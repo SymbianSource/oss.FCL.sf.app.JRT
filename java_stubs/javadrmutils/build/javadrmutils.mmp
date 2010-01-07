@@ -1,0 +1,37 @@
+/*
+* Copyright (c) 2005-2006 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Project definition file for javadrmutils stub
+*             
+*
+*/
+
+
+#include <platform_paths.hrh>
+
+TARGET          javadrmutils.dll
+TARGETTYPE      dll
+
+CAPABILITY      CAP_GENERAL_DLL
+VENDORID        VID_DEFAULT
+
+UID             0x100039CE 0x1028246D
+
+USERINCLUDE     ../../../java_plat/java_superd_parser_api/inc 
+
+SOURCEPATH      ../src
+SOURCE          javasuperdparser.cpp 
+
+APP_LAYER_SYSTEMINCLUDE
+
+LIBRARY         euser.lib

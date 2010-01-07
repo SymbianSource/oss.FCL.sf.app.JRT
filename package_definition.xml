@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SystemDefinition schema="3.0.0">
+  <package id="java" name="Java" levels="framework util generic rt">
+    <collection id="java_stubs" name="Java Stubs" level="util">
+      <component id="javadrmutils" name="Java DRM Utils" filter="s60">
+       <unit bldFile="java_stubs/javadrmutils/group"/>
+     </component>
+      <component id="javaenvinfo" name="Java Environment Info" filter="s60">
+       <unit bldFile="java_stubs/javaenvinfo/group"/>
+     </component>
+      <component id="javaregistry" filter="s60" name="Java Registry">
+        <unit bldFile="java_stubs/javaregistry/clientserver/client/group"/>
+      </component>
+      <component id="java_stubs_build" filter="s60" name="Java Stubs Build">
+		<!-- can this be split up into the other components? Otherwise, remove the #includes and rename Java ROM-->
+        <unit bldFile="java_stubs/group"/>
+      </component>
+    </collection>
+    <collection id="java_info" name="Java Info" level="rt">
+      <component id="java_plat" filter="s60" name="Java Platform Interfaces" class="api">
+        <unit bldFile="java_plat/group"/>
+      </component>
+    </collection>
+  </package>
+</SystemDefinition>

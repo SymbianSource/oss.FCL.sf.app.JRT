@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<api id="82ec49d9ff0aa95b1a50b117f48bced2" dataversion="2.0">
+  <name>Java Registry API</name>
+  <description>Provides functionality to get information about installed Java applications and installation packages.</description>
+  <type>c++</type>
+  <collection>javamanager</collection>
+  <libs>
+    <lib name="javaregistryclient.lib" />
+  </libs>
+  <release category="platform" sinceversion="3.2"/>
+  <attributes>
+     <!-- This indicates wether the api provedes separate html documentation -->
+     <!-- or is the additional documentation generated from headers. -->
+     <!-- If you are unsuere then the value is "no" -->
+     <htmldocprovided>no</htmldocprovided>
+     <adaptation>no</adaptation>
+  </attributes>
+</api>

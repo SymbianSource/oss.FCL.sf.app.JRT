@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<api id="01ecb2345c6a46912da51c209739aab3" dataversion="1.0">
+  <name>Java SuperD Parser API</name>
+  <description>Provides functionality to create and parse superdistributable JAR packages. There is a special JAR package format for Java applications. This format is used when end users send DRM protected java applications to each other. Superdistributable package includes Java application in encrypted format. The decryption key can be purchased separately.</description>
+  <type>c++</type>
+  <subsystem>javautils</subsystem>
+  <libs>
+    <lib name="javadrmutils.lib" />
+  </libs>
+  <release category="domain" sinceversion="3.2" deprecatedsince="9.2"/>
+  <attributes>
+     <!-- This indicates wether the api provedes separate html documentation -->
+     <!-- or is the additional documentation generated from headers. -->
+     <!-- If you are unsuere then the value is "no" -->
+     <htmldocprovided>yes</htmldocprovided>
+     <adaptation>no</adaptation>
+  </attributes>
+</api>
