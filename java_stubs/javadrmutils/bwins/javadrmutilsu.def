@@ -1,7 +1,0 @@
-EXPORTS
-	?ContentFileName@CJavaSuperDParser@Java@@QBE?AV?$TBuf@$0BAA@@@XZ @ 1 NONAME ; class TBuf<256> Java::CJavaSuperDParser::ContentFileName(void) const
-	?CreateSuperDPackageL@CJavaSuperDParser@Java@@SAXAAVRFs@@ABVTDesC16@@11@Z @ 2 NONAME ; void Java::CJavaSuperDParser::CreateSuperDPackageL(class RFs &, class TDesC16 const &, class TDesC16 const &, class TDesC16 const &)
-	?DescriptorFileName@CJavaSuperDParser@Java@@QBE?AV?$TBuf@$0BAA@@@XZ @ 3 NONAME ; class TBuf<256> Java::CJavaSuperDParser::DescriptorFileName(void) const
-	?NewL@CJavaSuperDParser@Java@@SAPAV12@AAVRFs@@AAVRFile@@ABVTDesC16@@@Z @ 4 NONAME ; class Java::CJavaSuperDParser * Java::CJavaSuperDParser::NewL(class RFs &, class RFile &, class TDesC16 const &)
-	?NewL@CJavaSuperDParser@Java@@SAPAV12@AAVRFs@@ABVTDesC16@@1@Z @ 5 NONAME ; class Java::CJavaSuperDParser * Java::CJavaSuperDParser::NewL(class RFs &, class TDesC16 const &, class TDesC16 const &)
-

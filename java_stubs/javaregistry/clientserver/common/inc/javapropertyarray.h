@@ -16,8 +16,8 @@
 */
 
 
-#ifndef __JAVA_PROPERTY_ARRAY_H
-#define __JAVA_PROPERTY_ARRAY_H
+#ifndef JAVAPROPERTYARRAY_H
+#define JAVAPROPERTYARRAY_H
 
 #include <e32base.h>
 #include <s32strm.h>
@@ -204,5 +204,5 @@ private:    //members
 }//namespace Manager
 }//namespace Java
 
-#endif //__JAVA_PROPERTY_ARRAY_H
+#endif // JAVAPROPERTYARRAY_H
 

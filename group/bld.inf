@@ -20,7 +20,8 @@
 // bld.inf of subprojects
 #ifdef __JAVA_STUBS
 #include "../java_stubs/group/bld.inf"
-#include "../java_plat/group/bld.inf"
+#include "../jrt_plat/group/bld.inf"
 #else
-#include "../build/bld.inf"
+#include "../build/bldjava.inf"
+#include "../bld.inf"
 #endif // __JAVA_STUBS

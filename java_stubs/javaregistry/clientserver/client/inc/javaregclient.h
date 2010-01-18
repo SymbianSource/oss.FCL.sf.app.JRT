@@ -16,8 +16,8 @@
 */
 
 
-#ifndef __JAVAREGCLIENT_H
-#define __JAVAREGCLIENT_H
+#ifndef JAVAREGCLIENT_H
+#define JAVAREGCLIENT_H
 
 #include "javaregdef.h"
 #include "javaregburstates.h"
@@ -278,4 +278,4 @@ private:
 }//namespace Manager
 }//namespace Java
 
-#endif //__JAVAREGCLIENT_H
+#endif // JAVAREGCLIENT_H

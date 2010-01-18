@@ -16,8 +16,8 @@
 */
 
 
-#ifndef JAVAREGUIDARRAYCONVERTER_H
-#define JAVAREGUIDARRAYCONVERTER_H
+#ifndef JAVAREGUIDARRAYCONV_H
+#define JAVAREGUIDARRAYCONV_H
 
 // INCLUDES
 #include <e32std.h>
@@ -83,6 +83,6 @@ public:
 }//namespace Manager
 }//namespace Java
 
-#endif // JAVAREGUIDARRAYCONVERTER_H
+#endif // JAVAREGUIDARRAYCONV_H
 
 // End of File

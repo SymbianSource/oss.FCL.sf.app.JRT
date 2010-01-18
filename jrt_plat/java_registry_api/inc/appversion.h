@@ -15,8 +15,8 @@
 *
 */
 
-#ifndef TAPPVERSION_H
-#define TAPPVERSION_H
+#ifndef APPVERSION_H
+#define APPVERSION_H
 
 /**
  * This class is used to represent the version of a Java application.
@@ -112,6 +112,6 @@ public:
 
 #include <appversion.inl>
 
-#endif // TAPPVERSION_H
+#endif // APPVERSION_H
 
 // End of File

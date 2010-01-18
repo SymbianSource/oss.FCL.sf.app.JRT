@@ -21,7 +21,6 @@
 
 file=ABI_DIR\BUILD_DIR\javaenvinfo.dll              \SHARED_LIB_DIR\javaenvinfo.dll
 file=ABI_DIR\BUILD_DIR\javaregistryclient.dll       \SHARED_LIB_DIR\javaregistryclient.dll
-file=ABI_DIR\BUILD_DIR\javadrmutils.dll             \SHARED_LIB_DIR\javadrmutils.dll
 file=ABI_DIR\BUILD_DIR\javadebugapi.dll             \SHARED_LIB_DIR\javadebugapi.dll
 
 #endif //  __JAVASTUBS_IBY__

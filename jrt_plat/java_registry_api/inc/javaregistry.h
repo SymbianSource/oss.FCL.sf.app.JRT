@@ -20,8 +20,8 @@
 
 
 // JAVAREGISTRY.H
-#ifndef __JAVAREGISTRY_H
-#define __JAVAREGISTRY_H
+#ifndef JAVAREGISTRY_H
+#define JAVAREGISTRY_H
 
 #include <e32base.h>
 #include "javaregistryentrytype.h"
@@ -190,4 +190,4 @@ private: // Data
 
 }// namespace Java
 
-#endif // __JAVAREGISTRY_H
+#endif // JAVAREGISTRY_H

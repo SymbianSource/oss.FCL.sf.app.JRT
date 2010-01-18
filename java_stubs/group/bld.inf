@@ -17,7 +17,6 @@
 
 
 // bld.inf of subprojects
-#include "../javadrmutils/build/bld.inf"
 #include "../javaenvinfo/build/bld.inf"
 #include "../javaregistry/clientserver/client/build/bld.inf"
 #include "../javadebugapi/build/bld.inf"

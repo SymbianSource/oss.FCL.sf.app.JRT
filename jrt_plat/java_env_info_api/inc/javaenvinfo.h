@@ -76,4 +76,4 @@ private:
 
 }
 
-#endif //JAVAENVINFO_H
+#endif // JAVAENVINFO_H

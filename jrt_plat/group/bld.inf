@@ -17,6 +17,5 @@
 */
 
 #include "../java_registry_api/build/bld.inf"
-#include "../java_superd_parser_api/build/bld.inf"
 #include "../java_env_info_api/build/bld.inf"
 #include "../java_debug_api/build/bld.inf"

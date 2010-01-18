@@ -2,7 +2,7 @@
 * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
-* under the terms of the License "Eclipse Public License v1.0"
+* under the terms of "Eclipse Public License v1.0"
 * which accompanies this distribution, and is available
 * at the URL "http://www.eclipse.org/legal/epl-v10.html".
 *
@@ -11,15 +11,19 @@
 *
 * Contributors:
 *
-* Description: 
+* Description: Generated bld.inf -file
 *
 */
 
-#include "javacommons/bld.inf" 
-#include "javaruntimes/bld.inf" 
-#include "javauis/bld.inf" 
-#include "javamanager/bld.inf" 
-#include "javatools/bld.inf" 
-#include "javaextensions/bld.inf" 
-#include "java_plat/group/bld.inf" 
-#include "rom/bld.inf" 
+PRJ_PLATFORMS
+default
+
+#include "javacommons/bld.inf"    
+#include "javaruntimes/bld.inf"    
+#include "javauis/bld.inf"    
+#include "javamanager/bld.inf"    
+#include "javatools/bld.inf"    
+#include "javaextensions/bld.inf"    
+#include "jrt_plat/group/bld.inf"    
+#include "build/bld.inf"    
+#include "build/stubsis/bld.inf"  

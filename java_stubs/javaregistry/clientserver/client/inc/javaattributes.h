@@ -16,8 +16,8 @@
 */
 
 
-#ifndef CJAVAATTRIBUTES_H
-#define CJAVAATTRIBUTES_H
+#ifndef JAVAATTRIBUTES_H
+#define JAVAATTRIBUTES_H
 
 
 #include <e32base.h>
@@ -202,7 +202,7 @@ private:
 } // namespace Manager
 } // namespace Java
 
-#endif // CJAVAATTRIBUTES_H
+#endif // JAVAATTRIBUTES_H
 
 
 // End of File

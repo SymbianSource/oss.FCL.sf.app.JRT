@@ -38,4 +38,4 @@ enum TBackupState
 }//namespace Manager
 }//namespace Java
 
-#endif //JAVAREGBURSTATES_H
+#endif // JAVAREGBURSTATES_H

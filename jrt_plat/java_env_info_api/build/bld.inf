@@ -18,7 +18,5 @@ PRJ_EXPORTS
 
 #include <platform_paths.hrh>
 
-../inc.s60/javadomainpskeys.h         APP_LAYER_PLATFORM_EXPORT_PATH (javadomainpskeys.h)
-../inc.s60/javadomainpskeys.h         |../../../inc/javadomainpskeys.h
-../inc.s60/javaenvinfo.h              APP_LAYER_PLATFORM_EXPORT_PATH (javaenvinfo.h)
-../inc.s60/javaenvinfo.h              |../../../inc/javaenvinfo.h
+../inc/javadomainpskeys.h         APP_LAYER_PLATFORM_EXPORT_PATH (javadomainpskeys.h)
+../inc/javaenvinfo.h              APP_LAYER_PLATFORM_EXPORT_PATH (javaenvinfo.h)

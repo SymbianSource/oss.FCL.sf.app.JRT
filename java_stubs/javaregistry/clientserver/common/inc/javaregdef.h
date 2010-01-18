@@ -56,5 +56,5 @@ enum TRequests
 }//namespace Manager
 }//namespace Java
 
-#endif //JAVAREGDEF_H
+#endif // JAVAREGDEF_H
 

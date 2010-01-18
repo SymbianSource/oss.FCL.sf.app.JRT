@@ -15,8 +15,8 @@
 *
 */
 
-#ifndef JAVADOMAINPSKEY_H
-#define JAVADOMAINPSKEY_H
+#ifndef JAVADOMAINPSKEYS_H
+#define JAVADOMAINPSKEYS_H
 
 /**
  * This header provides info about Java environment PS keys.
@@ -67,5 +67,5 @@
 #define KPSUidJavaLatestInstallationState 0x20019547
 #endif
 
-#endif //JAVADOMAINPSKEY_H
+#endif // JAVADOMAINPSKEYS_H
 

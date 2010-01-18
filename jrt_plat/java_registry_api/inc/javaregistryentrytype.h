@@ -46,4 +46,4 @@ enum TJavaRegistryEntryType
 
 }
 
-#endif
+#endif // JAVAREGISTRYENTRYTYPE_H

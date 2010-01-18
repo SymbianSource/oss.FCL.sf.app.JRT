@@ -16,8 +16,8 @@
 */
 
 
-#ifndef __JAVAREGPROPERTY_H
-#define __JAVAREGPROPERTY_H
+#ifndef JAVAREGPROPERTY_H
+#define JAVAREGPROPERTY_H
 
 #include <e32base.h>
 
@@ -122,5 +122,5 @@ private:    //members
 }//namespace Manager
 }//namespace Java
 
-#endif //__JAVAREGPROPERTY_H
+#endif // JAVAREGPROPERTY_H
 
