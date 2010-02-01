@@ -15,9 +15,6 @@
 *
 */
 
-#ifndef TAPPVERSIONINL_H
-#define TAPPVERSIONINL_H
-
 TAppVersion::TAppVersion()
         : iMajor(0), iMinor(0), iBuild(0)
 {
@@ -73,7 +70,3 @@ TBool TAppVersion::operator >=(const TAppVersion& aAppVersion) const
 {
     return !(*this < aAppVersion);
 }
-
-#endif // TAPPVERSIONINL_H
-
-//End of File
