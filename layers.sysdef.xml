@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE SystemDefinition SYSTEM "sysdef_1_4_0.dtd" [
+  <!ENTITY layer_real_source_path "sf/app/jrt" >
+]>
+
+<SystemDefinition name="jrt" schema="1.4.0">
+  <systemModel>
+    <layer name="app_layer">
+      <module name="jrt">
+        <unit unitID="jrt.jrt" mrp="" bldFile="&layer_real_source_path;/group"
+        filter="!sf_build" name="jrt" />
+      </module>
+      <module name="jrt">
+        <unit unitID="jrt.jrt.jrt_plat" mrp="" bldFile="&layer_real_source_path;/jrt_plat/group"
+        filter="sf_build" name="jrt_jrt_plat" />
+      </module>
+      <module name="jrt">
+        <unit unitID="jrt.jrt.java_stubs" mrp="" bldFile="&layer_real_source_path;/java_stubs/group"
+        filter="sf_build" name="jrt_jrt_stubs" />
+      </module>
+    </layer>
+  </systemModel>
+</SystemDefinition>

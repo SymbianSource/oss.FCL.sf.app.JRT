@@ -1,0 +1,21 @@
+/*
+* Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Includes all the Java Platform API specific bld.inf files, 
+*               which export files.
+*
+*/
+
+#include "../java_registry_api/build/bld.inf"
+#include "../java_env_info_api/build/bld.inf"
+#include "../java_debug_api/build/bld.inf"
