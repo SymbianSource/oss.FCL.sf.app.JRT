@@ -1,5 +1,0 @@
-EXPORTS
-	?GetUserAgentHeaderL@JavaEnvInfo@Java@@SAPAVHBufC16@@XZ @ 1 NONAME ; class HBufC16 * Java::JavaEnvInfo::GetUserAgentHeaderL(void)
-	?Version@JavaEnvInfo@Java@@SA?AVTVersion@@XZ @ 2 NONAME ; class TVersion Java::JavaEnvInfo::Version(void)
-	?GetPlatformInfoL@JavaEnvInfo@Java@@SAPAVHBufC16@@XZ @ 3 NONAME ; class HBufC16 * Java::JavaEnvInfo::GetPlatformInfoL(void)
-

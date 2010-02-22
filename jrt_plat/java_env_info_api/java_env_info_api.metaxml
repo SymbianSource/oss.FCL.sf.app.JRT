@@ -1,17 +1,14 @@
 <?xml version="1.0" ?>
-<api id="935dbdc2b6dfe73953cf5cc603647d36" dataversion="1.0">
+<api id="935dbdc2b6dfe73953cf5cc603647d36" dataversion="2.0">
   <name>Java Environment Info API</name>
   <description>This API provides information about the Java environment and events occurring within it</description>
   <type>c++</type>
-  <subsystem>java_dom</subsystem>
+  <collection>javacommons</collection>
   <libs>
     <lib name="javaenv.lib" />  
   </libs>
-  <release category="domain"/>
+  <release category="platform" sinceversion="3.2"/>
   <attributes>
-     <!-- This indicates wether the api provedes separate html documentation -->
-     <!-- or is the additional documentation generated from headers. -->
-     <!-- If you are unsuere then the value is "no" -->
      <htmldocprovided>no</htmldocprovided>
      <adaptation>no</adaptation>
   </attributes>

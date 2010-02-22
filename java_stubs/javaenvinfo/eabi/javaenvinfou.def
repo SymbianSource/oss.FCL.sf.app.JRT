@@ -1,5 +1,0 @@
-EXPORTS
-	_ZN4Java11JavaEnvInfo16GetPlatformInfoLEv @ 1 NONAME
-	_ZN4Java11JavaEnvInfo19GetUserAgentHeaderLEv @ 2 NONAME
-	_ZN4Java11JavaEnvInfo7VersionEv @ 3 NONAME
-
