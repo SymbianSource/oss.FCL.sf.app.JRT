@@ -22,6 +22,5 @@
 #include "../java_stubs/group/bld.inf"
 #include "../jrt_plat/group/bld.inf"
 #else
-#include "../build/bldjava.inf"
 #include "../bld.inf"
 #endif // __JAVA_STUBS
