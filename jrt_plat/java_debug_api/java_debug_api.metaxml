@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" ?>
 <api id="fb4b8d56e86ecb8152a0d3b2be8880c8" dataversion="2.0">
   <name>Java Debug API</name>
-  <description>Java Debug API allows it's users to install, remove, start and stop Java applications. Java application can be launched with Universal Emulator Interface (UEI) arguments that can be used to start JVM in debug mode.</description>
+  <description>Java Debug API allows its users to install, remove, start and stop Java applications. Java application can be launched with Universal Emulator Interface (UEI) arguments that can be used to start JVM in debug mode.</description>
   <type>c++</type>
   <collection>javamanager</collection>
   <libs>
