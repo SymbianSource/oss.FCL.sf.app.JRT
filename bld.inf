@@ -24,6 +24,5 @@ default
 #include "javamanager/bld.inf"    
 #include "javatools/bld.inf"    
 #include "javaextensions/bld.inf"    
-#include "jrt_plat/group/bld.inf"    
 #include "build/bld.inf"    
-#include "build/stubsis/bld.inf"  
+#include "jrt_plat/group/bld.inf"  
