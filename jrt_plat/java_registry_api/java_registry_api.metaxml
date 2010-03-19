@@ -9,9 +9,6 @@
   </libs>
   <release category="platform" sinceversion="3.2"/>
   <attributes>
-     <!-- This indicates wether the api provedes separate html documentation -->
-     <!-- or is the additional documentation generated from headers. -->
-     <!-- If you are unsuere then the value is "no" -->
      <htmldocprovided>no</htmldocprovided>
      <adaptation>no</adaptation>
   </attributes>
