@@ -71,7 +71,7 @@ public:
     IMPORT_C static HBufC* GetPlatformInfoL();
 private:
 
-    static TVersion JavaEnvInfo::GetJavaVersionL();
+    static TVersion GetJavaVersionL();
 };
 
 }
