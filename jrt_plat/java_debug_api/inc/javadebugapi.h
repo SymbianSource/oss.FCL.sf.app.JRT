@@ -20,6 +20,7 @@
 #define JAVADEBUGAPI_H
 
 #include <e32cmn.h>
+#include <e32std.h>
 
 /**
  * Java Debug API allows it's users to install, remove, start and
@@ -59,6 +60,7 @@ IMPORT_C TBool uninstallApp(TUid aSuiteUid);
  * Starts Java application.
  * @param[in] aApplicationUid application uid
  * @param[in] aUeiParameters includes arguments defined in Unified Emulator Interface (UEI) specification.
+ * @param[out] aProcessId process id of the launched Java application, valid if application is launched successfully
  * If aUeiParameters contains unsupported options then those options are discarded silently.
  * Supported arguments:
  *   -Xverbose[:options]
@@ -69,7 +71,7 @@ IMPORT_C TBool uninstallApp(TUid aSuiteUid);
  * @capability NetworkControl
  * @return true if application is started
  */
-IMPORT_C TBool startApp(TUid aApplicationUid, HBufC& aUeiParameters);
+IMPORT_C TBool startApp(TUid aApplicationUid, HBufC& aUeiParameters, TProcessId& aProcessId);
 
 /**
  * Stops Java application.

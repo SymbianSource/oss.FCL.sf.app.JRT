@@ -1,7 +1,7 @@
 EXPORTS
 	_ZN4java5debug10installAppER7HBufC16R4TUidR6RArrayIS3_E @ 1 NONAME
 	_ZN4java5debug12uninstallAppE4TUid @ 2 NONAME
-	_ZN4java5debug7stopAppE4TUid @ 3 NONAME
-	_ZN4java5debug8startAppE4TUidR7HBufC16 @ 4 NONAME
-	_ZN4java5debug14JavaDiagnostic14createInstanceEv @ 5 NONAME
+	_ZN4java5debug14JavaDiagnostic14createInstanceEv @ 3 NONAME
+	_ZN4java5debug7stopAppE4TUid @ 4 NONAME
+	_ZN4java5debug8startAppE4TUidR7HBufC16R10TProcessId @ 5 NONAME
 

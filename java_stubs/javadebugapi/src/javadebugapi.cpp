@@ -35,7 +35,7 @@ TBool java::debug::uninstallApp(TUid /*aSuiteUid*/)
 }
 
 EXPORT_C
-TBool java::debug::startApp(TUid /*aApplicationUid*/, HBufC& /*aUeiParameters*/)
+TBool java::debug::startApp(TUid /*aApplicationUid*/, HBufC& /*aUeiParameters*/, TProcessId& /*aProcessId*/)
 {
     return EFalse;
 }
