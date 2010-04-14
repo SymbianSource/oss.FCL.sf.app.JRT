@@ -1,0 +1,9 @@
+No grant is made under Sun's applicable intellectual property rights, 
+nor may licensees make any claims regarding compliance with Sun Specifications, 
+unless such licensee 
+(i) fully implements the Sun Specification(s) including all its required interfaces and functionality; 
+(ii) does not modify, subset, superset or otherwise extend the Licensor Name Space, or include any public or protected packages,
+classes, Java interfaces, fields or methods within the Licensor Name Space other than those required/authorized by the Specification
+or Specifications being implemented; and 
+(iii) the licensee's implementations pass the Sun TCK(s)
+(including satisfying the requirements of the applicable TCK User Guide) for such Specification(s))."
