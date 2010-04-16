@@ -1,7 +1,7 @@
 EXPORTS
-	?installApp@debug@java@@YAHAAVHBufC16@@AAVTUid@@AAV?$RArray@VTUid@@@@@Z @ 1 NONAME ; int java::debug::installApp(class HBufC16 &, class TUid &, class RArray<class TUid> &)
-	?startApp@debug@java@@YAHVTUid@@AAVHBufC16@@@Z @ 2 NONAME ; int java::debug::startApp(class TUid, class HBufC16 &)
-	?stopApp@debug@java@@YAHVTUid@@@Z @ 3 NONAME ; int java::debug::stopApp(class TUid)
+	?createInstance@JavaDiagnostic@debug@java@@SAPAV123@XZ @ 1 NONAME ; class java::debug::JavaDiagnostic * java::debug::JavaDiagnostic::createInstance(void)
+	?stopApp@debug@java@@YAHVTUid@@@Z @ 2 NONAME ; int java::debug::stopApp(class TUid)
+	?startApp@debug@java@@YAHVTUid@@AAVHBufC16@@AAVTProcessId@@@Z @ 3 NONAME ; int java::debug::startApp(class TUid, class HBufC16 &, class TProcessId &)
 	?uninstallApp@debug@java@@YAHVTUid@@@Z @ 4 NONAME ; int java::debug::uninstallApp(class TUid)
-	?createInstance@JavaDiagnostic@debug@java@@SAPAV123@XZ @ 5 NONAME ; class java::debug::JavaDiagnostic * java::debug::JavaDiagnostic::createInstance(void)
+	?installApp@debug@java@@YAHAAVHBufC16@@AAVTUid@@AAV?$RArray@VTUid@@@@@Z @ 5 NONAME ; int java::debug::installApp(class HBufC16 &, class TUid &, class RArray<class TUid> &)
 
