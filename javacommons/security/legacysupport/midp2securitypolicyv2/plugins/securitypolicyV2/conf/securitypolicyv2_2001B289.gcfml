@@ -1,0 +1,42 @@
+<file xmlns="http://www.s60.com/xml/genconfml/1" name="securitypolicyv2.iby">
+
+
+	<setting ref="KPolicyFile/KPolicyFile"/>
+
+
+	<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/TR/xhtml1/strict">
+
+
+		<xsl:output method="text" encoding="UTF-8"/>
+
+
+		<xsl:template match="configuration/data">
+
+
+#ifndef __COMMON___SECURITYPOLICY_VARIANT_IBY____
+
+
+#define __COMMON___SECURITYPOLICY_VARIANT_IBY____
+
+
+			<xsl:if test="KPolicyFile/KPolicyFile='att_r1'">
+
+
+data=ZRESOURCE\java\midp2securitypolicy\att_r1.xpf \RESOURCE_FILES_DIR\java\midp2securitypolicy\att_r1.xpf
+
+
+			</xsl:if>
+
+
+#endif //__COMMON___SECURITYPOLICY_VARIANT_IBY____
+
+
+		</xsl:template>
+
+
+	</xsl:stylesheet>
+
+
+</file>
+
+

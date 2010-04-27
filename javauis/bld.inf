@@ -1,0 +1,37 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: Generated bld.inf -file
+*
+*/
+
+PRJ_PLATFORMS
+default
+
+#include "amms_akn/build/bld.inf"    
+#include "coreui_akn/build/bld.inf"    
+#include "eswt_akn/eswtdirectcontent/build/bld.inf"    
+#include "eswt_akn/org.eclipse.ercp.swt.s60/native/build/bld.inf"    
+#include "m2g_akn/build/bld.inf"    
+#include "m3g_akn/build/bld.inf"    
+#include "mmapi_akn/build/bld.inf"    
+#include "nokiasound_akn/build/bld.inf"    
+#include "remconobserver_akn/build/bld.inf"    
+#include "runtimeui_akn/build/bld.inf"    
+#include "softnotification_akn/build/bld.inf"    
+#include "javalegacyutils/bld.inf"    
+#include "lcdui_akn/bld.inf"    
+#include "coreui/build/bld.inf"    
+#include "eswt_akn/build/bld.inf"    
+#include "eswt_akn/eswtapifacade/group/bld.inf"    
+#include "eswt_akn/eswtphysics/group/bld.inf"  

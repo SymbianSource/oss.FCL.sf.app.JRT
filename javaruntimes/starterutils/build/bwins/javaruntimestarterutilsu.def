@@ -1,0 +1,9 @@
+EXPORTS
+	?getJvmStarterInstance@JvmStarter@runtime@java@@SAPAV123@W4Configuration@123@ABV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@@Z @ 1 NONAME ; class java::runtime::JvmStarter * java::runtime::JvmStarter::getJvmStarterInstance(enum java::runtime::JvmStarter::Configuration, class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &)
+	?getJvmStarterInstance@JvmStarter@runtime@java@@SAPAV123@XZ @ 2 NONAME ; class java::runtime::JvmStarter * java::runtime::JvmStarter::getJvmStarterInstance(void)
+	??0RuntimeStarterUtils@runtime@java@@QAE@XZ @ 3 NONAME ; java::runtime::RuntimeStarterUtils::RuntimeStarterUtils(void)
+	??1RuntimeStarterUtils@runtime@java@@QAE@XZ @ 4 NONAME ; java::runtime::RuntimeStarterUtils::~RuntimeStarterUtils(void)	
+	?enableDevelopmentFeatures@RuntimeStarterUtils@runtime@java@@QAEXAAVJvmStarter@23@_NPAV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@@Z @ 5 NONAME ; void java::runtime::RuntimeStarterUtils::enableDevelopmentFeatures(class java::runtime::JvmStarter &, bool, class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > *)	
+	?startThreadSupervisor@RuntimeStarterUtils@runtime@java@@QAEX_N@Z @ 6 NONAME ; void java::runtime::RuntimeStarterUtils::startThreadSupervisor(bool)
+	?getExtBootClassPath@RuntimeStarterUtils@runtime@java@@QAEXAAV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@@Z @ 7 NONAME ; void java::runtime::RuntimeStarterUtils::getExtBootClassPath(class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > &)
+

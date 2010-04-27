@@ -1,0 +1,13 @@
+MicroEdition-Configuration: CLDC-1.1
+MIDlet-Version: 1.0.0
+Created-By: 1.3.1_14 (Sun Microsystems Inc.)
+MIDlet-Vendor: Nokia
+MicroEdition-Profile: MIDP-2.0
+MIDlet-1: JsrTestRunner,,JsrTestRunner.JsrTestRunner
+MIDlet-Name: JsrTestRunner
+MIDlet-Jar-Size: 7354
+MIDlet-Jar-URL: JsrTestRunner.jar
+ModuleName: PIM
+TestClassName1: com.nokia.mj.test.pim.adaptation.MIDPTest
+MIDlet-Permissions: javax.microedition.pim.ContactList.read,javax.microedition.pim.EventList.read,javax.microedition.pim.ToDoList.read,javax.microedition.pim.ContactList.write,javax.microedition.pim.EventList.write,javax.microedition.pim.ToDoList.write
+AvailableResolutions: resolution_QVGAPortrait, resolution_QVGALandscape

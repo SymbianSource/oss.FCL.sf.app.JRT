@@ -1,0 +1,21 @@
+EXPORTS
+	?findDllMethod@@YAP6APAXXZPBD@Z @ 1 NONAME ; void * (*)(void) findDllMethod(char const *)
+	??0SocketServerConnection@@QAE@ABV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@0@Z @ 2 NONAME ; SocketServerConnection::SocketServerConnection(class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &, class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &)
+	??0SocketServerConnectionFactory@@QAE@XZ @ 3 NONAME ; SocketServerConnectionFactory::SocketServerConnectionFactory(void)
+	??1SocketServerConnection@@UAE@XZ @ 4 NONAME ; SocketServerConnection::~SocketServerConnection(void)
+	??1SocketServerConnectionFactory@@UAE@XZ @ 5 NONAME ; SocketServerConnectionFactory::~SocketServerConnectionFactory(void)
+	?accept@SocketServerConnection@@QAEHXZ @ 6 NONAME ; int SocketServerConnection::accept(void)
+	?close@SocketServerConnection@@QAEHH@Z @ 7 NONAME ; int SocketServerConnection::close(int)
+	?close@SocketServerConnection@@UAEXXZ @ 8 NONAME ; void SocketServerConnection::close(void)
+	?create@SocketServerConnectionFactory@@UAEPAVServerConnection@push@java@@ABV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@@Z @ 9 NONAME ; class java::push::ServerConnection * SocketServerConnectionFactory::create(class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &)
+	?createSrvConnObj@SocketServerConnectionFactory@@UAEPAVServerConnection@push@java@@ABV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@0@Z @ 10 NONAME ; class java::push::ServerConnection * SocketServerConnectionFactory::createSrvConnObj(class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &, class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &)
+	?getFactory@SocketServerConnectionFactory@@SAAAV1@XZ @ 11 NONAME ; class SocketServerConnectionFactory & SocketServerConnectionFactory::getFactory(void)
+	?getFilter@SocketServerConnection@@UBE?AV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@XZ @ 12 NONAME ; class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > SocketServerConnection::getFilter(void) const
+	?getUri@SocketServerConnection@@UBE?AV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@XZ @ 13 NONAME ; class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > SocketServerConnection::getUri(void) const
+	?isMultipleSrvConnAllowed@SocketServerConnectionFactory@@UAE_NXZ @ 14 NONAME ; bool SocketServerConnectionFactory::isMultipleSrvConnAllowed(void)
+	?isNormalServerConnection@SocketServerConnection@@QAE_NXZ @ 15 NONAME ; bool SocketServerConnection::isNormalServerConnection(void)
+	?open@SocketServerConnection@@QAEHXZ @ 16 NONAME ; int SocketServerConnection::open(void)
+	?open@SocketServerConnection@@UAEXPAVConnectionListener@push@java@@@Z @ 17 NONAME ; void SocketServerConnection::open(class java::push::ConnectionListener *)
+	?setFilter@SocketServerConnection@@UAEXABV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@@Z @ 18 NONAME ; void SocketServerConnection::setFilter(class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &)
+	?setNormalServerConnection@SocketServerConnection@@QAEXXZ @ 19 NONAME ; void SocketServerConnection::setNormalServerConnection(void)
+

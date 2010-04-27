@@ -1,0 +1,79 @@
+EXPORTS
+	_Z10jni_lookupPKc @ 1 NONAME
+	_ZN4java9bluetooth11BtUrlParams11getProtocolEv @ 2 NONAME
+	_ZN4java9bluetooth11BtUrlParams12getParamNameEv @ 3 NONAME
+	_ZN4java9bluetooth11BtUrlParams14getParamMasterEv @ 4 NONAME
+	_ZN4java9bluetooth11BtUrlParams14getServiceUuidEv @ 5 NONAME
+	_ZN4java9bluetooth11BtUrlParams15getParamEncryptEv @ 6 NONAME
+	_ZN4java9bluetooth11BtUrlParams15isAllowedSenderER7HBufC16RbS4_ @ 7 NONAME
+	_ZN4java9bluetooth11BtUrlParams15isBlockedSenderER7HBufC16 @ 8 NONAME
+	_ZN4java9bluetooth11BtUrlParams17getParamAuthorizeEv @ 9 NONAME
+	_ZN4java9bluetooth11BtUrlParams18getParamReceiveMtuEv @ 10 NONAME
+	_ZN4java9bluetooth11BtUrlParams19getParamTransmitMtuEv @ 11 NONAME
+	_ZN4java9bluetooth11BtUrlParams20getParamAuthenticateEv @ 12 NONAME
+	_ZN4java9bluetooth11BtUrlParamsC1ESbIwSt11char_traitsIwESaIwEES5_ @ 13 NONAME
+	_ZN4java9bluetooth11BtUrlParamsC2ESbIwSt11char_traitsIwESaIwEES5_ @ 14 NONAME
+	_ZN4java9bluetooth11BtUrlParamsD1Ev @ 15 NONAME
+	_ZN4java9bluetooth11BtUrlParamsD2Ev @ 16 NONAME
+	_ZN4java9bluetooth13ServiceRecord14setAdvertiseFsEi @ 17 NONAME
+	_ZN4java9bluetooth13ServiceRecord15setAttributeIntEiiR6TDesC8 @ 18 NONAME
+	_ZN4java9bluetooth13ServiceRecord15setAttributeNilEi @ 19 NONAME
+	_ZN4java9bluetooth13ServiceRecord15setAttributeUrlEiR6TDesC8 @ 20 NONAME
+	_ZN4java9bluetooth13ServiceRecord16attributeListEndEi @ 21 NONAME
+	_ZN4java9bluetooth13ServiceRecord16initializeRecordEiiSbIwSt11char_traitsIwESaIwEES5_ @ 22 NONAME
+	_ZN4java9bluetooth13ServiceRecord16setAttributeBoolEii @ 23 NONAME
+	_ZN4java9bluetooth13ServiceRecord16setAttributeUUIDEiR5TUUID @ 24 NONAME
+	_ZN4java9bluetooth13ServiceRecord16setAttributeUintEiiR6TDesC8 @ 25 NONAME
+	_ZN4java9bluetooth13ServiceRecord17initializeRecordLEiiR5TUUIDR6TDesC8 @ 26 NONAME
+	_ZN4java9bluetooth13ServiceRecord18attributeListStartEii @ 27 NONAME
+	_ZN4java9bluetooth13ServiceRecord18getServiceRecordIDEv @ 28 NONAME
+	_ZN4java9bluetooth13ServiceRecord18setAttributeStringEiR6TDesC8 @ 29 NONAME
+	_ZN4java9bluetooth13ServiceRecord21completesUpdateRecordEv @ 30 NONAME
+	_ZN4java9bluetooth13ServiceRecord22initializeUpdateRecordEi @ 31 NONAME
+	_ZN4java9bluetooth13ServiceRecord23restorePersistentRecordEv @ 32 NONAME
+	_ZN4java9bluetooth13ServiceRecord25restoreJavaServiceRecordLEP7JNIEnv_P8_jobject @ 33 NONAME
+	_ZN4java9bluetooth13ServiceRecord4NewLEPNS0_23BluetoothFunctionServerE @ 34 NONAME
+	_ZN4java9bluetooth13ServiceRecord7cleanupERPS1_ @ 35 NONAME
+	_ZN4java9bluetooth19BluetoothNameLookup19doDeviceNameLookupLEx @ 36 NONAME
+	_ZN4java9bluetooth19BluetoothNameLookup4NewLEv @ 37 NONAME
+	_ZN4java9bluetooth19BluetoothNameLookupD0Ev @ 38 NONAME
+	_ZN4java9bluetooth19BluetoothNameLookupD1Ev @ 39 NONAME
+	_ZN4java9bluetooth19BluetoothNameLookupD2Ev @ 40 NONAME
+	_ZN4java9bluetooth19ServiceClassHandler21setDeviceServiceClassEjb @ 41 NONAME
+	_ZN4java9bluetooth21BluetoothRemoteDevice19getSecurityPropertyEaRx @ 42 NONAME
+	_ZN4java9bluetooth24BTServiceRecordPopulator17isAttributesFoundEv @ 43 NONAME
+	_ZN4java9bluetooth24BTServiceRecordPopulator3NewEP7JNIEnv_P8_jobject @ 44 NONAME
+	_ZN4java9bluetooth24BTServiceRecordPopulatorD1Ev @ 45 NONAME
+	_ZN4java9bluetooth24BTServiceRecordPopulatorD2Ev @ 46 NONAME
+	_ZN4java9bluetooth24BluetoothPlatformControl27getBluetoothPlatformControlEv @ 47 NONAME
+	_ZN4java9bluetooth25BluetoothClientConnection10initializeEixii @ 48 NONAME
+	_ZN4java9bluetooth25BluetoothClientConnection13getReceiveMTUEv @ 49 NONAME
+	_ZN4java9bluetooth25BluetoothClientConnection14getTransmitMTUEv @ 50 NONAME
+	_ZN4java9bluetooth25BluetoothClientConnection16getRemoteAddressEv @ 51 NONAME
+	_ZN4java9bluetooth25BluetoothClientConnection16registerCallbackEP7JNIEnv_P8_jobject @ 52 NONAME
+	_ZN4java9bluetooth25BluetoothClientConnection4initEi @ 53 NONAME
+	_ZN4java9bluetooth25BluetoothClientConnection4sendEPKci @ 54 NONAME
+	_ZN4java9bluetooth25BluetoothClientConnection5closeEv @ 55 NONAME
+	_ZN4java9bluetooth25BluetoothClientConnection7connectExibbii @ 56 NONAME
+	_ZN4java9bluetooth25BluetoothClientConnection7receiveERPc @ 57 NONAME
+	_ZN4java9bluetooth25BluetoothClientConnection9availableEv @ 58 NONAME
+	_ZN4java9bluetooth25BluetoothClientConnectionC1EP16CBluetoothSocketPNS0_23BluetoothFunctionServerE @ 59 NONAME
+	_ZN4java9bluetooth25BluetoothClientConnectionC1EPNS0_23BluetoothFunctionServerE @ 60 NONAME
+	_ZN4java9bluetooth25BluetoothClientConnectionC2EP16CBluetoothSocketPNS0_23BluetoothFunctionServerE @ 61 NONAME
+	_ZN4java9bluetooth25BluetoothClientConnectionC2EPNS0_23BluetoothFunctionServerE @ 62 NONAME
+	_ZN4java9bluetooth25BluetoothClientConnectionD1Ev @ 63 NONAME
+	_ZN4java9bluetooth25BluetoothClientConnectionD2Ev @ 64 NONAME
+	_ZN4java9bluetooth27S60BluetoothPlatformControl23getBluetoothDeviceClassERi @ 65 NONAME
+	_ZTIN4java9bluetooth19BluetoothNameLookupE @ 66 NONAME ; #<TI>#
+	_ZTIN4java9bluetooth24BTServiceRecordPopulatorE @ 67 NONAME ; #<TI>#
+	_ZTIN4java9bluetooth24CBluetoothPlatformPluginE @ 68 NONAME ; #<TI>#
+	_ZTIN4java9bluetooth25BluetoothClientConnectionE @ 69 NONAME ; #<TI>#
+	_ZTIN4java9bluetooth26BTDataElementListPopulatorE @ 70 NONAME ; #<TI>#
+	_ZTIN4java9bluetooth27S60BluetoothPlatformControlE @ 71 NONAME ; #<TI>#
+	_ZTVN4java9bluetooth19BluetoothNameLookupE @ 72 NONAME ; #<VT>#
+	_ZTVN4java9bluetooth24BTServiceRecordPopulatorE @ 73 NONAME ; #<VT>#
+	_ZTVN4java9bluetooth24CBluetoothPlatformPluginE @ 74 NONAME ; #<VT>#
+	_ZTVN4java9bluetooth25BluetoothClientConnectionE @ 75 NONAME ; #<VT>#
+	_ZTVN4java9bluetooth26BTDataElementListPopulatorE @ 76 NONAME ; #<VT>#
+	_ZTVN4java9bluetooth27S60BluetoothPlatformControlE @ 77 NONAME ; #<VT>#
+

@@ -1,0 +1,14 @@
+EXPORTS
+	_ZN4MIDP17Midp2PermissionDB17GetDomainFromNameERK7TDesC16RNS_12TMidp2DomainE @ 1 NONAME
+	_ZN4MIDP17Midp2PermissionDB21GetPermissionFromNameERK7TDesC16RNS_16TMidp2PermissionE @ 2 NONAME
+	_ZN4MIDP17Midp2PermissionDB24GetFunctionGroupFromNameERK7TDesC16RNS_19TMidp2FunctionGroupE @ 3 NONAME
+	_ZN4MIDP17Midp2PermissionDB26GetFunctionGroupPermissionERKNS_19TMidp2FunctionGroupERNS_20TMidp2PermissionTypeERNS_20TMidp2PermissionModeERh @ 4 NONAME
+	_ZN4MIDP17Midp2PermissionDB26SetFunctionGroupPermissionERKNS_19TMidp2FunctionGroupERKNS_20TMidp2PermissionTypeERKNS_20TMidp2PermissionModeE @ 5 NONAME
+	_ZN4MIDP17Midp2PermissionDB4NewLERK7TDesC16S3_S3_ @ 6 NONAME
+	_ZN4MIDP17Midp2PermissionDB9GetDomainERNS_12TMidp2DomainE @ 7 NONAME
+	_ZTIN4MIDP17Midp2PermissionDBE @ 8 NONAME ; #<TI>#
+	_ZTVN4MIDP17Midp2PermissionDBE @ 9 NONAME ; #<VT>#
+	_ZN4MIDP17Midp2PermissionDB22ReadMIDP2ConfigSettingERKNS_15TMidp2ConfigKeyERi @ 10 NONAME
+	_ZTIN4java8security13legacysupport12StorageUtilsE @ 11 NONAME ; #<TI>#
+	_ZTVN4java8security13legacysupport12StorageUtilsE @ 12 NONAME ; #<VT>#
+

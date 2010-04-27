@@ -1,0 +1,48 @@
+;
+; Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+; All rights reserved.
+; This component and the accompanying materials are made available
+; under the terms of "Eclipse Public License v1.0"
+; which accompanies this distribution, and is available
+; at the URL "http://www.eclipse.org/legal/epl-v10.html".
+;
+; Initial Contributors:
+; Nokia Corporation - initial contribution.
+;
+; Contributors:
+;
+; Description: 
+;
+;Languages
+&EN
+
+; UID of the sis file
+#{"Java RnD Tools"},(0x20022D3C),1,0,0
+
+;Localised Vendor name
+%{"Nokia"}
+
+;Unique Vendor name
+:"Nokia"
+
+;Supports Series 60 v 5.0
+;This line must appear _exactly_ as shown below in the sis file
+;If this line is missing or incorrect, the sis file will not be able
+;to be installed on Series 60 v5.0 platforms
+[0x1028315F], 0, 0, 0, {"Series60ProductID"}
+
+"\epoc32\release\armv5\urel\JavaCap.exe"-"c:\sys\bin\JavaCap.exe"
+"\epoc32\data\z\private\10003a3f\apps\JavaCap_reg.rsc"-"c:\private\10003a3f\import\apps\JavaCap_reg.rsc"
+"\epoc32\data\z\resource\apps\JavaCap.rsc"            -"c:\resource\apps\JavaCap.rsc"
+
+;j9dmp23.dll is a J9 VM plugin that provides the thread dump utility.
+"\epoc32\release\armv5\urel\j9dmp23.dll"-"c:\sys\bin\j9dmp23.dll"
+;javathreaddumper.dll provides the thread dump agent.
+"\epoc32\release\armv5\urel\javathreaddumper.dll"-"c:\sys\bin\javathreaddumper.dll"
+
+; J9 VM plugins for SDK support
+"\epoc32\release\armv5\urel\j9vrb23.dll"-"c:\sys\bin\j9vrb23.dll"
+"\epoc32\release\armv5\urel\j9dbg23.dll"-"c:\sys\bin\j9dbg23.dll"
+
+; javainstaller.exe is a command line tool for starting javainstaller for RnD purposes only
+"\epoc32\release\armv5\urel\javainstaller.exe"-"c:\sys\bin\javainst.exe"

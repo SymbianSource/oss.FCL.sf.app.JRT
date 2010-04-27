@@ -1,0 +1,450 @@
+/*
+* Copyright (c) 2004-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Localized strings for PIM API contacts model list
+*
+*/
+
+
+// LOCALISATION STRINGS
+
+// d:Name of the contact list
+// d:Refers to the title pane name in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_title
+// l:title_pane_t2/opt9
+// r:2.6
+//
+#define qtn_jpim_cnt_listname               "Contacts"
+
+// d:Name of the contact list
+// d:Refers to the title pane name in the SIM Directory
+// d:Logical name in Phonebook:
+// l:title_pane_t2/opt9
+// r:2.6
+//
+
+#define qtn_jpim_cnt_addr_pobox            "P.O. Box"
+
+// d:Extra (address array element)
+// d:Refers to the address Extension field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_extension
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_addr_extra             "Extension"
+
+// d:Street (address array element)
+// d:Refers to the Street field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_street
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_addr_street            "Street"
+
+// d:Locality (address array element)
+// d:Refers to the City field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_city
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_addr_locality          "City"
+
+// d:Region (address array element)
+// d:NOTE: Region maps to State/province in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_state
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_addr_region            "State"
+
+// d:Postal Code (address array element)
+// d:Refers to the postal code field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_postal_code
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_addr_postalcode        "Postal code"
+
+// d:Country (address array element)
+// d:NOTE: Country maps to Country/region in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_country
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_addr_country           "Country"
+
+// d:Family (name array element)
+// d:Refers to the Family Name field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_last_name
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_name_family            "Last name"
+
+// d:Given name (name array element)
+// d:Refers to the Given Name field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_first_name
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_name_given             "First name"
+
+// d:Family (last) name reading (name array element)
+// d:Refers to the Last name reading field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_last_reading
+// l:list_single_graphic_pane_t1_cp2
+// r:3.1
+//
+#define qtn_jpim_cnt_name_reading_family    "Last name reading"
+
+// d:Given (first) name reading (name array element)
+// d:Refers to the Given name reading field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_first_reading
+// l:list_single_graphic_pane_t1_cp2
+// r:3.1
+//
+#define qtn_jpim_cnt_name_reading_given     "First name reading"
+
+// d:Prefix (name array element)
+// d:Refers to the Prefix field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_prefix
+// l:list_single_graphic_pane_t1_cp2
+// r:3.1
+//
+#define qtn_jpim_cnt_name_prefix            "Prefix"
+
+// d:Suffix (name array element)
+// d:Refers to the Suffix field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_suffix
+// l:list_single_graphic_pane_t1_cp2
+// r:3.1
+//
+#define qtn_jpim_cnt_name_suffix            "Suffix"
+
+// d:Other name (name array element)
+// d:Refers to the Middle name field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_middle_name
+// l:list_single_graphic_pane_t1_cp2
+// r:3.1
+//
+#define qtn_jpim_cnt_name_other             "Middle name"
+
+// Attributes
+
+// d:Fax (phone attribute)
+// d:Refers to the Fax field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_fax
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_attr_fax               "Fax"
+
+// d:Home (address, email, url or phone attribute)
+// d:Refers to the Home attribute label in the native Phonebook
+// d:Logical name in Phonebook: N/A directly. Used in several logical names
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_attr_home              "Home"
+
+// d:Mobile (phone attribute)
+// d:Refers to the Mobile attribute label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_number_mobile
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_attr_mobile            "Mobile"
+
+// d:Pager (phone attribute)
+// d:Refers to the Pager attribute label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_pager
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_attr_pager             "Pager"
+
+// d:Preferred (phone attribute)
+// d:Refers to the Default attribute label in the native Phonebook
+// d:For example default call number
+// d:Logical name in Phonebook: N/A
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_attr_preferred         "Default"
+
+// d:SMS (phone attribute)
+// d:Refers to the Default SMS attribute label in the native Phonebook
+// d:Logical name in Phonebook: N/A
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_attr_sms               "SMS"
+
+// d:Work (address, email, url or phone attribute)
+// d:Refers to the Work/Business attribute label in the native Phonebook
+// d:Logical name in Phonebook: N/A directly. Used in several logical names
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_attr_work              "Business"
+
+// d:Auto (car phone, phone attribute)
+// d:Refers to the Car phone field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_car_tel
+// l:list_single_graphic_pane_t1_cp2
+// r:3.1
+//
+#define qtn_jpim_cnt_attr_auto              "Car phone"
+
+// d:Assistant phone (phone attribute)
+// d:Refers to the Assistant phone field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_number_assistant
+// l:list_single_graphic_pane_t1_cp2
+// r:3.1
+//
+#define qtn_jpim_cnt_attr_asst              "Assistant's phone"
+
+// d:Video number (phone attribute)
+// d:Refers to the Video phone number field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_video
+// l:list_single_graphic_pane_t1_cp2
+// r:3.1
+//
+#define qtn_jpim_cnt_attr_video             "Video number"
+
+// d:Other (phone attribute)
+// d:This is an extra attribute for telephone field
+// d:for mapping some other information. It doesn't 
+// d:have a clear native counterpart.
+// d:Logical name in Phonebook: N/A. Not used in Phonebook
+// l:list_single_graphic_pane_t1_cp2
+// r:3.1
+//
+#define qtn_jpim_cnt_attr_other             "Other"
+
+// Fields
+
+// d:Address field. Collection of address array elements
+// d:Logical name in Phonebook: qtn_phob_lbl_address
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_field_addr             "Address"
+
+// d:Birthday
+// d:Refers to the Birthday field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_date
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_field_birthday         "Birthday"
+
+// d:Email
+// d:Refers to the email field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_email
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_field_email            "E-Mail"
+
+// d:Formatted Name
+// d:Refers to the name displayed for a single contact in the
+// native Phonebook's "Contacts" view.
+// d:Logical name in Phonebook: N/A
+// l:list_single_graphic_pane_t1_cp2
+// r:3.0
+//
+#define qtn_jpim_cnt_field_formattedname    "Name"
+
+// d:Nickname
+// d:Refers to the Nickname field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_simp_lbl_nick
+// l:list_single_graphic_pane_t1_cp2
+// r:3.1
+//
+#define qtn_jpim_cnt_field_nickname         "Nickname"
+
+// d:Name field. Collection of name array elements
+// d:Logical name in Phonebook: N/A Phonebook names are separate fields
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_field_name             "Name"
+
+// d:Note
+// d:Refers to the Note field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_note
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_field_note             "Note"
+
+// d:Organisation
+// d:Refers to the Company field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_company_name
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_field_org              "Company"
+
+// d:Photo. Photo associated to a single contact
+// d:Logical name in Phonebook: N/A. Photo is just displayed in the native side
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_field_photo            "Picture"
+
+// d:Telephone
+// d:Refers to the Telephone field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_number_standard
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_field_tel              "Telephone"
+
+// d:Title
+// d:Refers to the Title field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_job_title
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_field_title            "Job title"
+
+// d:Url
+// d:Refers to the URL field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_url
+// l:list_single_graphic_pane_t1_cp2
+// r:2.6
+//
+#define qtn_jpim_cnt_field_url              "URL address"
+
+// d:UID (Unique IDentifier)
+// d:A code string that uniquely identifies an item among other items
+// d:in a list. UIDs are generated by the list - not by the user.
+// d:Logical name in Phonebook: N/A. Phonebook does not use this field
+// l:list_single_graphic_pane_t1_cp2
+// r:3.1
+//
+#define qtn_jpim_cnt_field_uid              "UID"
+
+// d:Revision. Last modification date of the item
+// d:Logical name in Phonebook: N/A. Phonebook does not use this field
+// l:list_single_graphic_pane_t1_cp2
+// r:3.1
+//
+#define qtn_jpim_cnt_field_revision         "Revision"
+
+// d:Class (Synchronisation)
+// d:Refers to the Synchronisation field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_synchronization
+// l:list_single_graphic_pane_t1_cp2
+// r:3.1
+//
+#define qtn_jpim_cnt_field_class            "Synchronisation"
+
+// d:WV User ID (Wireless Willage, Presence system user identifier)
+// d:Logical name in Phonebook: N/A. Phonebook does not use this field
+// l:list_single_graphic_pane_t1_cp2
+// r:3.1
+//
+#define qtn_jpim_cnt_field_extwvid          "WV User ID"
+
+// d:SIP (Generic SIP field) (Session Initiation protocol)
+// d:Refers to the general SIP address field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_sip
+// l:list_single_graphic_pane_t1_cp2
+// r:3.1
+//
+#define qtn_jpim_cnt_field_extsip           "SIP"
+
+// d:DTMF (Dual-Tone multi-frequency sequence)
+// d:Refers to the DTMF field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_dtmf
+// l:list_single_graphic_pane_t1_cp2
+// r:3.1
+//
+#define qtn_jpim_cnt_field_extdtmf          "DTMF"
+
+// d:Department name
+// d:Refers to the Department field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_dept_name
+// l:list_single_graphic_pane_t1_cp2
+// r:3.1
+//
+#define qtn_jpim_cnt_field_extdepartment    "Department"
+
+// d:Spouse
+// d:Refers to the Spouse field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_spouse
+// l:list_single_graphic_pane_t1_cp2
+// r:3.1
+//
+#define qtn_jpim_cnt_field_extspouse        "Spouse"
+
+// d:Children
+// d:Refers to the Children field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_children
+// l:list_single_graphic_pane_t1_cp2
+// r:3.1
+//
+#define qtn_jpim_cnt_field_extchildren      "Children"
+
+// d:Assistant name
+// d:Refers to the Assisntant name field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_assistant_name
+// l:list_single_graphic_pane_t1_cp2
+// r:3.1
+//
+#define qtn_jpim_cnt_field_extasstname      "Assistant's name"
+
+// d:Anniversary
+// d:Refers to the Anniversary field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_anniversary
+// l:list_single_graphic_pane_t1_cp2
+// r:3.1
+//
+#define qtn_jpim_cnt_field_extanniv         "Anniversary"
+
+// d:VOIP (Voice Over IP number)
+// d:Refers to the VOIP field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_voip
+// l:list_single_graphic_pane_t1_cp2
+// r:3.1
+//
+#define qtn_jpim_cnt_field_extvoip          "Tel. Internet"
+
+// d:PTT (Push-to-talk field)
+// d:Refers to the PTT (PoC) field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_poc
+// l:list_single_graphic_pane_t1_cp2
+// r:3.2
+//
+#define qtn_jpim_cnt_field_extptt           "Push to talk"
+
+// d:Share view
+// d:Refers to the Share view field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_swis
+// l:list_single_graphic_pane_t1_cp2
+// r:3.2
+//
+#define qtn_jpim_cnt_field_extshareview     "Share view"
+
+// d:Share view
+// d:Refers to the Ringing tone field label in the native Phonebook
+// d:Logical name in Phonebook: qtn_phob_lbl_tone
+// l:list_single_graphic_pane_t1_cp2
+// r:5.0
+//
+#define qtn_jpim_cnt_field_ringtone         "Ringing tone"
+
+// End of File

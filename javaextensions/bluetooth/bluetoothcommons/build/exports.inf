@@ -1,0 +1,30 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
+PRJ_EXPORTS
+
+../bluetoothplatformcontrol/inc/bluetoothplatformcontrol.h      |../../../../javaextensions/bluetooth/inc/bluetoothplatformcontrol.h
+../inc/bluetoothfunctionserver.h                                |../../../../javaextensions/bluetooth/inc/bluetoothfunctionserver.h
+../inc/bluetoothconsts.h                                        |../../../../javaextensions/bluetooth/inc/bluetoothconsts.h
+../inc/serviceclasshandler.h                                    |../../../../javaextensions/bluetooth/inc/serviceclasshandler.h
+../inc.s60/bluetoothclientconnection.h                          |../../../../javaextensions/bluetooth/inc/bluetoothclientconnection.h
+../inc.s60/servicerecord.h                                      |../../../../javaextensions/bluetooth/inc/servicerecord.h
+../inc.s60/bturlparams.h                                        |../../../../javaextensions/bluetooth/inc/bturlparams.h
+../inc.s60/bluetoothremotedevice.h                              |../../../../javaextensions/bluetooth/inc/bluetoothremotedevice.h
+../inc.s60/btservicerecordpopulator.h                           |../../../../javaextensions/bluetooth/inc/btservicerecordpopulator.h
+../inc.s60/btdataelementlistpopulator.h                         |../../../../javaextensions/bluetooth/inc/btdataelementlistpopulator.h
+../inc.s60/bluetoothnamelookup.h                                |../../../../javaextensions/bluetooth/inc/bluetoothnamelookup.h

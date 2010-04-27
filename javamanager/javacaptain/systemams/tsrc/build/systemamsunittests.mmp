@@ -1,0 +1,39 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+TARGET        SystemAmsTests.exe
+TARGETTYPE    exe
+UID          0x00000000 0x03A6305A
+CAPABILITY all -tcb -allfiles -drm
+
+#include <../../../../../inc/java_stdcpp_support_for_exe.hrh>
+#include <platform_paths.hrh>
+
+APP_LAYER_SYSTEMINCLUDE
+
+USERINCLUDE ../../../../../tools/cpputest/include/cpputest
+USERINCLUDE ../../../../../tools/cpputest/include/platforms/symbian
+USERINCLUDE ../../../../../inc
+USERINCLUDE ../src/utils
+
+STATICLIBRARY cpputest.lib
+LIBRARY estor.lib
+
+SOURCEPATH ../src/utils
+SOURCE clientsession.cpp
+SOURCEPATH ../src
+SOURCE systemamsunittests.cpp     // For STL execution
+SOURCE testcertificatesmanager.cpp

@@ -1,0 +1,116 @@
+<!--
+    Copyright (c) 2008 Nokia.  All rights reserved.
+
+    This material, including documentation and any related computer programs,
+    is protected by copyright controlled by Nokia. All rights are reserved.
+    Copying, including reproducing, storing, adapting or translating,
+    any or all of this material requires the prior written consent of Nokia.
+    This material also contains confidential information, which may not be
+    disclosed to others without the prior written consent of Nokia.
+-->
+
+<project name="javasecurity" default="deploy.generate.policies.and.certs" basedir=".">
+  <description>
+        Builds OMJ security, generates the policy files in their internal format and copies the certificates and the metadata into right locations
+  </description>
+
+  <import file="../../../build/utilities.xml"/>
+
+  <property name="javah.classnames" 
+            value="com.nokia.mj.impl.security.midp.authentication.AuthenticationModule, 
+                   com.nokia.mj.impl.security.midp.authorization.ClassInstantiator,
+                   com.nokia.mj.impl.security.midp.authentication.OcspChecker,
+                   com.nokia.mj.impl.security.utils.TelUtils,
+                   com.nokia.mj.impl.security.midp.authentication.OcspUserPreferences,
+                   com.nokia.mj.impl.security.midp.common.GeneralSecuritySettings,
+                   com.nokia.mj.impl.security.midp.common.SecurityExtensionsReader"/>
+
+  <property name="external.policies.dir" location="../data"/>
+  <property name="external.policy.editor.tool.lib" location="${java.src.root}/javatools/javasecuritycustomization/policyeditor/lib/engine.jar"/>
+  <property name="external.policy.editor.tool.bin" location="${java.src.root}/javatools/javasecuritycustomization/policyeditor/bin/securitypolicyeditor.jar"/>
+
+  <target name="init" depends="init.properties">
+    <property name="internal.policies.dir" location="${java.res.root}/security/policies"/>
+    <mkdir dir="${internal.policies.dir}"/>
+    <property name="security_res_dir" location="${java.captain.datacage}/security/trustroots/device/certificates"/>
+  </target>
+  
+  <target name="deliver.classes.to.external.tool">
+    <jar jarfile="${external.policy.editor.tool.lib}" update="true">
+        <fileset dir="${compile.result.root}/javasecurity/classes/collection" 
+            includes="com/nokia/mj/impl/security/midp/authorization/SecurityPolicy.class,
+                      com/nokia/mj/impl/security/midp/authorization/SecurityPolicyPermission.class,
+                      com/nokia/mj/impl/security/midp/authorization/SecurityPolicyPermissionSettings.class,
+                      com/nokia/mj/impl/security/midp/common/PolicyBasedPermission.class,
+                      com/nokia/mj/impl/security/midp/common/MIDPPermission.class,
+                      com/nokia/mj/impl/security/midp/common/PermissionMappingTable.class,
+                      com/nokia/mj/impl/security/midp/common/UserSecuritySettings.class"/>
+    </jar>
+  </target>
+  
+  <target name="deploy.generate.policies.and.certs" depends="init, deploy.dual, deliver.classes.to.external.tool, set.linux.certs">
+    <java classname="com.nokia.mj.tools.security.midp.PolicyEditor"
+         failonerror="true">
+         <sysproperty key="emma.properties" value="${emma.properties}"/>
+         <arg value="${external.policies.dir}"/>
+         <arg value="${internal.policies.dir}"/>
+         <classpath>
+           <pathelement path="${external.policy.editor.tool.bin}"/>
+           <pathelement path="${impl.cldc.jar}:${impl.cdc.jar}"/>
+           <pathelement path="${emma.dir}/emma.jar"/>
+         </classpath>
+    </java>
+  </target>
+
+  <target name="set.linux.certs" if="target.linux">
+    <copy todir="${security_res_dir}/">
+        <fileset dir="../../../javatools/testcerts/" includes="*.der"/>
+    </copy>
+    <copy todir="${security_res_dir}/">
+        <fileset dir="../../../javatools/testcerts/" includes="*.metadata"/>
+    </copy>
+  </target>
+
+  <target name="clean" depends="init">
+    <ant antfile="../../../build/utilities.xml" target="clean"/>  
+    <delete dir="${internal.policies.dir}"/>
+    <delete file="${external.policy.editor.tool.lib}"/>
+    <delete dir="${security_res_dir}"/>
+  </target>
+  
+  
+  <target name="create.internal.api.jar">
+    <omj.internal.apis includes="com/nokia/mj/impl/security/common/Certificate.class,
+                                 com/nokia/mj/impl/security/common/PermissionBase.class,
+                                 com/nokia/mj/impl/security/common/RuntimeSecurityException.class,
+                                 com/nokia/mj/impl/security/common/SecurityCommsMessages.class,
+                                 com/nokia/mj/impl/security/utils/SecurityErrorHandler.class,
+                                 com/nokia/mj/impl/security/utils/SecurityPromptMessage.class,
+                                 com/nokia/mj/impl/security/midp/authentication/AuthenticationModule.class,
+                                 com/nokia/mj/impl/security/midp/authentication/OcspSettings.class,
+                                 com/nokia/mj/impl/security/midp/authentication/OcspEventListener.class,
+                                 com/nokia/mj/impl/security/midp/authorization/AccessControllerFactoryImpl.class,
+                                 com/nokia/mj/impl/security/midp/authorization/AccessControllerImpl.class,
+                                 com/nokia/mj/impl/security/midp/authorization/PermissionGranter.class,
+                                 com/nokia/mj/impl/security/midp/common/SigningCertificate.class,
+                                 com/nokia/mj/impl/security/midp/common/SigningInfo.class,
+                                 com/nokia/mj/impl/security/midp/common/ProtectionDomain.class,
+                                 com/nokia/mj/impl/security/midp/common/AuthenticationCredentials.class,
+                                 com/nokia/mj/impl/security/midp/common/AuthenticationInfo.class,
+                                 com/nokia/mj/impl/security/midp/common/SecurityAttributes.class,
+                                 com/nokia/mj/impl/security/midp/common/AuthenticationAttribute.class,
+                                 com/nokia/mj/impl/security/midp/common/PermissionAttribute.class,
+                                 com/nokia/mj/impl/security/midp/storage/AuthenticationStorageData.class,
+                                 com/nokia/mj/impl/security/packageprotection/PackageProtector.class,
+                                 com/nokia/mj/impl/security/packageprotection/ScanCheck.class,
+                                 com/nokia/mj/impl/security/packageprotection/ScanCheck$BaseClassCheck.class,
+                                 com/nokia/mj/impl/security/packageprotection/ScanCheck$MethodCheck.class,
+                                 com/nokia/mj/impl/security/packageprotection/ScanCheck$MethodCheckResult.class"/>
+  </target>
+  
+  <target name="create.public.api.jar">
+  	<omj.public.apis includes="javax/microedition/pki/Certificate.class
+  	                           javax/microedition/pki/CertificateException.class"/>
+  </target>  
+  
+</project>

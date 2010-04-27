@@ -1,0 +1,2 @@
+-Xbootclasspath/p:Z:\resource\java\jvm\lib\common\omjsecuritystubs.jar
+-Dcom.nokia.mj.addon.list=c:\resource\ive\lib\jclcldc11\ext\ext1.odc;c:\resource\ive\lib\jclcldc11\ext\ext2.odc

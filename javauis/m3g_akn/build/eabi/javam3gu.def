@@ -1,0 +1,7 @@
+EXPORTS
+	_Z10jni_lookupPKc @ 1 NONAME
+	_ZTI16CSynchronization @ 2 NONAME
+	_ZTI19CJavaM3GEventSource @ 3 NONAME
+	_ZTV16CSynchronization @ 4 NONAME
+	_ZTV19CJavaM3GEventSource @ 5 NONAME
+

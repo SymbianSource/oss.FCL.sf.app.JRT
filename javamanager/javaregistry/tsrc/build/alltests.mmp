@@ -1,0 +1,51 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:
+*
+*/
+TARGET      JavaRegistryTest.exe
+TARGETTYPE    exe
+UID      0x00000000 0x03A6305A
+CAPABILITY all -tcb -allfiles -drm
+
+#include <../../../../inc/java_stdcpp_support_for_exe.hrh>
+#include <platform_paths.hrh>
+ APP_LAYER_SYSTEMINCLUDE
+MW_LAYER_SYSTEMINCLUDE
+
+USERINCLUDE /epoc32/include/cpputest
+USERINCLUDE ../src/utils
+
+USERINCLUDE ../../../../inc // == (JAVA_SRC_ROOT)/inc
+
+// Using main() as entry point
+// STATICLIBRARY libcrt0.lib
+STATICLIBRARY cpputest.lib
+STATICLIBRARY libstdcpp.lib
+
+// LIBRARY  euser.lib
+LIBRARY javastorage.lib
+LIBRARY javaregistryclient.lib
+LIBRARY x509.lib
+
+SOURCEPATH ../src
+SOURCE testregistry.cpp
+SOURCE testregistryentry.cpp
+SOURCE testregistrypackageentry.cpp
+SOURCE testregistryapplicationentry.cpp
+SOURCE alltests.cpp
+
+SOURCEPATH ../src/utils
+SOURCE storagetestutils.cpp
+

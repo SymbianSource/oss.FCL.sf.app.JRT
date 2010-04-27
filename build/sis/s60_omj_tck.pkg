@@ -1,0 +1,42 @@
+;
+; Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+; All rights reserved.
+; This component and the accompanying materials are made available
+; under the terms of "Eclipse Public License v1.0"
+; which accompanies this distribution, and is available
+; at the URL "http://www.eclipse.org/legal/epl-v10.html".
+;
+; Initial Contributors:
+; Nokia Corporation - initial contribution.
+;
+; Contributors:
+;
+; Description: 
+;
+;Languages
+&EN
+
+; This package contains TCK Runner
+; UID, version and type
+#{"OMJ TCK Runner"},(0x20021220),1,1,0
+
+;Localised Vendor name
+%{"Nokia"}
+
+;Unique Vendor name
+:"Nokia"
+
+;Supports Series 60 v 5.0
+;This line indicates that this installation is for the Series 60 platform v3.0
+;This line must appear _exactly_ as shown below in the sis file
+;If this line is missing or incorrect, the sis file will not be able
+;to be installed on Series 60 v5.0 platforms
+[0x1028315F], 0, 0, 0, {"Series60ProductID"}
+
+
+"\epoc32\release\armv5\urel\tckrunner.dll"-"c:\sys\bin\tckrunner.dll"
+"\epoc32\release\armv5\urel\tckrunner.exe"-"c:\sys\bin\tckrunner.exe"
+"\epoc32\data\z\private\10003a3f\apps\tckrunner_reg.rsc" -"c:\private\10003a3f\import\apps\tckrunner_reg.rsc"
+;"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\common\tckrunner.odc"-"c:\resource\java\jvm\lib\common\tckrunner.odc"
+
+

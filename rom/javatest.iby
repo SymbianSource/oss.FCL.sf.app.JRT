@@ -1,0 +1,54 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - Initial contribution
+*
+* Contributors:
+*
+* Description:
+* Image-description file of the Java package for ROFS1 on RnD/SubCon builds.
+*/
+
+#ifndef __JAVATEST_IBY__
+#define __JAVATEST_IBY__
+
+#include <data_caging_paths_for_iby.hrh>
+
+// Some helper defines
+define JAVA_CERT_BLD       ABI_DIR\BUILD_DIR\z\private\200211dc\security\trustroots\device\certificates
+define JAVA_CERT_IMG       \private\200211dc\security\trustroots\device\certificates
+define JAVA_VM_ODC_BLD     ABI_DIR\BUILD_DIR\z\resource\java\jvm\lib\jrt
+define JAVA_VM_ODC_IMG     RESOURCE_FILES_DIR\java\jvm\lib\jrt
+
+
+// Command line JavaInstaller
+file=ABI_DIR\BUILD_DIR\javainstaller.exe        PROGRAMS_DIR\javainstaller.exe
+
+
+// TCK related files
+file=ABI_DIR\BUILD_DIR\tckrunner.exe            PROGRAMS_DIR\tckrunner.exe
+file=ABI_DIR\BUILD_DIR\tckrunner.dll            SHARED_LIB_DIR\tckrunner.dll
+data=JAVA_VM_ODC_BLD\tckrunner.odc              JAVA_VM_ODC_IMG\tckrunner.odc
+data=ZPRIVATE\10003a3f\apps\tckrunner_reg.rsc   \private\10003a3f\import\apps\tckrunner_reg.rsc
+
+
+// Security RnD certificates and their metadata
+data=JAVA_CERT_BLD\test_manufacturer.der             JAVA_CERT_IMG\test_manufacturer.der
+data=JAVA_CERT_BLD\test_manufacturer.metadata        JAVA_CERT_IMG\test_manufacturer.metadata
+data=JAVA_CERT_BLD\test_operator.der                 JAVA_CERT_IMG\test_operator.der
+data=JAVA_CERT_BLD\test_operator.metadata            JAVA_CERT_IMG\test_operator.metadata
+data=JAVA_CERT_BLD\test_trustedthirdparty.der        JAVA_CERT_IMG\test_trustedthirdparty.der
+data=JAVA_CERT_BLD\test_trustedthirdparty.metadata   JAVA_CERT_IMG\test_trustedthirdparty.metadata
+
+// JavaCap App test utility
+file=ABI_DIR\BUILD_DIR\JavaCap.exe              PROGRAMS_DIR\JavaCap.exe
+data=ZPRIVATE\10003a3f\apps\JavaCap_reg.rsc     \private\10003a3f\import\apps\JavaCap_reg.rsc
+data=\epoc32\data\z\resource\apps\JavaCap.rsc   \resource\apps\JavaCap.rsc
+
+#endif

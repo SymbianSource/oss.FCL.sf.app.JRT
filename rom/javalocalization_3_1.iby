@@ -1,0 +1,27 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of the License "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - Initial contribution
+*
+* Contributors:
+*
+* Description:
+* Image-description file of the Java package for ROFS1.
+*/
+
+#ifndef __JAVALOCALIZATION_IBY__
+#define __JAVALOCALIZATION_IBY__
+
+data=DATAZ_\RESOURCE_FILES_DIR\java\javausermessages.rsc            RESOURCE_FILES_DIR\java\javausermessages.rsc
+data=DATAZ_\RESOURCE_FILES_DIR\java\pimcm.rsc                       RESOURCE_FILES_DIR\java\pimcm.rsc
+data=DATAZ_\RESOURCE_FILES_DIR\java\pimevent.rsc                    RESOURCE_FILES_DIR\java\pimevent.rsc
+data=DATAZ_\RESOURCE_FILES_DIR\java\pimtodo.rsc                     RESOURCE_FILES_DIR\java\pimtodo.rsc
+data=DATAZ_\QT_TRANSLATIONS_DIR\javaruntimeapplicationsettings.qm   QT_TRANSLATIONS_DIR\javaruntimeapplicationsettings.qm 
+
+#endif // __JAVALOCALIZATION_IBY__

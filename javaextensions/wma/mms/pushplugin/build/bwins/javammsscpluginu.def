@@ -1,0 +1,16 @@
+EXPORTS
+	?findDllMethod@@YAP6APAXXZPBD@Z @ 1 NONAME ; void * (*)(void) findDllMethod(char const *)
+	??0MmsServerConnectionFactory@@QAE@XZ @ 2 NONAME ; MmsServerConnectionFactory::MmsServerConnectionFactory(void)
+	??0S60MmsServerConnection@wma@java@@QAE@ABV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@0@Z @ 3 NONAME ; java::wma::S60MmsServerConnection::S60MmsServerConnection(class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &, class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &)
+	??1MmsServerConnectionFactory@@UAE@XZ @ 4 NONAME ; MmsServerConnectionFactory::~MmsServerConnectionFactory(void)
+	??1S60MmsServerConnection@wma@java@@UAE@XZ @ 5 NONAME ; java::wma::S60MmsServerConnection::~S60MmsServerConnection(void)
+	?close@S60MmsServerConnection@wma@java@@UAEXXZ @ 6 NONAME ; void java::wma::S60MmsServerConnection::close(void)
+	?createSrvConnObj@MmsServerConnectionFactory@@UAEPAVServerConnection@push@java@@ABV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@0@Z @ 7 NONAME ; class java::push::ServerConnection * MmsServerConnectionFactory::createSrvConnObj(class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &, class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &)
+	?getFactory@MmsServerConnectionFactory@@SAAAV1@XZ @ 8 NONAME ; class MmsServerConnectionFactory & MmsServerConnectionFactory::getFactory(void)
+	?getFilter@S60MmsServerConnection@wma@java@@UBE?AV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@XZ @ 9 NONAME ; class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > java::wma::S60MmsServerConnection::getFilter(void) const
+	?getUri@S60MmsServerConnection@wma@java@@UBE?AV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@XZ @ 10 NONAME ; class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > java::wma::S60MmsServerConnection::getUri(void) const
+	?isMultipleSrvConnAllowed@MmsServerConnectionFactory@@UAE_NXZ @ 11 NONAME ; bool MmsServerConnectionFactory::isMultipleSrvConnAllowed(void)
+	?open@S60MmsServerConnection@wma@java@@UAEXPAVConnectionListener@push@3@@Z @ 12 NONAME ; void java::wma::S60MmsServerConnection::open(class java::push::ConnectionListener *)
+	?setFilter@S60MmsServerConnection@wma@java@@UAEXABV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@@Z @ 13 NONAME ; void java::wma::S60MmsServerConnection::setFilter(class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &)
+	?setOpen@S60MmsServerConnection@wma@java@@UAEXXZ @ 14 NONAME ; void java::wma::S60MmsServerConnection::setOpen(void)
+

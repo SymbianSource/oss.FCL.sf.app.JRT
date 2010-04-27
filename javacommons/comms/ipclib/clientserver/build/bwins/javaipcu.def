@@ -1,0 +1,3 @@
+EXPORTS
+	?createConnection@IpcConnectionFactory@comms@java@@SAPAVIpcConnectionInterface@23@PAVIpcListener@23@@Z @ 1 NONAME ; class java::comms::IpcConnectionInterface * java::comms::IpcConnectionFactory::createConnection(class java::comms::IpcListener *)
+	?createServerConnection@IpcConnectionFactory@comms@java@@SAPAVIpcServerConnectionInterface@23@PAVIpcListener@23@@Z @ 2 NONAME ; class java::comms::IpcServerConnectionInterface * java::comms::IpcConnectionFactory::createServerConnection(class java::comms::IpcListener *)

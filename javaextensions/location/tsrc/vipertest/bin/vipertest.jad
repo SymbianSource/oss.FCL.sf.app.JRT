@@ -1,0 +1,8 @@
+MIDlet-Name: Viper test
+MIDlet-Vendor: TietoEnator
+MIDlet-Version: 1.0
+MIDlet-Jar-Size: 47621
+MIDlet-Jar-URL: Viper.jar
+MIDlet-Icon: Viper.png
+MIDlet-Description: MIDlet used to test Viper implementation.
+MIDlet-1: Viper, Viper.png, ViperTest

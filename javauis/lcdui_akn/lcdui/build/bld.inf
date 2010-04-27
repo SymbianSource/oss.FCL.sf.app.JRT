@@ -1,0 +1,63 @@
+/*
+* Copyright (c) 2002-2006 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  build information for the Series 60 lcdui component
+*
+*/
+
+
+
+PRJ_PLATFORMS
+// specify the platforms your component needs to be built for here
+// defaults to WINS MARM so you can ignore this if you just build these
+
+
+
+PRJ_EXPORTS
+// specify the source file followed by its destination here
+// copy will be used to copy the source file to its destination
+// If there's no destination then the source file will be copied
+// to the same name in /epoc32/include
+
+#include "exports.inf"
+
+PRJ_EXTENSIONS
+
+START EXTENSION s60/mifconv
+  OPTION TARGETFILE lcdui.mif
+  OPTION HEADERFILE lcdui.mbg
+  OPTION SOURCES -c32,8 qgn_note_alarm_alert -c32,8 qgn_menu_am_midlet -c32,8 qgn_graf_line_primary_horizontal \
+                 -c32,8 qgn_graf_line_primary_vertical -c8,8 qgn_indi_button_j_rocker_up_pressed \
+                 -c8,8 qgn_indi_button_j_rocker_up_dimmed -c8,8 qgn_indi_button_j_rocker_up \
+                 -c8,8 qgn_indi_button_j_rocker_down_pressed -c8,8 qgn_indi_button_j_rocker_down_dimmed \
+                 -c8,8 qgn_indi_button_j_rocker_down -c8,8 qgn_indi_button_j_rocker_left_pressed \
+                 -c8,8 qgn_indi_button_j_rocker_left_dimmed -c8,8 qgn_indi_button_j_rocker_left \
+                 -c8,8 qgn_indi_button_j_rocker_right_pressed -c8,8 qgn_indi_button_j_rocker_right_dimmed \
+                 -c8,8 qgn_indi_button_j_rocker_right -c8,8 qgn_indi_button_j_rocker_fire_pressed \
+                 -c8,8 qgn_indi_button_j_rocker_fire_dimmed -c8,8 qgn_indi_button_j_rocker_fire \
+                 -c8,8 qgn_indi_game_a -c8,8 qgn_indi_game_b -c8,8 qgn_indi_game_c -c8,8 qgn_indi_game_d \
+                 -c8,8 qgn_indi_rsk_horizontal -c8,8 qgn_indi_lsk_horizontal -c8,8 qgn_indi_rsk_vertical \
+                 -c8,8 qgn_indi_lsk_vertical
+END
+START EXTENSION s60/mifconv
+  OPTION TARGETFILE lcdui_aif.mif
+  OPTION SOURCES -c32,8 qgn_menu_am_midlet
+END
+
+PRJ_MMPFILES
+lcdui.mmp
+
+
+PRJ_TESTMMPFILES
+
+// End of File

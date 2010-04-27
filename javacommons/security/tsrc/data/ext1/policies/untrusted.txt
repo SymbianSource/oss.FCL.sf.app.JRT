@@ -1,0 +1,17 @@
+domain UnidentifiedThirdParty;
+grant user "Ext1" oneshot,session,blanket,no {
+    permission com.nokia.ext1.internal.Ext1Perm "ext1.target1" "ext1.action1";
+    permission javax.microedition.io.HttpProtocolPermission "http://";
+    permission com.nokia.mj.impl.gcf.protocol.http.HttpPermissionImpl "http://";
+}
+
+grant user "Net Access" oneshot,session,blanket,no {
+    permission com.nokia.ext1.internal.Ext1Perm "ext1.target2" "ext1.action2";
+    permission javax.microedition.io.FileProtocolPermission "PUBLIC_DIRS" "read";
+}
+
+grant allowed {
+    permission com.nokia.ext1.internal.Ext1Perm "ext1.target3" "ext1.action3";
+    permission javax.microedition.io.Connector.mms "mms://*" "open,receive";
+}
+

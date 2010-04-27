@@ -1,0 +1,34 @@
+EXPORTS
+	_ZN13CJavaRegistry11DeleteEntryERK4TUid @ 1 NONAME ABSENT
+	_ZN13CJavaRegistry4NewLEv @ 2 NONAME
+	_ZN13CJavaRegistry5NewLCEv @ 3 NONAME
+	_ZN13CJavaRegistry9AddEntryLER23CJavaRegistrySuiteEntry @ 4 NONAME ABSENT
+	_ZN13MJavaRegistry7CreateLEv @ 5 NONAME
+	_ZN23CJavaRegistrySuiteEntry10AddMIDletLERK7TDesC16 @ 6 NONAME ABSENT
+	_ZN23CJavaRegistrySuiteEntry10SetJadUrlLERK7TDesC16 @ 7 NONAME ABSENT
+	_ZN23CJavaRegistrySuiteEntry10SetJarUrlLERK7TDesC16 @ 8 NONAME ABSENT
+	_ZN23CJavaRegistrySuiteEntry10SetVersionERK11TAppVersion @ 9 NONAME ABSENT
+	_ZN23CJavaRegistrySuiteEntry11SetJadPathLERK7TDesC16 @ 10 NONAME ABSENT
+	_ZN23CJavaRegistrySuiteEntry11SetJarPathLERK7TDesC16 @ 11 NONAME ABSENT
+	_ZN23CJavaRegistrySuiteEntry14WriteableEntryEv @ 12 NONAME
+	_ZN23CJavaRegistrySuiteEntry22SetSuiteNameAndVendorLERK7TDesC16S2_ @ 13 NONAME ABSENT
+	_ZN23CJavaRegistrySuiteEntry4NewLER27CInstalledAppsRegistryEntry @ 14 NONAME
+	_ZN23CJavaRegistrySuiteEntry4NewLEv @ 15 NONAME
+	_ZN23CJavaRegistrySuiteEntry5NewLCER27CInstalledAppsRegistryEntry @ 16 NONAME
+	_ZN23CJavaRegistrySuiteEntry5NewLCEv @ 17 NONAME
+	_ZNK23CJavaRegistrySuiteEntry10MIDletUidsEv @ 18 NONAME
+	_ZTI13CJavaRegistry @ 19 NONAME ; #<TI>#
+	_ZTI18CJavaPropertyDes16 @ 20 NONAME ABSENT ; #<TI>#
+	_ZTI21RJavaPropertyUidArray @ 21 NONAME ABSENT ; #<TI>#
+	_ZTI22RJavaPropertyNameArray @ 22 NONAME ABSENT ; #<TI>#
+	_ZTI23CJavaRegistrySuiteEntry @ 23 NONAME ; #<TI>#
+	_ZTI24CJavaRegistryMIDletEntry @ 24 NONAME ; #<TI>#
+	_ZTV13CJavaRegistry @ 25 NONAME ; #<VT>#
+	_ZTV18CJavaPropertyDes16 @ 26 NONAME ABSENT ; #<VT>#
+	_ZTV21RJavaPropertyUidArray @ 27 NONAME ABSENT ; #<VT>#
+	_ZTV22RJavaPropertyNameArray @ 28 NONAME ABSENT ; #<VT>#
+	_ZTV23CJavaRegistrySuiteEntry @ 29 NONAME ; #<VT>#
+	_ZTV24CJavaRegistryMIDletEntry @ 30 NONAME ; #<VT>#
+	_ZN23CJavaRegistrySuiteEntry10AddMIDletLERK4TUidRK7TDesC16 @ 31 NONAME ABSENT
+	_ZN23CJavaRegistrySuiteEntry10AddMIDletLERK7TDesC16RK4TUid @ 32 NONAME ABSENT
+

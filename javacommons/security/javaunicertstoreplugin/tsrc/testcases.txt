@@ -1,0 +1,437 @@
+
+This file contains test cases for javacertstoreplugin.
+Following classes are tested in these tests:
+CJavaCertStoreImpl, CJavaCertStoreToken and CJavaCertStoreTokenType
+
+Test environment:
+This unit test set uses actual java captain to retrieve certificate information
+from the javacertstore which extension plugin of the java captain.
+Purpose of the Extensionplugin (part of the test code) is stop javacertstore extension plugin 
+from the java captain. This is needed because javacertstore caches its data and otherwise we
+would not have been able to change certificate data in the file system.
+
+
+/**
+ * TEST CASE 1:
+ * Name of the test: ReadCerts, readingCerts
+ * Purpose:
+ * Verifies that all except deleted certificates can be read.
+ * This test case verifies that use cases 1 and 2 works properly.
+ * Precondition:
+ * All existing certificates has been deleted.
+ * Steps:
+ * 1. Store following certificates to the javacert folder:
+ *    - enabled, can not be removed, can be disabled
+ *    - enabled, can be removed, can be disabled
+ *    - disabled, can be removed, can be disabled
+ *    - deleted, can be removed, can be disabled
+ * 2. - Read certificates using MCTWritableCertStore::List() operation.
+ *    - Read content of returned certificates by MCTWritableCertStore::Retrieve()
+ *      operation.
+ * 3. - Call again MCTWritableCertStore::List() operation.
+ *    - Call again MCTWritableCertStore::Retrieve()operation for each certificate.
+ * 4. - Stop javacertstore extension plugin and delete all certs from javacert folder.
+ *    - Read certificates using MCTWritableCertStore::List() operation.
+ * Result:
+ * 1. Certificates was stored successfully.
+ * 2. - All certificates except deleted was returned by MCTWritableCertStore::List() 
+ *      operation.
+ *    - All three certificates content was read successfully.
+ * 3. - Certificates was returned properly.
+ *    - Certificates was read successfully.
+ * 4. - Certs was removed and extension plugin was stopped successfully.
+ *    - Error was not occurred and length of the returned list was 0.
+ * Postcondition:
+ * All resources are freed.
+ */
+
+/**
+ * TEST CASE 2:
+ * Name of the test: ReadCerts, testDisablingCert
+ * Purpose:
+ * Verifies that certificate can be disabled.
+ * This test case verifies that use case 3 works properly.
+ * Precondition:
+ * All existing certificates has been deleted.
+ * Steps:
+ * 1. Store certificate with following data to the javacert folder:
+ *      - enabled, can be removed, can be disabled
+ * 2. Read certificates using MCTWritableCertStore::List() operation.
+ * 3. Get "active" application associated to the cert by
+ *    MCTWritableCertStore::Applications() operation.
+ * 4. Provide empty list to MCTWritableCertStore::SetApplicability()
+ *    operation. This illustrates that cert does not has any active application.
+ * 5. Disable cert by MCTWritableCertStore::SetTrust() operation.
+ * 6. Get "active" application associated to the cert by
+ *    MCTWritableCertStore::Applications() operation.
+ * 7. Create a new CJavaCertStoreImpl object and call
+ *    MCTWritableCertStore::List() operation.
+ * 8. Call MCTWritableCertStore::Applications() operation via CJavaCertStoreImpl
+ *    object created in step 7.
+ * Result:
+ * 1. Cert was stored successfully.
+ * 2. Cert was read successfully.
+ * 3. Applications() operation returns uid 0x101F9B28.
+ * 4. SetApplicability() was called successfully.
+ * 5. Cert was set to disabled state.
+ * 6. Applications() operation returns empty list.
+ * 7. List() operation returns disabled cert.
+ * 8. Applications() operation returns empty list.
+ * Postcondition:
+ * All resources are freed.
+ */
+
+/**
+ * TEST CASE 3:
+ * Name of the test: ReadCerts, testEnablingCert
+ * Purpose:
+ * Verifies that disabled certificate can be enabled.
+ * This test case verifies that use case 3 works properly.
+ * Precondition:
+ * All existing certificates has been deleted.
+ * Steps:
+ * 1. Store certificate with following data to the javacert folder:
+ *      - disabled, can be removed, can be disabled
+ * 2. Read certificates using MCTWritableCertStore::List() operation.
+ * 3. Get "active" application associated to the cert by
+ *    MCTWritableCertStore::Applications() operation.
+ * 4. Provide 0x101F9B28 uid as argument to MCTWritableCertStore::SetApplicability()
+ *    operation. This illustrates that cert does one active application.
+ * 5. Get "active" application associated to the cert by
+ *    MCTWritableCertStore::Applications() operation.
+ * 6. Create a new CJavaCertStoreImpl object and call
+ *    MCTWritableCertStore::List() operation.
+ * 7. Call MCTWritableCertStore::Applications() operation via CJavaCertStoreImpl
+ *    object created in step 7.
+ * Result:
+ * 1. Cert was stored successfully.
+ * 2. Cert was read successfully.
+ * 3. Applications() operation returns empty list.
+ * 4. SetApplicability() was called successfully.
+ * 5. Applications() operation returns uid 0x101F9B28.
+ * 6. List() operation returns enabled cert.
+ * 7. Applications() operation returns uid 0x101F9B28.
+ * Postcondition:
+ * All resources are freed.
+ */
+
+/**
+ * TEST CASE 4:
+ * Name of the test: ReadCerts, testDeletingCert
+ * Purpose:
+ * Verifies that cert can be deleted.
+ * This test case verifies that use case 4 works properly.
+ * Precondition:
+ * All existing certificates has been deleted.
+ * Steps:
+ * 1. Store following certificates to the javacert folder:
+ *    - enabled, can be removed, can be disabled
+ *    - enabled, can be removed, can be disabled
+ *    - disabled, can be removed, can be disabled
+ * 2. Read certificates using MCTWritableCertStore::List() operation.
+ * 3. Remove one cert by MCTWritableCertStore::Remove() operation.
+ * 4. Read certificates using MCTWritableCertStore::List() operation.
+ * 5. Remove one cert by MCTWritableCertStore::Remove() operation.
+ * 6. Read certificates using MCTWritableCertStore::List() operation.
+ * 7. Remove last cert by MCTWritableCertStore::Remove() operation.
+ * 8. Read certificates using MCTWritableCertStore::List() operation.
+ * Result:
+ * 1. Certs was stored successfully.
+ * 2. Three certs was returned successfully.
+ * 3. Cert was removed successfully.
+ * 4. Two certs was returned successfully.
+ * 5. Cert was removed successfully.
+ * 6. One certs was returned successfully.
+ * 7. Cert was removed successfully.
+ * 8. Empty list was returned.
+ * Postcondition:
+ * All resources are freed.
+ */
+
+/**
+ * TEST CASE 5:
+ * Name of the test: ReadCerts, testsForValidateCertAttrFilter
+ * Purpose:
+ * Verifies that MCTWritableCertStore::List() operation validates
+ * content of the CCertAttributeFilter object properly.
+ * Precondition:
+ * All existing certificates has been deleted.
+ * Steps:
+ * 1 - 6. Check that all relevant values of the CCertAttributeFilter object
+ *        is checked properly. More details information in the actual test case.
+ * Result:
+ * 1 - 6. Checks was done properly.
+ * Postcondition:
+ * All resources are freed.
+ */
+
+/**
+ * TEST CASE 6:
+ * Name of the test: ReadCerts, errorCasesForList
+ * Purpose:
+ * Verifies that MCTWritableCertStore::List() operation works properly in the
+ * error cases.
+ * Precondition:
+ * All existing certificates has been deleted.
+ * Steps:
+ * 1. Call MCTWritableCertStore::List() operation twice.
+ * 2. Call MCTWritableCertStore::CancelList() operation immediately after
+ *    MCTWritableCertStore::List() operation.
+ * Result:
+ * 1. Second call of List() operation fails to KErrInUse error.
+ * 2. CancelList() operation cancels List() operation with KErrCancel error code.
+ * Postcondition:
+ * All resources are freed.
+ */
+
+/**
+ * TEST CASE 7:
+ * Name of the test: ReadCerts, errorCasesForAdd
+ * Purpose:
+ * Verifies that non-supported MCTWritableCertStore::Add() operation returns 
+ * KErrNotSupported all times when it is called.
+ * Steps:
+ * 1. Call MCTWritableCertStore::Add() operation.
+ * Result:
+ * 1. Add() operation returns KErrNotSupported.
+ * Postcondition:
+ * All resources are freed.
+ */
+
+/**
+ * TEST CASE 8:
+ * Name of the test: ReadCerts, errorCasesForRemove
+ * Purpose:
+ * Verifies that MCTWritableCertStore::Remove() operation manages error situations
+ * properly.
+ * Steps:
+ * 1. Store following certificates to the javacert folder:
+ *    - enabled, can not be removed, can be disabled
+ * 2. Read certificates using MCTWritableCertStore::List() operation.
+ * 3. Pass CCTCertInfo object, which does not match to any cert, as argument to
+ *    CTWritableCertStore::Remove() operation.
+ * 4. Pass CCTCertInfo object, returned by List() operation, as argument to
+ *    CTWritableCertStore::Remove() operation. I.e. CCTCertInfo object points to
+ *    non-removable cert.
+ * Result:
+ * 1. Cert was stored succesfully.
+ * 2. Cert was read succcessfully.
+ * 3. Remove() operation returns KErrArgument.
+ * 4. Remove() operation returns KErrArgument.
+ * Postcondition:
+ * All resources are freed.
+ */
+
+/**
+ * TEST CASE 9:
+ * Name of the test: ReadCerts, testsForSetTrust
+ * Purpose:
+ * Verifies that MCTWritableCertStore::SetTrust() operation works properly in
+ * all situations.
+ * Steps:
+ * 1. Store following certificates to the javacert folder:
+ *    - enabled, can not be removed, can not be disabled
+ * 2. Pass CCTCertInfo object, which does not match to any cert, as argument to
+ *    CTWritableCertStore::SetTrust() operation.
+ * 3. - Read cert using MCTWritableCertStore::List() operation.
+ * 4. - Mark cert to "disable" by MCTWritableCertStore::SetApplicability() operation.
+ * 5. - Try to disable cert by CTWritableCertStore::SetTrust() operation. Cert is not allowed
+ *      to disable.
+ * Result:
+ * 1. Cert was stored succesfully.
+ * 2. SetTrust() operation returns KErrArgument.
+ * 3. - Cert was read successfully.
+ * 4. - Cert was marked successfully.
+ * 5. - SetTrust() operation returns KErrArgument.
+ * Postcondition:
+ * All resources are freed.
+ */
+
+/**
+ * TEST CASE 10:
+ * Name of the test: ReadCerts, testsForGetCert
+ * Purpose:
+ * Verifies that non-supported MCTWritableCertStore::GetCert() operation returns proper
+ * error.
+ * Steps:
+ * 1. Store following certificates to the javacert folder:
+ *    - enabled, can not be removed, can be disabled
+ * 2. Try to retrieve CCTCertInfo using non-existing handle.
+ * 3. Retrieve CCTCertInfo object by valid TCTTokenObjectHandle.
+ * Result:
+ * 1. Cert was stored succesfully.
+ * 2. GetCert() operation returns KErrArgument.
+ * 3. GetCert() operation returns KErrNone and returns CCTCertInfo object.
+ * Postcondition:
+ * All resources are freed.
+ */
+
+/**
+ * TEST CASE 11:
+ * Name of the test: ReadCerts, errorCasesForApplications
+ * Purpose:
+ * Verifies that MCTWritableCertStore::Applications() operation manages properly
+ * error situations.
+ * Steps:
+ * 1. Pass CCTCertInfo object, which does not match to any cert, as argument to
+ *    CTWritableCertStore::Applications() operation.
+ * Steps:
+ * 1. Applications() operation returns KErrArgument.
+ * Postcondition:
+ * All resources are freed.
+ */
+
+/**
+ * TEST CASE 12:
+ * Name of the test: ReadCerts, testCasesForIsApplicable
+ * Purpose:
+ * Verifies that MCTWritableCertStore::IsApplicable() operation works properly.
+ * Steps:
+ * 1. Store following certificates to the javacert folder:
+ *    - disabled, can be removed, can be disabled
+ *    - enabled, can be removed, can be disabled
+ * 2. Passing incorrect Uid as argument to MCTWritableCertStore::IsApplicable() operation.
+ * 3. Pass CCTCertInfo object, which does not match to any cert, as argument to
+ *    CTWritableCertStore::IsApplicable() operation.
+ * 4. - Read certs by MCTWritableCertStore::List() operation.
+ *    - Pass CCTCertInfo object, associated to disabled cert, as argument to 
+ *      MCTWritableCertStore::IsApplicable() operation.
+ * 5. - Delete disabled cert read in the step 4.
+ * 6. Pass CCTCertInfo object, associated to deleted cert, as argument to
+ *    MCTWritableCertStore::IsApplicable() operation.
+ * 7. Pass CCTCertInfo object, associated to enabled cert, as argument to
+ *    MCTWritableCertStore::IsApplicable() operation.
+ * Result:
+ * 1. Certs was stored successfully.
+ * 2. IsApplicable() operation returns KErrNone. Value of the 'aIsApplicable' out
+ *    argument is EFalse.
+ * 3. IsApplicable() operation returns KErrNone. Value of the 'aIsApplicable' out
+ *    argument is EFalse.
+ * 4. - Cert was read successfully.
+ *    - IsApplicable() operation returns KErrNone. Value of the 'aIsApplicable' out
+ *      argument is EFalse.
+ * 5. - Cert was deleted successfully.
+ * 6. IsApplicable() operation returns KErrNone. Value of the 'aIsApplicable' out
+ *    argument is EFalse.
+ * 7. IsApplicable() operation returns KErrNone. Value of the 'aIsApplicable' out
+ *    argument is ETrue.
+ * Postcondition:
+ * All resources are freed.
+ */
+
+/**
+ * TEST CASE 13:
+ * Name of the test: ReadCerts, testCasesForTrusted
+ * Purpose:
+ * Verifies that non-supported MCTWritableCertStore::Trusted() operation does not crash.
+ * Steps:
+ * 1. Store following certificates to the javacert folder:
+ *    - enabled, can be removed, can be disabled
+ * 2. Passing CCTCertInfo object, which does not point to any cert,
+ *    as argument to Trusted() operation.
+ * 3. Passing valid CCTCertInfo object as argument to Trusted() operation.
+ * 4. Deleting cert.
+ * 5. Call Trusted() operation to deleted cert.
+ * Result:
+ * 1. Cert was stored successfully.
+ * 2. Trusted() operation returns KErrArgument.
+ * 3. Trusted() operation returns KErrNone and sets ETrue to 'aTrusted' argument.
+ * 4. Cert was deleted succesfully.
+ * 5. Trusted() operation returns KErrArgument.
+ * Postcondition:
+ * All resources are freed.
+ */
+
+/**
+ * TEST CASE 14:
+ * Name of the test: ReadCerts, errorCasesForRetrieve
+ * Purpose:
+ * Verifies that MCTWritableCertStore::Retrieve() operation handles properly
+ * error situations.
+ * Steps:
+ * 1. Store following certificates to the javacert folder:
+ *    - enabled, can be removed, can be disabled
+ *    - enabled, can be removed, can be disabled
+ * 2. Call twice Retrieve() operation in the row.
+ * 3. Pass CCTCertInfo object, which does not match to any cert, as argument to
+ *    Retrieve() operation.
+ * Result:
+ * 1. Certs was stored successfully.
+ * 2. Second call of Retrieve() operation returns KErrInUse.
+ * 3. Retrieve() operation returns KErrArgument.
+ * Postcondition:
+ * All resources are freed.
+ */
+
+/**
+ * TEST CASE 15:
+ * Name of the test: ReadCerts, errorCasesForSetApplicability
+ * Purpose:
+ * Verifies that MCTWritableCertStore::SetApplicability() operation handles properly
+ * in error situations.
+ * Steps:
+ * 1. Store following certificate to the javacert folder:
+ *    - enabled, can be removed, can not be disabled
+ * 2. Pass CertInfo object, as argument to SetApplicability() operation, 
+ *    which does not match to any cert.
+ * 3. Try to disable cert which cannot be disabled.
+ * Result:
+ * 1. Cert was stored successfully.
+ * 2. SetApplicability() operation returns KErrArgument.
+ * 3. SetApplicability() operation returns KErrArgument.
+ * Postcondition:
+ * All resources are freed.
+ */
+
+/**
+ * TEST CASE 30:
+ * Name of the test: TokenTests, testsForList
+ * Purpose:
+ * Verifies that CJavaCertStoreTokenType::List() operation works properly.
+ * Steps:
+ * 1. Call CJavaCertStoreTokenType::List() operation.
+ * Result:
+ * 1. - Check that one item is in the 'aTokens' list.
+ *    - Check that value of the item is "MIDP2 Trust Roots".
+ * Postcondition:
+ * All resources are freed.
+ */
+
+/**
+ * TEST CASE 31:
+ * Name of the test: TokenTests, testsForOpenToken
+ * Purpose:
+ * Verifies that both CJavaCertStoreTokenType::OpenToken() operation works properly.
+ * Steps:
+ * 1. Call CJavaCertStoreTokenType::OpenToken() operation with valid token info
+ *    descriptor.
+ * 2. Call CJavaCertStoreTokenType::OpenToken() operation with unsupported token info
+ *    descriptor.
+ * 3. Call unsupported CJavaCertStoreTokenType::OpenToken() operation(TCTTokenHandle version).
+ * Result:
+ * 1. OpenToken() operation returns MCTToken object properly.
+ * 2. OpenToken() operation returns KErrNotSupported error code.
+ * 3. OpenToken() operation returns KErrNotSupported error code.
+ * Postcondition:
+ * All resources are freed.
+ */
+
+/**
+ * TEST CASE 32:
+ * Name of the test: TokenTests, testsForDoGetInterface
+ * Purpose:
+ * Verifies that both CJavaCertStoreToken::DoGetInterface() operation works properly.
+ * Steps:
+ * 1. Call CJavaCertStoreToken::DoGetInterface() operation with KInterfaceCertStore uid.
+ * 2. Call CJavaCertStoreToken::DoGetInterface() operation with 
+ *    KInterfaceWritableCertStore uid.
+ * 3. Call CJavaCertStoreToken::DoGetInterface() operation with unsupported uid.
+ * Result:
+ * 1. DoGetInterface() operation returns CJavaCertStoreImpl object.
+ * 2. DoGetInterface() operation returns CJavaCertStoreImpl object.
+ * 3. DoGetInterface() operation returns KErrNotSupported error code.
+ * Postcondition:
+ * All resources are freed.
+ */
+
+

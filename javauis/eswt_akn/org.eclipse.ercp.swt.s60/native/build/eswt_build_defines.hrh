@@ -1,0 +1,32 @@
+/*******************************************************************************
+ * Copyright (c) 2008 Nokia Corporation.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Nokia Corporation - S60 implementation
+ *******************************************************************************/
+
+#ifndef __ESWT_BUILD_DEFINES_HRH__
+#define __ESWT_BUILD_DEFINES_HRH__
+
+// Uncomment if Public SDK start
+//#ifndef ESWT_BUILD_PUBLIC_SDK
+//#define ESWT_BUILD_PUBLIC_SDK
+//#endif // ESWT_BUILD_PUBLIC_SDK
+// Uncomment if Public SDK end
+
+// Comment if Public SDK start
+#ifdef ESWT_BUILD_PUBLIC_SDK
+#undef ESWT_BUILD_PUBLIC_SDK
+#endif // ESWT_BUILD_PUBLIC_SDK
+// Comment if Public SDK end
+
+#ifndef ESWT_BUILD_PUBLIC_SDK
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+#endif // ESWT_BUILD_PUBLIC_SDK
+
+#endif  // __ESWT_BUILD_DEFINES_HRH__

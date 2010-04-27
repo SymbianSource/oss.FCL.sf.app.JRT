@@ -1,0 +1,12 @@
+MIDlet-Name: ASCII
+MIDlet-Vendor: Nokia
+MIDlet-Version: 1.0
+MIDlet-Jar-URL: http://195.134.231.83:7070/java-server/resources/man_jam/ceac00/bin/CEAC00.jar
+MIDlet-Jar-Size: 1494
+MicroEdition-Profile: MIDP-2.0
+MicroEdition-Configuration: CLDC-1.0
+MIDlet-1: ASCII,,USASCII.CEAC00_01
+MIDlet-Install-Notify: http://195.134.231.83:7070/java-server/getresult.jsp?phone=9F732D83F3B6AF98EB6577EA92366D95&tID=ceac00
+
+
+

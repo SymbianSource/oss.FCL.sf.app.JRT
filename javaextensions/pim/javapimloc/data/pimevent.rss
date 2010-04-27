@@ -1,0 +1,246 @@
+/*
+* Copyright (c) 2004-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Resource file for Event localization data
+*
+*/
+
+
+//  RESOURCE IDENTIFIER
+NAME    PIME
+
+//  INTERNAL INCLUDES
+#include "PIMPlugin.rh"
+#include "pimevent.h"
+
+//  EXTERNAL INCLUDES
+#include <uikon.rh>
+#include <pimevent.loc>
+
+RESOURCE RSS_SIGNATURE {}
+
+// ---------------------------------------------------------------------------
+// R_PIM_EVENT_LISTS
+// This resource structure holds information about event lists and labels
+// associated to each list. 
+//
+// @see PIM_LIST
+// @see PIM_LABEL_ARRAY
+// ---------------------------------------------------------------------------
+//
+RESOURCE PIM_LIST_ARRAY r_pim_event_lists
+    {
+    lists =
+        {
+        // Appointments list
+        PIM_LIST
+            {
+            list_subtype         = EPIMEventListAppointment;
+            list_name            = r_pim_appointment_listname;
+            field_array_id       = r_pim_appointment_fields;               
+            },
+        PIM_LIST
+            {
+            list_subtype         = EPIMEventListEvent;
+            list_name            = r_pim_memo_listname;
+            field_array_id       = r_pim_memo_fields;               
+            },
+        PIM_LIST
+            {
+            list_subtype         = EPIMEventListAnniversary;
+            list_name            = r_pim_anniversary_listname;
+            field_array_id       = r_pim_anniversary_fields;               
+            }
+        };
+    }
+
+// ---------------------------------------------------------------------------
+// R_PIM_APPOINTMENT_FIELDS
+// Array of labels associated to appointment fields. Fields may contain 
+// sub-elements such as array elements. Those have to be presented in a 
+// different structure
+//
+// @see PIM_LABEL_PAIR
+// @see PIM_LABEL_PAIR_WITH_SUBELEMENTS
+// ---------------------------------------------------------------------------
+//    
+RESOURCE PIM_LABEL_ARRAY r_pim_appointment_fields
+    {
+    labels =
+        {
+        PIM_LABEL_PAIR
+            {
+            id    = EPIMEventSummary;
+            label = qtn_jpim_event_field_summary;
+            },
+        PIM_LABEL_PAIR
+            {
+            id    = EPIMEventNote;
+            label = qtn_jpim_event_field_note;
+            },
+        PIM_LABEL_PAIR
+            {
+            id    = EPIMEventLocation;
+            label = qtn_jpim_event_field_appt_location;
+            },
+        PIM_LABEL_PAIR
+            {
+            id    = EPIMEventStart;
+            label = qtn_jpim_event_field_appt_start;
+            },
+        PIM_LABEL_PAIR
+            {
+            id    = EPIMEventEnd;
+            label = qtn_jpim_event_field_appt_end;
+            },
+        PIM_LABEL_PAIR
+            {
+            id    = EPIMEventAlarm;
+            label = qtn_jpim_event_field_alarm;
+            },
+        PIM_LABEL_PAIR
+            {
+            id    = EPIMEventClass;
+            label = qtn_jpim_event_field_class;
+            },
+        PIM_LABEL_PAIR
+            {
+            id    = EPIMEventUid;
+            label = qtn_jpim_event_field_uid;
+            },
+        PIM_LABEL_PAIR
+            {
+            id    = EPIMEventRevision;
+            label = qtn_jpim_event_field_revision;
+            }
+        };
+    }
+
+// ---------------------------------------------------------------------------
+// R_PIM_MEMO_FIELDS
+// Array of labels associated to memo fields. Fields may contain 
+// sub-elements such as array elements. Those have to be presented in a 
+// different structure
+//
+// @see PIM_LABEL_PAIR
+// @see PIM_LABEL_PAIR_WITH_SUBELEMENTS
+// ---------------------------------------------------------------------------
+//
+RESOURCE PIM_LABEL_ARRAY r_pim_memo_fields
+    {
+    labels =
+        {
+        PIM_LABEL_PAIR
+            {
+            id    = EPIMEventSummary;
+            label = qtn_jpim_event_field_summary;
+            },
+        PIM_LABEL_PAIR
+            {
+            id    = EPIMEventNote;
+            label = qtn_jpim_event_field_note;
+            },
+        PIM_LABEL_PAIR
+            {
+            id    = EPIMEventStart;
+            label = qtn_jpim_event_field_memo_start;
+            },
+        PIM_LABEL_PAIR
+            {
+            id    = EPIMEventEnd;
+            label = qtn_jpim_event_field_memo_end;
+            },
+        PIM_LABEL_PAIR
+            {
+            id    = EPIMEventAlarm;
+            label = qtn_jpim_event_field_alarm;
+            },
+        PIM_LABEL_PAIR
+            {
+            id    = EPIMEventClass;
+            label = qtn_jpim_event_field_class;
+            },
+        PIM_LABEL_PAIR
+            {
+            id    = EPIMEventUid;
+            label = qtn_jpim_event_field_uid;
+            },
+        PIM_LABEL_PAIR
+            {
+            id    = EPIMEventRevision;
+            label = qtn_jpim_event_field_revision;
+            }
+        };
+    }
+
+// ---------------------------------------------------------------------------
+// R_PIM_ANNIVERSARY_FIELDS
+// Array of labels associated to anniversary fields. Fields may contain 
+// sub-elements such as array elements. Those have to be presented in a 
+// different structure
+//
+// @see PIM_LABEL_PAIR
+// @see PIM_LABEL_PAIR_WITH_SUBELEMENTS
+// ---------------------------------------------------------------------------
+//    
+RESOURCE PIM_LABEL_ARRAY r_pim_anniversary_fields
+    {
+    labels =
+                {
+        PIM_LABEL_PAIR
+            {
+            id    = EPIMEventSummary;
+            label = qtn_jpim_event_field_anniv_summary;
+            },
+        PIM_LABEL_PAIR
+            {
+            id    = EPIMEventNote;
+            label = qtn_jpim_event_field_note;
+            },
+        PIM_LABEL_PAIR
+            {
+            id    = EPIMEventStart;
+            label = qtn_jpim_event_field_anniv_start;
+            },
+        PIM_LABEL_PAIR
+            {
+            id    = EPIMEventAlarm;
+            label = qtn_jpim_event_field_alarm;
+            },
+        PIM_LABEL_PAIR
+            {
+            id    = EPIMEventClass;
+            label = qtn_jpim_event_field_class;
+            },
+        PIM_LABEL_PAIR
+            {
+            id    = EPIMEventUid;
+            label = qtn_jpim_event_field_uid;
+            },
+        PIM_LABEL_PAIR
+            {
+            id    = EPIMEventRevision;
+            label = qtn_jpim_event_field_revision;
+            }
+        };
+    }
+
+// ---------------------------------------------------------------------------
+// String resources
+// ---------------------------------------------------------------------------
+// 
+RESOURCE LBUF r_pim_appointment_listname { txt = qtn_jpim_event_appts_listname;  }
+RESOURCE LBUF r_pim_memo_listname        { txt = qtn_jpim_event_events_listname; }
+RESOURCE LBUF r_pim_anniversary_listname { txt = qtn_jpim_event_annivs_listname; }
+    
+// End of File

@@ -1,0 +1,265 @@
+#
+# Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description:
+#
+
+# This (gnu) makefile has the general project defines. Plain variable
+# definitions are usable as such in subsystem makefiles, e.g. for
+# conditionally including some subcomponent based on the variable.
+
+# All contents of variable "PROJECT_DEFINES" are added to the C/C++
+# compilations as preprocessor macros. The PROJECT_DEFINES is also
+# usable in qmake, as conditional scope parameter.
+
+
+
+# NOTE! Unnecessary flags should be removed after the implementation has been
+# finalized.
+
+ifeq ($(BUILDENV),symbian)
+  USE_INSTALLERUI = 1
+  USE_PREWARM = 1
+  #SHOW_MIDP_EXIT_FAILURE = 1
+  OPENC_BETA_PATCH = 1
+  PROJECT_DEFINES += RD_JAVA_SYMBIAN_TARGET
+endif
+
+ifeq ($(BUILDENV),linux)
+  PROJECT_DEFINES += RD_JAVA_LINUX_TARGET
+endif
+
+# Determine S60 release being built
+ifeq ($(BUILDENV),symbian)
+  S60_STUBSIS_DIRS = $(EPOCROOT)epoc32/release/winscw/udeb/z/system/install/ $(EPOCROOT)epoc32/data/z/system/install/
+
+  ifeq ($(RD_JAVA_S60_RELEASE),)
+    # S60 release is not set, autodetermine
+    ifneq ($(wildcard $(RD_JAVA_S60_RELEASE_FILE)),)
+      # Use release written in file
+      include $(RD_JAVA_S60_RELEASE_FILE)
+    else
+    ifneq ($(wildcard $(addsuffix Series60v5.2.sis,$(S60_STUBSIS_DIRS))),)
+      RD_JAVA_S60_RELEASE = 9.2
+    else
+    ifneq ($(wildcard $(addsuffix Series60v5.1.sis,$(S60_STUBSIS_DIRS))),)
+      RD_JAVA_S60_RELEASE = 9.1
+    else
+    ifneq ($(wildcard $(addsuffix Series60v5.0.sis,$(S60_STUBSIS_DIRS))),)
+      RD_JAVA_S60_RELEASE = 5.0
+    else
+      $(error Cannot determine S60 release, no known stub files in $(S60_STUBSIS_DIRS))
+    endif
+    endif
+    endif
+    endif
+    # Export the release info, so that no autodetermination is needed after this
+    export RD_JAVA_S60_RELEASE
+  endif
+
+  ifeq ($(RD_JAVA_S60_RELEASE),10.1)
+    RD_JAVA_S60_RELEASE_10_1 = 1
+    RD_JAVA_S60_RELEASE_10_1_ONWARDS = 1
+    RD_JAVA_S60_RELEASE_9_2_ONWARDS = 1
+    RD_JAVA_S60_RELEASE_5_0_ONWARDS = 1
+    PROJECT_DEFINES += RD_JAVA_S60_RELEASE_10_1 RD_JAVA_S60_RELEASE_10_1_ONWARDS RD_JAVA_S60_RELEASE_9_2_ONWARDS RD_JAVA_S60_RELEASE_5_0_ONWARDS
+  else
+  ifeq ($(RD_JAVA_S60_RELEASE),9.2)
+    RD_JAVA_S60_RELEASE_9_2 = 1
+    RD_JAVA_S60_RELEASE_9_2_ONWARDS = 1
+    RD_JAVA_S60_RELEASE_5_0_ONWARDS = 1
+    PROJECT_DEFINES += RD_JAVA_S60_RELEASE_9_2 RD_JAVA_S60_RELEASE_9_2_ONWARDS RD_JAVA_S60_RELEASE_5_0_ONWARDS
+  else
+  ifeq ($(RD_JAVA_S60_RELEASE),5.0)
+    RD_JAVA_S60_RELEASE_5_0 = 1
+    RD_JAVA_S60_RELEASE_5_0_ONWARDS = 1
+    PROJECT_DEFINES += RD_JAVA_S60_RELEASE_5_0 RD_JAVA_S60_RELEASE_5_0_ONWARDS
+  else
+    $(error RD_JAVA_S60_RELEASE not set)
+  endif
+  endif
+  endif
+endif
+
+# By default use Raptor on non-5.0 builds
+ifndef RD_JAVA_S60_RELEASE_5_0
+  export USESBS = 1
+endif
+
+ifeq ($(BUILDENV),symbian)
+   ifdef RD_JAVA_S60_RELEASE_10_1
+     UI = QT
+   else
+     UI = AVKON
+   endif
+else
+  UI = QT
+endif
+
+ifeq ($(UI),QT)
+  RD_JAVA_UI_QT = 1
+  PROJECT_DEFINES += RD_JAVA_UI_QT
+endif
+
+# Define IAD flags
+ifdef RD_JAVA_S60_RELEASE_5_0
+  # IAD is the default on 5.0 releases
+  RD_JAVA_S60_RELEASE_5_0_IAD = 1
+  PROJECT_DEFINES += RD_JAVA_S60_RELEASE_5_0_IAD
+endif
+
+# Define stdcpp version
+ifneq ($(wildcard $(EPOCROOT)epoc32/release/armv5/urel/libstdcppv5.dll),)
+  RD_JAVA_STDCPPV5 = 1
+endif
+ifeq ($(RD_JAVA_STDCPPV5),1)
+  PROJECT_DEFINES += RD_JAVA_STDCPPV5
+endif
+
+# Workaround for 9.1 and 9.2 OpenC problem with static data on Raptor
+ifndef RD_JAVA_S60_RELEASE_5_0
+  RD_JAVA_EPOCALLOWDLLDATA_FIX = 1
+endif
+ifdef RD_JAVA_EPOCALLOWDLLDATA_FIX
+  PROJECT_DEFINES += RD_JAVA_EPOCALLOWDLLDATA_FIX
+endif
+
+# Variation for the potential CDMA support in 5.0 based devices
+ifdef RD_JAVA_S60_RELEASE_5_0
+  RD_JAVA_SUPPORT_CDMA = 1
+endif
+ifdef RD_JAVA_SUPPORT_CDMA
+  PROJECT_DEFINES += RD_JAVA_SUPPORT_CDMA
+endif
+
+# Variation for the SIDChecker library, old library used in 5.0 and 9.1
+ifdef RD_JAVA_S60_RELEASE_5_0
+  RD_JAVA_OLD_SIDCHECKER_LIBRARY = 1
+endif
+ifdef RD_JAVA_OLD_SIDCHECKER_LIBRARY
+  PROJECT_DEFINES += RD_JAVA_OLD_SIDCHECKER_LIBRARY
+endif
+
+# HttpStreaming uses EMC API in MMAPI and AMMS if platform is 9.1 or 9.2 only(can not be used if 5.0)
+ifndef RD_JAVA_S60_RELEASE_5_0
+  RD_JAVA_HTTP_EMC_ENABLED = 1
+endif
+ifdef RD_JAVA_HTTP_EMC_ENABLED
+  PROJECT_DEFINES += RD_JAVA_HTTP_EMC_ENABLED
+endif
+
+# NGA changes, 9.2 and onwards only
+ifndef RD_JAVA_S60_RELEASE_5_0
+  RD_JAVA_NGA_ENABLED =1
+endif
+ifdef RD_JAVA_NGA_ENABLED
+  PROJECT_DEFINES += RD_JAVA_NGA_ENABLED
+endif
+
+# Uiaccelerator AlfDrawer is supported since 9.2
+ifndef RD_JAVA_S60_RELEASE_5_0
+  ifneq ($(wildcard $(EPOCROOT)epoc32/include/platform/mw/alf/alfdrawer.h),)
+    RD_JAVA_UI_ALFDRAWER_ENABLED = 1
+  endif
+endif
+ifdef RD_JAVA_UI_ALFDRAWER_ENABLED
+  PROJECT_DEFINES += RD_JAVA_UI_ALFDRAWER_ENABLED
+endif
+
+# Check if USIF is supported
+ifneq ($(wildcard $(EPOCROOT:\=/)epoc32/include/mw/usif/scr/scr.h),)
+  RD_JAVA_USIF_ENABLED = 1
+endif
+
+ifdef RD_JAVA_USIF_ENABLED
+  SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK = 1
+  PROJECT_DEFINES += SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
+  # Following flag enables application registrations to USIF
+  # and disables application registrations to AppArc.
+  PROJECT_DEFINES += RD_JAVA_USIF_APP_REG
+  # Following flag enables application notifications to AppArc.
+  #PROJECT_DEFINES += RD_JAVA_USIF_NOTIFY_APP_ARC
+endif
+
+# Java proximity Listener support exsist in 9.2 only(can not be used if 5.0 untill IAD dependecy mentioned)
+ifndef RD_JAVA_S60_RELEASE_5_0
+  RD_JAVA_PROXIMITY_LISTENER_ENABLED = 1
+endif
+ifdef RD_JAVA_PROXIMITY_LISTENER_ENABLED
+  PROJECT_DEFINES += RD_JAVA_PROXIMITY_LISTENER_ENABLED
+endif
+
+ifeq ($(OPENC_BETA_PATCH),1)
+  PROJECT_DEFINES += RD_JAVA_OPENC_BETA_PATCH
+endif
+
+ifeq ($(S60_50_REL2),1)
+  PROJECT_DEFINES += RD_JAVA_S60_50_REL2
+endif
+
+ifeq ($(UI),QT)
+  PROJECT_DEFINES += OPENLCDUI_ENABLED RD_JAVA_OPENLCDUI_ENABLED
+endif
+
+ifeq ($(COMPILE_LEGACY_UI),0)
+  PROJECT_DEFINES += OPENLCDUI_ENABLED RD_JAVA_OPENLCDUI_ENABLED
+endif
+
+ifdef USE_INSTALLERUI
+  PROJECT_DEFINES += RD_JAVA_INSTALLERUI_ENABLED
+endif
+
+# Enables emma instrumentation for Java code coverage measurement.
+ifdef EMMA
+  ANT_EMMA_DEFINES += -Dset.emma.enabled=true
+endif
+
+#ifdef SHOW_MIDP_EXIT_FAILURE
+  PROJET_DEFINES += RD_JAVA_EXIT_ERROR_DIALOG
+#endif
+
+ifdef USE_PREWARM
+PROJECT_DEFINES += RD_JAVA_PREWARM
+endif
+
+ifdef USE_INI_FILE
+PROJECT_DEFINES += RD_JAVA_INI_FILE_ACCESS_IN_USE
+endif
+
+# Enables advanced tactile feedback for Java UI
+ifdef RD_JAVA_S60_RELEASE_9_2
+  RD_JAVA_ADVANCED_TACTILE_FEEDBACK = 1
+  PROJECT_DEFINES += RD_JAVA_ADVANCED_TACTILE_FEEDBACK
+endif
+ifdef RD_JAVA_S60_RELEASE_10_1
+  RD_JAVA_ADVANCED_TACTILE_FEEDBACK = 1
+  PROJECT_DEFINES += RD_JAVA_ADVANCED_TACTILE_FEEDBACK
+endif
+
+# Skip the following targets in 10.1 build
+ifdef RD_JAVA_S60_RELEASE_10_1
+  SKIPTARGETS=pim
+endif
+
+ifdef RD_JAVA_S60_RELEASE_10_1
+  RD_JAVA_APPLICATION_SETTINGS_QT = 1
+  PROJECT_DEFINES += RD_JAVA_APPLICATION_SETTINGS_QT
+endif
+
+# selects RMS implementation (file or db)
+ifndef RD_JAVA_S60_RELEASE_5_0
+  RD_JAVA_MIDPRMS_DB = 1
+endif
+ifdef RD_JAVA_MIDPRMS_DB
+  PROJECT_DEFINES += RD_JAVA_MIDPRMS_DB
+endif

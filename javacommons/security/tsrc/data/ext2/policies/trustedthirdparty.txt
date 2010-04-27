@@ -1,0 +1,22 @@
+domain IdentifiedThirdParty;
+grant user "Ext1" oneshot,session,no {
+    permission com.nokia.ext2.internal.Ext2Perm "ext2.target1" "ext2.action1";
+    permission com.nokia.ext1.public.Ext1Perm "ext1.target1" "ext1.action1";
+    permission com.nokia.ext1.internal.Ext1Perm "ext1.target1" "ext1.action1";
+}
+
+grant user "Ext2" oneshot,no {
+    permission com.nokia.ext2.internal.Ext2Perm "ext2.target2" "ext2.action2";
+}
+grant allowed {
+    permission com.nokia.ext2.internal.Ext2Perm "ext2.target3" "ext2.action3";
+}
+
+grant assigned {
+    permission com.nokia.ext2.internal.Ext2Perm "ext2.target4" "ext2.action4";
+}
+
+grant user "Messaging" oneshot,no {
+    permission com.nokia.ext2.internal.Ext2Perm "ext2.target5" "ext2.action5";
+}
+

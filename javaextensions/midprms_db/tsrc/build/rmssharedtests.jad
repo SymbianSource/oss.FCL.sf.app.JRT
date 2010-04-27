@@ -1,0 +1,9 @@
+MicroEdition-Configuration: CLDC-1.0
+MIDlet-Version: 1.0
+MIDlet-Vendor: Nokia
+MicroEdition-Profile: MIDP-2.0
+MIDlet-1: SharedStore,,j2meunitomj.MIDletTestRunner
+MIDlet-Name: SharedStore
+MIDlet-Jar-Size: 69757
+MIDlet-Jar-URL: rmssharedtests.jar
+J2MEUnitTestClasses: com.nokia.mj.test.rms.CreateSharedStore

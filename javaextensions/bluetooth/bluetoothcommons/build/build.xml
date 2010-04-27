@@ -1,0 +1,48 @@
+﻿<!--
+* Copyright © 2008 Nokia Corporation and/or its subsidiary(-ies).
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*  http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License. 
+-->
+<project name="javabluetoothcommons" default="deploy" basedir=".">
+    <description>
+        Builds Bluetooth Commons
+    </description>
+
+  <import file="../../../../build/utilities.xml"/>
+
+  <!-- Needed by the utilities.xml. See the description form the utilities.xml
+       file -->
+
+  <property name="javah.classnames" 
+            value="com.nokia.mj.impl.bluetooth.BTPlatformControl,
+            com.nokia.mj.impl.bluetooth.BluetoothStackConsts"/>
+
+  <target name="create.internal.api.jar">
+      <omj.internal.apis includes="
+            com/nokia/mj/impl/bluetooth/BTPlatformControl.class,
+            com/nokia/mj/impl/bluetooth/BluetoothStackConsts.class"/>
+  </target>
+
+  <property name="java.src.paths"
+            value="../bluetoothplatformcontrol/javasrc;../javasrc"/>
+
+  
+  <target name="init.component.properties">
+      <condition property="java.src.paths"
+               value="../javasrc:../javasrc.s60"
+               else="../javasrc:../javasrc.linux">
+          <isset property="target.s60" />
+      </condition>
+  </target> 
+
+</project>

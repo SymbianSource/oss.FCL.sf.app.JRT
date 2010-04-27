@@ -1,0 +1,9 @@
+EXPORTS
+	?GetDomain@Midp2PermissionDB@MIDP@@QAEHAAW4TMidp2Domain@2@@Z @ 1 NONAME ; int MIDP::Midp2PermissionDB::GetDomain(enum MIDP::TMidp2Domain &)
+	?GetDomainFromName@Midp2PermissionDB@MIDP@@SAHABVTDesC16@@AAW4TMidp2Domain@2@@Z @ 2 NONAME ; int MIDP::Midp2PermissionDB::GetDomainFromName(class TDesC16 const &, enum MIDP::TMidp2Domain &)
+	?GetFunctionGroupFromName@Midp2PermissionDB@MIDP@@SAHABVTDesC16@@AAW4TMidp2FunctionGroup@2@@Z @ 3 NONAME ; int MIDP::Midp2PermissionDB::GetFunctionGroupFromName(class TDesC16 const &, enum MIDP::TMidp2FunctionGroup &)
+	?GetFunctionGroupPermission@Midp2PermissionDB@MIDP@@QAEHABW4TMidp2FunctionGroup@2@AAW4TMidp2PermissionType@2@AAW4TMidp2PermissionMode@2@AAE@Z @ 4 NONAME ; int MIDP::Midp2PermissionDB::GetFunctionGroupPermission(enum MIDP::TMidp2FunctionGroup const &, enum MIDP::TMidp2PermissionType &, enum MIDP::TMidp2PermissionMode &, unsigned char &)
+	?GetPermissionFromName@Midp2PermissionDB@MIDP@@SAHABVTDesC16@@AAW4TMidp2Permission@2@@Z @ 5 NONAME ; int MIDP::Midp2PermissionDB::GetPermissionFromName(class TDesC16 const &, enum MIDP::TMidp2Permission &)
+	?NewL@Midp2PermissionDB@MIDP@@SAPAV12@ABVTDesC16@@00@Z @ 6 NONAME ; class MIDP::Midp2PermissionDB * MIDP::Midp2PermissionDB::NewL(class TDesC16 const &, class TDesC16 const &, class TDesC16 const &)
+	?SetFunctionGroupPermission@Midp2PermissionDB@MIDP@@QAEHABW4TMidp2FunctionGroup@2@ABW4TMidp2PermissionType@2@ABW4TMidp2PermissionMode@2@@Z @ 7 NONAME ; int MIDP::Midp2PermissionDB::SetFunctionGroupPermission(enum MIDP::TMidp2FunctionGroup const &, enum MIDP::TMidp2PermissionType const &, enum MIDP::TMidp2PermissionMode const &)
+	?ReadMIDP2ConfigSetting@Midp2PermissionDB@MIDP@@QAEXABW4TMidp2ConfigKey@2@AAH@Z @ 8 NONAME ; void MIDP::Midp2PermissionDB::ReadMIDP2ConfigSetting(enum MIDP::TMidp2ConfigKey const &, int &)

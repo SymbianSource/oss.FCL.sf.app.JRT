@@ -1,0 +1,30 @@
+/*
+* Copyright (c) 2006-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: Java FileUtils test data build file
+*
+*/
+
+PRJ_EXPORTS
+
+#include "../../../../../inc/build_defines.hrh"
+
+#ifdef RD_JAVA_SYMBIAN_TARGET
+
+../../data/HelloWorld1.jar    /epoc32/winscw/c/HelloWorld1.jar
+../../data/HelloWorld2.jar    /epoc32/winscw/c/HelloWorld2.jar
+
+#endif
+
+
+PRJ_EXPORTS

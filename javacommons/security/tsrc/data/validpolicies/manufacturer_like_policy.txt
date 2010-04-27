@@ -1,0 +1,24 @@
+domain Manufacturer;
+grant allowed {
+permission javax.microedition.io.HttpProtocolPermission "http://*";
+permission javax.microedition.io.HttpsProtocolPermission "https://*";
+permission javax.microedition.io.DatagramProtocolPermission "datagram://*";
+permission javax.microedition.io.DatagramProtocolPermission "datagram://";
+permission javax.microedition.io.SocketProtocolPermission "socket://*";
+permission javax.microedition.io.SocketProtocolPermission "socket://";
+permission javax.microedition.io.SSLProtocolPermission "ssl://*";
+}
+grant allowed "misc" {
+permission javax.microedition.io.PushRegistryPermission "*";
+permission javax.microedition.io.CommProtocolPermission "comm:*";
+permission javax.microedition.media.PlayerPermission "*" "record,snapshot";
+permission java.util.PropertyPermission "*" "read";
+permission javax.microedition.event.EventPermission "*" "read,register,post";
+permission javax.microedition.midlet.ActionsDeniedPermission;
+permission javax.microedition.midlet.AutoStartPermission;
+}
+grant assigned {
+permission java.util.PropertyPermission "microedition.*" "read";
+permission javax.microedition.event.EventPermission "*.*" "read,register,post";
+}
+

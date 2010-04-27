@@ -1,0 +1,5 @@
+EXPORTS
+	?findDllMethod@@YAP6APAXXZPBD@Z @ 1 NONAME ; void * (*)(void) findDllMethod(char const *)
+	??0PushRegistryHandler@push@java@@QAE@XZ @ 2 NONAME ; java::push::PushRegistryHandler::PushRegistryHandler(void)
+	??1PushRegistryHandler@push@java@@UAE@XZ @ 3 NONAME ; java::push::PushRegistryHandler::~PushRegistryHandler(void)
+

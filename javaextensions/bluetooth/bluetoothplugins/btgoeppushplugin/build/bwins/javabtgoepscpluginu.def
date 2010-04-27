@@ -1,0 +1,9 @@
+EXPORTS
+	?findDllMethod@@YAP6APAXXZPBD@Z @ 1 NONAME ; void * (*)(void) findDllMethod(char const *)
+	??0BTOBEXServerConnectionFactory@bluetooth@java@@QAE@XZ @ 2 NONAME ; java::bluetooth::BTOBEXServerConnectionFactory::BTOBEXServerConnectionFactory(void)
+	??1BTOBEXServerConnectionFactory@bluetooth@java@@UAE@XZ @ 3 NONAME ; java::bluetooth::BTOBEXServerConnectionFactory::~BTOBEXServerConnectionFactory(void)
+	?create@BTOBEXServerConnectionFactory@bluetooth@java@@UAEPAVServerConnection@push@3@ABV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@@Z @ 4 NONAME ; class java::push::ServerConnection * java::bluetooth::BTOBEXServerConnectionFactory::create(class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &)
+	?createSrvConnObj@BTOBEXServerConnectionFactory@bluetooth@java@@UAEPAVServerConnection@push@3@ABV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@0@Z @ 5 NONAME ; class java::push::ServerConnection * java::bluetooth::BTOBEXServerConnectionFactory::createSrvConnObj(class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &, class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &)
+	?getFactory@BTOBEXServerConnectionFactory@bluetooth@java@@SAAAV123@XZ @ 6 NONAME ; class java::bluetooth::BTOBEXServerConnectionFactory & java::bluetooth::BTOBEXServerConnectionFactory::getFactory(void)
+	?isMultipleSrvConnAllowed@BTOBEXServerConnectionFactory@bluetooth@java@@UAE_NXZ @ 7 NONAME ; bool java::bluetooth::BTOBEXServerConnectionFactory::isMultipleSrvConnAllowed(void)
+

@@ -1,0 +1,12 @@
+EXPORTS
+	_Z10jni_lookupPKc @ 1 NONAME
+	_ZN4java22NativeSecureConnection10writeBytesER7JNIEnv_P11_jbyteArrayii @ 2 NONAME
+	_ZN4java22NativeSecureConnection11stopReadingEv @ 3 NONAME
+	_ZN4java22NativeSecureConnection11stopWritingEv @ 4 NONAME
+	_ZN4java22NativeSecureConnection15getSecurityInfoEv @ 5 NONAME
+	_ZN4java22NativeSecureConnection15secureHandshakeEv @ 6 NONAME
+	_ZN4java22NativeSecureConnection23initialiseSslConnectionEv @ 7 NONAME
+	_ZN4java22NativeSecureConnection9readBytesER7JNIEnv_P11_jbyteArray @ 8 NONAME
+	_ZTIN4java22NativeSecureConnectionE @ 9 NONAME ; #<TI>#
+	_ZTVN4java22NativeSecureConnectionE @ 10 NONAME ; #<VT>#
+

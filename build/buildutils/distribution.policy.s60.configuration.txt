@@ -1,0 +1,30 @@
+# S60 distribution policy configuration file.
+#
+# File syntax:
+# <path> : <policy>
+#
+# The order of path definitions is significant. Directories
+# are matched to path definitions in the order they are defined here.
+# The policy defined for the first matching path is taken into use.
+# Path definitions which begin with keyword ROOT match from the
+# beginning of the root directory, path definitions which begin
+# with slash match anywhere in the path.
+# Always use slash ('/') as a path separator in this file
+# and do not end path definitions with a slash.
+
+/.svn                              : IGNORE
+/swt/internal                      : 7
+/swt/expanded/internal             : 7
+/swt/mobile/internal               : 7
+/internal                          : 1
+/releng                            : 1
+ROOT/tools                         : 1
+ROOT/javacommons/jvms/j9/s60       : 810
+/midprms                           : 102
+/webservices/javasrc               : 102
+/webservices/tsrc                  : 102
+/CgfxTestRunner                    : 1
+/nokiatests                        : 1
+/broadcast_stub/javasrc            : 1
+DEFAULT_POLICY                     : 7
+ROOT_POLICY                        : 7

@@ -1,0 +1,133 @@
+<!--
+#
+# Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<project name="EmmaUtilities">
+
+  <import file="properties.xml"/>
+
+  <!--
+      Steps to generate emma coverage report in Linux:
+
+      1) Build component with emma instrumentation from component build dir:
+
+        cd component_build_dir
+        make -f $JAVA_SRC_ROOT/build/Makefile.comp clean
+        make -f $JAVA_SRC_ROOT/build/Makefile.comp EMMA=1
+
+        Note that you can also instrument the whole build if necessary:
+
+        cd $JAVA_SRC_ROOT
+        make reallyclean
+        make EMMA=1
+
+      2) Run the tests from component test build dir:
+
+        cd component_tsrc_build_dir
+        ant run
+
+      3) Generate coverage report from component build dir:
+
+        cd component_build_dir
+        make -f $JAVA_SRC_ROOT/build/Makefile.comp emmareport
+
+        Reports are generated into /tmp/coverage/coverage.txt
+        and /tmp/coverage/coverage.html files. To view the html report
+        in firefox issue command:
+
+        firefox /tmp/coverage/coverage.html &
+
+        The reason why report generation should be made from component build
+        directory is that to generate reports with code line level details,
+        the implementation source files are needed during report generation.
+        The report can be generated also from other directories (e.g. from
+        $JAVA_BIN_ROOT), but the generated report will not be as detailed.
+
+      4) To reset coverage measurement, remove all other files from
+        /tmp/coverage except metadata.emma.
+
+    -->
+
+  <!-- Begin definitions for emma. -->
+
+  <!-- Location for emma.jar, emma_ant.jar and emma.properties files. -->
+  <property name="emma.dir" value="${java.src.root}/tools/emma"/>
+  <!-- Directory for emma coverage data. -->
+  <property name="emma.coverage.dir" location="/tmp/coverage"/>
+  <!-- Properties file for emma. -->
+  <property name="emma.properties" value="${env.JAVA_BIN_ROOT}/emma.properties"/>
+
+  <!-- Define ant tasks for emma. -->
+  <path id="emma.lib">
+    <pathelement location="${emma.dir}/emma.jar"/>
+    <pathelement location="${emma.dir}/emma_ant.jar"/>
+  </path>
+  <taskdef resource="emma_ant.properties" classpathref="emma.lib"/>
+
+  <!-- Defines emma.enabled to be true for enabling emma tasks
+       and some properties which depend on dynamic properties
+       defined in properties.xml. -->
+  <target name="emma" depends="init.properties" if="set.emma.enabled">
+    <property name="emma.enabled" value="true"/>
+    <!-- Directory for emma instrumented classes. -->
+    <property name="emma.instr.dir" location="${classes.dir}/emmainstr"/>
+    <!-- Implementation sources for emma coverage report generation. -->
+    <property name="emma.src.dir" value="../ignorethisdir,${java.src.paths},${java.src.second.paths},${javasrc.platform.specific},${javasrc.platform.specific.cdc}"/>
+  </target>
+
+  <!-- Copy emma.jar and emma.properties to correct places. -->
+  <target name="emma.deploy" if="set.emma.enabled">
+    <copy file="${emma.dir}/emma.jar" todir="${vm.extension.directory}"/>
+    <copy file="${emma.dir}/emma.properties" tofile="${emma.properties}"/>
+  </target>
+
+  <!-- Make emma instrumentation. -->
+  <target name="emma.instr" depends="emma, emma.deploy" if="set.emma.enabled">
+    <!-- echo message="Instrumenting from ${dst.dir} to ${emma.instr.dir}"/ -->
+    <delete dir="${emma.instr.dir}"/>
+    <mkdir dir="${emma.instr.dir}"/>
+    <emma enabled="${emma.enabled}" properties="${emma.properties}">
+      <instr instrpath="${dst.dir}" destdir="${emma.instr.dir}"/>
+    </emma>
+    <!-- Copy instrumented classes back to destination dir so that they
+         are processed through the rest of the build chain. -->
+    <copy todir="${dst.dir}" overwrite="true">
+      <fileset dir="${emma.instr.dir}" includes="**/*.class"/>
+    </copy>
+  </target>
+
+  <!-- Generate emma coverage report. -->
+  <target name="emma.report" depends="emma">
+    <emma enabled="${emma.enabled}" properties="${emma.properties}">
+      <report sourcepath="${emma.src.dir}">
+        <fileset dir="${emma.coverage.dir}" includes="*.emma"/>
+        <txt/>
+        <html/>
+      </report>
+    </emma>
+  </target>
+
+  <!-- Clean emma related files. -->
+  <target name="emma.clean">
+    <delete file="${vm.extension.directory}/emma.jar"/>
+    <delete file="${emma.properties}"/>
+    <delete dir="${emma.coverage.dir}"/>
+  </target>
+
+  <!-- End definitions for emma. -->
+
+</project>

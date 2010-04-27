@@ -1,0 +1,41 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+
+#include <../../../../../../inc/java_stdcpp_support_for_exe.hrh>
+
+TARGET      JavaCertStoreTests.exe
+TARGETTYPE  exe
+UID         0x20004c45 0xE0000031
+CAPABILITY  All -Tcb
+
+APP_LAYER_SYSTEMINCLUDE
+
+USERINCLUDE ../src
+USERINCLUDE ../../../../../../inc // == (JAVA_SRC_ROOT)/inc
+USERINCLUDE ../../../../../../tools/cpputest/include/cpputest // == (JAVA_SRC_ROOT)/tools/cpputest/include/cpputest
+USERINCLUDE ../../../../../../tools/cpputest/include/platforms/symbian // == (JAVA_SRC_ROOT)/tools/cpputest/include/platforms/symbian
+
+LIBRARY cpputest.lib
+LIBRARY javacomms.lib
+
+SOURCEPATH ../src
+SOURCE javacertstoreunittests.cpp
+SOURCE sendreceive.cpp
+
+

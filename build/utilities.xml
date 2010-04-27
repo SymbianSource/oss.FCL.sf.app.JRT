@@ -1,0 +1,591 @@
+<!--
+#
+# Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<project name="Utilities">
+
+<!--
+  This file contains common utilities for each build.xml file.
+  Following properties are mandatory for a basic build process. Most of the
+  APIs can use default values, but if some property is not suitable, it can
+  be overridden.
+
+    java.src.paths    The source path. If there are more than one source path 
+                      concatenate the paths using ':' as separator. Default is
+                      '../javasrc
+
+    java.src.second.paths    The source path for the second phase compilation. 
+                      If there are more than one source path concatenate the 
+                      paths using ':' as separator. Default is '../javasrc.cdc
+
+    bootclasspath     The bootclasspath used for compile time. Default is CLDC
+
+    bootclasspath.second     The bootclasspath used for the second phase 
+                      compilation.. Default is CDC
+
+    native.dll.name   The name of the dll (without extension) which will 
+                      contain the rommized byte code. The default value is the 
+                      name of the ant project.
+  
+  
+  Following properties are optionals:
+
+    javah.classnames        A list of classes using ',' as separator to be 
+                            "javah"ed.
+
+-->
+
+
+  <import file="properties.xml"/>
+
+  
+  <!--Importing platform specific utilities. This might seem quite complex,
+      since we need to import a default one (utilities.fake.xml), because
+      the property ${platform.utilities.xml.file} need to have some meaningful
+      value when the utilities.xml is used for the first time. The default one 
+      isn't used at all, instead the platform dependent xml file is defined 
+      using additional antcall after the dynamic properties have been defined.
+      See targets deploy and deploy.dual-->
+  <import file="${platform.utilities.xml.file}"/>
+
+
+  <!-- Importing emma utilities for Java code coverage measurement. -->
+  <import file="emmautilities.xml"/>
+
+
+
+
+
+
+
+
+
+
+<!--STARTING POINTS START-->
+
+  <!--The start point of the component's build when there are classes that can
+      be compiled against same configuration (cldc, cdc, etc). This is the 
+      normal case for the most of the components-->
+  <target name="deploy" depends="init.properties, make.target.dirs">
+    <antcall target="deploy.internal">
+      <param name="platform.utilities.xml.file" 
+             value="${dyn.platform.utilities.xml.file}"/>
+    </antcall>
+  </target>
+
+  <!--The start point of the component's build when there are classes from two
+      different configurations (cldc, cdc, etc). The default order is that cldc
+      is compiled in first phase and cdc in the second, but the component is 
+      able to variate the behavior.
+  -->
+  <target name="deploy.dual" depends="init.properties, make.target.dirs">
+    <antcall target="deploy.dual.internal">
+      <param name="platform.utilities.xml.file" value="${dyn.platform.utilities.xml.file}"/>
+    </antcall>
+  </target>
+
+<!--STARTING POINTS END-->
+
+
+
+
+
+
+
+
+
+
+
+<!--TARGETS FOR THE FIRST PHASE COMPILATION START-->
+
+
+  <!--An internal target to be called using antcall in order to import correct
+      platform specific helper xml file for the first phase compilation. 
+      This targe assumes that the antcall to this target (or target that 
+      depends on this) defines following property:
+         * platform.utilities.xml.file   A file containg platform specific 
+                                         implementations of certain common
+                                         targets
+  -->
+  <target name="deploy.internal" depends="do.export, deploy.first, finalize">
+  </target>
+
+
+  <!--Target that launches the first phase compilation. After this target
+      classes are compiled into classes/first directory, copied to 
+      classes/collection directory, finetuned (platform specific) and
+      copied into jar containig all the classes of the different components.-->
+  <target name="deploy.first" depends="do.export">
+
+    <!--If the platform specific directory exists, it is added to the 
+        source path -->
+    <condition property="additional.java.src.path.first"
+               value=";${javasrc.platform.specific}"
+               else="">
+      <isset property="javasrc.platform.specific.present" />
+    </condition>
+
+    <!--Start the job described above using antcall -->
+    <antcall target="do.java.compile">
+      <param name="compile.target" value="compile"/>
+      <param name="int.bcp" value=""/>
+      <param name="bcp" value="${bootclasspath}"/>
+      <param name="jsrc" 
+             value="${java.src.paths}${additional.java.src.path.first}"/>
+      <param name="dst.dir" value="${classes.first.dir}"/>
+    </antcall>
+  </target>
+
+<!--TARGETS FOR THE FIRST PHASE COMPILATION END-->
+
+
+
+
+
+
+
+
+<!--TARGETS FOR THE SECOND PHASE COMPILATION START-->
+
+  <!--An internal target for the second phase compilation. Look for the
+      description of the target 'deploy.internal'.
+  -->
+  <target name="deploy.dual.internal" depends="deploy.second, finalize">
+  </target>
+
+  <!--Target that launches the second phase compilation. After this target
+      classes are compiled into classes/second directory, copied to 
+      classes/collection directory, finetuned (platform specific) and
+      copied into jar containig all the classes of the different components.-->
+  <target name="deploy.second" depends="deploy.first, init.second.phase">
+
+    <!--If the platform specific cdc directory exists, it is added to the 
+        source path -->
+    <condition property="additional.java.src.path.second"
+               value=";${javasrc.platform.specific.cdc}"
+               else="">
+      <isset property="javasrc.platform.specific.cdc.present" />
+    </condition>
+
+    <!--Start the job described above using antcall -->
+    <antcall target="do.java.compile">
+      <param name="compile.target" value="compile.second"/>
+      <param name="int.bcp" value="${classes.first.dir}"/>
+      <param name="bcp" value="${bootclasspath.second}"/>
+      <param name="jsrc" 
+           value="${java.src.second.paths}${additional.java.src.path.second}"/>
+      <param name="dst.dir" value="${classes.second.dir}"/>
+    </antcall>
+  </target>
+
+<!--TARGETS FOR THE SECOND PHASE COMPILATION END-->
+
+
+
+
+
+
+
+<!--COMPILE AND FINALIZE START-->
+
+  <!--This target compiles the java code, finetunes the classes in
+      platform specific way (if exists) and adds the classes into
+      collection jar file. The target is meant to be called using
+      <antcall> which must define following properties:
+        *compile.target   Target to be used doing the 'javac'
+        *bcp              The bootclasspath for the 'javac'
+        *jsrc             A list of dir(s) containing the Java files.
+        *dst.dir          A directory where to put the resulted classes.
+        *int.bcp          An internal additional bootclasspath. This is used
+                          in the second phase of the dual compilation for
+                          adding the classes compiled in the first phase
+                          into bootclasspath of the 'javac'
+    -->
+  <target name="do.java.compile" depends="do.java.preprocessing">
+    <!--If the pre-processing is done change the java source to point
+        to preprocessed sources.-->
+    <condition property="jsrc.for.javac"
+               value="${java.cpp.tmp.dir}"
+               else="${jsrc}">
+      <isset property="java.cpp.tmp.dir" />
+    </condition>
+
+    <ant target="${compile.target}"/>
+    <ant target="finetune.classes"/>
+    <ant target="emma.instr"/>
+    <ant target="add.classes.to.collection.jar"/>
+    <ant target="collect.localisation.files"/>
+    
+    <!--Copy only changed classes into collection dir -->
+    <copy todir="${classes.collection.dir}">
+      <fileset dir="${dst.dir}" includes="**/*.class">
+        <depend targetdir="${classes.collection.dir}"/>
+      </fileset>
+    </copy>
+  </target>
+
+
+  <!--Target that does the pre rpocessing of the java code. This is not done
+      by default - it is done only if property java.cpp.defines has been
+      defined by the component. Java source files are pre processed into 
+      component's classes/firstjavacpp (or classes/secondjavacpp in case of
+       second phase compilation) directory
+  -->
+  <target name="do.java.preprocessing" if="java.cpp.defines">
+    <property name="java.cpp.tmp.dir" location="${dst.dir}javacpp"/>
+    <mkdir dir="${java.cpp.tmp.dir}"/>
+    <exec executable="python" failonerror="true">
+      <arg value="${java.src.root}/build/buildutils/javacpp.py"/>
+      <arg value="${jsrc}"/>
+      <arg value="${java.cpp.tmp.dir}"/>
+    </exec>
+    
+  </target>
+
+  <!--Groups a set of functionalities that are done after java code has
+      been compiled ad finetuned -->
+  <target name="finalize" depends="create.internal.api.jar, 
+                                   create.public.api.jar, javah, generate.odc,
+                                   rommize.classes, jni.utils">
+  </target>
+
+<!--COMPILE AND FINALIZE END-->
+
+
+
+
+
+
+
+
+<!--INITIALIZATIONS START-->
+
+  <!--Creates target directories -->
+  <target name="make.target.dirs">
+    <mkdir dir="${classes.collection.dir}"/>
+    <mkdir dir="${classes.first.dir}"/>
+    <mkdir dir="${temp.javah.dir}"/>
+    <mkdir dir="${javah.dir}"/>
+    <mkdir dir="${jar.destination.root}"/>
+  </target>
+
+  <!--Creates target directories when dual phase compilation is
+      used. In normal case this is not used.-->
+  <target name="init.second.phase">
+    <property name="second.phase.compilation" value="true"/>
+    <mkdir dir="${classes.second.dir}"/>
+  </target>
+
+  <!--Target for making component specific initalizations depending on
+      the values of dynamic properties (e.g. Target platform).
+      The default implementation of this target is empty and the component 
+      should override this if it provides public APIs -->
+  <target name="init.target">
+  </target>
+
+<!--INITIALIZATIONS END-->
+
+
+
+
+<!--JAVAC START-->
+
+  <!--Javac 
+       TODO: bootclasspath should look like this:
+      bootclasspath="${bcp}:${int.bcp}:${platform.api.jar}:${public.api.jar}">
+  -->
+  <presetdef name="omj.javac">
+    <javac 
+      source="${javac.source}" 
+      target="${javac.target}"
+      destdir="${dst.dir}"
+      debug="${javac.debug.on}"
+      debuglevel="lines,vars,source"
+      bootclasspath="${bcp}:${int.bcp}:${platform.api.jar}:${public.api.jar}${eswt.jar}">
+      <src path="${jsrc.for.javac}"/>
+    </javac>
+  </presetdef>
+
+  <!--Do the first Java compilation. May be overridden-->
+  <target name="compile">
+    <omj.javac/>
+  </target>
+
+  <!--Do the second Java compilation. May be overridden-->
+  <target name="compile.second">
+    <omj.javac/>
+  </target>
+
+<!--JAVAC END-->
+
+
+
+
+
+<!--SYSTEM PROPERTIES START-->
+
+  <!--Default empty target for the system properties. If the componen wants
+      to publish some system properties, it must override this target. Example:
+      <target name="system.properties">
+          <properties>
+              microedtion.locale=Fi-fi
+              microedtion.encoding=utf-8
+          </properties>
+      </target>
+  -->
+  <target name="system.properties">
+  </target>
+
+  <!--Used in overridable target 'system.properties' to list the properties
+      into component's properties.txt file-->
+  <presetdef name="properties">
+      <echo file="${component.root.dir}/properties.txt">
+      </echo>
+  </presetdef>
+
+<!--SYSTEM PROPERTIES END-->
+
+
+
+
+
+<!--ODC FILE START-->
+
+  <!--Generate the odc files -->
+  <target name="generate.odc" depends="system.properties">
+    <exec executable="python" failonerror="true">
+      <arg value="${java.src.root}/build/buildutils/generateOdcFile.py"/>
+      <arg value="${component.root.dir}/${odc.file.name}.odc"/>
+      <arg value="${native.dll.name}"/>
+      <arg value="${classes.collection.dir}"/>
+      <arg value="${component.root.dir}/properties.txt"/>
+    </exec>
+
+    <!--Copy the odc file into location where the VM can find it -->
+    <copy file="${component.root.dir}/${odc.file.name}.odc" 
+          todir="${bcp.dest.directory}"/>
+  </target>
+
+<!--ODC FILE END-->
+
+
+
+<!--INTERNAL, PUBLIC AND COLLECTION JAR FILE GENERATION START-->
+
+  <presetdef name="omj.internal.apis">
+     <jar destfile="${platform.api.jar}"
+           basedir="${classes.collection.dir}"
+           update="true"/>
+  </presetdef>
+
+  <!--Create an internal API jar file into directory containig all the 
+      internal API jar files. The default implementation of this target is 
+      empty and the component should override this if it provides internal 
+      APIs -->
+  <target name="create.internal.api.jar">
+  </target>
+
+  <!--Public APIs -->
+  <presetdef name="omj.public.apis">
+     <jar destfile="${public.api.jar}"
+           basedir="${classes.collection.dir}"
+           update="true"
+      />
+  </presetdef>
+
+  <!--Create a public API jar file into directory containig all the 
+      public API jar files. The default implementation of this target is 
+      empty and the component should override this if it provides public 
+      APIs -->
+  <target name="create.public.api.jar">
+  </target>
+
+  <!--Updated the classes into the common jar file. If the Java code contains
+      cldc compilable code it is put into jar file ${impl.cldc.jar} otherwise
+      ${impl.cdc.jar} is updated.-->
+  <target name="add.classes.to.collection.jar">
+      <condition property="collection.target.jar"
+               value="${impl.cdc.jar}"
+               else="${impl.cldc.jar}">
+        <equals arg1="${bcp}" arg2="${bootclasspath.cdc}"/>
+      </condition>
+
+      <jar destfile="${collection.target.jar}"
+           basedir="${dst.dir}"
+           update="true"
+      />
+  </target>
+
+<!--INTERNAL, PUBLIC AND COLLECTION JAR FILE GENERATION END-->
+
+
+
+
+<!--JAVAH START-->
+
+
+  <!--Run the javah if needed. Javah results goes to temp directory and
+      if they have changed, then they are copied into a directory that
+      is included to the component's makefile -->
+  <target name="javah" if="javah.classnames">
+    <javah destdir="${temp.javah.dir}" force="yes" 
+       classpath="${classes.collection.dir}:${platform.api.jar}:${public.api.jar}"
+       class = "${javah.classnames}">
+    </javah>
+    <!--Copy the files if they are changed-->
+    <copy todir="${javah.dir}">
+      <fileset dir="${temp.javah.dir}" includes="*.h" casesensitive="false">
+          <different targetdir="${javah.dir}"
+                     ignoreFileTimes="true"/>
+      </fileset>
+    </copy>
+  </target>
+
+<!--JAVAH END-->
+
+
+
+<!--EXPORT START-->
+  <!--Start the do.export using antcall. The usage of ant call is needed
+      in order to include platform specific utility xml file.-->
+  <target name="export" depends="init.properties, make.target.dirs">
+    <antcall target="do.export">
+      <param name="platform.utilities.xml.file" 
+             value="${dyn.platform.utilities.xml.file}"/>
+    </antcall>
+  </target>
+<!--EXPORT START-->
+
+
+
+
+<!--RELEASEABLES FOR S60 START-->
+
+  <!--The common releasables-->
+  <target name="common.releasables" depends="init.properties">
+    <echo file="${java.src.root}/build/java_releasables_${target.platform}_${target.cfg}.tmp" append="false">${platform.api.jar}
+${public.api.jar}
+${impl.cldc.jar}
+${impl.cdc.jar}
+${signature.jar}
+</echo>
+  </target>
+
+
+  <!--The only releasable in S60 is the odc file-->
+  <target name="s60releasables" if="target.s60">
+    <echo file="java_releasables_${target.platform}_${target.cfg}.tmp" append="false">${bcp.dest.directory}\${odc.file.name}.odc
+</echo>
+  </target>
+
+  <!--The start point for releasables-->
+  <target name="releasables" depends="init.properties, s60releasables">
+  </target>
+<!--RELEASEABLES FOR S60 END-->
+
+
+<!--LOCALISATION START-->
+  <target name="collect.localisation.files" depends="init.properties"
+          if="localisation.file.base">
+    <zip destfile="${resource.jar}" update="true" filesonly="true">
+      <!-- Original localisation file -->
+      <zipfileset dir="../loc" prefix="resources/com/nokia/mj/impl"
+                  includes="${localisation.file.base}.loc"/>
+    </zip>
+  </target>
+
+
+<!--LOCALISATION END-->
+
+
+
+<!--CLEANING START-->
+  <!--Do the cleaning-->
+  <target name="clean" depends="init.properties, emma.clean">
+    <!--
+    <echo message = "target.platform = ${target.platform}"/>
+    <echo message = "target.cfg = ${target.cfg}"/>
+    <echo message = "bootclasspath = ${bootclasspath}"/>
+    -->
+
+    <echo message=""/>
+    <!--Clean the javah results from inc.javah-->
+    <delete>
+      <fileset dir="${javah.dir}" includes="*.h">
+          <present present="both" targetdir="${temp.javah.dir}"/>
+      </fileset>
+    </delete>
+
+    <delete dir="${component.root.dir}"/>
+    <delete file="${bcp.dest.directory}/${jar.filename}"/>
+    <delete file="${bcp.dest.directory}/${odc.file.name}.odc"/>
+  </target>
+
+
+  <!--Do the cleaning-->
+  <target name="clean.api.jars" depends="init.properties">
+    <delete file="${platform.api.jar}"/>
+    <delete file="${public.api.jar}"/>
+    <delete file="${impl.cldc.jar}"/>
+    <delete file="${impl.cdc.jar}"/>
+    <delete file="${signature.jar}"/>
+  </target>
+
+
+<!--CLEANING END-->
+
+
+  <!--Generate signature jar file-->
+  <target name="generate.signature.jars" depends="init.properties">
+   <zip destfile="${signature.jar}">  
+     <zipfileset src="${bootclasspath.cldc}"/>  
+     <zipfileset src="${impl.cldc.jar}"/>  
+   </zip>  
+  </target>
+
+
+
+<!--GENERATE JAVADOC START-->
+  <target name="javadoc" description="Create javadoc. Use -javadoc.dir=dir to override location">
+     <property name="javadoc.dir" value="javadoc" />
+	 <javadoc destdir="${javadoc.dir}"
+			  version="true"
+			  use="true"
+              defaultexcludes="true"
+			  windowtitle="Runtime API">
+
+	   <fileset dir="${java.src.root}/javacommons/" defaultexcludes="yes">
+		 <include name="utils/javasrc/com/nokia/mj/impl/rt/support/*.java"/>
+		 <include name="utils/javasrc/com/nokia/mj/impl/utils/**/*.java"/>
+		 <include name="fileutils/javasrc/**/*.java"/>
+  	     <include name="comms/javasrc/**/*.java"/>
+		 <include name="javastorage/javasrc/**/*.java"/>
+	   </fileset>
+
+	   <doctitle><![CDATA[<h1>Runtime API</h1>]]></doctitle>
+	   <bottom><![CDATA[<i>Copyright &#169; 2008 Nokia. All Rights Reserved.</i>]]></bottom>
+	 </javadoc>
+  </target>
+<!--GENERATE JAVADOC END-->
+
+
+
+
+
+
+</project>
+

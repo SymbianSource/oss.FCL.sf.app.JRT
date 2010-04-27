@@ -1,0 +1,15 @@
+EXPORTS
+	_Z10jni_lookupPKc @ 1 NONAME
+	_ZN4java8security24MIDPAuthenticationModule14createInstanceEv @ 2 NONAME
+	_ZN4java8security28MIDPAuthenticationModuleImpl13getCertChainsERKNS_4util3UidERSt4listISsSaISsEE @ 3 NONAME
+	_ZTIN4java8security10OcspClientE @ 4 NONAME ; #<TI>#
+	_ZTIN4java8security12OcspResponseE @ 5 NONAME ; #<TI>#
+	_ZTIN4java8security14StorageHandlerE @ 6 NONAME ; #<TI>#
+	_ZTIN4java8security28MIDPAuthenticationModuleImplE @ 7 NONAME ; #<TI>#
+	_ZTIN4java8security8TelUtilsE @ 8 NONAME ; #<TI>#
+	_ZTVN4java8security10OcspClientE @ 9 NONAME ; #<VT>#
+	_ZTVN4java8security12OcspResponseE @ 10 NONAME ; #<VT>#
+	_ZTVN4java8security14StorageHandlerE @ 11 NONAME ; #<VT>#
+	_ZTVN4java8security28MIDPAuthenticationModuleImplE @ 12 NONAME ; #<VT>#
+	_ZTVN4java8security8TelUtilsE @ 13 NONAME ; #<VT>#
+

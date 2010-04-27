@@ -1,0 +1,7 @@
+domain Manufacturer;
+grant user user_group oneshot,session,no {
+}
+grant allowed {
+}
+grant assigned {
+}

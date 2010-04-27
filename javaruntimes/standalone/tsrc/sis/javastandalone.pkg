@@ -1,0 +1,35 @@
+;
+; Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
+; All rights reserved.
+; This component and the accompanying materials are made available
+; under the terms of "Eclipse Public License v1.0"
+; which accompanies this distribution, and is available
+; at the URL "http://www.eclipse.org/legal/epl-v10.html".
+;
+; Initial Contributors:
+; Nokia Corporation - initial contribution.
+;
+; Contributors:
+;
+; Description: 
+;
+;Languages
+&EN
+
+; UID of the sis file
+#{"JavaStandalone"},(0x2002703C),1,0,0
+
+;Localised Vendor name
+%{"Nokia"}
+
+;Unique Vendor name
+:"Nokia"
+
+;Supports Series 60 v 5.0
+;This line must appear _exactly_ as shown below in the sis file
+;If this line is missing or incorrect, the sis file will not be able
+;to be installed on Series 60 v5.0 platforms
+[0x1028315F], 0, 0, 0, {"Series60ProductID"}
+
+"\epoc32\release\armv5\urel\javastandalone.exe"-"c:\sys\bin\javastandalone.exe"
+"\epoc32\data\z\private\10003a3f\apps\javastandalone_reg.rsc"-"c:\private\10003a3f\import\apps\javastandalone_reg.rsc"

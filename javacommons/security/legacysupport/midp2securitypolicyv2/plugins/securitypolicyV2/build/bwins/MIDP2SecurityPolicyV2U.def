@@ -1,0 +1,2 @@
+EXPORTS
+	?GetSecurityPolicyL@@YAPAVMSecurityPolicyV2@MIDP@@KABVTDesC16@@@Z @ 1 NONAME ; class MIDP::MSecurityPolicyV2 * __cdecl GetSecurityPolicyL(unsigned long,class TDesC16 const &)

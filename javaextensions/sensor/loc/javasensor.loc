@@ -1,0 +1,59 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Localized strings for JSR-256.
+*
+*/
+
+
+// LOCALISATION STRINGS
+
+// d:Sensor specific description of the sensor.
+// d:Human readable information about the sensor.
+// d:sensor quantity: acceleration
+// l:None
+// r:3.2
+// r:5.0
+#define qtn_sensor_description_acceleration     "acceleration sensor has channels axis_x, axis_y, and axis_z that measure x, y, and z axis accelerations; used, for example, to get the orientation of the device. Always on"
+
+// d:Sensor specific description of the sensor.
+// d:Human readable information about the sensor.
+// d:sensor quantity: acceleration
+// l:None
+// r:3.2
+// r:5.0
+#define qtn_sensor_description_acceleration2     "acceleration sensor has channels axis_x, axis_y, and axis_z that measure x, y, and z axis accelerations and give values as raw data; performance-optimized. Always on"
+
+// d:Sensor specific description of the sensor.
+// d:Human readable information about the sensor.
+// d:sensor quantity: battery_charge
+// l:None
+// r:3.2
+// r:5.0
+#define qtn_sensor_description_battery_charge   "battery_charge sensor has one channel that gives the relative battery charge level as a percentage of the maximum value of being fully charged. Always on"
+
+// d:Sensor specific description of the sensor.
+// d:Human readable information about the sensor.
+// d:sensor quantity: charger_state
+// l:None
+// r:3.2
+// r:5.0
+#define qtn_sensor_description_charger_state      "charger_state sensor has one channel that indicates whether the device is plugged in a charger (1) or not (0).  Always on"
+
+// d:Sensor specific description of the sensor.
+// d:Human readable information about the sensor.
+// d:sensor quantity: network_field_intensity
+// l:None
+// r:3.2
+// r:5.0
+#define qtn_sensor_description_network_field_intensity      "network_field_intensity sensor has one channel that gives signal strength of the used network as a percentage of the maximum intensity the device is capable of measuring. Always on"

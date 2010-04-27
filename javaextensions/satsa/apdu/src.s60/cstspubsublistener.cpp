@@ -1,0 +1,54 @@
+/*
+* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:
+ *
+*/
+
+
+// INCLUDE FILES
+#include  "cstspubsublistener.h"
+
+namespace java
+{
+namespace satsa
+{
+
+CSTSPubSubListener::CSTSPubSubListener() :
+        CActive(EPriorityNormal)
+{
+    CActiveScheduler::Add(this);
+}
+
+CSTSPubSubListener::~CSTSPubSubListener()
+{
+    Cancel();
+    iProperty.Close();
+}
+
+void CSTSPubSubListener::Start()
+{
+    if (!IsActive())
+    {
+        DoStart(); // Derived class implements this
+    }
+}
+
+void CSTSPubSubListener::DoCancel()
+{
+    iProperty.Cancel();
+}
+
+} // namespace satsa
+} // namespace java
+//  End of File

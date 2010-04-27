@@ -1,0 +1,45 @@
+#
+# Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: Header file exporting Function Like Makefile (FLM)
+#              The file destinations are relative to EPOCROOT
+#
+
+# Find Java build dir by going up from $(TO_BLDINF). 
+# (TO_BLDINF refers to the directory having initial bld.inf, i.e.
+#  - jrt/group (9.2 S60)
+#  - jrt/group/sf (9.2 SF)
+#  - jrt (10.1 SF/S60) 
+#  therefore the jrt-directory is found from finding first directory having
+#  subsystem.mk, going up to max. three directory levels)
+
+JAVABUILDDIR = $(dir $(firstword $(wildcard $(TO_BLDINF)/subsystem.mk $(TO_BLDINF)/../subsystem.mk $(TO_BLDINF)/../../subsystem.mk)))
+
+JAVABUILDCMD = make -C $(JAVABUILDDIR) -f subsystem.mk EPOCROOT=$(EPOCROOT)/ \
+               PLATFORM=$(PLATFORM) CFG=$(CFG) BLD_INF_JAVA=1
+
+define java_build
+RESOURCE::
+	$(call startrule,compilenativejava,,javasources) \
+	$(JAVABUILDCMD) java finalactions\
+	$(call endrule,compilenativejava)
+CLEAN::
+	$(call startrule,cleannativejava,,javasources) \
+	$(JAVABUILDCMD) clean_java \
+	$(call endrule,cleannativejava)
+endef
+
+$(eval $(java_build))
+
+RELEASABLES = $(shell $(JAVABUILDCMD) -s javareleasables)
+$(eval $(call whatmacro,$(RELEASABLES),WHATRESOURCES))

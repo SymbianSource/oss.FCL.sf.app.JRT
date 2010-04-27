@@ -1,0 +1,2 @@
+EXPORTS
+	GetSecurityPolicyL__FUlRC7TDesC16 @ 1 NONAME R3UNUSED ; GetSecurityPolicyL(unsigned long, TDesC16 const &)

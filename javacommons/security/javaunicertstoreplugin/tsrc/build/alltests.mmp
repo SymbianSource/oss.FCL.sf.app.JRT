@@ -1,0 +1,71 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+TARGET		  javasecurity_certstoreplugintests.exe
+TARGETTYPE	  exe
+UID			 0x00000000 0x03A6305A
+
+#include <../../../../../inc/java_stdcpp_support_for_exe.hrh>
+#include <platform_paths.hrh>
+
+MACRO 	__SYMBIAN32__
+
+APP_LAYER_SYSTEMINCLUDE
+
+CAPABILITY	AllFiles WriteDeviceData ReadUserData
+
+USERINCLUDE ../../src.s60
+USERINCLUDE ../../../../../inc
+USERINCLUDE ../extensionplugin/src
+USERINCLUDE ../../../../../javamanager/javacaptain/inc
+USERINCLUDE ../../../../../tools/cpputest/include/cpputest
+USERINCLUDE ../../../../../tools/cpputest/include/platforms/symbian
+USERINCLUDE ../utils
+
+// Using main() as entry point
+//STATICLIBRARY libcrt0.lib 
+//STATICLIBRARY libstdcpp.lib cpputest.lib
+LIBRARY		CppUTest.lib
+
+LIBRARY ctframework.lib
+LIBRARY efsrv.lib
+LIBRARY estor.lib
+LIBRARY	euser.lib
+LIBRARY x509.lib
+LIBRARY libc.lib
+LIBRARY libm.lib
+LIBRARY libpthread.lib
+LIBRARY javacomms.lib
+LIBRARY CommonEngine.lib
+LIBRARY aknnotify.lib
+
+SOURCEPATH ../../src.s60
+SOURCE			javacertstoreimpl.cpp
+SOURCE			javacertstoretoken.cpp
+SOURCE			javacertstoretokentype.cpp
+
+SOURCEPATH ../utils
+SOURCE testutils.cpp
+SOURCE testexecutor.cpp
+SOURCE testdata.cpp
+SOURCE commsmsgsender.cpp
+
+SOURCEPATH ../src
+SOURCE SymbianAllTests.cpp
+SOURCE readcerts.cpp
+SOURCE tokentests.cpp
+
+

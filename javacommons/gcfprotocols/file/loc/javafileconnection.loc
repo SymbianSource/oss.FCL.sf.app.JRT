@@ -1,0 +1,111 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Localised strings for Java File API
+*
+*/
+
+
+// LOCALISATION STRINGS
+
+// d:String is used as name of the "Images" folder.
+// d:Just like "Images" is used as folder name 
+// d:in the File Manager application.
+// l:None
+#define qtn_fileconn_dir_photos_name     "Images"
+
+// d:String is used as name of the "Videos" folder.
+// d:Just like "Videos" is used as folder name 
+// d:in the File Manager application.
+// l:None
+#define qtn_fileconn_dir_videos_name     "Videos"
+
+// d:String is used as name of the "Images/Pictures" folder.
+// d:See description of the qtn_fileconn_dir_photos_name
+// d:definition.
+// l:None
+#define qtn_fileconn_dir_graphics_name   "Graphics"
+
+// d:String is used as name of the "Sounds" folder.
+// d:See description of the qtn_fileconn_dir_photos_name
+// d:definition.
+// l:None
+#define qtn_fileconn_dir_tones_name      "Sounds"
+
+// d:String is used as name of the "Sounds" folder.
+// d:See description of the qtn_fileconn_dir_photos_name
+// d:definition.
+// l:None
+#define qtn_fileconn_dir_music_name      "Music"
+
+// d:String is used as name of the "Sounds/Digital" folder.
+// d:See description of the qtn_fileconn_dir_photos_name
+// d:definition.
+// l:None
+#define qtn_fileconn_dir_recordings_name "Recordings"
+
+// d:String is used as name of the memory card.
+// l:None
+#define qtn_fileconn_dir_memorycard_name "Memory card"
+
+// d:String is used as name of the "Private" folder.
+// d:See description of the qtn_fileconn_dir_photos_name
+// d:definition.
+// l:None
+#define qtn_fileconn_dir_private_name    "Private"
+
+// d:String is used as name of the c: drive(=root).
+// d:See description of the qtn_fileconn_dir_photos_name
+// d:definition.
+// l:None
+#define qtn_fileconn_dir_c_drive    "Internal"
+
+// d:String is used as name of the d: drive(=root).
+// d:See description of the qtn_fileconn_dir_photos_name
+// d:definition.
+// l:None
+#define qtn_fileconn_dir_d_drive    "Temporary"
+
+// d:String is used as name of the z: drive(=root).
+// d:See description of the qtn_fileconn_dir_photos_name
+// d:definition.
+// l:None
+#define qtn_fileconn_dir_z_drive    "Rom"
+
+// d:String is used as name of the hard drive(=root).
+// d:See description of the qtn_fileconn_dir_photos_name
+// d:definition.
+// l:None
+#define qtn_fileconn_dir_hard_drive  "Hard drive"
+
+// d:String is used as the name of one of the internal memory drives
+// d:when there are several internal drives, for example c: and e:.
+// d:If there is only one internal drive, then qtn_fileconn_dir_c_drive
+// d:is used. %C is drive letter in upper case ('C', 'E', 'F',...)
+// l:None
+#define qtn_fileconn_dir_internal_n_drive    "Internal %U"
+
+// d:String is used as the name of one the memory cards 
+// d:when there are several memory cards in the device.
+// d:If there is only only memory card, then qtn_fileconn_dir_memorycard_name
+// d:is used. %C is drive letter in upper case ('E', 'F', 'G',...)
+// l:None
+#define qtn_fileconn_dir_memorycard_n_drive "Memory card %U"
+
+// d:String is used as the name of one the remote drives  
+// d:when there are remote drives mounted to the device.
+// d:%C is drive letter in upper case ('J', 'K', 'L',...)
+// l:None
+#define qtn_fileconn_dir_remote_n_drive "Remote drive %U"
+
+

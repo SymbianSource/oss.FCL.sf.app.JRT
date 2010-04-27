@@ -1,0 +1,42 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+#include <../../../../../../inc/java_stdcpp_support_for_dll.hrh>
+
+target          wimclient.dll
+
+targettype      dll
+
+UID             0x1000008d 0x101f79d5
+
+CAPABILITY      CAP_GENERAL_DLL
+VENDORID        VID_DEFAULT
+
+APP_LAYER_SYSTEMINCLUDE
+
+sourcepath      ../src
+
+source          wimcert.cpp
+source          wimdummies.cpp
+
+#if defined(WINSCW)
+deffile ./bwins/testwimclient.def
+#else
+deffile ./eabi/testwimclient.def
+#endif

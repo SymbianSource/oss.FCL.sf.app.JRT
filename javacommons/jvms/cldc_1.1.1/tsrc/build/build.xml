@@ -1,0 +1,84 @@
+<!--
+#
+# Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<project name="javatimertests" default="deploy.ut" basedir=".">
+
+  <import file="../../../../../build/utilities.xml"/>
+
+  <property environment="env"/>
+  <property name="java.src.root" location="${env.JAVA_SRC_ROOT}"/>
+  <property name="java.bin.root" location="${env.JAVA_BIN_ROOT}"/>
+
+  <property name="src.dir" location="../javasrc"/>
+  <property name="build.dir" location="../build"/>
+  <property name="classes.dir" location="${build.dir}/javabuild"/>
+  <property name="dist" location="${java.bin.root}/jsr/classes"/>
+
+  <property name="test.jar.filename" value="javatimertests.jar"/>
+  <property name="junit.jar.dir" location="${java.src.root}/tools/junit"/>
+  <property name="junit.jar.filename" value="j2meunit1.1.1.jar"/>
+  <property name="junit.omj.jar.filename" value="j2meunitomj.jar"/>
+
+  <property name="bootclasspath.cdc" location="${java.src.root}/javaruntime/jvm/ibm/j9_23/ibmdelivery/resource/lib/jclCdc11/classes.zip"/>
+
+  <property name="javac.source" value="1.3"/>
+  <property name="javac.target" value="1.3"/>
+
+  <target name="clean" depends="init.properties">
+    <delete dir="${classes.dir}"/>
+    <delete file="${dist}/${test.jar.filename}"/>
+    <delete file="${dist}/${junit.jar.filename}"/>
+    <delete file="${dist}/${junit.omj.jar.filename}"/>
+  </target>
+
+  <target name="compile.ut" depends="init.properties">
+    <mkdir dir="${classes.dir}"/>
+    <javac source="${javac.source}" target="${javac.target}"
+           destdir="${classes.dir}"
+           bootclasspath="${bootclasspath.cdc}">
+           <classpath>
+               <pathelement location="${impl.cldc.jar}"/>
+               <pathelement location="${impl.cdc.jar}"/>
+               <pathelement location="${public.api.jar}"/>
+               <pathelement location="${platform.api.jar}"/>
+               <pathelement location="${junit.jar.dir}/${junit.jar.filename}"/>
+               <pathelement location="${junit.jar.dir}/${junit.omj.jar.filename}"/>
+           </classpath>
+      <src path="${src.dir}"/>
+    </javac>
+  </target>
+
+  <target name="deploy.ut" depends="compile.ut">
+      <mkdir dir="${dist}"/>
+      <jar destfile="${vm.extension.directory}/${test.jar.filename}" basedir="${classes.dir}"/>
+      <copy file="${junit.jar.dir}/${junit.jar.filename}"
+            tofile="${vm.extension.directory}/${junit.jar.filename}"/>
+      <copy file="${junit.jar.dir}/${junit.omj.jar.filename}"
+            tofile="${vm.extension.directory}/${junit.omj.jar.filename}"/>
+  </target>
+
+  <target name="main" depends="clean,run"/>
+
+  <target name="run" depends="deploy.ut">
+      <echo>Running Timer/TimerTask Tests</echo>
+      <exec executable="${env.JAVA_BIN_ROOT}/bin/javainstaller">
+          <arg line="test -mainclass=com.nokia.mj.test.java.util.AllTests"/>
+      </exec>
+  </target>
+
+</project>

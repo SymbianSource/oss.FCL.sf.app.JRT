@@ -1,0 +1,116 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+//
+// lcdgr.mmp
+//
+// Project file for LCDGR image and graphics support DLL providing
+// support for all display modes.
+//
+
+//
+// Common definitions/source files for LCDGR
+//
+/**
+@file
+
+@SYMPurpose lcdgr.dll Implementation of the MIDP2.0 LCDUI APIs (graphics code)
+@SYMPurpose lcdgr.rsc Resource file for lcdgr.dll
+*/
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+#include "../../../inc/capabilities.mmh"
+
+#include <../../../../inc/project_defines.hrh>
+#include <../../../../inc/java_stdcpp_support_for_dll.hrh>
+
+PAGED
+
+TARGET          lcdgr.dll
+TARGETTYPE      dll
+CAPABILITY		J2ME_VMS_CAPABILITIES
+UID      		0x101F8116	0x2000CFEC
+
+// Modify default options to optimize for speed over size in this module.
+OPTION ARMCC -O3
+OPTION ARMCC -Otime
+
+SOURCEPATH		../src
+
+//
+// Files containing classes exported via interface
+//
+SOURCE	CMIDGraphicsFactory.cpp
+SOURCE	CMIDGraphics.cpp
+SOURCE	CMIDImage.cpp
+SOURCE	CMIDBitmapImage.cpp
+SOURCE	CMIDImageDecoder.cpp
+
+//
+// Implementation.
+//
+SOURCE	LcdFbsImage.cpp
+SOURCE	LcdFbsImageCache.cpp
+SOURCE	MidProxyMap.cpp
+SOURCE	LcdImage.cpp
+SOURCE	LcdGraphics.cpp
+SOURCE	fbslcdgraphics.cpp
+SOURCE	LcdBitmapSurface.cpp
+SOURCE	LcdWindowSurface.cpp
+
+START RESOURCE	lcdgr.rss
+targetpath      /resource/java
+HEADER
+END
+
+APP_LAYER_SYSTEMINCLUDE
+
+SYSTEMINCLUDE   ../inc
+
+SYSTEMINCLUDE   ../../inc
+SYSTEMINCLUDE   ../../../inc
+SYSTEMINCLUDE   ../../../../inc
+
+LIBRARY		avkon.lib
+LIBRARY		gdi.lib
+LIBRARY		bitgdi.lib
+LIBRARY		fbscli.lib
+LIBRARY		ImageConversion.lib
+LIBRARY		lcdgdrv.lib
+LIBRARY		bafl.lib
+library		efsrv.lib
+LIBRARY		hal.lib
+#ifdef __SERIES60_
+LIBRARY         aknpictograph.lib
+#endif
+
+DEBUGLIBRARY	flogger.lib
+//
+// Unwanted dependencies.
+//
+LIBRARY		ws32.lib
+LIBRARY		cone.lib
+
+NOSTRICTDEF
+
+#if defined(WINS)
+DEFFILE			bwins/lcdgr.def
+#elif defined(ARMCC)
+DEFFILE			eabi/lcdgr.def
+#endif
+
+VENDORID VID_DEFAULT
+

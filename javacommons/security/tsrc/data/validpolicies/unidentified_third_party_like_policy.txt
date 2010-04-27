@@ -1,0 +1,26 @@
+domain UnidentifiedThirdParty;
+grant user "NetAccess" oneshot,session,no {
+permission javax.microedition.io.HttpProtocolPermission "http://*";
+permission javax.microedition.io.HttpsProtocolPermission "https://*";
+}
+grant user "LowLevelNetAccess" oneshot,session,no {
+permission javax.microedition.io.DatagramProtocolPermission "datagram://*";
+permission javax.microedition.io.DatagramProtocolPermission "datagram://";
+permission javax.microedition.io.SocketProtocolPermission "socket://*";
+permission javax.microedition.io.SocketProtocolPermission "socket://";
+permission javax.microedition.io.SSLProtocolPermission "ssl://*";
+}
+grant user "ApplicationAutoInvocation" oneshot,session,no {
+permission javax.microedition.io.PushRegistryPermission "*";
+}
+grant user "LocalConnectivity" session,blanket,oneshot,no {
+permission javax.microedition.io.CommProtocolPermission "comm:*";
+}
+grant user "MultimediaRecording" session,oneshot,no {
+permission javax.microedition.media.PlayerPermission "*" "record";
+permission javax.microedition.media.PlayerPermission "*" "snapshot";
+}
+grant assigned {
+permission java.util.PropertyPermission "microedition.*" "read";
+permission javax.microedition.event.EventPermission "*.*" "read,register,post";
+}

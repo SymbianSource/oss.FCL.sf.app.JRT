@@ -1,0 +1,27 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: Generated bld.inf -file
+*
+*/
+
+PRJ_PLATFORMS
+default
+
+#include "installer/starterdll/build/bld.inf"    
+#include "installer/starterexe/build/bld.inf"    
+#include "jvmargmodifier/default/build/bld.inf"    
+#include "jvmargmodifier/file/build/bld.inf"    
+#include "starterutils/build/bld.inf"    
+#include "starter/build/bld.inf"    
+#include "midp/bld.inf"  

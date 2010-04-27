@@ -1,0 +1,14 @@
+MIDlet-1: HelloWorld, , helloworld.HelloWorld
+MIDlet-2: HelloWorld2, , helloworld.HelloWorld2
+MIDlet-3: HelloWorld3, , helloworld.HelloWorld3
+MIDlet-Jar-Size: 1511
+MIDlet-Jar-URL: HelloWorld.jar
+MIDlet-Name: HelloWorld
+MIDlet-Vendor: Nokia
+MIDlet-Version: 1.0
+Nokia-MIDlet-UID-1: 0xefef0001
+Nokia-MIDlet-UID-3: 0xefef0003
+Nokia-MIDlet-On-Screen-Keypad: no
+Nokia-MIDlet-Auto-Start-1: true
+Nokia-MIDlet-Auto-Start-2: false
+Nokia-MIDlet-Auto-Start-3: once

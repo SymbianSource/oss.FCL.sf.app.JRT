@@ -1,0 +1,44 @@
+EXPORTS
+	_ZN22CInstalledAppsRegistry11DeleteEntryERK4TUid @ 1 NONAME
+	_ZN22CInstalledAppsRegistry4NewLEv @ 2 NONAME
+	_ZN22CInstalledAppsRegistry9AddEntryLERK27CInstalledAppsRegistryEntry @ 3 NONAME
+	_ZN22MInstalledAppsRegistry7CreateLEv @ 4 NONAME
+	_ZN27CInstalledAppsRegistryEntry10SetVersionERK11TAppVersion @ 5 NONAME
+	_ZN27CInstalledAppsRegistryEntry12AddLanguageLE9TLanguageRK7TDesC16S3_ @ 6 NONAME
+	_ZN27CInstalledAppsRegistryEntry12AddPropertyLE4TUidRK6TDesC8 @ 7 NONAME
+	_ZN27CInstalledAppsRegistryEntry13AddDirectoryLERK7TDesC16 @ 8 NONAME
+	_ZN27CInstalledAppsRegistryEntry14AddDependencyLE4TUid @ 9 NONAME
+	_ZN27CInstalledAppsRegistryEntry19AddEmbeddedPackageLE4TUid @ 10 NONAME
+	_ZN27CInstalledAppsRegistryEntry20AddCertificateChainLERK6TDesC8 @ 11 NONAME
+	_ZN27CInstalledAppsRegistryEntry5NewLCER11RReadStream @ 12 NONAME
+	_ZN27CInstalledAppsRegistryEntry5NewLCERKS_ @ 13 NONAME
+	_ZN27CInstalledAppsRegistryEntry5NewLCEv @ 14 NONAME
+	_ZN27CInstalledAppsRegistryEntry6AddRefEv @ 15 NONAME
+	_ZN27CInstalledAppsRegistryEntry6SetUidERK4TUid @ 16 NONAME
+	_ZN27CInstalledAppsRegistryEntry7SetTypeE12TInstallType @ 17 NONAME
+	_ZN27CInstalledAppsRegistryEntry8AddFileLERK7TDesC16 @ 18 NONAME
+	_ZN27CInstalledAppsRegistryEntry8SetDriveE5TChar @ 19 NONAME
+	_ZNK22CInstalledAppsRegistry11DependentsLE4TUidR6RArrayIS0_E @ 20 NONAME
+	_ZNK22CInstalledAppsRegistry12CorruptUidsLER6RArrayI4TUidE @ 21 NONAME
+	_ZNK22CInstalledAppsRegistry14AppsUsingFileLERK7TDesC16R6RArrayI4TUidE @ 22 NONAME
+	_ZNK22CInstalledAppsRegistry15AppsUsingFilesLERK13RPointerArrayI7HBufC16ERS0_I6RArrayI4TUidEE @ 23 NONAME
+	_ZNK22CInstalledAppsRegistry15WriteableEntryLE9TLanguageRK7TDesC16S3_ @ 24 NONAME
+	_ZNK22CInstalledAppsRegistry15WriteableEntryLERK4TUid @ 25 NONAME
+	_ZNK22CInstalledAppsRegistry16WriteableEntryLCE9TLanguageRK7TDesC16S3_ @ 26 NONAME
+	_ZNK22CInstalledAppsRegistry16WriteableEntryLCERK4TUid @ 27 NONAME
+	_ZNK27CInstalledAppsRegistryEntry6WriteLER12RWriteStream @ 28 NONAME
+	_ZTI17CEntryLangDetails @ 29 NONAME ; #<TI>#
+	_ZTI18CPropertyValuePair @ 30 NONAME ; #<TI>#
+	_ZTI22CInstalledAppsRegistry @ 31 NONAME ; #<TI>#
+	_ZTI27CInstalledAppsRegistryEntry @ 32 NONAME ; #<TI>#
+	_ZTI27CInstalledAppsRegistryFiles @ 33 NONAME ; #<TI>#
+	_ZTIN27CInstalledAppsRegistryFiles9CDirFilesE @ 34 NONAME ; #<TI>#
+	_ZTV17CEntryLangDetails @ 35 NONAME ; #<VT>#
+	_ZTV18CPropertyValuePair @ 36 NONAME ; #<VT>#
+	_ZTV22CInstalledAppsRegistry @ 37 NONAME ; #<VT>#
+	_ZTV27CInstalledAppsRegistryEntry @ 38 NONAME ; #<VT>#
+	_ZTV27CInstalledAppsRegistryFiles @ 39 NONAME ; #<VT>#
+	_ZTVN27CInstalledAppsRegistryFiles9CDirFilesE @ 40 NONAME ; #<VT>#
+	_ZN27CInstalledAppsRegistryEntry20AddApparcIdentifierLERK7TDesC16 @ 41 NONAME
+	_ZN27CInstalledAppsRegistryEntry4NewLEPN4Java18CJavaRegistryEntryE @ 42 NONAME
+

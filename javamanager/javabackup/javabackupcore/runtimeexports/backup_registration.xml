@@ -1,0 +1,7 @@
+<?xml version="1.0" standalone="yes"?>
+<backup_registration>
+    <active_backup process_name = "javabackup"
+                   supports_incremental = "no"
+			 requires_delay_to_prepare_data = "yes">
+    </active_backup>
+</backup_registration>

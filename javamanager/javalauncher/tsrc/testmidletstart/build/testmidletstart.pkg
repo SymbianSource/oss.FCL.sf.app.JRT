@@ -1,0 +1,18 @@
+
+; Language
+&EN
+
+; SIS header: name, uid, version
+#{"testmidletstart"},(0x20A2119B),1,0,0
+
+; Localised Vendor name
+%{"Nokia"}
+
+; Unique Vendor name
+:"Nokia"
+
+; Dependencies
+[0x1028315F], 0, 0, 0, {"Series60ProductID"}
+
+; Executable and default resource files
+"\epoc32\release\armv5\urel\testmidletstart.exe"    - "C:\sys\bin\testmidletstart.exe"

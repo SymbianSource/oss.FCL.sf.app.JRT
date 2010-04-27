@@ -1,0 +1,18 @@
+EXPORTS
+	?findDllMethod@@YAP6APAXXZPBD@Z @ 1 NONAME ; void * (*)(void) findDllMethod(char const *)
+	??0DatagramServerConnection@@QAE@ABV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@0@Z @ 2 NONAME ; DatagramServerConnection::DatagramServerConnection(class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &, class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &)
+	??0DatagramServerConnectionFactory@@QAE@XZ @ 3 NONAME ; DatagramServerConnectionFactory::DatagramServerConnectionFactory(void)
+	??1DatagramServerConnection@@UAE@XZ @ 4 NONAME ; DatagramServerConnection::~DatagramServerConnection(void)
+	??1DatagramServerConnectionFactory@@UAE@XZ @ 5 NONAME ; DatagramServerConnectionFactory::~DatagramServerConnectionFactory(void)
+	?close@DatagramServerConnection@@UAEXXZ @ 6 NONAME ; void DatagramServerConnection::close(void)
+	?create@DatagramServerConnectionFactory@@UAEPAVServerConnection@push@java@@ABV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@@Z @ 7 NONAME ; class java::push::ServerConnection * DatagramServerConnectionFactory::create(class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &)
+	?createSrvConnObj@DatagramServerConnectionFactory@@UAEPAVServerConnection@push@java@@ABV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@0@Z @ 8 NONAME ; class java::push::ServerConnection * DatagramServerConnectionFactory::createSrvConnObj(class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &, class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &)
+	?getFactory@DatagramServerConnectionFactory@@SAAAV1@XZ @ 9 NONAME ; class DatagramServerConnectionFactory & DatagramServerConnectionFactory::getFactory(void)
+	?getFilter@DatagramServerConnection@@UBE?AV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@XZ @ 10 NONAME ; class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > DatagramServerConnection::getFilter(void) const
+	?getUri@DatagramServerConnection@@UBE?AV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@XZ @ 11 NONAME ; class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > DatagramServerConnection::getUri(void) const
+	?isMultipleSrvConnAllowed@DatagramServerConnectionFactory@@UAE_NXZ @ 12 NONAME ; bool DatagramServerConnectionFactory::isMultipleSrvConnAllowed(void)
+	?isNormalServerConnection@DatagramServerConnection@@QAE_NXZ @ 13 NONAME ; bool DatagramServerConnection::isNormalServerConnection(void)
+	?open@DatagramServerConnection@@QAEHXZ @ 14 NONAME ; int DatagramServerConnection::open(void)
+	?open@DatagramServerConnection@@UAEXPAVConnectionListener@push@java@@@Z @ 15 NONAME ; void DatagramServerConnection::open(class java::push::ConnectionListener *)
+	?setFilter@DatagramServerConnection@@UAEXABV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@@Z @ 16 NONAME ; void DatagramServerConnection::setFilter(class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &)
+	?setNormalServerConnection@DatagramServerConnection@@QAEXXZ @ 17 NONAME ; void DatagramServerConnection::setNormalServerConnection(void)

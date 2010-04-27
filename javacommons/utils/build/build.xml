@@ -1,0 +1,124 @@
+<!--
+#
+# Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<project name="javautils" default="deploy.dual" basedir=".">
+
+  <import file="../../../build/utilities.xml"/>
+
+  <property name="java.src.paths" value="../javasrc:../../jvms/cldc_1.1.1/javasrc"/>
+
+  <property name="javah.classnames" 
+            value="com.nokia.mj.impl.utils.DebugUtils,
+                   com.nokia.mj.impl.utils.Logger,
+                   com.nokia.mj.impl.utils.StartUpTrace,
+                   com.nokia.mj.impl.properties.common.FreeMemory,
+                   com.nokia.mj.impl.properties.common.Locale,
+                   com.nokia.mj.impl.properties.common.Platform,
+                   com.nokia.mj.impl.utils.Formatter,
+                   com.nokia.mj.impl.utils.ResourceLoader"/>
+
+  <target name="system.properties">
+      <properties>
+          microedition.configuration=CLDC-1.1
+          microedition.locale=:common.Locale
+          microedition.platform=:common.Platform
+          com.nokia.memoryramfree=:common.FreeMemory
+      </properties>
+  </target>
+
+  <!-- Setting all classes to be visible to everybody -->
+  <target name="create.internal.api.jar">
+    <omj.internal.apis includes=
+                 "com/nokia/mj/impl/utils/Attribute.class,
+                  com/nokia/mj/impl/utils/AttributeReader.class,
+                  com/nokia/mj/impl/utils/Base64.class,
+                  com/nokia/mj/impl/utils/BufferedReader.class,
+                  com/nokia/mj/impl/utils/DebugUtils.class,
+                  com/nokia/mj/impl/utils/ErrorMessageBase.class,
+                  com/nokia/mj/impl/utils/Formatter.class,
+                  com/nokia/mj/impl/utils/InstallerDetailedErrorMessage.class,
+                  com/nokia/mj/impl/utils/InstallerErrorMessage.class,
+                  com/nokia/mj/impl/utils/JadReader.class,
+                  com/nokia/mj/impl/utils/JarManifestReader.class,
+                  com/nokia/mj/impl/utils/JavaLanguageSyntaxChecker.class,
+                  com/nokia/mj/impl/utils/LineReader.class,
+                  com/nokia/mj/impl/utils/LocalizedTextProvider.class,
+                  com/nokia/mj/impl/utils/Logger.class,
+                  com/nokia/mj/impl/utils/ManifestReader.class,
+                  com/nokia/mj/impl/utils/MidpAttributeValidator.class,
+                  com/nokia/mj/impl/utils/OsErrorMessage.class,
+                  com/nokia/mj/impl/utils/OtaStatusCode.class,
+                  com/nokia/mj/impl/utils/ResourceLoader.class,
+                  com/nokia/mj/impl/utils/ResourceUtil.class,
+                  com/nokia/mj/impl/utils/StartUpTrace.class,
+                  com/nokia/mj/impl/utils/StreamUtils.class,
+                  com/nokia/mj/impl/utils/Task.class,
+                  com/nokia/mj/impl/utils/TaskQueue.class,
+                  com/nokia/mj/impl/utils/TextUtil.class,
+                  com/nokia/mj/impl/utils/Tokenizer.class,
+                  com/nokia/mj/impl/utils/Uid.class,
+                  com/nokia/mj/impl/utils/Version.class,
+                  com/nokia/mj/impl/utils/exception/InvalidAttributeException.class,
+                  com/nokia/mj/impl/utils/exception/InstallerExceptionBase.class,
+                  com/nokia/mj/impl/utils/exception/ExceptionBase.class,
+                  com/nokia/mj/impl/utils/exception/UserCancelException.class,
+                  com/nokia/mj/impl/rt/legacy/LegacySupport.class,
+                  com/nokia/mj/impl/rt/support/ApplicationInfo.class,
+                  com/nokia/mj/impl/rt/support/ApplicationUtils.class,
+                  com/nokia/mj/impl/rt/support/Finalizer.class,
+                  com/nokia/mj/impl/rt/support/Jvm.class,
+                  com/nokia/mj/impl/rt/support/JvmInternal.class,
+                  com/nokia/mj/impl/rt/support/MemoryManager.class,
+                  com/nokia/mj/impl/rt/support/MemoryManagerCtr.class,
+                  com/nokia/mj/impl/rt/support/MemoryToken.class,
+                  com/nokia/mj/impl/rt/support/NativeMemoryBlock.class,
+                  com/nokia/mj/impl/rt/support/ShutdownListener.class,
+                  com/nokia/mj/impl/rt/support/SystemPropertyProvider.class,
+                  com/nokia/mj/impl/rt/support/ThreadEventListener.class,
+                  com/nokia/mj/impl/rt/ui/ConfirmData.class,
+                  com/nokia/mj/impl/rt/ui/RuntimeUi.class,
+                  com/nokia/mj/impl/rt/ui/RuntimeUiFactory.class,
+                  com/nokia/mj/impl/rt/ui/RuntimeUiTexts.class,
+                  com/nokia/mj/impl/coreui/CoreUi.class,
+                  java/lang/RuntimePermission.class,
+                  java/security/AccessControlException.class,
+                  java/security/BasicPermission.class,
+                  java/security/Permission.class,
+                  java/security/PermissionCollection.class,
+                  java/util/PropertyPermission.class,
+                  java/util/TaskQueue.class,
+                  javax/microedition/io/CommProtocolPermission.class,
+                  javax/microedition/io/DatagramProtocolPermission.class,
+                  javax/microedition/io/FileProtocolPermission.class,
+                  javax/microedition/io/GCFPermission.class,
+                  javax/microedition/io/HttpProtocolPermission.class,
+                  javax/microedition/io/HttpsProtocolPermission.class,
+                  javax/microedition/io/SocketProtocolPermission.class,
+                  javax/microedition/io/SSLProtocolPermission.class"/>
+  </target>
+
+
+  <target name="create.public.api.jar">
+    <omj.public.apis includes="java/lang/IllegalStateException.class,
+                               java/util/Timer.class,
+                               java/util/TimerTask.class"/>
+  </target>
+
+</project>
+
+

@@ -1,0 +1,5 @@
+EXPORTS
+	_Z10jni_lookupPKc @ 1 NONAME
+	_ZTI17CPIMAgnServerWait @ 2 NONAME
+	_ZTV17CPIMAgnServerWait @ 3 NONAME
+

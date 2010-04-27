@@ -1,0 +1,85 @@
+<!--
+#
+# Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<project name="commonsystemproptestsmidlet" default="deploy2" basedir=".">
+    <description>
+        Common system property test midlet
+    </description>
+
+  <import file="../../../../../build/utilities.xml"/>
+
+  <property name="junitdir" location="${java.src.root}/tools/junit"/>
+  <property name="junitjarfilename" value="j2meunit1.1.1.jar"/>
+  <property name="junit.omj.jar.filename" value="j2meunitomj.jar"/>
+
+  <property name="jarfilename" value="commonsystemproptests.jar"/>
+  <property name="java.bin.root" location="${env.JAVA_BIN_ROOT}"/>
+  <echo message = "java.bin.root: ${java.bin.root}"/>
+  
+  <target name="deploy2" depends="init.properties, make.target.dirs, midlet.compile, make.jar">
+    <echo message = "Public interfaces: ${public.api.jar}"/>
+  </target>
+  
+  <!-- Overriding default implementation -->
+  <target name="midlet.compile">
+    <property name="dest.dir" value="${classes.first.dir}"/>
+  
+    <javac 
+      source="${javac.source}" 
+      target="${javac.target}"
+      destdir="${dest.dir}"
+      bootclasspath="${bootclasspath.cldc}:${impl.cldc.jar}:${vm.extension.directory}/openlcdui.jar:${junitdir}/${junitjarfilename}:${junitdir}/${junit.omj.jar.filename}">
+      <src path="../javasrc"/>
+    </javac>
+  </target>
+
+  <target name="make.jar">
+    <jar destfile="${jarfilename}" basedir="${dest.dir}">
+      <manifest>
+        <attribute name="MIDlet-Name" value="CommonSysPropertyMidlet"/>
+        <attribute name="MIDlet-Vendor" value="Nokia"/>
+        <attribute name="MIDlet-Version" value="1.1"/>
+        <attribute name="MIDlet-1" value="MIDletTestRunner, ,j2meunitomj.MIDletTestRunner"/>
+        <attribute name="MicroEdition-Profile" value="MIDP-2.0"/>
+        <attribute name="MicroEdition-Configuration" value="CLDC-1.0"/>
+      </manifest>
+    </jar>
+    <echo message = "junit source: ${junitdir}/${junitjarfilename}"/>
+    <echo message = "junit target: ${vm.extension.directory}/${junitjarfilename}"/>
+    <copy file="${junitdir}/${junitjarfilename}" tofile="${vm.extension.directory}/${junitjarfilename}"/>
+    <copy file="${junitdir}/${junit.omj.jar.filename}" tofile="${vm.extension.directory}/${junit.omj.jar.filename}"/>
+    <copy file="${jarfilename}" tofile="${vm.extension.directory}/${jarfilename}"/>
+    <!-- Copy JAR to Install dir to help S60 emulator usage -->
+  </target>
+
+  <target name="clean">
+    <!-- delete dir="${build}"/ -->
+    <delete dir="javabuild"/>
+    <delete file="${jarfiles.collect.root}/${jarfilename}"/>
+    <delete file="${jarfiles.collect.root}/${junitjarfilename}"/>
+    <delete file="${jarfiles.collect.root}/${junit.omj.jar.filename}"/>
+    <delete file="${vm.extension.directory}/${jarfilename}"/>
+  </target>
+
+  <target name="help">
+    <echo>"Following targets supported:"</echo>
+    <echo>"  deploy (default)"</echo>
+    <echo>"  clean"</echo>
+  </target>
+
+</project>

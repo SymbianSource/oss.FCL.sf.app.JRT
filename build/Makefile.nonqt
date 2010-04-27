@@ -1,0 +1,147 @@
+#
+# Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+
+ifndef JAVA_SRC_ROOT
+$(error JAVA_SRC_ROOT variable not defined!)
+endif
+
+include $(JAVA_SRC_ROOT)/build/Makefile.defs
+
+.PHONY: export makemake java nativelib native clean cleanexport reallyclean
+
+# Common   ---------------------------------
+
+java qmakefix configure_qmake:
+
+clean: clean_native clean_java
+
+reallyclean: clean cleanexport
+
+clean_generated:
+
+clean_configure:
+
+test:
+	$(PHASEINFO)
+	$(EXEC_NONQT)
+
+# Symbian ----------------------------------
+ifeq ($(BUILDENV),symbian)
+
+all: native
+
+javareleasables:
+
+makestubs:
+
+# Symbian SBS ------------------------------
+ifdef USESBS
+
+# BUILD combines commands EXPORT MAKEFILE BITMAP RESOURCE LIBRARY TARGET FINAL
+native:
+	$(PHASEINFO)
+	$(SBS) -c $(PLATFORM)_$(CFG) BUILD
+
+clean_java:
+
+clean_native:
+	$(PHASEINFO)
+	$(SBS) -c $(PLATFORM)_$(CFG) clean
+
+reallyclean:
+	$(PHASEINFO)
+	$(SBS) -c $(PLATFORM)_$(CFG) reallyclean
+
+export: 
+	$(PHASEINFO)
+	$(SBS) -c $(PLATFORM)_$(CFG) EXPORT
+
+cleanexport:
+	$(PHASEINFO)
+	-$(SBS) -c $(PLATFORM)_$(CFG) CLEANEXPORT
+
+
+# Symbian ABLD MAKEFILE --------------------
+else
+
+native:
+	$(PHASEINFO)
+	$(BLDMAKE) bldfiles
+	$(ABLDMAKE) -f $(BUILDDIR)/EXPORT.make EXPORT
+	$(ABLDMAKE) -f $(BUILDDIR)/$(PLATFORM).make MAKEFILE $(VERBOSE)
+	$(ABLDMAKE) -f $(BUILDDIR)/$(PLATFORM).make LIBRARY $(VERBOSE)
+	$(ABLDMAKE) -f $(BUILDDIR)/$(PLATFORM).make RESOURCE CFG=$(CFG) $(VERBOSE)
+	$(ABLDMAKE) -f $(BUILDDIR)/$(PLATFORM).make TARGET CFG=$(CFG) $(VERBOSE)
+	$(ABLDMAKE) -f $(BUILDDIR)/$(PLATFORM).make FINAL CFG=$(CFG) $(VERBOSE)
+
+clean_java:
+
+clean_native:
+	$(PHASEINFO)
+	-$(ABLDMAKE) -f $(BUILDDIR)/$(PLATFORM).make CLEAN CFG=$(CFG) $(VERBOSE)
+
+reallyclean:
+	$(PHASEINFO)
+	-$(ABLDMAKE) -f $(BUILDDIR)/$(PLATFORM).make CLEAN CFG=$(CFG) $(VERBOSE)
+	-$(ABLDMAKE) -f $(BUILDDIR)/$(PLATFORM).make CLEANALL CFG=$(CFG) $(VERBOSE)
+	-$(BLDMAKE) clean
+
+export: 
+	$(PHASEINFO)
+	$(BLDMAKE) bldfiles $(PLATFORM)
+	$(ABLDMAKE) -f $(BUILDDIR)/EXPORT.make EXPORT
+
+cleanexport:
+	$(PHASEINFO)
+	$(BLDMAKE) bldfiles $(PLATFORM)
+	$(ABLDMAKE) -f $(BUILDDIR)/EXPORT.make CLEANEXPORT
+
+endif
+
+
+# Linux -----------------------------------
+else
+
+all: export native
+
+EXPORTCMD = python ${JAVA_SRC_ROOT}/build/buildutils/export.py -DJAVA_SRC_ROOT=$(JAVA_SRC_ROOT) -DJAVA_BIN_ROOT=$(JAVA_BIN_ROOT) $(addprefix -D,$(PROJECT_DEFINES))
+
+export:
+	$(EXPORTCMD) BUILD exports.inf
+
+cleanexport:
+	$(EXPORTCMD) CLEAN exports.inf
+
+makemake:
+
+nativelib:
+
+native:
+ifneq ($(wildcard Makefile makefile),)
+	make
+endif
+
+fastbuild: export
+ifneq ($(wildcard Makefile makefile),)
+	make
+endif
+
+clean_java clean_native reallyclean: cleanexport
+ifneq ($(wildcard Makefile makefile),)
+	make clean
+endif
+
+endif

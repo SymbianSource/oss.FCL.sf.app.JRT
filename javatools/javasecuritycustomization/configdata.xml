@@ -1,0 +1,23 @@
+<javasecurity>
+    <root>
+		    <file><!--Mandatory configuration item. It defines the path to the root/certificate to be added into the set of existing trusted roots for java--></file>
+		    <domain><!--Mandatory configuration item. It defines the protection domain to which the new root is assigned to. It can be 'Manufacturer', 'Operator', 'OperatorExtra' or 'IdentifiedThirdParty'--></domain>
+		    <canDelete><!--Optional configuration item. It specifies if the new root can be deleted by user. It can be either 'true' or 'false'. If not specified it is set to 'false'--></canDelete>
+		    <canDisable><!--Optional configuration item. It specifies if the new root can be disabled by user. It can be either 'true' or 'false'. If not specified it is set to 'false'--></canDisable>
+		    <state><!--Optional configuration item. It specifies if the initial state of the root. It can be either 'enabled', 'disabled' or 'removed'. If not specified it is set to 'enabled'--></state>
+    </root>
+    <!--Multiple roots can be added-->    
+    <policy>
+		    <name><!--Mandatory configuration item for the 'addpolicy' or 'deploypolicy' or 'selectpolicy' options of the javasecuritycustomizationtool. It defines the name of the policy. For the 'addpolicy' or 'deploypolicy' options of the javasecuritycustomizationtool it can be anything else but 's60', 'msa' and 'at&t', which are reserved. For the 'selectpolicy' option of the javasecuritycustomizationtool it has to be one of the 's60', 'msa' or 'at&t'--></name>
+		    <unidentifiedthirdparty><!--Mandatory configuration item for the 'addpolicy' or 'deploypolicy' options of the javasecuritycustomizationtool. It defines the path to the file containing the security policy for the UnidentifiedThirdParty protection domain, file expressed in the external format defined by MIDP3 specification--></unidentifiedthirdparty>
+		    <identifiedthirdparty><!--Mandatory configuration item for the 'addpolicy' or 'deploypolicy' options of the javasecuritycustomizationtool. It defines the path to the file containing the security policy for the IdentifiedThirdParty protection domain, file expressed in the external format defined by MIDP3 specification--></identifiedthirdparty>
+		    <operator><!--Mandatory configuration item for the 'addpolicy' or 'deploypolicy' options of the javasecuritycustomizationtool. It defines the path to the file containing the security policy for the Operator protection domain, file expressed in the external format defined by MIDP3 specification--></operator>
+		    <manufacturer><!--Mandatory configuration item for the 'addpolicy' or 'deploypolicy' options of the javasecuritycustomizationtool. It defines the path to the file containing the security policy for the Manufacturer protection domain, file expressed in the external format defined by MIDP3 specification--></manufacturer>
+    </policy>
+    <warningsmode><!--Mandatory configuration item for the 'setwarningsmode' option of the javasecuritycustomizationtool. It defines the security warnings mode: it has to be either 'default' or 'user'--></warningsmode>
+    <signing>
+		    <cert><!--Optional configuration item. It specifies the public certificate to be used for signing the deployment package (applicable only to 'deploycerts' and 'deploypolicy' options of the javasecuritycustomizationtool)--></cert>
+		    <key><!--Optional configuration item. It specifies the private key to be used for signing the deployment package (applicable only to 'deploycerts' and 'deploypolicy' options of the javasecuritycustomizationtool)--></key>
+    </signing>
+    <deploytype><!--Optional configuration item for the 'deploypolicy', 'deploycerts' or 'deployall' options of the javasecuritycustomizationtool. It defines the type of the deployment package (SIS). It is either 'removable' or 'non-removable'. The default value is 'non-removable'--></deploytype>
+</javasecurity>

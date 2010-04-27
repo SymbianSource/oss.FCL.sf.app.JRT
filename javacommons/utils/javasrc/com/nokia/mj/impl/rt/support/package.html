@@ -1,0 +1,92 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Nokia">
+   <title>Runtime support API</title>
+</head>
+<body>
+Runtime Support hides differences between different runtime implementations 
+from the API developer. 
+<p>
+Runtime Support aligns different runtimes (including different JVMs so that 
+API implementations can rely on them in all runtimes (MIDP3 Runtime, CDC main, 
+eRCP Runtime) have different implementations of Runtime support API, but 
+runtime differences are hidden behind Runtime support API. Runtime Support also 
+provides API for hiding differences between different JVM vendors and for 
+hiding some differnces between CLDC and CDC.
+<p>
+Runtime Support provides following services:
+<li>Application related services.</li>
+<li>Special services provided by the JVM.</li>
+<li>System property extension mechanism.</li>
+<p>
+<h2>Application related services</h2>
+Application related services provides utilities for getting application specific
+static information like name, uid, vendor, version etc. Application related 
+services provides also some utilities that are application lifetime dependent 
+like ability receive a notification when the application is about to close. 
+<p>
+For further details see {@link com.nokia.mj.impl.rt.support.ApplicationInfo} 
+or {@link com.nokia.mj.impl.rt.support.ApplicationUtils}.
+<h2>JVM services</h2>
+The basic idea is to provide helper utilities for cases where there is need to 
+use different implementation depending on the used JVM or the used configuration. 
+In other words the underlying JVM is tried to hide from the API developer. 
+<p>
+There are two cases where port layer is needed:
+<li>Some standard API either is used differently or is missing from certain 
+configuration. This is most commonly needed to hide differences between CDC 
+and CLDC. For example System.loadLibrary doesn't exist in the CLDC and 
+therefore when using CLDC JVM we need to call some proprietary API provided by
+the JVM vendor, which must be hidden from the API developers. Another example 
+is Class.forName. If the we are using CDC JVM and we are trying to load a class
+which is int 'normal' classpath from a class that is in the bootclass path, 
+we need to provide the class loader. In CLDC we don't have class loaders, so 
+the Runtime support variates the usage of Class.forName in different 
+configurations.</li>
+<li>The JVM provides some proprietary APIs to do some things in more 
+advanced/faster way than it is possible using the standard Java APIs. One 
+example could be {@link com.nokia.mj.impl.rt.support.NativeMemoryBlock}, which
+provides a way to read some resource from the jar file and store the content 
+in a native memory block instead of copying the content to Java side.
+<p>
+JVM services are divided into two different classes: 
+{@link com.nokia.mj.impl.rt.support.Jvm} and 
+{@link com.nokia.mj.impl.rt.support.JvmInternal}. <code>Jvm</code> is meant 
+for all API developers while <code>JvmInternal</code> is meant only for 
+Runtime's internal usage.
+<h3>Finalizers</h3>
+Some public API are defined so that implementation requires usage of 
+Java finalization feature. Since finalization is not part of CLDC, the
+Runtime Support provides a common way to hide VM specific implemetation from
+the API developer. The provided way works also in case where the used 
+configuration (e.g. CDC) officially supports finalization.
+<p>
+For further details see {@link com.nokia.mj.impl.rt.support.Finalizer}.
+<h2>System property extension mechanism</h2>
+Many APIs need to introduce new system properties into the system. Since the 
+JVM is delivered in binary format, it is needed a mechanism to extend 
+(and overwrite) existing system properties.
+<p>
+System properties can be divided into three categories:
+<li>Static ones, that will never change during the runtime of the JVM (e.g. 
+microedition.jtwi.version).</li>
+<li>Dynamic static ones, that will be solved during first query, but will 
+not change after that during the runtime of the JVM 
+(e.g. microedition.platform).</li>
+<li>Dynamic ones, that may change any time during the runtime of the JVM 
+(e.g. com.nokia.memoryramfree)</li>
+<p>
+No matter which category the system property belongs to, it is stored into 
+the hash table from where it can be found fast. Only the value of the property
+tells if the property is static or dynamic.
+<p>
+The usage of System property extension mechanism is explained in more detailed 
+in {@link com.nokia.mj.impl.rt.support.SystemPropertyProvider here}. 
+<h2>Runtime Support wiki pages</h2>
+Here is a link to the Wiki pages of the 
+<a href="http://wikis.in.nokia.com/MIDPEvolution/ArchitectureRuntimeSupport" 
+target="_top">Runtime Support</a>.
+</body>
+</html>

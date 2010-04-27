@@ -1,0 +1,69 @@
+﻿<!--
+* Copyright © 2008 Nokia Corporation and/or its subsidiary(-ies).
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*  http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License. 
+-->
+<project name="javabluecove" default="deploy" basedir=".">
+    <description>
+        Builds Bluecove Implementation
+    </description>
+
+  <import file="../../../../build/utilities.xml"/>
+
+  <!-- Needed by the utilities.xml. See the description form the utilities.xml
+       file -->
+
+  <target name="compile">
+      <omj.javac excludes="
+          com/intel/bluetooth/BluetoothStackMicrosoft.java,
+          com/intel/bluetooth/BluetoothStackBlueSoleil.java,
+          com/intel/bluetooth/BluetoothStackOSX.java,
+          com/intel/bluetooth/BluetoothStackToshiba.java,
+          com/intel/bluetooth/BluetoothStackWIDCOMM.java,
+          com/intel/bluetooth/BluetoothStackWIDCOMMSDPInputStream.java,
+          com/intel/bluetooth/DebugLog4jAppender.java,
+          com/intel/bluetooth/NativeLibLoader.java,
+          com/intel/bluetooth/NativeTestInterfaces.java,
+          com/intel/bluetooth/UtilsJavaSE5.java"/>
+  </target>
+
+  <target name="create.internal.api.jar">
+    <omj.internal.apis/>
+  </target>  
+
+  <target name="create.public.api.jar">
+      <omj.public.apis includes="
+          javax/bluetooth/BluetoothConnectionException.class,
+          javax/bluetooth/BluetoothStateException.class,
+          javax/bluetooth/DataElement.class,
+          javax/bluetooth/DeviceClass.class,
+          javax/bluetooth/DiscoveryAgent.class,
+          javax/bluetooth/DiscoveryListener.class,
+          javax/bluetooth/L2CAPConnection.class,
+          javax/bluetooth/L2CAPConnectionNotifier.class,
+          javax/bluetooth/LocalDevice.class,
+          javax/bluetooth/RemoteDevice.class,
+          javax/bluetooth/ServiceRecord.class,
+          javax/bluetooth/ServiceRegistrationException.class,
+          javax/bluetooth/UUID.class,
+          javax/obex/Authenticator.class,
+          javax/obex/ClientSession.class,
+          javax/obex/HeaderSet.class,
+          javax/obex/Operation.class,
+          javax/obex/PasswordAuthentication.class,
+          javax/obex/ResponseCodes.class,
+          javax/obex/ServerRequestHandler.class,
+          javax/obex/SessionNotifier.class"/>        
+  </target>
+</project>
+ 

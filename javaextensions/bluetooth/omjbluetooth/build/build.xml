@@ -1,0 +1,72 @@
+﻿<!--
+* Copyright © 2008 Nokia Corporation and/or its subsidiary(-ies).
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*  http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License. 
+-->
+<project name="javabluetooth" default="deploy" basedir=".">
+    <description>
+        Builds Bluetooth API
+    </description>
+
+  <import file="../../../../build/utilities.xml"/>
+
+  <!-- Needed by the utilities.xml. See the description form the utilities.xml
+       file -->
+
+  <target name="create.internal.api.jar">
+      <omj.internal.apis includes="
+            com/nokia/mj/impl/bluetooth/BluetoothStackS60.class"/>
+  </target>  
+
+  <property name="javah.classnames" 
+            value="com.nokia.mj.impl.bluetooth.BluetoothStackS60,
+            com.nokia.mj.impl.bluetooth.BluetoothStackConstsS60"/>
+
+  <target name="init.component.properties">
+      <!--
+          BluecoveStack property is used to detect stack dynamically. 
+          In case of S60, it should be BluetoothStackS60.
+          In case of Linux, it should be BluetoothStackLinux
+          If in future, we have more platforms to support, we must set the
+          property appropriately.
+      -->
+      <condition property="bluecove.stack"
+               value="BluetoothStackS60" 
+                 else="BluetoothStackLinux">
+          <isset property="target.s60" />
+      </condition>
+  </target> 
+
+<!-- 
+    Properties mandated by JSR-82
+-->
+  <target name="system.properties">
+    <properties>
+        bluetooth.api.version=1.1
+        obex.api.version=1.1
+        bluetooth.l2cap.receiveMTU.max=:bluetooth.BtDynamicPropertyHandler
+        bluetooth.connected.devices.max=:bluetooth.BtDynamicPropertyHandler
+        bluetooth.connected.inquiry=:bluetooth.BtDynamicPropertyHandler
+        bluetooth.connected.page=:bluetooth.BtDynamicPropertyHandler
+        bluetooth.connected.inquiry.scan=:bluetooth.BtDynamicPropertyHandler
+        bluetooth.connected.page.scan=:bluetooth.BtDynamicPropertyHandler
+        bluetooth.master.switch=:bluetooth.BtDynamicPropertyHandler
+        bluetooth.sd.trans.max=:bluetooth.BtDynamicPropertyHandler
+        bluetooth.sd.attr.retrievable.max=:bluetooth.BtDynamicPropertyHandler
+        
+        <!-- Properties used to configure Bluetooth -->
+        bluecove.stack=${bluecove.stack}
+    </properties>
+  </target>  
+
+</project>

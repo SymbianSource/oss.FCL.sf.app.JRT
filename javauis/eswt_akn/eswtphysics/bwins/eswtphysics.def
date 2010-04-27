@@ -1,0 +1,3 @@
+EXPORTS
+	?SwtPhysicsLibEntryL@@YAPAVMSwtPhysics@@AAVMSwtPhysicsObserver@@AAVCCoeControl@@@Z @ 1 NONAME ; class MSwtPhysics * SwtPhysicsLibEntryL(class MSwtPhysicsObserver &, class CCoeControl &)
+

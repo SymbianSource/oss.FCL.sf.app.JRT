@@ -1,0 +1,235 @@
+<!--
+#
+# Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<!--
+    This is the template for the build.xml files of Java components. Copy 
+	this file into the build directory of your component and rename it to
+    "build.xml". Create also a .pro file in order to get the byte code 
+    rommized into a native DLL.
+
+    Please remember to remove all the unused parts and comments. Also remember
+	to document properly all non-trivial constucts used (especially overrides
+	of targets like 'compile' and 'init.component.properties', and properties
+	like 'bootclasspath').
+-->
+
+<!--
+    Replace the name "mycomponent" with the name of your component. Use only
+    lower case letters. By default, the basename of the resulting DLL uses
+    the same name.
+    
+    The default target is 'deploy' which builds the component in a single 
+    build phase (sufficient for most of the components). In this phase, all 
+    the classes of the component are built using one Java configuration, 
+    the default being CLDC. The generic java sources are assumed to be in the
+    directory javasrc and any platform dependent sources in the directories 
+    javasrc.s60 and javasrc.linux.
+
+    If the component contains e.g. classes that need both CLDC and CDC
+    configuration in order to be built, you must define the default target as
+    'deploy.dual'. In this case, there are two built phases - the first one 
+    being like described above for the target 'deploy'. The second phase uses
+    by default CDC configuration. The generic sources are assumed to be in the
+    directory javasrc.cdc and any platorm dependent sources in the 
+    directories javasrc.s60.cdc and javasrc.linux.cdc. 
+-->
+<project name="mycomponent" default="deploy" basedir=".">
+
+  <!-- Import utilities.xml from the directory ${JAVA_SRC_ROOT}/build/. 
+       Unfortunately, the property '${JAVA_SRC_ROOT}' can't be used in this 
+       phase so use the "../" construct to reach the root build directory.
+  -->
+  <import file="../../../../build/utilities.xml"/>
+
+
+  <!-- In the first build phase the system expects to find all Java sources
+       from the directory ../javasrc and from the platform dependent 
+       directories javasrc.s60 and javasrc.linux. If not all the classes are
+       in these directories, define the property 'java.src.paths' to point to
+       the correct location(s). If there are multiple directories containing 
+       Java sources, use the character ':' as the separator.
+  -->
+  <property name="java.src.paths" value="../myjavasrc:../myjavasrc2"/>
+
+  <!-- The property 'java.src.second.paths' is for the second build phase.
+       The behavior is the same as with the property 'java.src.paths' except
+       that the default directories are javasrc.cdc, javasrc.s60.cdc and 
+       javasrc.linux.cdc.
+  -->
+  <property name="java.src.second.paths" value="../myjavasrc:../myjavasrc2"/>
+
+  <!-- In the first build phase the system sets the bootclasspath to include
+       CLDC libraries. If this is not proper settings for your component, 
+       define with the property 'bootclasspath' the appropriate libraries. If
+       multiple libraries are needed, use the character ':' as the separator.
+       The system provides a predefined property '${bootclasspath.cdc}'
+       for CDC.
+  -->
+  <property name="bootclasspath" value="${bootclasspath.cdc}"/>
+
+  <!-- In the second build phase the system sets the bootclasspath to include
+       CDC libraries. If this is not proper settings for your component, 
+       define with the property 'bootclasspath.second' the appropriate
+       libraries. If multiple libraries are needed, use the character ':' as 
+       the separator.The system provides a predefined property 
+       '${bootclasspath.cldc}' for CLDC.
+  -->
+  <property name="bootclasspath.second" value="${bootclasspath.cldc}"/>
+
+  <!-- The base name of the native DLL containing the rommized Java code is
+       by default equal to the name of this project (in this template 
+       'mycomponent'). If this is not right, define the property 
+       'native.dll.name' to set the name to something else.
+  -->
+  <property name="native.dll.name" value="mydefinedlibname"/>
+
+
+  <!-- The property 'javah.classnames' is used to list the Java classes 
+       containing native methods for which the 'javah' tool must be run
+       to generate the corresponding JNI header files. The value is 
+       a list of fully qualified class names, with the character '.' as the 
+       package separator and the character ',' as the class separator.
+  -->
+  <property name="javah.classnames" 
+            value="com.nokia.mj.impl.midpruntime.JavaUi,
+                   com.nokia.mj.impl.midpruntime.MidletLifeCycle,
+                   com.nokia.mj.impl.midpruntime.ApplicationInfoImpl"/>
+
+  <!-- If the Java component introduces new system properties, override 
+       the target 'system.properties' providing a list of the system property
+       names and values as shown below.
+  -->
+  <target name="system.properties">
+      <properties>
+          microedition.hostname=localhost
+          microedition.jtwi.version=1.0
+          wireless.messaging.mms.mmsc=:mms.DynamicPropertyHandler
+      </properties>
+  </target>
+
+
+  <!-- If the Java component provides internal APIs to other components, 
+       override the target 'create.internal.api.jar' and use one of the 
+       formats shown in the following examples to list the class(es).
+       By default, no classes are published to other components.
+  -->
+        
+          <!-- Example 1. All the classes of the component are published for 
+               the other components
+          -->
+          <target name="create.internal.api.jar">
+            <omj.internal.apis/>
+          </target>
+        
+          <!-- Example 2. All the classes except the listed ones are published
+               for the other components. Use the character '/' as the package
+               separator, append the ".class" extension to each class name, 
+               and separate the classes with the character ','.
+          -->
+          <target name="create.internal.api.jar">
+            <omj.internal.apis excludes=
+                "javax/microedition/midlet/MIDlet.class,
+                 javax/microedition/midlet/MIDletStateChangeException.class"/>
+          </target>
+        
+          <!-- Example 3. Only the explicitly listed classes are published for
+               the other components. Use the character '/' as the package 
+               separator, append the ".class" extension to each class name,
+               and separate the classes with the character ','. 
+          -->
+          <target name="create.internal.api.jar">
+            <omj.internal.apis includes=
+                "com/nokia/mj/impl/rt/DynamicSystemProperty.class,
+                 com/nokia/mj/impl/rt/SystemProperty.class"/>
+          </target>
+        
+
+
+  <!-- If the Java component provides public APIs to the application 
+       developers, override the target 'create.public.api.jar' and use one of 
+       the formats shown in the following examples to list the class(es).
+       By default, no classes are published to the application developers.
+
+       When listing classes, use the character '/' as the package
+       separator, append the ".class" extension to each class name, and
+       separate the classes with the character ','.
+
+       Use wildcard "*" (single file/directory) or "**" (multiple
+       directories). 
+  -->
+  
+          <!-- Example 1. All the classes of the component are published for 
+               the application developers.
+          -->
+          <target name="create.public.api.jar">
+          </target>
+        
+          <!-- Example 2. All the classes except the listed ones are published
+               for the application developers. 
+          -->
+          <target name="create.public.api.jar">
+            <omj.public.apis excludes=
+                "com/nokia/mj/impl/rt/DynamicSystemProperty.class,
+                 com/nokia/mj/impl/rt/SystemProperty.class,
+                 com/nokia/mj/impl/internal/**/*.class"/>
+          </target>
+        
+          <!-- Example 3. Only the explicitly listed classes are published for
+               the application developers. 
+          -->
+          <target name="create.public.api.jar">
+            <omj.public.apis includes=
+                "javax/microedition/midlet/MIDlet.class,
+                 javax/microedition/midlet/MIDletStateChangeException.class,
+                 org/eclipse/**/*.class" />
+          </target>
+
+
+  <!-- If there is a need to modify the behavior of the 'javac' tool in the 
+       first build phase, override the target 'compile' and modify the 
+       predefined parameters as needed.
+  -->
+  <target name="compile">
+    <omj.javac excludes="**/PermissionGranter.java **/SecurityPolicy*.java"/>
+  </target>
+
+  <!-- As above (target 'compile') but for the second build phase. 
+  -->
+  <target name="compile.second">
+    <omj.javac
+           excludes="com/nokia/mj/impl/installer/Install*.java,
+                     com/nokia/mj/impl/installer/pushregistrator/Push*.java,
+                     com/nokia/mj/impl/installer/utils/InstallerMain.java">
+    </omj.javac>
+  </target>
+
+
+  <!-- Sometimes it is necessary to finetune some properties based on e.g. the
+       target platform. This is possible in a safe way by overriding the 
+       target 'init.component.properties'. In the example below, the property
+       'java.src.paths' is defined differently according to used platform.
+  -->
+  <target name="init.component.properties">
+    <condition property="java.src.second.paths"
+               value="../javasrc:../javasrc.s60"
+               else="../javasrc:../javasrc.linux">
+      <isset property="target.s60" />
+    </condition>
+  </target>
+
+</project>
