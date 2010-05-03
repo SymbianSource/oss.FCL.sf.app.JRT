@@ -1,0 +1,14 @@
+EXPORTS
+	_Z13findDllMethodPKc @ 1 NONAME
+	_ZN4java9bluetooth29BTOBEXServerConnectionFactory10getFactoryEv @ 2 NONAME
+	_ZN4java9bluetooth29BTOBEXServerConnectionFactory16createSrvConnObjERKSbIwSt11char_traitsIwESaIwEES7_ @ 3 NONAME
+	_ZN4java9bluetooth29BTOBEXServerConnectionFactory24isMultipleSrvConnAllowedEv @ 4 NONAME
+	_ZN4java9bluetooth29BTOBEXServerConnectionFactory6createERKSbIwSt11char_traitsIwESaIwEE @ 5 NONAME
+	_ZN4java9bluetooth29BTOBEXServerConnectionFactoryC1Ev @ 6 NONAME
+	_ZN4java9bluetooth29BTOBEXServerConnectionFactoryC2Ev @ 7 NONAME
+	_ZN4java9bluetooth29BTOBEXServerConnectionFactoryD0Ev @ 8 NONAME
+	_ZN4java9bluetooth29BTOBEXServerConnectionFactoryD1Ev @ 9 NONAME
+	_ZN4java9bluetooth29BTOBEXServerConnectionFactoryD2Ev @ 10 NONAME
+	_ZTIN4java9bluetooth29BTOBEXServerConnectionFactoryE @ 11 NONAME ; #<TI>#
+	_ZTVN4java9bluetooth29BTOBEXServerConnectionFactoryE @ 12 NONAME ; #<VT>#
+

@@ -1,0 +1,61 @@
+/*
+* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
+#ifndef _LCDGD_HRH_
+#define _LCDGD_HRH_
+
+/**
+ * This file contains configuration macros for the lcdui graphics driver dll's.
+ *
+ * Macros should be uncommented to enable the corresponding feature.
+ */
+
+/**
+ * Include support for 1bpp mask bitmaps for images with binary transparency.
+ */
+#define LCDGD_SUPPORT_1BPP_MASK_BITMAP
+
+/**
+ * Include support for matched display mode mask bitmaps for images with
+ * binary transparency. These masks will be up to 32x larger than 1bpp 
+ * masks but may on some hardware provide a small performance increase.
+ */
+//#define LCDGD_SUPPORT_MATCHED_MASK_BITMAP
+
+
+/**
+ * Include support for 256 level alpha bitmaps.
+ *
+ * This is required if the system display mode does not include alpha information
+ * and lcdui must support bitmaps with 256 level transparency information.
+ */
+#define LCDGD_SUPPORT_ALPHA_BITMAP
+
+/**
+ * Driver interface type UID.
+ */
+#include "lcdgd_uids.h"
+
+/**
+ * Driver id strings.
+ */
+#define LCDGD_COLOR4K_DRIVER_ID_STR   "EColor4K"
+#define LCDGD_COLOR64K_DRIVER_ID_STR  "EColor64K"
+#define LCDGD_COLOR16MU_DRIVER_ID_STR "EColor16MU"
+#define LCDGD_COLOR16MA_DRIVER_ID_STR "EColor16MA"
+
+#endif

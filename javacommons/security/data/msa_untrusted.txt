@@ -1,0 +1,62 @@
+domain UnidentifiedThirdParty;
+grant user "Net Access" oneshot,session,no {
+    permission javax.microedition.io.HttpProtocolPermission "http://*";
+    permission javax.microedition.io.HttpsProtocolPermission "https://*";
+    permission javax.microedition.io.Connector.rtsp "*";
+    permission javax.microedition.io.DatagramProtocolPermission "datagram://*";
+    permission javax.microedition.io.DatagramProtocolPermission "datagram://";
+    permission javax.microedition.io.SocketProtocolPermission "socket://*";
+    permission javax.microedition.io.SocketProtocolPermission "socket://";
+    permission javax.microedition.io.SSLProtocolPermission "ssl://*";
+}
+
+grant user "Local Connectivity" oneshot,session,blanket,no {
+    permission javax.microedition.io.CommProtocolPermission "comm:*";
+    permission javax.microedition.io.Connector.obex.server "*" "server";
+    permission javax.microedition.io.Connector.obex.client "*" "client";
+    permission javax.microedition.io.Connector.bluetooth.server "*" "server";
+    permission javax.microedition.io.Connector.bluetooth.client "*" "client";
+}
+
+grant user "Read User Data Access" oneshot,no {
+    permission javax.microedition.io.FileProtocolPermission "*" "read";
+    permission javax.microedition.pim.ContactList "pim://*" "read_contacts";
+    permission javax.microedition.pim.EventList "pim://*" "read_events";
+    permission javax.microedition.pim.ToDoList "pim://*" "read_todos";
+}
+
+grant user "Write User Data Access" oneshot,no {
+    permission javax.microedition.io.FileProtocolPermission "*" "write";
+    permission javax.microedition.pim.ContactList "pim://*" "write_contacts";
+    permission javax.microedition.pim.EventList "pim://*" "write_events";
+    permission javax.microedition.pim.ToDoList "pim://*" "write_todos";
+}
+
+grant user "Messaging" oneshot,no {
+    permission javax.microedition.io.Connector.sms "sms://*" "send";
+    permission javax.microedition.io.Connector.mms "mms://*" "send";
+}
+
+grant user "Multimedia Recording" oneshot,session,no {
+    permission javax.microedition.media.control.RecordControl "*" "record";
+    permission javax.microedition.media.control.VideoControl.getSnapshot "*" "snapshot";
+}
+
+grant user "Application Auto Invocation" oneshot,session,no {
+    permission javax.microedition.io.PushRegistryPermission "*" "staticregistration,dynamicregistration,autoinvocation";
+}
+
+grant user "Location" oneshot,session,no {
+    permission javax.microedition.location.LocationPermission "location://*" "position,orientation";
+    permission javax.microedition.location.LocationPermission "proximity://*" "registerlistener";
+}
+
+grant user "Landmark" oneshot,session,no {
+    permission javax.microedition.location.LocationPermission "landmarks://*" "read,write,category,management";
+}
+
+grant allowed {
+    permission javax.microedition.io.Connector.sms "sms://*" "open,receive";
+    permission javax.microedition.io.Connector.mms "mms://*" "open,receive";
+    permission javax.microedition.io.Connector.cbs "cbs://*" "open,receive";
+}

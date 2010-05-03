@@ -1,0 +1,7 @@
+<?xml version="1.0" standalone="yes"?>
+<backup_registration>
+    <passive_backup delete_before_restore = "yes">
+      <include_directory name = "\" />
+    </passive_backup>
+    <restore requires_reboot = "yes"/>
+</backup_registration>

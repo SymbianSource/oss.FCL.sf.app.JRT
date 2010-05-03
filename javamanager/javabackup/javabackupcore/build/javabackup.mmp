@@ -1,0 +1,54 @@
+/*
+* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Project definition file for Java Backup component
+*
+*/
+
+
+#include <bldvariant.hrh>
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+
+#include <../../../../inc/java_stdcpp_support_for_dll.hrh>
+#include <../../../../inc/project_defines.hrh>
+
+TARGET                  javabackup.exe
+TARGETTYPE              exe
+UID                     0x100039CE 0x1028246F
+epocstacksize           0x5000
+
+PAGED
+
+#ifdef RD_JAVA_S60_RELEASE_9_2_ONWARDS
+CAPABILITY              AllFiles TrustedUI
+#else
+// SBE has lesser capability set on beta release.
+CAPABILITY              AllFiles WriteDeviceData
+#endif
+
+VENDORID                VID_DEFAULT
+
+SOURCEPATH              ../src.s60
+SOURCE                  jsbcactive.cpp
+SOURCE                  jsbcdataowner.cpp
+
+USERINCLUDE             ../src.s60
+USERINCLUDE             ../../inc.s60
+USERINCLUDE             ../../../../inc
+
+SYSTEMINCLUDE           /epoc32/include/connect
+
+LIBRARY                 ecom.lib
+LIBRARY                 abclient.lib
+LIBRARY                 javastorage.lib

@@ -1,0 +1,10 @@
+EXPORTS
+  ?jni_lookup@@YAP6AXXZPBD@Z @ 1 NONAME ; void (*)(void) jni_lookup(char const *)
+	?readBytes@NativeSecureConnection@java@@UAEHAAUJNIEnv_@@PAV_jbyteArray@@@Z @ 2 NONAME ; int java::NativeSecureConnection::readBytes(struct JNIEnv_ &, class _jbyteArray *)
+	?secureHandshake@NativeSecureConnection@java@@QAEHXZ @ 3 NONAME ; int java::NativeSecureConnection::secureHandshake(void)
+	?stopReading@NativeSecureConnection@java@@UAEXXZ @ 4 NONAME ; void java::NativeSecureConnection::stopReading(void)
+	?stopWriting@NativeSecureConnection@java@@UAEXXZ @ 5 NONAME ; void java::NativeSecureConnection::stopWriting(void)
+	?writeBytes@NativeSecureConnection@java@@UAEHAAUJNIEnv_@@PAV_jbyteArray@@HH@Z @ 6 NONAME ; int java::NativeSecureConnection::writeBytes(struct JNIEnv_ &, class _jbyteArray *, int, int)
+	?getSecurityInfo@NativeSecureConnection@java@@QAEPAPADXZ @ 7 NONAME ; char * * java::NativeSecureConnection::getSecurityInfo(void)
+	?initialiseSslConnection@NativeSecureConnection@java@@QAEXXZ @ 8 NONAME ; void java::NativeSecureConnection::initialiseSslConnection(void)
+

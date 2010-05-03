@@ -1,0 +1,71 @@
+<!--
+#
+# Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<project name="javalocation" default="deploy" basedir=".">
+    <description>
+        Builds Location API
+    </description>
+
+  <import file="../../../build/utilities.xml"/>
+
+  <!-- Needed by the utilities.xml. See the description form the utilities.xml
+       file -->
+
+  <property name="javah.classnames" 
+            value="com.nokia.mj.impl.location.LandmarkStoreManager,
+                   com.nokia.mj.impl.location.LAPIManager,
+                   javax.microedition.location.Landmark,
+                   javax.microedition.location.Coordinates,
+                   javax.microedition.location.LandmarkStore,
+                   javax.microedition.location.Orientation, 
+                   com.nokia.mj.impl.location.LocationProviderImpl,
+                   com.nokia.mj.impl.location.Positioner,
+                   javax.microedition.location.LocationProvider,
+                   javax.microedition.location.Location"/>      
+
+  <target name="system.properties">
+    <properties>
+        microedition.location.version=1.0
+    </properties>
+  </target>
+
+<!-- conditional compilation variation depending upon the platform
+-->
+  <target name="init.component.properties">
+    <condition property="java.src.paths" value="../common/javasrc.s60:../landmarks/javasrc.s60:../orientation/javasrc.s60:../position/javasrc.s60/javasrc:../position/javasrc.s60/javasrc.proximity" else="../common/javasrc.s60:../landmarks/javasrc.s60:../orientation/javasrc.s60:../position/javasrc.s60/javasrc:../position/javasrc.s60/javasrc.noproximity">
+      <isset property="RD_JAVA_PROXIMITY_LISTENER_ENABLED"/>
+    </condition>
+  </target>
+
+  <target name="create.public.api.jar">
+      <omj.public.apis includes="javax/microedition/location/Landmark.class,
+                                 javax/microedition/location/LandmarkStore.class,
+                                 javax/microedition/location/AddressInfo.class,
+                                 javax/microedition/location/Coordinates.class,
+                                 javax/microedition/location/QualifiedCoordinates.class,
+                                 javax/microedition/location/LandmarkException.class,
+                                 javax/micoredition/location/Orientation.class,
+                                 javax/microedition/location/LocationProvider.class,
+                                 javax/microedition/location/Criteria.class,
+                                 javax/microedition/location/Location.class,
+                                 javax/microedition/location/LocationException.class,
+                                 javax/microedition/location/LocationListener.class,
+                                 javax/microedition/location/ProximityListener.class"/>
+  </target>
+
+</project>

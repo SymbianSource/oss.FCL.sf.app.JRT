@@ -1,0 +1,32 @@
+EXPORTS
+	?AddEntryL@CInstalledAppsRegistry@@QAEXABVCInstalledAppsRegistryEntry@@@Z @ 1 NONAME ; public: void __thiscall CInstalledAppsRegistry::AddEntryL(class CInstalledAppsRegistryEntry const &)
+	?AddFileL@CInstalledAppsRegistryEntry@@QAEXABVTDesC16@@@Z @ 2 NONAME ; public: void __thiscall CInstalledAppsRegistryEntry::AddFileL(class TDesC16 const &)
+	?AddLanguageL@CInstalledAppsRegistryEntry@@QAEXW4TLanguage@@ABVTDesC16@@1@Z @ 3 NONAME ; public: void __thiscall CInstalledAppsRegistryEntry::AddLanguageL(enum TLanguage,class TDesC16 const &,class TDesC16 const &)
+	?AddPropertyL@CInstalledAppsRegistryEntry@@QAEXVTUid@@ABVTDesC8@@@Z @ 4 NONAME ; public: void __thiscall CInstalledAppsRegistryEntry::AddPropertyL(class TUid,class TDesC8 const &)
+	?AppsUsingFileL@CInstalledAppsRegistry@@QBEXABVTDesC16@@AAV?$RArray@VTUid@@@@@Z @ 5 NONAME ; public: void __thiscall CInstalledAppsRegistry::AppsUsingFileL(class TDesC16 const &,class RArray<class TUid> &)const 
+	?AppsUsingFilesL@CInstalledAppsRegistry@@QBEXABV?$RPointerArray@VHBufC16@@@@AAV?$RPointerArray@V?$RArray@VTUid@@@@@@@Z @ 6 NONAME ; public: void __thiscall CInstalledAppsRegistry::AppsUsingFilesL(class RPointerArray<class HBufC16> const &,class RPointerArray<class RArray<class TUid> > &)const 
+	?CorruptUidsL@CInstalledAppsRegistry@@QBEXAAV?$RArray@VTUid@@@@@Z @ 7 NONAME ; public: void __thiscall CInstalledAppsRegistry::CorruptUidsL(class RArray<class TUid> &)const 
+	?CreateL@MInstalledAppsRegistry@@SAPAV1@XZ @ 8 NONAME ; public: static class MInstalledAppsRegistry * __cdecl MInstalledAppsRegistry::CreateL(void)
+	?DeleteEntry@CInstalledAppsRegistry@@QAEHABVTUid@@@Z @ 9 NONAME ; public: int __thiscall CInstalledAppsRegistry::DeleteEntry(class TUid const &)
+	?NewL@CInstalledAppsRegistry@@SAPAV1@XZ @ 10 NONAME ; public: static class CInstalledAppsRegistry * __cdecl CInstalledAppsRegistry::NewL(void)
+	?NewLC@CInstalledAppsRegistryEntry@@SAPAV1@AAVRReadStream@@@Z @ 11 NONAME ; public: static class CInstalledAppsRegistryEntry * __cdecl CInstalledAppsRegistryEntry::NewLC(class RReadStream &)
+	?NewLC@CInstalledAppsRegistryEntry@@SAPAV1@ABV1@@Z @ 12 NONAME ; public: static class CInstalledAppsRegistryEntry * __cdecl CInstalledAppsRegistryEntry::NewLC(class CInstalledAppsRegistryEntry const &)
+	?NewLC@CInstalledAppsRegistryEntry@@SAPAV1@XZ @ 13 NONAME ; public: static class CInstalledAppsRegistryEntry * __cdecl CInstalledAppsRegistryEntry::NewLC(void)
+	?SetDrive@CInstalledAppsRegistryEntry@@QAEXVTChar@@@Z @ 14 NONAME ; public: void __thiscall CInstalledAppsRegistryEntry::SetDrive(class TChar)
+	?SetType@CInstalledAppsRegistryEntry@@QAEXW4TInstallType@@@Z @ 15 NONAME ; public: void __thiscall CInstalledAppsRegistryEntry::SetType(enum TInstallType)
+	?SetUid@CInstalledAppsRegistryEntry@@QAEXABVTUid@@@Z @ 16 NONAME ; public: void __thiscall CInstalledAppsRegistryEntry::SetUid(class TUid const &)
+	?SetVersion@CInstalledAppsRegistryEntry@@QAEXABVTAppVersion@@@Z @ 17 NONAME ; public: void __thiscall CInstalledAppsRegistryEntry::SetVersion(class TAppVersion const &)
+	?WriteL@CInstalledAppsRegistryEntry@@QBEXAAVRWriteStream@@@Z @ 18 NONAME ; public: void __thiscall CInstalledAppsRegistryEntry::WriteL(class RWriteStream &)const 
+	?WriteableEntryLC@CInstalledAppsRegistry@@QBEPAVCInstalledAppsRegistryEntry@@ABVTUid@@@Z @ 19 NONAME ; public: class CInstalledAppsRegistryEntry * __thiscall CInstalledAppsRegistry::WriteableEntryLC(class TUid const &)const 
+	?WriteableEntryLC@CInstalledAppsRegistry@@QBEPAVCInstalledAppsRegistryEntry@@W4TLanguage@@ABVTDesC16@@1@Z @ 20 NONAME ; public: class CInstalledAppsRegistryEntry * __thiscall CInstalledAppsRegistry::WriteableEntryLC(enum TLanguage,class TDesC16 const &,class TDesC16 const &)const 
+	?AddCertificateChainL@CInstalledAppsRegistryEntry@@QAEXABVTDesC8@@@Z @ 21 NONAME ; public: void __thiscall CInstalledAppsRegistryEntry::AddCertificateChainL(class TDesC8 const &)
+	?AddDependencyL@CInstalledAppsRegistryEntry@@QAEXVTUid@@@Z @ 22 NONAME ; public: void __thiscall CInstalledAppsRegistryEntry::AddDependencyL(class TUid)
+	?AddDirectoryL@CInstalledAppsRegistryEntry@@QAEXABVTDesC16@@@Z @ 23 NONAME ; public: void __thiscall CInstalledAppsRegistryEntry::AddDirectoryL(class TDesC16 const &)
+	?AddEmbeddedPackageL@CInstalledAppsRegistryEntry@@QAEXVTUid@@@Z @ 24 NONAME ; public: void __thiscall CInstalledAppsRegistryEntry::AddEmbeddedPackageL(class TUid)
+	?DependentsL@CInstalledAppsRegistry@@QBEXVTUid@@AAV?$RArray@VTUid@@@@@Z @ 25 NONAME ; public: void __thiscall CInstalledAppsRegistry::DependentsL(class TUid,class RArray<class TUid> &)const 
+	?WriteableEntryL@CInstalledAppsRegistry@@QBEPAVCInstalledAppsRegistryEntry@@ABVTUid@@@Z @ 26 NONAME ; public: class CInstalledAppsRegistryEntry * __thiscall CInstalledAppsRegistry::WriteableEntryL(class TUid const &)const 
+	?WriteableEntryL@CInstalledAppsRegistry@@QBEPAVCInstalledAppsRegistryEntry@@W4TLanguage@@ABVTDesC16@@1@Z @ 27 NONAME ; public: class CInstalledAppsRegistryEntry * __thiscall CInstalledAppsRegistry::WriteableEntryL(enum TLanguage,class TDesC16 const &,class TDesC16 const &)const 
+	?AddRef@CInstalledAppsRegistryEntry@@QAEXXZ @ 28 NONAME ; public: void __thiscall CInstalledAppsRegistryEntry::AddRef(void)
+	?AddApparcIdentifierL@CInstalledAppsRegistryEntry@@QAEXABVTDesC16@@@Z @ 29 NONAME ; public: void __thiscall CInstalledAppsRegistryEntry::AddApparcIdentifierL(class TDesC16 const &)
+	?NewL@CInstalledAppsRegistryEntry@@SAPAV1@PAVCJavaRegistryEntry@Java@@@Z @ 30 NONAME ; class CInstalledAppsRegistryEntry * CInstalledAppsRegistryEntry::NewL(class Java::CJavaRegistryEntry *)
+

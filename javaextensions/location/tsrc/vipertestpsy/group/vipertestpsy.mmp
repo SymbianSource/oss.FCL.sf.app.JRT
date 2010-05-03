@@ -1,0 +1,39 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
+TARGET    vipertestpsy.dll
+TARGETTYPE      PLUGIN
+UID             0x10009D8D 0x13070BF3
+
+VENDORID        VID_DEFAULT
+CAPABILITY      CAP_ECOM_PLUGIN
+
+SOURCEPATH  ../src
+SOURCE    ViperTestPsy.cpp
+
+
+start resource  ../resource/13070BF3.rss
+TARGET          vipertestpsy.rsc
+end
+USERINCLUDE     ../resource
+
+SYSTEMINCLUDE /Epoc32/Include
+SYSTEMINCLUDE   /Epoc32/Include/ECom
+
+LIBRARY     euser.lib
+LIBRARY     lbs.lib
+LIBRARY     epospluginfw.lib

@@ -1,0 +1,74 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+PRJ_EXPORTS
+
+#include "../../../inc/build_defines.hrh"
+
+../inc/applicationinfo.h                         |../../../inc/applicationinfo.h
+../inc/applicationinfosetter.h                   |../../../inc/applicationinfosetter.h
+../inc/dynamiclibloader.h                        |../../../inc/dynamiclibloader.h
+../inc/exceptionbase.h                           |../../../inc/exceptionbase.h
+../inc/runtimeexception.h                        |../../../inc/runtimeexception.h
+../inc/javacommonutils.h                         |../../../inc/javacommonutils.h
+../inc/javainifileutils.h                        |../../../inc/javainifileutils.h
+../inc/javajniutils.h                            |../../../inc/javajniutils.h
+../inc/javaoslayer.h                             |../../../inc/javaoslayer.h
+../inc/javauid.h                                 |../../../inc/javauid.h
+../inc/jniarrayutils.h                           |../../../inc/jniarrayutils.h
+../inc/libraryloaderexception.h                  |../../../inc/libraryloaderexception.h
+../inc/logger.h                                  |../../../inc/logger.h
+../inc/monitor.h                                 |../../../inc/monitor.h
+../inc/scopedlocks.h                             |../../../inc/scopedlocks.h
+../functionserver/inc/legacyeventserverwrapper.h |../../../inc/legacyeventserverwrapper.h
+../functionserver/inc/functionserver.h           |../../../inc/functionserver.h
+../functionserver/inc/fs_functor.h               |../../../inc/fs_functor.h
+../functionserver/inc/fs_methodcall.h            |../../../inc/fs_methodcall.h
+../functionserver/inc/fs_methodwrappers.h        |../../../inc/fs_methodwrappers.h
+
+#ifdef RD_JAVA_LINUX_TARGET
+../inc.linux/javaosheaders.h                     |../../../inc/javaosheaders.h
+../inc.linux/jdebug_omj.h                        |../../../inc/jdebug_omj.h
+#else //RD_JAVA_LINUX_TARGET
+../functionserver/inc.s60/os_functionclient.h    |../../../inc/os_functionclient.h
+../functionserver/inc.s60/os_functionserver.h    |../../../inc/os_functionserver.h
+../inc.s60/s60commonutils.h                      |../../../inc/s60commonutils.h
+../inc.s60/jstringutils.h                        |../../../inc/jstringutils.h
+../inc.s60/javaosheaders.h                       |../../../inc/javaosheaders.h
+../inc.s60/javasymbianoslayer.h                  |../../../inc/javasymbianoslayer.h
+../inc.s60/java_capabilities.hrh                 |../../../inc/java_capabilities.hrh
+../inc.s60/java_stdcpp_support_for_dll.hrh       |../../../inc/java_stdcpp_support_for_dll.hrh
+../inc.s60/java_stdcpp_support_for_exe.hrh       |../../../inc/java_stdcpp_support_for_exe.hrh
+../inc.s60/java_stdcpp_support_for_stddll.hrh    |../../../inc/java_stdcpp_support_for_stddll.hrh
+../inc.s60/java_stdcpp_support_for_stdexe.hrh    |../../../inc/java_stdcpp_support_for_stdexe.hrh
+../inc.s60/javauids.h                            |../../../inc/javauids.h
+../inc.s60/javaredirector.h                      |../../../inc/javaredirector.h
+../inc.s60/javaredirectserver.h                  |../../../inc/javaredirectserver.h
+
+// Export localisation resources
+#ifdef RD_JAVA_OPENLCDUI_ENABLED
+../../../build/loc/resources_qt.jar		/epoc32/release/winscw/udeb/z/resource/java/jvm/lib/jrt/resources.jar
+../../../build/loc/resources_qt.jar		/epoc32/release/armv5/urel/z/resource/java/jvm/lib/jrt/resources.jar
+../../../build/loc/resources_qt.jar		/epoc32/release/winscw/urel/z/resource/java/jvm/lib/jrt/resources.jar
+../../../build/loc/resources_qt.jar		/epoc32/release/armv5/udeb/z/resource/java/jvm/lib/jrt/resources.jar
+#else //RD_JAVA_OPENLCDUI_ENABLED
+../../../build/loc/resources.jar		/epoc32/release/winscw/udeb/z/resource/java/jvm/lib/jrt/resources.jar
+../../../build/loc/resources.jar		/epoc32/release/armv5/urel/z/resource/java/jvm/lib/jrt/resources.jar
+../../../build/loc/resources.jar		/epoc32/release/winscw/urel/z/resource/java/jvm/lib/jrt/resources.jar
+../../../build/loc/resources.jar		/epoc32/release/armv5/udeb/z/resource/java/jvm/lib/jrt/resources.jar
+
+#endif //RD_JAVA_OPENLCDUI_ENABLED
+#endif //RD_JAVA_LINUX_TARGET

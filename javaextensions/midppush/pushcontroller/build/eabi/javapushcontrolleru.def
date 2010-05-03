@@ -1,0 +1,7 @@
+EXPORTS
+	_Z13findDllMethodPKc @ 1 NONAME
+	_ZTIN4java4push25PushControllerStarterImplE @ 2 NONAME ; #<TI>#
+	_ZTIN4java4push27PushServerConnPluginManagerE @ 3 NONAME ; #<TI>#
+	_ZTVN4java4push25PushControllerStarterImplE @ 4 NONAME ; #<VT>#
+	_ZTVN4java4push27PushServerConnPluginManagerE @ 5 NONAME ; #<VT>#
+

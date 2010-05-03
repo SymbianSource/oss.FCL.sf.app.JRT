@@ -1,0 +1,2 @@
+EXPORTS
+	?GetUserPreferencesL@@YAPAVMUserPreferences@MIDP@@KABVMSecurityPolicyV2@2@@Z @ 1 NONAME ; class MIDP::MUserPreferences * GetUserPreferencesL(unsigned long, class MIDP::MSecurityPolicyV2 const &)

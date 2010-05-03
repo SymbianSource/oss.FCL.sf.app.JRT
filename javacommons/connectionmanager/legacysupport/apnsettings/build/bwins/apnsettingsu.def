@@ -1,0 +1,3 @@
+EXPORTS
+	?GetAPNSettingsLC@CENREP@@YAPAVMAPNSettings@1@K@Z @ 1 NONAME ; class CENREP::MAPNSettings * CENREP::GetAPNSettingsLC(unsigned long)
+

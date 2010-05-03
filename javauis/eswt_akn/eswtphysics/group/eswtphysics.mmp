@@ -1,0 +1,59 @@
+/*
+* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  THIS FILE IS NOT INCLUDED INTO ECLIPSE CVS DELIVERY
+*
+*/
+
+
+
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+
+// java/inc
+#include <../../../../inc/project_defines.hrh>
+#include <../../../../inc/java_stdcpp_support_for_dll.hrh>
+
+
+
+TARGET          eswtphysics.dll
+TARGETTYPE      dll
+CAPABILITY      CAP_GENERAL_DLL
+UID             0x10282F32 0x2000CFEC
+VERSION         12.19065
+
+
+// Modify default options to optimize for speed over size in this module.
+OPTION ARMCC -O3
+OPTION ARMCC -Otime
+ALWAYS_BUILD_AS_ARM
+
+
+NOSTRICTDEF
+#if defined(WINSCW)
+DEFFILE     ../bwins/eswtphysics.def
+#else
+DEFFILE     ../eabi/eswtphysics.def
+#endif
+
+PAGED
+
+USERINCLUDE     ../inc
+USERINCLUDE     ../../org.eclipse.ercp.swt.s60/native/inc
+APP_LAYER_SYSTEMINCLUDE
+
+
+SOURCEPATH  ../src
+SOURCE swtphysics.cpp
+
+LIBRARY aknphysics.lib

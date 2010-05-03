@@ -1,0 +1,60 @@
+/*
+* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This is an ECOM plugin for Symbian AppArc (database that contains
+*                info on all applications installed to the device)
+*                This plugin tells AppArc whether Java application installed
+*                to a removable storage media is present and can be executed.
+*
+*/
+
+
+//  INCLUDES
+#include <../../../inc/project_defines.hrh>
+#include <../../../inc/build_defines.hrh>
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+
+#include <../../../inc/java_stdcpp_support_for_dll.hrh>
+
+TARGET javasidchecker.dll
+CAPABILITY All -Tcb
+TARGETTYPE plugin
+
+UID 0x10009d8d 0x10281FBE
+
+// Use bytepair compression to enable code paging
+PAGED
+
+// Includes
+USERINCLUDE     .
+USERINCLUDE     ../inc
+
+SYSTEMINCLUDE ../../../inc /epoc32/include/ecom /epoc32/include/swi
+
+// Sources
+SOURCEPATH    ../src
+SOURCE        javasidchecker.cpp
+
+start RESOURCE ../data/10281FBE.rss
+target javasidchecker.rsc
+end
+
+#ifdef RD_JAVA_OLD_SIDCHECKER_LIBRARY
+LIBRARY apfile.lib
+#else
+LIBRARY aplist.lib
+#endif
+
+LIBRARY ecom.lib
+LIBRARY javaregistryclient.lib

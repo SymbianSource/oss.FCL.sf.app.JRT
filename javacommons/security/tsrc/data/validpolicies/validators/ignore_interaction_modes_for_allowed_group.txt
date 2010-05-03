@@ -1,0 +1,3 @@
+domain=Manufacturer
+allowed,javax.microedition.io.HttpProtocolPermission,http://*
+

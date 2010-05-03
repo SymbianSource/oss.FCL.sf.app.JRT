@@ -1,0 +1,92 @@
+<!--
+#
+# Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<project name="javainstaller" basedir="." default="deploy.dual">
+    <description>
+        Builds JavaInstaller
+    </description>
+
+  <import file="../../../../build/utilities.xml"/>
+
+  <target name="init.component.properties">
+    <condition property="java.src.second.paths"
+               value="../javasrc:../javasrc.s60"
+               else="../javasrc:../javasrc.linux">
+      <isset property="target.s60" />
+    </condition>
+  </target>
+
+  <target name="compile">
+    <omj.javac
+	       includes="com/nokia/mj/impl/installer/jsrpluginnotifier/InstallerExtension*.java,
+			 com/nokia/mj/impl/installer/pushregistrator/Push*.java,
+			 com/nokia/mj/impl/installer/utils/InstallerMain.java">
+    </omj.javac>
+  </target>
+
+  <!--
+      Data is exported to \epoc32\RELEASE\WINSCW\udeb\Z\resource\java AND
+      to \epoc32\data\Z\resource\java in S60 build env.
+  -->
+  <target name="export.data">
+    <condition property="export.data.path"
+               value="${epocroot}epoc32/release/winscw/udeb/Z/resource/java"
+               else="${env.JAVA_BIN_ROOT}/resources">
+      <isset property="target.s60" />
+    </condition>
+    <copy todir="${export.data.path}">
+        <fileset dir="../data/resource/"/>
+    </copy>
+    <condition property="export.data.path2"
+               value="${epocroot}epoc32/data/Z/resource/java"
+               else="${env.JAVA_BIN_ROOT}/resources">
+      <isset property="target.s60" />
+    </condition>
+    <copy todir="${export.data.path2}">
+        <fileset dir="../data/resource/"/>
+    </copy>
+  </target>
+
+  <target name="compile.second" depends="export.data">
+    <omj.javac
+	       excludes="com/nokia/mj/impl/installer/jsrpluginnotifier/InstallerExtension*.java,
+			 com/nokia/mj/impl/installer/pushregistrator/Push*.java,
+			 com/nokia/mj/impl/installer/utils/InstallerMain.java">
+    </omj.javac>
+  </target>
+
+  <property name="javah.classnames"
+    value="com.nokia.mj.impl.installer.utils.SysUtil,
+           com.nokia.mj.impl.installer.utils.FileRoots,
+           com.nokia.mj.impl.installer.utils.FileWriter,
+           com.nokia.mj.impl.installer.jadjarmatcher.JadJarMatcher,
+           com.nokia.mj.impl.installer.applicationregistrator.ApplicationRegistrator,
+           com.nokia.mj.impl.installer.applicationregistrator.SifNotifier,
+           com.nokia.mj.impl.installer.applicationregistrator.SifRegistrator"/>
+
+  <target name="create.internal.api.jar">
+      <omj.internal.apis includes="com/nokia/mj/impl/installer/jsrpluginnotifier/InstallerExtension.class,
+                                   com/nokia/mj/impl/installer/jsrpluginnotifier/InstallerExtensionInfo.class,
+                                   com/nokia/mj/impl/installer/pushregistrator/PushApplicationInfo.class,
+                                   com/nokia/mj/impl/installer/pushregistrator/PushInfo.class,
+                                   com/nokia/mj/impl/installer/pushregistrator/PushRegistrator.class,
+                                   com/nokia/mj/impl/installer/pushregistrator/PushRegistrationException.class,
+                                   com/nokia/mj/impl/installer/utils/InstallerMain.class"/>
+  </target>
+
+</project>

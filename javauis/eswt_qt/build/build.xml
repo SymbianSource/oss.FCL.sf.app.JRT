@@ -1,0 +1,51 @@
+<!--
+#
+# Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of the License "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<project name="eswtqt" default="deploy" basedir=".">
+
+    <description>
+        Builds eSWT on Qt
+    </description>
+
+    <import file="../../../build/utilities.xml"/>
+
+    <!-- Needed by the utilities.xml. See the description form the utilities.xml
+         file -->
+
+    <property name="java.src.paths" value="../org.eclipse.swt/Eclipse_SWT_PI/s60:../org.eclipse.swt/Eclipse_SWT_PI/qt:../org.eclipse.swt/Eclipse_SWT_PI/common_j2me:../org.eclipse.swt/Eclipse SWT/qt:../org.eclipse.swt/Eclipse SWT/common_j2me:../org.eclipse.swt/Eclipse SWT/common:../org.eclipse.swt/Eclipse SWT Drag and Drop/qt:../org.eclipse.swt/Eclipse SWT Browser/qt:../org.eclipse.swt/Eclipse SWT Browser/common:../com.nokia.swt.extensions/extensions:../com.nokia.swt.extensions/midp_common"/>
+
+    <target name="compile">
+        <omj.javac classpath="${impl.cldc.jar}" excludes="**/CDCCompatibilityDelegate.java"/>
+    </target>
+
+    <property name="javah.classnames" value="org.eclipse.swt.internal.qt.OS,
+                                             org.eclipse.swt.internal.qt.graphics.OS,
+                                             org.eclipse.swt.internal.qt.s60.OS"/>
+
+    <!-- This property gets added to eswtqt.odc created by the build system -->
+    <target name="system.properties">
+      <properties>
+          org.eclipse.ercp.swt.defaultOrientation=system
+      </properties>
+    </target>
+
+    <target name="create.public.api.jar">
+        <omj.public.apis/>
+    </target>
+
+</project>

@@ -1,0 +1,9 @@
+EXPORTS
+	_Z24ImplementationGroupProxyRi @ 1 NONAME
+	_ZTI19CTestSmartCardToken @ 2 NONAME ; #<TI>#
+	_ZTI23CTestSmartCardCertStore @ 3 NONAME ; #<TI>#
+	_ZTI23CTestSmartCardTokenType @ 4 NONAME ; #<TI>#
+	_ZTV19CTestSmartCardToken @ 5 NONAME ; #<VT>#
+	_ZTV23CTestSmartCardCertStore @ 6 NONAME ; #<VT>#
+	_ZTV23CTestSmartCardTokenType @ 7 NONAME ; #<VT>#
+

@@ -1,0 +1,65 @@
+<!--
+#
+# Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<project name="javapim" default="deploy" basedir=".">
+    <description>
+        Builds PIM
+    </description>
+
+  <import file="../../../build/utilities.xml"/>
+
+  <!-- Needed by the utilities.xml. See the description form the utilities.xml
+       file -->  
+  <property name="javah.classnames" 
+            value="com.nokia.mj.impl.pim.ContactImpl,
+                   com.nokia.mj.impl.pim.EventImpl,
+                   com.nokia.mj.impl.pim.EventListImpl,
+                   com.nokia.mj.impl.pim.PIMItemImpl,
+                   com.nokia.mj.impl.pim.PIMListImpl,
+                   com.nokia.mj.impl.pim.PIMManager,
+                   com.nokia.mj.impl.pim.Serializer,
+                   com.nokia.mj.impl.pim.ToDoImpl,
+                   com.nokia.mj.impl.pim.ToDoListImpl,
+                   javax.microedition.pim.RepeatRule"/>
+  
+  <target name="system.properties">
+    <properties>
+      microedition.pim.version=1.0
+    </properties>
+  </target>
+  
+   <target name="create.public.api.jar">
+       <omj.public.apis includes="javax/microedition/pim/Contact.class,
+                                  javax/microedition/pim/ContactList.class,
+                                  javax/microedition/pim/Event.class,
+                                  javax/microedition/pim/EventList.class,
+                                  javax/microedition/pim/FieldEmptyException.class,
+                                  javax/microedition/pim/FieldFullException.class,
+                                  javax/microedition/pim/PIM.class,
+                                  javax/microedition/pim/PIMException.class,
+                                  javax/microedition/pim/PIMItem.class,
+                                  javax/microedition/pim/PIMList.class,
+                                  javax/microedition/pim/RepeatRule.class,
+                                  javax/microedition/pim/ToDo.class,
+                                  javax/microedition/pim/ToDoList.class,
+                                  javax/microedition/pim/UnsupportedFieldException.class"/>
+   </target>
+
+</project>
+
+

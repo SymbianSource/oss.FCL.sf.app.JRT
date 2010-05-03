@@ -1,0 +1,475 @@
+/*
+* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Resource definitions for Midlet Runtime plugin
+*
+*/
+
+
+NAME MLEP
+
+#include "javaapplicationsettings.hrh"           // Midlet command IDs
+#include "javaapplicationsettings.loc"           // UI strings
+
+#include <eikon.rh>                     // Resource structs
+#include <avkon.rh>                     // Resource structs
+#include <avkon.rsg>                    // Avkon resources
+#include <avkon.loc>                    // UI strings
+#include <cmmanager.loc>                // Destination network strings
+
+RESOURCE RSS_SIGNATURE { }
+
+// ---------------------------------------------------------------------------
+// Test menu items
+// ---------------------------------------------------------------------------
+//
+RESOURCE MENU_ITEM midlet_suite_settings_menu_item
+    { 
+    command = EAppMngrCmdSetSuiteSettings;
+    txt = qtn_java_settings_app;
+    }
+
+RESOURCE MENU_ITEM midlet_start_update_menu_item
+    {
+    command = EAppMngrCmdStartUpdate;
+    txt = qtn_java_settings_update;
+    }
+
+RESOURCE MENU_ITEM midlet_goto_url_menu_item
+    {
+    command = EAppMngrCmdGoToUrl;
+    txt = qtn_java_settings_wwwlink;
+    }
+
+
+//----------------------------------------------------
+//   
+//    r_appmngr_view_context_specific
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_appmngr_view_context_specific
+    {
+    menubar = r_appmngr_menubar_view_context_specific;  
+    cba = R_AVKON_SOFTKEYS_OPTIONS_BACK__SELECT;
+    }
+
+//----------------------------------------------------
+//   
+//    r_appmngr_menubar_view_context_specific
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_appmngr_menubar_view_context_specific
+    {
+    titles=
+        {
+        MENU_TITLE { menu_pane = r_appmngr_settings_menu; txt = "View"; }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_appmngr_settings_menu
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_appmngr_settings_menu
+    {
+    items=
+        {	
+        MENU_ITEM { command = EAknCmdHelp; txt = qtn_options_help; },
+        MENU_ITEM { command = EAknCmdExit; txt = qtn_options_exit; }
+        };
+    }
+
+//----------------------------------------------------------
+//   
+//	r_java__sec_lbx_resource
+//
+//----------------------------------------------------------
+//
+RESOURCE ARRAY r_list_box_item_array    
+    {    
+    items =         
+        {         
+                LBUF { txt = "\tItem1\t";},        
+                LBUF { txt = "\tItem2\t";},        
+                LBUF { txt = "\tItem3\t";},        
+                LBUF { txt = "\tItem4\t";}
+        };    
+    }
+RESOURCE LISTBOX r_java__sec_lbx_resource
+    {
+    array_id = r_list_box_item_array;
+    flags = EEikListBoxMultipleSelection | EAknListBoxItemSpecificMenuDisabled;
+    }
+
+//----------------------------------------------------------
+//
+// r_java_setting_on_screen_keypad_page
+// Setting page for security permission
+//
+//----------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_java_setting_on_screen_keypad_page
+	{
+	label = qtn_java_setting_on_screen_keypad;
+	softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+	type = EAknSetListBox;
+	editor_resource_id = r_java__sec_lbx_resource;
+	}
+
+//----------------------------------------------------------
+//
+// r_java_setting_net_access_page
+// Setting page for network access security permission
+//
+//----------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_java_setting_net_access_page
+	{
+	label = qtn_java_setting_net_access;
+	softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+	type = EAknSetListBox;
+	editor_resource_id = r_java__sec_lbx_resource;
+	}
+
+//----------------------------------------------------------
+//
+// r_java_setting_low_level_net_access_page
+// Setting page for network access security permission
+//
+//----------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_java_setting_low_level_net_access_page
+	{
+	label = qtn_java_setting_low_level_net_access;
+	softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+	type = EAknSetListBox;
+	editor_resource_id = r_java__sec_lbx_resource;
+	}
+
+//----------------------------------------------------------
+//
+// r_java_setting_call_control_page
+// Setting page for call control security permission
+//
+//----------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_java_setting_call_control_page
+	{
+	label = qtn_java_setting_call_control;
+	softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+	type = EAknSetListBox;
+	editor_resource_id = r_java__sec_lbx_resource;
+	}
+
+//----------------------------------------------------------
+//
+// r_java_setting_messaging_page
+// Setting page for messaging security permission
+//
+//----------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_java_setting_messaging_page
+	{
+	label = qtn_java_setting_messaging;
+	softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+	type = EAknSetListBox;
+	editor_resource_id = r_java__sec_lbx_resource;
+	}
+
+//----------------------------------------------------------
+//
+// r_java_setting_restricted_messaging_page
+// Setting page for restricted messaging security permission
+//
+//----------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_java_setting_restricted_messaging_page
+	{
+	label = qtn_java_setting_restricted_messaging;
+	softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+	type = EAknSetListBox;
+	editor_resource_id = r_java__sec_lbx_resource;
+	}
+
+//----------------------------------------------------------
+//
+// r_java_setting_app_auto_invocat_page
+// Setting page for automatic invocation security permission
+//
+//----------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_java_setting_app_auto_invocat_page
+	{
+	label = qtn_java_setting_app_auto_invocat;
+	softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+	type = EAknSetListBox;
+	editor_resource_id = r_java__sec_lbx_resource;
+	}
+
+//----------------------------------------------------
+//    r_appmngr_query_dialog with ok-cancel buttons
+//----------------------------------------------------
+    RESOURCE DIALOG r_appmngr_query_dialog_ok_cancel
+    {
+    flags = EGeneralQueryFlags | EEikDialogFlagNoBorder | EEikDialogFlagNoShadow;
+    buttons = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+    items=
+        {
+        DLG_LINE 
+            {
+            type = EAknCtPopupHeadingPane;
+            id = EAknMessageQueryHeaderId;
+            control = AVKON_HEADING
+                {
+                headinglayout = R_AVKON_WML_SIGN_QUERY_HEADING_PANE;
+                };
+            },
+        DLG_LINE
+            {
+            type = EAknCtMessageQuery;
+            id = EAknMessageQueryContentId;
+            control = AVKON_MESSAGE_QUERY
+                {
+                };
+            }
+        };
+    }
+
+//----------------------------------------------------------
+//
+// r_java_setting_local_conn_page
+// Setting page for local connectivity security permission
+//
+//----------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_java_setting_local_conn_page
+	{
+	label = qtn_java_setting_local_conn;
+	softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+	type = EAknSetListBox;
+	editor_resource_id = r_java__sec_lbx_resource;
+	}
+
+//----------------------------------------------------------
+//
+// r_java_setting_mm_record_page
+// Setting page for multimedia recording security permission
+//
+//----------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_java_setting_mm_record_page
+	{
+	label = qtn_java_setting_mm_record;
+	softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+	type = EAknSetListBox;
+	editor_resource_id = r_java__sec_lbx_resource;
+	}
+
+//----------------------------------------------------------
+//
+// r_java_setting_read_data_page
+// Setting page for Read User data Access security permission
+//
+//----------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_java_setting_read_data_page
+	{
+	label = qtn_java_setting_read_data;
+	softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+	type = EAknSetListBox;
+	editor_resource_id = r_java__sec_lbx_resource;
+	}
+
+//----------------------------------------------------------
+//
+// r_java_setting_write_data_page
+// Setting page for Write User data access security permission
+//
+//----------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_java_setting_write_data_page
+	{
+	label = qtn_java_setting_write_data;
+	softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+	type = EAknSetListBox;
+	editor_resource_id = r_java__sec_lbx_resource;
+	}
+
+//----------------------------------------------------------
+//
+// r_java_setting_location_page
+// Setting page for location security permission
+//
+//----------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_java_setting_location_page
+	{
+	label = qtn_java_setting_location;
+	softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+	type = EAknSetListBox;
+	editor_resource_id = r_java__sec_lbx_resource;
+	}
+
+//----------------------------------------------------------
+//
+// r_java_setting_landmarks_page
+// Setting page for landmarks security permission
+//
+//----------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_java_setting_landmarks_page
+	{
+	label = qtn_java_setting_landmarks;
+	softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+	type = EAknSetListBox;
+	editor_resource_id = r_java__sec_lbx_resource;
+	}
+
+//----------------------------------------------------------
+//
+// r_java_setting_auth_page
+// Setting page for authentication security permission
+//
+//----------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_java_setting_auth_page
+	{
+	label = qtn_java_setting_auth;
+	softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+	type = EAknSetListBox;
+	editor_resource_id = r_java__sec_lbx_resource;
+	}
+
+//----------------------------------------------------------
+//
+// r_java_setting_smartcard_page
+// Setting page for smart card communication security permission
+//
+//----------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_java_setting_smartcard_page
+	{
+	label = qtn_java_setting_smartcard;
+	softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+	type = EAknSetListBox;
+	editor_resource_id = r_java__sec_lbx_resource;
+	}
+
+//----------------------------------------------------------
+//
+// r_java_setting_default_page
+// Setting page for security permission
+//
+//----------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_java_setting_default_page
+	{
+	label = qtn_java_setting_default;
+	softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+	type = EAknSetListBox;
+	editor_resource_id = r_java__sec_lbx_resource;
+	}
+
+//----------------------------------------------------------
+//
+// r_java_setting_security_warnings_page
+// Setting page for security warnings mode
+//
+//----------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_java_setting_security_warnings_page
+    {
+    label = qtn_java_setting_security_level;
+    softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+    type = EAknSetListBox;
+    editor_resource_id = r_java__sec_lbx_resource;
+    }
+
+//----------------------------------------------------------
+//
+// r_java_setting_broadcast_page
+// Setting page for broadcast
+//
+//----------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_java_setting_broadcast_page
+    {
+    label = qtn_java_setting_broadcast;
+    softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+    type = EAknSetListBox;
+    editor_resource_id = r_java__sec_lbx_resource;
+    }
+
+//----------------------------------------------------------
+//
+// r_java_setting_nfc_write_access_page
+// Setting page for NFC write access
+//
+//----------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_java_setting_nfc_write_access_page
+    {
+    label = qtn_java_setting_nfc_write_access;
+    softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+    type = EAknSetListBox;
+    editor_resource_id = r_java__sec_lbx_resource;
+    }
+
+// ------------------------------------------------------
+// Misc strings
+// ------------------------------------------------------
+
+RESOURCE TBUF r_java_set_title { buf=qtn_java_settings_app_title; }
+RESOURCE TBUF r_java_sec_header { buf=qtn_java_settings_note_security_warn; }
+RESOURCE TBUF r_java_query_midlet_perm_excl { buf=qtn_java_settings_query_perm_warn; }
+RESOURCE TBUF r_java_query_midlet_perm_net { buf=qtn_java_settings_query_perm_net; }
+RESOURCE TBUF r_java_query_midlet_perm_sec { buf=qtn_java_settings_query_perm_sec; }
+RESOURCE TBUF r_java_info_stat_not_loaded { buf=qtn_java_app_details_status_only_jad; }
+RESOURCE TBUF r_java_msk_view_details { buf = qtn_msk_view_details; }
+RESOURCE TBUF r_java_conset_sett_always_ask { buf=qtn_netw_conset_sett_always_ask; }
+RESOURCE TBUF r_java_conset_sett_default_connection { buf=qtn_netw_conset_sett_default_connection; }
+RESOURCE TBUF r_java_setting_name_net_access { buf=qtn_java_setting_net_access; }
+RESOURCE TBUF r_java_setting_name_low_level_net_access { buf=qtn_java_setting_low_level_net_access; }
+RESOURCE TBUF r_java_setting_name_app_auto_invocat { buf=qtn_java_setting_app_auto_invocat; }
+RESOURCE TBUF r_java_setting_name_mm_record { buf=qtn_java_setting_mm_record; }
+RESOURCE TBUF r_java_setting_name_read_data { buf=qtn_java_setting_read_data; }
+RESOURCE TBUF r_java_setting_name_write_data { buf=qtn_java_setting_write_data; }
+RESOURCE TBUF r_java_setting_name_location { buf=qtn_java_setting_location; }
+RESOURCE TBUF r_java_setting_name_landmarks { buf=qtn_java_setting_landmarks; }
+RESOURCE TBUF r_java_setting_name_smartcard { buf=qtn_java_setting_smartcard; }
+RESOURCE TBUF r_java_setting_name_aut { buf=qtn_java_setting_auth; }
+RESOURCE TBUF r_java_setting_name_messaging { buf=qtn_java_setting_messaging; }
+RESOURCE TBUF r_java_setting_name_restricted_messaging { buf=qtn_java_setting_restricted_messaging; }
+RESOURCE TBUF r_java_setting_name_restricted_call_control { buf=qtn_java_setting_call_control; }
+RESOURCE TBUF r_java_setting_name_local_conn { buf=qtn_java_setting_local_conn; }
+RESOURCE TBUF r_java_setting_name_keypad { buf=qtn_java_setting_on_screen_keypad; }
+RESOURCE TBUF r_java_setting_name_network_destination { buf=qtn_netw_conset_sett_destination; }
+RESOURCE TBUF r_java_setting_name_broadcast { buf=qtn_java_setting_broadcast; }
+RESOURCE TBUF r_java_setting_name_nfc_write_access { buf=qtn_java_setting_nfc_write_access; }
+RESOURCE TBUF r_java_setting_name_security_warnings { buf=qtn_java_setting_security_level; }
+RESOURCE TBUF r_java_setting_value_no { buf=qtn_java_setting_value_no; }
+RESOURCE TBUF r_java_setting_value_oneshot { buf=qtn_java_setting_value_oneshot; }
+RESOURCE TBUF r_java_setting_value_session { buf=qtn_java_setting_value_session; }
+RESOURCE TBUF r_java_setting_value_blank { buf=qtn_java_setting_value_blanket; }
+RESOURCE TBUF r_java_keypad_setting_value_no { buf=qtn_java_setting_keypad_no; }
+RESOURCE TBUF r_java_keypad_setting_value_game { buf=qtn_java_setting_keypad_game; }
+RESOURCE TBUF r_java_keypad_setting_value_navigation { buf=qtn_java_setting_keypad_navigation; }
+RESOURCE TBUF r_java_security_warnings_setting_value_default { buf=qtn_java_setting_value_recommended; }
+RESOURCE TBUF r_java_security_warnings_setting_value_user_defined { buf=qtn_java_setting_value_user_defined; }

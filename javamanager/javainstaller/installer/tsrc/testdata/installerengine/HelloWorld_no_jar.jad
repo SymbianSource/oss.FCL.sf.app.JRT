@@ -1,0 +1,9 @@
+MIDlet-1: HelloWorld, , helloworld.HelloWorld
+MIDlet-Jar-Size: 1511
+MIDlet-Jar-URL: HelloWorld.jar
+MIDlet-Data-Size: 4000
+MIDlet-Name: HelloWorld_no_jar
+MIDlet-Vendor: Nokia
+MIDlet-Version: 1.0
+MIDlet-Push-1: socket://:81, helloworld.HelloWorld, *
+MIDlet-Permissions: javax.microedition.io.PushRegistryPermission, javax.microedition.io.Connector.serversocket

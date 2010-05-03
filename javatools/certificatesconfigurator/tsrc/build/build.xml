@@ -1,0 +1,112 @@
+<!--
+#
+# Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<project name="javaunitcertstoreplugintests" default="backup" basedir=".">
+
+  <import file="../../../../build/utilities.xml"/>
+
+  <property name="test.base.dir" location="${env.JAVA_SRC_ROOT}/javatools/certificatesconfigurator/tsrc/tmp"/>
+  <property name="test.legacy.base.dir" location="${test.base.dir}/legacy"/>
+  <property name="test.omj.base.dir" location="${test.base.dir}/omj"/>
+  <property name="test.legacy.certs.dir" location="${test.legacy.base.dir}/certs"/>
+  <property name="test.legacy.certs.states.dir" location="${test.legacy.base.dir}/states"/>
+  <property name="test.omj.certs.primary.dir" location="${test.omj.base.dir}/primarycerts"/>
+  <property name="test.omj.certs.secondary.dir" location="${test.omj.base.dir}/secondarycerts"/>
+  <property name="test.omj.certs.states.dir" location="${test.omj.base.dir}/states"/>
+  <property name="test.trustrootpolicy.dir" location="${test.base.dir}/trustrootpolicy"/>
+  <property name="legacy.certs.dir" location="/epoc32/release/winscw/udeb/Z/private/10203636/security/trustroots/device/certificates"/>
+  <property name="legacy.certs.states.dir" location="/epoc32/winscw/C/private/10203636/security/trustroots/device/state"/>
+  <property name="omj.certs.primary.dir" location="/epoc32/release/winscw/udeb/Z/private/200211dc/security/trustroots/device/certificates"/>
+  <property name="omj.certs.secondary.dir" location="/epoc32/winscw/C/private/200211dc/security/trustroots/device/certificates"/>
+  <property name="omj.certs.states.dir" location="/epoc32/winscw/C/private/200211dc/security/trustroots/device/state"/>
+  <property name="legacy.trustrootpolicy.file" location="/epoc32/release/winscw/udeb/Z/private/10203636/security/midp2_trp.xml"/>
+
+  <target name="init" depends="init.properties">
+      <available file="${test.base.dir}" type="dir" property="test.base.dir.exists"/>
+  </target>
+
+  <target name="backup" depends="init" unless="test.base.dir.exists">
+      <mkdir dir="${test.legacy.certs.dir}"/>
+      <mkdir dir="${test.legacy.certs.states.dir}"/>
+      <mkdir dir="${test.omj.certs.primary.dir}"/>
+      <mkdir dir="${test.omj.certs.secondary.dir}"/>
+      <mkdir dir="${test.omj.certs.states.dir}"/>
+      <mkdir dir="${test.trustrootpolicy.dir}"/>
+      <copy todir="${test.legacy.certs.dir}" failonerror="false">
+          <fileset dir="${legacy.certs.dir}"/>
+      </copy>
+      <copy todir="${test.legacy.certs.states.dir}" failonerror="false">
+          <fileset dir="${legacy.certs.states.dir}"/>
+      </copy>
+      <copy todir="${test.omj.certs.primary.dir}" failonerror="false">
+          <fileset dir="${omj.certs.primary.dir}"/>
+      </copy>
+      <copy todir="${test.omj.certs.secondary.dir}" failonerror="false">
+          <fileset dir="${omj.certs.secondary.dir}"/>
+      </copy>
+      <copy todir="${test.omj.certs.states.dir}" failonerror="false">
+          <fileset dir="${omj.certs.states.dir}"/>
+      </copy>
+      <move file="${legacy.trustrootpolicy.file}" todir="${test.trustrootpolicy.dir}"/>      
+      <delete>
+          <fileset dir="${legacy.certs.dir}"/>
+      </delete>
+      <delete>
+          <fileset dir="${legacy.certs.states.dir}"/>
+      </delete>
+      <delete>
+          <fileset dir="${omj.certs.primary.dir}"/>
+      </delete>
+      <delete>
+          <fileset dir="${omj.certs.secondary.dir}"/>
+      </delete>
+      <delete>
+          <fileset dir="${omj.certs.states.dir}"/>
+      </delete>
+      <copy file="../data/midp2_trp.xml" tofile="${legacy.trustrootpolicy.file}"/>      
+      <unzip src="../data/roots.zip" dest="${legacy.certs.dir}"/>
+      <unzip src="../data/states.zip" dest="${legacy.certs.states.dir}"/>
+  </target>
+
+  <target name="clean" depends="init.properties">
+      <delete dir="${legacy.certs.dir}"/>
+      <delete dir="${legacy.certs.states.dir}"/>
+      <delete dir="${omj.certs.primary.dir}"/>
+      <delete dir="${omj.certs.secondary.dir}"/>
+      <delete dir="${omj.certs.states.dir}"/>
+      <copy todir="${legacy.certs.dir}" failonerror="false">
+          <fileset dir="${test.legacy.certs.dir}"/>
+      </copy>
+      <copy todir="${legacy.certs.states.dir}" failonerror="false">
+          <fileset dir="${test.legacy.certs.states.dir}"/>
+      </copy>
+      <copy todir="${omj.certs.primary.dir}" failonerror="false">
+          <fileset dir="${test.omj.certs.primary.dir}"/>
+      </copy>
+      <copy todir="${omj.certs.secondary.dir}" failonerror="false">
+          <fileset dir="${test.omj.certs.secondary.dir}"/>
+      </copy>
+      <copy todir="${omj.certs.states.dir}" failonerror="false">
+          <fileset dir="${test.omj.certs.states.dir}"/>
+      </copy>
+      <copy file="${test.trustrootpolicy.dir}/midp2_trp.xml" tofile="${legacy.trustrootpolicy.file}" overwrite="true" failonerror="false"/>      
+      <delete dir="${test.base.dir}"/>
+  </target>
+
+</project>
+

@@ -1,0 +1,60 @@
+<!--
+#
+# Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<project name="javasensor" default="deploy" basedir=".">
+    <description>
+        Builds Sensor API
+    </description>
+
+  <import file="../../../build/utilities.xml"/>
+
+  <property name="localisation.file.base" value="javasensor"/>
+
+  <property name="javah.classnames" 
+            value="com.nokia.mj.impl.sensor.ChannelImpl,
+            com.nokia.mj.impl.sensor.SensorConnectionImpl,
+            com.nokia.mj.impl.sensor.SensorManagerImpl"/>
+            
+   <target name="system.properties">
+    <properties>
+      microedition.sensor.version=1.2
+    </properties>
+  </target>
+            
+   <target name="create.public.api.jar">
+       <omj.public.apis includes="javax/microedition/sensor/Channel.class,
+                                  javax/microedition/sensor/ChannelInfo.class,
+                                  javax/microedition/sensor/Condition.class,
+                                  javax/microedition/sensor/ConditionListener.class,
+                                  javax/microedition/sensor/Data.class,
+                                  javax/microedition/sensor/DataAndErrorListener.class,
+                                  javax/microedition/sensor/DataListener.class,
+                                  javax/microedition/sensor/LimitCondition.class,
+                                  javax/microedition/sensor/MeasurementRange.class
+                                  javax/microedition/sensor/ObjectCondition.class,
+                                  javax/microedition/sensor/RangeCondition.class,
+                                  javax/microedition/sensor/SensorConnection.class,
+                                  javax/microedition/sensor/SensorInfo.class,
+                                  javax/microedition/sensor/SensorListener.class,
+                                  javax/microedition/sensor/SensorManager.class,
+                                  javax/microedition/sensor/Unit.class"/>
+   </target>     
+
+</project>
+
+

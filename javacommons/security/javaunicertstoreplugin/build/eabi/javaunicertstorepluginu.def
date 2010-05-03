@@ -1,0 +1,11 @@
+EXPORTS
+	_Z24ImplementationGroupProxyRi @ 1 NONAME
+	_ZTIN4java8security13CJavaCertDataE @ 2 NONAME ; #<TI>#
+	_ZTIN4java8security18CJavaCertStoreImplE @ 3 NONAME ; #<TI>#
+	_ZTIN4java8security19CJavaCertStoreTokenE @ 4 NONAME ; #<TI>#
+	_ZTIN4java8security23CJavaCertStoreTokenTypeE @ 5 NONAME ; #<TI>#
+	_ZTVN4java8security13CJavaCertDataE @ 6 NONAME ; #<VT>#
+	_ZTVN4java8security18CJavaCertStoreImplE @ 7 NONAME ; #<VT>#
+	_ZTVN4java8security19CJavaCertStoreTokenE @ 8 NONAME ; #<VT>#
+	_ZTVN4java8security23CJavaCertStoreTokenTypeE @ 9 NONAME ; #<VT>#
+

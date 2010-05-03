@@ -1,0 +1,8 @@
+EXPORTS
+	_Z10jni_lookupPKc @ 1 NONAME
+	_ZN17ConnectionManager24getDestinationNetworkIdLEN4java4util3UidE @ 2 NONAME
+	_ZN17ConnectionManager24setDestinationNetworkIdLEN4java4util3UidEi @ 3 NONAME
+	_ZN17ConnectionManager9getApnIdLEN4java4util3UidE @ 4 NONAME
+	_ZN17ConnectionManager9setApnIdLEN4java4util3UidEi @ 5 NONAME
+	_ZN17ConnectionManager12isIapDefaultEmmb @ 6 NONAME
+

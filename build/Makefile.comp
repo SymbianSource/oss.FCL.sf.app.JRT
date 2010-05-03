@@ -1,0 +1,253 @@
+#
+# Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+
+ifndef JAVA_SRC_ROOT
+$(error JAVA_SRC_ROOT variable not defined!)
+endif
+
+include $(JAVA_SRC_ROOT)/build/Makefile.defs
+
+
+.PHONY: build_clean_java build_qmake build_clean_native really_clean_native clean_qmake qmakehelp emmareport
+
+
+PRO_FILE = $(wildcard *.pro)
+ANT_FILE = $(wildcard build.xml)
+ifeq ($(PRO_FILE),)
+$(error No .pro file on COMPONENT directory $(CURDIR))
+endif
+
+clean: clean_java clean_native
+
+
+# Determine if Java needs to be built
+ifneq ($(ANT_FILE),)
+java: build_java
+clean_java: build_clean_java
+makestubs: build_makestubs
+else
+java:
+clean_java:
+makestubs:
+endif
+
+# Determine if native needs to be built
+qmake: build_qmake
+native: build_native
+clean_native: build_clean_native
+reallyclean: really_clean_native clean_generated
+
+
+# Common   ---------------------------------
+
+reallyclean: clean cleanexport
+
+test: 
+	$(PHASEINFO)
+	$(EXEC_QT)
+
+clean_configure:
+
+# Make stub files of .cpp and .h files of Java compilation (needed by qmake)
+build_makestubs:
+	$(PHASEINFO)
+ifndef SBOX_CPUTRANSPARENCY_LOG
+	$(ANT) -Dtarget.platform=$(PLATFORM) -Dtarget.cfg=debug $(ANT_PROJECT_DEFINES) export
+endif
+
+build_java:
+	$(PHASEINFO)
+ifndef SBOX_CPUTRANSPARENCY_LOG
+	$(ANT) -Dtarget.platform=$(PLATFORM) -Dtarget.cfg=$(VARIANT) $(ANT_PROJECT_DEFINES) $(ANT_EMMA_DEFINES)
+endif
+
+build_clean_java:
+	$(PHASEINFO)
+ifndef SBOX_CPUTRANSPARENCY_LOG
+	-$(ANT) -Dtarget.platform=$(PLATFORM) -Dtarget.cfg=$(VARIANT) $(ANT_PROJECT_DEFINES) clean
+endif
+
+# Say "QT-=gui core" here, as removing it in omj.prf (CONFIG += omj through .pro file) does
+# not work for "default_post" step.
+qmakehelp:
+	$(call PHASEINFO,qmake)
+	$(QMAKE) "PROJECT_DEFINES=$(PROJECT_DEFINES)"
+
+emmareport:
+ifndef SBOX_CPUTRANSPARENCY_LOG
+	$(ANT) -f $(JAVA_SRC_ROOT)/build/emmautilities.xml -Dset.emma.enabled=true emma.report
+endif
+
+# Add the pro-file to the subdirs of enclosing component. Must define the file
+# explicitly when directory (==build) is differntly named from pro-file.
+configure_qmake:
+ifdef TARGET_PRO
+	echo SUBDIRS += $(TARGET_SUB)/$(PRO_FILE) >> $(TARGET_PRO)
+endif
+
+# Symbian ----------------------------------
+ifeq ($(BUILDENV),symbian)
+
+all: qmake java native
+
+# Extract basename of current component
+BASENAME = $(basename $(PRO_FILE))
+
+# Use separate qmakefix run, so that wildcards are evaluated with 
+# latest directory content
+build_qmake: clean_qmake qmakehelp
+ifndef RD_JAVA_UI_QT
+	$(MAKE) -f $(JAVA_SRC_ROOT)/build/Makefile.comp qmakefix
+endif
+
+# Replace bld.inf completely, fix mmp (if any) and remove extra files
+# (used when QT is used only for qmake)
+qmakefix:
+	$(PHASEINFO)
+ifeq ($(filter 0 1,$(words $(wildcard $(BASENAME)_*.mmp))),)
+	$(error Old generated files left on build directory. Please run "make -f subsystem.mk clean_generated" on root directory, and rebuild)
+endif
+	$(call RMFILES,Makefile* $(BASENAME)_*.pkg bld.inf*)
+ifeq ($(wildcard $(BASENAME)_*.mmp),)
+	$(call CATCOMMAND,$(JAVA_SRC_ROOT)/build/templates/bld.inf) > bld.inf
+else
+	python $(JAVA_SRC_ROOT)/build/buildutils/fixmmp.py --tmp-dirs --datetime --header $(JAVA_SRC_ROOT)/build/templates/generated_header.txt $(wildcard $(BASENAME)_*.mmp) $(wildcard $(BASENAME)_*.mmp) && \
+	$(call CATCOMMAND,$(JAVA_SRC_ROOT)/build/templates/bld.inf) > bld.inf && \
+	echo PRJ_MMPFILES >> bld.inf && \
+	echo $(wildcard $(BASENAME)_*.mmp) >> bld.inf
+endif
+ifneq ($(wildcard exports.inf),)
+	echo #include "exports.inf" >> bld.inf
+endif
+
+javareleasables:
+ifneq ($(ANT_FILE),)
+	$(ANT) -q -Dtarget.platform=$(PLATFORM) -Dtarget.cfg=$(VARIANT) $(ANT_PROJECT_DEFINES) releasables > $(DEVNULL)
+	$(call CATCOMMAND,java_releasables_$(PLATFORM)_$(VARIANT).tmp)
+	$(call RMFILE,java_releasables_$(PLATFORM)_$(VARIANT).tmp)
+endif
+
+# Remove all generated build files
+clean_generated: FORCE
+	$(PHASEINFO)
+ifdef RD_JAVA_UI_QT
+	-$(call IFEXIST,Makefile,make dodistclean)
+endif
+	-$(call RMFILES,abld.bat bld.inf* Makefile* $(BASENAME).mmp $(BASENAME)_*.mmp $(BASENAME)_*.pkg $(BASENAME)_reg.rss eabi_stl4/*)
+	-$(call RMDIR, eabi_stl4) > $(DEVNULL) 2>&1
+
+clean_qmake:
+	-$(call RMFILES,abld.bat bld.inf* Makefile* $(BASENAME).mmp $(BASENAME)_*.mmp $(BASENAME)_*.pkg $(BASENAME)_reg.rss eabi_stl4/*)
+
+# Symbian SBS ------------------------------
+ifdef USESBS
+
+export: 
+	$(PHASEINFO)
+	$(SBS) -c $(PLATFORM)_$(CFG) EXPORT
+
+build_native:
+	$(PHASEINFO)
+	$(SBS) -c $(PLATFORM)_$(CFG) BUILD
+
+fastbuild: export java
+	$(PHASEINFO)
+	$(SBS) -c $(PLATFORM)_$(CFG) TARGET
+
+build_clean_native:
+	$(PHASEINFO)
+	-$(SBS) -c $(PLATFORM)_$(CFG) clean
+
+really_clean_native:
+	$(PHASEINFO)
+	-$(SBS) -c $(PLATFORM)_$(CFG) reallyclean
+
+cleanexport:
+	$(PHASEINFO)
+	-$(SBS) -c $(PLATFORM)_$(CFG) CLEANEXPORT
+
+
+# Symbian ABLD MAKEFILE --------------------
+else
+
+export: 
+	$(PHASEINFO)
+	$(BLDMAKE) bldfiles $(PLATFORM)
+	$(ABLDMAKE) -f $(BUILDDIR)/EXPORT.make EXPORT
+
+cleanexport:
+	$(PHASEINFO)
+	$(ABLDMAKE) -f $(BUILDDIR)/EXPORT.make CLEANEXPORT
+
+build_native:
+	$(PHASEINFO)
+	$(BLDMAKE) bldfiles $(PLATFORM)
+	$(ABLDMAKE) -f $(BUILDDIR)/EXPORT.make EXPORT
+	$(ABLDMAKE) -f $(BUILDDIR)/$(PLATFORM).make MAKEFILE $(VERBOSE)
+	$(ABLDMAKE) -f $(BUILDDIR)/$(PLATFORM).make LIBRARY $(VERBOSE)
+	$(ABLDMAKE) -f $(BUILDDIR)/$(PLATFORM).make RESOURCE CFG=$(CFG) $(VERBOSE)
+	$(ABLDMAKE) -f $(BUILDDIR)/$(PLATFORM).make TARGET CFG=$(CFG) $(VERBOSE)
+	$(ABLDMAKE) -f $(BUILDDIR)/$(PLATFORM).make FINAL CFG=$(CFG) $(VERBOSE)
+
+fastbuild: export java
+	$(PHASEINFO)
+	$(ABLDMAKE) -f $(BUILDDIR)/$(PLATFORM).make TARGET CFG=$(CFG) $(VERBOSE)
+
+build_clean_native:
+	$(PHASEINFO)
+	-$(ABLDMAKE) -f $(BUILDDIR)/$(PLATFORM).make CLEAN CFG=$(CFG) $(VERBOSE)
+
+really_clean_native:
+	$(PHASEINFO)
+	$(BLDMAKE) bldfiles $(PLATFORM)
+	$(ABLDMAKE) -f $(BUILDDIR)/$(PLATFORM).make MAKEFILE $(VERBOSE) NO_DEPENDENCIES=-nd
+	-abld reallyclean $(PLATFORM) $(CFG)
+	-$(BLDMAKE) clean
+
+endif
+
+
+# Linux ------------------------------------
+else
+
+all: export java qmake native
+
+EXPORTCMD = python ${JAVA_SRC_ROOT}/build/buildutils/export.py -DJAVA_SRC_ROOT=$(JAVA_SRC_ROOT) -DJAVA_BIN_ROOT=$(JAVA_BIN_ROOT) $(addprefix -D,$(PROJECT_DEFINES))
+
+export: 
+	$(EXPORTCMD) BUILD exports.inf
+
+cleanexport:
+	$(EXPORTCMD) CLEAN exports.inf
+
+build_makemake: qmake
+
+build_qmake: qmakehelp
+
+build_native:	
+	$(PHASEINFO)
+	make
+
+build_clean_native:
+	-make clean
+
+really_clean_native: 
+	-make distclean
+
+clean_generated:
+	-rm Makefile
+
+endif

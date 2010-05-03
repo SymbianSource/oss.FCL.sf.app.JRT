@@ -1,0 +1,70 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
+PRJ_PLATFORMS
+default
+
+#include "bldjava.inf"
+#include "buildjavastubsis.inf"
+
+PRJ_EXPORTS
+
+#include "../inc/build_defines.hrh"
+
+#ifdef RD_JAVA_UI_QT
+
+../rom/java_3_1.iby                CORE_APP_LAYER_IBY_EXPORT_PATH(java.iby)
+
+// Export ODC list files
+../rom/midpodclist30      /epoc32/release/winscw/udeb/z/resource/java/midpodclist
+../rom/midpodclist30      /epoc32/release/winscw/urel/z/resource/java/midpodclist
+../rom/midpodclist30      /epoc32/data/z/resource/java/midpodclist
+
+../rom/installerodclist30 /epoc32/release/winscw/udeb/z/resource/java/installerodclist
+../rom/installerodclist30 /epoc32/release/winscw/urel/z/resource/java/installerodclist
+../rom/installerodclist30 /epoc32/data/z/resource/java/installerodclist
+
+../rom/tckrunnerodclist30 /epoc32/release/winscw/udeb/z/resource/java/tckrunnerodclist
+../rom/tckrunnerodclist30 /epoc32/release/winscw/urel/z/resource/java/tckrunnerodclist
+../rom/tckrunnerodclist30 /epoc32/data/z/resource/java/tckrunnerodclist
+
+../rom/javalocalization_3_1.iby        LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(javalocalization.iby)
+
+#else // RD_JAVA_UI_QT
+
+../rom/java_2_1.iby                CORE_APP_LAYER_IBY_EXPORT_PATH(java.iby)
+
+// Export ODC list files
+../rom/midpodclist	     /epoc32/release/winscw/udeb/z/resource/java/midpodclist
+../rom/midpodclist	     /epoc32/release/winscw/urel/z/resource/java/midpodclist
+../rom/midpodclist	     /epoc32/data/z/resource/java/midpodclist
+
+../rom/installerodclist /epoc32/release/winscw/udeb/z/resource/java/installerodclist
+../rom/installerodclist /epoc32/release/winscw/urel/z/resource/java/installerodclist
+../rom/installerodclist /epoc32/data/z/resource/java/installerodclist
+
+../rom/tckrunnerodclist /epoc32/release/winscw/udeb/z/resource/java/tckrunnerodclist
+../rom/tckrunnerodclist /epoc32/release/winscw/urel/z/resource/java/tckrunnerodclist
+../rom/tckrunnerodclist /epoc32/data/z/resource/java/tckrunnerodclist
+
+../rom/javalocalization_2_1.iby        LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(javalocalization.iby)
+
+#endif // RD_JAVA_UI_QT
+
+// Test utilities are included only in R&D and SubCon images
+../rom/javatest.iby                CORE_IBY_EXPORT_PATH(tools,javatest.iby)
+

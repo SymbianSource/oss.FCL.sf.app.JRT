@@ -1,0 +1,233 @@
+<!--
+#
+# Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<project name="utilities.s60">
+
+<!--EXPORT START-->
+
+  <target name="do.export">
+    <exec executable="python" failonerror="true">
+      <arg value="${java.src.root}/build/buildutils/createstubfiles.py"/>
+      <arg value="${component.root.dir}"/>
+      <arg value="${javah.classnames}"/>
+      <arg value="${javah.dir}"/>
+    </exec>
+  </target>
+
+<!--EXPORT START-->
+
+
+
+
+  <!--Initialize japt specific properties -->
+  <target name="init.j9.japt.properties">
+
+    <!--Set the target Jar file depending whether the build is first phase
+        build or second phase build -->
+    <condition property="target.japt.debug"
+               value="${component.root.dir}/debug_japted2.jar"
+               else="${component.root.dir}/debug_japted.jar">
+      <isset property="second.phase.compilation" />
+    </condition>
+
+    <condition property="target.japt.release"
+               value="${component.root.dir}/release_japted2.jar"
+               else="${component.root.dir}/release_japted.jar">
+      <isset property="second.phase.compilation" />
+    </condition>
+
+    <!--Is the japted jar uptodate? -->
+    <uptodate property="japt.not.uptodate" targetfile="${target.japt.debug}">
+        <srcfiles dir= "${dst.dir}" includes="**/*.class"/>
+    </uptodate>
+
+
+    <!--Adding the Jar file containig all the cdc classes into the 
+        bootclasspath of the japt tool if the source files contains cdc 
+        Java code.-->
+    <condition property="impl.cdc.jar.classpath"
+               value="${impl.cdc.jar}"
+               else="">
+      <equals arg1="${bcp}" arg2="${bootclasspath.cdc}"/>
+    </condition>
+
+    <!--Property for setting the debug info for japt-->
+	<condition property="no.strip.debug.info"
+               value="-noStripDebugInfo"
+               else="">
+      <equals arg1="${target.cfg}" arg2="debug"/>
+	</condition>
+
+    <!-- Path for JAPT classpath. Nonexistent files are skipped -->
+    <path id="japt.classpath">
+      <fileset file="${bcp}"/>
+      <fileset file="${int.bcp}"/>
+      <fileset file="${impl.cldc.jar}"/>
+      <fileset file="${impl.cdc.jar.classpath}"/>
+    </path>
+
+  </target>
+
+  <!--Do the finetune.classes (japt in J9) if needed -->
+  <target name="finetune.classes" depends="init.j9.japt.properties" 
+                                  unless="japt.not.uptodate">
+
+    <!-- The wildcard parameter to japt is different in Linux and Windows. -->
+    <condition property="japt.wildcard.parameter" 
+               value="&quot;*&quot;"
+               else="*">
+      <os family="windows"/>
+    </condition>
+
+    <exec executable="${j9.java.home}/bin/japt" failonerror="true">
+      <env key="JAVA_HOME" value="${j9.java.home}"/>
+      <arg value="-includeClass"/>
+      <arg value="${japt.wildcard.parameter}"/>
+      <arg value="-extension"/>
+      <arg value="-inline"/>
+      <arg value="-inlineAllJSRs"/>
+      <arg value="-icp"/>
+      <arg value="${dst.dir}"/>
+      <arg value="-cp"/>
+      <arg value="${toString:japt.classpath}"/>
+      <arg value="-extension"/>
+      <arg value="-jarOutput"/>
+      <arg value="-output"/>
+      <arg value="${target.japt.debug}"/>
+      <arg value="-noStripDebugInfo"/>
+    </exec>
+
+    <exec executable="${j9.java.home}/bin/japt" failonerror="true">
+      <env key="JAVA_HOME" value="${j9.java.home}"/>
+      <arg value="-includeClass"/>
+      <arg value="${japt.wildcard.parameter}"/>
+      <arg value="-extension"/>
+      <arg value="-inline"/>
+      <arg value="-inlineAllJSRs"/>
+      <arg value="-icp"/>
+      <arg value="${dst.dir}"/>
+      <arg value="-cp"/>
+      <arg value="${toString:japt.classpath}"/>
+      <arg value="-extension"/>
+      <arg value="-jarOutput"/>
+      <arg value="-output"/>
+      <arg value="${target.japt.release}"/>
+    </exec>
+  </target>
+
+<!--JAPT END-->
+
+
+
+
+
+
+
+
+<!--JAR2JXE START-->
+
+  <!--Initialize jar2jxe specific properties -->
+  <target name="init.j9.jxe.properties">
+
+     <!--In dual phase compilation there exists also
+         japted2.jar which needs to be added. -->
+    <condition property="secondary.jar.to.japt.debug"
+               value="${component.root.dir}/debug_japted2.jar"
+               else="">
+      <isset property="second.phase.compilation" />
+    </condition>
+
+    <condition property="secondary.jar.to.japt.release"
+               value="${component.root.dir}/release_japted2.jar"
+               else="">
+      <isset property="second.phase.compilation" />
+    </condition>
+
+    <!--Property for setting the debug info for japt-->
+	<condition property="jxe.debug.info"
+               value="-g:lines,source,vars"
+               else="">
+      <equals arg1="${target.cfg}" arg2="debug"/>
+	</condition>
+
+    <!--Is the jxe_debug.c uptodate? -->
+    <uptodate property="jxe.not.uptodate" 
+        targetfile="${component.root.dir}/jxe_debug.c">
+        <srcfiles dir= "${component.root.dir}" includes="*.jar"/>
+    </uptodate>
+
+  </target>
+
+  <!--Do the rommize.classes (jar2jxe in J9)">-->
+  <target name="rommize.classes" depends="init.j9.jxe.properties"
+                                 unless="jxe.not.uptodate">
+
+    <exec executable="${j9.java.home}/bin/jar2jxe" failonerror="true">
+      <env key="JAVA_HOME" value="${j9.java.home}"/>
+      <arg value="-nog"/>
+      <arg value="-o"/>
+      <arg value="${component.root.dir}/jxe_debug"/>
+      <arg value="-outputFormat"/>
+      <arg value="c"/>
+      <arg value="-g:lines,source,vars"/>
+      <arg value="${component.root.dir}/debug_japted.jar"/>
+      <arg value="${secondary.jar.to.japt.debug}"/>
+    </exec>
+
+    <exec executable="${j9.java.home}/bin/jar2jxe" failonerror="true">
+      <env key="JAVA_HOME" value="${j9.java.home}"/>
+      <arg value="-nog"/>
+      <arg value="-o"/>
+      <arg value="${component.root.dir}/jxe_release"/>
+      <arg value="-outputFormat"/>
+      <arg value="c"/>
+      <arg value="${component.root.dir}/release_japted.jar"/>
+      <arg value="${secondary.jar.to.japt.release}"/>
+    </exec>
+
+  </target>
+
+<!--JAR2JXE END-->
+
+
+  <!--This target just checks whether there is need to create/update the 
+      jxe.c file -->
+  <target name="init.lookup.properties" if="javah.classnames">
+    <uptodate property="lookup.uptodate"
+                targetfile="${component.root.dir}/lookup.cpp">
+        <srcfiles dir="${javah.dir}" includes="*.h">
+              <present present="both" targetdir="${temp.javah.dir}"/>
+        </srcfiles>
+
+    </uptodate>
+  </target>
+
+<!--LOOKUP GENERATION START-->
+  <!--Generate the lookup file in S60 -->
+  <target name="jni.utils" depends="init.lookup.properties"
+                                    unless="lookup.uptodate">
+    <exec executable="python" failonerror="true">
+      <arg value="${java.src.root}/build/buildutils/generates60lookup.py"/>
+      <arg value="${temp.javah.dir}"/>
+      <arg value="${component.root.dir}/lookup.cpp"/>
+    </exec>
+  </target>
+<!--LOOKUP GENERATION END-->
+
+</project>
+

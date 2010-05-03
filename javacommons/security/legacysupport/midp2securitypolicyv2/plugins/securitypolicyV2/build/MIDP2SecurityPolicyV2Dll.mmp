@@ -1,0 +1,77 @@
+/*
+* Copyright (c) 2004 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
+
+/**
+@file
+
+@SYMPurpose MIDP2SecurityPolicyV2.dll Java security policy interface implementation
+*/
+
+#include <../../../../../../../inc/project_defines.hrh>
+
+target			MIDP2SecurityPolicyV2.dll
+targettype		dll
+CAPABILITY		CAP_GENERAL_DLL
+VENDORID VID_DEFAULT
+
+UID     0x1000008d 0x2000CFEC  // KSharedLibraryUid 
+                               // SharedJavaLibraryUid
+
+PAGED
+
+#if defined(WINS)
+deffile ./bwins/MIDP2SecurityPolicyV2.def
+#elif defined(GCC32)
+deffile ./bmarm/MIDP2SecurityPolicyV2.def
+#elif defined(ARMCC)
+deffile ./midp2secrp/eabi/MIDP2SecurityPolicyV2.def
+#endif
+
+systeminclude	/epoc32/include
+systeminclude	/epoc32/include/libc
+
+systeminclude ../../../../../../../inc
+
+userinclude		../export
+userinclude     ../../../../../../../inc
+
+sourcepath		../src
+
+source			main.cpp
+source			CDriveAccessPolicy.cpp
+source			CFileSystemAccessPolicy.cpp
+source			ConnectionFilter.cpp
+source			CPathAccessPolicy.cpp
+source			FunctionGroup.cpp
+source			FunctionGroupBinding.cpp
+source			Permission.cpp
+source			ProtectionDomain.cpp
+source			SecurityPolicy.cpp
+source			SimpleMapping.cpp
+source			XPFParser.cpp
+source 			BlanketPermissionPolicy.cpp
+source 			BlanketPermissionPolicyElement.cpp
+
+library			efsrv.lib
+library			euser.lib
+library	        centralrepository.lib
+
+//debuglibrary	flogger.lib
+library	flogger.lib
+library	estlib.lib
+

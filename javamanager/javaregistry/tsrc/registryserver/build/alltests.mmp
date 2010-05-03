@@ -1,0 +1,59 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+TARGET      JavaRegistryServerTest.exe
+TARGETTYPE    exe
+UID      0x00000000 0x03A6305A
+CAPABILITY all -tcb -allfiles -drm
+
+#include <platform_paths.hrh>
+#include <../../../../../inc/java_stdcpp_support_for_exe.hrh>
+
+USERINCLUDE ../../../../../tools/cpputest/include/CppUTest
+USERINCLUDE ../../../../../tools/cpputest/include/Platforms/Symbian
+
+USERINCLUDE ../../src/utils
+
+USERINCLUDE ../../../../../inc // == (JAVA_SRC_ROOT)/inc
+USERINCLUDE ../../../legacy/installedappsregistry/inc
+
+
+// Using main() as entry point
+LIBRARY cpputest.lib
+STATICLIBRARY libstdcpp.lib
+
+// LIBRARY  euser.lib
+LIBRARY javastorage.lib
+LIBRARY javaregistryclient.lib
+LIBRARY javaregistry.lib
+LIBRARY installedappsregistry.lib
+
+SOURCEPATH ../src
+SOURCE testregistry.cpp
+SOURCE testregistryentry.cpp
+SOURCE testregistrypackageentry.cpp
+SOURCE testregistryapplicationentry.cpp
+SOURCE testlegacyregistry.cpp
+SOURCE testsuiteentry.cpp
+SOURCE testmidletentry.cpp
+SOURCE testinstalledappsregistry.cpp
+SOURCE testinstalledappsregistryentry.cpp
+
+//SOURCE symbianalltests.cpp     // For Emulator CLI execution
+SOURCE alltests.cpp     // For STL execution
+
+SOURCEPATH ../src/utils
+SOURCE storagetestutils.cpp

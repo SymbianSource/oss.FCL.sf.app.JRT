@@ -1,0 +1,10 @@
+MIDlet-Jar-URL: NDRM.jar
+MIDlet-Install-Notify: http://uljava.gjmptw.de:8080/Index/Index/NDRM.jad?nstalled=NDRM_harmony
+MIDlet-Name: DRMonitor
+MIDlet-Vendor: m-internet.com Limited
+MIDlet-Version: 1.0
+MIDlet-Jar-Size: 24472
+MIDlet-Icon: /icon.png
+MIDlet-1: NDRM, /icon.png, ndrm.NDRMMIDlet
+
+

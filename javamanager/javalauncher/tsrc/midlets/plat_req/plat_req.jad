@@ -1,0 +1,22 @@
+MIDlet-1: platRequest, platRequest.png, platRequest
+MIDlet-Jar-Size: 2216
+MIDlet-Jar-URL: plat_req.jar
+MIDlet-Name: platRequest
+MIDlet-Vendor: Unknown
+MIDlet-Version: 1.0
+MicroEdition-Configuration: CLDC-1.0
+MicroEdition-Profile: MIDP-2.0
+platreq_0002a: http://10.63.48.225:8001/jtcml/platReq/content/midlet/ver1/SimpleMidlet.jad
+platreq_0002b: http://10.63.48.225:8001/jtcml/platReq/content/midlet/ver2/SimpleMidlet.jad
+platreq_0003: localapp://jam/launch?midlet-uid=0x10137c4d;midlet-args=mode=localapp;sounds=ON;difficulty=medium;wizard_mode
+platreq_0004: javaapp:midlet-uid=0x10137c4d;midlet-args=mode=javaapp;sounds=OFF;difficulty=easy;wizard_mode
+platreq_0005: localapp://native/launch?application-uid=0x101f4cce;application-args=mode=localapp;sounds=ON;difficulty=medium;wizard_mode
+platreq_0006: nativeapp:application-exe=ImageViewer.exe;content=E:\tif(01).tif
+platreq_0007: vid:+393910910606
+platreq_0008: javaapp://jam/launch?midlet-uid=0x10137c4d;midlet-args=mode=javaapp;sounds=OFF;difficulty=easy;wizard_mode
+platreq_0009: localapp://jam/launch?midlet-name=SPtesti;midlet-args=mode=localapp;sounds=ON;difficulty=medium;wizard_mode
+platreq_0010: javaapp:midlet-name=%E6%98%9F%E5%A4%A2%E7%BE%8E%E5%B0%91%E5%A5%B3%E7%A0%8C%E5%9C%96
+platreq_0012: nativeapp:application-exe=MediaPlayer.exe;content=Mama.MP3
+platreq_0013: sms:+393910910606
+platreq_0014: mms:+393910910606
+platreq_0015: mailto:info@h3g.it

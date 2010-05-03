@@ -1,0 +1,32 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
+PRJ_EXPORTS
+
+../inc/MSecurityPreferences.h                   |../../../../../inc/j2me/midp2/data/msecuritypreferences.h
+../inc/MUserPreferences.h                       |../../../../../inc/j2me/midp2/data/muserpreferences.h
+../inc/MMIDletSuiteUserPreferencesIterator.h    |../../../../../inc/j2me/midp2/data/mmidletsuiteuserpreferencesiterator.h
+../inc/MMIDletSuiteUserPreferences.h            |../../../../../inc/j2me/midp2/data/mmidletsuiteuserpreferences.h
+../inc/MMIDletSuiteCustomAttributes.h           |../../../../../inc/j2me/midp2/data/mmidletsuitecustomattributes.h
+../inc/MDomainPolicyFileParser.h                |../../../../../inc/j2me/midp2/security/MDomainPolicyFileParser.h
+../inc/MPermission.h                            |../../../../../inc/j2me/midp2/security/MPermission.h
+../inc/MProtectionDomain.h                      |../../../../../inc/j2me/midp2/security/MProtectionDomain.h
+../inc/MProtectionDomainTable.h                 |../../../../../inc/j2me/midp2/security/MProtectionDomainTable.h
+../inc/IPCVersion.h                             |../../../../../inc/j2me/midp2/security/ipcversion.h
+../inc/MSecurityPolicy.h                        |../../../../../inc/j2me/systemams/module/security/policy/MSecurityPolicy.h
+../inc/MMIDletSuiteInfo.h                       |../../../../../inc/j2me/midp2/runtime/mmidletsuiteinfo.h
+../inc/MUserSecurityPreferencesTable.h          |../../../../../inc/j2me/midp2/dbv2/musersecuritypreferencestable.h

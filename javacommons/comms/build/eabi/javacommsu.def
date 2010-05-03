@@ -1,0 +1,94 @@
+EXPORTS
+	_Z10jni_lookupPKc @ 1 NONAME
+	_ZN4java5comms12CommsMessage11setModuleIdEi @ 2 NONAME
+	_ZN4java5comms12CommsMessage11setReceiverEi @ 3 NONAME
+	_ZN4java5comms12CommsMessage11toByteArrayEv @ 4 NONAME
+	_ZN4java5comms12CommsMessage12setMessageIdEi @ 5 NONAME
+	_ZN4java5comms12CommsMessage13setMessageRefEi @ 6 NONAME
+	_ZN4java5comms12CommsMessage5beginEv @ 7 NONAME
+	_ZN4java5comms12CommsMessage5resetEv @ 8 NONAME
+	_ZN4java5comms12CommsMessage7replyToERKS1_ @ 9 NONAME
+	_ZN4java5comms12CommsMessage9setSenderEi @ 10 NONAME
+	_ZN4java5comms12CommsMessageC1EPKNS0_12ipcMessage_sE @ 11 NONAME
+	_ZN4java5comms12CommsMessageC1ERKS1_ @ 12 NONAME
+	_ZN4java5comms12CommsMessageC1Ev @ 13 NONAME
+	_ZN4java5comms12CommsMessageC2EPKNS0_12ipcMessage_sE @ 14 NONAME
+	_ZN4java5comms12CommsMessageC2ERKS1_ @ 15 NONAME
+	_ZN4java5comms12CommsMessageC2Ev @ 16 NONAME
+	_ZN4java5comms12CommsMessageD0Ev @ 17 NONAME
+	_ZN4java5comms12CommsMessageD1Ev @ 18 NONAME
+	_ZN4java5comms12CommsMessageD2Ev @ 19 NONAME
+	_ZN4java5comms12CommsMessageaSERKS1_ @ 20 NONAME
+	_ZN4java5comms12CommsMessagelsERKNS_4util3UidE @ 21 NONAME
+	_ZN4java5comms12CommsMessagelsERKSbIwSt11char_traitsIwESaIwEE @ 22 NONAME
+	_ZN4java5comms12CommsMessagelsERKSs @ 23 NONAME
+	_ZN4java5comms12CommsMessagelsERKi @ 24 NONAME
+	_ZN4java5comms12CommsMessagelsERKx @ 25 NONAME
+	_ZN4java5comms12CommsMessagersERNS_4util3UidE @ 26 NONAME
+	_ZN4java5comms12CommsMessagersERSbIwSt11char_traitsIwESaIwEE @ 27 NONAME
+	_ZN4java5comms12CommsMessagersERSs @ 28 NONAME
+	_ZN4java5comms12CommsMessagersERi @ 29 NONAME
+	_ZN4java5comms12CommsMessagersERx @ 30 NONAME
+	_ZN4java5comms13CommsEndpoint10attachToVmEP7JNIEnv_ @ 31 NONAME
+	_ZN4java5comms13CommsEndpoint11sendReceiveERNS0_12CommsMessageES3_i @ 32 NONAME
+	_ZN4java5comms13CommsEndpoint12detachFromVmEv @ 33 NONAME
+	_ZN4java5comms13CommsEndpoint13handleMessageERNS0_12CommsMessageE @ 34 NONAME
+	_ZN4java5comms13CommsEndpoint14processMessageEPKNS0_12ipcMessage_sE @ 35 NONAME
+	_ZN4java5comms13CommsEndpoint16handleIpcMessageERNS0_12CommsMessageE @ 36 NONAME
+	_ZN4java5comms13CommsEndpoint16registerListenerEiPNS0_13CommsListenerE @ 37 NONAME
+	_ZN4java5comms13CommsEndpoint18unregisterListenerEiPNS0_13CommsListenerE @ 38 NONAME
+	_ZN4java5comms13CommsEndpoint20registerJavaListenerEiP8_jobjectP7JNIEnv_ @ 39 NONAME
+	_ZN4java5comms13CommsEndpoint22unregisterJavaListenerEiP8_jobjectP7JNIEnv_ @ 40 NONAME
+	_ZN4java5comms13CommsEndpoint23registerDefaultListenerEPNS0_13CommsListenerE @ 41 NONAME
+	_ZN4java5comms13CommsEndpoint24generateMessageReferenceEv @ 42 NONAME
+	_ZN4java5comms13CommsEndpoint25unregisterDefaultListenerEPNS0_13CommsListenerE @ 43 NONAME
+	_ZN4java5comms13CommsEndpoint27registerDefaultJavaListenerEP8_jobjectP7JNIEnv_ @ 44 NONAME
+	_ZN4java5comms13CommsEndpoint29unregisterDefaultJavaListenerEP8_jobjectP7JNIEnv_ @ 45 NONAME
+	_ZN4java5comms13CommsEndpoint6onExitEv @ 46 NONAME
+	_ZN4java5comms13CommsEndpoint7onStartEv @ 47 NONAME
+	_ZN4java5comms13CommsEndpointC2Ev @ 48 NONAME
+	_ZN4java5comms13CommsEndpointD0Ev @ 49 NONAME
+	_ZN4java5comms13CommsEndpointD1Ev @ 50 NONAME
+	_ZN4java5comms13CommsEndpointD2Ev @ 51 NONAME
+	_ZN4java5comms19CommsClientEndpoint10disconnectEv @ 52 NONAME
+	_ZN4java5comms19CommsClientEndpoint12detachFromVmEv @ 53 NONAME
+	_ZN4java5comms19CommsClientEndpoint4findERKSbIwSt11char_traitsIwESaIwEE @ 54 NONAME
+	_ZN4java5comms19CommsClientEndpoint4sendERNS0_12CommsMessageE @ 55 NONAME
+	_ZN4java5comms19CommsClientEndpoint7connectEi @ 56 NONAME
+	_ZN4java5comms19CommsClientEndpointC1ERKSbIwSt11char_traitsIwESaIwEE @ 57 NONAME
+	_ZN4java5comms19CommsClientEndpointC1Ev @ 58 NONAME
+	_ZN4java5comms19CommsClientEndpointC2ERKSbIwSt11char_traitsIwESaIwEE @ 59 NONAME
+	_ZN4java5comms19CommsClientEndpointC2Ev @ 60 NONAME
+	_ZN4java5comms19CommsClientEndpointD0Ev @ 61 NONAME
+	_ZN4java5comms19CommsClientEndpointD1Ev @ 62 NONAME
+	_ZN4java5comms19CommsClientEndpointD2Ev @ 63 NONAME
+	_ZN4java5comms19CommsServerEndpoint12detachFromVmEv @ 64 NONAME
+	_ZN4java5comms19CommsServerEndpoint4findERKSbIwSt11char_traitsIwESaIwEE @ 65 NONAME
+	_ZN4java5comms19CommsServerEndpoint4sendERNS0_12CommsMessageE @ 66 NONAME
+	_ZN4java5comms19CommsServerEndpoint4stopEv @ 67 NONAME
+	_ZN4java5comms19CommsServerEndpoint5startEi @ 68 NONAME
+	_ZN4java5comms19CommsServerEndpointC1ERKSbIwSt11char_traitsIwESaIwEE @ 69 NONAME
+	_ZN4java5comms19CommsServerEndpointC1Ev @ 70 NONAME
+	_ZN4java5comms19CommsServerEndpointC2ERKSbIwSt11char_traitsIwESaIwEE @ 71 NONAME
+	_ZN4java5comms19CommsServerEndpointC2Ev @ 72 NONAME
+	_ZN4java5comms19CommsServerEndpointD0Ev @ 73 NONAME
+	_ZN4java5comms19CommsServerEndpointD1Ev @ 74 NONAME
+	_ZN4java5comms19CommsServerEndpointD2Ev @ 75 NONAME
+	_ZNK4java5comms12CommsMessage11getModuleIdEv @ 76 NONAME
+	_ZNK4java5comms12CommsMessage11getReceiverEv @ 77 NONAME
+	_ZNK4java5comms12CommsMessage12getMessageIdEv @ 78 NONAME
+	_ZNK4java5comms12CommsMessage13getMessageRefEv @ 79 NONAME
+	_ZNK4java5comms12CommsMessage8toStringEv @ 80 NONAME
+	_ZNK4java5comms12CommsMessage9getSenderEv @ 81 NONAME
+	_ZNK4java5comms12CommsMessage13hasPermissionERKNS0_15CommsPermissionE @ 82 NONAME
+	_ZNK4java5comms12CommsMessagecvPvEv @ 83 NONAME
+	_ZNK4java5comms12CommsMessagentEv @ 84 NONAME
+	_ZTIN4java5comms12CommsMessageE @ 85 NONAME ; #<TI>#
+	_ZTIN4java5comms13CommsEndpointE @ 86 NONAME ; #<TI>#
+	_ZTIN4java5comms19CommsClientEndpointE @ 87 NONAME ; #<TI>#
+	_ZTIN4java5comms19CommsServerEndpointE @ 88 NONAME ; #<TI>#
+	_ZTVN4java5comms12CommsMessageE @ 89 NONAME ; #<VT>#
+	_ZTVN4java5comms13CommsEndpointE @ 90 NONAME ; #<VT>#
+	_ZTVN4java5comms19CommsClientEndpointE @ 91 NONAME ; #<VT>#
+	_ZTVN4java5comms19CommsServerEndpointE @ 92 NONAME ; #<VT>#
+

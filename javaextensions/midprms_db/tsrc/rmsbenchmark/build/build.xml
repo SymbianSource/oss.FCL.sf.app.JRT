@@ -1,0 +1,68 @@
+<!--
+#
+# Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<project name="rmsbenchmark" default="deploy2" basedir=".">
+    <description>
+        RMS Benchmark MIDlet
+    </description>
+
+  <import file="../../../../../build/utilities.xml"/>
+
+  <property name="jarfilename" value="rmsbenchmark.jar"/>
+
+  <property name="java.bin.root" location="${env.JAVA_BIN_ROOT}"/>
+  <echo message = "java.bin.root: ${java.bin.root}"/>
+  
+  <target name="deploy2" depends="init.properties, make.target.dirs, midlet.compile, make.jar">
+    <echo message = "Public interfaces: ${public.api.jar}"/>
+  </target>
+  
+  <!-- Overriding default implementation -->
+  <target name="midlet.compile">
+    <property name="dest.dir" value="${classes.first.dir}"/>
+  
+    <javac 
+      source="${javac.source}" 
+      target="${javac.target}"
+      destdir="${dest.dir}"
+      bootclasspath="${bootclasspath.cldc}:${impl.cldc.jar}">
+      <src path="../javasrc"/>
+    </javac>
+  </target>
+
+  <target name="make.jar">
+    <jar destfile="${jarfilename}" basedir="${dest.dir}">
+      <manifest>
+        <attribute name="MIDlet-Name" value="RMS Benchmark"/>
+        <attribute name="MIDlet-Vendor" value="Nokia"/>
+        <attribute name="MIDlet-Version" value="1.0"/>
+        <attribute name="MIDlet-1" value="RMS Benchmark, ,RmsBenchmarkMidlet"/>
+        <attribute name="MicroEdition-Profile" value="MIDP-2.0"/>
+        <attribute name="MicroEdition-Configuration" value="CLDC-1.0"/>
+        <attribute name="MIDlet-Permissions" value="javax.microedition.io.Connector.file.read,javax.microedition.io.Connector.file.write"/>
+      </manifest>
+    </jar>
+    <copy file="${jarfilename}" tofile="${vm.extension.directory}/${jarfilename}"/>
+  </target>
+
+  <target name="help">
+    <echo>"Following targets supported:"</echo>
+    <echo>"  clean"</echo>
+  </target>
+
+</project>

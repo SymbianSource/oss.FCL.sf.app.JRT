@@ -1,0 +1,7 @@
+EXPORTS
+	_Z10jni_lookupPKc @ 1 NONAME
+	_ZTIN4java3wma13SmsConnectionE @ 2 NONAME
+	_ZTIN4java3wma26CSmsPlatformServiceS60ImplE @ 3 NONAME
+	_ZTVN4java3wma13SmsConnectionE @ 4 NONAME
+	_ZTVN4java3wma26CSmsPlatformServiceS60ImplE @ 5 NONAME
+

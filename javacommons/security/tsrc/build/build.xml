@@ -1,0 +1,336 @@
+<!--
+#
+# Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<project name="OMJSecurityTests" basedir="." default="deploy">
+
+
+  <import file="../../../../build/utilities.xml"/>
+
+  <property environment="env"/>
+  <property name="java.src.root" location="${env.JAVA_SRC_ROOT}"/>
+  <property name="java.bin.root" location="${env.JAVA_BIN_ROOT}"/>
+
+  <property name="src.dir" location="../javasrc"/>
+  <property name="src.dir2" location="../javasrc_cldc1.1.1"/>
+  <property name="build.dir" location="../build"/>
+  <property name="classes.dir" location="${build.dir}/javabuild"/>
+  <!--the name of the stub jar needs to be something which starts with a letter from [a-j], so that the JVM loads it before the javasecurity.jar-->
+  <property name="omjsecuritystubs.jar.filename" value="omjsecuritystubs.jar"/>
+  <property name="omjsecuritytests.jar.filename" value="omjsecuritytests.jar"/>
+  <property name="junit.jar.dir" location="${java.src.root}/tools/junit"/>
+  <property name="junit.jar.filename" value="j2meunit1.1.1.jar"/>
+  <property name="junit.omj.jar.filename" value="j2meunitomj.jar"/>
+  <property name="policy.editor.test.data.dir" location="../data"/>
+  <property name="policyeditor.jar" location="${java.src.root}/javatools/javasecuritycustomization/policyeditor/bin/securitypolicyeditor.jar"/>
+  <property name="external.policies.dir" location="../data/policies"/>
+  <property name="certs.src.dir" location="${java.src.root}/javatools/testcerts"/>
+  <property name="certs.dest.dir" location="/epoc32/winscw/c/private/200211dc/security/trustroots/device/certificates"/>
+  <property name="certs.state.dest.dir" location="/epoc32/winscw/c/private/200211dc/security/trustroots/device/state"/>
+  <property name="s60.networking.dir" location="/epoc32/winscw/c/private/101f7989/esock/"/>
+  <property name="s60.networking.dir2" location="/epoc32/winscw/c/private/10202be9/persists/"/>
+  <property name="test.tmp.dir" location="../tmp/"/>
+  <property name="odc.dir" location="/epoc32/winscw/c/resource/ive/lib/jclcldc11/ext/"/>
+  <property name="bootclasspath.cdc" location="${java.src.root}/javaruntime/jvm/ibm/j9_23/ibmdelivery/resource/lib/jclCdc11/classes.zip"/>
+  <property name="ext1.policies.dir" location="/epoc32/winscw/c/resource/java/security/extensions/ext1/policies/"/>
+  <property name="ext2.policies.dir" location="/epoc32/winscw/c/resource/java/security/extensions/ext2/policies/"/>
+  <property name="jvmargsmodifier.default.dll" location="/epoc32/release/winscw/udeb/javajvmargsmodifier.dll"/>
+  <property name="jvmargsmodifier.filebased.dll" location="/epoc32/release/winscw/udeb/javajvmargsmodifierfile.dll"/>
+  <property name="javac.source" value="1.3"/>
+  <property name="javac.target" value="1.3"/>
+
+  <target name="backup" depends="init">
+      <mkdir dir="${test.tmp.dir}/certs"/>
+      <mkdir dir="${test.tmp.dir}/state"/>
+      <mkdir dir="${test.tmp.dir}/networking"/>
+      <move todir="${test.tmp.dir}/certs" failonerror="false">
+          <fileset dir="${certs.dest.dir}"/>
+      </move>
+      <move todir="${test.tmp.dir}/state" failonerror="false">
+          <fileset dir="${certs.state.dest.dir}"/>
+      </move>
+      <copy todir="${certs.dest.dir}">
+          <fileset dir="${certs.src.dir}"/>
+      </copy>
+      <!--move file="${s60.networking.dir}/ip.tcpip.esk" todir="${test.tmp.dir}/networking"/>
+      <move file="${s60.networking.dir2}/cccccc00.cre" todir="${test.tmp.dir}/networking"/>
+      <unzip src="../data/wsock.zip" dest="/"/-->      
+  </target>
+  
+  <target name="cleanup" depends="init">
+      <delete dir="${certs.dest.dir}"/>
+      <delete dir="${certs.state.dest.dir}"/>
+      <mkdir dir="${certs.dest.dir}"/>
+      <mkdir dir="${certs.state.dest.dir}"/>
+      <copy todir="${certs.dest.dir}">
+          <fileset dir="${test.tmp.dir}/certs"/>
+      </copy>
+      <copy todir="${certs.state.dest.dir}">
+          <fileset dir="${test.tmp.dir}/state"/>
+      </copy>
+      <!--move file="${test.tmp.dir}/networking/ip.tcpip.esk" todir="${s60.networking.dir}"/>
+      <move file="${test.tmp.dir}/networking/cccccc00.cre" todir="${s60.networking.dir2}"/>
+      <delete file="/epoc32/release/winscw/udeb/wsock6.lib"/>
+      <delete file="/epoc32/release/winscw/udeb/wsock6.prt"/>
+      <delete file="/epoc32/release/winscw/udeb/wsock.lib"/>
+      <delete file="/epoc32/release/winscw/udeb/wsock.prt"/>
+      <delete file="/epoc32/release/winscw/udeb/wsocka.agt"/>
+      <delete file="/epoc32/release/winscw/udeb/wsocka.lib"/>
+      <delete file="/epoc32/release/winscw/udeb/wsocki.lib"/>
+      <delete file="/epoc32/release/winscw/udeb/wsocki.nif"/-->
+      <delete file="${vm.args.folder}installerargs.txt"/>
+      <delete file="${odc.dir}/ext1.odc"/>
+      <delete file="${odc.dir}/ext2.odc"/>
+      <delete dir="${test.tmp.dir}"/>
+      <delete dir="${ext1.policies.dir}"/>
+      <delete dir="${ext2.policies.dir}"/>
+      <delete dir="${security.test.data.dir}"/>
+  </target>
+
+  <target name="clean" depends="init.my.properties,close.ext.dir">
+    <delete dir="${classes.dir}"/>
+    <delete file="${dist}/${omjsecuritytests.jar.filename}"/>
+    <delete file="${dist}/${omjsecuritystubs.jar.filename}"/>
+    <delete file="${dist}/midpsecuritypolicyeditortool.jar"/>
+    <delete file="${dist}/${junit.jar.filename}"/>
+    <delete file="${dist}/${junit.omj.jar.filename}"/>
+    <exec executable="perl">
+      <env key="OMJ_PP_ROOT_DIR" value="../data/javasrc/invalidjars/"/>    
+      <arg line="cleanTestData.pl"/>
+    </exec>
+    <exec executable="perl">
+      <env key="OMJ_PP_ROOT_DIR" value="../data/javasrc/validjars/"/>    
+      <arg line="cleanTestData.pl"/>
+    </exec>
+    <delete dir="${security.test.data.dir}"/>
+  </target>
+
+  <target name="init.my.properties" depends="init.properties">
+    <property name="dist" location="${vm.extension.directory}"/>
+    <condition property="security.test.data.dir"
+               value="/epoc32/winscw/c/java/securitytestdata/"
+               else="${env.JAVA_BIN_ROOT}/securitytestdata/">
+      <isset property="target.s60" />
+    </condition>
+    <condition property="vm.args.folder"
+               value="/epoc32/winscw/c/java/"
+               else="${env.JAVA_BIN_ROOT}/">
+      <isset property="target.s60" />
+    </condition>
+    <available file="${jvmargsmodifier.default.dll}_" property="jvmargsmodifier.changed"/>
+  </target>
+  
+  <target name="init" depends="init.my.properties">
+    <property name="dist" location="${vm.extension.directory}"/>
+    <mkdir dir="${security.test.data.dir}/security_tmp"/>
+    <mkdir dir="${security.test.data.dir}/securitypolicies/testinputdata/validpolicies"/>
+    <mkdir dir="${security.test.data.dir}/securitypolicies/testinputdata/invalidpolicies"/>
+    <mkdir dir="${security.test.data.dir}/securitypolicies/testoutputdata/validpolicies"/>
+    <mkdir dir="${security.test.data.dir}/securitypolicies/testoutputdata/invalidpolicies"/>
+    <mkdir dir="${security.test.data.dir}/security/policies/"/>
+    <mkdir dir="${security.test.data.dir}/packageprotection/invalidjars"/>
+    <mkdir dir="${security.test.data.dir}/packageprotection/validjars"/>
+    <mkdir dir="${security.test.data.dir}/packageprotection/robustness"/>
+    <mkdir dir="${ext1.policies.dir}"/>
+    <mkdir dir="${ext2.policies.dir}"/>
+    <copy file="../data/HelloWorld.jar" tofile="${security.test.data.dir}/security_tmp/HelloWorld.jar"/>
+    <copy file="../data/HelloTouch.jar" tofile="${security.test.data.dir}/security_tmp/HelloTouch.jar"/>
+    <copy file="../data/app.jar" tofile="${security.test.data.dir}/security_tmp/app.jar"/>
+    <copy file="../data/modified_app.jar" tofile="${security.test.data.dir}/security_tmp/modified_app.jar"/>
+    <copy file="${policyeditor.jar}" tofile="${dist}/midpsecuritypolicyeditortool.jar"/>
+    <copy file="../data/installerargs.txt" todir="${vm.args.folder}"/>
+    <copy file="../data/ext1/ext1.odc" todir="${odc.dir}"/>
+    <copy file="../data/ext2/ext2.odc" todir="${odc.dir}"/>
+  </target>
+
+  <target name="compile" depends="init, prepare_test_data">
+    <delete dir="${classes.dir}"/>
+    <mkdir dir="${classes.dir}"/>
+    <property name="jars.dir" location="${jarfiles.collect.root}"/>
+    <property name="jars.dir.cdc" location="${jarfiles.collect.cdc.root}"/>
+    <javac source="${javac.source}" target="${javac.target}"
+           destdir="${classes.dir}"
+           bootclasspath="${bootclasspath.cdc}"
+           excludes="com/nokia/mj/impl/security/midp/authorization/PermissionMappingTable.java">
+           <classpath>
+               <pathelement location="${policyeditor.jar}"/>
+               <pathelement location="${impl.cldc.jar}"/>
+               <pathelement location="${impl.cdc.jar}"/>
+               <pathelement location="${junit.jar.dir}/${junit.jar.filename}"/>
+               <pathelement location="${junit.jar.dir}/${junit.omj.jar.filename}"/>
+           </classpath>
+      <src path="${src.dir}"/>
+      <src path="${src.dir2}"/>
+    </javac>
+  </target>
+  
+  <target name="prepare_test_data">
+    <exec executable="perl">
+      <env key="OMJ_PP_CP" value="${impl.cldc.jar}${path.separator}${impl.cdc.jar}"/>    
+      <env key="OMJ_PP_JAR_DIR" value="${security.test.data.dir}/packageprotection/invalidjars/"/>    
+      <env key="OMJ_PP_ROOT_DIR" value="../data/javasrc/invalidjars/"/>    
+      <arg line="prepareTestData.pl"/>
+    </exec>
+    <exec executable="perl">
+      <env key="OMJ_PP_CP" value="${impl.cldc.jar}${path.separator}${impl.cdc.jar}"/>    
+      <env key="OMJ_PP_JAR_DIR" value="${security.test.data.dir}/packageprotection/validjars/"/>    
+      <env key="OMJ_PP_ROOT_DIR" value="../data/javasrc/validjars/"/>    
+      <arg line="prepareTestData.pl"/>
+    </exec>
+    <unzip src="../../internal/tsrc/data/securityrobustnesstestingdata.zip" dest="${security.test.data.dir}/packageprotection/robustness/"/>      
+  </target>
+  
+  <target name="prepare_test_data2">
+    <javac source="${javac.source}" target="${javac.target}"
+           destdir="${classes.dir}"
+           bootclasspath="${bootclasspath.cdc}"
+           includes="com/nokia/mj/impl/security/midp/authorization/PermissionMappingTable.java">
+           <classpath>
+               <pathelement location="${impl.cldc.jar}"/>
+           </classpath>
+      <src path="${src.dir}"/>
+    </javac>
+    <java classname="com.nokia.mj.tools.security.midp.PolicyEditor"
+         failonerror="true">
+         <sysproperty key="emma.properties" value="${emma.properties}"/>
+         <arg value="${external.policies.dir}"/>
+         <arg value="${security.test.data.dir}/security/policies/"/>
+         <classpath>
+             <!--javabuild as classpath is for the NewPermissionMapping-->
+             <pathelement location="./javabuild"/>
+             <pathelement location="${policyeditor.jar}"/>
+             <pathelement location="${impl.cldc.jar}"/>
+             <pathelement location="${impl.cdc.jar}"/>
+             <pathelement path="${emma.dir}/emma.jar"/>
+         </classpath>
+    </java>
+    <java classname="com.nokia.mj.tools.security.midp.PolicyEditor"
+         failonerror="true">
+         <sysproperty key="emma.properties" value="${emma.properties}"/>
+         <arg value="../data/ext1/policies/"/>
+         <arg value="${ext1.policies.dir}"/>
+         <classpath>
+             <!--javabuild as classpath is for the NewPermissionMapping-->
+             <pathelement location="./javabuild"/>
+             <pathelement location="${policyeditor.jar}"/>
+             <pathelement location="${impl.cldc.jar}"/>
+             <pathelement location="${impl.cdc.jar}"/>
+             <pathelement path="${emma.dir}/emma.jar"/>
+         </classpath>
+    </java>
+    <java classname="com.nokia.mj.tools.security.midp.PolicyEditor"
+         failonerror="true">
+         <sysproperty key="emma.properties" value="${emma.properties}"/>
+         <arg value="../data/ext2/policies/"/>
+         <arg value="${ext2.policies.dir}"/>
+         <classpath>
+             <!--javabuild as classpath is for the NewPermissionMapping-->
+             <pathelement location="./javabuild"/>
+             <pathelement location="${policyeditor.jar}"/>
+             <pathelement location="${impl.cldc.jar}"/>
+             <pathelement location="${impl.cdc.jar}"/>
+             <pathelement path="${emma.dir}/emma.jar"/>
+         </classpath>
+    </java>
+  </target>
+
+  <target name="deploy" depends="compile, prepare_test_data2, open.ext.dir">
+      <mkdir dir="${dist}"/>
+      <jar destfile="${dist}/${omjsecuritytests.jar.filename}" basedir="${classes.dir}" excludes="com/nokia/mj/impl/security/midp/authentication/OcspUserPreferences.class"/>
+      <jar destfile="${dist}/${omjsecuritystubs.jar.filename}" basedir="${classes.dir}" includes="com/nokia/mj/impl/security/midp/authentication/OcspUserPreferences.class"/>
+      <copy file="${junit.jar.dir}/${junit.jar.filename}"
+            tofile="${dist}/${junit.jar.filename}"/>
+      <copy file="${junit.jar.dir}/${junit.omj.jar.filename}"
+            tofile="${dist}/${junit.omj.jar.filename}"/>
+      <copy todir="${security.test.data.dir}/securitypolicies/testinputdata/invalidpolicies">
+        <fileset dir="${policy.editor.test.data.dir}/invalidpolicies"/>
+      </copy>
+      <copy todir="${security.test.data.dir}/securitypolicies/testinputdata/validpolicies">
+        <fileset dir="${policy.editor.test.data.dir}/validpolicies"/>
+      </copy>
+      <!--open up the extensions dir-->
+  </target>
+
+  <target name="open.ext.dir" unless="jvmargsmodifier.changed">
+      <!--open up the extensions dir-->
+      <move file="${jvmargsmodifier.default.dll}" tofile="${jvmargsmodifier.default.dll}_"/>      
+      <move file="${jvmargsmodifier.filebased.dll}" tofile="${jvmargsmodifier.default.dll}"/>      
+  </target>
+  
+  <target name="close.ext.dir" if="jvmargsmodifier.changed">
+    <move file="${jvmargsmodifier.default.dll}" tofile="${jvmargsmodifier.filebased.dll}"/>      
+    <move file="${jvmargsmodifier.default.dll}_" tofile="${jvmargsmodifier.default.dll}"/>      
+  </target>
+
+  <target name="main" depends="run"/>
+
+  <target name="run" depends="deploy">
+      <echo>Running OMJSecurityTests</echo>
+      <exec executable="${java.bin.root}/bin/javainstaller">
+          <arg line="test -mainclass=com.nokia.mj.impl.security.OMJSecurityTests"/>
+      </exec>
+      <echo>Running SecurityCommonTests</echo>
+      <exec executable="${java.bin.root}/bin/javainstaller">
+          <arg line="test -mainclass=com.nokia.mj.impl.security.common.SecurityCommonTests"/>
+      </exec>
+      <echo>Running ApplicationAccessAuthorizationTests</echo>
+      <exec executable="${java.bin.root}/bin/javainstaller">
+          <arg line="test -mainclass=com.nokia.mj.impl.security.midp.appaccessauthorization.ApplicationAccessAuthorizationTests"/>
+      </exec>
+      <echo>Running MIDPAuthenticationModuleTests</echo>
+      <exec executable="${java.bin.root}/bin/javainstaller">
+          <arg line="test -mainclass=com.nokia.mj.impl.security.midp.authentication.AuthenticationModuleTests"/>
+      </exec>
+      <!-- TODO: uncomment this when Linux will support UI
+      <exec executable="${java.bin.root}/bin/javainstaller">
+          <arg line="test -mainclass=com.nokia.mj.impl.security.midp.authentication.InteractiveAuthenticationModuleTests"/>
+      </exec-->
+      <echo>Running MIDPAuthorizationTests</echo>
+      <exec executable="${java.bin.root}/bin/javainstaller">
+          <arg line="test -mainclass=com.nokia.mj.impl.security.midp.authorization.SecurityPolicyModuleTests"/>
+      </exec>
+      <exec executable="${java.bin.root}/bin/javainstaller">
+          <arg line="test -mainclass=com.nokia.mj.impl.security.midp.authorization.PermissionGranterTests"/>
+      </exec>
+      <exec executable="${java.bin.root}/bin/javainstaller">
+          <arg line="test -mainclass=com.nokia.mj.impl.security.midp.authorization.AccessControllerTests"/>
+      </exec>
+      <!-- TODO: uncomment this when Linux will support UI
+      <exec executable="${java.bin.root}/bin/javainstaller">
+          <arg line="test -mainclass=com.nokia.mj.impl.security.midp.authorization.InteractiveAccessControllerTests"/>
+      </exec-->
+      <echo>Running MIDPSecurityCommonTests</echo>
+      <exec executable="${java.bin.root}/bin/javainstaller">
+          <arg line="test -mainclass=com.nokia.mj.impl.security.midp.common.SecurityDescriptorAttributesTests"/>
+      </exec>
+      <exec executable="${java.bin.root}/bin/javainstaller">
+          <arg line="test -mainclass=com.nokia.mj.impl.security.midp.common.SecurityManifestAttributesTests"/>
+      </exec>
+      <exec executable="${java.bin.root}/bin/javainstaller">
+          <arg line="test -mainclass=com.nokia.mj.impl.security.midp.storage.SecurityStorageTests"/>
+      </exec>
+      <echo>Running PackageProtectorTests</echo>
+      <exec executable="${java.bin.root}/bin/javainstaller">
+          <arg line="test -mainclass=com.nokia.mj.impl.security.packageprotection.PackageProtectorTests"/>
+      </exec>
+      <echo>Running MIDPSecurityPolicyEditorTests</echo>
+      <exec executable="${java.bin.root}/bin/javainstaller">
+          <arg line="test -mainclass=com.nokia.mj.tools.security.midp.PolicyEditorTests"/>
+      </exec>
+  </target>
+
+</project>

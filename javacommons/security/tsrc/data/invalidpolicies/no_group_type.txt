@@ -1,0 +1,5 @@
+domain Manufacturer;
+grant {
+permission javax.microedition.io.HttpProtocolPermission "http://*";
+}
+

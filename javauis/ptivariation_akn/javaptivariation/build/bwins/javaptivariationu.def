@@ -1,0 +1,3 @@
+EXPORTS
+	?JavaPtiVariationLibEntryL@@YAXAAVCPtiEngine@@H@Z @ 1 NONAME ; void JavaPtiVariationLibEntryL(class CPtiEngine &, int)
+

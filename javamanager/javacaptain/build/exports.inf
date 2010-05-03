@@ -1,0 +1,34 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
+PRJ_EXPORTS
+../inc/coreinterface.h                          |../../../inc/coreinterface.h
+../inc/rtcinterface.h                           |../../../inc/rtcinterface.h
+../inc/pmcinterface.h                           |../../../inc/pmcinterface.h
+../inc/amcinterface.h                           |../../../inc/amcinterface.h
+../inc/timerserverinterface.h                   |../../../inc/timerserverinterface.h
+../inc/extensionplugininterface.h               |../../../inc/extensionplugininterface.h
+../inc/eventconsumerinterface.h                 |../../../inc/eventconsumerinterface.h
+../inc/applicationmanagementeventsinterface.h   |../../../inc/applicationmanagementeventsinterface.h
+../inc/applicationruntimeeventsinterface.h      |../../../inc/applicationruntimeeventsinterface.h
+../inc/processmanagementeventsinterface.h       |../../../inc/processmanagementeventsinterface.h
+../inc/rtcmessages.h                            |../../../inc/rtcmessages.h
+../inc/amcmessages.h                            |../../../inc/amcmessages.h
+../inc/pmcmessages.h                            |../../../inc/pmcmessages.h
+../inc/coremessages.h                           |../../../inc/coremessages.h
+../extensionplugins/boot/inc/booteventprovidermessages.h |../../../inc/booteventprovidermessages.h
+../extensionplugins/mmc/inc/mmceventprovidermessages.h |../../../inc/mmceventprovidermessages.h

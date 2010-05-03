@@ -1,0 +1,1 @@
+Unfortunately Java Runtime 2.0 Alpha is not compatible with your device. Java Runtime 2.0 Alpha works only on S60 5.0 devices.

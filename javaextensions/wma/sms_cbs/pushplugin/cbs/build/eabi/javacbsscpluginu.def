@@ -1,0 +1,27 @@
+EXPORTS
+	_Z13findDllMethodPKc @ 1 NONAME
+	_ZN26CbsServerConnectionFactory10getFactoryEv @ 2 NONAME
+	_ZN26CbsServerConnectionFactory16createSrvConnObjERKSbIwSt11char_traitsIwESaIwEES5_ @ 3 NONAME
+	_ZN26CbsServerConnectionFactory24isMultipleSrvConnAllowedEv @ 4 NONAME
+	_ZN26CbsServerConnectionFactoryC1Ev @ 5 NONAME
+	_ZN26CbsServerConnectionFactoryC2Ev @ 6 NONAME
+	_ZN26CbsServerConnectionFactoryD0Ev @ 7 NONAME
+	_ZN26CbsServerConnectionFactoryD1Ev @ 8 NONAME
+	_ZN26CbsServerConnectionFactoryD2Ev @ 9 NONAME
+	_ZN4java3wma19CbsServerConnection4openEPNS_4push18ConnectionListenerE @ 10 NONAME
+	_ZN4java3wma19CbsServerConnectionC1ERKSbIwSt11char_traitsIwESaIwEES7_ @ 11 NONAME
+	_ZN4java3wma19CbsServerConnectionC2ERKSbIwSt11char_traitsIwESaIwEES7_ @ 12 NONAME
+	_ZN4java3wma20ServerConnectionBase9setFilterERKSbIwSt11char_traitsIwESaIwEE @ 13 NONAME
+	_ZNK4java3wma20ServerConnectionBase18getMessagesOnStoreEv @ 14 NONAME
+	_ZNK4java3wma20ServerConnectionBase6getUriEv @ 15 NONAME
+	_ZNK4java3wma20ServerConnectionBase9getFilterEv @ 16 NONAME
+	_ZTI26CbsServerConnectionFactory @ 17 NONAME ; #<TI>#
+	_ZTIN4java3wma15CJavaCbsDecoderE @ 18 NONAME ; #<TI>#
+	_ZTIN4java3wma19CbsServerConnectionE @ 19 NONAME ; #<TI>#
+	_ZTIN4java3wma20ServerConnectionBaseE @ 20 NONAME ; #<TI>#
+	_ZTV26CbsServerConnectionFactory @ 21 NONAME ; #<VT>#
+	_ZTVN4java3wma15CJavaCbsDecoderE @ 22 NONAME ; #<VT>#
+	_ZTVN4java3wma19CbsServerConnectionE @ 23 NONAME ; #<VT>#
+	_ZTVN4java3wma20ServerConnectionBaseE @ 24 NONAME ; #<VT>#
+	_ZThn28_N4java3wma19CbsServerConnection4openEPNS_4push18ConnectionListenerE @ 25 NONAME ; #<thunk>#
+

@@ -1,0 +1,55 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  ECOM resource definition for Java Sif plugin
+*               javasifplugin.dll
+*/
+
+
+//  INCLUDES
+#include <ecom/registryinfov2.rh>
+
+//  RESOURCE DEFINITIONS
+
+RESOURCE REGISTRY_INFO registry_info
+    {
+    resource_format_version = RESOURCE_FORMAT_VERSION_2;
+    // UID for the DLL
+    dll_uid = 0x2002BC6F;
+
+    // Interface info array
+    interfaces =
+        {
+        INTERFACE_INFO
+            {
+            // UID of the implemented interface KUidSifPlugin
+            interface_uid = 0x10285BC2;
+
+            implementations =
+                {
+                IMPLEMENTATION_INFO
+                    {
+                    implementation_uid  =  0x2002BC70;
+                    version_no          =  1;
+                    display_name        =  "Midlet installation implementation";
+                    default_data        =  "";
+                    opaque_data         =  "";
+                    rom_only            =  0;
+                    }
+                };
+             }
+        };
+    }
+
+
+// End of File

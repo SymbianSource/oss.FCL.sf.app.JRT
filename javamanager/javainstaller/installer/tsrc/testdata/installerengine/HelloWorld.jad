@@ -1,0 +1,19 @@
+MIDlet-1: HelloWorld, , helloworld.HelloWorld
+MIDlet-Jar-Size: 1511
+MIDlet-Jar-URL: HelloWorld.jar
+MIDlet-Data-Size: 4000
+MIDlet-Name: HelloWorld
+MIDlet-Vendor: Nokia
+MIDlet-Version: 1.0
+MIDlet-Push-1: socket://:81, helloworld.HelloWorld, *
+MIDlet-Permissions: javax.microedition.io.PushRegistryPermission, javax.microedition.io.Connector.serversocket
+MIDlet-Install-Notify: unsupportedprotocol://unsupportedprotocol
+MIDlet-Delete-Notify: unsupportedprotocol://unsupportedprotocol
+MIDlet-Certificate-1-1: MIICWDCCAcECBEhQwA0wDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX0RldmljZV9NYW51ZmFjdHVyZXIwHhcNMDgwNjEyMDYxOTU3WhcNMTgwNjEwMDYxOTU3WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfRGV2aWNlX01hbnVmYWN0dXJlcjCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEApi3ipIPj8O33/rZre1euh7Itd9d6ZVf2mvQ/tLpHEsFJe5XLOsVViMvFskhhKUzmDsRbP4J03L6827/vEDIi/1i8kJGLaoFqJYaLGFWI2Zmxlj6aJV8cfZyOjmQPWJn1IDEe1ZAWbvMSp8xibWRsCLNEGKIkxQvAr/QDK/6iS+kCAwEAATANBgkqhkiG9w0BAQQFAAOBgQCDXt6klAs6yKvdTab3D2wkdoi3Lu4YFsMgLexJOu5HhAUJ/9VYO+Q2+mjd95MRsTa5rWQ2Jjvhn57Z3z/KBOwfHbymmNtMk6Gl14H0vQRoHa31jh3mTuAy5KotDVthaDp30aOizk473NU68wY1WdP4gFk5ZhrpNea9q3st13BxIQ==
+MIDlet-Jar-RSA-SHA1: IcANmLKiOJQF8ABCNDj1PNNH/O8v9jfCVuiGBVm8enXDkM/gLwPjrC65sDKpOCHPqssUlHzjmVN5b9g8aRs4jxUOXNt2b732J7NSIPh97vw/WrP/KHdiooi/1KFUyklMyokK9ZrIv+GW1ttLCfKbuFupT9zmPAmWJQpnuD7J6sE=
+Nokia-MIDlet-Name-en-GB-Iron: (en-GB-Iron)Victory
+Nokia-MIDlet-Name-en-GB: (en-GB)HelloWorld
+Nokia-MIDlet-Name-fi: (fi)HeiVaan
+Nokia-MIDlet-1-en: (en)HelloWorld
+Nokia-MIDlet-1-en-GB: (en-GB)HelloWorld
+Nokia-MIDlet-1-fi-FI: (fi-FI)HeiVaan

@@ -1,0 +1,51 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+//  RESOURCE IDENTIFIER
+//NAME VIPS
+
+//  INCLUDES
+#include <RegistryInfoV2.rh>
+#include "ViperTestPsy.hrh"
+
+//  RESOURCE DEFINITIONS
+
+RESOURCE REGISTRY_INFO r_reginfo
+    {
+    resource_format_version = RESOURCE_FORMAT_VERSION_2;
+    dll_uid = 0x13070BF3;
+    interfaces =
+        {
+        INTERFACE_INFO
+            {
+            interface_uid = 0x101f7a7c;
+            implementations =
+                {
+                IMPLEMENTATION_INFO
+                    {
+                    implementation_uid = KPosImplementationUid;
+                    version_no = 1;
+                    display_name = "Viper Test PSY";
+                    default_data = 0;
+                    opaque_data = 0;
+                    rom_only = 0;
+                    }
+                };
+            }
+        };
+    }
+
+// End of File

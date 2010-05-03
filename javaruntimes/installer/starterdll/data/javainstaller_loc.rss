@@ -1,0 +1,35 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  javainstaller_loc.rss
+*
+*/
+
+
+#include <appinfo.rh>
+
+RESOURCE LOCALISABLE_APP_INFO
+    {
+    short_caption = "Installer";
+    caption_and_icon =
+        {
+        CAPTION_AND_ICON_INFO
+            {
+            caption = "Installer";
+            number_of_icons = 1;
+            icon_file = "\\resource\\apps\\javainstaller_icon.mif";
+            }
+        };
+    }
+
+// End of File

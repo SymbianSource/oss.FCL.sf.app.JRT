@@ -1,0 +1,35 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+PRJ_EXPORTS
+
+// old export path - to be removed when all dependencies to lcduib are solved
+../inc/CMIDToolkit.h    |../../../../javauis/inc/CMIDToolkit.h
+../inc/lcdui.h          |../../../../javauis/inc/lcdui.h
+../inc/lcdgr.h          |../../../../javauis/inc/lcdgr.h
+../inc/Lcdglue.h        |../../../../javauis/inc/Lcdglue.h
+../inc/LcduiThread.h    |../../../../javauis/inc/LcduiThread.h
+../inc/reflcdui.h       |../../../../javauis/inc/reflcdui.h
+../inc/CMIDEnv.h        |../../../../javauis/inc/CMIDEnv.h
+../inc/MIDUtils.h       |../../../../javauis/inc/MIDUtils.h
+
+
+../inc/MMIDCustomComponent.h             |../../../../javauis/inc/MMIDCustomComponent.h
+../inc/MMIDCustomComponentContainer.h    |../../../../javauis/inc/MMIDCustomComponentContainer.h
+
+../inc.nokialcdui/MMIDTextEditor.h                  |../../../../javauis/inc/MMIDTextEditor.h
+../inc.nokialcdui/MMIDCanvasGraphicsItem.h          |../../../../javauis/inc/MMIDCanvasGraphicsItem.h
+../inc.nokialcdui/MMIDCanvasGraphicsItemPainter.h   |../../../../javauis/inc/MMIDCanvasGraphicsItemPainter.h

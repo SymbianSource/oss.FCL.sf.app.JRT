@@ -1,0 +1,18 @@
+EXPORTS
+	?findDllMethod@@YAP6APAXXZPBD@Z @ 1 NONAME ; void * (*)(void) findDllMethod(char const *)
+	??0SmsServerConnection@wma@java@@QAE@ABV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@0@Z @ 2 NONAME ; java::wma::SmsServerConnection::SmsServerConnection(class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &, class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &)
+	??0SmsServerConnectionFactory@@QAE@XZ @ 3 NONAME ; SmsServerConnectionFactory::SmsServerConnectionFactory(void)
+	??1SmsServerConnection@wma@java@@UAE@XZ @ 4 NONAME ; java::wma::SmsServerConnection::~SmsServerConnection(void)
+	??1SmsServerConnectionFactory@@UAE@XZ @ 5 NONAME ; SmsServerConnectionFactory::~SmsServerConnectionFactory(void)
+	?close@SmsServerConnection@wma@java@@UAEXXZ @ 6 NONAME ; void java::wma::SmsServerConnection::close(void)
+	?createSrvConnObj@SmsServerConnectionFactory@@UAEPAVServerConnection@push@java@@ABV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@0@Z @ 7 NONAME ; class java::push::ServerConnection * SmsServerConnectionFactory::createSrvConnObj(class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &, class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &)
+	?getFactory@SmsServerConnectionFactory@@SAAAV1@XZ @ 8 NONAME ; class SmsServerConnectionFactory & SmsServerConnectionFactory::getFactory(void)
+	?getFilter@ServerConnectionBase@wma@java@@UBE?AV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@XZ @ 9 NONAME ; class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > java::wma::ServerConnectionBase::getFilter(void) const
+	?getMessagesOnStore@ServerConnectionBase@wma@java@@QBEHXZ @ 10 NONAME ; int java::wma::ServerConnectionBase::getMessagesOnStore(void) const
+	?getUri@ServerConnectionBase@wma@java@@UBE?AV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@XZ @ 11 NONAME ; class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > java::wma::ServerConnectionBase::getUri(void) const
+	?isMultipleSrvConnAllowed@SmsServerConnectionFactory@@UAE_NXZ @ 12 NONAME ; bool SmsServerConnectionFactory::isMultipleSrvConnAllowed(void)
+	?open@SmsServerConnection@wma@java@@UAEXPAVConnectionListener@push@3@@Z @ 13 NONAME ; void java::wma::SmsServerConnection::open(class java::push::ConnectionListener *)
+	?open@SmsServerConnection@wma@java@@UAEXPAVConnectionListener@push@3@_N@Z @ 14 NONAME ; void java::wma::SmsServerConnection::open(class java::push::ConnectionListener *, bool)
+	?retrieveMessage@SmsServerConnection@wma@java@@UAEHAAV?$TPckgBuf@VTJavaMessageParameters@@@@@Z @ 15 NONAME ; int java::wma::SmsServerConnection::retrieveMessage(class TPckgBuf<class TJavaMessageParameters> &)
+	?setFilter@ServerConnectionBase@wma@java@@UAEXABV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@@Z @ 16 NONAME ; void java::wma::ServerConnectionBase::setFilter(class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &)
+

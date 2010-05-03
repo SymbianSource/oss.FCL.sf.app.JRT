@@ -1,0 +1,4 @@
+EXPORTS
+	?start@java@@YAHHPAPBD@Z @ 1 NONAME ; int java::start(int, char const * *)
+	?start@java@@YAHPBD@Z @ 2 NONAME ; int java::start(char const *)
+

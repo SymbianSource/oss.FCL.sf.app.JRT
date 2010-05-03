@@ -1,0 +1,9 @@
+MIDlet-1: HelloWorld, , helloworld.HelloWorld
+MIDlet-Jar-Size: 1723
+MIDlet-Jar-URL: HelloWorld.jar
+MIDlet-Data-Size: 4000
+MIDlet-Name: HelloWorld_invalid_push
+MIDlet-Vendor: Nokia
+MIDlet-Version: 1.0
+MIDlet-Push-1: unknownprotocol://:81, helloworld.HelloWorld, *
+MIDlet-Permissions: javax.microedition.io.PushRegistryPermission

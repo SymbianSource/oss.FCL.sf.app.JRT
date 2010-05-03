@@ -1,0 +1,16 @@
+domain=UnidentifiedThirdParty
+user,NetAccess:oneshot:session:no,javax.microedition.io.HttpProtocolPermission,http://*
+user,NetAccess:oneshot:session:no,javax.microedition.io.HttpsProtocolPermission,https://*
+user,LowLevelNetAccess:oneshot:session:no,javax.microedition.io.DatagramProtocolPermission,datagram://*
+user,LowLevelNetAccess:oneshot:session:no,javax.microedition.io.DatagramProtocolPermission,datagram://
+user,LowLevelNetAccess:oneshot:session:no,javax.microedition.io.SocketProtocolPermission,socket://*
+user,LowLevelNetAccess:oneshot:session:no,javax.microedition.io.SocketProtocolPermission,socket://
+user,LowLevelNetAccess:oneshot:session:no,javax.microedition.io.SSLProtocolPermission,ssl://*
+user,ApplicationAutoInvocation:oneshot:session:no,javax.microedition.io.PushRegistryPermission,*
+user,LocalConnectivity:session:blanket:oneshot:no,javax.microedition.io.CommProtocolPermission,comm:*
+user,MultimediaRecording:session:oneshot:no,javax.microedition.media.PlayerPermission,*,record
+user,MultimediaRecording:session:oneshot:no,javax.microedition.media.PlayerPermission,*,snapshot
+assigned,java.util.PropertyPermission,microedition.*,read
+assigned,javax.microedition.event.EventPermission,*.*,read
+assigned,javax.microedition.event.EventPermission,*.*,register
+assigned,javax.microedition.event.EventPermission,*.*,post

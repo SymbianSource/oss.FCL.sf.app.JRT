@@ -1,0 +1,3 @@
+EXPORTS
+	?jni_lookup@@YGP6APAXXZPBD@Z @ 1 NONAME ; void * (*)(void) jni_lookup(char const *)
+

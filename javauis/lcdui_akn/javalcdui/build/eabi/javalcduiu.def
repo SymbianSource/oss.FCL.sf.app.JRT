@@ -1,0 +1,29 @@
+EXPORTS
+	_Z10jni_lookupPKc @ 1 NONAME
+	_ZTI10CMIDBuffer @ 2 NONAME
+	_ZTI11CMIDToolkit @ 3 NONAME
+	_ZTI12CMIDletSuite @ 4 NONAME
+	_ZTI15CMIDImageLoader @ 5 NONAME
+	_ZTI15CMIDNotifyEvent @ 6 NONAME
+	_ZTI17CAsyncDecodeEvent @ 7 NONAME
+	_ZTI17CMIDFinalizeEvent @ 8 NONAME
+	_ZTI17CMIDKeyTranslator @ 9 NONAME
+	_ZTI19CMIDToLcduiObserver @ 10 NONAME
+	_ZTI29CTactileFeedbackInterfaceESWT @ 11 NONAME
+	_ZTI30CTactileFeedbackInterfaceLCDUI @ 12 NONAME
+	_ZTI7CMIDEnv @ 13 NONAME
+	_ZTI9CMIDEvent @ 14 NONAME
+	_ZTV10CMIDBuffer @ 15 NONAME
+	_ZTV11CMIDToolkit @ 16 NONAME
+	_ZTV12CMIDletSuite @ 17 NONAME
+	_ZTV15CMIDImageLoader @ 18 NONAME
+	_ZTV15CMIDNotifyEvent @ 19 NONAME
+	_ZTV17CAsyncDecodeEvent @ 20 NONAME
+	_ZTV17CMIDFinalizeEvent @ 21 NONAME
+	_ZTV17CMIDKeyTranslator @ 22 NONAME
+	_ZTV19CMIDToLcduiObserver @ 23 NONAME
+	_ZTV29CTactileFeedbackInterfaceESWT @ 24 NONAME
+	_ZTV30CTactileFeedbackInterfaceLCDUI @ 25 NONAME
+	_ZTV7CMIDEnv @ 26 NONAME
+	_ZTV9CMIDEvent @ 27 NONAME
+

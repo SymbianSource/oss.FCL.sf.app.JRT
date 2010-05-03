@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="src_j2se"/>
+	<classpathentry kind="src" path="res"/>
+	<classpathentry kind="lib" path="/XlibUiTestUtils/bin"/>
+	<classpathentry kind="lib" path="junit-3.8.1.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="S:/epoc32/RELEASE/WINSCW/udeb/Z/resource/java/jvm/lib/common/eswt.jar"/>
+	<classpathentry kind="lib" path="S:/epoc32/RELEASE/WINSCW/udeb/Z/resource/java/jvm/lib/common/openlcdui.jar"/>
+	<classpathentry kind="lib" path="S:/epoc32/RELEASE/WINSCW/udeb/java_signature_test.jar"/>
+	<classpathentry kind="lib" path="S:/epoc32/release/winscw/udeb/Z/resource/java/jvm/lib/common/s60uitestutils.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

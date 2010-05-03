@@ -1,0 +1,7 @@
+EXPORTS
+	_Z13findDllMethodPKc @ 1 NONAME
+	_ZTI19CJavaSizeHelpServer @ 2 NONAME ; #<TI>#
+	_ZTI20CJavaSizeHelpSession @ 3 NONAME ; #<TI>#
+	_ZTV19CJavaSizeHelpServer @ 4 NONAME ; #<VT>#
+	_ZTV20CJavaSizeHelpSession @ 5 NONAME ; #<VT>#
+

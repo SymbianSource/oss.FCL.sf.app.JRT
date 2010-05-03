@@ -1,0 +1,48 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+// This is a test resource file, utf-8 encoded (also works as Latin1, as no >128 chars)
+
+#define test_id_1 "id1 %0"
+#define   test_id_2 "id2 %0"
+
+#define   test_id_3   "id3 %0"
+
+#define   test_id_4   "id4 \n %0 \n"
+
+#define   test_id_5   "\\id5 \\ %0"
+
+#define   test_id_6   "id6 \"\" %0"
+
+#define   test_id_7   "id7 \' %0"
+
+#define   test_id_8   "id8\t%0"
+
+#define   test_id_9   "id9 It takes %0 <0x20AC> to win!"
+
+#define   test_id_10   "id10 It takes <0x20AC> %0 <0x20AC> to win!"
+
+#define   test_id_11   "id11 It takes <0x20AC><0x20AC> to win!"
+
+#define   test_id_12   "<0x20AC>"
+
+#define   test_id_13   "id13 It <0x20A>to win!"
+
+#define   test_id_14   "<0x20AC> id14"
+
+#define   test_id_15   "id15 <0x20AC>"
+
+#define   test_id_16   "id16 <0xG0AC>"

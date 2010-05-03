@@ -1,0 +1,55 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Predefined macro definitions to be used in the mmp-files
+*
+*/
+
+/* 
+* Include the correct version of this file based on your TARGETTYPE. 
+* As an example, if the targettype is STDDLL, have the following line
+* in the corresponding MMP file:
+*
+*     #include <java_stdcpp_support_for_stddll.hrh>
+*
+*/
+
+#ifndef JAVA_STDCPP_SUPPORT_FOR_DLL_HRH
+#define JAVA_STDCPP_SUPPORT_FOR_DLL_HRH
+
+
+#include "java_capabilities.hrh"
+
+LIBRARY euser.lib
+LIBRARY libc.lib
+LIBRARY libpthread.lib
+  
+OPTION CW -wchar_t on
+MACRO  _WCHAR_T_DECLARED
+
+#include "build_defines.hrh"
+
+#include <platform_paths.hrh>
+
+OS_LAYER_LIBC_SYSTEMINCLUDE
+
+#ifdef RD_JAVA_STDCPPV5
+  SYSTEMINCLUDE OS_LAYER_PUBLIC_EXPORT_PATH(stdapis/stlportv5)
+  LIBRARY libstdcppv5.lib
+  STDCPP
+#else
+  OS_LAYER_STDCPP_SYSTEMINCLUDE
+  LIBRARY libstdcpp.lib
+#endif
+
+#endif // JAVA_STDCPP_SUPPORT_FOR_DLL_HRH

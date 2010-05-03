@@ -1,0 +1,4 @@
+domain IdentifiedThirdParty;
+grant user "Ext1" blanket,no {
+    permission com.nokia.ext1.public.Ext1Perm "ext1.target1" "ext1.action1";
+}

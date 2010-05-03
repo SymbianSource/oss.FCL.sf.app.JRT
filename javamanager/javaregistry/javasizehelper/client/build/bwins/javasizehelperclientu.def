@@ -1,0 +1,6 @@
+EXPORTS
+	??0RJavaSizeHelpClient@@QAE@XZ @ 1 NONAME ; RJavaSizeHelpClient::RJavaSizeHelpClient(void)
+	??1RJavaSizeHelpClient@@QAE@XZ @ 2 NONAME ; RJavaSizeHelpClient::~RJavaSizeHelpClient(void)
+	?Connect@RJavaSizeHelpClient@@QAEHXZ @ 3 NONAME ; int RJavaSizeHelpClient::Connect(void)
+	?GetUserUsedDiskSpace@RJavaSizeHelpClient@@QBEHABVTDesC16@@@Z @ 4 NONAME ; int RJavaSizeHelpClient::GetUserUsedDiskSpace(class TDesC16 const &) const
+

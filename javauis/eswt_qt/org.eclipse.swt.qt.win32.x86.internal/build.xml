@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="org.eclipse.swt.qt.win32.x86.internal" default="build" basedir=".">
+
+    <target name="help">
+        <echo level="info">
+Usage: ant [one of the following:]
+build              : Build debug + release
+build.jar          : Build all jars
+build.debug        : Build all debug binaries
+build.release      : Build all release binaries
+build.lib          : Build all native libraries
+build.lib.debug    : Build debug native libraries
+build.lib.release  : Build release native libraries
+build.tests        : Build JUnit and MT tests
+clean              : Clean everything
+clean.jar          : Clean all jars
+clean.lib          : Clean native libraries and object files
+clean.lib.debug    : Clean debug native libraries and object files
+clean.lib.release  : Clean release native libraries and object files
+export             : Export everything
+export.jar         : Export Java classes packed as jar
+export.debug       : Export all debug binaries
+export.release     : Export all release binaries
+export.lib         : Export native libraries
+export.lib.debug   : Export debug native libraries
+export.lib.release : Export release native libraries
+run.tests                  : Run JUnit and MT tests
+        </echo>
+    </target>
+
+    <target name="init" depends="init.env, init.export.path">
+        <property file="./build.properties"></property>
+        <property name="full.name" value="${fragment}_${version.suffix}"/>
+        <property name="temp.dir" value="${basedir}/temp"/>
+        <property name="plugin.destination" value="${basedir}"/>
+        <property name="build.result.dir" value="${basedir}"/>
+        <property name="download.destination" value="${basedir}"/>
+        <property name="lib.path" value = "${plugin.dir}/Eclipse_SWT_PI/qt/library"/>
+        <property name="lib.gfx.path" value = "${plugin.dir}/Eclipse_SWT_PI/qt/library/graphics"/>
+        <mkdir dir="${lib.path}/${generated.native.dir}"/>
+        <!-- Platform Specific properties -->
+   </target>
+
+    <target name="init.env">
+        <property environment = "env"/>
+    </target>
+
+    <target name="init.export.path" if="env.JAVA_BIN_ROOT">
+        <property name="export.jar.debug.path" value = "${env.JAVA_BIN_ROOT}/jsr/classes"/>
+        <property name="export.jar.release.path" value = "${env.JAVA_BIN_ROOT}/jsr/classes"/>
+        <property name="export.lib.debug.path" value = "${env.JAVA_BIN_ROOT}/lib"/>
+        <property name="export.lib.release.path" value = "${env.JAVA_BIN_ROOT}/lib"/>
+    </target>
+        
+    <target name="download" depends="init">
+        <delete dir="${temp.dir}"/>
+        <mkdir dir="${temp.dir}/swtdownload/"/>
+        <antcall target="build.jar"/>
+        <jar jarfile="${build.result.dir}/${jar.filename}" basedir="${basedir}/release/" 
+                update="true" includes="eswt*.dll,libeswt*.so"/>
+        <copy file="${build.result.dir}/${jar.filename}" todir="${temp.dir}/swtdownload"/>
+        <antcall target="src.zip"/>
+        <copy file="${build.result.dir}/src.zip" todir="${temp.dir}/swtdownload"/>
+        <copy file="${plugin.dir}/build/.project" todir="${temp.dir}/swtdownload"/>
+        <copy file="${plugin.dir}/build/.classpath" todir="${temp.dir}/swtdownload"/>
+        <copy todir="${temp.dir}/swtdownload">
+            <fileset dir="${basedir}" includes="about.html,about_files/"/>
+        </copy>
+        <zip zipfile="${download.destination}/eswt-${ws}-${os}-${arch}-${jsdk}.zip">
+            <zipfileset dir="${temp.dir}/swtdownload/"/>
+        </zip>
+        <delete dir="${temp.dir}"/>
+    </target>
+
+    <target name="src.zip" depends="init">
+        <mkdir dir="${build.result.dir}/"/>
+        <zip zipfile="${build.result.dir}/src.zip">
+            <fileset dir="${plugin.dir}/Eclipse SWT/common/" includes="**/*.java" excludes=""/>
+            <fileset dir="${plugin.dir}/Eclipse SWT/common_j2${java.edition}/" includes="**/*.java" excludes=""/>
+            <fileset dir="${plugin.dir}/Eclipse SWT/qt/" includes="**/*.java" excludes=""/>
+            <fileset dir="${plugin.dir}/Eclipse SWT Browser/common/" includes="**/*.java" excludes=""/>
+            <fileset dir="${plugin.dir}/Eclipse SWT Browser/qt/" includes="**/*.java" excludes=""/>
+            <fileset dir="${plugin.dir}/Eclipse SWT Drag and Drop/qt/" includes="**/*.java" excludes=""/>
+            <fileset dir="${plugin.dir}/Eclipse_SWT_PI/common_j2${java.edition}/" includes="**/*.java" excludes=""/>
+            <fileset dir="${plugin.dir}/Eclipse_SWT_PI/qt/library/"/>
+            <fileset dir="${plugin.dir}/Eclipse_SWT_PI/qt/graphics_library/"/>
+            <fileset dir="${plugin.dir}/Eclipse_SWT_PI/qt/" includes="**/*.java" excludes=""/>
+            <fileset dir="${plugin.dir}/Nokia SWT/extensions/" includes="**/*.java" excludes=""/>
+            <fileset dir="${plugin.dir}/Eclipse SWT/common_j2${java.edition}/" includes="**/*.properties" excludes=""/>
+            <fileset dir="${plugin.dir}/Eclipse SWT/common/" includes="**/version.txt" excludes=""/>
+            <fileset dir="${basedir}" includes="about.html,about_files/" excludes=""/>
+        </zip>
+    </target>
+        
+    <target name="gather.sources" depends="init" if="destination.temp.folder">
+        <mkdir dir="${destination.temp.folder}/${full.name}"/>
+        <copy file="${build.result.dir}/src.zip" todir="${destination.temp.folder}/${full.name}/"/>
+        <copy todir="${destination.temp.folder}/${full.name}">
+            <fileset dir="${basedir}" includes="about.html,about_files/"/>
+        </copy>
+    </target>
+
+    <target name="gather.individual.sources" depends="init">
+        <copy todir="${destination.temp.folder}/" failonerror="true" overwrite="true">
+            <fileset dir="${plugin.dir}/Eclipse SWT/common/" includes="**/*.java" excludes=""/>
+            <fileset dir="${plugin.dir}/Eclipse SWT/common_j2${java.edition}/" includes="**/*.java" excludes=""/>
+            <fileset dir="${plugin.dir}/Eclipse SWT/qt/" includes="**/*.java" excludes=""/>
+            <fileset dir="${plugin.dir}/Eclipse SWT Browser/common/" includes="**/*.java" excludes=""/>
+            <fileset dir="${plugin.dir}/Eclipse SWT Browser/qt/" includes="**/*.java" excludes=""/>
+            <fileset dir="${plugin.dir}/Eclipse SWT Drag and Drop/qt/" includes="**/*.java" excludes=""/>
+            <fileset dir="${plugin.dir}/Eclipse_SWT_PI/common_j2${java.edition}/" includes="**/*.java" excludes=""/>
+            <fileset dir="${plugin.dir}/Eclipse_SWT_PI/qt/" includes="**/*.java" excludes=""/>
+            <fileset dir="${plugin.dir}/Eclipse_SWT_PI/qt/library/"/>
+            <fileset dir="${plugin.dir}/Eclipse_SWT_PI/qt/graphics_library/"/>
+            <fileset dir="${plugin.dir}/Nokia SWT/extensions/" includes="**/*.java" excludes=""/>
+            <fileset dir="${plugin.dir}/Eclipse SWT/common_j2${java.edition}/" includes="**/*.properties" excludes=""/>
+            <fileset dir="${plugin.dir}/Eclipse SWT/common/" includes="**/version.txt" excludes=""/>
+        </copy>
+    </target>
+
+    <target name="gather.bin.parts" depends="init" if="destination.temp.folder">
+        <mkdir dir="${destination.temp.folder}/${full.name}"/>
+        <copy todir="${destination.temp.folder}/${full.name}" failonerror="true">
+            <fileset dir="${plugin.dir}/bin" includes="*"/>
+        </copy>
+        <copy todir="${destination.temp.folder}/${full.name}">
+            <fileset dir="${basedir}" includes="eswt*.dll,libeswt*.so,META-INF/"/>
+        </copy>
+        <chmod perm="755" dir="${destination.temp.folder}/${full.name}" includes="eswt*.dll,libeswt*.so" />
+        <eclipse.versionReplacer path="${destination.temp.folder}/${full.name}" version="${version.suffix}"/>
+    </target>
+        
+    <target name="jar.plugin" depends="init">
+        <delete dir="${temp.dir}"/>
+        <mkdir dir="${temp.dir}"/>
+        <antcall target="build.jar"/>
+        <antcall target="gather.bin.parts">
+            <param name="destination.temp.folder" value="${temp.dir}/"/>
+        </antcall>
+        <jar jarfile="${plugin.destination}/${full.name}.jar" 
+                basedir="${temp.dir}/${full.name}" filesonly="true"/>
+        <delete dir="${temp.dir}"/>
+    </target>
+        
+    <target name="zip.plugin" depends="init">
+        <delete dir="${temp.dir}"/>
+        <mkdir dir="${temp.dir}"/>
+        <antcall target="build.jar"/>
+        <antcall target="src.zip"/>
+        <antcall target="gather.bin.parts">
+            <param name="destination.temp.folder" value="${temp.dir}/"/>
+        </antcall>
+        <antcall target="gather.sources">
+            <param name="destination.temp.folder" value="${temp.dir}/"/>
+        </antcall>
+        <zip zipfile="${plugin.destination}/${full.name}.zip" 
+                basedir="${temp.dir}" filesonly="true"/>
+        <delete dir="${temp.dir}"/>
+    </target>
+
+    <target name="build">
+        <antcall target="export.jar"/>
+        <antcall target="export.lib"/>
+    </target>
+        
+    <target name="build.jar" depends="init" description="Produces eswt-qt.jar">
+        <mkdir dir="${plugin.dir}/bin"/>
+        <javac destdir="${plugin.dir}/bin" source="${javac.source}" target="${javac.target}"
+            debug="${javac.debug}" debuglevel="lines,vars,source" verbose="true" failonerror="true">
+            <src path="${plugin.dir}/Eclipse SWT/common/"/>
+            <src path="${plugin.dir}/Eclipse SWT/common_j2${java.edition}/"/>
+            <src path="${plugin.dir}/Eclipse SWT/qt/"/>
+            <src path="${plugin.dir}/Eclipse SWT Browser/common/"/>
+            <src path="${plugin.dir}/Eclipse SWT Browser/qt/"/>
+            <src path="${plugin.dir}/Eclipse SWT Drag and Drop/qt/"/>
+            <src path="${plugin.dir}/Eclipse_SWT_PI/common_j2${java.edition}/"/>
+            <src path="${plugin.dir}/Eclipse_SWT_PI/qt/"/>
+            <src path="${plugin.dir}/Nokia SWT/extensions/"/>
+        </javac>
+        <jar jarfile="${build.result.dir}/${jar.filename}" basedir="${plugin.dir}/bin"/>
+    </target>
+
+    <target name="build.debug">
+        <antcall target="export.jar.debug"/>
+        <antcall target="export.lib.debug"/>
+    </target>
+
+    <target name="build.release">
+        <antcall target="export.jar.release"/>
+        <antcall target="export.lib.release"/>
+    </target>
+
+    <target name="build.lib">
+        <antcall target="build.lib.debug"/>
+        <antcall target="build.lib.release"/>
+    </target>
+
+    <target name="build.lib.debug" depends="init">
+        <antcall target="build.lib.common">
+            <param name="build.lib.common.config" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="build.lib.release" depends="init">
+        <antcall target="build.lib.common">
+            <param name="build.lib.common.config" value="release"/>
+        </antcall>
+    </target>
+
+    <target name="build.lib.common" depends="init" description="params: config">
+        <javah outputfile="${lib.path}/${generated.native.dir}/os.h" classpath="${plugin.dir}/bin" verbose="yes">
+            <class name="org.eclipse.swt.internal.qt.OS"/>
+            <class name="org.eclipse.swt.internal.qt.graphics.OS"/>
+        </javah>
+        <antcall target="qmake">
+            <param name="qmake.dir" value="${lib.path}"/>
+            <param name="qmake.target" value="${build.lib.common.config}"/>
+            <param name="qmake.spec" value="${lib.spec}"/>
+            <param name="qmake.file" value="${lib.makefile}.${build.lib.common.config}"/>
+        </antcall>
+        <antcall target="make">
+            <param name="make.dir" value="${lib.path}"/>
+            <param name="make.file" value="${lib.makefile}.${build.lib.common.config}"/>
+            <param name="make.target" value=""/>
+        </antcall>
+        <!--<exec executable="pexports" dir="${lib.path}" failonerror="false">
+            <arg line="${build.lib.common.config}/${lib.filename} > swt.def"/>
+        </exec>-->
+        <mkdir dir="${build.result.dir}/${build.lib.common.config}/"/>
+        <copy file="${lib.path}/${build.lib.common.config}/${lib.filename}" 
+            tofile="${build.result.dir}/${build.lib.common.config}/${lib.filename}" overwrite="true" verbose="true"/>
+    </target>
+
+    <target name="clean">
+        <antcall target="clean.jar"/>
+        <antcall target="clean.lib"/>
+    </target>
+        
+    <target name="clean.jar" depends="init" description="">
+        <delete dir="${plugin.dir}/bin"/>
+        <delete file="${build.result.dir}/${jar.filename}" verbose="true"/>
+        <delete file="${export.jar.debug.path}/${jar.filename}" verbose="true"/>
+        <delete file="${export.jar.release.path}/${jar.filename}" verbose="true"/>
+    </target>
+
+    <target name="clean.lib">
+        <antcall target="clean.lib.debug"/>
+        <antcall target="clean.lib.release"/>
+    </target>
+
+    <target name="clean.lib.debug" depends="init">
+        <antcall target="clean.lib.common">
+            <param name="clean.lib.common.config" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="clean.lib.release" depends="init">
+        <antcall target="clean.lib.common">
+            <param name="clean.lib.common.config" value="release"/>
+        </antcall>
+    </target>
+
+    <target name="clean.lib.common" depends="init" description="params: config">
+        <antcall target="make">
+            <param name="make.dir" value="${lib.path}"/>
+            <param name="make.target" value="clean"/>
+            <param name="make.file" value="${lib.makefile}.${clean.lib.common.config}"/>
+            <param name="fail" value="false"/>
+        </antcall>
+        <delete file="${lib.path}/${lib.makefile}.${clean.lib.common.config}" verbose="true"/>
+        <delete dir="${lib.path}/${generated.native.dir}" verbose="true"/>
+    	<delete dir="${lib.path}/${clean.lib.common.config}" verbose="true"/>
+        <delete file="${build.result.dir}/${clean.lib.common.config}/${lib.filename}" verbose="true"/>
+        <condition property="clean.lib.common.export.path" value="${export.lib.debug.path}" else="${export.lib.release.path}">
+            <equals arg1="${clean.lib.common.config}" arg2="debug"/>
+        </condition>
+        <delete file="${clean.lib.common.export.path}/${lib.filename}" verbose="true"/>
+    </target>
+
+    <target name="export">
+        <antcall target="export.jar"/>
+        <antcall target="export.lib"/>
+    </target>
+
+    <target name="export.debug">
+        <antcall target="export.jar.debug"/>
+        <antcall target="export.lib.debug"/>
+    </target>
+
+    <target name="export.release">
+        <antcall target="export.jar.release"/>
+        <antcall target="export.lib.release"/>
+    </target>
+
+        <target name="export.jar">
+                <antcall target="export.jar.debug"/>
+                <antcall target="export.jar.release"/>
+        </target>
+
+        <target name="export.jar.debug" depends="build.jar" if="export.jar.debug.path">
+                <mkdir dir="${export.jar.debug.path}"/>
+                <copy file="${build.result.dir}/${jar.filename}" 
+            tofile="${export.jar.debug.path}/${jar.filename}" overwrite="true" verbose="true"/>
+        </target>
+
+        <target name="export.jar.release" depends="build.jar" if="export.jar.release.path">
+                <mkdir dir="${export.jar.release.path}"/>
+                <copy file="${build.result.dir}/${jar.filename}"
+            tofile="${export.jar.release.path}/${jar.filename}" overwrite="true" verbose="true"/>
+        </target>
+
+    <target name="export.lib">
+        <antcall target="export.lib.debug"/>
+        <antcall target="export.lib.release"/>
+    </target>
+
+    <target name="export.lib.debug" depends="build.lib.debug" if="export.lib.debug.path">
+        <mkdir dir="${export.lib.debug.path}"/>
+        <copy file="${lib.path}/debug/${lib.filename}" 
+            tofile="${export.lib.debug.path}/${lib.filename}" overwrite="true" verbose="true"/>
+    </target>
+
+    <target name="export.lib.release" depends="build.lib.release" if="export.lib.release.path">
+        <mkdir dir="${export.lib.release.path}"/>
+        <copy file="${lib.path}/release/${lib.filename}"
+            tofile="${export.lib.release.path}/${lib.filename}" overwrite="true" verbose="true"/>
+    </target>
+
+    <target name="make" description="params: dir, file, target">
+        <exec executable="mingw32-make" dir="${make.dir}" failonerror="false">
+            <arg line="-f ${make.file} ${make.target}"/>
+        </exec>
+    </target>
+
+    <target name="qmake" description="params: dir, spec, target">
+        <exec executable="qmake" dir="${qmake.dir}" failonerror="true">
+            <arg line="-spec ${qmake.spec} -o ${qmake.file}"/>
+            <arg value="CONFIG+=${qmake.target}"/>
+            <arg value="DESTDIR=${qmake.target}"/>
+            <arg value="OBJECTS_DIR=${qmake.target}/${qmake.spec}/build"/>
+        </exec>
+    </target>
+
+
+</project>
+

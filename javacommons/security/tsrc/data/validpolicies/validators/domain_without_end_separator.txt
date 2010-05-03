@@ -1,0 +1,2 @@
+domain=operator
+allowed,javax.microedition.midlet.AutoStartPermission

@@ -1,0 +1,52 @@
+/*
+* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Java Sid Checker is an ECOM plugin for Symbian AppArc
+*                (database that contains info on all applications installed
+*                 to the device)
+*                It tells AppArc whether Java application installed
+*                to a removable storage media is present and can be executed.
+*
+*/
+
+
+// Registry file for the CApparcVerifierInterface JavaRegistry implementation
+
+#include <ecom/registryinfov2.rh>
+#include "javauids.h"
+
+RESOURCE REGISTRY_INFO r_registry
+{
+    resource_format_version = RESOURCE_FORMAT_VERSION_2;
+	dll_uid = KJavaSidCheckerDllUid;    // must match the name of this file
+	interfaces =
+	{
+		INTERFACE_INFO
+		{
+			interface_uid = KSidCheckerEcomIfUid;
+			implementations =
+			{
+				IMPLEMENTATION_INFO
+				{
+					implementation_uid = KSidCheckerEcomImplUid;
+					// Version number is 2 so that this implementation should override the old one in ROM
+                    version_no         =  2;
+					display_name = "JavaVerify";
+					default_data = "[10210e26]";
+					opaque_data  = "";
+					rom_only           =  0;
+				}
+			};
+		}
+	};
+}

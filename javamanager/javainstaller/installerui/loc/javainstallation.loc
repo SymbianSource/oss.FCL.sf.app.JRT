@@ -1,0 +1,592 @@
+/*
+* Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Localised strings for Java Runtime version 2.x for S60 - Java Application Installer
+*
+*/
+
+
+
+// LOCALISATION STRINGS
+
+// d:Installation confirmation query
+// d:displayed at the top of the popup
+// d:with application name
+// l:popup_note_window
+//
+#define qtn_java_inst_query "Install %U?"
+
+// d:Softkey label in SK1
+// d:for accepting installation, update, uninstallation, authentication query.
+// d:Used also for dismissing error message
+// l:control_pane_t1/opt7
+//
+#define qtn_java_inst_ok "Ok"
+
+// d:Softkey label in SK2
+// d:for cancelling installation, update, uninstallation, authentication query
+// l:control_pane_t1/opt7
+//
+#define qtn_java_inst_cancel "Cancel"
+
+// d:Link in installation and update confirmation query
+// d:for opening application details view
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_view_app_details "View details"
+
+// d:Title of authentication query
+// d:requesting username and password
+// l:heading_pane_t1
+//
+#define qtn_java_inst_auth_query "Connect to"
+
+// d:Authentication query prompt text
+// d:with application name
+// l:loc_type_pane
+//
+#define qtn_java_inst_auth_yourself "To download %U you need to authenticate yourself."
+
+// d:Authentication query prompt text
+// d:username
+// l:none
+//
+#define qtn_java_inst_auth_username "Username:"
+
+// d:Authentication query prompt text
+// d:password
+// l:none
+//
+#define qtn_java_inst_auth_password "Password:"
+
+// d:Wait note displayed to user
+// d:during application conversion with a progress bar
+// l:popup_note_wait_window
+//
+#define qtn_java_inst_app_conversion_progress "Converting application %0N / %1N"
+
+// d:Wait note displayed to user
+// d:during OCSP check with a progress bar
+// l:popup_note_wait_window
+//
+#define qtn_java_inst_ocsp_check_progress "Checking certificate validity"
+
+// d:Wait note displayed to user
+// d:during downloading process with a progress bar
+// l:popup_note_wait_window
+//
+#define qtn_java_inst_download_progress "Downloading"
+
+// d:Wait note displayed to user
+// d:during installation process with a progress bar
+// l:popup_note_wait_window
+//
+#define qtn_java_inst_progress "Installing"
+
+// d:Installation completed prompt with softkeys
+// d:listing all applications in the application suite
+// d:with possible application icon(s)
+// l:heading_pane_t1
+//
+#define qtn_java_inst_complete "Installation complete"
+
+// d:Installation completed prompt
+// d:label for SK1 to launch applicationlisting all applications in the application suite
+// l:control_pane_t1/opt7
+//
+#define qtn_java_inst_start "Start"
+
+// d:Installation completed prompt
+// d:label for SK2 to dismiss prompt
+// l:control_pane_t1/opt7
+//
+#define qtn_java_inst_close "Close"
+
+// d:Link in installation details query
+// d:for opening application not certified details view
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_view_not_certified_details "Application not certified"
+
+// d:Title for displaying application not certified details
+// d:in a separate view with softkey
+// l:heading_pane_t1
+//
+#define qtn_java_inst_not_certified_title "Security warning"
+
+// d:Installation (update) confirmation query certificate details:
+// d:application not certified warning
+// l:loc_type_pane
+//
+#define qtn_java_inst_not_certified_warning "The application is untrusted and may be harmful to your phone."
+
+// d:Link in installation details query
+// d:for opening certificate details view
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_view_cert_details "Certificate information"
+
+// d:Title for displaying details of a certificate
+// d:in a separate view with softkey
+// l:heading_pane_t1
+//
+#define qtn_java_inst_cert_details_title "Certificate details"
+
+// d:Softkey label for SK2 for returning from a view
+// d:back to the application details
+// l:control_pane_t1/opt7
+//
+#define qtn_java_inst_back "Back"
+
+// d:Update (installation) confirmation query with application name and
+// d:current and new version numbers,
+// d:displayed at the top of the popup
+// l:popup_note_window
+//
+#define qtn_java_inst_update_query "Update %0U from version %1U to %2U?"
+
+// d:Update (installation) confirmation query application details
+// d:with option to retain user data (with check box)
+// l:list_single_graphic_pane_t1
+//
+#define qtn_java_inst_update_retain_user_data "Retain user data"
+
+// d:Uninstallation confirmation query
+// d:displayed at the top of the popup
+// l:popup_note_window
+//
+#define qtn_java_inst_uninstall_query "Uninstall %U and remove associated data?"
+
+// d:Wait note displayed to user
+// d:during uninstallation process with a progress bar
+// l:popup_note_wait_window
+//
+#define qtn_java_inst_uninstalling_progress "Uninstalling"
+
+// d:Installation failed error note
+// d:displayed when installation/uninstallation/update failed
+// d:displayed at the top of note and including an error icon
+// l:heading_pane_t1
+//
+#define qtn_java_inst_failed "Installation failed"
+
+// d:Uninstallation failed error note
+// d:displayed when installation/uninstallation/update failed
+// d:displayed at the top of note and including an error icon
+// l:heading_pane_t1
+//
+#define qtn_java_inst_uninst_failed "Uninstallation failed"
+
+// d:Softkey label for SK2 for viewing error details
+// d:opening a new view
+// l:control_pane_t1/opt7
+//
+#define qtn_java_inst_failed_details "Details"
+
+// d:Installation (update) confirmation query application details:
+// d:application name
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_app_details_name "Name: %U"
+
+// d:Installation (update) confirmation query application details:
+// d:vendor
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_app_details_vendor "Vendor: %U"
+
+// d:Installation (update) confirmation query application details:
+// d:version
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_app_details_version "Version: %U"
+
+// d:Installation (update) confirmation query application details:
+// d:size
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_app_details_size_kb "Size: %U kB"
+
+// d:Installation (update) confirmation query application details:
+// d:applications
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_app_details_apps_list "Applications:"
+
+// d:Installation (update) confirmation query application details:
+// d:application name
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_application_name "- %U"
+
+// d:Installation (update) confirmation query certificate details:
+// d:domain
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_cert_details_domain "Domain: %U"
+
+// d:Installation (update) confirmation query certificate details:
+// d:domain name (possible %U in qtn_java_inst_cert_details_domain)
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_cert_details_domain_operator "Operator"
+
+// d:Installation (update) confirmation query certificate details:
+// d:domain name (possible %U in qtn_java_inst_cert_details_domain)
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_cert_details_domain_manufacturer "Manufacturer"
+
+// d:Installation (update) confirmation query certificate details:
+// d:domain name (possible %U in qtn_java_inst_cert_details_domain)
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_cert_details_domain_trusted_third_party "Trusted 3rd party"
+
+// d:Installation (update) confirmation query certificate details:
+// d:domain name (possible %U in qtn_java_inst_cert_details_domain)
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_cert_details_domain_untrusted_third_party "Untrusted 3rd party"
+
+// d:Installation (update) confirmation query certificate details:
+// d:issuer
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_cert_details_issuer "Issuer: %U"
+
+// d:Installation (update) confirmation query certificate details:
+// d:subject
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_cert_details_subject "Subject: %U"
+
+// d:Installation (update) confirmation query certificate details:
+// d:valid from
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_cert_details_valid_from "Valid from: %U"
+
+// d:Installation (update) confirmation query certificate details:
+// d:valid until
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_cert_details_valid_until "Valid until: %U"
+
+// d:Installation (update) confirmation query certificate details:
+// d:serial number
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_cert_details_serial_number "Serial number: %U"
+
+// d:Installation (update) confirmation query certificate details:
+// d:fingerprint
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_cert_details_fingerprint "Fingerprint (SHA1): %U"
+
+// d:Installation (update) confirmation query application details:
+// d:title of installation drive drop down list, if available
+// l:heading_pane_t1
+//
+#define qtn_java_inst_app_details_install_to_drive "Install to drive:"
+
+// d:Installation (update) confirmation query application details:
+// d:option in installation drive drop down list, if available
+// l:list_single_pane_t1_cp2
+//
+#define qtn_java_inst_drive_type_phone_memory "%U: Phone Memory"
+
+// d:Installation (update) confirmation query application details:
+// d:option in installation drive drop down list, if available
+// d:amount of free memory in kB (max three digits e.g. 256)
+// l:list_single_pane_t1_cp2
+//
+#define qtn_java_inst_drive_type_phone_memory_kb "%U: Phone Memory (%N kB)"
+
+// d:Installation (update) confirmation query application details:
+// d:option in installation drive drop down list, if available
+// d:amount of free memory in MB (max three digits e.g. 500)
+// l:list_single_pane_t1_cp2
+//
+#define qtn_java_inst_drive_type_phone_memory_mb "%U: Phone Memory (%N MB)"
+
+// d:Installation (update) confirmation query application details:
+// d:option in installation drive drop down list, if available
+// d:amount of free memory in GB (max three digits e.g. 100)
+// l:list_single_pane_t1_cp2
+//
+#define qtn_java_inst_drive_type_phone_memory_gb "%U: Phone Memory (%N GB)"
+
+// d:Installation (update) confirmation query application details:
+// d:option in installation drive drop down list, if available
+// l:list_single_pane_t1_cp2
+//
+#define qtn_java_inst_drive_type_memory_card "%U: Memory Card"
+
+// d:Installation (update) confirmation query application details:
+// d:option in installation drive drop down list, if available
+// d:amount of free memory in kB (max three digits e.g. 256)
+// l:list_single_pane_t1_cp2
+//
+#define qtn_java_inst_drive_type_memory_card_kb "%U: Memory Card (%N kB)"
+
+// d:Installation (update) confirmation query application details:
+// d:option in installation drive drop down list, if available
+// d:amount of free memory in MB (max three digits e.g. 500)
+// l:list_single_pane_t1_cp2
+//
+#define qtn_java_inst_drive_type_memory_card_mb "%U: Memory Card (%N MB)"
+
+// d:Installation (update) confirmation query application details:
+// d:option in installation drive drop down list, if available
+// d:amount of free memory in GB (max three digits e.g. 100)
+// l:list_single_pane_t1_cp2
+//
+#define qtn_java_inst_drive_type_memory_card_gb "%U: Memory Card (%N GB)"
+
+// d:Installation (update) confirmation query application details:
+// d:option in installation drive drop down list, if available
+// l:list_single_pane_t1_cp2
+//
+#define qtn_java_inst_drive_type_internal_mass_memory "%U: Internal Mass Storage"
+
+// d:Installation (update) confirmation query application details:
+// d:option in installation drive drop down list, if available
+// d:amount of free memory in kB (max three digits e.g. 256)
+// l:list_single_pane_t1_cp2
+//
+#define qtn_java_inst_drive_type_internal_mass_memory_kb "%U: Internal Mass Storage (%N kB)"
+
+// d:Installation (update) confirmation query application details:
+// d:option in installation drive drop down list, if available
+// d:amount of free memory in MB (max three digits e.g. 500)
+// l:list_single_pane_t1_cp2
+//
+#define qtn_java_inst_drive_type_internal_mass_memory_mb "%U: Internal Mass Storage (%N MB)"
+
+// d:Installation (update) confirmation query application details:
+// d:option in installation drive drop down list, if available
+// d:amount of free memory in GB (max three digits e.g. 100)
+// l:list_single_pane_t1_cp2
+//
+#define qtn_java_inst_drive_type_internal_mass_memory_gb "%U: Internal Mass Storage (%N GB)"
+
+// d:Installation (update) confirmation query application details:
+// d:option in installation drive drop down list, drive type is unknown
+// l:list_single_pane_t1_cp2
+//
+#define qtn_java_inst_drive_type_unknown "%U: Unknown"
+
+// d:Installation (update) confirmation query application details:
+// d:option in installation drive drop down list, drive type is unknown
+// d:amount of free memory in kB (max three digits e.g. 256)
+// l:list_single_pane_t1_cp2
+//
+#define qtn_java_inst_drive_type_unknown_kb "%U: Unknown (%N kB)"
+
+// d:Installation (update) confirmation query application details:
+// d:option in installation drive drop down list, drive type is unknown
+// d:amount of free memory in MB (max three digits e.g. 500)
+// l:list_single_pane_t1_cp2
+//
+#define qtn_java_inst_drive_type_unknown_mb "%U: Unknown (%N MB)"
+
+// d:Installation (update) confirmation query application details:
+// d:option in installation drive drop down list, drive type is unknown
+// d:amount of free memory in GB (max three digits e.g. 100)
+// l:list_single_pane_t1_cp2
+//
+#define qtn_java_inst_drive_type_unknown_gb "%U: Unknown (%N GB)"
+
+// d:Installation/update/uninstallation error message:
+// d:short error message
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_no_mem "Unable to install application. Insufficient memory in device."
+
+// d:Installation/update/uninstallation error message:
+// d:short error message
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_no_net "Unable to install application. Network connection was lost."
+
+// d:Installation/update/uninstallation error message:
+// d:short error message
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_corrupt_pkg "Unable to install application. Corrupted installation package."
+
+// d:Installation/update/uninstallation error message:
+// d:short error message
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_compat_err "Unable to install application. Application is incompatible with the device."
+
+// d:Installation/update/uninstallation error message:
+// d:short error message
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_authorization_err "Unable to install application. Application authorization failed."
+
+// d:Installation/update/uninstallation error message:
+// d:short error message
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_authentication_err "Unable to install application. Application authentication failed."
+
+// d:Installation/update/uninstallation error message:
+// d:short error message
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_push_reg_err "Unable to install application. Push registration failed."
+
+// d:Installation/update/uninstallation error message:
+// d:short error message
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_unexpected "Unable to install application. Unexpected error."
+
+// d:Installation/update/uninstallation error message:
+// d:short error message
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_cancel "Installation was cancelled. Application not installed."
+
+// d:Installation/update/uninstallation error message:
+// d:short error message
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_uninst_not_allowed "Uninstallation not allowed."
+
+// d:Installation/update/uninstallation error message:
+// d:short error message
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_uninst_unexpected "Unable to uninstall application. Unexpected error."
+
+// d:Installation/update/uninstallation error message:
+// d:short error message
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_uninst_cancel "Uninstallation cancelled. Application not uninstalled."
+
+// d:Installation/update/uninstallation error message:
+// d:detailed error message
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_no_mem_detail "Application requires %U kB of memory. You have to remove other applications or data from the device to install the application."
+
+// d:Installation/update/uninstallation error message:
+// d:detailed error message
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_no_mem_detail_mb "Application requires %U MB of memory. You have to remove other applications or data from the device to install the application."
+
+// d:Installation/update/uninstallation error message:
+// d:detailed error message
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_no_net_detail "Cannot download installation package from URL %U."
+
+// d:Installation/update/uninstallation error message:
+// d:detailed error message
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_attr_bad_syntax "Attribute %U has bad syntax."
+
+// d:Installation/update/uninstallation error message:
+// d:detailed error message
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_attr_missing "Mandatory attribute %U is missing."
+
+// d:Installation/update/uninstallation error message:
+// d:detailed error message
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_attr_mismatch "Attribute %U is different in JAD and JAR files."
+
+// d:Installation/update/uninstallation error message:
+// d:detailed error message
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_attr_unsupported_value "Attribute %U has unsupported value."
+
+// d:Installation/update/uninstallation error message:
+// d:detailed error message
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_attr_handling_failed "Attribute %U handling failed."
+
+// d:Installation/update/uninstallation error message:
+// d:detailed error message
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_cert_unsupported "Application has been signed with a certificate that is not supported in this device."
+
+// d:Installation/update/uninstallation error message:
+// d:detailed error message
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_protected_pkg_misuse "Package %U is protected and can not be used."
+
+// d:Installation/update/uninstallation error message:
+// d:detailed error message
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_different_signers "The signers of the update and the already installed applications do not match."
+
+// d:Installation/update/uninstallation error message:
+// d:detailed error message
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_uninst_blocked "Uninstallation is blocked by an attribute in application."
+
+// d:Installation/update/uninstallation error message:
+// d:detailed error message with exception stack trace or other not localised information
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_error_internal "Internal error: %U"
+
+// d:Security permission to access restricted device functionality
+// d: - query
+// l:loc_type_pane
+//
+#define qtn_java_inst_perm_query "Application asks permission to access protected device functions."
+
+// d:Security permission to access restricted device functionality
+// d:option for granting access always
+// l:list_single_pane_t1_cp2
+//
+#define qtn_java_inst_perm_allow_always "Allow always"
+
+// d:Security permission to access restricted device functionality
+// d:for asking access during runtime
+// l:list_single_pane_t1_cp2
+//
+#define qtn_java_inst_perm_ask_me_later "Ask me later"
+
+// d:Link in security permission access query
+// d:for opening permission details view
+// l:popup_info_list_pane_t1
+//
+#define qtn_java_inst_perm_view_details "View details"
+
+// d:Title for displaying security permission details
+// d:in a separate view
+// l:heading_pane_t1
+//
+#define qtn_java_inst_perm_view_details_title "Permission details"
+
+// End of File

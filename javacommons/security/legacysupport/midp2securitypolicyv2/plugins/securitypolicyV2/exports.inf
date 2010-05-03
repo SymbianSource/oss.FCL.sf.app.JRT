@@ -1,0 +1,38 @@
+/*
+* Copyright (c) 2004 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
+
+#ifndef __SECURITYPOLICYV2_EXPORTS_INF__
+#define __SECURITYPOLICYV2_EXPORTS_INF__
+
+PRJ_EXPORTS
+
+../../plugins/securitypolicyV2/export/ConnectionFilterType.h             |../../../../../../inc/j2me/midp2/security/connectionfiltertype.h
+../../plugins/securitypolicyV2/export/MConnectionFilter.h                |../../../../../../inc/j2me/midp2/security/mconnectionfilter.h
+../../plugins/securitypolicyV2/export/MDriveAccessPolicy.h               |../../../../../../inc/j2me/midp2/security/mdriveaccesspolicy.h
+../../plugins/securitypolicyV2/export/MExtendedProtectionDomain.h        |../../../../../../inc/j2me/midp2/security/mextendedprotectiondomain.h
+../../plugins/securitypolicyV2/export/MFileSystemAccessPolicy.h          |../../../../../../inc/j2me/midp2/security/mfilesystemaccesspolicy.h
+../../plugins/securitypolicyV2/export/MFunctionGroupBinding.h            |../../../../../../inc/j2me/midp2/security/mfunctiongroupbinding.h
+../../plugins/securitypolicyV2/export/MFunctionGroup.h                   |../../../../../../inc/j2me/midp2/security/mfunctiongroup.h
+../../plugins/securitypolicyV2/export/MSecurityPolicyV2.h                |../../../../../../inc/j2me/midp2/security/msecuritypolicyv2.h
+../../plugins/securitypolicyV2/export/MVersionedInterface.h              |../../../../../../inc/j2me/midp2/core/mversionedinterface.h
+
+// MIDP2 Security RP exports
+../../plugins/securitypolicyV2/export/MBlanketPermissionPolicy.h         |../../../../../../inc/j2me/midp2/security/mblanketpermissionpolicy.h
+../../plugins/securitypolicyV2/export/MBlanketPermissionPolicyElement.h  |../../../../../../inc/j2me/midp2/security/mblanketpermissionpolicyelement.h
+
+#endif    // !__SECURITYPOLICYV2_EXPORTS_INF__

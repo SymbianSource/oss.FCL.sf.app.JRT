@@ -1,0 +1,20 @@
+EXPORTS
+  ?jni_lookup@@YAP6AXXZPBD@Z @ 1 NONAME ; void (*)(void) jni_lookup(char const *)
+	?readBytes@NativeSocketConnection@java@@UAEHAAUJNIEnv_@@PAV_jbyteArray@@@Z @ 2 NONAME ; int java::NativeSocketConnection::readBytes(struct JNIEnv_ &, class _jbyteArray *)
+	?setSocketOption@NativeSocketConnection@java@@QAEHHH@Z @ 3 NONAME ; int java::NativeSocketConnection::setSocketOption(int, int)
+	?socketClose@NativeSocketConnection@java@@QAEHXZ @ 4 NONAME ; int java::NativeSocketConnection::socketClose(void)
+	?socketOpen@NativeSocketConnection@java@@QAEHHHHPAH@Z @ 5 NONAME ; int java::NativeSocketConnection::socketOpen(int, int, int, int *)
+	?socketRead@NativeSocketConnection@java@@QAEHPADH@Z @ 6 NONAME ; int java::NativeSocketConnection::socketRead(char *, int)
+	?socketWrite@NativeSocketConnection@java@@QAEHPADH@Z @ 7 NONAME ; int java::NativeSocketConnection::socketWrite(char *, int)
+	?stopReading@NativeSocketConnection@java@@UAEXXZ @ 8 NONAME ; void java::NativeSocketConnection::stopReading(void)
+	?stopWriting@NativeSocketConnection@java@@UAEXXZ @ 9 NONAME ; void java::NativeSocketConnection::stopWriting(void)
+	?writeBytes@NativeSocketConnection@java@@UAEHAAUJNIEnv_@@PAV_jbyteArray@@HH@Z @ 10 NONAME ; int java::NativeSocketConnection::writeBytes(struct JNIEnv_ &, class _jbyteArray *, int, int)
+	??0NativeSocketConnection@java@@QAE@PBDH0H@Z @ 11 NONAME ; java::NativeSocketConnection::NativeSocketConnection(char const *, int, char const *, int)
+	??1NativeSocketConnection@java@@QAE@XZ @ 12 NONAME ; java::NativeSocketConnection::~NativeSocketConnection(void)
+	?getAddress@NativeSocketConnection@java@@QAEHPAD@Z @ 13 NONAME ; int java::NativeSocketConnection::getAddress(char *)
+	?getLocalAddress@NativeSocketConnection@java@@QAEHPAD@Z @ 14 NONAME ; int java::NativeSocketConnection::getLocalAddress(char *)
+	?getLocalPort@NativeSocketConnection@java@@QAEHXZ @ 15 NONAME ; int java::NativeSocketConnection::getLocalPort(void)
+	?getPort@NativeSocketConnection@java@@QAEHXZ @ 16 NONAME ; int java::NativeSocketConnection::getPort(void)
+	?getSocketOption@NativeSocketConnection@java@@QAEHH@Z @ 17 NONAME ; int java::NativeSocketConnection::getSocketOption(int)
+	
+

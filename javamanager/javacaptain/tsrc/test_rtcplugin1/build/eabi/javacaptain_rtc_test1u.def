@@ -1,0 +1,5 @@
+EXPORTS
+	_Z13findDllMethodPKc @ 1 NONAME
+	_ZTIN4java7captain13RtcBasePluginE @ 2 NONAME ; #<TI>#
+	_ZTVN4java7captain13RtcBasePluginE @ 3 NONAME ; #<VT>#
+

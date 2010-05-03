@@ -1,0 +1,5 @@
+[properties]
+-Dcom.nokia.mj.addon.protected.ext2=com.nokia.ext2.internal.,com.nokia.ext1.public
+-Dcom.nokia.mj.addon.restricted.ext2=com.nokia.ext2.public.,com.nokia.ext1.internal
+-Dcom.nokia.mj.addon.permissions.ext2=com.nokia.ext2.public.Ext2Perm,com.nokia.ext1.internal.Ext1Perm;com.nokia.ext1.public.Ext1Perm,com.nokia.ext2.internal.Ext2Perm;com.nokia.ext2.public.Ext2Perm,com.nokia.ext2.internal.Ext2Perm,*
+-Dcom.nokia.mj.addon.policies.ext2=c:\resource\java\security\extensions\ext2\policies\trustedthirdparty.ser

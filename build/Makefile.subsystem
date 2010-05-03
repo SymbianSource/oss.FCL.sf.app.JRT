@@ -1,0 +1,250 @@
+#
+# Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+
+ifndef JAVA_SRC_ROOT
+$(error JAVA_SRC_ROOT variable not defined!)
+endif
+
+# ------------------------------------------------
+
+
+ifndef SUBTARGETS
+# If order is not explicitly defined, use the following
+SUBTARGETS = $(COMPONENTS) $(SUBSYSTEMS) $(NONQTSUBSYSTEMS)
+endif
+
+.PHONY: subtargets $(SUBTARGETS)
+
+# Check for overlaps
+OVERLAPS = \
+ $(filter $(SUBSYSTEMS) $(NONQTSUBSYSTEMS), $(COMPONENTS)) \
+ $(filter $(COMPONENTS) $(NONQTSUBSYSTEMS), $(SUBSYSTEMS)) \
+ $(filter $(COMPONENTS) $(SUBSYSTEMS), $(NONQTSUBSYSTEMS))
+ifneq ($(strip $(OVERLAPS)),)
+$(error Overlap(s) in COMPONENTS/SUBSYSTEMS/NONQTSUBSYSTEMS definition)
+endif
+
+ifdef ALLTARGETS
+REALTARGETS := $(SUBTARGETS)
+endif
+
+ifndef REALTARGETS
+# This is the real target list. Allow skipping of targets
+REALTARGETS := $(filter-out $(SKIPTARGETS),$(SUBTARGETS))
+# Filter targets by platform
+ifeq ($(BUILDENV),symbian)
+REALTARGETS := $(filter-out $(LINUX_ONLY), $(REALTARGETS))
+else
+REALTARGETS := $(filter-out $(SYMBIAN_ONLY), $(REALTARGETS))
+endif
+endif
+
+subtargets: $(REALTARGETS)
+
+
+$(SUBSYSTEMS): 
+	$(MAKE) TARGET_SUB=$@ -C $@ -f subsystem.mk $(TARGET_PHASE)
+
+$(COMPONENTS): 
+	$(MAKE) TARGET_SUB=$@ -C $@ -f ${JAVA_SRC_ROOT}/build/Makefile.comp $(TARGET_PHASE)
+
+$(NONQTSUBSYSTEMS): 
+	$(MAKE) TARGET_SUB=$@ -C $@ -f ${JAVA_SRC_ROOT}/build/Makefile.nonqt $(TARGET_PHASE)
+
+test:
+	$(PHASEINFO)
+	$(MAKE) -f subsystem.mk TARGET_PHASE=$@ subtargets
+	$(EXEC_SUB)
+
+finalactions:
+
+configure: configure_qmake
+
+configure_qmake: 
+	$(PHASEINFO)
+	$(call CATCOMMAND,$(JAVA_SRC_ROOT)/build/templates/generated_header_hash.txt) > $(COMPONENT_NAME).pro && \
+	echo TEMPLATE = subdirs>> $(COMPONENT_NAME).pro
+	$(MAKE) -f subsystem.mk TARGET_PHASE=configure_qmake TARGET_PRO=$(CURDIR)/$(COMPONENT_NAME).pro subtargets
+ifeq ($(BUILDENV),symbian)
+ifeq ($(notdir $(basename $(SHELL))),sh)
+	$(foreach d, $(filter $(NONQTSUBSYSTEMS),$(REALTARGETS)),echo 'BLD_INF_RULES.prj_extensions += "$$$${LITERAL_HASH}include \"$(d)/bld.inf\""' >> $(COMPONENT_NAME).pro &&)  \
+	echo BLD_INF_RULES.prj_extensions += "prj_extensions" >> $(COMPONENT_NAME).pro
+else
+	$(foreach d, $(filter $(NONQTSUBSYSTEMS),$(REALTARGETS)),echo BLD_INF_RULES.prj_extensions += "$$$${LITERAL_HASH}include \"$(d)/bld.inf\"" >> $(COMPONENT_NAME).pro &&)  \
+	echo BLD_INF_RULES.prj_extensions += "prj_extensions" >> $(COMPONENT_NAME).pro
+endif
+endif
+ifdef TARGET_PRO
+	echo SUBDIRS += $(TARGET_SUB) >> $(TARGET_PRO)
+endif
+
+configure_qmake_recurse:
+	$(MAKE) -f subsystem.mk TARGET_PHASE=configure_qmake subtargets
+
+clean_configure:
+	$(PHASEINFO)
+	$(MAKE) -f subsystem.mk TARGET_PHASE=clean_configure subtargets
+	$(call RMFILES,$(COMPONENT_NAME).pro)
+
+
+# Symbian ----------------------------------
+ifeq ($(BUILDENV),symbian)
+
+ifeq ($(COMPONENT_NAME),jrt)
+# When building from top level, the native compilation does also export, java and finalactions
+all: configure qmake native
+clean: clean_native clean_generated
+else
+all: configure qmake export java native finalactions
+clean: clean_java clean_native clean_generated
+endif
+
+# On top level symbian build, the java building happens always during native
+# phase, through bld.inf -file, so no direct Java building is done (unless it 
+# building _is_ made from the bld.inf).
+ifeq ($(COMPONENT_NAME),jrt)
+ifndef BLD_INF_JAVA
+NOJAVA=1
+endif
+endif
+
+ifdef NOJAVA
+java clean_java:
+else
+java clean_java:
+	$(MAKE) -f subsystem.mk TARGET_PHASE=$@ subtargets
+endif
+
+javareleasables makestubs:
+	$(MAKE) -f subsystem.mk TARGET_PHASE=$@ subtargets
+
+qmake:
+	$(QMAKE)
+ifndef RD_JAVA_UI_QT
+	$(MAKE) -f subsystem.mk qmakefix
+endif
+
+qmakefix:
+	$(PHASEINFO)
+	$(call RMFILES,bld.inf* Makefile*)
+	$(MAKE) -f subsystem.mk TARGET_PHASE=qmakefix subtargets
+	$(call CATCOMMAND,$(JAVA_SRC_ROOT)/build/templates/bld.inf) > bld.inf \
+	$(foreach d, $(REALTARGETS), && echo #include "$d/bld.inf" >> bld.inf )
+
+build_all: configure qmake
+ifdef USESBS
+	$(SBS) -c winscw_udeb -c armv5_urel -f -
+else
+	$(MAKE) -f subsystem.mk PLATFORM=winscw VARIANT=debug NODEP=1 native
+	$(MAKE) -f subsystem.mk PLATFORM=armv5 VARIANT=release NODEP=1 native
+endif
+
+
+reallyclean_all:
+	$(MAKE) -f subsystem.mk PLATFORM=winscw VARIANT=debug reallyclean_native
+	$(MAKE) -f subsystem.mk PLATFORM=armv5 VARIANT=release reallyclean_native
+	$(MAKE) -f subsystem.mk clean_java clean_generated
+
+clean_generated:
+	$(PHASEINFO)
+	$(MAKE) -f subsystem.mk TARGET_PHASE=clean_generated subtargets
+	$(call RMFILES,bld.inf abld.bat bld.inf* Makefile*)
+
+
+# Target for cleaning, in case bld.inf does not exist
+bld.inf:
+	$(MAKE) -f subsystem.mk makestubs qmake
+
+
+# Symbian SBS ------------------------------
+ifdef USESBS
+
+export:
+	$(PHASEINFO)
+	$(SBS) -c $(PLATFORM)_$(CFG) EXPORT
+
+cleanexport:
+	$(PHASEINFO)
+	$(SBS) -c $(PLATFORM)_$(CFG) CLEANEXPORT
+
+# BUILD combines commands EXPORT MAKEFILE BITMAP RESOURCE LIBRARY TARGET FINAL
+native:
+	$(PHASEINFO)
+	$(SBS) -c $(PLATFORM)_$(CFG)
+
+fastbuild: export java
+	$(SBS) -c $(PLATFORM)_$(CFG) TARGET
+
+clean_native:
+	$(PHASEINFO)
+	$(SBS) -c $(PLATFORM)_$(CFG) clean
+
+reallyclean: reallyclean_native clean_java clean_generated
+reallyclean_native: bld.inf
+	$(PHASEINFO)
+	$(SBS) -c $(PLATFORM)_$(CFG) reallyclean
+
+
+# Symbian ABLD MAKEFILE --------------------
+else
+
+export:
+	$(PHASEINFO)
+	$(BLDMAKE) bldfiles $(PLATFORM)
+	$(ABLDMAKE) -f $(BUILDDIR)/EXPORT.make EXPORT
+
+native:
+	$(PHASEINFO)
+	$(BLDMAKE) bldfiles $(PLATFORM)
+	$(ABLDMAKE) -f $(BUILDDIR)/EXPORT.make EXPORT
+	$(ABLDMAKE) -f $(BUILDDIR)/$(PLATFORM).make MAKEFILE $(VERBOSE)
+	$(ABLDMAKE) -f $(BUILDDIR)/$(PLATFORM).make LIBRARY $(VERBOSE)
+	$(ABLDMAKE) -f $(BUILDDIR)/$(PLATFORM).make RESOURCE CFG=$(CFG) $(VERBOSE)
+	$(ABLDMAKE) -f $(BUILDDIR)/$(PLATFORM).make TARGET CFG=$(CFG) $(VERBOSE)
+	$(ABLDMAKE) -f $(BUILDDIR)/$(PLATFORM).make FINAL CFG=$(CFG) $(VERBOSE)
+
+fastbuild: export java
+	$(ABLDMAKE) -f $(BUILDDIR)/$(PLATFORM).make TARGET CFG=$(CFG) $(VERBOSE)
+
+cleanexport:
+	$(PHASEINFO)
+	$(BLDMAKE) bldfiles $(PLATFORM)
+	-$(ABLDMAKE) -f $(BUILDDIR)/EXPORT.make CLEANEXPORT
+
+clean_native:
+	-$(ABLDMAKE) -f $(BUILDDIR)/$(PLATFORM).make CLEAN CFG=$(CFG) $(VERBOSE)
+
+reallyclean: reallyclean_native clean_java clean_generated
+reallyclean_native: bld.inf
+	$(PHASEINFO)
+	$(BLDMAKE) bldfiles $(PLATFORM)
+	$(ABLDMAKE) -f $(BUILDDIR)/$(PLATFORM).make MAKEFILE $(VERBOSE) NO_DEPENDENCIES=-nd
+	-abld reallyclean $(PLATFORM) $(CFG)
+	-$(BLDMAKE) clean
+
+endif
+
+
+# Linux ------------------------------------
+else
+
+all: configure qmake export java native finalactions
+
+java export qmake native clean reallyclean clean_generated cleanexport:
+	$(PHASEINFO)
+	$(MAKE) -f subsystem.mk TARGET_PHASE=$@ subtargets
+
+endif

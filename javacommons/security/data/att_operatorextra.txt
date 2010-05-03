@@ -1,0 +1,36 @@
+domain OperatorExtra;
+grant allowed {
+    permission javax.microedition.io.HttpProtocolPermission "http://*";
+    permission javax.microedition.io.HttpsProtocolPermission "https://*";
+    permission javax.microedition.io.DatagramProtocolPermission "datagram://*";
+    permission javax.microedition.io.DatagramProtocolPermission "datagram://";
+    permission javax.microedition.io.SocketProtocolPermission "socket://*";
+    permission javax.microedition.io.SocketProtocolPermission "socket://";
+    permission javax.microedition.io.SSLProtocolPermission "ssl://*";
+    permission javax.microedition.io.CommProtocolPermission "comm:*";
+    permission javax.microedition.io.FileProtocolPermission "*" "read,write";
+    permission javax.microedition.io.Connector.sms "sms://*" "open,send,receive";
+    permission javax.microedition.io.Connector.mms "mms://*" "open,send,receive";
+    permission javax.microedition.io.Connector.cbs "cbs://*" "open,receive";
+    permission javax.microedition.pim.ContactList "pim://*" "read_contacts,write_contacts";
+    permission javax.microedition.pim.EventList "pim://*" "read_events,write_events";
+    permission javax.microedition.pim.ToDoList "pim://*" "read_todos,write_todos";
+    permission javax.microedition.io.PushRegistryPermission "*" "staticregistration,dynamicregistration,autoinvocation";
+    permission javax.microedition.io.Connector.obex.server "*" "server";
+    permission javax.microedition.io.Connector.obex.client "*" "client";
+    permission javax.microedition.io.Connector.bluetooth.server "*" "server";
+    permission javax.microedition.io.Connector.bluetooth.client "*" "client";
+    permission javax.microedition.location.LocationPermission "location://*" "position,orientation";
+    permission javax.microedition.location.LocationPermission "landmarks://*" "read,write,category,management";
+    permission javax.microedition.apdu.aid "apdu://*" "aid";
+    permission javax.microedition.apdu.sat "apdu://*" "sat";
+    permission javax.microedition.securityservice.CMSMessageSignatureService "pki://*" "authenticate";
+    permission javax.microedition.media.control.RecordControl "*" "record";
+    permission javax.microedition.media.control.VideoControl.getSnapshot "*" "snapshot";
+    permission javax.microedition.io.Connector.rtsp "*";
+    permission javax.microedition.PropertyPermission "mobinfo.imsi" "read";
+}
+
+grant assigned {
+    permission javax.microedition.PropertyPermission "mobinfo.msisdn" "read";
+}

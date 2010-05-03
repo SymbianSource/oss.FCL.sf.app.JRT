@@ -1,0 +1,4 @@
+EXPORTS
+	_ZN4java5comms20IpcConnectionFactory16createConnectionEPNS0_11IpcListenerE @ 1 NONAME
+	_ZN4java5comms20IpcConnectionFactory22createServerConnectionEPNS0_11IpcListenerE @ 2 NONAME
+

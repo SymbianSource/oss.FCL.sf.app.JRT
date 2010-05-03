@@ -1,0 +1,15 @@
+EXPORTS
+	_Z19GetUserPreferencesLmRKN4MIDP17MSecurityPolicyV2E @ 1 NONAME
+	_ZTIN4MIDP16CUserPreferencesE @ 2 NONAME ; #<TI>#
+	_ZTIN4MIDP20CSecurityPreferencesE @ 3 NONAME ; #<TI>#
+	_ZTIN4MIDP27CMIDletSuiteUserPreferencesE @ 4 NONAME ; #<TI>#
+	_ZTIN4MIDP35CMIDletSuiteUserPreferencesIteratorE @ 5 NONAME ; #<TI>#
+	_ZTVN4MIDP16CUserPreferencesE @ 6 NONAME ; #<VT>#
+	_ZTVN4MIDP20CSecurityPreferencesE @ 7 NONAME ; #<VT>#
+	_ZTVN4MIDP27CMIDletSuiteUserPreferencesE @ 8 NONAME ; #<VT>#
+	_ZTVN4MIDP35CMIDletSuiteUserPreferencesIteratorE @ 9 NONAME ; #<VT>#
+	_ZTIN4MIDP28CMIDletSuiteCustomAttributesE @ 10 NONAME ; #<TI>#
+	_ZTVN4MIDP28CMIDletSuiteCustomAttributesE @ 11 NONAME ; #<VT>#
+	_ZTIN4java8security13legacysupport12StorageUtilsE @ 12 NONAME ; #<TI>#
+	_ZTVN4java8security13legacysupport12StorageUtilsE @ 13 NONAME ; #<VT>#
+

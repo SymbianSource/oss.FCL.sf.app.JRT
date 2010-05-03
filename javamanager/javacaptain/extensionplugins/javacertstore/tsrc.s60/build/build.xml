@@ -1,0 +1,56 @@
+<!--
+#
+# Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<project name="smartcardreadertests" default="backup" basedir=".">
+
+  <import file="../../../../../../build/utilities.xml"/>
+
+  <property environment="env"/>
+  <property name="java.src.root" location="${env.JAVA_SRC_ROOT}"/>
+  <property name="java.bin.root" location="${env.JAVA_BIN_ROOT}"/>
+  <property name="test.data.dest.dir" location="${env.JAVA_BIN_ROOT}/javacertstore"/>
+  <property name="test.data.src.dir" location="${env.JAVA_SRC_ROOT}/javamanager/javacaptain/extensionplugins/javacertstore/tsrc.s60/data"/>
+  <property name="test.tmp.dir" location="${env.JAVA_SRC_ROOT}/javamanager/javacaptain/extensionplugins/javacertstore/tsrc.s60/tmp"/>
+  <property name="wimclient.dll" location="/epoc32/release/winscw/udeb/wimclient.dll"/>
+  <property name="wimclient.lib" location="/epoc32/release/winscw/udeb/wimclient.lib"/>
+
+  <target name="init" depends="init.properties">
+      <mkdir dir="${test.data.dest.dir}"/>
+      <copy file="${test.data.src.dir}/cert.cer"
+            todir="${test.data.dest.dir}"/>
+      <available file="${test.tmp.dir}" type="dir" property="tmp.dir.exists"/>
+  </target>
+
+  <target name="backup" depends="init" unless="tmp.dir.exists">
+      <mkdir dir="${test.tmp.dir}"/>
+      <copy file="${wimclient.dll}"
+          todir="${test.tmp.dir}" preservelastmodified="true"/>
+      <copy file="${wimclient.lib}"
+          todir="${test.tmp.dir}" preservelastmodified="true"/>
+  </target>
+  
+  <target name="clean" depends="init.properties">
+      <delete dir="${test.data.dest.dir}"/>
+      <copy file="${test.tmp.dir}/wimclient.dll"
+            tofile="${wimclient.dll}" overwrite="true" preservelastmodified="true"/>
+      <copy file="${test.tmp.dir}/wimclient.lib"
+            tofile="${wimclient.lib}"  overwrite="true" preservelastmodified="true"/>
+      <delete dir="${test.tmp.dir}"/>
+  </target>
+
+</project>

@@ -1,0 +1,22 @@
+MicroEdition-Configuration: CLDC-1.1
+MIDlet-Version: 1.0.0
+Created-By: 1.3.1_14 (Sun Microsystems Inc.)
+MIDlet-Vendor: Nokia
+MicroEdition-Profile: MIDP-2.0
+MIDlet-1: JsrTestRunner,/res/JsrTestRunner.png,JsrTestRunner.JsrTestRunner
+MIDlet-Name: JsrTestRunner
+MIDlet-Jar-Size: 7291
+MIDlet-Jar-URL: JsrTestRunner.jar
+ModuleName: LAPI
+TestClassName1: com.nokia.mj.test.lapi.CoordinatesTest
+TestClassName2: com.nokia.mj.test.lapi.QualifiedCoordinatesTest
+TestClassName3: com.nokia.mj.test.lapi.AddressInfoTest
+TestClassName4: com.nokia.mj.test.lapi.CriteriaTest
+TestClassName5: com.nokia.mj.test.lapi.LandmarkStoreTest
+TestClassName6: com.nokia.mj.test.lapi.LandmarkTest
+TestClassName7: com.nokia.mj.test.lapi.MultipleLandmarkStoresTest
+TestClassName8: com.nokia.mj.test.lapi.ErrorsTest
+TestClassName9: com.nokia.mj.test.lapi.GetLocationTest
+TestClassName10: com.nokia.mj.test.lapi.PeriodicUpdateTest
+TestClassName11: com.nokia.mj.test.lapi.OrientationTest
+TestClassName12: com.nokia.mj.test.lapi.ProximityListenerTest

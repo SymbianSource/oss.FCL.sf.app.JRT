@@ -1,0 +1,288 @@
+#
+# Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+
+# Default platform
+ifeq ($(OS),Windows_NT)
+  # On Windows, build symbian
+  export BUILDENV = symbian
+
+else
+  ifdef EPOCROOT
+    # On linux, build symbian if EPOCROOT is defined
+    export BUILDENV = symbian
+  else
+    export BUILDENV = linux
+  endif
+endif
+
+# S60 release file (written if release is given explicitly on commandline)
+RD_JAVA_S60_RELEASE_FILE = $(JAVA_SRC_ROOT)/inc/java_s60_release.hrh
+
+include $(JAVA_SRC_ROOT)/build/Makefile.project
+
+ifeq ($(BUILDENV),symbian)
+  export PLATFORM = winscw
+  export JAVA_BIN_ROOT=$(EPOCROOT)winscw/c/java
+  ifeq ($(JAVA_6_HOME), )
+  $(error The environment variable JAVA_6_HOME is not defined)
+  endif
+  export JAVA_HOME=$(JAVA_6_HOME)
+
+  ifeq ($(notdir $(basename $(SHELL))),sh)
+    # Cygwin definitions
+    BATPREFIX =
+    RMFILE = rm $(call PATHFIX, $(1))
+    RMFILES = $(RMFILE)
+    CATCOMMAND = cat $(call PATHFIX, $(1))
+    PATHFIX = $(subst \,/,$(1))
+    ANT := sh ant
+    SBS = MAKELEVEL=&&MAKEFLAGS=&&MFLAGS=&&sbs
+    CPPCMD = gcc -E -x assembler-with-cpp -P -undef -w -traditional-cpp
+    IFNOTEXIST = if [ ! -f $(1) ]; then $(2); fi
+    IFEXIST = if [ -f $(1) ]; then $(2); fi
+    DEVNULL = /dev/null
+    MKDIR = if [ ! -d $(1)]; then mkdir $(1); fi
+    RMDIR = if [ -d $(1)]; then rmdir $(1); fi
+
+  else
+    # CMD.exe definitions
+    BATPREFIX = cmd /c call
+    RMFILE = $(if $(wildcard $(1)),del $(call PATHFIX,$(wildcard $(1))),echo Nothing to delete from $(1) > $(DEVNULL))
+    RMFILES = $(RMFILE)
+    CATCOMMAND = type $(call PATHFIX, $(1))
+    PATHFIX = $(subst /,\,$(1))
+    ANT := $(BATPREFIX) ant.bat
+    SBS = set MAKELEVEL=&&set MAKEFLAGS=&&set MFLAGS=&&sbs
+    CPPCMD = $(EPOCROOT)epoc32/gcc/bin/cpp -lang-asm -P -undef
+    IFNOTEXIST = if not exist $(1) $(2)
+    IFEXIST = if exist $(1) $(2)
+    DEVNULL = NUL
+    MKDIR = if not exist $(1) mkdir  $(1)
+    RMDIR = if exist $(1) rmdir  $(1)
+
+  endif
+
+  ifndef QMAKE_DEFINED
+    QMAKESPEC_JAVA=$(if $(USESBS),symbian-sbsv2,symbian-abld)
+
+    ifndef QTDIR
+      ifneq ($(wildcard $(EPOCROOT)epoc32/tools/qmake*),)
+        # Use platform's qmake
+	QMAKE := $(EPOCROOT)epoc32/tools/qmake -spec $(QMAKESPEC_JAVA)
+      else
+        # Use builtin qmake
+	QTDIR_JAVA := $(JAVA_SRC_ROOT)/tools/qt_symbian
+	QMAKE := $(QTDIR_JAVA)/qmake -spec $(QTDIR_JAVA)/mkspecs/symbian-abld
+      endif
+    else
+      QMAKE := $(QTDIR)/bin/qmake -spec $(QTDIR)/mkspecs/$(QMAKESPEC_JAVA)
+    endif
+    QMAKE := $(call PATHFIX,$(QMAKE))
+    QMAKE_DEFINED = 1
+    export QMAKE
+    export QMAKE_DEFINED
+  endif
+
+  # Prevent enclosing ant options from propagating to Java compilation
+  export ANT_ARGS=
+  export ANT_OPTS=
+  BLDMAKE = perl -S bldmake.pl
+  ABLDMAKE = set MAKELEVEL=&&set MAKEFLAGS=&&set MFLAGS=&&make -r
+
+  ifdef NODEP
+  # Makmake does not make dependency checks with this flag
+  export NO_DEPENDENCIES=-nd
+  endif
+
+
+else
+  export PLATFORM = linux
+  QMAKE = qmake
+  ANT := ant
+
+  ifndef JAVA_BIN_ROOT
+  export JAVA_BIN_ROOT=$(JAVA_SRC_ROOT)/bin
+  endif
+
+  ifndef LD_LIBRARY_PATH_SET
+  export LD_LIBRARY_PATH_SET=1
+  export LD_LIBRARY_PATH:=$(JAVA_BIN_ROOT)/lib:$(LD_LIBRARY_PATH)
+  endif
+
+  PATHFIX = $(subst \,/,$(1))
+  RMFILE = rm $(call PATHFIX, $(1))
+  CATCOMMAND = cat $(1)
+  DEVNULL = /dev/null
+endif
+
+# Ensure that VARIANT, CFG and PLATFORM are in lower case
+ifeq ($(VARIANT),DEBUG)
+  override VARIANT := debug
+endif
+ifeq ($(VARIANT),RELEASE)
+  override VARIANT := release
+endif
+ifeq ($(CFG),UDEB)
+  override CFG := udeb
+endif
+ifeq ($(CFG),UREL)
+  override CFG := urel
+endif
+ifeq ($(PLATFORM),WINSCW)
+  override PLATFORM := winscw
+endif
+ifeq ($(PLATFORM),ARMV5)
+  override PLATFORM := armv5
+endif
+
+# If CFG is defined, use it instead of VARIANT (with case insensitive match)
+ifdef CFG
+  ifeq ($(CFG),udeb)
+      override VARIANT := debug
+  else
+    ifeq ($(CFG),urel)
+      override VARIANT := release
+    else
+      $(error CFG value "$(CFG)" is not recognized)
+    endif
+  endif
+endif
+
+
+# Default to debug
+ifndef VARIANT
+  VARIANT := debug
+endif
+
+# Define CFG based on VARIANT
+ifeq ($(VARIANT),debug)
+  override CFG := udeb
+else
+  override CFG := urel
+endif
+
+export VARIANT
+
+ANT_PROJECT_DEFINES = $(foreach d,$(PROJECT_DEFINES),-D$d=1)
+
+COMPONENT_NAME ?= $(notdir $(CURDIR))
+
+# Following targets should be defined by every level
+.PHONY: all export java native clean cleanexport reallyclean test qmake clean_generated clean_java clean_native builddefinefile generatejavaversion projectdefinefile javareleasables commonjavareleasables clean_build_defines clean_javaversion clean_project_defines freeze exec
+
+# Default target
+default_target: all
+
+# Silent / verbose building
+ifndef JAVAVERBOSE
+.SILENT:
+ANT += -q
+endif
+ifeq ($(JAVAVERBOSE),1)
+ANT += -q
+endif
+ifeq ($(JAVAVERBOSE),2)
+endif
+ifeq ($(JAVAVERBOSE),3)
+ANT += -v
+endif
+
+PHASEINFO = @echo $(if $(1),$(1),$@)	$(CURDIR)
+
+# Empty target, forcing target compilation
+FORCE:
+
+# Common ----------------------------------
+
+# Export files need a build_defines file
+BUILDDEFINEFILE := $(JAVA_SRC_ROOT)/inc/build_defines.hrh
+QBUILDDEFINEFILE := $(JAVA_SRC_ROOT)/inc/build_defines.pri
+JAVAVERSIONFILE := $(JAVA_SRC_ROOT)/inc/java.txt
+
+# Project define file is needed by export and native phases of nonqt components
+# Native builds require project_defines.hrh for nonqt-mmp-files
+PROJECTDEFINEFILE = $(JAVA_SRC_ROOT)/inc/project_defines.hrh
+
+ifndef FIRSTTIME_FLAG
+export FIRSTTIME_FLAG = 1
+FIRSTTIME = 1
+endif
+
+# Write file on first make evaluation
+ifdef FIRSTTIME
+
+# Echo the S60 release before export
+ifeq ($(BUILDENV),symbian)
+all init export configure qmake java native releasebuild test: echo_s60_release
+echo_s60_release:
+	@echo Building on top of S60 $(RD_JAVA_S60_RELEASE)
+endif
+
+include $(JAVA_SRC_ROOT)/build/makefile.javaversion
+
+COMMA = ,
+JAVA_VERSION_ = $(subst .,$(COMMA),$(JAVA_VERSION))
+
+configure: generateconffiles generatereleasefile
+generateconffiles:
+	@echo Writing $(BUILDDEFINEFILE) ... \
+	$(shell $(call CATCOMMAND,$(JAVA_SRC_ROOT)/build/templates/generated_header.txt) > $(BUILDDEFINEFILE)) \
+	$(shell echo #define RD_JAVA_VERSION $(JAVA_VERSION_) >> $(BUILDDEFINEFILE)) \
+	$(foreach d, $(PROJECT_DEFINES), $(shell echo #define $d >> $(BUILDDEFINEFILE)))
+	@echo Writing $(QBUILDDEFINEFILE) ... \
+	$(shell $(call CATCOMMAND,$(JAVA_SRC_ROOT)/build/templates/generated_header_hash.txt) > $(QBUILDDEFINEFILE)) \
+	$(shell echo PROJECT_DEFINES *= $(PROJECT_DEFINES) >> $(QBUILDDEFINEFILE))
+	@echo Writing $(JAVAVERSIONFILE) \
+	$(shell echo $(JAVA_VERSION)>$(JAVAVERSIONFILE))
+ifeq ($(BUILDENV),symbian)
+	@echo Writing $(PROJECTDEFINEFILE) ... \
+	$(shell $(call CATCOMMAND,$(JAVA_SRC_ROOT)/build/templates/generated_header.txt) > $(PROJECTDEFINEFILE)) \
+	$(foreach d, $(PROJECT_DEFINES), $(shell echo MACRO $d >> $(PROJECTDEFINEFILE)))
+ifdef RD_JAVA_EPOCALLOWDLLDATA_FIX
+	@echo EPOCALLOWDLLDATA >> $(PROJECTDEFINEFILE)
+endif
+endif
+
+generatereleasefile:
+ifeq ($(origin RD_JAVA_S60_RELEASE),command line)
+	@echo Writing $(RD_JAVA_S60_RELEASE_FILE) ... \
+	$(shell echo RD_JAVA_S60_RELEASE=$(RD_JAVA_S60_RELEASE)>$(RD_JAVA_S60_RELEASE_FILE))
+endif
+
+# Clean file on clean_generated
+clean_configure: clean_conffiles
+
+clean_conffiles:
+	$(call RMFILES,$(BUILDDEFINEFILE) $(QBUILDDEFINEFILE) $(JAVAVERSIONFILE) \
+	$(PROJECTDEFINEFILE) $(RD_JAVA_S60_RELEASE_FILE))
+
+endif # FIRSTTIME
+
+
+# Symbian ----------------------------------
+ifeq ($(BUILDENV),symbian)
+
+# Get build directory in symbian
+# Remove drive letter
+DIRECTORY = $(wordlist 2,2,$(subst :, ,$(CURDIR)))
+# Set makefile directory
+BUILDDIR  = /epoc32/build$(DIRECTORY)
+
+VERBOSE   = VERBOSE=-s
+
+# --------------------------------------
+
+endif

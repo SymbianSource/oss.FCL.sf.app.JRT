@@ -1,0 +1,4 @@
+domain operator;
+grant mytype {
+    permission javax.microedition.midlet.AutoStartPermission;
+}

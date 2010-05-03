@@ -1,0 +1,25 @@
+EXPORTS
+	_Z18GetSecurityPolicyLmRK7TDesC16 @ 1 NONAME
+	_ZTIN4MIDP10CXPFParserE @ 2 NONAME ; #<TI>#
+	_ZTIN4MIDP11CPermissionE @ 3 NONAME ; #<TI>#
+	_ZTIN4MIDP14CFunctionGroupE @ 4 NONAME ; #<TI>#
+	_ZTIN4MIDP14CSimpleMappingE @ 5 NONAME ; #<TI>#
+	_ZTIN4MIDP15CSecurityPolicyE @ 6 NONAME ; #<TI>#
+	_ZTIN4MIDP17CConnectionFilterE @ 7 NONAME ; #<TI>#
+	_ZTIN4MIDP17CPathAccessPolicyE @ 8 NONAME ; #<TI>#
+	_ZTIN4MIDP17CProtectionDomainE @ 9 NONAME ; #<TI>#
+	_ZTIN4MIDP18CDriveAccessPolicyE @ 10 NONAME ; #<TI>#
+	_ZTIN4MIDP21CFunctionGroupBindingE @ 11 NONAME ; #<TI>#
+	_ZTIN4MIDP23CFileSystemAccessPolicyE @ 12 NONAME ; #<TI>#
+	_ZTVN4MIDP10CXPFParserE @ 13 NONAME ; #<VT>#
+	_ZTVN4MIDP11CPermissionE @ 14 NONAME ; #<VT>#
+	_ZTVN4MIDP14CFunctionGroupE @ 15 NONAME ; #<VT>#
+	_ZTVN4MIDP14CSimpleMappingE @ 16 NONAME ; #<VT>#
+	_ZTVN4MIDP15CSecurityPolicyE @ 17 NONAME ; #<VT>#
+	_ZTVN4MIDP17CConnectionFilterE @ 18 NONAME ; #<VT>#
+	_ZTVN4MIDP17CPathAccessPolicyE @ 19 NONAME ; #<VT>#
+	_ZTVN4MIDP17CProtectionDomainE @ 20 NONAME ; #<VT>#
+	_ZTVN4MIDP18CDriveAccessPolicyE @ 21 NONAME ; #<VT>#
+	_ZTVN4MIDP21CFunctionGroupBindingE @ 22 NONAME ; #<VT>#
+	_ZTVN4MIDP23CFileSystemAccessPolicyE @ 23 NONAME ; #<VT>#
+

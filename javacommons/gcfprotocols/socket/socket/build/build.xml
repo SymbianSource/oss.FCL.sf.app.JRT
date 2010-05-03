@@ -1,0 +1,59 @@
+<!--
+#
+# Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<project name="javasocket" default="deploy" basedir=".">
+    <description>
+        Builds GCF Socket
+    </description>
+
+
+  <import file="../../../../../build/utilities.xml"/>
+
+  <!-- Needed by the utilities.xml. See the description form the utilities.xml
+       file -->
+       
+  <target name="init.component.properties">
+    <condition property="java.src.paths"
+               value="../javasrc:../javasrc.s60">
+      <isset property="target.s60" />
+    </condition>
+    
+    <condition property="java.src.paths"
+               value="../javasrc:../javasrc.linux">
+      <isset property="target.linux" />
+    </condition>   
+   </target>
+
+  <property name="javah.classnames" 
+            value="com.nokia.mj.impl.socket.SocketConnectionImpl,
+                   com.nokia.mj.impl.socket.ServerSocketConnectionImpl"/>
+
+  <target name="create.internal.api.jar">
+  	<omj.internal.apis includes="com/nokia/mj/impl/gcf/protocol/socket/Protocol.class,
+  							    com/nokia/mj/impl/socket/utils/SocketConnectionUtility.class,
+   							    com/nokia/mj/impl/socket/SocketConnectionImpl.class,
+   							    com/nokia/mj/impl/gcf/protocol/socket/PushValidatorImpl.class"/>
+  </target>
+  
+  <target name="create.public.api.jar">
+  	<omj.public.apis includes="javax/microedition/io/SocketConnection.class,
+  														 javax/microedition/io/ServerSocketConnection.class"/>
+  </target>
+  
+</project>
+

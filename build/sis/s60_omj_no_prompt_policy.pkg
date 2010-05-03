@@ -1,0 +1,53 @@
+;
+; Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+; All rights reserved.
+; This component and the accompanying materials are made available
+; under the terms of "Eclipse Public License v1.0"
+; which accompanies this distribution, and is available
+; at the URL "http://www.eclipse.org/legal/epl-v10.html".
+;
+; Initial Contributors:
+; Nokia Corporation - initial contribution.
+;
+; Contributors:
+;
+; Description: 
+;
+;Languages
+&EN
+
+; This is partial update to OMJ Java Core adding custom security policy
+; UID, version and type
+#{"OMJ Java Core (No Prompt)"},(0x20000F3D),1,2,0, TYPE=PU
+
+;Localised Vendor name
+%{"Nokia"}
+
+;Unique Vendor name
+:"Nokia"
+
+;Supports Series 60 v 5.0
+;This line indicates that this installation is for the Series 60 platform v3.0
+;This line must appear _exactly_ as shown below in the sis file
+;If this line is missing or incorrect, the sis file will not be able
+;to be installed on Series 60 v5.0 platforms
+[0x1028315F], 0, 0, 0, {"Series60ProductID"}
+
+
+; No Prompt Policy
+".\nouserpromptspolicy\s60_manufacturer.ser"-"c:\resource\java\security\policies\s60_manufacturer.ser"
+".\nouserpromptspolicy\s60_operator.ser"-"c:\resource\java\security\policies\s60_operator.ser"
+".\nouserpromptspolicy\s60_operatorextra.ser"-"c:\resource\java\security\policies\s60_operatorextra.ser"
+".\nouserpromptspolicy\s60_trustedthirdparty.ser"-"c:\resource\java\security\policies\s60_trustedthirdparty.ser"
+".\nouserpromptspolicy\s60_untrusted.ser"-"c:\resource\java\security\policies\s60_untrusted.ser"
+".\nouserpromptspolicy\msa_manufacturer.ser"-"c:\resource\java\security\policies\msa_manufacturer.ser"
+".\nouserpromptspolicy\msa_operator.ser"-"c:\resource\java\security\policies\msa_operator.ser"
+".\nouserpromptspolicy\msa_operatorextra.ser"-"c:\resource\java\security\policies\msa_operatorextra.ser"
+".\nouserpromptspolicy\msa_trustedthirdparty.ser"-"c:\resource\java\security\policies\msa_trustedthirdparty.ser"
+".\nouserpromptspolicy\msa_untrusted.ser"-"c:\resource\java\security\policies\msa_untrusted.ser"
+".\nouserpromptspolicy\att_manufacturer.ser"-"c:\resource\java\security\policies\att_manufacturer.ser"
+".\nouserpromptspolicy\att_operator.ser"-"c:\resource\java\security\policies\att_operator.ser"
+".\nouserpromptspolicy\att_operatorextra.ser"-"c:\resource\java\security\policies\att_operatorextra.ser"
+".\nouserpromptspolicy\att_trustedthirdparty.ser"-"c:\resource\java\security\policies\att_trustedthirdparty.ser"
+".\nouserpromptspolicy\att_untrusted.ser"-"c:\resource\java\security\policies\att_untrusted.ser"
+".\nouserpromptspolicy\all.ser"-"c:\resource\java\security\policies\all.ser"

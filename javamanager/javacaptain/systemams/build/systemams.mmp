@@ -1,0 +1,53 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+#include <bldvariant.hrh>
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+
+#include <../../../../inc/project_defines.hrh>
+#include <../../../../inc/java_stdcpp_support_for_exe.hrh>
+
+epocheapsize 0x00001000 0x02000000
+epocstacksize 16384
+
+target          SystemAMS.exe
+TARGETTYPE EXE
+
+VENDORID        VID_DEFAULT
+CAPABILITY      ProtServ ReadUserData WriteDeviceData
+
+UID         0x2000CFEC 0x200159D7
+
+// Use bytepair compression to enable code paging
+PAGED
+
+USERINCLUDE ../../../../inc
+
+SOURCEPATH  ../src
+SOURCE      main.cpp
+SOURCE      systemamstrader.cpp
+SOURCE      legacyserver.cpp
+SOURCE      legacyserversession.cpp
+SOURCE      certificatesmanager.cpp
+
+LIBRARY ctframework.lib
+LIBRARY ctfinder.lib
+LIBRARY ecom.lib
+LIBRARY estor.lib
+
+//  End of File
+

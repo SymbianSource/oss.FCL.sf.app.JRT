@@ -1,0 +1,808 @@
+;
+; Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+; All rights reserved.
+; This component and the accompanying materials are made available
+; under the terms of "Eclipse Public License v1.0"
+; which accompanies this distribution, and is available
+; at the URL "http://www.eclipse.org/legal/epl-v10.html".
+;
+; Initial Contributors:
+; Nokia Corporation - initial contribution.
+;
+; Contributors:
+;
+; Description: 
+;
+;Languages
+&EN
+
+#include "../../inc/build_defines.hrh"
+
+; UID of the sis file
+#ifdef RD_JAVA_S60_RELEASE_5_0_IAD
+#{"Java Runtime 2 beta"},(0x1028289E), RD_JAVA_VERSION, TYPE=SA,RU
+#else // RD_JAVA_S60_RELEASE_5_0_IAD
+#{"Java Runtime 2"},(0x2001FD68), RD_JAVA_VERSION, TYPE=SA,RU
+#endif // RD_JAVA_S60_RELEASE_5_0_IAD
+
+;Localised Vendor name
+%{"Nokia"}
+
+;Unique Vendor name
+:"Nokia"
+
+;Supports Series 60 v 5.0
+;This line indicates that this installation is for the Series 60 platform v3.0
+;This line must appear _exactly_ as shown below in the sis file
+;If this line is missing or incorrect, the sis file will not be able
+;to be installed on Series 60 v5.0 platforms
+[0x1028315F], 0, 0, 0, {"Series60ProductID"}
+
+#ifdef RD_JAVA_S60_RELEASE_5_0_IAD
+IF NOT exists("Z:\system\install\Series60v5.0.sis")
+  ; Popup error on Non-S60 v 5.0 platforms. Do not allow continuing.
+  "incompatible_platform.txt"-"", FILETEXT, FORCEABORT
+ENDIF
+#endif // RD_JAVA_S60_RELEASE_5_0_IAD
+
+
+
+; Executed during uninstallation before any Java 2.0 file has been removed.
+; Must be the first file in the .pkg file.
+#ifdef RD_JAVA_S60_RELEASE_5_0_IAD
+"\epoc32\release\armv5\urel\javacleaner.exe"-"c:\sys\bin\javacleaner.exe", FR, RR, RW
+#endif // RD_JAVA_S60_RELEASE_5_0_IAD
+
+
+
+; JVM.
+"\epoc32\release\armv5\urel\j9.dll"-"c:\sys\bin\j9.dll"
+"\epoc32\release\armv5\urel\j9vmall23.dll"-"c:\sys\bin\j9vmall23.dll"
+"\epoc32\release\armv5\urel\j9mjit23.dll"-"c:\sys\bin\j9mjit23.dll"
+"\epoc32\release\armv5\urel\jclcldc11_23.dll"-"c:\sys\bin\jclcldc11_23.dll"
+"\epoc32\release\armv5\urel\jclcdc11_23.dll"-"c:\sys\bin\jclcdc11_23.dll"
+"\epoc32\release\armv5\urel\j9fdm23.dll"-"c:\sys\bin\j9fdm23.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\bin\java.properties"-"c:\resource\java\jvm\bin\java.properties"
+
+
+
+
+
+
+; Executables and their resources
+#ifdef RD_JAVA_S60_RELEASE_5_0_IAD
+"\epoc32\release\armv5\urel\j9midps60.exe"-"c:\sys\bin\j9midps60.exe"
+#else // RD_JAVA_S60_RELEASE_5_0_IAD
+"\epoc32\release\armv5\urel\javamidp.exe"-"c:\sys\bin\javamidp.exe"
+#endif // RD_JAVA_S60_RELEASE_5_0_IAD
+
+
+#ifdef RD_JAVA_S60_RELEASE_5_0_IAD
+"\epoc32\release\armv5\urel\javaregistry.exe"-"c:\sys\bin\javaregistry.exe"
+#endif
+
+#ifdef RD_JAVA_S60_RELEASE_5_0_IAD
+"\epoc32\release\armv5\urel\Systemams.exe"-"c:\sys\bin\Systemams.exe"
+#endif // RD_JAVA_S60_RELEASE_5_0_IAD
+
+"\epoc32\release\armv5\urel\javabackup.exe"-"c:\sys\bin\javabackup.exe"
+
+#ifdef RD_JAVA_S60_RELEASE_5_0_IAD
+"\epoc32\release\armv5\urel\javaappconverter.exe"-"c:\sys\bin\javaappconverter.exe"
+"\epoc32\release\armv5\urel\javacertificatesconfigurator.exe"-"c:\sys\bin\javacertificatesconfigurator.exe"
+"\epoc32\release\armv5\urel\javausersettingsconfigurator.exe"-"c:\sys\bin\javausersettingsconfigurator.exe"
+#endif // RD_JAVA_S60_RELEASE_5_0_IAD
+
+"\epoc32\release\armv5\urel\javacaptain.exe"-"c:\sys\bin\javacaptain.exe"
+"\epoc32\release\armv5\urel\javalauncher.exe"-"c:\sys\bin\javalauncher.exe"
+
+
+
+;Odc file lists
+"\epoc32\data\z\resource\java\midpodclist"-"c:\resource\java\midpodclist"
+"\epoc32\data\z\resource\java\tckrunnerodclist"-"c:\resource\java\tckrunnerodclist"
+"\epoc32\data\z\resource\java\installerodclist"-"c:\resource\java\installerodclist"
+
+
+
+; Dlls containing java byte code and their odc files
+"\epoc32\release\armv5\urel\javabluecove.dll"-"c:\sys\bin\javabluecove.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javabluecove.odc"-"c:\resource\java\jvm\lib\jrt\javabluecove.odc"
+
+"\epoc32\release\armv5\urel\javabluetooth.dll"-"c:\sys\bin\javabluetooth.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javabluetooth.odc"-"c:\resource\java\jvm\lib\jrt\javabluetooth.odc"
+
+"\epoc32\release\armv5\urel\javabluetoothcommons.dll"-"c:\sys\bin\javabluetoothcommons.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javabluetoothcommons.odc"-"c:\resource\java\jvm\lib\jrt\javabluetoothcommons.odc"
+
+"\epoc32\release\armv5\urel\javacomm.dll"-"c:\sys\bin\javacomm.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javacomm.odc"-"c:\resource\java\jvm\lib\jrt\javacomm.odc"
+
+"\epoc32\release\armv5\urel\javacomms.dll"-"c:\sys\bin\javacomms.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javacomms.odc"-"c:\resource\java\jvm\lib\jrt\javacomms.odc"
+
+"\epoc32\release\armv5\urel\javaconnectionmanager.dll"-"c:\sys\bin\javaconnectionmanager.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javaconnectionmanager.odc"-"c:\resource\java\jvm\lib\jrt\javaconnectionmanager.odc"
+
+"\epoc32\release\armv5\urel\javadatagram.dll"-"c:\sys\bin\javadatagram.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javadatagram.odc"-"c:\resource\java\jvm\lib\jrt\javadatagram.odc"
+
+"\epoc32\release\armv5\urel\javagcf.dll"-"c:\sys\bin\javagcf.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javagcf.odc"-"c:\resource\java\jvm\lib\jrt\javagcf.odc"
+
+"\epoc32\release\armv5\urel\javaglobalindicators.dll"-"c:\sys\bin\javaglobalindicators.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javaglobalindicators.odc"-"c:\resource\java\jvm\lib\jrt\javaglobalindicators.odc"
+
+"\epoc32\release\armv5\urel\javafile.dll"-"c:\sys\bin\javafile.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javafile.odc"-"c:\resource\java\jvm\lib\jrt\javafile.odc"
+
+"\epoc32\release\armv5\urel\javafileutils.dll"-"c:\sys\bin\javafileutils.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javafileutils.odc"-"c:\resource\java\jvm\lib\jrt\javafileutils.odc"
+
+"\epoc32\release\armv5\urel\javahttp.dll"-"c:\sys\bin\javahttp.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javahttp.odc"-"c:\resource\java\jvm\lib\jrt\javahttp.odc"
+
+"\epoc32\release\armv5\urel\javahttps.dll"-"c:\sys\bin\javahttps.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javahttps.odc"-"c:\resource\java\jvm\lib\jrt\javahttps.odc"
+
+"\epoc32\release\armv5\urel\javaiapinfo.dll"-"c:\sys\bin\javaiapinfo.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javaiapinfo.odc"-"c:\resource\java\jvm\lib\jrt\javaiapinfo.odc"
+
+"\epoc32\release\armv5\urel\javainstaller.dll"-"c:\sys\bin\javainstaller.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javainstaller.odc"-"c:\resource\java\jvm\lib\jrt\javainstaller.odc"
+
+"\epoc32\release\armv5\urel\javainstallerui.dll"-"c:\sys\bin\javainstallerui.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javainstallerui.odc"-"c:\resource\java\jvm\lib\jrt\javainstallerui.odc"
+
+"\epoc32\release\armv5\urel\javalocation.dll"-"c:\sys\bin\javalocation.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javalocation.odc"-"c:\resource\java\jvm\lib\jrt\javalocation.odc"
+
+"\epoc32\release\armv5\urel\javamidpruntime.dll"-"c:\sys\bin\javamidpruntime.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javamidpruntime.odc"-"c:\resource\java\jvm\lib\jrt\javamidpruntime.odc"
+
+"\epoc32\release\armv5\urel\javamobinfo.dll"-"c:\sys\bin\javamobinfo.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javamobinfo.odc"-"c:\resource\java\jvm\lib\jrt\javamobinfo.odc"
+
+"\epoc32\release\armv5\urel\javaruntimeui.dll"-"c:\sys\bin\javaruntimeui.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javaruntimeui.odc"-"c:\resource\java\jvm\lib\jrt\javaruntimeui.odc"
+
+"\epoc32\release\armv5\urel\javapim.dll"-"c:\sys\bin\javapim.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javapim.odc"-"c:\resource\java\jvm\lib\jrt\javapim.odc"
+"\epoc32\data\z\resource\java\pimcm.r01"-"c:\resource\java\pimcm.r01"
+"\epoc32\data\z\resource\java\pimcm.r02"-"c:\resource\java\pimcm.r02"
+"\epoc32\data\z\resource\java\pimcm.r03"-"c:\resource\java\pimcm.r03"
+"\epoc32\data\z\resource\java\pimcm.r04"-"c:\resource\java\pimcm.r04"
+"\epoc32\data\z\resource\java\pimcm.r05"-"c:\resource\java\pimcm.r05"
+"\epoc32\data\z\resource\java\pimcm.r06"-"c:\resource\java\pimcm.r06"
+"\epoc32\data\z\resource\java\pimcm.r07"-"c:\resource\java\pimcm.r07"
+"\epoc32\data\z\resource\java\pimcm.r08"-"c:\resource\java\pimcm.r08"
+"\epoc32\data\z\resource\java\pimcm.r09"-"c:\resource\java\pimcm.r09"
+"\epoc32\data\z\resource\java\pimcm.r10"-"c:\resource\java\pimcm.r10"
+"\epoc32\data\z\resource\java\pimcm.r102"-"c:\resource\java\pimcm.r102"
+"\epoc32\data\z\resource\java\pimcm.r103"-"c:\resource\java\pimcm.r103"
+"\epoc32\data\z\resource\java\pimcm.r129"-"c:\resource\java\pimcm.r129"
+"\epoc32\data\z\resource\java\pimcm.r13"-"c:\resource\java\pimcm.r13"
+"\epoc32\data\z\resource\java\pimcm.r14"-"c:\resource\java\pimcm.r14"
+"\epoc32\data\z\resource\java\pimcm.r15"-"c:\resource\java\pimcm.r15"
+"\epoc32\data\z\resource\java\pimcm.r157"-"c:\resource\java\pimcm.r157"
+"\epoc32\data\z\resource\java\pimcm.r158"-"c:\resource\java\pimcm.r158"
+"\epoc32\data\z\resource\java\pimcm.r159"-"c:\resource\java\pimcm.r159"
+"\epoc32\data\z\resource\java\pimcm.r16"-"c:\resource\java\pimcm.r16"
+"\epoc32\data\z\resource\java\pimcm.r160"-"c:\resource\java\pimcm.r160"
+"\epoc32\data\z\resource\java\pimcm.r161"-"c:\resource\java\pimcm.r161"
+"\epoc32\data\z\resource\java\pimcm.r17"-"c:\resource\java\pimcm.r17"
+"\epoc32\data\z\resource\java\pimcm.r18"-"c:\resource\java\pimcm.r18"
+"\epoc32\data\z\resource\java\pimcm.r25"-"c:\resource\java\pimcm.r25"
+"\epoc32\data\z\resource\java\pimcm.r26"-"c:\resource\java\pimcm.r26"
+"\epoc32\data\z\resource\java\pimcm.r27"-"c:\resource\java\pimcm.r27"
+"\epoc32\data\z\resource\java\pimcm.r28"-"c:\resource\java\pimcm.r28"
+"\epoc32\data\z\resource\java\pimcm.r29"-"c:\resource\java\pimcm.r29"
+"\epoc32\data\z\resource\java\pimcm.r30"-"c:\resource\java\pimcm.r30"
+"\epoc32\data\z\resource\java\pimcm.r31"-"c:\resource\java\pimcm.r31"
+"\epoc32\data\z\resource\java\pimcm.r32"-"c:\resource\java\pimcm.r32"
+"\epoc32\data\z\resource\java\pimcm.r326"-"c:\resource\java\pimcm.r326"
+"\epoc32\data\z\resource\java\pimcm.r327"-"c:\resource\java\pimcm.r327"
+"\epoc32\data\z\resource\java\pimcm.r33"-"c:\resource\java\pimcm.r33"
+"\epoc32\data\z\resource\java\pimcm.r37"-"c:\resource\java\pimcm.r37"
+"\epoc32\data\z\resource\java\pimcm.r39"-"c:\resource\java\pimcm.r39"
+"\epoc32\data\z\resource\java\pimcm.r42"-"c:\resource\java\pimcm.r42"
+"\epoc32\data\z\resource\java\pimcm.r44"-"c:\resource\java\pimcm.r44"
+"\epoc32\data\z\resource\java\pimcm.r45"-"c:\resource\java\pimcm.r45"
+"\epoc32\data\z\resource\java\pimcm.r49"-"c:\resource\java\pimcm.r49"
+"\epoc32\data\z\resource\java\pimcm.r50"-"c:\resource\java\pimcm.r50"
+"\epoc32\data\z\resource\java\pimcm.r51"-"c:\resource\java\pimcm.r51"
+"\epoc32\data\z\resource\java\pimcm.r54"-"c:\resource\java\pimcm.r54"
+"\epoc32\data\z\resource\java\pimcm.r57"-"c:\resource\java\pimcm.r57"
+"\epoc32\data\z\resource\java\pimcm.r59"-"c:\resource\java\pimcm.r59"
+"\epoc32\data\z\resource\java\pimcm.r67"-"c:\resource\java\pimcm.r67"
+"\epoc32\data\z\resource\java\pimcm.r68"-"c:\resource\java\pimcm.r68"
+"\epoc32\data\z\resource\java\pimcm.r70"-"c:\resource\java\pimcm.r70"
+"\epoc32\data\z\resource\java\pimcm.r76"-"c:\resource\java\pimcm.r76"
+"\epoc32\data\z\resource\java\pimcm.r78"-"c:\resource\java\pimcm.r78"
+"\epoc32\data\z\resource\java\pimcm.r79"-"c:\resource\java\pimcm.r79"
+"\epoc32\data\z\resource\java\pimcm.r83"-"c:\resource\java\pimcm.r83"
+"\epoc32\data\z\resource\java\pimcm.r93"-"c:\resource\java\pimcm.r93"
+"\epoc32\data\z\resource\java\pimcm.r94"-"c:\resource\java\pimcm.r94"
+"\epoc32\data\z\resource\java\pimcm.r96"-"c:\resource\java\pimcm.r96"
+"\epoc32\data\z\resource\java\pimcm.rsc"-"c:\resource\java\pimcm.rsc"
+"\epoc32\data\z\resource\java\pimevent.r01"-"c:\resource\java\pimevent.r01"
+"\epoc32\data\z\resource\java\pimevent.r02"-"c:\resource\java\pimevent.r02"
+"\epoc32\data\z\resource\java\pimevent.r03"-"c:\resource\java\pimevent.r03"
+"\epoc32\data\z\resource\java\pimevent.r04"-"c:\resource\java\pimevent.r04"
+"\epoc32\data\z\resource\java\pimevent.r05"-"c:\resource\java\pimevent.r05"
+"\epoc32\data\z\resource\java\pimevent.r06"-"c:\resource\java\pimevent.r06"
+"\epoc32\data\z\resource\java\pimevent.r07"-"c:\resource\java\pimevent.r07"
+"\epoc32\data\z\resource\java\pimevent.r08"-"c:\resource\java\pimevent.r08"
+"\epoc32\data\z\resource\java\pimevent.r09"-"c:\resource\java\pimevent.r09"
+"\epoc32\data\z\resource\java\pimevent.r10"-"c:\resource\java\pimevent.r10"
+"\epoc32\data\z\resource\java\pimevent.r102"-"c:\resource\java\pimevent.r102"
+"\epoc32\data\z\resource\java\pimevent.r103"-"c:\resource\java\pimevent.r103"
+"\epoc32\data\z\resource\java\pimevent.r129"-"c:\resource\java\pimevent.r129"
+"\epoc32\data\z\resource\java\pimevent.r13"-"c:\resource\java\pimevent.r13"
+"\epoc32\data\z\resource\java\pimevent.r14"-"c:\resource\java\pimevent.r14"
+"\epoc32\data\z\resource\java\pimevent.r15"-"c:\resource\java\pimevent.r15"
+"\epoc32\data\z\resource\java\pimevent.r157"-"c:\resource\java\pimevent.r157"
+"\epoc32\data\z\resource\java\pimevent.r158"-"c:\resource\java\pimevent.r158"
+"\epoc32\data\z\resource\java\pimevent.r159"-"c:\resource\java\pimevent.r159"
+"\epoc32\data\z\resource\java\pimevent.r16"-"c:\resource\java\pimevent.r16"
+"\epoc32\data\z\resource\java\pimevent.r160"-"c:\resource\java\pimevent.r160"
+"\epoc32\data\z\resource\java\pimevent.r161"-"c:\resource\java\pimevent.r161"
+"\epoc32\data\z\resource\java\pimevent.r17"-"c:\resource\java\pimevent.r17"
+"\epoc32\data\z\resource\java\pimevent.r18"-"c:\resource\java\pimevent.r18"
+"\epoc32\data\z\resource\java\pimevent.r25"-"c:\resource\java\pimevent.r25"
+"\epoc32\data\z\resource\java\pimevent.r26"-"c:\resource\java\pimevent.r26"
+"\epoc32\data\z\resource\java\pimevent.r27"-"c:\resource\java\pimevent.r27"
+"\epoc32\data\z\resource\java\pimevent.r28"-"c:\resource\java\pimevent.r28"
+"\epoc32\data\z\resource\java\pimevent.r29"-"c:\resource\java\pimevent.r29"
+"\epoc32\data\z\resource\java\pimevent.r30"-"c:\resource\java\pimevent.r30"
+"\epoc32\data\z\resource\java\pimevent.r31"-"c:\resource\java\pimevent.r31"
+"\epoc32\data\z\resource\java\pimevent.r32"-"c:\resource\java\pimevent.r32"
+"\epoc32\data\z\resource\java\pimevent.r326"-"c:\resource\java\pimevent.r326"
+"\epoc32\data\z\resource\java\pimevent.r327"-"c:\resource\java\pimevent.r327"
+"\epoc32\data\z\resource\java\pimevent.r33"-"c:\resource\java\pimevent.r33"
+"\epoc32\data\z\resource\java\pimevent.r37"-"c:\resource\java\pimevent.r37"
+"\epoc32\data\z\resource\java\pimevent.r39"-"c:\resource\java\pimevent.r39"
+"\epoc32\data\z\resource\java\pimevent.r42"-"c:\resource\java\pimevent.r42"
+"\epoc32\data\z\resource\java\pimevent.r44"-"c:\resource\java\pimevent.r44"
+"\epoc32\data\z\resource\java\pimevent.r45"-"c:\resource\java\pimevent.r45"
+"\epoc32\data\z\resource\java\pimevent.r49"-"c:\resource\java\pimevent.r49"
+"\epoc32\data\z\resource\java\pimevent.r50"-"c:\resource\java\pimevent.r50"
+"\epoc32\data\z\resource\java\pimevent.r51"-"c:\resource\java\pimevent.r51"
+"\epoc32\data\z\resource\java\pimevent.r54"-"c:\resource\java\pimevent.r54"
+"\epoc32\data\z\resource\java\pimevent.r57"-"c:\resource\java\pimevent.r57"
+"\epoc32\data\z\resource\java\pimevent.r59"-"c:\resource\java\pimevent.r59"
+"\epoc32\data\z\resource\java\pimevent.r67"-"c:\resource\java\pimevent.r67"
+"\epoc32\data\z\resource\java\pimevent.r68"-"c:\resource\java\pimevent.r68"
+"\epoc32\data\z\resource\java\pimevent.r70"-"c:\resource\java\pimevent.r70"
+"\epoc32\data\z\resource\java\pimevent.r76"-"c:\resource\java\pimevent.r76"
+"\epoc32\data\z\resource\java\pimevent.r78"-"c:\resource\java\pimevent.r78"
+"\epoc32\data\z\resource\java\pimevent.r79"-"c:\resource\java\pimevent.r79"
+"\epoc32\data\z\resource\java\pimevent.r83"-"c:\resource\java\pimevent.r83"
+"\epoc32\data\z\resource\java\pimevent.r93"-"c:\resource\java\pimevent.r93"
+"\epoc32\data\z\resource\java\pimevent.r94"-"c:\resource\java\pimevent.r94"
+"\epoc32\data\z\resource\java\pimevent.r96"-"c:\resource\java\pimevent.r96"
+"\epoc32\data\z\resource\java\pimevent.rsc"-"c:\resource\java\pimevent.rsc"
+"\epoc32\data\z\resource\java\pimtodo.r01"-"c:\resource\java\pimtodo.r01"
+"\epoc32\data\z\resource\java\pimtodo.r02"-"c:\resource\java\pimtodo.r02"
+"\epoc32\data\z\resource\java\pimtodo.r03"-"c:\resource\java\pimtodo.r03"
+"\epoc32\data\z\resource\java\pimtodo.r04"-"c:\resource\java\pimtodo.r04"
+"\epoc32\data\z\resource\java\pimtodo.r05"-"c:\resource\java\pimtodo.r05"
+"\epoc32\data\z\resource\java\pimtodo.r06"-"c:\resource\java\pimtodo.r06"
+"\epoc32\data\z\resource\java\pimtodo.r07"-"c:\resource\java\pimtodo.r07"
+"\epoc32\data\z\resource\java\pimtodo.r08"-"c:\resource\java\pimtodo.r08"
+"\epoc32\data\z\resource\java\pimtodo.r09"-"c:\resource\java\pimtodo.r09"
+"\epoc32\data\z\resource\java\pimtodo.r10"-"c:\resource\java\pimtodo.r10"
+"\epoc32\data\z\resource\java\pimtodo.r102"-"c:\resource\java\pimtodo.r102"
+"\epoc32\data\z\resource\java\pimtodo.r103"-"c:\resource\java\pimtodo.r103"
+"\epoc32\data\z\resource\java\pimtodo.r129"-"c:\resource\java\pimtodo.r129"
+"\epoc32\data\z\resource\java\pimtodo.r13"-"c:\resource\java\pimtodo.r13"
+"\epoc32\data\z\resource\java\pimtodo.r14"-"c:\resource\java\pimtodo.r14"
+"\epoc32\data\z\resource\java\pimtodo.r15"-"c:\resource\java\pimtodo.r15"
+"\epoc32\data\z\resource\java\pimtodo.r157"-"c:\resource\java\pimtodo.r157"
+"\epoc32\data\z\resource\java\pimtodo.r158"-"c:\resource\java\pimtodo.r158"
+"\epoc32\data\z\resource\java\pimtodo.r159"-"c:\resource\java\pimtodo.r159"
+"\epoc32\data\z\resource\java\pimtodo.r16"-"c:\resource\java\pimtodo.r16"
+"\epoc32\data\z\resource\java\pimtodo.r160"-"c:\resource\java\pimtodo.r160"
+"\epoc32\data\z\resource\java\pimtodo.r161"-"c:\resource\java\pimtodo.r161"
+"\epoc32\data\z\resource\java\pimtodo.r17"-"c:\resource\java\pimtodo.r17"
+"\epoc32\data\z\resource\java\pimtodo.r18"-"c:\resource\java\pimtodo.r18"
+"\epoc32\data\z\resource\java\pimtodo.r25"-"c:\resource\java\pimtodo.r25"
+"\epoc32\data\z\resource\java\pimtodo.r26"-"c:\resource\java\pimtodo.r26"
+"\epoc32\data\z\resource\java\pimtodo.r27"-"c:\resource\java\pimtodo.r27"
+"\epoc32\data\z\resource\java\pimtodo.r28"-"c:\resource\java\pimtodo.r28"
+"\epoc32\data\z\resource\java\pimtodo.r29"-"c:\resource\java\pimtodo.r29"
+"\epoc32\data\z\resource\java\pimtodo.r30"-"c:\resource\java\pimtodo.r30"
+"\epoc32\data\z\resource\java\pimtodo.r31"-"c:\resource\java\pimtodo.r31"
+"\epoc32\data\z\resource\java\pimtodo.r32"-"c:\resource\java\pimtodo.r32"
+"\epoc32\data\z\resource\java\pimtodo.r326"-"c:\resource\java\pimtodo.r326"
+"\epoc32\data\z\resource\java\pimtodo.r327"-"c:\resource\java\pimtodo.r327"
+"\epoc32\data\z\resource\java\pimtodo.r33"-"c:\resource\java\pimtodo.r33"
+"\epoc32\data\z\resource\java\pimtodo.r37"-"c:\resource\java\pimtodo.r37"
+"\epoc32\data\z\resource\java\pimtodo.r39"-"c:\resource\java\pimtodo.r39"
+"\epoc32\data\z\resource\java\pimtodo.r42"-"c:\resource\java\pimtodo.r42"
+"\epoc32\data\z\resource\java\pimtodo.r44"-"c:\resource\java\pimtodo.r44"
+"\epoc32\data\z\resource\java\pimtodo.r45"-"c:\resource\java\pimtodo.r45"
+"\epoc32\data\z\resource\java\pimtodo.r49"-"c:\resource\java\pimtodo.r49"
+"\epoc32\data\z\resource\java\pimtodo.r50"-"c:\resource\java\pimtodo.r50"
+"\epoc32\data\z\resource\java\pimtodo.r51"-"c:\resource\java\pimtodo.r51"
+"\epoc32\data\z\resource\java\pimtodo.r54"-"c:\resource\java\pimtodo.r54"
+"\epoc32\data\z\resource\java\pimtodo.r57"-"c:\resource\java\pimtodo.r57"
+"\epoc32\data\z\resource\java\pimtodo.r59"-"c:\resource\java\pimtodo.r59"
+"\epoc32\data\z\resource\java\pimtodo.r67"-"c:\resource\java\pimtodo.r67"
+"\epoc32\data\z\resource\java\pimtodo.r68"-"c:\resource\java\pimtodo.r68"
+"\epoc32\data\z\resource\java\pimtodo.r70"-"c:\resource\java\pimtodo.r70"
+"\epoc32\data\z\resource\java\pimtodo.r76"-"c:\resource\java\pimtodo.r76"
+"\epoc32\data\z\resource\java\pimtodo.r78"-"c:\resource\java\pimtodo.r78"
+"\epoc32\data\z\resource\java\pimtodo.r79"-"c:\resource\java\pimtodo.r79"
+"\epoc32\data\z\resource\java\pimtodo.r83"-"c:\resource\java\pimtodo.r83"
+"\epoc32\data\z\resource\java\pimtodo.r93"-"c:\resource\java\pimtodo.r93"
+"\epoc32\data\z\resource\java\pimtodo.r94"-"c:\resource\java\pimtodo.r94"
+"\epoc32\data\z\resource\java\pimtodo.r96"-"c:\resource\java\pimtodo.r96"
+"\epoc32\data\z\resource\java\pimtodo.rsc"-"c:\resource\java\pimtodo.rsc"
+
+
+"\epoc32\release\armv5\urel\javapushregistry.dll"-"c:\sys\bin\javapushregistry.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javapushregistry.odc"-"c:\resource\java\jvm\lib\jrt\javapushregistry.odc"
+
+"\epoc32\release\armv5\urel\javarms.dll"-"c:\sys\bin\javarms.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javarms.odc"-"c:\resource\java\jvm\lib\jrt\javarms.odc"
+
+"\epoc32\release\armv5\urel\javasatsa.dll"-"c:\sys\bin\javasatsa.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javasatsa.odc"-"c:\resource\java\jvm\lib\jrt\javasatsa.odc"
+
+"\epoc32\release\armv5\urel\javasecurity.dll"-"c:\sys\bin\javasecurity.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javasecurity.odc"-"c:\resource\java\jvm\lib\jrt\javasecurity.odc"
+
+"\epoc32\release\armv5\urel\javasensor.dll"-"c:\sys\bin\javasensor.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javasensor.odc"-"c:\resource\java\jvm\lib\jrt\javasensor.odc"
+
+"\epoc32\release\armv5\urel\javastorage.dll"-"c:\sys\bin\javastorage.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javastorage.odc"-"c:\resource\java\jvm\lib\jrt\javastorage.odc"
+
+"\epoc32\release\armv5\urel\javasocket.dll"-"c:\sys\bin\javasocket.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javasocket.odc"-"c:\resource\java\jvm\lib\jrt\javasocket.odc"
+
+"\epoc32\release\armv5\urel\javassl.dll"-"c:\sys\bin\javassl.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javassl.odc"-"c:\resource\java\jvm\lib\jrt\javassl.odc"
+
+"\epoc32\release\armv5\urel\javautils.dll"-"c:\sys\bin\javautils.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javautils.odc"-"c:\resource\java\jvm\lib\jrt\javautils.odc"
+
+"\epoc32\release\armv5\urel\javawebservices.dll"-"c:\sys\bin\javawebservices.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javawebservices.odc"-"c:\resource\java\jvm\lib\jrt\javawebservices.odc"
+
+"\epoc32\release\armv5\urel\javawma.dll"-"c:\sys\bin\javawma.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javawma.odc"-"c:\resource\java\jvm\lib\jrt\javawma.odc"
+
+"\epoc32\release\armv5\urel\javawmamms.dll"-"c:\sys\bin\javawmamms.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javawmamms.odc"-"c:\resource\java\jvm\lib\jrt\javawmamms.odc"
+
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\tckrunner.odc"-"c:\resource\java\jvm\lib\jrt\tckrunner.odc"
+
+
+
+; Misc dlls
+#ifdef RD_JAVA_S60_RELEASE_5_0_IAD
+"\epoc32\release\armv5\urel\InstalledAppsRegistry.dll"-"c:\sys\bin\InstalledAppsRegistry.dll"
+"\epoc32\release\armv5\urel\javaregistry.dll"-"c:\sys\bin\javaregistry.dll"
+#endif
+
+; Application Manager 2 plugin
+#ifndef RD_JAVA_S60_RELEASE_5_0_IAD
+"\epoc32\release\armv5\urel\appmngr2midletplugin.dll"-"c:\sys\bin\appmngr2midletplugin.dll"
+"\epoc32\data\z\resource\plugins\appmngr2midletplugin.rsc"-"c:\resource\plugins\appmngr2midletplugin.rsc"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r01"-"c:\resource\java\javaapplicationsettings.r01"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r02"-"c:\resource\java\javaapplicationsettings.r02"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r03"-"c:\resource\java\javaapplicationsettings.r03"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r04"-"c:\resource\java\javaapplicationsettings.r04"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r05"-"c:\resource\java\javaapplicationsettings.r05"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r06"-"c:\resource\java\javaapplicationsettings.r06"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r07"-"c:\resource\java\javaapplicationsettings.r07"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r08"-"c:\resource\java\javaapplicationsettings.r08"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r09"-"c:\resource\java\javaapplicationsettings.r09"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r10"-"c:\resource\java\javaapplicationsettings.r10"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r102"-"c:\resource\java\javaapplicationsettings.r102"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r103"-"c:\resource\java\javaapplicationsettings.r103"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r129"-"c:\resource\java\javaapplicationsettings.r129"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r13"-"c:\resource\java\javaapplicationsettings.r13"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r14"-"c:\resource\java\javaapplicationsettings.r14"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r15"-"c:\resource\java\javaapplicationsettings.r15"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r157"-"c:\resource\java\javaapplicationsettings.r157"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r158"-"c:\resource\java\javaapplicationsettings.r158"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r159"-"c:\resource\java\javaapplicationsettings.r159"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r16"-"c:\resource\java\javaapplicationsettings.r16"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r160"-"c:\resource\java\javaapplicationsettings.r160"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r161"-"c:\resource\java\javaapplicationsettings.r161"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r17"-"c:\resource\java\javaapplicationsettings.r17"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r18"-"c:\resource\java\javaapplicationsettings.r18"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r25"-"c:\resource\java\javaapplicationsettings.r25"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r26"-"c:\resource\java\javaapplicationsettings.r26"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r27"-"c:\resource\java\javaapplicationsettings.r27"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r28"-"c:\resource\java\javaapplicationsettings.r28"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r29"-"c:\resource\java\javaapplicationsettings.r29"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r30"-"c:\resource\java\javaapplicationsettings.r30"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r31"-"c:\resource\java\javaapplicationsettings.r31"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r32"-"c:\resource\java\javaapplicationsettings.r32"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r326"-"c:\resource\java\javaapplicationsettings.r326"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r327"-"c:\resource\java\javaapplicationsettings.r327"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r33"-"c:\resource\java\javaapplicationsettings.r33"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r37"-"c:\resource\java\javaapplicationsettings.r37"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r39"-"c:\resource\java\javaapplicationsettings.r39"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r42"-"c:\resource\java\javaapplicationsettings.r42"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r44"-"c:\resource\java\javaapplicationsettings.r44"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r45"-"c:\resource\java\javaapplicationsettings.r45"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r49"-"c:\resource\java\javaapplicationsettings.r49"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r50"-"c:\resource\java\javaapplicationsettings.r50"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r51"-"c:\resource\java\javaapplicationsettings.r51"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r54"-"c:\resource\java\javaapplicationsettings.r54"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r57"-"c:\resource\java\javaapplicationsettings.r57"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r59"-"c:\resource\java\javaapplicationsettings.r59"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r67"-"c:\resource\java\javaapplicationsettings.r67"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r68"-"c:\resource\java\javaapplicationsettings.r68"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r70"-"c:\resource\java\javaapplicationsettings.r70"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r76"-"c:\resource\java\javaapplicationsettings.r76"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r78"-"c:\resource\java\javaapplicationsettings.r78"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r79"-"c:\resource\java\javaapplicationsettings.r79"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r83"-"c:\resource\java\javaapplicationsettings.r83"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r93"-"c:\resource\java\javaapplicationsettings.r93"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r94"-"c:\resource\java\javaapplicationsettings.r94"
+"\epoc32\data\z\resource\java\javaapplicationsettings.r96"-"c:\resource\java\javaapplicationsettings.r96"
+"\epoc32\data\z\resource\java\javaapplicationsettings.rsc"-"c:\resource\java\javaapplicationsettings.rsc"
+#endif
+
+"\epoc32\release\armv5\urel\ifeui.dll"-"c:\sys\bin\ifeui.dll"
+"\epoc32\release\armv5\urel\javaappschemeplugin.dll"-"c:\sys\bin\javaappschemeplugin.dll"
+"\epoc32\release\armv5\urel\javabtl2capscplugin.dll"-"c:\sys\bin\javabtl2capscplugin.dll"
+"\epoc32\release\armv5\urel\javabtsppscplugin.dll"-"c:\sys\bin\javabtsppscplugin.dll"
+"\epoc32\release\armv5\urel\javabtgoepscplugin.dll"-"c:\sys\bin\javabtgoepscplugin.dll"
+"\epoc32\release\armv5\urel\javadatagramscplugin.dll"-"c:\sys\bin\javadatagramscplugin.dll"
+"\epoc32\release\armv5\urel\javaenv.dll"-"c:\sys\bin\javaenv.dll"
+"\epoc32\release\armv5\urel\javaipc.dll"-"c:\sys\bin\javaipc.dll"
+"\epoc32\release\armv5\urel\javainstallerstarter.dll"-"c:\sys\bin\javainstallerstarter.dll"
+"\epoc32\release\armv5\urel\javamidpstarter.dll"-"c:\sys\bin\javamidpstarter.dll"
+"\epoc32\release\armv5\urel\javacbsscplugin.dll"-"c:\sys\bin\javacbsscplugin.dll"
+"\epoc32\release\armv5\urel\javammsscplugin.dll"-"c:\sys\bin\javammsscplugin.dll"
+"\epoc32\release\armv5\urel\javasmsscplugin.dll"-"c:\sys\bin\javasmsscplugin.dll"
+"\epoc32\release\armv5\urel\javapreinstaller.dll"-"c:\sys\bin\javapreinstaller.dll"
+"\epoc32\release\armv5\urel\javapushcontroller.dll"-"c:\sys\bin\javapushcontroller.dll"
+"\epoc32\release\armv5\urel\javaregistryclient.dll"-"c:\sys\bin\javaregistryclient.dll"
+"\epoc32\release\armv5\urel\javaruntimestarterutils.dll"-"c:\sys\bin\javaruntimestarterutils.dll"
+"\epoc32\release\armv5\urel\javasidchecker.dll"-"c:\sys\bin\javasidchecker.dll"
+"\epoc32\release\armv5\urel\javasizehelperclient.dll"-"c:\sys\bin\javasizehelperclient.dll"
+"\epoc32\release\armv5\urel\javasizehelperserver.dll"-"c:\sys\bin\javasizehelperserver.dll"
+"\epoc32\release\armv5\urel\javasocketscplugin.dll"-"c:\sys\bin\javasocketscplugin.dll"
+"\epoc32\release\armv5\urel\javaunicertstoreplugin.dll"-"c:\sys\bin\javaunicertstoreplugin.dll"
+"\epoc32\release\armv5\urel\jvmnativeport.dll"-"c:\sys\bin\jvmnativeport.dll"
+"\epoc32\release\armv5\urel\midp2backupplugin.dll"-"c:\sys\bin\midp2backupplugin.dll"
+"\epoc32\release\armv5\urel\javadebugapi.dll"-"c:\sys\bin\javadebugapi.dll"
+
+#ifdef RD_JAVA_S60_RELEASE_5_0_IAD
+"\epoc32\release\armv5\urel\midp2cenrep.dll"-"c:\sys\bin\midp2cenrep.dll"
+#endif // RD_JAVA_S60_RELEASE_5_0_IAD
+
+; to enable JVM argument modifier - comment 1st line below and uncomment 2nd line below
+"\epoc32\release\armv5\urel\javajvmargsmodifier.dll"-"c:\sys\bin\javajvmargsmodifier.dll"
+;"\epoc32\release\armv5\urel\javajvmargsmodifierfile.dll"-"c:\sys\bin\javajvmargsmodifier.dll"
+
+
+; Javacaptain extension plugins
+"\epoc32\release\armv5\urel\javacaptain_ext_config.dll"                 -"c:\sys\bin\javacaptain_ext_config.dll"
+"\epoc32\release\armv5\urel\javacaptain_ext_preinstallerstarter.dll"    -"c:\sys\bin\javacaptain_ext_preinstallerstarter.dll"
+"\epoc32\release\armv5\urel\javacaptain_ext_pushregistryplugin.dll"     -"c:\sys\bin\javacaptain_ext_pushregistryplugin.dll"
+"\epoc32\release\armv5\urel\javacaptain_ext_storageserverplugin.dll"    -"c:\sys\bin\javacaptain_ext_storageserverplugin.dll"
+"\epoc32\release\armv5\urel\javacaptain_ext_btdeviceclassmanager.dll"   -"c:\sys\bin\javacaptain_ext_btdeviceclassmanager.dll"
+; PLUGIN_ID_JAVA_CERT_STORE_EXTENSION_C = 7
+"\epoc32\release\armv5\urel\javacaptain_ext_ondemand_7.dll"             -"c:\sys\bin\javacaptain_ext_ondemand_7.dll"
+#ifdef RD_JAVA_MIDPRMS_DB
+"\epoc32\release\armv5\urel\javacaptain_ext_ondemand_2.dll"             -"c:\sys\bin\javacaptain_ext_ondemand_2.dll"
+#endif
+
+
+
+
+; resources
+"\epoc32\data\z\resource\plugins\ifeui.rsc"                   -"c:\resource\plugins\ifeui.rsc"
+"\epoc32\data\z\resource\plugins\javaappschemeplugin.rsc"     -"c:\resource\plugins\javaappschemeplugin.rsc"
+"\epoc32\winscw\c\private\102033E6\installer\inst_plugins.cfg"-"c:\private\102033E6\installer\inst_plugins.cfg"
+"\epoc32\data\Z\Resource\versions\java.txt"-"c:\resource\versions\java.txt"
+#ifdef RD_JAVA_S60_RELEASE_5_0_IAD
+"\epoc32\data\z\resource\java\java_app.mif"-"c:\resource\java\java_app.mif"
+#else
+"\epoc32\data\z\resource\java\java_app_92.mif"-"c:\resource\java\java_app.mif"
+#endif // RD_JAVA_S60_RELEASE_5_0_IAD
+"\epoc32\data\z\resource\apps\lcdui.mif"-"c:\resource\apps\lcdui.mif"
+"\epoc32\data\z\private\10003a3f\apps\javainstaller_reg.rsc"-"c:\private\10003a3f\import\apps\javainstaller_reg.rsc"
+"\epoc32\data\z\resource\apps\javainstaller_loc.rsc"-"c:\resource\apps\javainstaller_loc.rsc"
+"\epoc32\data\z\resource\apps\javainstaller_icon.mif"-"c:\resource\apps\javainstaller_icon.mif"
+"\epoc32\data\z\resource\java\java_trusted.png"-"c:\resource\java\java_trusted.png"
+"\epoc32\data\z\resource\java\java_untrusted.png"-"c:\resource\java\java_untrusted.png"
+"\epoc32\data\z\resource\plugins\javasidchecker.rsc"   -"c:\resource\plugins\javasidchecker.rsc"
+"\epoc32\data\z\resource\plugins\javaunicertstoreplugin.rsc" -"c:\resource\plugins\javaunicertstoreplugin.rsc"
+"\epoc32\data\z\resource\plugins\midp2backupplugin.rsc"-"c:\resource\plugins\midp2backupplugin.rsc"
+#ifndef RD_JAVA_S60_RELEASE_5_0_IAD
+"\epoc32\data\z\resource\java\javausermessages.r01"-"c:\resource\java\javausermessages.r01"
+"\epoc32\data\z\resource\java\javausermessages.r02"-"c:\resource\java\javausermessages.r02"
+"\epoc32\data\z\resource\java\javausermessages.r03"-"c:\resource\java\javausermessages.r03"
+"\epoc32\data\z\resource\java\javausermessages.r04"-"c:\resource\java\javausermessages.r04"
+"\epoc32\data\z\resource\java\javausermessages.r05"-"c:\resource\java\javausermessages.r05"
+"\epoc32\data\z\resource\java\javausermessages.r06"-"c:\resource\java\javausermessages.r06"
+"\epoc32\data\z\resource\java\javausermessages.r07"-"c:\resource\java\javausermessages.r07"
+"\epoc32\data\z\resource\java\javausermessages.r08"-"c:\resource\java\javausermessages.r08"
+"\epoc32\data\z\resource\java\javausermessages.r09"-"c:\resource\java\javausermessages.r09"
+"\epoc32\data\z\resource\java\javausermessages.r10"-"c:\resource\java\javausermessages.r10"
+"\epoc32\data\z\resource\java\javausermessages.r102"-"c:\resource\java\javausermessages.r102"
+"\epoc32\data\z\resource\java\javausermessages.r103"-"c:\resource\java\javausermessages.r103"
+"\epoc32\data\z\resource\java\javausermessages.r129"-"c:\resource\java\javausermessages.r129"
+"\epoc32\data\z\resource\java\javausermessages.r13"-"c:\resource\java\javausermessages.r13"
+"\epoc32\data\z\resource\java\javausermessages.r14"-"c:\resource\java\javausermessages.r14"
+"\epoc32\data\z\resource\java\javausermessages.r15"-"c:\resource\java\javausermessages.r15"
+"\epoc32\data\z\resource\java\javausermessages.r157"-"c:\resource\java\javausermessages.r157"
+"\epoc32\data\z\resource\java\javausermessages.r158"-"c:\resource\java\javausermessages.r158"
+"\epoc32\data\z\resource\java\javausermessages.r159"-"c:\resource\java\javausermessages.r159"
+"\epoc32\data\z\resource\java\javausermessages.r16"-"c:\resource\java\javausermessages.r16"
+"\epoc32\data\z\resource\java\javausermessages.r160"-"c:\resource\java\javausermessages.r160"
+"\epoc32\data\z\resource\java\javausermessages.r161"-"c:\resource\java\javausermessages.r161"
+"\epoc32\data\z\resource\java\javausermessages.r17"-"c:\resource\java\javausermessages.r17"
+"\epoc32\data\z\resource\java\javausermessages.r18"-"c:\resource\java\javausermessages.r18"
+"\epoc32\data\z\resource\java\javausermessages.r25"-"c:\resource\java\javausermessages.r25"
+"\epoc32\data\z\resource\java\javausermessages.r26"-"c:\resource\java\javausermessages.r26"
+"\epoc32\data\z\resource\java\javausermessages.r27"-"c:\resource\java\javausermessages.r27"
+"\epoc32\data\z\resource\java\javausermessages.r28"-"c:\resource\java\javausermessages.r28"
+"\epoc32\data\z\resource\java\javausermessages.r29"-"c:\resource\java\javausermessages.r29"
+"\epoc32\data\z\resource\java\javausermessages.r30"-"c:\resource\java\javausermessages.r30"
+"\epoc32\data\z\resource\java\javausermessages.r31"-"c:\resource\java\javausermessages.r31"
+"\epoc32\data\z\resource\java\javausermessages.r32"-"c:\resource\java\javausermessages.r32"
+"\epoc32\data\z\resource\java\javausermessages.r326"-"c:\resource\java\javausermessages.r326"
+"\epoc32\data\z\resource\java\javausermessages.r327"-"c:\resource\java\javausermessages.r327"
+"\epoc32\data\z\resource\java\javausermessages.r33"-"c:\resource\java\javausermessages.r33"
+"\epoc32\data\z\resource\java\javausermessages.r37"-"c:\resource\java\javausermessages.r37"
+"\epoc32\data\z\resource\java\javausermessages.r39"-"c:\resource\java\javausermessages.r39"
+"\epoc32\data\z\resource\java\javausermessages.r42"-"c:\resource\java\javausermessages.r42"
+"\epoc32\data\z\resource\java\javausermessages.r44"-"c:\resource\java\javausermessages.r44"
+"\epoc32\data\z\resource\java\javausermessages.r45"-"c:\resource\java\javausermessages.r45"
+"\epoc32\data\z\resource\java\javausermessages.r49"-"c:\resource\java\javausermessages.r49"
+"\epoc32\data\z\resource\java\javausermessages.r50"-"c:\resource\java\javausermessages.r50"
+"\epoc32\data\z\resource\java\javausermessages.r51"-"c:\resource\java\javausermessages.r51"
+"\epoc32\data\z\resource\java\javausermessages.r54"-"c:\resource\java\javausermessages.r54"
+"\epoc32\data\z\resource\java\javausermessages.r57"-"c:\resource\java\javausermessages.r57"
+"\epoc32\data\z\resource\java\javausermessages.r59"-"c:\resource\java\javausermessages.r59"
+"\epoc32\data\z\resource\java\javausermessages.r67"-"c:\resource\java\javausermessages.r67"
+"\epoc32\data\z\resource\java\javausermessages.r68"-"c:\resource\java\javausermessages.r68"
+"\epoc32\data\z\resource\java\javausermessages.r70"-"c:\resource\java\javausermessages.r70"
+"\epoc32\data\z\resource\java\javausermessages.r76"-"c:\resource\java\javausermessages.r76"
+"\epoc32\data\z\resource\java\javausermessages.r78"-"c:\resource\java\javausermessages.r78"
+"\epoc32\data\z\resource\java\javausermessages.r79"-"c:\resource\java\javausermessages.r79"
+"\epoc32\data\z\resource\java\javausermessages.r83"-"c:\resource\java\javausermessages.r83"
+"\epoc32\data\z\resource\java\javausermessages.r93"-"c:\resource\java\javausermessages.r93"
+"\epoc32\data\z\resource\java\javausermessages.r94"-"c:\resource\java\javausermessages.r94"
+"\epoc32\data\z\resource\java\javausermessages.r96"-"c:\resource\java\javausermessages.r96"
+"\epoc32\data\z\resource\java\javausermessages.rsc"-"c:\resource\java\javausermessages.rsc"
+#endif
+
+
+
+; Resources for localisation
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\resources.jar"-"c:\resource\java\jvm\lib\jrt\resources.jar"
+
+
+
+
+
+; Security policies
+"\epoc32\release\armv5\urel\z\resource\java\security\policies\s60_manufacturer.ser"-"c:\resource\java\security\policies\s60_manufacturer.ser"
+"\epoc32\release\armv5\urel\z\resource\java\security\policies\s60_operator.ser"-"c:\resource\java\security\policies\s60_operator.ser"
+"\epoc32\release\armv5\urel\z\resource\java\security\policies\s60_trustedthirdparty.ser"-"c:\resource\java\security\policies\s60_trustedthirdparty.ser"
+"\epoc32\release\armv5\urel\z\resource\java\security\policies\s60_untrusted.ser"-"c:\resource\java\security\policies\s60_untrusted.ser"
+"\epoc32\release\armv5\urel\z\resource\java\security\policies\msa_manufacturer.ser"-"c:\resource\java\security\policies\msa_manufacturer.ser"
+"\epoc32\release\armv5\urel\z\resource\java\security\policies\msa_operator.ser"-"c:\resource\java\security\policies\msa_operator.ser"
+"\epoc32\release\armv5\urel\z\resource\java\security\policies\msa_trustedthirdparty.ser"-"c:\resource\java\security\policies\msa_trustedthirdparty.ser"
+"\epoc32\release\armv5\urel\z\resource\java\security\policies\msa_untrusted.ser"-"c:\resource\java\security\policies\msa_untrusted.ser"
+"\epoc32\release\armv5\urel\z\resource\java\security\policies\att_manufacturer.ser"-"c:\resource\java\security\policies\att_manufacturer.ser"
+"\epoc32\release\armv5\urel\z\resource\java\security\policies\att_operator.ser"-"c:\resource\java\security\policies\att_operator.ser"
+"\epoc32\release\armv5\urel\z\resource\java\security\policies\att_operatorextra.ser"-"c:\resource\java\security\policies\att_operatorextra.ser"
+"\epoc32\release\armv5\urel\z\resource\java\security\policies\att_trustedthirdparty.ser"-"c:\resource\java\security\policies\att_trustedthirdparty.ser"
+"\epoc32\release\armv5\urel\z\resource\java\security\policies\att_untrusted.ser"-"c:\resource\java\security\policies\att_untrusted.ser"
+"\epoc32\release\armv5\urel\z\resource\java\security\policies\all.ser"-"c:\resource\java\security\policies\all.ser"
+
+
+
+
+
+; UI binaries
+; Dlls containing java byte code and their odc files
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javacoreui.odc"-"c:\resource\java\jvm\lib\jrt\javacoreui.odc"
+"\epoc32\release\armv5\urel\javacoreui.dll"-"c:\sys\bin\javacoreui.dll"
+
+"\epoc32\release\armv5\urel\eswt.dll"-"c:\sys\bin\eswt.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\eswt.odc"-"c:\resource\java\jvm\lib\jrt\eswt.odc"
+
+"\epoc32\release\armv5\urel\eswtdirectcontent.dll"-"c:\sys\bin\eswtdirectcontent.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\eswtdirectcontent.odc"-"c:\resource\java\jvm\lib\jrt\eswtdirectcontent.odc"
+
+"\epoc32\release\armv5\urel\javaamms.dll"-"c:\sys\bin\javaamms.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javaamms.odc"-"c:\resource\java\jvm\lib\jrt\javaamms.odc"
+
+"\epoc32\release\armv5\urel\javalegacyutils.dll"-"c:\sys\bin\javalegacyutils.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javalegacyutils.odc"-"c:\resource\java\jvm\lib\jrt\javalegacyutils.odc"
+
+"\epoc32\release\armv5\urel\javamobilemedia.dll"-"c:\sys\bin\javamobilemedia.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javamobilemedia.odc"-"c:\resource\java\jvm\lib\jrt\javamobilemedia.odc"
+
+"\epoc32\release\armv5\urel\javalcdui.dll"-"c:\sys\bin\javalcdui.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javalcdui.odc"-"c:\resource\java\jvm\lib\jrt\javalcdui.odc"
+
+"\epoc32\release\armv5\urel\javam2g.dll"-"c:\sys\bin\javam2g.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javam2g.odc"-"c:\resource\java\jvm\lib\jrt\javam2g.odc"
+
+"\epoc32\release\armv5\urel\javam3g.dll"-"c:\sys\bin\javam3g.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javam3g.odc"-"c:\resource\java\jvm\lib\jrt\javam3g.odc"
+
+"\epoc32\release\armv5\urel\javanokiasound.dll"-"c:\sys\bin\javanokiasound.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javanokiasound.odc"-"c:\resource\java\jvm\lib\jrt\javanokiasound.odc"
+
+"\epoc32\release\armv5\urel\javasoftnotification.dll"-"c:\sys\bin\javasoftnotification.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javasoftnotification.odc"-"c:\resource\java\jvm\lib\jrt\javasoftnotification.odc"
+
+; Misc dlls
+"\epoc32\release\armv5\urel\eswtapifacade.dll"-"c:\sys\bin\eswtapifacade.dll"
+"\epoc32\release\armv5\urel\eswtphysics.dll"-"c:\sys\bin\eswtphysics.dll"
+
+#ifdef RD_JAVA_S60_RELEASE_5_0_IAD
+"\epoc32\release\armv5\urel\javaptivariation.dll"-"c:\sys\bin\javaptivariation.dll"
+#endif
+"\epoc32\release\armv5\urel\javaremconobserver.dll"-"c:\sys\bin\javaremconobserver.dll"
+"\epoc32\release\armv5\urel\lcdgr.dll"-"c:\sys\bin\lcdgr.dll"
+"\epoc32\release\armv5\urel\lcdui.dll"-"c:\sys\bin\lcdui.dll"
+"\epoc32\release\armv5\urel\LCDC16MA.dll"-"c:\sys\bin\LCDC16MA.dll"
+"\epoc32\release\armv5\urel\LCDC16MU.dll"-"c:\sys\bin\LCDC16MU.dll"
+"\epoc32\release\armv5\urel\LCDC4K.dll"-"c:\sys\bin\LCDC4K.dll"
+"\epoc32\release\armv5\urel\LCDC64K.dll"-"c:\sys\bin\LCDC64K.dll"
+"\epoc32\release\armv5\urel\lcdgdrv.dll"-"c:\sys\bin\lcdgdrv.dll"
+"\epoc32\release\armv5\urel\lcdgdrvi.dll"-"c:\sys\bin\lcdgdrvi.dll"
+#ifdef RD_JAVA_S60_RELEASE_5_0_IAD
+"\epoc32\release\armv5\urel\midp2permissiondb.dll"-"c:\sys\bin\midp2permissiondb.dll"
+"\epoc32\release\armv5\urel\midp2userpreferences.dll"-"c:\sys\bin\midp2userpreferences.dll"
+#endif // RD_JAVA_S60_RELEASE_5_0_IAD
+
+; lcdui resources
+"\epoc32\data\Z\resource\java\lcdgr.rsc"-"c:\resource\java\lcdgr.rsc"
+"\epoc32\data\Z\resource\java\lcdui.rsc"-"c:\resource\java\lcdui.rsc"
+"\epoc32\data\Z\resource\java\lcdui.r01"-"c:\resource\java\lcdui.r01"
+"\epoc32\data\Z\resource\java\lcdui.r02"-"c:\resource\java\lcdui.r02"
+"\epoc32\data\Z\resource\java\lcdui.r03"-"c:\resource\java\lcdui.r03"
+"\epoc32\data\Z\resource\java\lcdui.r04"-"c:\resource\java\lcdui.r04"
+"\epoc32\data\Z\resource\java\lcdui.r05"-"c:\resource\java\lcdui.r05"
+"\epoc32\data\Z\resource\java\lcdui.r06"-"c:\resource\java\lcdui.r06"
+"\epoc32\data\Z\resource\java\lcdui.r07"-"c:\resource\java\lcdui.r07"
+"\epoc32\data\Z\resource\java\lcdui.r08"-"c:\resource\java\lcdui.r08"
+"\epoc32\data\Z\resource\java\lcdui.r09"-"c:\resource\java\lcdui.r09"
+"\epoc32\data\Z\resource\java\lcdui.r10"-"c:\resource\java\lcdui.r10"
+"\epoc32\data\Z\resource\java\lcdui.r129"-"c:\resource\java\lcdui.r102"
+"\epoc32\data\Z\resource\java\lcdui.r129"-"c:\resource\java\lcdui.r103"
+"\epoc32\data\Z\resource\java\lcdui.r129"-"c:\resource\java\lcdui.r129"
+"\epoc32\data\Z\resource\java\lcdui.r13"-"c:\resource\java\lcdui.r13"
+"\epoc32\data\Z\resource\java\lcdui.r14"-"c:\resource\java\lcdui.r14"
+"\epoc32\data\Z\resource\java\lcdui.r15"-"c:\resource\java\lcdui.r15"
+"\epoc32\data\Z\resource\java\lcdui.r157"-"c:\resource\java\lcdui.r157"
+"\epoc32\data\Z\resource\java\lcdui.r158"-"c:\resource\java\lcdui.r158"
+"\epoc32\data\Z\resource\java\lcdui.r159"-"c:\resource\java\lcdui.r159"
+"\epoc32\data\Z\resource\java\lcdui.r16"-"c:\resource\java\lcdui.r16"
+"\epoc32\data\Z\resource\java\lcdui.r160"-"c:\resource\java\lcdui.r160"
+"\epoc32\data\Z\resource\java\lcdui.r161"-"c:\resource\java\lcdui.r161"
+"\epoc32\data\Z\resource\java\lcdui.r17"-"c:\resource\java\lcdui.r17"
+"\epoc32\data\Z\resource\java\lcdui.r18"-"c:\resource\java\lcdui.r18"
+"\epoc32\data\Z\resource\java\lcdui.r25"-"c:\resource\java\lcdui.r25"
+"\epoc32\data\Z\resource\java\lcdui.r26"-"c:\resource\java\lcdui.r26"
+"\epoc32\data\Z\resource\java\lcdui.r27"-"c:\resource\java\lcdui.r27"
+"\epoc32\data\Z\resource\java\lcdui.r28"-"c:\resource\java\lcdui.r28"
+"\epoc32\data\Z\resource\java\lcdui.r29"-"c:\resource\java\lcdui.r29"
+"\epoc32\data\Z\resource\java\lcdui.r30"-"c:\resource\java\lcdui.r30"
+"\epoc32\data\Z\resource\java\lcdui.r31"-"c:\resource\java\lcdui.r31"
+"\epoc32\data\Z\resource\java\lcdui.r32"-"c:\resource\java\lcdui.r32"
+"\epoc32\data\Z\resource\java\lcdui.r326"-"c:\resource\java\lcdui.r326"
+"\epoc32\data\Z\resource\java\lcdui.r327"-"c:\resource\java\lcdui.r327"
+"\epoc32\data\Z\resource\java\lcdui.r33"-"c:\resource\java\lcdui.r33"
+"\epoc32\data\Z\resource\java\lcdui.r37"-"c:\resource\java\lcdui.r37"
+"\epoc32\data\Z\resource\java\lcdui.r39"-"c:\resource\java\lcdui.r39"
+"\epoc32\data\Z\resource\java\lcdui.r42"-"c:\resource\java\lcdui.r42"
+"\epoc32\data\Z\resource\java\lcdui.r44"-"c:\resource\java\lcdui.r44"
+"\epoc32\data\Z\resource\java\lcdui.r45"-"c:\resource\java\lcdui.r45"
+"\epoc32\data\Z\resource\java\lcdui.r49"-"c:\resource\java\lcdui.r49"
+"\epoc32\data\Z\resource\java\lcdui.r50"-"c:\resource\java\lcdui.r50"
+"\epoc32\data\Z\resource\java\lcdui.r51"-"c:\resource\java\lcdui.r51"
+"\epoc32\data\Z\resource\java\lcdui.r54"-"c:\resource\java\lcdui.r54"
+"\epoc32\data\Z\resource\java\lcdui.r57"-"c:\resource\java\lcdui.r57"
+"\epoc32\data\Z\resource\java\lcdui.r59"-"c:\resource\java\lcdui.r59"
+"\epoc32\data\Z\resource\java\lcdui.r67"-"c:\resource\java\lcdui.r67"
+"\epoc32\data\Z\resource\java\lcdui.r68"-"c:\resource\java\lcdui.r68"
+"\epoc32\data\Z\resource\java\lcdui.r70"-"c:\resource\java\lcdui.r70"
+"\epoc32\data\Z\resource\java\lcdui.r76"-"c:\resource\java\lcdui.r76"
+"\epoc32\data\Z\resource\java\lcdui.r78"-"c:\resource\java\lcdui.r78"
+"\epoc32\data\Z\resource\java\lcdui.r79"-"c:\resource\java\lcdui.r79"
+"\epoc32\data\Z\resource\java\lcdui.r83"-"c:\resource\java\lcdui.r83"
+"\epoc32\data\Z\resource\java\lcdui.r93"-"c:\resource\java\lcdui.r93"
+"\epoc32\data\Z\resource\java\lcdui.r94"-"c:\resource\java\lcdui.r94"
+"\epoc32\data\Z\resource\java\lcdui.r96"-"c:\resource\java\lcdui.r96"
+
+; eswt resources
+"\epoc32\data\z\private\10003a3f\apps\eswt_reg.rsc"-"c:\private\10003a3f\import\apps\eswt_reg.rsc"
+"\epoc32\data\z\resource\java\eswtcore.r01"-"c:\resource\java\eswtcore.r01"
+"\epoc32\data\z\resource\java\eswtcore.r02"-"c:\resource\java\eswtcore.r02"
+"\epoc32\data\z\resource\java\eswtcore.r03"-"c:\resource\java\eswtcore.r03"
+"\epoc32\data\z\resource\java\eswtcore.r04"-"c:\resource\java\eswtcore.r04"
+"\epoc32\data\z\resource\java\eswtcore.r05"-"c:\resource\java\eswtcore.r05"
+"\epoc32\data\z\resource\java\eswtcore.r06"-"c:\resource\java\eswtcore.r06"
+"\epoc32\data\z\resource\java\eswtcore.r07"-"c:\resource\java\eswtcore.r07"
+"\epoc32\data\z\resource\java\eswtcore.r08"-"c:\resource\java\eswtcore.r08"
+"\epoc32\data\z\resource\java\eswtcore.r09"-"c:\resource\java\eswtcore.r09"
+"\epoc32\data\z\resource\java\eswtcore.r10"-"c:\resource\java\eswtcore.r10"
+"\epoc32\data\z\resource\java\eswtcore.r102"-"c:\resource\java\eswtcore.r102"
+"\epoc32\data\z\resource\java\eswtcore.r103"-"c:\resource\java\eswtcore.r103"
+"\epoc32\data\z\resource\java\eswtcore.r129"-"c:\resource\java\eswtcore.r129"
+"\epoc32\data\z\resource\java\eswtcore.r13"-"c:\resource\java\eswtcore.r13"
+"\epoc32\data\z\resource\java\eswtcore.r14"-"c:\resource\java\eswtcore.r14"
+"\epoc32\data\z\resource\java\eswtcore.r15"-"c:\resource\java\eswtcore.r15"
+"\epoc32\data\z\resource\java\eswtcore.r157"-"c:\resource\java\eswtcore.r157"
+"\epoc32\data\z\resource\java\eswtcore.r158"-"c:\resource\java\eswtcore.r158"
+"\epoc32\data\z\resource\java\eswtcore.r159"-"c:\resource\java\eswtcore.r159"
+"\epoc32\data\z\resource\java\eswtcore.r16"-"c:\resource\java\eswtcore.r16"
+"\epoc32\data\z\resource\java\eswtcore.r160"-"c:\resource\java\eswtcore.r160"
+"\epoc32\data\z\resource\java\eswtcore.r161"-"c:\resource\java\eswtcore.r161"
+"\epoc32\data\z\resource\java\eswtcore.r17"-"c:\resource\java\eswtcore.r17"
+"\epoc32\data\z\resource\java\eswtcore.r18"-"c:\resource\java\eswtcore.r18"
+"\epoc32\data\z\resource\java\eswtcore.r25"-"c:\resource\java\eswtcore.r25"
+"\epoc32\data\z\resource\java\eswtcore.r26"-"c:\resource\java\eswtcore.r26"
+"\epoc32\data\z\resource\java\eswtcore.r27"-"c:\resource\java\eswtcore.r27"
+"\epoc32\data\z\resource\java\eswtcore.r28"-"c:\resource\java\eswtcore.r28"
+"\epoc32\data\z\resource\java\eswtcore.r29"-"c:\resource\java\eswtcore.r29"
+"\epoc32\data\z\resource\java\eswtcore.r30"-"c:\resource\java\eswtcore.r30"
+"\epoc32\data\z\resource\java\eswtcore.r31"-"c:\resource\java\eswtcore.r31"
+"\epoc32\data\z\resource\java\eswtcore.r32"-"c:\resource\java\eswtcore.r32"
+"\epoc32\data\z\resource\java\eswtcore.r326"-"c:\resource\java\eswtcore.r326"
+"\epoc32\data\z\resource\java\eswtcore.r327"-"c:\resource\java\eswtcore.r327"
+"\epoc32\data\z\resource\java\eswtcore.r33"-"c:\resource\java\eswtcore.r33"
+"\epoc32\data\z\resource\java\eswtcore.r37"-"c:\resource\java\eswtcore.r37"
+"\epoc32\data\z\resource\java\eswtcore.r39"-"c:\resource\java\eswtcore.r39"
+"\epoc32\data\z\resource\java\eswtcore.r42"-"c:\resource\java\eswtcore.r42"
+"\epoc32\data\z\resource\java\eswtcore.r44"-"c:\resource\java\eswtcore.r44"
+"\epoc32\data\z\resource\java\eswtcore.r45"-"c:\resource\java\eswtcore.r45"
+"\epoc32\data\z\resource\java\eswtcore.r49"-"c:\resource\java\eswtcore.r49"
+"\epoc32\data\z\resource\java\eswtcore.r50"-"c:\resource\java\eswtcore.r50"
+"\epoc32\data\z\resource\java\eswtcore.r51"-"c:\resource\java\eswtcore.r51"
+"\epoc32\data\z\resource\java\eswtcore.r54"-"c:\resource\java\eswtcore.r54"
+"\epoc32\data\z\resource\java\eswtcore.r57"-"c:\resource\java\eswtcore.r57"
+"\epoc32\data\z\resource\java\eswtcore.r59"-"c:\resource\java\eswtcore.r59"
+"\epoc32\data\z\resource\java\eswtcore.r67"-"c:\resource\java\eswtcore.r67"
+"\epoc32\data\z\resource\java\eswtcore.r68"-"c:\resource\java\eswtcore.r68"
+"\epoc32\data\z\resource\java\eswtcore.r70"-"c:\resource\java\eswtcore.r70"
+"\epoc32\data\z\resource\java\eswtcore.r76"-"c:\resource\java\eswtcore.r76"
+"\epoc32\data\z\resource\java\eswtcore.r78"-"c:\resource\java\eswtcore.r78"
+"\epoc32\data\z\resource\java\eswtcore.r79"-"c:\resource\java\eswtcore.r79"
+"\epoc32\data\z\resource\java\eswtcore.r83"-"c:\resource\java\eswtcore.r83"
+"\epoc32\data\z\resource\java\eswtcore.r93"-"c:\resource\java\eswtcore.r93"
+"\epoc32\data\z\resource\java\eswtcore.r94"-"c:\resource\java\eswtcore.r94"
+"\epoc32\data\z\resource\java\eswtcore.r96"-"c:\resource\java\eswtcore.r96"
+"\epoc32\data\z\resource\java\eswtcore.rsc"-"c:\resource\java\eswtcore.rsc"
+
+
+
+
+#ifdef RD_JAVA_S60_RELEASE_5_0_IAD
+; This helper is needed also in non-IAD 5.0 
+"\epoc32\release\armv5\urel\javarestoreconverter.exe"-"c:\sys\bin\javarestoreconverter.exe"
+
+; Misc helpers run during sis installation.
+
+; to be executed before installation, installations waits until it exits
+; must be at the last line of .pkg file so that it is executed first
+"\epoc32\release\armv5\urel\javaapppreconverter.exe"-"c:\sys\bin\javaapppreconverter.exe", FR, RI, RW
+
+; javaupdater is ran after installation, makes its magic and then launches Java 2.0 trader (systemams.exe)
+"\epoc32\release\armv5\urel\javaupdater.exe"-"c:\sys\bin\javaupdater.exe", FR, RI, RW
+
+; javapostupdater is ran after installation, it executes after native installer has exited
+"\epoc32\release\armv5\urel\javapostupdater.exe"-"c:\sys\bin\javapostupdater.exe", FR, RI
+
+; javaappbackconverter is ran after uninstallation
+"\epoc32\release\armv5\urel\javaappbackconverter.exe"-"c:\sys\bin\javaappbackconverter.exe", FR, RR, RW
+#endif // RD_JAVA_S60_RELEASE_5_0_IAD

@@ -1,0 +1,87 @@
+<!--
+#
+# Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<project name="javasatsa" default="deploy" basedir=".">
+    <description>
+        Builds SATSA
+    </description>
+
+  <import file="../../../build/utilities.xml"/>
+
+  <!-- Needed by the utilities.xml. See the description form the utilities.xml
+       file -->
+  <property name="javah.classnames" 
+            value="javax.microedition.securityservice.CMSMessageSignatureService,
+                   javax.microedition.pki.UserCredentialManager,
+                   com.nokia.mj.impl.crypto.CipherImpl,
+                   com.nokia.mj.impl.security.KeyFactoryImpl,
+                   com.nokia.mj.impl.security.MessageDigestImpl,
+                   com.nokia.mj.impl.security.SignatureImpl,
+                   com.nokia.mj.impl.satsa.APDUConnectionImpl,
+                   com.nokia.mj.impl.properties.satsa.SmartCardSlots"/>
+                     
+  <property name="java.src.paths" 
+  				  value="../pki/:../apdu/:../crypto/:../framework"/>
+  																			 
+  <target name="system.properties">
+    <properties>
+        microedition.satsa.version=1.0
+        microedition.satsa.apdu.version=1.0
+        microedition.satsa.crypto.version=1.0
+        microedition.satsa.pki.version=1.0
+        microedition.smartcardslots=:satsa.DynamicPropertyHandler
+    </properties>
+  </target>
+
+  <target name="create.public.api.jar">
+      <omj.public.apis includes="
+          java/lang/UnsupportedOperationException.class,
+          java/security/DigestException.class,
+          java/security/GeneralSecurityException.class,
+          java/security/InvalidAlgorithmParameterException.class,
+          java/security/InvalidKeyException.class,
+          java/security/Key.class,
+          java/security/KeyException.class,
+          java/security/KeyFactory.class,
+          java/security/MessageDigest.class,
+          java/security/NoSuchAlgorithmException.class,
+          java/security/PrivMessageDigestImpl.class,
+          java/security/PrivSignatureImpl.class,
+          java/security/PublicKey.class,
+          java/security/Signature.class,
+          java/security/SignatureException.class,
+          java/security/spec/AlgorithmParameterSpec.class,
+          java/security/spec/EncodedKeySpec.class,
+          java/security/spec/InvalidKeySpecException.class,
+          java/security/spec/KeySpec.class,
+          java/security/spec/X509EncodedKeySpec.class,
+          javax/crypto/BadPaddingException.class,
+          javax/crypto/Cipher.class,
+          javax/crypto/IllegalBlockSizeException.class,
+          javax/crypto/NoSuchPaddingException.class,
+          javax/crypto/ShortBufferException.class,
+          javax/crypto/spec/IvParameterSpec.class,
+          javax/crypto/spec/SecretKeySpec.class,          
+          javax/microedition/apdu/APDUConnection.class,
+          javax/microedition/pki/UserCredentialManager.class,
+          javax/microedition/pki/UserCredentialManagerException.class,
+          javax/microedition/securityservice/CMSMessageSignatureService.class,
+          javax/microedition/securityservice/CMSMessageSignatureServiceException.class"/>        
+  </target>
+  
+</project>

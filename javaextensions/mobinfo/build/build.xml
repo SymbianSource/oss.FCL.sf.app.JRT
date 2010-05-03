@@ -1,0 +1,55 @@
+<!--
+#
+# Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<project name="javamobinfo" default="deploy" basedir=".">
+    <description>
+        Builds Mobile Info Properties
+    </description>
+
+  <import file="../../../build/utilities.xml"/>
+
+  <target name="init.component.properties">
+    <condition property="java.src.paths"
+               value="../javasrc.s60">
+      <isset property="target.s60" />
+    </condition>
+  </target>
+  
+  <target name="system.properties">
+    <properties>
+        com.nokia.network.access=:mobinfo.MobileInfoProperties
+        com.nokia.mid.batterylevel=:mobinfo.MobileInfoProperties
+        com.nokia.mid.countrycode=:mobinfo.MobileInfoProperties
+        com.nokia.mid.imsi=:mobinfo.MobileInfoProperties
+        com.nokia.mid.imei=:mobinfo.MobileInfoProperties
+        com.nokia.mid.networkavailability=:mobinfo.MobileInfoProperties
+        com.nokia.mid.networkid=:mobinfo.MobileInfoProperties
+        com.nokia.mid.networksignal=:mobinfo.MobileInfoProperties
+        com.nokia.mid.settings.email-receive-protocol=:mobinfo.MobileInfoProperties
+        com.nokia.mid.settings.email-send-protocol=:mobinfo.MobileInfoProperties
+        com.nokia.mid.cellid=:mobinfo.MobileInfoProperties
+        com.nokia.mid.msisdn=:mobinfo.MobileInfoProperties
+        com.nokia.mid.dateformat=:mobinfo.MobileInfoProperties
+        com.nokia.mid.timeformat=:mobinfo.MobileInfoProperties
+        com.nokia.mid.networkstatus=:mobinfo.MobileInfoProperties
+    </properties>
+  </target>
+
+  <property name="javah.classnames" 
+            value="com.nokia.mj.impl.properties.mobinfo.MobileInfoProperties"/>
+</project>

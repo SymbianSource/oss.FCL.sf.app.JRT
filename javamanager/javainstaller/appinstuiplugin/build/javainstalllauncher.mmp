@@ -1,0 +1,62 @@
+/*
+* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This is an ECOM plugin for S60 AppInstUI that handles Java
+*                installations by starting OMJ Java Installer executable
+*
+*/
+
+
+//  INCLUDES
+#include <../../../../inc/project_defines.hrh>
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+
+#include <../../../../inc/java_stdcpp_support_for_dll.hrh>
+
+TARGET          ifeui.dll
+TARGETTYPE      PLUGIN
+UID             0x10009D8D 0x101F875F
+
+// Capability assignment.
+CAPABILITY      CAP_ECOM_PLUGIN
+VENDORID        VID_DEFAULT
+
+// Use bytepair compression to enable code paging
+PAGED
+
+// Resources
+
+START RESOURCE  ../data/101F875F.rss
+TARGET          ifeui.rsc
+END
+
+// Sources
+SOURCEPATH      ../src
+SOURCE          proxy.cpp
+SOURCE          javainstalllauncher.cpp
+SOURCE          asyncwaitcallback.cpp
+
+// Includes
+USERINCLUDE     .
+USERINCLUDE     ../inc
+USERINCLUDE     ../../../../inc
+
+SYSTEMINCLUDE   ../../../../inc
+
+// Libraries
+LIBRARY         charconv.lib
+LIBRARY         cone.lib
+LIBRARY         ecom.lib
+LIBRARY         efsrv.lib
+LIBRARY         SWInstCommonUI.lib
