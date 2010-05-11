@@ -22,9 +22,6 @@ import com.nokia.mj.impl.installer.utils.FileUtils;
 
 /**
  * FileList is a holder for a list of file related information.
- *
- * @author Nokia Corporation
- * @version $Rev: 0 $
  */
 public class FileList
 {

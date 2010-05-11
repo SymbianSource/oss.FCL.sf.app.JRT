@@ -151,7 +151,7 @@ protected:
     void PositionChanged();
     void FocusChanged(TDrawNow aDrawNow);
     TTypeUid::Ptr MopSupplyObject(TTypeUid aId);
-    
+
 private:
     void Draw(const TRect& aRect) const;
 
@@ -480,7 +480,7 @@ private:
      * Stores last known focus index. Use only during paint and key handlers.
      */
     TInt iPrevFocusIndex;
-    
+
     /**
      * View visible rect at last draw
      */

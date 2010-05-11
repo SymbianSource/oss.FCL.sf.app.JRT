@@ -47,7 +47,7 @@ CSwtCommand::~CSwtCommand()
 void CSwtCommand::ConstructL()
 {
     iParentControl.GetShell().InstallCba();
-    
+
     // Notify Command arranger (must be done at the end of ConstructL,
     // when Command is created for sure)
     MSwtCommandArranger* commandArranger = iDisplay.CommandArranger();

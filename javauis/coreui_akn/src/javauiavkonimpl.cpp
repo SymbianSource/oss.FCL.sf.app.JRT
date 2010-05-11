@@ -197,20 +197,25 @@ void JavaUiAvkonAppUi::HandleWsEventL(const TWsEvent& event,
         setDefaultProcessPriority(timeForCurrentPriority);
     }
 
-    if (hasStartScreen())
+    if (event.Type() == EEventFocusLost)
     {
-        ASSERT(mAppView);
-        if (event.Type() == EEventFocusLost)
+        mIsForeground = false;
+        if (hasStartScreen())
         {
-            mIsForeground = false;
-            mAppView->HandleForeground(false);
+            ASSERT(mAppView);
+            mAppView->HandleForeground(false);   
         }
-        else if (event.Type() == EEventFocusGained)
+    }
+    else if (event.Type() == EEventFocusGained)
+    {
+        mIsForeground = true;
+        if (hasStartScreen())
         {
-            mIsForeground = true;
+            ASSERT(mAppView);
             mAppView->HandleForeground(true);
         }
     }
+
     bool eventBlocked = false;
     if (mActiveChild)
     {

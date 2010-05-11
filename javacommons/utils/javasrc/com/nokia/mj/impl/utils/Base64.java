@@ -17,6 +17,10 @@
 
 package com.nokia.mj.impl.utils;
 
+/**
+ * Base64 utility class originated from the public domain:
+ * see http://iharder.sourceforge.net/current/java/base64/
+ */
 public class Base64
 {
     private final static byte[] ENCODE_ALPHABET =

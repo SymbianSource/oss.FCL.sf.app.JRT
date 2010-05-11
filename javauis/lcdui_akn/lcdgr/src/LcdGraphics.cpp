@@ -845,7 +845,13 @@ void CLcdGraphics::DrawBackground(MMIDCanvas* aCanvas, const TPoint& aPosition, 
     iSurface->End(iCount);
 
     CHECK_BITMAP_LOCK();
-
+    
+    // MMIDCanvas::DrawBackground modifies settings of iContext.
+    // Reset pen and brush settings here, so they
+    // are re-applied again when needed.
+    iState = 0;
+    iContext->SetPenStyle(CGraphicsContext::ENullPen);
+    iContext->SetBrushStyle(CGraphicsContext::ENullBrush);
 }
 
 TInt CLcdGraphics::DrawPixels

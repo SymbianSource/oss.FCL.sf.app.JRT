@@ -629,6 +629,21 @@ void CMIDList::DeleteElementL(TInt aIndex)
     }
 
     DoDeleteElement(aIndex);
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    if (!iItems.Count())
+    {
+        // Last element was deleted, highlight is removed at all.
+        // In case of IMPLICIT List without highlight, CBA has to be updated,
+        // so that no ITEM or OK commands are mapped to soft keys
+        // or populated to Options menu.
+        iHighlight = EFalse;
+        if (iChoiceType == MMIDChoiceGroup::EImplicit && iDisplayable)
+        {
+            iDisplayable->InitializeCbasL();
+        }
+    }
+#endif // RD_JAVA_S60_RELEASE_9_2
 }
 
 /**
@@ -659,6 +674,18 @@ void CMIDList::DeleteAllL()
 
     iIconArray->Delete(firstIcon, iIconArray->Count() - firstIcon);
     SetMaxIconSize();
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    // All items are deleted, highlight is removed.
+    // In case of IMPLICIT List without highlight, CBA has to be updated,
+    // so that no ITEM or OK commands are mapped to soft keys
+    // or populated to Options menu.
+    iHighlight = EFalse;
+    if (iChoiceType == MMIDChoiceGroup::EImplicit && iDisplayable)
+    {
+        iDisplayable->InitializeCbasL();
+    }
+#endif // RD_JAVA_S60_RELEASE_9_2
 }
 
 /**
@@ -1221,6 +1248,10 @@ TKeyResponse CMIDList::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEventCode aTy
             iChoiceType == MMIDChoiceGroup::EImplicit)
     {
         iHighlight = ETrue;
+        if (iDisplayable)
+        {
+            iDisplayable->InitializeCbasL();
+        }
     }
 #endif // RD_JAVA_S60_RELEASE_9_2
 
@@ -1334,6 +1365,10 @@ void CMIDList::HandlePointerEventL(const TPointerEvent &aPointerEvent)
             (iLongTapDetected && aPointerEvent.iType == TPointerEvent::EButton1Up)))
     {
         iHighlight = EFalse;
+        if (iDisplayable)
+        {
+            iDisplayable->InitializeCbasL();
+        }
     }
 #endif // RD_JAVA_S60_RELEASE_9_2
 
@@ -1444,7 +1479,17 @@ void CMIDList::HandleListBoxEventL(CEikListBox* /*aListBox*/, TListBoxEvent aEve
 
             if (iSelectCommandId == MMIDCommand::ENullCommand)
             { //setSelectCommand(null) has been called by application
+#ifndef RD_JAVA_S60_RELEASE_9_2
                 iDisplayable->ShowOkOptionsMenuL();
+#else
+                // If ShowOkOptionsMenuL returned false then we can try to open screen(help) menu
+                if (iHighlight && iDisplayable && !iDisplayable->ShowOkOptionsMenuL() &&
+                        aEventType == MEikListBoxObserver::EEventEnterKeyPressed)
+                {
+                    // Invoke the SCREEN or HELP command with the highest priority if exists
+                    iDisplayable->HandleHighestPriorityScreenOrHelpCommandL();
+                }
+#endif // RD_JAVA_S60_RELEASE_9_2
             }
             else
             { //either default select cmd - which we may not know
@@ -1730,6 +1775,28 @@ TBool CMIDList::CreateListBoxL()
 
         listBox->SetListBoxObserver(this);
         listBox->ScrollBarFrame()->SetScrollBarFrameObserver(this);
+
+        // We need avoid stretching list's elements. This prevents problems
+        // with icon overlaying and bad wrapping.
+        if(type < EDouble2Style)
+        {
+            CEikColumnListBox* clb =
+                (static_cast<CEikColumnListBox*>(listBox));
+            if(clb)
+            {
+                clb->EnableStretching(EFalse);
+            }
+        }
+        else
+        {
+            CEikFormattedCellListBox* fclb =
+                (static_cast<CEikFormattedCellListBox*>(listBox));
+            if(fclb)
+            {
+                fclb->EnableStretching(EFalse);
+            }
+        }
+
 
         if (iListBox)
         {//Remove icon array before deleting old list box

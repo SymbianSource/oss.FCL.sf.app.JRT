@@ -95,9 +95,9 @@ private:
     TInt DoTrailingWhitespaceCorrection(
         const TInt aCurrentTextPosition) const;
     TRect GetDrawableFragmentRectangle(const CFont& aFont,
-           const TDesC& aText, const TInt aLinePosition, const TInt aLength,
-           const TInt aAvailableWidth, const TInt aXOffset, const TInt aYOffset,
-           const TInt aCurrentLineIndex) const;
+                                       const TDesC& aText, const TInt aLinePosition, const TInt aLength,
+                                       const TInt aAvailableWidth, const TInt aXOffset, const TInt aYOffset,
+                                       const TInt aCurrentLineIndex) const;
     void SetFocusedFragment();
     TBool IsRtl() const;
 
@@ -181,7 +181,7 @@ private:
      * Link fragment text color.
      */
     TRgb iLinkColor;
-    
+
     /**
      * Link fragment text color when highlighted.
      */
@@ -224,13 +224,13 @@ private:
      * Own.
      */
     const CSwtLinkFragmentDescriptor* iFocusedFragment;
-    
+
     /**
      * True for as long as pressed by pointer.
      * Eclipses ASwtControlBase::iPressed!
      */
     TBool iPressed;
-    
+
     /**
      * True if 2 or more targets.
      */

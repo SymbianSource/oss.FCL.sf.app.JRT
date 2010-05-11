@@ -8,7 +8,7 @@
  * Contributors:
  *     Nokia Corporation - S60 implementation
  *******************************************************************************/
- 
+
 
 #ifndef SWTMIDMEDIAKEYSLISTENER_H
 #define SWTMIDMEDIAKEYSLISTENER_H

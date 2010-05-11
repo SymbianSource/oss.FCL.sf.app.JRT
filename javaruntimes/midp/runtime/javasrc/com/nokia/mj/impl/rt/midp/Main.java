@@ -24,9 +24,6 @@ import com.nokia.mj.impl.utils.StartUpTrace;
 
 /**
  * A Main entry class of the MIDP runtime.
- *
- * @author Nokia Corporation
- * @version $Rev$
  */
 public final class Main
 {

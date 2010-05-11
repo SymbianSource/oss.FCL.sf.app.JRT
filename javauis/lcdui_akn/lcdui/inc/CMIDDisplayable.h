@@ -428,7 +428,6 @@ private:
 
     void RenewFullscreenCanvasLabelCacheL();
 
-#ifdef RD_JAVA_NGA_ENABLED
     /**
      * In case content is Canvas, notifies it about changed
      * foreground status.
@@ -438,7 +437,6 @@ private:
      * @since S60 9.2
      */
     void HandleCanvasForeground(TBool aForeground);
-#endif // RD_JAVA_NGA_ENABLED
 
     void HideIndicator(CEikStatusPane* aSp, TInt aId);
     void HideIndicators();

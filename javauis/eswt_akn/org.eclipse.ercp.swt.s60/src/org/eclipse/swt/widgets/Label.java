@@ -115,18 +115,6 @@ public class Label extends Control
     }
 
     /**
-     * Disable SetMenu method because label is a non-focusable widget.
-     *
-     */
-    /*
-    public void setMenu (Menu menu) {
-        checkWidget ();
-    }
-    */
-
-
-
-    /**
      * Returns a value which describes the position of the
      * text or image in the receiver. The value will be one of
      * <code>LEFT</code>, <code>RIGHT</code> or <code>CENTER</code>

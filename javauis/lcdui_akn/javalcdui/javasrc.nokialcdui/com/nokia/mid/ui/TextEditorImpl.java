@@ -10,7 +10,7 @@
  *
  * Contributors:
  *
- * Description: Package private class implementing the S40 and S60 interfaces
+ * Description: Package private class implementing the S60 interfaces 
  * for TextEditor
  *
  */
@@ -34,9 +34,8 @@ import javax.microedition.lcdui.Canvas;
  * @since 1.4
  */
 class TextEditorImpl
-        extends com.nokia.mid.ui.TextEditor
-        implements com.nokia.mid.ui.S60TextEditor
-{
+    extends com.nokia.mid.ui.TextEditor
+    implements com.nokia.mid.ui.S60TextEditor {
     /*
      * Indicates that all input methods are available.
      * <p>
@@ -129,8 +128,7 @@ class TextEditorImpl
      *             if the width or height is less than one pixel
      */
     TextEditorImpl(String aText, int aMaxSize, int aConstraints, int aWidth,
-                   int aHeight)
-    {
+        int aHeight) {
         super(aText, aMaxSize, aConstraints, aWidth, aHeight, false);
     }
 
@@ -173,11 +171,10 @@ class TextEditorImpl
      * @throws IllegalArgumentException
      *             if the width is less than one pixel
      */
-    TextEditorImpl(int aMaxSize, int aConstraints, int aWidth, int aRows)
-    {
+    TextEditorImpl(int aMaxSize, int aConstraints, int aWidth, int aRows) {
         super(null, aMaxSize, aConstraints, aWidth, aRows, true);
     }
-
+        
     /*
      * Set the parent object of this TextEditor. Typically in LCDUI the parent
      * object would be Canvas or CustomItem. Setting the parameter to null
@@ -189,12 +186,10 @@ class TextEditorImpl
      *              if <code>aParent</code> is not a valid object with which a
      *              TextEditor can be associated
      */
-    public void setParent(Object aParent)
-    {
-        super.setParent(aParent);
+    public void setParent( Object aParent ) {
+        super.setParent( aParent );
         // Update indicator location to their default position.
-        if (aParent != null)
-        {
+        if( aParent != null ) {
             setDefaultIndicators();
         }
     }
@@ -233,12 +228,10 @@ class TextEditorImpl
      *            the y coordinate of the anchor point, in pixels.
      *
      */
-    public void setIndicatorLocation(int x, int y)
-    {
-        synchronized (iToolkit)
-        {
+    public void setIndicatorLocation(int x, int y) {
+        synchronized (iToolkit) {
             NativeError.check(_setIndicatorLocation(getToolkitHandle(),
-                                                    iHandle, x, y));
+                iHandle, x, y));
         }
     }
 
@@ -267,20 +260,17 @@ class TextEditorImpl
      *             If the <code>TextEditor</code> is not added to
      *             <code>Canvas</code>
      */
-    public void setDefaultIndicators()
-    {
-        synchronized (iToolkit)
-        {
+    public void setDefaultIndicators() {
+        synchronized (iToolkit) {
             Object parent = getParent();
             boolean fullScreen = false;
 
-            if (parent instanceof Canvas)
-            {
+            if (parent instanceof Canvas) {
                 fullScreen = iLCDUIPackageInvoker.isFullScreen((Canvas) parent);
             }
 
             NativeError.check(_setDefaultIndicators(getToolkitHandle(),
-                                                    iHandle, fullScreen));
+                iHandle, fullScreen));
         }
     }
 
@@ -304,12 +294,10 @@ class TextEditorImpl
      * @see #setIndicatorLocation(int, int)
      * @see #setDefaultIndicators()
      */
-    public void setIndicatorVisibility(boolean visible)
-    {
-        synchronized (iToolkit)
-        {
+    public void setIndicatorVisibility(boolean visible) {
+        synchronized (iToolkit) {
             NativeError.check(_setIndicatorVisibility(getToolkitHandle(),
-                              iHandle, visible));
+                iHandle, visible));
         }
     }
 
@@ -329,14 +317,12 @@ class TextEditorImpl
      * @return the width and height of area needed for drawing input indicators
      * @see #setDefaultIndicators()
      */
-    public int[] getIndicatorSize()
-    {
+    public int[] getIndicatorSize() {
         int[] size = new int[INDICATOR_SIZE_COUNT];
 
-        synchronized (iToolkit)
-        {
+        synchronized (iToolkit) {
             NativeError.check(_getIndicatorSize(getToolkitHandle(), iHandle,
-                                                size));
+                size));
         }
         return size;
     }
@@ -363,20 +349,17 @@ class TextEditorImpl
      * @see #setPreferredTouchMode(int)
      * @see #getDisabledTouchInputModes()
      */
-    public void setDisabledTouchInputModes(int touchInputModes)
-    {
+    public void setDisabledTouchInputModes(int touchInputModes) {
         // Validate touch input modes. There must not be additional modes
         // 0 is valid.
         // See com.nokia.mid.ui.s60.TextEditor.TOUCH_INPUT_ALL_AVAILABLE.
-        if ((touchInputModes & ~MASK) != 0)
-        {
+        if ((touchInputModes & ~MASK) != 0) {
             throw new IllegalArgumentException();
         }
 
-        synchronized (iToolkit)
-        {
+        synchronized (iToolkit) {
             NativeError.check(_setDisabledTouchInputModes(getToolkitHandle(),
-                              iHandle, touchInputModes));
+                iHandle, touchInputModes));
         }
     }
 
@@ -395,12 +378,10 @@ class TextEditorImpl
      * @see #setDisabledTouchInputModes(int)
      * @see #setPreferredTouchMode(int)
      */
-    public int getDisabledTouchInputModes()
-    {
+    public int getDisabledTouchInputModes() {
         int disabled = 0;
 
-        synchronized (iToolkit)
-        {
+        synchronized (iToolkit) {
             disabled = _getDisabledTouchInputModes(getToolkitHandle(), iHandle);
         }
 
@@ -429,20 +410,17 @@ class TextEditorImpl
      * @see #getPreferredTouchMode()
      *
      */
-    public void setPreferredTouchMode(int touchInputModes)
-    {
+    public void setPreferredTouchMode(int touchInputModes) {
         int mask = touchInputModes & MASK;
         // Validate touch input mode.
         if (touchInputModes == 0 || (touchInputModes & ~MASK) != 0
-                || (mask & (mask - 1)) != 0)
-        {
+            || (mask & (mask - 1)) != 0) {
             throw new IllegalArgumentException();
         }
 
-        synchronized (iToolkit)
-        {
+        synchronized (iToolkit) {
             NativeError.check(_setPreferredTouchMode(getToolkitHandle(),
-                              iHandle, touchInputModes));
+                iHandle, touchInputModes));
         }
     }
 
@@ -458,41 +436,37 @@ class TextEditorImpl
      * @see #setPreferredTouchMode(int)
      * @see #setDisabledTouchInputModes(int)
      */
-    public int getPreferredTouchMode()
-    {
+    public int getPreferredTouchMode() {
         int preferredMode = 0;
 
-        synchronized (iToolkit)
-        {
+        synchronized (iToolkit) {
             preferredMode = _getPreferredTouchMode(getToolkitHandle(), iHandle);
         }
 
         NativeError.check(preferredMode);
         return preferredMode;
     }
-
+    
     /*
      * Sets the caret in the Editor at x, y location.
-     *
+     * 
      * @param x
      *      The x coordinate of the wanted caret position.
      *
      * @param y
      *      The y coordinate of the wanted caret position.
      */
-    public void setCaretXY(int x, int y)
-    {
-        synchronized (iToolkit)
-        {
-            NativeError.check(_setCaretXY(getToolkitHandle(), iHandle, x, y));
+    public void setCaretXY(int x, int y) {
+        synchronized (iToolkit) {
+            NativeError.check(_setCaretXY(getToolkitHandle(),
+                iHandle, x, y));
         }
     }
 
     /*
      * Hidden default constructor.
      */
-    private TextEditorImpl()
-    {
+    private TextEditorImpl() {
     }
 
     // Private methods.

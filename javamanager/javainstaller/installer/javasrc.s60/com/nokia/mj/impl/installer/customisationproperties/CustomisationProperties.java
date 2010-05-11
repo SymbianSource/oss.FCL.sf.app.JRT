@@ -32,9 +32,6 @@ import java.util.Vector;
  * Fetches product program/operator specific customizable settings.
  * In S60 platform some of these are fetched from central repository,
  * rest are asked from S60 ApplicationShell
- *
- * @author Nokia Corporation
- * @version $Rev: 9381 $
  */
 public final class CustomisationProperties extends CustomisationPropertiesBase
 {

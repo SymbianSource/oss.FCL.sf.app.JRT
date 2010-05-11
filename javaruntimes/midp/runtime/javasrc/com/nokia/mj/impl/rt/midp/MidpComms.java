@@ -27,9 +27,6 @@ import com.nokia.mj.impl.utils.Uid;
 /**
  * A class for Comms connection towards Java Captain. This class is used to
  * send and receive messages to/from Java Captain.
- *
- * @author Nokia Corporation
- * @version $Rev$
  */
 
 final class MidpComms implements CommsListener

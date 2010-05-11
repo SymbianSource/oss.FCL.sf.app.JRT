@@ -64,7 +64,7 @@ protected: // from CMIDEdwin
      * @param aLayout multi line layout info
      */
     virtual void DoLayout(const TRect& aRect);
-    void AddCommandsToEdwinL(RPointerArray<MMIDCommand>& aArray);
+    void AddCommandToEdwinL(MMIDCommand& aCommand);
 
 private: // Constructors
     /**

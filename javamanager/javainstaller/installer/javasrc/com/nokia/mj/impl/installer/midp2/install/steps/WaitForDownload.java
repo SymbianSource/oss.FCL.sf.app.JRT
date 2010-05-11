@@ -27,9 +27,6 @@ import com.nokia.mj.impl.installer.utils.Log;
 /**
  * Installation step WaitForDownload blocks and waits until
  * donwload gets completed.
- *
- * @author Nokia Corporation
- * @version $Rev:  $ $Date:  $
  */
 public class WaitForDownload extends ExeStep
 {

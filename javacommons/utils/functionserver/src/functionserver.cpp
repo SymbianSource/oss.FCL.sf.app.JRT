@@ -62,16 +62,24 @@ OS_EXPORT void FunctionServer::stopServer()
     JELOG2(EUtils);
     ScopedLock lock(mMutex);
 
-    mServerTerminating = true;
-    if (!mConnectedToClient)
+    if (mOsServer != 0)
     {
-        mClient.connect(*mOsServer);
-        mConnectedToClient = true;
+    
+        mServerTerminating = true;
+        if (!mConnectedToClient)
+        {
+            mClient.connect(*mOsServer);
+            mConnectedToClient = true;
+        }
+    
+        mClient.sendCloseMessage(this);
+        mClient.Close();
+        mMonitor->wait();
     }
-
-    mClient.sendCloseMessage(this);
-    mClient.Close();
-    mMonitor->wait();
+    else
+    {
+        ELOG(EUtils,"FunctionServer::stopServer() called when there was no server running");
+    }
 }
 
 
@@ -335,10 +343,18 @@ int FunctionServer::executeInServerThread(const Functor& functor)
     JELOG2(EUtils);
     // See stopServerInsideServerThread operation.
     // ScopedLock lock(mMutex);
-    if (mServerTerminating)
+    if (mServerTerminating || mOsServer == 0)
     {
         std::string message = "Trying to execute code in non-existing FS: ";
         message.append(mServerName);
+        if (mServerTerminating)
+        {
+            message.append(" server closing.");
+        }
+        else
+        {
+            message.append(" server not created.");
+        }
         ELOG1(EUtils,"%s", message.c_str());
         throw ExceptionBase(message, __FILE__, __FUNCTION__, __LINE__);
     }

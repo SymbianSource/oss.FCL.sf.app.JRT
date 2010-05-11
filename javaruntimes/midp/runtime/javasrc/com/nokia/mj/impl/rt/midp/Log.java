@@ -21,9 +21,6 @@ import com.nokia.mj.impl.utils.Logger;
 
 /**
  * A utility class for logging.
- *
- * @author Nokia Corporation
- * @version $Rev$
  */
 
 
@@ -41,7 +38,7 @@ public final class Log
      */
     public static void logI(String msg)
     {
-        Logger.ILOG(COMPONENT_ID, msg);
+        Logger.ILOG(COMPONENT_ID, Thread.currentThread().getName() + ": " +msg);
     }
 
     /**

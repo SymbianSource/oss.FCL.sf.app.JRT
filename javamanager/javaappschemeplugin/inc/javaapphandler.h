@@ -20,8 +20,15 @@
 #define JAVAAPPHANDLER_H
 
 // INCLUDES
+
+#ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS
+#include <SchemeHandler.h>
+#else
 #include <schemehandler.h>
+#endif
+
 #include <e32base.h>
+
 
 namespace java
 {

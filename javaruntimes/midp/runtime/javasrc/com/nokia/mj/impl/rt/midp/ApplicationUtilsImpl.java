@@ -29,11 +29,8 @@ import com.nokia.mj.impl.utils.exception.UserCancelException;
 
 
 /**
- * A MIDP runtime specific implemetation of ApplicationUtils class of the
+ * A MIDP runtime specific implementation of ApplicationUtils class of the
  * runtime support API.
- *
- * @author Nokia Corporation
- * @version $Rev$
  */
 
 public class ApplicationUtilsImpl extends ApplicationUtils
@@ -49,7 +46,14 @@ public class ApplicationUtilsImpl extends ApplicationUtils
      */
     public static void doShutdownImpl()
     {
-        ((ApplicationUtilsImpl)sInstance).doShutdown();
+        try
+        {
+            ((ApplicationUtilsImpl)sInstance).doShutdown();
+        }
+        catch (Throwable t)
+        {
+            Log.logE("Error in doShutdownImpl: " , t);
+        }
     }
 
     public static void setStandAloneMode()

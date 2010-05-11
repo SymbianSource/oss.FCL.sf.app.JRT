@@ -8,7 +8,7 @@
  * Contributors:
  *     Nokia Corporation - S60 implementation
  *******************************************************************************/
- 
+
 
 #ifndef SWTMOBILEDEVICE_H
 #define SWTMOBILEDEVICE_H

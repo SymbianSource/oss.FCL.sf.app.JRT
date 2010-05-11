@@ -25,7 +25,7 @@ class CAknStylusPopUpMenu;
 /**
  * CSwtMenuArranger
  * @lib eswt
- * 
+ *
  * Context menus contain:
  * # Prior to 9.2:
  *      - Specific control menu of focused control (Mark, Unmark, etc.).
@@ -33,7 +33,7 @@ class CAknStylusPopUpMenu;
  *      - OK & SELECT commands of all parents of focused control.
  * # Since 9.2:
  *      - No context menus in 9.2.
- * 
+ *
  * Stylus popup menus contain:
  * # Prior to 9.2:
  *      - Specific control menu of long tapped control (Mark, Unmark, etc.).
@@ -45,7 +45,7 @@ class CAknStylusPopUpMenu;
  *      - Specific control menu of long tapped control (Mark, Unmark, etc.).
  *      - All commands of long tapped control.
  *      - Popup menu of long tapped control (Control.setMenu()).
- * 
+ *
  * Options menus contain:
  * # Prior to 9.2:
  *      - Menu bar of active shell.
@@ -179,7 +179,7 @@ public:
     CEikMenuPane* ParentPane(CEikMenuPane& aPane) const;
 
 #ifdef RD_SCALABLE_UI_V2
-    void OpenStylusPopupMenuL(const MSwtControl& aControl, const TPoint& aPoint, 
+    void OpenStylusPopupMenuL(const MSwtControl& aControl, const TPoint& aPoint,
                               MSwtPopupMenuCallBack* aCallBack = NULL);
     void OpenStylusPopupMenuL(const MSwtMenu& aMenu, const TPoint& aPoint);
     void CloseStylusPopupMenuL();
@@ -292,7 +292,7 @@ private:
      * Cached image size for the panes
      */
     TSize iImageSize;
-    
+
     MSwtPopupMenuCallBack* iPopupMenuCallback;
 };
 

@@ -31,8 +31,6 @@ import java.util.Vector;
 
 /**
  * Implementation class of the APNInfo interface
- *
- * @version 0.1 First version of the implementation.
  */
 class IAPInfoImpl extends IAPInfo
 {

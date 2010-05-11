@@ -174,7 +174,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
     {
         // prepare the storage data
         allAttributes = new Hashtable();
-        SecurityAttributes securityAttributes;
+        SecurityAttributes securityAttributes = new SecurityAttributes();
         String appName = "OMJSecurityTests";
         ac = AccessControllerFactoryImpl.getAccessController(appUID, appName);
         AuthenticationCredentials[] credentials;
@@ -190,7 +190,6 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICWDCCAcECBEhQwA0wDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX0RldmljZV9NYW51ZmFjdHVyZXIwHhcNMDgwNjEyMDYxOTU3WhcNMTgwNjEwMDYxOTU3WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfRGV2aWNlX01hbnVmYWN0dXJlcjCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEApi3ipIPj8O33/rZre1euh7Itd9d6ZVf2mvQ/tLpHEsFJe5XLOsVViMvFskhhKUzmDsRbP4J03L6827/vEDIi/1i8kJGLaoFqJYaLGFWI2Zmxlj6aJV8cfZyOjmQPWJn1IDEe1ZAWbvMSp8xibWRsCLNEGKIkxQvAr/QDK/6iS+kCAwEAATANBgkqhkiG9w0BAQQFAAOBgQCDXt6klAs6yKvdTab3D2wkdoi3Lu4YFsMgLexJOu5HhAUJ/9VYO+Q2+mjd95MRsTa5rWQ2Jjvhn57Z3z/KBOwfHbymmNtMk6Gl14H0vQRoHa31jh3mTuAy5KotDVthaDp30aOizk473NU68wY1WdP4gFk5ZhrpNea9q3st13BxIQ=="));
         allAttributes.put(AuthenticationAttribute.SECOND_LEGACY_ATTRIBUTE_NAME ,new Attribute("", "IcANmLKiOJQF8ABCNDj1PNNH/O8v9jfCVuiGBVm8enXDkM/gLwPjrC65sDKpOCHPqssUlHzjmVN5b9g8aRs4jxUOXNt2b732J7NSIPh97vw/WrP/KHdiooi/1KFUyklMyokK9ZrIv+GW1ttLCfKbuFupT9zmPAmWJQpnuD7J6sE="));
-        securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         credentials = authenticationModule.authenticateJad(appUID,null,securityAttributes.getAuthenticationAttributes());
         permissionGranter.grantJadPermissions(appUID, null, securityAttributes.getPermissionAttributes(), credentials);
@@ -741,6 +740,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
                                                                                                                          UserSecuritySettings.SESSION_INTERACTION_MODE})),
                                                     new PolicyBasedPermissionImpl("java.util.PropertyPermission", "microedition.*", "read", null),
                                                     new PolicyBasedPermissionImpl(p4.getName(), "mobinfo.publicinfo", "read", null),
+                                                    new PolicyBasedPermissionImpl(p4.getName(), "mobinfo.cellid", "read", null),
                                                     new PolicyBasedPermissionImpl("com.nokia.ext2.internal.Ext2Perm", "ext2.target4", "ext2.action4", null),
                                                 }));
         // getBlanketPermissions: while installing V1 the permissions are not put to blanket, while installing V2 there are some blanket permissions returned
@@ -952,7 +952,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         permissionGranter.getBlanketPermissions(appUID);
         assertTrue(permissionGranter.getBlanketPermissionsDetails(appUID) == null);
-        // getBlanketPermissionsDetails for Net Access, Read User Data -> net details
+        // getBlanketPermissionsDetails for Multimedia, Local Connectivity -> privacy details
         permissionGranter.removeSecurityData(session, appUID);
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session, appUID);
@@ -963,21 +963,22 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("","cert1"));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-2", new Attribute("","cert2"));
         allAttributes.put(AuthenticationAttribute.SECOND_LEGACY_ATTRIBUTE_NAME, new Attribute("","signature"));
-        allAttributes.put(PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.microedition.io.Connector.http,javax.microedition.io.Connector.file.read"));
+        allAttributes.put(PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.microedition.media.control.RecordControl,javax.microedition.io.Connector.bluetooth.client"));
         securityAttributes.addDescriptorAttributes(allAttributes);
         authCredentials = new AuthenticationCredentials[1];
         authCredentials[0] = new AuthenticationCredentials("IdentifiedThirdParty", "ITDP");
         permissionGranter.grantJadPermissions(appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
-        allAttributes.put(PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.microedition.io.Connector.http,javax.microedition.io.Connector.file.read"));
+        allAttributes.put(PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.microedition.media.control.RecordControl,javax.microedition.io.Connector.bluetooth.client"));
         securityAttributes.addManifestAttributes(allAttributes);
         permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         permissionGranter.getBlanketPermissions(appUID);
-        assertTrue("qtn_java_settings_inst_query_perm_net".equals(permissionGranter.getBlanketPermissionsDetails(appUID))
-                   || "Allowing these permissions may result in compromised privacy or increased network usage costs.".equals(
-                       permissionGranter.getBlanketPermissionsDetails(appUID)));
-        // getBlanketPermissionsDetails for Messaging. Multimedia -> privacy details
+        String blanketDetails = permissionGranter.getBlanketPermissionsDetails(appUID);
+        assertTrue("qtn_java_settings_inst_query_perm_sec".equals(blanketDetails) 
+            || "Allowing these permissions may result in compromised privacy".equals(
+            blanketDetails));
+        // getBlanketPermissionsDetails for Messaging, Multimedia -> net details
         permissionGranter.removeSecurityData(session, appUID);
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session, appUID);
@@ -999,9 +1000,10 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         securityAttributes.addManifestAttributes(allAttributes);
         permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         permissionGranter.getBlanketPermissions(appUID);
-        assertTrue("qtn_java_settings_inst_query_perm_sec".equals(permissionGranter.getBlanketPermissionsDetails(appUID))
-                   || "Allowing these permissions may result in compromised privacy.".equals(
-                       permissionGranter.getBlanketPermissionsDetails(appUID)));
+        blanketDetails = permissionGranter.getBlanketPermissionsDetails(appUID);
+        assertTrue("qtn_java_settings_inst_query_perm_net".equals(blanketDetails) 
+            || "Allowing these permissions may result in compromised privacy or increased network usage costs".equals(
+            blanketDetails));
     }
 
     private void upgradeTests(boolean legacySuites)

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -28,9 +28,6 @@ import javax.microedition.io.HttpConnection;
 
 /**
  * GcfDownloader implements Downloader using MIDP GCF classes.
- *
- * @author Nokia Corporation
- * @version $Rev: 0 $ $Date$
  */
 public class GcfDownloader extends Downloader
 {
@@ -104,8 +101,20 @@ public class GcfDownloader extends Downloader
     {
         // Open connection.
         String url = getUrlWithAccessPoint(iDlInfo.getUrl(), iIap, iSnap);
-        Log.log("GcfDownloader: opening " + url);
-        HttpConnection connection = (HttpConnection)Connector.open(url);
+        HttpConnection connection = null;
+        synchronized (this)
+        {
+            if (iState != STATE_DOWNLOADING)
+            {
+                Log.log("GcfDownloader: download cancelled before connection opening");
+                return;
+            }
+            // Download may not be stopped during connection opening,
+            // so open connection inside synchronization block.
+            Log.logInfoPrd("GcfDownloader: opening " + url);
+            connection = (HttpConnection)Connector.open(url);
+            Log.logInfoPrd("GcfDownloader: connection opened");
+        }
         if (iAuthorizationHeader != null)
         {
             connection.setRequestProperty("Authorization",
@@ -120,8 +129,8 @@ public class GcfDownloader extends Downloader
 
         // Get response code and message.
         int status = connection.getResponseCode();
-        Log.log("GcfDownloader: got HTTP status: " + status +
-                " " + connection.getResponseMessage());
+        Log.logInfoPrd("GcfDownloader: got HTTP status: " + status +
+                       " " + connection.getResponseMessage());
 
         // Check if HTTP redirect is needed.
         String location = connection.getHeaderField("Location");

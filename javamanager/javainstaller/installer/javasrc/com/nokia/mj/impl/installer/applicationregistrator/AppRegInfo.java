@@ -24,9 +24,6 @@ import com.nokia.mj.impl.utils.Uid;
 /**
  * Contains all information needed to register Java application to
  * any platform.
- *
- * @author Nokia Corporation
- * @version $Rev: 9041 $
  */
 public final class AppRegInfo
 {

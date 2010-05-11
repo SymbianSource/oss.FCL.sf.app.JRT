@@ -377,9 +377,16 @@ EXPORT_C TAknLayoutRect CSwtLafFacade::GetLayoutRect(
         layoutRect.LayoutRect(aRect, AknLayoutScalable_Avkon::
                               list_single_popup_submenu_pane(0).LayoutLine());
         break;
+
     case EPopupEswtTasktipWindow:
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        layoutRect.LayoutRect(aRect, AknLayoutScalable_Avkon::
+                              popup_discreet_window(aArg1).LayoutLine());
+#else
         layoutRect.LayoutRect(aRect, AknLayoutScalable_Avkon::
                               popup_eswt_tasktip_window(aArg1).LayoutLine());
+#endif
+
         break;
     case EWaitBarPaneCp71:
         layoutRect.LayoutRect(aRect, AknLayoutScalable_Avkon::
@@ -575,10 +582,6 @@ EXPORT_C TAknLayoutText CSwtLafFacade::GetLayoutText(
     case EFormDataWideGraphicFieldTextsLine2:
         layoutText.LayoutText(aRect, AknLayout::
                               Form_data_wide_graphic_field_texts_Line_2(aArg1));
-        break;
-    case EPopupEswtTasktipWindowT1:
-        layoutText.LayoutText(aRect, AknLayoutScalable_Avkon::
-                              popup_eswt_tasktip_window_t1(aArg1).LayoutLine());
         break;
     case ETabs4ActivePaneT1:
         layoutText.LayoutText(aRect, AknLayoutScalable_Avkon::

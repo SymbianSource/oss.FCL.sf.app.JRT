@@ -65,7 +65,7 @@ public:
 private:
     static FileContent readFileContent(bool create=false);
     static void writeFileContent(const char* content);
-    static char* getPosition(FileContent& content, const std::string& property);
+    static const char* getPosition(FileContent& content, const std::string& property);
 
 };
 

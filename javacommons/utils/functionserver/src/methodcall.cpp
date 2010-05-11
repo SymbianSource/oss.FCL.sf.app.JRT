@@ -34,7 +34,16 @@ OS_EXPORT void MethodCaller::ExecuteRegularFunctor(const Functor& functor, java:
 OS_EXPORT void MethodCaller::ExecuteLeavingFunctorL(const Functor& functor, java::util::FunctionServer* functionServer, int* /*res*/)
 {
     JELOG2(EUtils);
-    int error = functionServer->executeInServerThread(functor);
+    int error = KErrNone;
+    try
+    {
+        error = functionServer->executeInServerThread(functor);
+    }
+    catch (std::exception&)
+    {
+        error = KErrServerTerminated;
+    }
+
     if (error) // Do not use LeaveIfError(), we want to handle positive error codes as well
     {
         User::Leave(error);

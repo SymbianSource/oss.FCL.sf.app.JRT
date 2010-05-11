@@ -17,7 +17,13 @@
 
 
 #include <memory>
-#include <schemehandler.h>        // SchemeHandler
+
+#ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS
+#include <SchemeHandler.h>
+#else
+#include <schemehandler.h>
+#endif
+
 #include <apgcli.h>               // for RApaLsSession
 #include <apacmdln.h>
 #include <sstream>

@@ -80,9 +80,6 @@ import com.nokia.mj.impl.utils.StartUpTrace;
  * that will fail if any of the started Java threads dont stop as a result of
  * shut down notifications. That is considered a failure in the shut down phase
  * and the Java Captain will terminate forcefully the process.
- *
- * @author Nokia Corporation
- * @version $Rev$
  */
 final class MidletLifeCycle
 {
@@ -100,8 +97,7 @@ final class MidletLifeCycle
     private static final int RESUMING        = 0x100;
 
     /**
-     * A singleton instance of the life cycle. It is singleton for provoding
-     * easy access to all other classes of the MIDP runtime.
+     * A singleton instance of the life cycle.
      */
     private static MidletLifeCycle       mInstance = new MidletLifeCycle();
 
@@ -251,11 +247,6 @@ final class MidletLifeCycle
         {
             mRuntimeErrDialog.showDialog();
         }
-        if (Log.mOn) Log.logI("Sending close indication to runtime starter.");
-        _closeInd(mNativeRuntimeStarterHandle);
-
-        if (Log.mOn) Log.logI("Sending shutdown notifications to listeners.");
-        ApplicationUtilsImpl.doShutdownImpl();
 
         if (!mStandAlone)
         {
@@ -267,7 +258,14 @@ final class MidletLifeCycle
             mMidpcomms = null;
         }
 
-        if (Log.mOn) Log.logI("Short pause before closing dispatchers.");
+        if (Log.mOn) Log.logI("Sending shutdown notifications to listeners.");
+        ApplicationUtilsImpl.doShutdownImpl();
+
+        if (Log.mOn) Log.logI("Sending close indication to runtime starter.");
+        _closeInd(mNativeRuntimeStarterHandle);
+
+
+        if (Log.mOn) Log.logI("Short pause before closing LegacySupport.");
         try
         {
             Thread.sleep(200);
@@ -276,7 +274,7 @@ final class MidletLifeCycle
         {
         }
 
-        if (Log.mOn) Log.logI("Closing dispatchers.");
+        if (Log.mOn) Log.logI("Closing LegacySupport.");
         LegacySupport.close();
 
         // Setting state to closed.
@@ -602,7 +600,7 @@ final class MidletLifeCycle
     /**
      * Handles the start request task. Allowed to be called only from
      * startStateMachine() method. The only intention of this method is
-     * to diminish the switch case clause in the diminish startStateMachine()
+     * to diminish the switch case clause in the startStateMachine()
      * method.
      * @param subTask The sub task provided by the task setter.
      */
@@ -610,8 +608,8 @@ final class MidletLifeCycle
     {
         if (Log.mOn) Log.logI("MidletLifeCycle.handleStartRequest(), subTask: "
                                   + subTask);
-        if (mState == POST_INIT_DONE || (mState == PRE_INIT_DONE &&
-                                         subTask == LifeCycleTask.PRE_WARM_START))
+        if ((mState == POST_INIT_DONE && subTask != LifeCycleTask.PRE_WARM_START) || 
+            (mState == PRE_INIT_DONE && subTask == LifeCycleTask.PRE_WARM_START))
         {
             if (subTask == LifeCycleTask.NORMAL_START)
             {
@@ -781,6 +779,10 @@ final class MidletLifeCycle
             // Check if there are add-on JSRs.
             ExtensionUtil.handleExtensions();
         }
+        else
+        {
+            ApplicationUtilsImpl.setStandAloneMode();
+        }
 
         mTaskQueue = new TaskQueue();
 
@@ -919,10 +921,6 @@ final class MidletLifeCycle
         _setUids(mMidletUid.toString(),
                  ApplicationInfoImpl.getMidletInfo().getSuiteUid().toString(),
                  mNativeRuntimeStarterHandle);
-        // The Jvm doesn't know about MIDlet class path - need to set it.
-        String classPath = ApplicationInfoImpl.getMidletInfo().getClassPath();
-        if (Log.mOn) Log.logI("  Adding to classpath: "+classPath);
-        JvmInternal.appendToClassPath(classPath);
     }
 
     private void doPostInit()
@@ -946,6 +944,11 @@ final class MidletLifeCycle
             // API works ok, the setMidletInfo must be called before
             // starting the UI.
             CoreUi.createUi(mMidletUid, mBackGroundStart);
+
+            // The Jvm doesn't know about MIDlet class path - need to set it.
+            String classPath = ApplicationInfoImpl.getMidletInfo().getClassPath();
+            if (Log.mOn) Log.logI("  Adding to classpath: "+classPath);
+            JvmInternal.appendToClassPath(classPath);
         }
         if (!mStandAlone)
         {

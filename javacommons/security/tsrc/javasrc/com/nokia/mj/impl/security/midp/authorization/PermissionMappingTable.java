@@ -17,6 +17,8 @@
 
 package com.nokia.mj.impl.security.midp.common;
 
+import com.nokia.mj.impl.security.midp.authorization.TestPermissionMappingTable;
+
 import java.util.Hashtable;
 import java.util.Enumeration;
 

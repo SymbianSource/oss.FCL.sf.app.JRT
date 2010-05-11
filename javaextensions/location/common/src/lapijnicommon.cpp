@@ -19,7 +19,7 @@
 // INTERNAL INCLUDES
 #include "lapijnicommon.h"
 #include "clapilandmark.h"
-#include "cleanupresetanddestroy.h"
+#include "javasymbianoslayer.h"
 #include "lapipanics.h"
 #include "jstringutils.h"
 #include "s60commonutils.h"

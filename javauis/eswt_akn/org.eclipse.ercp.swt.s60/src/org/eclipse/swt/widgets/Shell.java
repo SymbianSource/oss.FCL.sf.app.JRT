@@ -104,8 +104,6 @@ public class Shell extends Decorations
 {
     private int shellHandle;
 
-    // Widgets registered with this Shell
-    private Vector widgets = new Vector();
     private Vector asyncPaintControls = new Vector();
     
     /**
@@ -396,12 +394,26 @@ public class Shell extends Decorations
         return size;
     }
 
+    /**
+     * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+     * API for <code>Shell</code>. It is marked public only so that it
+     * can be shared within the packages provided by SWT. It is not
+     * available on all platforms, and should never be called from
+     * application code.
+     */
     protected void internal_setShellHandle(int shellHandle)
     {
         this.shellHandle = shellHandle;
         internal_setDecorationsHandle(OS.Shell_DecorationsHandle(shellHandle));
     }
 
+    /**
+     * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+     * API for <code>Shell</code>. It is marked public only so that it
+     * can be shared within the packages provided by SWT. It is not
+     * available on all platforms, and should never be called from
+     * application code.
+     */
     public void internal_checkShell()
     {
         checkWidget();
@@ -550,15 +562,6 @@ public class Shell extends Decorations
 
     protected void internal_releaseResources()
     {
-        int size = widgets.size();
-        for (int i=0; i<size; ++i)
-        {
-            // release the registered widgets
-            // that take this shell as parent
-            Widget widget = (Widget)widgets.elementAt(i);
-            widget.internal_release();
-        }
-        widgets.removeAllElements();
         asyncPaintControls.removeAllElements();
         super.internal_releaseResources();
     }
@@ -680,21 +683,25 @@ public class Shell extends Decorations
         OS.Shell_SetImeInputMode(shellHandle, mode);
     }
 
+    /**
+     * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+     * API for <code>Shell</code>. It is marked public only so that it
+     * can be shared within the packages provided by SWT. It is not
+     * available on all platforms, and should never be called from
+     * application code.
+     */
     public int internal_getShellHandle()
     {
         return shellHandle;
     }
 
-    public void internal_registerWidget(Widget widget)
-    {
-        widgets.addElement(widget);
-    }
-
-    public void internal_unregisterWidget(Widget widget)
-    {
-        widgets.removeElement(widget);
-    }
-
+    /**
+     * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+     * API for <code>Shell</code>. It is marked public only so that it
+     * can be shared within the packages provided by SWT. It is not
+     * available on all platforms, and should never be called from
+     * application code.
+     */
     public Rectangle internal_getDefaultBounds()
     {
         return OS.Shell_GetDefaultBounds(shellHandle);
@@ -712,6 +719,18 @@ public class Shell extends Decorations
         return OS.Control_GetVisible(this.display.handle, handle);
     }
     
+    /**
+     * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+     * API for <code>Shell</code>. It is marked public only so that it
+     * can be shared within the packages provided by SWT. It is not
+     * available on all platforms, and should never be called from
+     * application code.
+     */
+    public void internal_setTaskTip()
+    {
+        OS.Shell_SetTaskTip(shellHandle);
+    }
+
     void setAsyncPainting(Control child, boolean status) 
     {
         if (status)

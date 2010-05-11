@@ -65,7 +65,7 @@ OS_EXPORT SmsServerConnection::~SmsServerConnection()
 {
     JELOG2(EWMA);
     // As per internal spec the message store should be removed only when
-    // Application is unintalled / UnRegistered from push
+    // Application is uninstalled / UnRegistered from push
     removeDir(mMessageStoreDirName);
     delete mMessage;
     delete mFilterDes;
@@ -109,7 +109,9 @@ OS_EXPORT void SmsServerConnection::open(ConnectionListener* aListener)
             if (0 == mMessage)
             {
                 CSmsBuffer* smsBuffer = CSmsBuffer::NewL();
+                CleanupStack::PushL(smsBuffer);
                 mMessage = CSmsMessage::NewL(mFs, CSmsPDU::ESmsDeliver, smsBuffer);
+                CleanupStack::Pop(smsBuffer);
             }
             error = pthread_mutex_init(&mMutex, 0);
             if (error == 0)
@@ -152,7 +154,6 @@ OS_EXPORT void SmsServerConnection::open(ConnectionListener* aListener)
                 {
                     error = pthread_create(&mThreadId, NULL,
                                            SmsServerConnection::listenThread, this);
-                    mOpenMonitor->wait();
                 }
             }
         }
@@ -163,6 +164,7 @@ OS_EXPORT void SmsServerConnection::open(ConnectionListener* aListener)
             throw PushException(COMMON_SRV_CONN_PLUGIN_ERROR,errTxt,__FILE__,
                                 __FUNCTION__,__LINE__);
         }
+        mOpenMonitor->wait();
         if (mMessagesOnStore > 0)
         {
             mListener->msgArrived();
@@ -328,6 +330,7 @@ void SmsServerConnection::DoCancel()
     mSocket.CancelIoctl();
     mSocket.Close();
     mSocketServer.Close();
+    mSocketServerOpened = EFalse;
 }
 
 TInt SmsServerConnection::RunError(TInt aError)
@@ -347,12 +350,13 @@ OS_EXPORT int SmsServerConnection::retrieveMessage(
     JELOG2(EWMA);
     std::wstring path;
     path += mMessageStoreDirName;
+    char* messagePath =0;
     // Read the SMS file contents
     readStream.exceptions(std::ifstream::failbit|std::ifstream::badbit);
     try
     {
         path += JavaCommonUtils::intToWstring(mFirstMessageInStore);
-        char* messagePath = JavaCommonUtils::wstringToUtf8(path);
+        messagePath = JavaCommonUtils::wstringToUtf8(path);
         readStream.open(messagePath, std::ios::in | std::ios::binary);
         readStream.read((char*) aSmsBuf.Ptr(), mSmsParameters.Size());
         readStream.read((char*)(aSmsBuf().mData).Ptr(), aSmsBuf().mDataSize * 2);
@@ -364,11 +368,13 @@ OS_EXPORT int SmsServerConnection::retrieveMessage(
     catch (std::ifstream::failure e)
     {
         ELOG(EWMA,"SMS : Exception while opening/reading file");
+        delete[] messagePath;
         readStream.close();
         return KErrGeneral;
     }
     catch (ExceptionBase ex)
     {
+        delete[] messagePath;
         return KErrGeneral;
     }
     return KErrNone;
@@ -443,6 +449,7 @@ void SmsServerConnection::readMessageFromStackL()
         catch (std::ofstream::failure e)
         {
             ELOG(EWMA,"SMS : Exception while creating/writing file");
+            delete[] messagePath;
             writeStream.close();
             User::Leave(KErrGeneral);
         }

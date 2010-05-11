@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -15,7 +15,6 @@
 *
 */
 
-
 #include <memory>
 #include <jni.h>
 #include <f32file.h>
@@ -23,19 +22,6 @@
 #include <versioninfo.h>
 #include <sysutil.h>
 #include <hal.h>
-
-#ifdef RD_JAVA_UI_QT
-
-#include <QLocale>
-
-#else // RD_JAVA_UI_QT
-
-#include <bautils.h>
-#include <barsc.h>
-#include <avkon.rsg>
-#include <AknUtils.h>
-
-#endif // RD_JAVA_UI_QT
 
 #include "javaenvinfo.h"
 #include "commonproperties.h"
@@ -45,14 +31,6 @@
 #include "s60commonutils.h"
 
 using namespace java::util;
-
-jstring getS60LocaleL(JNIEnv* env);
-
-#ifndef RD_JAVA_UI_QT
-
-HBufC* getS60LocaleTempImplL();
-
-#endif // RD_JAVA_UI_QT
 
 HBufC* MicroEditionPlatformL();
 TInt getHardwareVersionL(TDes& aHardwareType);
@@ -64,57 +42,244 @@ _LIT(KMicroeditionPlatformName,      "sw_platform=");
 _LIT(KMicroeditionPlatformVersion,   "sw_platform_version=");
 _LIT(KMicroeditionPlatformJavaVersion, "java_build_version=");
 
+_LIT(KMicroeditionLocaleAfrikaans,              "af-ZA");
+_LIT(KMicroeditionLocaleAlbanian,               "sq-SQ");
+_LIT(KMicroeditionLocaleArabic,                 "ar");
+_LIT(KMicroeditionLocaleBasque,                 "eu");
+_LIT(KMicroeditionLocaleIndonesian,             "id-ID");
+_LIT(KMicroeditionLocaleMalay,                  "ms-MY");
+_LIT(KMicroeditionLocaleBulgarian,              "bg-BG");
+_LIT(KMicroeditionLocaleCatalan,                "ca");
+_LIT(KMicroeditionLocalePrcChinese,             "zh-CN");
+_LIT(KMicroeditionLocaleHongKongChinese,        "zh-HK");
+_LIT(KMicroeditionLocaleTaiwanChinese,          "zh-TW");
+_LIT(KMicroeditionLocaleCroatian,               "hr-HR");
+_LIT(KMicroeditionLocaleCzech,                  "cs-CZ");
+_LIT(KMicroeditionLocaleDanish,                 "da-DK");
+_LIT(KMicroeditionLocaleDutch,                  "nl-NL");
+_LIT(KMicroeditionLocaleEnglish,                "en");
+_LIT(KMicroeditionLocaleAmerican,               "en-US");
+_LIT(KMicroeditionLocaleEstonian,               "et-EE");
+_LIT(KMicroeditionLocaleFarsi,                  "fa");
+_LIT(KMicroeditionLocaleFinnish,                "fi-FI");
+_LIT(KMicroeditionLocaleFrench,                 "fr");
+_LIT(KMicroeditionLocaleCanadianFrench,         "fr-CA");
+_LIT(KMicroeditionLocaleGalician,               "gl");
+_LIT(KMicroeditionLocaleGerman,                 "de");
+_LIT(KMicroeditionLocaleGreek,                  "el-GR");
+_LIT(KMicroeditionLocaleHebrew,                 "he-IL");
+_LIT(KMicroeditionLocaleHindi,                  "hi-IN");
+_LIT(KMicroeditionLocaleMarathi,                "mr-IN");
+_LIT(KMicroeditionLocaleHungarian,              "hu-HU");
+_LIT(KMicroeditionLocaleIcelandic,              "is-IS");
+_LIT(KMicroeditionLocaleItalian,                "it");
+_LIT(KMicroeditionLocaleJapanese,               "ja-JP");
+_LIT(KMicroeditionLocaleKorean,                 "ko-KR");
+_LIT(KMicroeditionLocaleLatvian,                "lv-LV");
+_LIT(KMicroeditionLocaleLithuanian,             "lt-LT");
+_LIT(KMicroeditionLocaleNorwegian,              "no-NO");
+_LIT(KMicroeditionLocalePolish,                 "pl-PL");
+_LIT(KMicroeditionLocalePortuguese,             "pt-PT");
+_LIT(KMicroeditionLocaleBrazilianPortuguese,    "pt-BR");
+_LIT(KMicroeditionLocaleRomanian,               "ro-RO");
+_LIT(KMicroeditionLocaleRussian,                "ru-RU");
+_LIT(KMicroeditionLocaleSerbian,                "sr-YU");
+_LIT(KMicroeditionLocaleSlovak,                 "sk-SK");
+_LIT(KMicroeditionLocaleSlovenian,              "sl-SI");
+_LIT(KMicroeditionLocaleSpanish,                "es-ES");
+_LIT(KMicroeditionLocaleLatinAmericanSpanish,   "es-US");
+_LIT(KMicroeditionLocaleSwahili,                "sw");
+_LIT(KMicroeditionLocaleSwedish,                "sv");
+_LIT(KMicroeditionLocaleTagalog,                "tl-PH");
+_LIT(KMicroeditionLocaleThai,                   "th-TH");
+_LIT(KMicroeditionLocaleTurkish,                "tr-TR");
+_LIT(KMicroeditionLocaleUkrainian,              "uk-UA");
+_LIT(KMicroeditionLocaleUrdu,                   "ur");
+_LIT(KMicroeditionLocaleVietnamese,             "vi-VN");
+_LIT(KMicroeditionLocaleZulu,                   "zu");
+
 jstring java::util::getLocaleImpl(JNIEnv* env)
 {
     JELOG2(EUtils);
 
-#ifdef RD_JAVA_UI_QT
+    // microedition.locale
+    switch (User::Language()) {
+        case ELangAfrikaans:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleAfrikaans);
+        case ELangAlbanian:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleAlbanian);
 
-    QString localeName = QLocale::system().name();
+        case ELangArabic:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleArabic);
 
-    jstring loc = env->NewString(localeName.utf16(), localeName.size());
-    if (!loc)
-    {
-        std::bad_alloc();
+#if defined (__S60_50__)
+        case 327: // Indonesian in Asia-Pacific regions = 327
+#else
+        case ELangIndonesian_Apac:
+#endif
+
+        case ELangIndonesian:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleIndonesian);
+
+        case ELangMalay_Apac:
+        case ELangMalay:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleMalay);
+
+        case ELangBasque:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleBasque);
+
+        case ELangBulgarian:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleBulgarian);
+
+        case ELangCatalan:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleCatalan);
+
+        case ELangPrcChinese:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocalePrcChinese);
+
+        case ELangHongKongChinese:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleHongKongChinese);
+
+        case ELangTaiwanChinese:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleTaiwanChinese);
+
+        case ELangCroatian:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleCroatian);
+
+        case ELangCzech:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleCzech);
+
+        case ELangDanish:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleDanish);
+
+        case ELangDutch:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleDutch);
+
+        case ELangEnglish:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleEnglish);
+
+        case ELangAmerican:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleAmerican);
+
+        case ELangEstonian:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleEstonian);
+
+        case ELangFarsi:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleFarsi);
+
+        case ELangFinnish:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleFinnish);
+
+        case ELangFrench:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleFrench);
+
+        case ELangCanadianFrench:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleCanadianFrench);
+
+        case ELangGalician:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleGalician);
+
+        case ELangGerman:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleGerman);
+
+        case ELangGreek:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleGreek);
+
+        case ELangHebrew:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleHebrew);
+
+        case ELangHindi:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleHindi);
+
+        case ELangHungarian:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleHungarian);
+
+        case ELangIcelandic:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleIcelandic);
+
+        case ELangItalian:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleItalian);
+
+        case ELangJapanese:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleJapanese);
+
+        case ELangKorean:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleKorean);
+
+        case ELangLatvian:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleLatvian);
+
+        case ELangLithuanian:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleLithuanian);
+
+        case ELangMarathi:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleMarathi);
+
+        case ELangNorwegian:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleNorwegian);
+
+        case ELangPolish:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocalePolish);
+
+        case ELangPortuguese:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocalePortuguese);
+
+        case ELangBrazilianPortuguese:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleBrazilianPortuguese);
+
+        case ELangRomanian:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleRomanian);
+
+        case ELangRussian:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleRussian);
+
+        case ELangSerbian:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleSerbian);
+
+        case ELangSlovak:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleSlovak);
+
+        case ELangSlovenian:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleSlovenian);
+
+        case ELangSpanish:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleSpanish);
+
+        case ELangLatinAmericanSpanish:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleLatinAmericanSpanish);
+
+        case ELangSwahili:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleSwahili);
+
+        case ELangSwedish:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleSwedish);
+
+        case ELangTagalog:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleTagalog);
+
+        case ELangThai:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleThai);
+
+        case ELangTurkish:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleTurkish);
+
+        case ELangUkrainian:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleUkrainian);
+
+        case ELangUrdu:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleUrdu);
+
+        case ELangVietnamese:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleVietnamese);
+
+        case ELangZulu:
+            return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleZulu);
     }
-    return loc;
 
-#else // RD_JAVA_UI_QT
-    jstring loc = 0;
-    HBufC* buf = 0;
-    bool usingTempSolution = false;
-    TRAPD(err, buf = AknLangUtils::DisplayLanguageTagL());
-    if (buf == 0 && err == KErrNotSupported)
-    {
-        //At the moment DisplayLanguageTagL must be called from
-        //UI thread. Once this is fixed by the Avkon, we must
-        //use temporary solution.
-        usingTempSolution = true;
-        TRAP(err, buf = getS60LocaleTempImplL());
-    }
-    if (buf == 0)
-    {
-        std::string errorStr = "Could not solve locale when using ";
-        if (usingTempSolution)
-        {
-            errorStr.append("temp");
-        }
-        else
-        {
-            errorStr.append("original");
-        }
-        errorStr.append(" solution. Leave code = ");
-        errorStr.append(JavaCommonUtils::intToString(err));
-        throw ExceptionBase(errorStr,
-                            __FILE__,__FUNCTION__,__LINE__);
-    }
-    const jchar* stringPtr = buf->Ptr();
-    const jsize stringLength = buf->Length();
-    loc = env->NewString(stringPtr, stringLength);
-    delete buf;
-    return loc;
-
-#endif // RD_JAVA_UI_QT
+    // According to MIDP2.0 spec the locale property, if not null, MUST
+    // consist of the language and MAY optionally also contain the country
+    // code, and variant separated by -
+    return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleEnglish);
 }
 
 jstring java::util::getPlatformImpl(JNIEnv* aEnv)
@@ -132,31 +297,6 @@ jstring java::util::getPlatformImpl(JNIEnv* aEnv)
     }
     return platform;
 }
-
-#ifndef RD_JAVA_UI_QT
-
-HBufC* getS60LocaleTempImplL()
-{
-    JELOG2(EUtils);
-    _LIT(KFileName, "z:\\resource\\avkon.rsc");
-    TFileName fileName(KFileName);
-    RFs iRFs;
-    CleanupClosePushL(iRFs);
-    User::LeaveIfError(iRFs.Connect());
-    BaflUtils::NearestLanguageFile(iRFs, fileName);
-    RResourceFile resourceFile;
-    CleanupClosePushL(resourceFile);
-    resourceFile.OpenL(iRFs, fileName);
-    resourceFile.ConfirmSignatureL(0);
-    HBufC8* textBuf8 = resourceFile.AllocReadLC(R_QTN_LANGUAGE_RFC3066_TAG);
-    const TPtrC16 ptrBuf8((TText16*) textBuf8->Ptr(), (textBuf8->Length() + 1) >> 1);
-    HBufC16* tag = ptrBuf8.AllocL();
-    CleanupStack::PopAndDestroy(3);
-    return tag;
-
-}
-
-#endif // RD_JAVA_UI_QT
 
 HBufC* GetPlatformVersionL()
 {

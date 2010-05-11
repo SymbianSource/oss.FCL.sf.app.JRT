@@ -40,9 +40,6 @@ import java.util.jar.JarEntry;
 
 /**
  * ConfirmInstallation shows installation confirmation dialog to user.
- *
- * @author Nokia Corporation
- * @version $Rev:  $ $Date:  $
  */
 public class ConfirmInstallation extends ExeStep
 {

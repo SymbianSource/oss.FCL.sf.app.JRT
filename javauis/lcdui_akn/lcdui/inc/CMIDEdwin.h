@@ -137,7 +137,7 @@ protected:
     void ConstructL(const TDesC& aText,TInt aMaxSize);
 
 protected:
-    virtual void AddCommandsToEdwinL(RPointerArray<MMIDCommand>& aArray) = 0;
+    virtual void AddCommandToEdwinL(MMIDCommand& aCommand) = 0;
 
 private:
 
@@ -146,10 +146,10 @@ private:
     void SetFEPModeAndCharFormat();
 
     virtual void CreateNonMidletCommandsL();
-    void AddCommandToArrayL(RPointerArray<MMIDCommand>& aArray,
-                            TInt aCommandResId, TInt aCommandId);
-    void AddCommandToArrayL(RPointerArray<MMIDCommand>& aArray,
-                            TInt aCommandResIdShort, TInt aCommandResIdLong, TInt aCommandId);
+    void AddCommandToEdwinL(TInt aCommandResId, TInt aCommandId);
+    void AddCommandToEdwinL(TInt aCommandResIdShort,
+                            TInt aCommandResIdLong,
+                            TInt aCommandId);
     void RemoveNonMidletCommands();
 
     /*

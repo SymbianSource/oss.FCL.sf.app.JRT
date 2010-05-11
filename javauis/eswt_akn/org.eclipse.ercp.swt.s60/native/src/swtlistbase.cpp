@@ -1460,6 +1460,11 @@ void CSwtListBase::HandleSizeChangedL()
 
     // Update background color
     listBoxDrawer->SetBackColor(GetBackground());
+
+    // Suppress margins - they are drawn over scrollbars
+    // We need to update margins here one more time, because previous
+    // code re-sets them
+    CSwtListBoxLists::SetMargins(iListType, iList, 0, 0);
 }
 
 // ---------------------------------------------------------------------------

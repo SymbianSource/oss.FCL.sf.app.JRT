@@ -22,9 +22,6 @@ package com.nokia.mj.impl.installer.downloader;
  * Downloader will notify DownloadListener about download progress.
  * Note that Downloader will ignore all exceptions thrown from
  * DownloadListener callback methods.
- *
- * @author Nokia Corporation
- * @version $Rev: 0 $ $Date$
  */
 public interface DownloadListener
 {

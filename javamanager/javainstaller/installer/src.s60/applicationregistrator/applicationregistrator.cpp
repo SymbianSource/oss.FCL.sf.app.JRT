@@ -520,6 +520,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_A
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_ApplicationRegistrator__1commitSession
 (JNIEnv *, jclass, jint aSessionHandle, jboolean aSynchronous)
 {
+    (void)aSynchronous; // suppress compilation warning about unused argument
     // Convert session handle to pointer.
     RApaLsSession *pApaSession =
         reinterpret_cast<RApaLsSession*>(aSessionHandle<<2);

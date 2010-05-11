@@ -24,7 +24,7 @@
 #include "logger.h"
 #include "clapilandmark.h"
 #include "clapiaddressinfo.h"
-#include "cleanupresetanddestroy.h"
+#include "javasymbianoslayer.h"
 #include "locationfunctionserver.h"
 
 using namespace java::location;

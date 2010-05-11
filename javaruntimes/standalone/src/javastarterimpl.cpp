@@ -233,7 +233,7 @@ int JavaStarterImpl::start()
 
 #ifndef RD_JAVA_UI_QT
     // In Java 2.x we are using legacy UI.
-    mJvmStarter->appendSystemProperty(L"-Dcom.nokia.legacy.support=symbian");
+    mJvmStarter->appendSystemProperty(L"-Dcom.nokia.legacy.support=LegacySymbian");
 #endif //RD_JAVA_HYBRID
 
     int result = mJvmStarter->startJvm();
@@ -460,11 +460,6 @@ void JavaStarterImpl::setUidAndRootPath()
 #ifdef __SYMBIAN32__
     TUidToUid(RProcess().Type()[2], mAppUid);
     LOG1(EJavaRuntime, EInfo, "PROCESS UID %S",  mAppUid.toString().c_str());
-
-//    TUid tuid = uidType[1];
-    TUid tuid(TUid::Uid(0x10005902));
-//    TUidToUid(tuid, mAppUid);
-//    LOG1(EJavaRuntime, EInfo, "TEMP UID %S",  mAppUid.toString().c_str());
 #else // __SYMBIAN32__
 //    mAppUid = Uid(L"java_standalone");
 

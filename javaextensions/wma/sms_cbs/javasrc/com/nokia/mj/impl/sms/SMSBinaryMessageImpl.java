@@ -37,16 +37,13 @@ public final class SMSBinaryMessageImpl extends SMSMessageImpl implements
      * @returns null if not supported
      * @see
      */
-    public String getPayloadTextData()
+    String getPayloadTextData()
     {
         return null;
     }
 
-    /**
-    *Refer About this in JSR-205(Wireless Messaging API 2.0)specification
-    */
 
-    public byte[] getPayloadBinaryData()
+    byte[] getPayloadBinaryData()
     {
         return getPayloadData();
     }

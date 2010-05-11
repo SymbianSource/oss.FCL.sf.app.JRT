@@ -294,7 +294,7 @@ private: // data
      * Stores last known focus index. Use only during paint and key handlers.
      */
     TInt iPrevFocusIndex;
-    
+
     /**
      * Used to implement horizontal panning.
      */

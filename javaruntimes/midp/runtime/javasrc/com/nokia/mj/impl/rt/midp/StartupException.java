@@ -25,9 +25,6 @@ import java.util.Hashtable;
  * an error or the MIDlet start up denied by the user (e.g. auto invocation).
  * If it is denied by the user, then this exception is not considered as an
  * error.
- *
- * @author Nokia Corporation
- * @version $Rev$
  */
 final class StartupException extends RuntimeException
 {

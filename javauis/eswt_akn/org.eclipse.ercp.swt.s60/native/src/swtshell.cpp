@@ -146,38 +146,38 @@ void CSwtShell::ConstructL()
         CCoeControl::SetPointerCapture(ETrue);
     }
 #endif //RD_SCALABLE_UI_V2
-    
+
 #ifdef RD_JAVA_S60_RELEASE_9_2
     GfxTransEffect::Enable();
-    GfxTransEffect::Register(this, 
-        iParent ? KGfxOptionsMenuControlUid : KGfxInformationNoteControlUid, EFalse);
+    GfxTransEffect::Register(this,
+                             iParent ? KGfxOptionsMenuControlUid : KGfxInformationNoteControlUid, EFalse);
 
     // Window transparency cannot be enabled as it breaks the async drawing.
-    // Since transparency cannot be enabled, set the initial background 
+    // Since transparency cannot be enabled, set the initial background
     // color to something closer to the theme's background.
     if (iParent)
     {
         TRgb bgColor = iDisplay.UiUtils().GetSystemColor(ESwtColorWidgetBackground);
-        
+
         TInt r = bgColor.Green();
         r -= KSwtRoundCornerBgColorDiff;
-        if (r < 0) 
+        if (r < 0)
             r = 0;
-        
+
         TInt g = bgColor.Green();
         g -= KSwtRoundCornerBgColorDiff;
-        if (g < 0) 
+        if (g < 0)
             g = 0;
-        
+
         TInt b = bgColor.Blue();
         b -= KSwtRoundCornerBgColorDiff;
-        if (b < 0) 
+        if (b < 0)
             b = 0;
-        
+
         bgColor.SetRed(b);
         bgColor.SetGreen(b);
         bgColor.SetBlue(b);
-        
+
         OverrideColorL(EColorControlBackground, bgColor);
     }
 #endif // RD_JAVA_S60_RELEASE_9_2
@@ -304,7 +304,7 @@ void CSwtShell::DoDelete()
 #ifdef RD_JAVA_S60_RELEASE_9_2
     GfxTransEffect::Deregister(this);
 #endif // RD_JAVA_S60_RELEASE_9_2
-    
+
     CSwtUiUtils& uiUtils = UiUtils();
     if (uiUtils.GetActiveShell() == this)
     {
@@ -362,7 +362,7 @@ TKeyResponse CSwtShell::OfferKeyEventL(const TKeyEvent& aKeyEvent,
 // ---------------------------------------------------------------------------
 // CSwtShell::HandlePointerEventL
 // This is the entry point for all pointer events targeted at any of the children
-// of this Shell.
+// of this Shell except for Browser's case.
 // From CCoeControl
 // ---------------------------------------------------------------------------
 //
@@ -371,19 +371,10 @@ void CSwtShell::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 {
     CSwtUiUtils& utils = UiUtils();
 
-    utils.SetNaviKeyInput(EFalse);
-
-    MSwtControl* capturingControl = utils.PointerCaptureControl();
-    if (capturingControl && capturingControl != this)
-    {
-        capturingControl->HandlePointerEventL(aPointerEvent);
-        capturingControl->PostMouseEventL(aPointerEvent);
-        iDisplay.TryDetectLongTapL(aPointerEvent);
-        return;
-    }
-
     if (aPointerEvent.iType == TPointerEvent::EButton1Down)
     {
+        utils.SetNaviKeyInput(EFalse);
+
         // Ignore pointer events outside modal Shells.
         MSwtShell *activeShell = utils.GetActiveShell();
         if (!activeShell || (activeShell && activeShell != this &&
@@ -392,6 +383,20 @@ void CSwtShell::HandlePointerEventL(const TPointerEvent& aPointerEvent)
         {
             utils.SetActiveShell(*this, ETrue);
         }
+    }
+
+    MSwtControl* capturingControl = utils.PointerCaptureControl();
+    if (capturingControl && capturingControl != this)
+    {
+        if (aPointerEvent.iType == TPointerEvent::EButton1Down
+                && capturingControl->IsFocusable())
+        {
+            capturingControl->SetSwtFocus(KSwtFocusByPointer);
+        }
+        capturingControl->HandlePointerEventL(aPointerEvent);
+        capturingControl->PostMouseEventL(aPointerEvent);
+        iDisplay.TryDetectLongTapL(aPointerEvent);
+        return;
     }
 
     MSwtControl* ctrl = NULL;
@@ -435,9 +440,9 @@ void CSwtShell::MakeVisible(TBool aVisible)
     {
         TRAP_IGNORE(CreateBackgroundL());
     }
-    
+
     CSwtUiUtils& utils = UiUtils();
-    
+
 #ifdef RD_JAVA_S60_RELEASE_9_2
     TBool doEffect = (IsVisible() != aVisible) && (iDisplay.IsUiReady() || iParent);
     if (doEffect)
@@ -455,9 +460,9 @@ void CSwtShell::MakeVisible(TBool aVisible)
         GfxTransEffect::End(this);
     }
 #endif // RD_JAVA_S60_RELEASE_9_2
-    
+
     utils.ShellActivabilityChanged(*this);
-    
+
     // Done already if the Shell became active
     if (aVisible && utils.GetActiveShell() != this)
     {
@@ -919,10 +924,10 @@ void CSwtShell::ShowSilently()
 // ---------------------------------------------------------------------------
 //
 void CSwtShell::SetVisible(TBool aVisible)
-{    
+{
     // A DrawNow() is absolutely mandatory if the ui is set to be ready.
     CSwtDecorations::SetVisible(aVisible);
-    
+
     TBool paintingUrgently = !AsyncPainting();
     if (aVisible && paintingUrgently && !iDisplay.IsUiReady())
     {
@@ -2050,6 +2055,38 @@ void CSwtShell::InstallCba()
 TBool CSwtShell::HasCba() const
 {
     return iHasCba;
+}
+
+// ---------------------------------------------------------------------------
+// CSwtShell::SetTaskTip
+// From MSwtShell
+// ---------------------------------------------------------------------------
+//
+void CSwtShell::SetTaskTip()
+{
+    iIsTaskTip = ETrue;
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    if (iParent && CAknEnv::Static()->TransparencyEnabled())
+    {
+        Window().SetRequiredDisplayMode(EColor16MA);
+        if (Window().SetTransparencyAlphaChannel() == KErrNone)
+        {
+            Window().SetBackgroundColor(~0);
+        }
+    }
+    GfxTransEffect::Deregister(this); // already registered in ConstructL
+    GfxTransEffect::Register(this, KGfxDiscreetPopupControlUid, EFalse);
+#endif
+}
+
+// ---------------------------------------------------------------------------
+// CSwtShell::IsTaskTip
+// From MSwtShell
+// ---------------------------------------------------------------------------
+//
+TBool CSwtShell::IsTaskTip() const
+{
+    return iIsTaskTip;
 }
 
 // ---------------------------------------------------------------------------

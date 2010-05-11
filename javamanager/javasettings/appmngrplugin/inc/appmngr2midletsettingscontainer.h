@@ -44,8 +44,7 @@ public: // Constructors and destructor
     /**
     * C++ constructor.
     */
-    CAppMngr2MidletSettingsContainer::CAppMngr2MidletSettingsContainer(
-        CAppMngr2MidletSettingsView& aView);
+    CAppMngr2MidletSettingsContainer(CAppMngr2MidletSettingsView& aView);
 
     /**
     * EPOC default constructor.

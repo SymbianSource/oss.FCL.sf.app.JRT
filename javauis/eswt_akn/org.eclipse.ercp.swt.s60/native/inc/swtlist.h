@@ -8,7 +8,7 @@
  * Contributors:
  *     Nokia Corporation - S60 implementation
  *******************************************************************************/
- 
+
 
 #ifndef SWTLIST_H
 #define SWTLIST_H

@@ -74,8 +74,8 @@ public abstract class SMSMessageImpl implements Message
 
     public abstract int getType();
 
-    public abstract String getPayloadTextData();
+    abstract String getPayloadTextData();
 
-    public abstract byte[] getPayloadBinaryData();
+    abstract byte[] getPayloadBinaryData();
 
 }

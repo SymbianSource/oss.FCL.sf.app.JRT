@@ -31,9 +31,6 @@ import java.util.Vector;
 /**
  * MIDP installation step RegisterApplication.
  * Added to MIDP2 Install table in com.nokia.mj.impl.installer.Installer
- *
- * @author Nokia Corporation
- * @version $Rev: 9375 $ $Date: 2010-01-18 12:54:40 +0200 (Mon, 18 Jan 2010) $
  */
 public class RegisterApplication extends ExeStep
 {

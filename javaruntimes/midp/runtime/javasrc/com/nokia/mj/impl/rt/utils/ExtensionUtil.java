@@ -55,9 +55,6 @@ import com.nokia.mj.impl.fileutils.FileUtility;
  * The J9 JVM is not able to read the system properties from the odc
  * file added to boot classpath. This class provides utility for reading
  * the system properties from the odc files.
- *
- * @author Nokia Corporation
- * @version $Rev$
  */
 
 public final class ExtensionUtil

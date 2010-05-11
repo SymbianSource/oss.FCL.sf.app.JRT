@@ -654,7 +654,11 @@ public final class SifRegistrator
         {
             groupName = ""; // default installation group
         }
-        String iconFilename = aSuiteInfo.getRegisteredIconPath(aIndex);
+        String iconFilename = null;
+        if (!appInfo.getUseDefaultIcon())
+        {
+            iconFilename = aSuiteInfo.getRegisteredIconPath(aIndex);
+        }
         Log.log("SifRegistrator iconFilename " + aIndex + ": " + iconFilename);
         int numberOfIcons = 1;
         // Initalize localized names for the application.
@@ -736,7 +740,7 @@ public final class SifRegistrator
         {
             if (aSuite.getComponentId() == null)
             {
-                Log.logWarning(
+                Log.log(
                     "SifRegistrator.registerLocalizedComponentName: cid not present in suite");
                 return;
             }
@@ -749,7 +753,7 @@ public final class SifRegistrator
                 (ApplicationInfo)aSuite.getApplications().elementAt(aIndex);
             if (app.getComponentId() == null)
             {
-                Log.logWarning(
+                Log.log(
                     "SifRegistrator.registerLocalizedComponentName: cid not present in app");
                 return;
             }
@@ -785,7 +789,7 @@ public final class SifRegistrator
     {
         if (aSuite.getComponentId() == null)
         {
-            Log.logWarning(
+            Log.log(
                 "SifRegistrator.registerLocalizedProperties: cid not present in suite");
             return;
         }

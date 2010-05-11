@@ -27,9 +27,6 @@ import com.nokia.mj.impl.installer.utils.Log;
 
 /**
  * Installation step for sending InstallerResultMessage.
- *
- * @author Nokia Corporation
- * @version $Rev:  $ $Date:  $
  */
 public class SendInstallerResultMessage extends ExeStep
 {

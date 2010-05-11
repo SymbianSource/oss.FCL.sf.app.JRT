@@ -14,8 +14,6 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Shell;
@@ -28,14 +26,11 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.ercp.swt.expanded.internal.OS;
-import org.eclipse.ercp.swt.mobile.Command;
-import java.util.Vector;
 
 
 /**
@@ -208,7 +203,13 @@ public class FontDialog extends Dialog
             flags |= SWT.TITLE;
         shell = new Shell(getParent(), flags);
         shell.setText(title);
-        shell.open();
+        
+        if (org.eclipse.swt.internal.symbian.OS.windowServer 
+            < org.eclipse.swt.internal.symbian.OS.WS_SYMBIAN_S60_92) 
+        {
+            // On 5.0 the modal Shell needs to be made visible before Combo is created.
+            shell.open();
+        }
         
         // Listen to skin and resolution changes
         settingsListener = new Listener()
@@ -325,6 +326,12 @@ public class FontDialog extends Dialog
         }
         
         shell.setBounds(rect);
+        
+        if (org.eclipse.swt.internal.symbian.OS.windowServer 
+            >= org.eclipse.swt.internal.symbian.OS.WS_SYMBIAN_S60_92) 
+        {
+            shell.open();
+        }
 
         // Block till submited
         isOpen = true;

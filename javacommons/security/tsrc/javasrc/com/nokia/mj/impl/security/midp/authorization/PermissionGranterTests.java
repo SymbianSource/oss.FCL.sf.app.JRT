@@ -42,7 +42,6 @@ import com.nokia.mj.impl.utils.ErrorMessageBase;
 import com.nokia.mj.impl.utils.OtaStatusCode;
 import com.nokia.mj.impl.utils.Attribute;
 import com.nokia.mj.impl.security.midp.common.PermissionMappingTable;
-import com.nokia.mj.impl.security.midp.common.TestPermissionMappingTable;
 
 import j2meunit.framework.Test;
 import j2meunit.framework.TestCase;
@@ -1087,9 +1086,10 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
 
     private static MIDPPermission[] getDefaultPermissions()
     {
-        MIDPPermission[] defaultPerms = new MIDPPermission[2];
+        MIDPPermission[] defaultPerms = new MIDPPermission[3];
         defaultPerms[0] = new MIDPPermission("java.util.PropertyPermission", "microedition.*", "read");
         defaultPerms[1] = new MIDPPermission("javax.microedition.PropertyPermission", "mobinfo.publicinfo", "read");
+        defaultPerms[2] = new MIDPPermission("javax.microedition.PropertyPermission", "mobinfo.cellid", "read");
         return defaultPerms;
     }
 

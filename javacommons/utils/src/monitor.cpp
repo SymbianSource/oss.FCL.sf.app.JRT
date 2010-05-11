@@ -97,7 +97,7 @@ OS_EXPORT int Monitor::wait(int timeOut)
                 currentTimeVal.tv_usec * 1000 + (timeOut % 1000) * 1000 * 1000;
 
             int err = pthread_cond_timedwait(&mCondVar, &mMutex, &timeOutTime);
-            if (err != ETIMEDOUT)
+            if (err != 0 && err != ETIMEDOUT)
             {
                 ELOG1(EUtils, "Monitor: Timed wait failed, err = %d", err);
             }

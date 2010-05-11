@@ -24,7 +24,7 @@
 #include  "cpimtodoitem.h"
 #include  "mpimadaptermanager.h"
 #include  "pimtodo.h"
-#include  "cleanupresetanddestroy.h"
+#include  "javasymbianoslayer.h"
 #include  "pimjnitools.h"
 #include "pimutils.h"
 #include  "s60commonutils.h"

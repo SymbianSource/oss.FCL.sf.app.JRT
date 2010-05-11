@@ -20,9 +20,6 @@
 #include <apgcli.h>
 #include <e32base.h>
 #include <f32file.h>
-#include <javastorage.h>
-#include <javastorageentry.h>
-#include <javastoragenames.h>
 
 #include "javaprocessconstants.h"
 #include "javasymbianoslayer.h"

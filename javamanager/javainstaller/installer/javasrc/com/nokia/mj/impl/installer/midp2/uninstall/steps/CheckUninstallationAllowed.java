@@ -33,9 +33,6 @@ import com.nokia.mj.impl.utils.OtaStatusCode;
 /**
  * Check if uninstallation is allowed from Nokia-MIDlet-Block-Uninstall
  * attribute and protection domain.
- *
- * @author Nokia Corporation
- * @version $Rev:  $ $Date:  $
  */
 public class CheckUninstallationAllowed extends ExeStep
 {

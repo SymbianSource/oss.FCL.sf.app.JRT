@@ -25,8 +25,7 @@ import com.nokia.mj.impl.rt.support.ApplicationInfo;
  */
 public class FileAccessHelper implements FileConstants
 {
-    public static boolean accessAllowed(String aPath, String aIntent,
-                                        String aDomain, boolean aIsOpening)
+    public static boolean accessAllowed(String aPath, String aDomain)
     {
         return true;
     }

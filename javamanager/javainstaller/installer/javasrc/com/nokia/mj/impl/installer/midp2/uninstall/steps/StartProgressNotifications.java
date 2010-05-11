@@ -22,9 +22,14 @@ import com.nokia.mj.impl.installer.applicationregistrator.SifNotifier;
 import com.nokia.mj.impl.installer.exetable.ExeBall;
 import com.nokia.mj.impl.installer.exetable.ExeStep;
 import com.nokia.mj.impl.installer.storagehandler.ApplicationInfo;
+import com.nokia.mj.impl.installer.utils.FileRoots;
+import com.nokia.mj.impl.installer.utils.FileUtils;
 import com.nokia.mj.impl.installer.utils.InstallerException;
 import com.nokia.mj.impl.installer.utils.Log;
+import com.nokia.mj.impl.utils.Uid;
 
+import java.io.IOException;
+import java.util.Enumeration;
 import java.util.Vector;
 
 public class StartProgressNotifications extends ExeStep
@@ -60,17 +65,28 @@ public class StartProgressNotifications extends ExeStep
                 ((ApplicationInfo)appNamesVector.elementAt(i)).getName();
         }
 
-        // Use default icon for now.
-        String componentIconPath =
-            ball.iApplicationRegistrator.getDefaultIconPath();
+        // Initialize icon filenames and icon dir.
+        String iconDir = FileRoots.getRegisteredIconDir(
+            FileUtils.getDrive(ball.iSuite.getRootDir())) +
+            ball.iSuite.getUid().toString();
+        String componentIcon = null;
+        String[] appIcons = ball.iSuite.getRegisteredAppIcons();
+        if (appIcons != null)
+        {
+            for (int i = 0; i < appIcons.length; i++)
+            {
+                Log.log("App icon " + appIcons[i] +
+                        " for "+ appNames[i] + " from " + iconDir);
+            }
+        }
 
         try
         {
             ball.iSifNotifier.notifyStart(
                 ball.iSifNotifier.OP_UNINSTALL,
                 ball.iSuite.getGlobalId(), ball.iSuite.getName(),
-                appNames, ball.iSuite.calculateInitialSize(),
-                componentIconPath);
+                appNames, appIcons, ball.iSuite.calculateInitialSize(),
+                iconDir, componentIcon);
         }
         catch (Throwable t)
         {

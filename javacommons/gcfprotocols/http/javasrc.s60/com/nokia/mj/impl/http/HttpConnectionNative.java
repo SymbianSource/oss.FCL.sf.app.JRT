@@ -873,6 +873,7 @@ public class HttpConnectionNative implements HttpConnection,
         case CONNECTED:
         case REQUEST_HEADERS_SENT:
             ensureResponse();
+            break;
 
         default:
             // No-op

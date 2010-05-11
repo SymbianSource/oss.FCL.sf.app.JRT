@@ -103,7 +103,7 @@ EmbeddedEntryByUidL(const TUid& aEntryUid) const
 
     if (writeableEntry == NULL)
     {
-        WLOG(EJavaStorage,
+        ILOG(EJavaStorage,
              "Can't find entry for the given uid, returning NULL.");
         return NULL;
     }
@@ -119,14 +119,14 @@ EmbeddedEntryByUidL(const TUid& aEntryUid) const
         entry
         = new(ELeave) CJavaRegistryPackageEntry(
             (CWriteableJavaRegistryPackageEntry*) writeableEntry);
-        LOG(EJavaStorage, EInfo, "PackageEntry created");
+        ILOG(EJavaStorage, "PackageEntry created");
     }
     else if (EGeneralApplication <= entryType)
     {
         entry
         = new(ELeave) CJavaRegistryApplicationEntry
         ((CWriteableJavaRegistryApplicationEntry*) writeableEntry);
-        LOG(EJavaStorage, EInfo, "ApplicationEntry created");
+        ILOG(EJavaStorage, "ApplicationEntry created");
     }
     else
     {
@@ -167,14 +167,14 @@ EmbeddedEntryByNumberL(TInt aEntryNum) const
         entry
         = new(ELeave) CJavaRegistryPackageEntry(
             (CWriteableJavaRegistryPackageEntry*) writeableEntry);
-        LOG(EJavaStorage, EInfo, "PackageEntry created");
+        ILOG(EJavaStorage, "PackageEntry created");
     }
     else if (EGeneralApplication <= entryType)
     {
         entry
         = new(ELeave) CJavaRegistryApplicationEntry
         ((CWriteableJavaRegistryApplicationEntry*) writeableEntry);
-        LOG(EJavaStorage, EInfo, "ApplicationEntry created");
+        ILOG(EJavaStorage, "ApplicationEntry created");
     }
     else
     {

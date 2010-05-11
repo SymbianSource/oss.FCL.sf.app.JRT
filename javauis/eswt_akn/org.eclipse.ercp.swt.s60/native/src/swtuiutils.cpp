@@ -35,6 +35,7 @@
 #include "swtdisplaybase.h"
 
 _LIT(KSeparator, "-");
+const TInt KVariationFullScreen = 3;
 
 // ======== MEMBER FUNCTIONS ========
 
@@ -676,15 +677,15 @@ void CSwtUiUtils::ConstructL()
                &appUi,
                NULL,
                CEikButtonGroupContainer::EAddToStack);
-    
+
     // The Cba will be made visible by the firtst top shell to show
     // or by the first child Shell with commands to show.
     iCba->MakeVisible(EFalse);
-    
+
 #ifdef RD_JAVA_S60_RELEASE_9_2
     static_cast<CEikCba*>(iCba->ButtonGroup())->EnableItemSpecificSoftkey(EFalse);
 #endif
-    
+
     const TSize screenSize = iDisplay.CoeEnv()->ScreenDevice()->SizeInPixels();
     iCba->SetBoundingRect(TRect(screenSize));
 
@@ -744,7 +745,7 @@ void CSwtUiUtils::DoSetActiveShell(MSwtShell& aShell, TBool aSetFocus)
 
     // Bring back on screen and activate the new Shell.
     MoveToEndOfQueue(*iActiveShell);
-    
+
     TRAP_IGNORE(UpdateStatusPaneL());
 
     iActiveShell->Control()->ShowSilently();
@@ -753,7 +754,7 @@ void CSwtUiUtils::DoSetActiveShell(MSwtShell& aShell, TBool aSetFocus)
     // Remember the new top most Shell for Shell activability changes.
     iLastTopMostShell = TopMostTopShell();
 
-    
+
     SetShellFade(iActiveShell, ETrue);
 }
 
@@ -865,7 +866,7 @@ void CSwtUiUtils::HideIndicators()
 {
     if (!iStatusPane)
         return;
-    
+
     HideIndicator(EEikStatusPaneUidSignal);
     HideIndicator(EEikStatusPaneUidBattery);
     HideIndicator(EEikStatusPaneUidIndic);
@@ -1134,7 +1135,7 @@ CEikButtonGroupContainer& CSwtUiUtils::Cba() const
 // CSwtUiUtils::UpdateStatusPaneL
 // From MSwtUiUtils
 // Calls to this should be kept to a severe minimum! This function is not anymore
-// responsible of resizing the topmost shells since Shell's bounds should not 
+// responsible of resizing the topmost shells since Shell's bounds should not
 // depend on the current status pane height(See CSwtShell::DefaultBounds()).
 // ---------------------------------------------------------------------------
 //
@@ -1273,22 +1274,22 @@ void CSwtUiUtils::UpdateStatusPaneL()
             iStatusPane->SwitchLayoutL(R_AVKON_STATUS_PANE_LAYOUT_SMALL_WITH_SIGNAL_PANE);
         }
         iStatusPane->MakeVisible(ETrue);
-        
+
         java::ui::CoreUiAvkonAppUi* appUi = java::ui::CoreUiAvkonEswt::getInstance().getJavaUiAppUi();
         if (appUi && appUi->hidesIndicators())
         {
             HideIndicators();
         }
-        
+
         // The above relies on DrawDeferred which is too slow for some cases.
-        // For instance, the pane must draw immediately when the app draws the 
+        // For instance, the pane must draw immediately when the app draws the
         // first time otherwise the startup screenshot will miss the pane.
         iStatusPane->DrawNow();
     }
-    
+
     // This will cause HandleStatusPaneSizeChange notifications again
     iStatusPane->SetObserver(this);
-    
+
     // Shells are trusted to have the correct size already.
 }
 
@@ -1305,9 +1306,9 @@ void CSwtUiUtils::HandleAppFocusChangeL(TBool aFocused)
         {
             return;
         }
-    
+
         ASSERT(!iActiveShell);
-    
+
         // Update flag
         iFocusLost = EFalse;
         TBool getFocused(EFalse);
@@ -1316,7 +1317,7 @@ void CSwtUiUtils::HandleAppFocusChangeL(TBool aFocused)
             getFocused = iNextFocusedControl->SetSwtFocus(KSwtFocusByForce);
             iNextFocusedControl = NULL;
         }
-    
+
         if (getFocused)
         {
             // do nothing
@@ -1524,7 +1525,7 @@ void CSwtUiUtils::HandleResourceChangedL(TInt aType)
         iInlineFont = NULL;
         iInlineFontHeight = -1;
         iInlinePadding.iTop = -1;
-        
+
         // Sometimes CBA bounds are incorrect at this point in the case we have
         // a dialog shell active. As a result Shell gets wrong size.
         // Set the bounds here to make sure they are always correct.
@@ -1613,6 +1614,11 @@ void CSwtUiUtils::SetCbaVisible(TBool aVisible)
         return;
     }
     iCba->MakeVisible(aVisible);
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    // To enable clock pane in landscape after MIDlet was started
+    iCba->SetBoundingRect(TRect(0, 0, 0, 0));
+#endif // RD_JAVA_S60_RELEASE_9_2
 }
 
 // ---------------------------------------------------------------------------
@@ -1647,6 +1653,26 @@ MSwtControl* CSwtUiUtils::GetPointerGrabbingControl()
     }
 
     return grabbingControl;
+}
+
+// ---------------------------------------------------------------------------
+// CSwtUiUtils::HandleFreeRamEventL
+// From MSwtUiUtils
+// ---------------------------------------------------------------------------
+//
+TRect CSwtUiUtils::TaskTipRect() const
+{
+    TRect screenRect;
+    AknLayoutUtils::LayoutMetricsRect(AknLayoutUtils::EScreen, screenRect);
+    TAknLayoutRect layoutMainPane = CSwtLafFacade::GetLayoutRect(
+                                        CSwtLafFacade::EMainEswtPane,
+                                        screenRect,
+                                        KVariationFullScreen);
+    TRect mainPaneRect = layoutMainPane.Rect();
+    TAknLayoutRect layoutShell = CSwtLafFacade::GetLayoutRect(
+                                     CSwtLafFacade::EPopupEswtTasktipWindow,
+                                     mainPaneRect);
+    return layoutShell.Rect();
 }
 
 // ---------------------------------------------------------------------------

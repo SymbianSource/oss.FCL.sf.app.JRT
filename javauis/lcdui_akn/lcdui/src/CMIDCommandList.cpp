@@ -132,13 +132,20 @@ TInt CMIDCommandList::HighestPriorityCommand(MMIDCommand::TCommandType aType) co
   of a particular type that we find will be the highest priority
   command of that type.
 */
-TInt CMIDCommandList::HighestNonMappedPriorityCommand(MMIDCommand::TCommandType aType) const
+TInt CMIDCommandList::HighestNonMappedPriorityCommand(
+        MMIDCommand::TCommandType aType, TBool aIgnoreForImplicitList) const
 {
     TInt numCommands = Count();
     for (TInt i = 0; i < numCommands; i++)
     {
         CMIDCommand* cmd = At(i).iCommand;
-        if ((cmd->CommandType() == aType) && !cmd->IsMappedToSoftKey())
+        // In case of IMPLICIT List without highlight, nor OK
+        // neither ITEM commands are mapped to soft keys.
+        TBool ignore = aIgnoreForImplicitList 
+                && (cmd->CommandType() == MMIDCommand::EOk 
+                    || cmd->CommandType() == MMIDCommand::EItem);
+        if ((cmd->CommandType() == aType) && !cmd->IsMappedToSoftKey() 
+                && !ignore)
         {
             return i;
         }
@@ -151,12 +158,14 @@ TInt CMIDCommandList::HighestNonMappedPriorityCommand(MMIDCommand::TCommandType 
     Given a softkey, return the index of the highest priority command
     that is allowed for this softkey.
  */
-TInt CMIDCommandList::FindCommandForSoftKey(const CMIDSoftKey& aSoftKey) const
+TInt CMIDCommandList::FindCommandForSoftKey(const CMIDSoftKey& aSoftKey,
+        TBool aIgnoreForImplicitList) const
 {
     TInt numTypes = aSoftKey.AllowedCommandTypes().Count();
     for (TInt i = 0; i < numTypes; i++)
     {
-        TInt index = HighestNonMappedPriorityCommand(aSoftKey.AllowedCommandTypes()[i]);
+        TInt index = HighestNonMappedPriorityCommand(
+                aSoftKey.AllowedCommandTypes()[i], aIgnoreForImplicitList);
         if (index != KErrNotFound)
         {
             return index;

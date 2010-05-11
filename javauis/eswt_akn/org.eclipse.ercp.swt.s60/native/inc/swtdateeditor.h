@@ -118,7 +118,7 @@ private:
      * @param aIsFieldNumeric indicates whether field is numeric field
      * @returns true if field was modified, false otherwise.
      */
-    TBool CSwtDateEditor::IsCurrentFieldChanged(TBool aIsFieldNumeric);
+    TBool IsCurrentFieldChanged(TBool aIsFieldNumeric);
 
     /**
      * Updates current field counters if necessary.

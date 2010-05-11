@@ -73,13 +73,17 @@ public: // MPIMAdapterAccess
         MPIMLocalizationData** aRetLocalizationData);
 
     TBool OpenEventListL(
-        const TDesC* aListName,
+        CCalSession* aCalSession,
+
+        const TDesC* aListName, 
         MPIMEventAdapterManager** aRetAdapterManager,
         MPIMEventListAdapter** aRetListAdapter,
         MPIMLocalizationData** aRetLocalizationData);
 
     TBool OpenToDoListL(
-        const TDesC* aListName,
+        CCalSession* aCalSession,
+
+        const TDesC* aListName, 
         MPIMToDoAdapterManager** aRetAdapterManager,
         MPIMToDoListAdapter** aRetListAdapter,
         MPIMLocalizationData** aRetLocalizationData);

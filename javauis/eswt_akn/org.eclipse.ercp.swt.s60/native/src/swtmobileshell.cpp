@@ -197,7 +197,7 @@ void CSwtMobileShell::ChangeTrimL(TInt aStyle, TInt aStatusStyle)
     {
         return;
     }
-    
+
     iStatusPaneStyle = statusStyle;
 
     // Immediatelly called after construction on Java side. Status style is
@@ -215,7 +215,7 @@ void CSwtMobileShell::ChangeTrimL(TInt aStyle, TInt aStatusStyle)
     {
         utils.UpdateStatusPaneL();
     }
-    
+
     CCoeControl::SetRect(DefaultBounds());
 }
 

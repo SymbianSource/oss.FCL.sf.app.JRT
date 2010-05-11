@@ -86,24 +86,7 @@ public class FileInternalPermission extends PermissionBase
 
             if (PermissionBase.matchActions(per.getActions(), intent))
             {
-                if (getTarget().equals("*"))
-                {
-                    // IN case all are allowed.
-                    return true;
-                }
-
-                if (this.targetName.equalsIgnoreCase(per.getTarget()))
-                {
-                    return true;
-                }
-                else
-                {
-                    return getCategory().equals(per.getCategory());
-                }
-            }
-            else
-            {
-                return false;
+                return true;
             }
         }
 
@@ -163,11 +146,6 @@ public class FileInternalPermission extends PermissionBase
                         + "Invalid security intent presented: " + intent
                         + " for target: " + targetName);
         return null;
-    }
-
-    public String getCategory()
-    {
-        return FileAccessHelper.getCategory(targetName);
     }
 
     public String getTarget()

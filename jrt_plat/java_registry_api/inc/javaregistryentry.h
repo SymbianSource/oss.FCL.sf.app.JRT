@@ -148,8 +148,7 @@ public:
      * @return MJavaAttribute poiter to instance, which contain attribute.
      * If attribute doesn't exist return NULL.
      */
-    IMPORT_C const MJavaAttribute*
-    CJavaRegistryEntry::AttributeL(const TDesC& aName) const;
+    IMPORT_C const MJavaAttribute* AttributeL(const TDesC& aName) const;
 
     /**
      * CJavaRegistryEntry::Attributes method gets the
@@ -158,8 +157,7 @@ public:
      * @since S60 v5.0
      * @return RPointerArray& with all additional attributes.
      */
-    IMPORT_C const RPointerArray<MJavaAttribute>&
-    CJavaRegistryEntry::AttributesL() const;
+    IMPORT_C const RPointerArray<MJavaAttribute>& AttributesL() const;
 
 protected:
 

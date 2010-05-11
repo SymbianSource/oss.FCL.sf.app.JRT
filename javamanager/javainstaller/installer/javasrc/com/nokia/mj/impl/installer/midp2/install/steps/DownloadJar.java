@@ -31,9 +31,6 @@ import com.nokia.mj.impl.utils.OtaStatusCode;
 
 /**
  * Installation step DownloadJar takes care of downloading Jar file.
- *
- * @author Nokia Corporation
- * @version $Rev:  $ $Date:  $
  */
 public class DownloadJar extends ExeStep
 {

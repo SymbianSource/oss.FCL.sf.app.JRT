@@ -42,7 +42,7 @@ public:
      * @return pointer to an object of this class
      */
     static CSwtCaptionedControl* NewL(MSwtDisplay& aDisplay, TSwtPeer aPeer,
-                                      MSwtComposite& aParent, TInt aStyle);
+    MSwtComposite& aParent, TInt aStyle);
 
 private:
     /**
@@ -264,7 +264,7 @@ private:
      * Not Own.
      */
     const MSwtColor* iForegroundColor;
-    
+
     /**
      * Can be the child or null.
      */

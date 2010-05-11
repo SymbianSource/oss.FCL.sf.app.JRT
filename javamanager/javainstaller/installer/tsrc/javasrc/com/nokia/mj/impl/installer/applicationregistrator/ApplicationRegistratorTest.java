@@ -30,9 +30,6 @@ import j2meunit.framework.TestSuite;
 
 /**
  * ApplicationRegistrator unit tests.
- *
- * @author Nokia Corporation
- * @version $Rev: 9041 $
  */
 public class ApplicationRegistratorTest extends TestCase implements InstallerMain
 {

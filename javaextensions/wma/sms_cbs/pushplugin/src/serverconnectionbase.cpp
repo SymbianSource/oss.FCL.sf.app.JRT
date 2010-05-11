@@ -133,7 +133,16 @@ int ServerConnectionBase::makeDirAll(const std::wstring aDirPath)
     {
         path += std::wstring(tok);
         path += L"\\";
-        char *dirName = JavaCommonUtils::wstringToUtf8(path);
+        char *dirName =0;
+        try 
+        {
+           dirName = JavaCommonUtils::wstringToUtf8(path);
+        }
+        catch (ExceptionBase ex)
+        {
+           delete[] stringToTokenize;
+           return -1;
+        }
         if (ableToOpen)
         {
             if (0 != lstat(dirName, &temp))
@@ -169,10 +178,11 @@ int ServerConnectionBase::removeDir(const std::wstring aDirPath)
     JELOG2(EWMA);
     std::wstring path1;
     path1 +=  aDirPath;
+    char* path =0;
     int error = 0;
     try
     {
-        char* path = JavaCommonUtils::wstringToUtf8(path1);
+        path = JavaCommonUtils::wstringToUtf8(path1);
         LOG1(EWMA, EInfo, "WMA : Removing Message Store %s",path);
         struct stat temp;
         if (0 != lstat(path, &temp))
@@ -211,7 +221,9 @@ int ServerConnectionBase::removeDir(const std::wstring aDirPath)
     }
     catch (ExceptionBase ex)
     {
+        delete[] path;
         ELOG(EWMA,"WMA : Cought an exception while removing Dir");
+        return -1;
     }
     return error;
 }

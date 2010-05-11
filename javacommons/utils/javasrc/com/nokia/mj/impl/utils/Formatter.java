@@ -299,7 +299,7 @@ public class Formatter
 
     /**
      * Replace first occurrence of the string pattern in the replaced field.
-     * Replace only [NN] defined amount of characters.
+     * Replace [N...N] defined amount of characters.
      *
      * @param pattern string to search for
      * @param replacement string to replace patterns
@@ -310,11 +310,10 @@ public class Formatter
     private boolean replaceWithMax(String pattern, String replacement, int maxIndex)
     {
         boolean result = false;
-        int closingIndex = maxIndex + pattern.length() + 3;
+        int closingIndex = replaced.indexOf("]", maxIndex + pattern.length());
 
-        // Check format [NN] comply. If not skip.
-        if (replaced.length() > closingIndex
-                && replaced.charAt(closingIndex) == ']')
+        // Check format [N...N] comply. If not skip.
+        if (closingIndex > 0)
         {
             try
             {
@@ -328,7 +327,7 @@ public class Formatter
 
                 replaced = replaced.substring(0, maxIndex) +
                            replacement.substring(0, maxLen) +
-                           replaced.substring(maxIndex + pattern.length() + 4);
+                           replaced.substring(closingIndex + 1);
                 result = true;
             }
             catch (NumberFormatException nfe)

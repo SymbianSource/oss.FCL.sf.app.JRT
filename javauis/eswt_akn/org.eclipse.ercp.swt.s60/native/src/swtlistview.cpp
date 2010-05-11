@@ -192,6 +192,8 @@ void CSwtListView::ConstructL()
 #else
         gridFlags |= EAknListBoxMarkableGrid;
 #endif
+        // Enabling marking only by pressing enter key
+        gridFlags |= CEikListBox::EEnterMarks;
 
         // Create control menu
         iMenu = CSwtControlMenu::NewL(iDisplay, NULL, 0);
@@ -2689,15 +2691,7 @@ void CSwtListView::ProcessKeyEventL(const TKeyEvent& aKeyEvent, TEventCode aType
     {
         GetSelection(iOldSelectionArray);
 
-        TBool shiftKeyPressed = (aKeyEvent.iModifiers & EModifierShift) ||
-                                (aKeyEvent.iModifiers & EModifierLeftShift) ||
-                                (aKeyEvent.iModifiers & EModifierRightShift);
-
-        // Do not offer menu opening ok key event to the grid
-        if ((aKeyEvent.iCode != EKeyOK && aKeyEvent.iCode != EKeyEnter) || shiftKeyPressed)
-        {
-            iGrid->OfferKeyEventL(aKeyEvent, aType);
-        }
+        iGrid->OfferKeyEventL(aKeyEvent, aType);
 
         if (aType == EEventKeyUp)
         {
@@ -2931,22 +2925,16 @@ TBool CSwtListView::IsKeyUsed(TUint aKeyCode) const
     }
     else if (aKeyCode == EKeyOK || aKeyCode == EKeyEnter)
     {
-        if (iStyle & KSwtStyleSingle)
+        MSwtCommandArranger* commandArranger = iDisplay.CommandArranger();
+        if (commandArranger)
         {
-            MSwtCommandArranger* commandArranger = iDisplay.CommandArranger();
-            if (commandArranger)
+            if (iStyle & KSwtStyleSingle &&
+                    commandArranger->IsContextSensitiveOperationSet())
             {
-                if (commandArranger->IsContextSensitiveOperationSet())
-                {
-                    return EFalse;
-                }
+                return EFalse;
             }
-            return ETrue;
         }
-        else
-        {
-            return EFalse;
-        }
+        return ETrue;
     }
     return ETrue;
 }

@@ -56,7 +56,7 @@ public:
                   const TInt aStart, const TInt aEnd, const TPoint& aTextOrigin,
                   TInt aExtraPixels) const;
 #endif
-    
+
     TRgb SystemColor(TUint aColorIndex, TRgb aDefaultColor) const;
 
 private:
@@ -64,13 +64,13 @@ private:
      * Control owning the drawer.
      */
     const CEikEdwin& iEdwin;
-    
+
     /**
      * Original drawer used for actual drawing.
      * Not own.
      */
     const MFormCustomDraw* iEdWinDrawer;
-    
+
     /**
      * Clipping rectangle.
      * Applied before iEdWinDrawer draws.

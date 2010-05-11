@@ -8,7 +8,7 @@
  * Contributors:
  *     Nokia Corporation - S60 implementation
  *******************************************************************************/
- 
+
 
 #ifndef SWTLISTVIEW_H
 #define SWTLISTVIEW_H
@@ -198,7 +198,7 @@ private:
         CSwtLafFacade::TSwtLafFacadeTextId& aRectIdPaneT1,
         CSwtLafFacade::TSwtLafFacadeFontId& aRectIdPaneT1Font
     ) const;
-    void            CoerceCellRect(const TSwtListViewDensity& aDensity, 
+    void            CoerceCellRect(const TSwtListViewDensity& aDensity,
                                    TRect& aCellRect) const;
 
 #ifdef RD_JAVA_ADVANCED_TACTILE_FEEDBACK
@@ -332,7 +332,7 @@ private: // data
      * Stores grid cell layout update status
      */
     TBool iIsGridCellLayoutNeeded;
-    
+
     /**
      * View visible rect at last draw
      */

@@ -37,7 +37,7 @@ grant user "Messaging" oneshot,session,no {
     permission javax.microedition.io.Connector.mms "mms://*" "send";
 }
 
-grant user "Multimedia Recording" oneshot,session,no {
+grant user "Multimedia Recording" oneshot,session,blanket,no {
     permission javax.microedition.media.control.RecordControl "*" "record";
     permission javax.microedition.media.control.VideoControl.getSnapshot "*" "snapshot";
 }
@@ -59,4 +59,7 @@ grant allowed {
     permission javax.microedition.io.Connector.sms "sms://*" "open,receive";
     permission javax.microedition.io.Connector.mms "mms://*" "open,receive";
     permission javax.microedition.io.Connector.cbs "cbs://*" "open,receive";
+}
+grant assigned {
+    permission javax.microedition.PropertyPermission "mobinfo.cellid" "read";
 }

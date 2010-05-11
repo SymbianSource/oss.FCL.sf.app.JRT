@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -36,6 +36,8 @@ public class ApplicationInfo
     private String iMainClass = null;
     private int iAutoStart = AUTOSTART_FALSE;
 
+    /** Flag telling if default icon should be used. */
+    private boolean iUseDefaultIcon = false;
     /** Filename for converted icon. This member is not saved into storage. */
     private String iConvertedIconPath = null;
 
@@ -152,6 +154,22 @@ public class ApplicationInfo
     public int getAutoStart()
     {
         return iAutoStart;
+    }
+
+    /**
+     * Returns true if default icon should be used, false otherwise.
+     */
+    public boolean getUseDefaultIcon()
+    {
+        return iUseDefaultIcon;
+    }
+
+    /**
+     * Set flag telling if default icon should be used.
+     */
+    public void setUseDefaultIcon(boolean aUseDefaultIcon)
+    {
+        iUseDefaultIcon = aUseDefaultIcon;
     }
 
     /**

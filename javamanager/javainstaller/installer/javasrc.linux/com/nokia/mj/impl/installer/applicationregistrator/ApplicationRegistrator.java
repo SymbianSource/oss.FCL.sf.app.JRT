@@ -37,10 +37,6 @@ import java.io.OutputStream;
  *
  * startSession() must be called before the other methods of this
  * class can be used.
- *
- *
- * @author Nokia Corporation
- * @version $Rev: 10289 $
  */
 public final class ApplicationRegistrator
 {

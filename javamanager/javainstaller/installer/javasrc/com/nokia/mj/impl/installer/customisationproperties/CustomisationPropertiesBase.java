@@ -24,9 +24,6 @@ import java.util.Vector;
 
 /**
  * Fetches product program/operator specific customizable settings.
- *
- * @author Nokia Corporation
- * @version $Rev: 9041 $
  */
 public class CustomisationPropertiesBase
 {

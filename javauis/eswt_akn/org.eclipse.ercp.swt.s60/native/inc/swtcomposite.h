@@ -19,7 +19,9 @@
 #include <mswtphysics.h>
 #include "eswtwidgetscore.h"
 #include "swtscrollablebase.h"
-
+#ifdef RD_JAVA_ADVANCED_TACTILE_FEEDBACK
+#include <touchfeedback.h>
+#endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
 
 class CEikScrollBarFrame;
 class CSwtScrollBar;
@@ -136,6 +138,7 @@ private:
     void PaintUrgently() const;
 #ifdef RD_JAVA_ADVANCED_TACTILE_FEEDBACK
     void UpdateTactileFeedbackDensity();
+    void DoScrollingFeedback();
 #endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
 
 // Data
@@ -205,8 +208,10 @@ private:
     /**
      * Kinetic scrolling tactile feedback
      */
+    MTouchFeedback* iFeedback; // Not own
     TInt iLastTactileFeedbackPos;
-    TInt iTactileFeedbackDensity;    
+    TInt iTactileFeedbackDensity;
+    TInt iLastPointerEventType;
 #endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
 };
 

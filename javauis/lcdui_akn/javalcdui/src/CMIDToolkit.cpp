@@ -27,6 +27,10 @@
 #include <bautils.h>
 #include <s32stor.h>
 #include <s32file.h>
+#include <e32property.h>
+#include <centralrepository.h>
+#include <settingsinternalcrkeys.h>
+#include <screensaverinternalpskeys.h>      // to work with screensaver
 #include <gfxtranseffect/gfxtranseffect.h>  // For transition effects
 #include <akntranseffect.h>                                 // For transition effects
 //
@@ -427,6 +431,8 @@ void CMIDToolkit::SetCurrentL(MMIDDisplayable* aDisplayable)
         ASSERT(oldDisplayable->Component()->Type() == MMIDComponent::EAlert);
     }
 
+    ResetInactivityTimeL();
+
     // Set it, revert will rollback if required.
     iCurrentDisplayable = newDisplayable;
 
@@ -487,6 +493,57 @@ void CMIDToolkit::SetCurrentL(MMIDDisplayable* aDisplayable)
     CleanupStack::Pop();    // revert
 }
 
+void CMIDToolkit::ResetInactivityTimeL()
+{
+    TInt status = KErrNotFound;
+    RProperty::Get(KPSUidScreenSaver, KScreenSaverAllowScreenSaver,status);
+
+    // If Screen Saver is enabled and is inactive reset timers
+    // Keep lights on and screensaver disabled. When status is >0 it means
+    // that screen saver is not allowed to be activated
+    if (!status)
+    {
+        TInt isTimeoutEnabled = KErrNone;
+        TInt errPCenrep = KErrNone;
+        CRepository* pCenrep = CRepository::NewLC(KCRUidPersonalizationSettings);
+        if (pCenrep)
+        {
+            errPCenrep = pCenrep->Get(
+                             KSettingsScreensaverTimeoutItemVisibility,
+                             isTimeoutEnabled);
+        }
+        CleanupStack::PopAndDestroy(pCenrep);
+
+#if defined(__WINSCW__)
+        if (!isTimeoutEnabled)
+        {
+            isTimeoutEnabled = 1;
+        }
+#endif
+
+        // Screen Saver Time out value
+        TInt screenSaverTimeout = KErrNone;
+        TInt errSCenrep = KErrNone;
+        CRepository* securityCenrep = CRepository::NewLC(KCRUidSecuritySettings);
+        if (securityCenrep)
+        {
+            errSCenrep = securityCenrep->Get(
+                             KSettingsAutomaticKeyguardTime, screenSaverTimeout);
+        }
+        CleanupStack::PopAndDestroy(securityCenrep);
+
+        // Inactivity time in seconds
+        TInt userInactivity = User::InactivityTime().Int();
+
+        // Check if screen saver is inactive, if so reset timers
+        if (errPCenrep == KErrNone && errSCenrep == KErrNone &&
+                isTimeoutEnabled && userInactivity < screenSaverTimeout)
+        {
+            User::ResetInactivityTime();
+        }
+    }
+}
+
 void CMIDToolkit::BringToForeground()
 {
     LCDUI_DEBUG("**RF**");
@@ -513,10 +570,25 @@ void CMIDToolkit::BringToForeground()
             if (appUi && appUi->hasStartScreen())
             {
                 MMIDComponent* content = iCurrentDisplayable ? iCurrentDisplayable->Component() : NULL;
-                if (!content || content->Type() != MMIDComponent::ECanvas)
+
+                TBool isCanvas = EFalse;
+                TBool isCanvasReadyToBlit = EFalse;
+                if (content)
+                {
+                    if (content->Type() == MMIDComponent::ECanvas)
+                    {
+                        isCanvas = ETrue;
+                        MMIDCanvas* canvas = static_cast<MMIDCanvas*>(content);
+                        isCanvasReadyToBlit = canvas->ReadyToBlit();
+                    }
+                }
+
+                if (!content || !isCanvas || isCanvasReadyToBlit)
                 {
                     if (iCurrentDisplayable)
+                    {
                         iCurrentDisplayable->DrawNow();
+                    }
                     appUi->stopStartScreen();
                 }
             }

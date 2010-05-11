@@ -108,6 +108,7 @@ public class Sound
     private static final int NOT_SUPPORTED_ERROR = 3;
 
     private static final int ERR_NOT_READY = -18;
+    private static final int ERR_ARGUMENT  = -6;
 
     private int iHandle;
 
@@ -362,6 +363,10 @@ public class Sound
         {
             throw new RuntimeException(Integer.toString(err));
         }
+        else if (err == ERR_ARGUMENT)
+        {
+            throw new IllegalArgumentException("Data is invalid");            
+        }
         iState = SOUND_STOPPED;
     }
 
@@ -410,7 +415,7 @@ public class Sound
 
         iCurrentType = type;
         int err = _init(iHandle, iCurrentType, data, 0, 0);
-        if (err == ERR_NOT_READY)
+        if (err == ERR_NOT_READY || err == ERR_ARGUMENT )
         {
             throw new IllegalArgumentException("Data is invalid");
         }

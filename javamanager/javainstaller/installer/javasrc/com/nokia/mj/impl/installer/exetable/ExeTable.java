@@ -22,9 +22,6 @@ import java.util.Vector;
 
 /**
  * Execution table contains the steps to be executed in execution engine.
- *
- * @author Nokia Corporation
- * @version $Rev: 9041 $ $Date: 2009-12-07 18:36:08 +0200 (Mon, 07 Dec 2009) $
  */
 public final class ExeTable
 {

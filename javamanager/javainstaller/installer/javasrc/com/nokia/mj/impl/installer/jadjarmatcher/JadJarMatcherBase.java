@@ -38,9 +38,6 @@ import java.util.Vector;
  * JadJarMatcher offers services for finding Jar when Jad filename is known,
  * and finding Jad when Jar filename is known.  JadJarMatcher only searches
  * files from local folders.
- *
- * @author Nokia Corporation
- * @version $Rev: 9457 $
  */
 public class JadJarMatcherBase
 {

@@ -19,8 +19,8 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
-
 #include <string.h>
+#include <cstdio>
 
 #include "logger.h"
 #include "javainifileutils.h"
@@ -118,12 +118,12 @@ OS_EXPORT void JavaIniFileUtils::setProperty(const std::string& /*property*/,
 #endif // RD_JAVA_INI_FILE_ACCESS_IN_USE
 
 
-char* JavaIniFileUtils::getPosition(FileContent& content, const std::string& property)
+const char* JavaIniFileUtils::getPosition(FileContent& content, const std::string& property)
 {
     const char* data = content.getContent();
     if (data)
     {
-        char* position = strstr(data, property.c_str());
+        const char* position = strstr(data, property.c_str());
         if (position)
         {
             position += property.length()+2;

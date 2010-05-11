@@ -68,7 +68,7 @@ public:
      * Updates item drawer's custom clipping rectangle.
      */
     void SetItemDrawerClippingRect(const TRect& aRect);
-    
+
     /**
      * Wrapper for protected member function HandleScrollEventL of CAknGrid.
      */
@@ -80,7 +80,7 @@ public:
 // From CAknGrid
 protected:
     void CreateItemDrawerL();
-    
+
 private:
     /**
      * Called when size or position has changed.

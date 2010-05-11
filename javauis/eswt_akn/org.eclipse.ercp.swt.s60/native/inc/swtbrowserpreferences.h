@@ -70,7 +70,7 @@ public:
 // From MActiveApDbObserver
 
 // From MBrowserPreferences
-    const TPreferencesValues& AllPreferencesL();
+    const TPreferencesValues& AllPreferences() const;
     void AddObserverL(MPreferencesObserver* anObserver);
     void RemoveObserver(MPreferencesObserver* anObserver);
     void NotifyObserversL(TPreferencesEvent aEvent,
@@ -85,7 +85,6 @@ public:
                                 TUint aAssocVpn = KWmlNoDefaultAccessPoint);
     void SetFontSizeL(TInt aFontSize);
     void SetEncodingL(TUint32 aEncoding);
-    void SetHomePageTypeL(TWmlSettingsHomePage aHomePageType);
     TPtrC SelfDownloadContentTypesL();
     TBool AccessPointSelectionMode();
     void SetAccessPointSelectionModeL(
@@ -93,12 +92,12 @@ public:
     TBool AutoLoadImages() const;
     TBool BackList() const;
     TBool AutoRefresh() const;
-    TWmlSettingsCookies Cookies() const;
-    TWmlSettingsECMA Ecma() const;
-    TWmlSettingsIMEI IMEINotification() const;
+    TBool Cookies() const;
+    TBool Ecma() const;
+    TBool IMEINotification() const;
     TBool SendReferrer() const;
     TBool PageOverview() const;
-    virtual TWmlSettingsFormData FormDataSaving() const;
+    TUint FormDataSaving() const;
 
 private:
     /**

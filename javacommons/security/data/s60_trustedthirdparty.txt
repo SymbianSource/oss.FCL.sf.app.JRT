@@ -68,3 +68,6 @@ grant allowed {
     permission javax.microedition.io.Connector.mms "mms://*" "open,receive";
     permission javax.microedition.io.Connector.cbs "cbs://*" "open,receive";
 }
+grant assigned {
+    permission javax.microedition.PropertyPermission "mobinfo.cellid" "read";
+}

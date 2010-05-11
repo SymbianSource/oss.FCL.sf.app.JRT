@@ -209,7 +209,7 @@ public:
      * @param aCertChains [out] The method converts the unicode descriptors
      *                          into this RPointerArray<HBufC>.
      */
-    IMPORT_C static void JavaRegConverter::GetUnicodeDescriptorsL(
+    IMPORT_C static void GetUnicodeDescriptorsL(
         const TDesC& aValue,
         RPointerArray<HBufC>& aDescriptors);
     /**
@@ -224,7 +224,7 @@ public:
      * @param aDes [out] Descriptor parameter, storing, and the returning
      * the certificate chains.
      */
-    IMPORT_C static void JavaRegConverter::StoreUnicodeDescriptorsL(
+    IMPORT_C static void StoreUnicodeDescriptorsL(
         const RPointerArray<HBufC>& aValue,
         HBufC*& aDes);
 };

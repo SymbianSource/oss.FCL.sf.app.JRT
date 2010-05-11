@@ -1437,23 +1437,6 @@ public:
 
 
 /**
- * Interface class for the org.eclipse.ercp.swt.mobile.TaskTip class.
- */
-class MSwtTaskTip
-{
-protected:
-    virtual ~MSwtTaskTip() {} // Made protected to prevent destruction through the interface
-
-public:
-    virtual TSwtPeer Dispose() =0;
-    virtual TRect GetBarDefaultBounds(TBool aHasText) const=0;
-    virtual TRect GetLabelDefaultBounds(TBool aHasText) const=0;
-    virtual TRect GetShellDefaultBounds(TBool aHasText) const=0;
-    virtual TSwtPeer JavaPeer() const =0;
-};
-
-
-/**
  * Interface class for the org.eclipse.ercp.swt.mobile.TextExtension class.
  */
 class MSwtTextExtension

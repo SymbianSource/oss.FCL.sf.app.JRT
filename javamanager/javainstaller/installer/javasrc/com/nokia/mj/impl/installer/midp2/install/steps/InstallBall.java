@@ -289,6 +289,20 @@ public final class InstallBall extends ExeBall
         super.checkForCancel();
         if (isCancelled())
         {
+            if (iDownloader != null)
+            {
+                try
+                {
+                    Log.log("checkForCancel: User cancelled, stopping downloader...");
+                    iDownloader.stop();
+                    iDownloader = null;
+                    Log.log("checkForCancel: Downloader stopped");
+                }
+                catch (Throwable t)
+                {
+                    Log.logWarning("checkForCancel: Stopping downloader failed", t);
+                }
+            }
             throw new InstallerException
             (InstallerErrorMessage.INST_CANCEL, null,
              InstallerDetailedErrorMessage.NO_MSG, null,

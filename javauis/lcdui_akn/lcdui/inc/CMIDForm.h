@@ -498,12 +498,13 @@ public:
      */
     void DoFeedbackOnFocusChange(CMIDControlItem& aControlItem);
 
+private:
 #ifdef RD_JAVA_ADVANCED_TACTILE_FEEDBACK
     /**
-     * Fuction does feedback when dragging/flicking the form content.
+     * Function for feedback on kinetic scrolling .
      */
-    void DoFeedbackOnDraggingUp();
-    void DoFeedbackOnDraggingDown();
+    void UpdateTactileFeedbackDensity();
+    void DoScrollingFeedback();
 #endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
 
 private: //data
@@ -579,6 +580,15 @@ private: //data
      * The startup trace should be done only once.
      */
     mutable TBool iStartUpTraceDone;
+
+#ifdef RD_JAVA_ADVANCED_TACTILE_FEEDBACK
+    /**
+     * Kinetic scrolling tactile feedback
+     */
+    TInt iLastTactileFeedbackPos;
+    TInt iTactileFeedbackDensity;
+    TInt iLastPointerEventType;
+#endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
 };
 
 inline void CMIDForm::Dispose()

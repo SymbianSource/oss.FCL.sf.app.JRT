@@ -102,7 +102,7 @@ void CSwtColumnListBoxItemDrawer::DrawItemText(TInt aItemIndex,
 {
     BeginClipping(iGc);
     CColumnListBoxItemDrawer::DrawItemText(aItemIndex, aItemTextRect,
-            aItemIsCurrent, aViewIsEmphasized, aItemIsSelected);
+                                           aItemIsCurrent, aViewIsEmphasized, aItemIsSelected);
     EndClipping(iGc);
 }
 
@@ -160,14 +160,7 @@ void CSwtDoubleLargeStyleItemDrawer::DrawItemText(TInt aItemIndex,
 void ASwtListBoxItemDrawerBase::SetCustomClippingRect(
     const TRect& aRect)
 {
-    if (aRect.IsNormalized())
-    {
-        iCustomClippingRect = aRect;
-    }
-    else
-    {
-        iCustomClippingRect = TRect::EUninitialized;
-    }
+    iCustomClippingRect = aRect;
 }
 
 // ---------------------------------------------------------------------------
@@ -176,10 +169,7 @@ void ASwtListBoxItemDrawerBase::SetCustomClippingRect(
 //
 void ASwtListBoxItemDrawerBase::BeginClipping(CWindowGc* aGc) const
 {
-    if (iCustomClippingRect != TRect::EUninitialized)
-    {
-        aGc->SetClippingRect(iCustomClippingRect);
-    }
+    aGc->SetClippingRect(iCustomClippingRect);
 }
 
 // ---------------------------------------------------------------------------
@@ -188,8 +178,5 @@ void ASwtListBoxItemDrawerBase::BeginClipping(CWindowGc* aGc) const
 //
 void ASwtListBoxItemDrawerBase::EndClipping(CWindowGc* aGc) const
 {
-    if (iCustomClippingRect != TRect::EUninitialized)
-    {
-        aGc->CancelClippingRect();
-    }
+    aGc->CancelClippingRect();
 }

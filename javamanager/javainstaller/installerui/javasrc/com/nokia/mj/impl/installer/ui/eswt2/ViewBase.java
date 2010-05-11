@@ -25,6 +25,8 @@ import com.nokia.mj.impl.security.midp.common.SigningCertificate;
 
 import java.io.InputStream;
 
+import org.eclipse.ercp.swt.mobile.MobileDevice;
+import org.eclipse.ercp.swt.mobile.Screen;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionEvent;
@@ -75,7 +77,7 @@ abstract public class ViewBase
     /** Certificate details view.  */
     private CertificateDetailsView iCertificateDetailsView = null;
     /** Certificates for this application. */
-    private SigningCertificate[] iCertificates = null;
+    protected SigningCertificate[] iCertificates = null;
 
     /** Constructor */
     protected ViewBase()
@@ -83,15 +85,15 @@ abstract public class ViewBase
     }
 
     /** Constructor */
-    protected ViewBase(InstallerUiEswt aInstaller, Composite aParent, int aColumns)
+    protected ViewBase(InstallerUiEswt aInstallerUi, Composite aParent, int aColumns)
     {
-        this(aInstaller, aParent, aColumns, false);
+        this(aInstallerUi, aParent, aColumns, false);
     }
 
     /** Constructor */
-    protected ViewBase(InstallerUiEswt aInstaller, Composite aParent, int aColumns, boolean aScrollable)
+    protected ViewBase(InstallerUiEswt aInstallerUi, Composite aParent, int aColumns, boolean aScrollable)
     {
-        iInstallerUi = aInstaller;
+        iInstallerUi = aInstallerUi;
 
         // Each view gets a shell to be used as a parameter.
         iParent = (Shell)aParent;
@@ -229,8 +231,11 @@ abstract public class ViewBase
         {
             public void run()
             {
-                log(className + ": disposing view container");
-                iContainer.dispose();
+                if (!isDisposed())
+                {
+                    log(className + ": disposing view container");
+                    iContainer.dispose();
+                }
             }
         });
     }
@@ -267,11 +272,14 @@ abstract public class ViewBase
             }
         }
         // UI updates must be executed in UI thread.
-        iParent.getDisplay().syncExec
-        (new Runnable()
+        iParent.getDisplay().syncExec(new Runnable()
         {
             public void run()
             {
+                if (isDisposed())
+                {
+                    return;
+                }
                 if (iVisible)
                 {
                     updateSize();
@@ -386,6 +394,20 @@ abstract public class ViewBase
     }
 
     /**
+     * Forces screen orientation. Valid values are
+     * Screen.PORTRAIT, Screen.LANDSCAPE, and SWT.DEFAULT.
+     */
+    protected void forceScreenOrientation(int aOrientation)
+    {
+        Screen[] screens = MobileDevice.getMobileDevice().getScreens();
+        for (int i = 0; i < screens.length; i++)
+        {
+            screens[i].setOrientation(aOrientation);
+        }
+        log(this.toString() + ": screen orientation set to " + aOrientation);
+    }
+
+    /**
      * Returns true if the View should have focus after it has been opened.
      */
     protected boolean forceFocusToView()
@@ -412,10 +434,20 @@ abstract public class ViewBase
     }
 
     /**
-     * Adds header used in installation and uninstallation views.
+     * Adds header used in installation views.
      */
     protected void addHeader(
         String aTitle, InstallInfo aInstallInfo, UninstallInfo aUninstallInfo)
+    {
+        addHeader(aTitle, aInstallInfo, aUninstallInfo, true);
+    }
+
+    /**
+     * Adds header used in installation views.
+     */
+    protected void addHeader(
+        String aTitle, InstallInfo aInstallInfo, UninstallInfo aUninstallInfo,
+        boolean aSecurityButton)
     {
         // Add title.
         String title = "Install?";
@@ -435,8 +467,16 @@ abstract public class ViewBase
         Label titleLabel = createLabel(aTitle, getColumns() - 1, SWT.WRAP);
         titleLabel.setFont(iInstallerUi.getBoldFont());
 
-        // Add security icon.
-        createSecurityButton();
+        if (aSecurityButton)
+        {
+            // Add security icon.
+            createSecurityButton();
+        }
+        else
+        {
+            // Add security icon.
+            createSecurityLabel(iCertificates != null);
+        }
 
         // Add suite icon.
         InputStream iconInputStream = null;
@@ -628,10 +668,10 @@ abstract public class ViewBase
     {
         Label label = createLabel((Image)null, 1, SWT.NONE);
         Image securityIcon = null;
-        if (iInstallerUi instanceof InstallerUiEswt)
+        if (iInstallerUi != null)
         {
-            securityIcon = ((InstallerUiEswt)iInstallerUi).getSecurityIcon
-                           (getDisplay(), aIdentified);
+            securityIcon = iInstallerUi.getSecurityIcon(
+                getDisplay(), aIdentified);
         }
         if (securityIcon != null)
         {
@@ -654,11 +694,10 @@ abstract public class ViewBase
         gridData.verticalAlignment = SWT.CENTER;
         button.setLayoutData(gridData);
         Image securityIcon = null;
-        if (iInstallerUi instanceof InstallerUiEswt)
+        if (iInstallerUi != null)
         {
-            securityIcon =
-                ((InstallerUiEswt)iInstallerUi).getSecurityIcon(
-                    getDisplay(), iCertificates != null);
+            securityIcon = iInstallerUi.getSecurityIcon(
+                getDisplay(), iCertificates != null);
         }
         if (securityIcon != null)
         {

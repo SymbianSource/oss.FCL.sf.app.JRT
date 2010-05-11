@@ -41,9 +41,10 @@ public class LaunchAppQueryView extends ConfirmationViewBase
     }
 
     /** Constructor */
-    protected LaunchAppQueryView(InstallerUiEswt aInstaller, Composite aParent)
+    protected LaunchAppQueryView(
+        InstallerUiEswt aInstallerUi, Composite aParent)
     {
-        super(aInstaller, aParent, 8);
+        super(aInstallerUi, aParent, 8);
         setTitle(InstallerUiTexts.get(InstallerUiTexts.INSTALLATION_COMPLETE));
         setCommands("Show", //InstallerUiTexts.get(InstallerUiTexts.SHOW),
                     InstallerUiTexts.get(InstallerUiTexts.CLOSE));

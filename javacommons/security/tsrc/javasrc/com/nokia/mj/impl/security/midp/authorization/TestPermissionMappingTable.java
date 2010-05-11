@@ -15,10 +15,11 @@
 *
 */
 
-package com.nokia.mj.impl.security.midp.common;
+package com.nokia.mj.impl.security.midp.authorization;
 
 import java.util.Hashtable;
 import java.util.Enumeration;
+import com.nokia.mj.impl.security.midp.common.*;
 
 /**
  * Mapping between named permissions and class named permissions

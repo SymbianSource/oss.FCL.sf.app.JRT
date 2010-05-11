@@ -35,7 +35,6 @@ using namespace Java::Manager::Registry;
 EXPORT_C CJavaRegistry* CJavaRegistry::NewL()
 {
     JELOG2(EJavaStorage);
-    LOG(EJavaStorage, EInfo, "CJavaRegistry::NewL");
 
     CJavaRegistry* self = CJavaRegistry::NewLC();
     CleanupStack::Pop(self);
@@ -49,7 +48,6 @@ EXPORT_C CJavaRegistry* CJavaRegistry::NewL()
 EXPORT_C CJavaRegistry* CJavaRegistry::NewLC()
 {
     JELOG2(EJavaStorage);
-    LOG(EJavaStorage, EInfo, "CJavaRegistry::NewLC");
 
     CJavaRegistry* self = new(ELeave) CJavaRegistry();
     CleanupStack::PushL(self);
@@ -96,7 +94,7 @@ EXPORT_C CJavaRegistryEntry* CJavaRegistry::RegistryEntryL(
     JELOG2(EJavaStorage);
     if (0 == aUid.iUid)
     {
-        WLOG(EJavaStorage,
+        ILOG(EJavaStorage,
              "Can't find entry for uid 0, returning NULL.");
         return NULL;
     }
@@ -106,7 +104,7 @@ EXPORT_C CJavaRegistryEntry* CJavaRegistry::RegistryEntryL(
 
     if (writableEntry == NULL)
     {
-        WLOG(EJavaStorage,
+        ILOG(EJavaStorage,
              "Can't find entry for the given uid, returning NULL.");
         return NULL;
     }
@@ -124,7 +122,7 @@ EXPORT_C CJavaRegistryEntry* CJavaRegistry::RegistryEntryL(
         regEntry = new(ELeave)
         CJavaRegistryPackageEntry(writablePackageEntry);
         // pointer ownership passed over
-        LOG(EJavaStorage, EInfo, "PackageEntry created");
+        ILOG(EJavaStorage, "PackageEntry created");
     }
     else if (EGeneralApplication <= entryType)
     {
@@ -134,7 +132,7 @@ EXPORT_C CJavaRegistryEntry* CJavaRegistry::RegistryEntryL(
         regEntry = new(ELeave)
         CJavaRegistryApplicationEntry(writableAppEntry);
         // pointer ownership passed over
-        LOG(EJavaStorage, EInfo, "ApplicationEntry created");
+        ILOG(EJavaStorage, "ApplicationEntry created");
     }
     else
     {

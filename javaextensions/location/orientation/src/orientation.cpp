@@ -73,14 +73,9 @@ JNICALL Java_javax_microedition_location_Orientation__1getAzimuthData(
         KSensrvChannelTypeIdMagneticNorthData;
 
     Orientation->mFunctionServer = server;
-    TInt error = KErrNone;
-    TRAPD(err,CallMethodL(error, Orientation,&COrientation::GetOrientationL,server));
 
-    if (error < KErrNone)
-    {
-        err = error;
-    }
-
+    TRAPD(err,CallMethodL( Orientation,&COrientation::GetOrientationL,server));
+    	
     return err;
 }
 

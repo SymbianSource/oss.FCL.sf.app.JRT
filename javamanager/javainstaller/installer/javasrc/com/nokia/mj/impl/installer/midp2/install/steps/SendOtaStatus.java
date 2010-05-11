@@ -35,9 +35,6 @@ import com.nokia.mj.impl.utils.exception.InstallerExceptionBase;
  * Installation step for sending OTA status notifications.
  * This is the first and the last step in installation execution table.
  * This execution step may not throw any exceptions.
- *
- * @author Nokia Corporation
- * @version $Rev:  $ $Date:  $
  */
 public class SendOtaStatus extends ExeStep
 {

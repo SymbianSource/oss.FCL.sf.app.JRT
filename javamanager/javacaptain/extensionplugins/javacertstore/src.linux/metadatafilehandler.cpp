@@ -15,6 +15,7 @@
 *
 */
 
+#include <cstdio>
 
 #include "metadatafilehandler.h"
 

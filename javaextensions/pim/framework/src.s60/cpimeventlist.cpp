@@ -29,7 +29,7 @@
 #include  "pimjnitools.h"
 #include  "pimutils.h"
 #include  "s60commonutils.h"
-#include  "cleanupresetanddestroy.h"
+#include  "javasymbianoslayer.h"
 #include  "logger.h"
 
 CPIMEventList::CPIMEventList(const CPIMEventValidator& aValidator) :

@@ -26,9 +26,6 @@ import java.util.Date;
 
 /**
  * DownloadInfo contains information of one file download.
- *
- * @author Nokia Corporation
- * @version $Rev: 0 $ $Date$
  */
 public class DownloadInfo
 {

@@ -205,7 +205,7 @@ void CAppMngr2MidletRuntime::GetInstalledAppsL(
 
         //CleanupStack::PushL(entry);
         // Entry ownership is taken.
-        TRAP_IGNORE(GetInstalledAppL(aApps, aFsSession, entry));
+        GetInstalledAppL(aApps, aFsSession, entry);
 
         //CleanupStack::Pop(aEntry);
     }

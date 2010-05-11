@@ -1286,35 +1286,30 @@ TPtrC CMIDTextBoxQueryDialog::Read() const
 to either the displayable or to the item. Commands will be processed in ProcessCommandL(). */
 void CMIDTextBoxQueryDialog::CreateNonMidletCommandsL()
 {
-    RPointerArray<MMIDCommand> array;
-    CleanupClosePushL(array);
-
     if (((iConstraints & MMIDTextField::EConstraintMask) == MMIDTextField::EPhoneNumber) && !(iConstraints & MMIDTextField::EUneditable))
     {
-        AddCommandToArrayL(array, R_MIDP_PB_FETCH_NUMBER_SHORT_COMMAND_TEXT, R_MIDP_PB_FETCH_NUMBER_COMMAND_TEXT, CMIDEdwinUtils::EMenuCommandFetchPhoneNumber);
-        AddCommandToArrayL(array, R_MIDP_CREATE_CALL_SHORT_COMMAND_TEXT, R_MIDP_CREATE_CALL_COMMAND_TEXT, CMIDEdwinUtils::EMenuCommandCreatePhoneCall);
+        AddCommandToEdwinL(R_MIDP_PB_FETCH_NUMBER_SHORT_COMMAND_TEXT, R_MIDP_PB_FETCH_NUMBER_COMMAND_TEXT, CMIDEdwinUtils::EMenuCommandFetchPhoneNumber);
+        AddCommandToEdwinL(R_MIDP_CREATE_CALL_SHORT_COMMAND_TEXT, R_MIDP_CREATE_CALL_COMMAND_TEXT, CMIDEdwinUtils::EMenuCommandCreatePhoneCall);
     }
 
     if (((iConstraints & MMIDTextField::EConstraintMask) == MMIDTextField::EPhoneNumber) && (iConstraints & MMIDTextField::EUneditable))
     {
-        AddCommandToArrayL(array, R_MIDP_CREATE_CALL_SHORT_COMMAND_TEXT, R_MIDP_CREATE_CALL_COMMAND_TEXT, CMIDEdwinUtils::EMenuCommandCreatePhoneCall);
+        AddCommandToEdwinL(R_MIDP_CREATE_CALL_SHORT_COMMAND_TEXT, R_MIDP_CREATE_CALL_COMMAND_TEXT, CMIDEdwinUtils::EMenuCommandCreatePhoneCall);
     }
 
     if (((iConstraints & MMIDTextField::EConstraintMask) == MMIDTextField::EMailAddr) && !(iConstraints & MMIDTextField::EUneditable))
     {
-        AddCommandToArrayL(array, R_MIDP_PB_FETCH_EMAIL_SHORT_COMMAND_TEXT, R_MIDP_PB_FETCH_EMAIL_COMMAND_TEXT, CMIDEdwinUtils::EMenuCommandFetchEmailAddress);
+        AddCommandToEdwinL(R_MIDP_PB_FETCH_EMAIL_SHORT_COMMAND_TEXT, R_MIDP_PB_FETCH_EMAIL_COMMAND_TEXT, CMIDEdwinUtils::EMenuCommandFetchEmailAddress);
     }
-    AddCommandsToEdwinL(array);
-
-    CleanupStack::PopAndDestroy(&array);
 }
 
 /**
-Creates and adds new command to array based on shot & long label resource ids
+Creates and adds new command to edwin based on shot & long label resource ids
 and other parameters.
 */
-void CMIDTextBoxQueryDialog::AddCommandToArrayL(RPointerArray<MMIDCommand>& aArray,
-        TInt aCommandResIdShort, TInt aCommandResIdLong, TInt aCommandId)
+void CMIDTextBoxQueryDialog::AddCommandToEdwinL(TInt aCommandResIdShort,
+                                                TInt aCommandResIdLong,
+                                                TInt aCommandId)
 {
     TBuf<64> shortLabel;
     iEikonEnv->ReadResourceL(shortLabel, aCommandResIdShort);
@@ -1326,17 +1321,17 @@ void CMIDTextBoxQueryDialog::AddCommandToArrayL(RPointerArray<MMIDCommand>& aArr
 
     STATIC_CAST(CMIDCommand*,cmd)->SetObserver(this);
 
-    aArray.AppendL(cmd);
+    AddCommandToEdwinL(*cmd);
     CleanupStack::Pop(cmd);
 }
 
 /**
-Creates and adds new command to array, short label is the same as long label.
+Creates and adds new command to edwin, short label is the same as long label.
 */
-void CMIDTextBoxQueryDialog::AddCommandToArrayL(RPointerArray<MMIDCommand>& aArray,
-        TInt aCommandResId, TInt aCommandId)
+void CMIDTextBoxQueryDialog::AddCommandToEdwinL(TInt aCommandResId,
+                                                TInt aCommandId)
 {
-    AddCommandToArrayL(aArray, aCommandResId, aCommandResId, aCommandId);
+    AddCommandToEdwinL(aCommandResId, aCommandResId, aCommandId);
 }
 
 /** This method is called from the destructor and removes
@@ -1369,12 +1364,9 @@ void CMIDTextBoxQueryDialog::RemoveNonMidletCommands()
     }
 }
 
-void CMIDTextBoxQueryDialog::AddCommandsToEdwinL(RPointerArray<MMIDCommand>& aArray)
+void CMIDTextBoxQueryDialog::AddCommandToEdwinL(MMIDCommand& aCommand)
 {
-    for (TInt i = 0; i < aArray.Count(); i++)
-    {
-        STATIC_CAST(CMIDDisplayable*, iDisplayable)->AddCommandL(aArray[i]);
-    }
+    STATIC_CAST(CMIDDisplayable*, iDisplayable)->AddCommandL(&aCommand);
 }
 
 void CMIDTextBoxQueryDialog::CreatePhoneCallL()

@@ -24,7 +24,7 @@
 #include "cstsprincipal.h"
 #include "cstsapdumaskpermission.h"
 #include "cstsuserauth.h"
-#include "stscommon.h"
+#include "javasymbianoslayer.h"
 
 namespace java
 {

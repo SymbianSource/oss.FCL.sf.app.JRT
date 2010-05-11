@@ -40,9 +40,6 @@ import com.nokia.mj.impl.utils.LineReader;
  * that may be shown in the error cases: Some thread doesn't catch exception,
  * application start up fails by throwing some exception or DRM rights has been
  * expired.
- *
- * @author Nokia Corporation
- * @version $Rev$
  */
 
 final class RuntimeErrorDialog extends ErrorMessageBase

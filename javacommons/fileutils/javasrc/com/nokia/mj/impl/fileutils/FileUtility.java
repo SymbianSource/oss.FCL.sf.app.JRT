@@ -1289,6 +1289,35 @@ public final class FileUtility
 
         return _delete(iTarget.getFullPath());
     }
+    
+    /**
+     * Deletes the file or directory denoted by this pathname. If this pathname
+     * denotes a directory, then the directory must be empty in order to be
+     * deleted. Deletes the file or directory even if it is marked as read-only.
+     * <p>
+     * All open input and output streams are automatically flushed and closed.
+     * Attempts to further use those streams result in an IOException. The
+     * FileUtility instance object remains available for use.
+     *
+     * @return true if and only if the file or directory is successfully
+     *         deleted; false otherwise
+     * @throws SecurityException
+     *             if access was denied to the file/directory
+     */    
+    public boolean forceDelete() throws SecurityException
+    {
+      
+        // Close input and output Streams if created.
+        // Found in StreamConnectionBase
+
+        if (iStreamHandler != null)
+        {
+            iStreamHandler.closeInputStreams();
+            iStreamHandler.closeOutputStreams();
+        }
+
+        return _delete(iTarget.getFullPath());
+    }
 
     /**
      * Renames the selected file or directory to a new name in the same

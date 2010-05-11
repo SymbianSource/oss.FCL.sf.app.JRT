@@ -129,7 +129,8 @@ private:
         EInitial,
         EListing,
         EPreDisabling,
-        EPreEnabling
+        EPreEnabling,
+        EPreDeleting
     };
 
     //Datamembers.
@@ -159,12 +160,17 @@ private:
     TBool SendDisableEnableCommsMsg(const std::string& aId,
                                     TState aState,
                                     TRequestStatus* aRequestStatus);
+    TBool SendDeleteCommsMsg(const std::string& aId,
+                             TRequestStatus* aRequestStatus);
     TBool CheckCapability(const TCapability& aCapability,TRequestStatus* aRequestStatus);
-    void HandleDisableQuery(TRequestStatus &aRequestStatus);
-    void ShowQueryL();
+    void HandleDeleteDisableQuery(TRequestStatus &aRequestStatus, bool disableCertQuery);
+    void ShowQueryL(TInt resourceId);
     void SendDisableMsg(TInt aStatus);
+    void SendDeleteMsg(TInt aStatus);
     void HandleSendingEnableDisableMsg(TRequestStatus* aRequestStatus,
                                        TState aState,CJavaCertData& aCertDataObj);
+    void HandleSendingDeleteMsg(TRequestStatus* aRequestStatus,
+                                CJavaCertData& aCertDataObj);
 
     //Not implemented.
     CJavaCertStoreImpl(const CJavaCertStoreImpl &x);

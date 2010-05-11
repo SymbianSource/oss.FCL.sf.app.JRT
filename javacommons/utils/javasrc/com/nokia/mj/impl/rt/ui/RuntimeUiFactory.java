@@ -21,9 +21,6 @@ import com.nokia.mj.impl.rt.support.ApplicationInfo;
 
 /**
  * Factory for RuntimeUI interfaces.
- *
- * @author Nokia Corporation
- * @version $Rev: 0 $
  */
 public class RuntimeUiFactory
 {

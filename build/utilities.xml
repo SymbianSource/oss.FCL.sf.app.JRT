@@ -316,6 +316,10 @@
       debug="${javac.debug.on}"
       debuglevel="lines,vars,source"
       bootclasspath="${bcp}:${int.bcp}:${platform.api.jar}:${public.api.jar}${eswt.jar}">
+      
+   <!-- Uncomment the following line if you want to see Javac warnings. -->      
+   <!--   <compilerarg value="-Xlint"/> -->
+
       <src path="${jsrc.for.javac}"/>
     </javac>
   </presetdef>

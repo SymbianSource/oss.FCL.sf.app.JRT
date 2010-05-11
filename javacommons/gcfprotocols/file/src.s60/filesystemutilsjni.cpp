@@ -23,6 +23,7 @@
 #include "javasymbianoslayer.h"
 #include "s60commonutils.h"
 #include "logger.h"
+#include "javaoslayer.h"
 
 #include "systempropertyprovider.h"
 #include "com_nokia_mj_impl_file_FileSystemUtils.h"
@@ -108,48 +109,14 @@ JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_file_FileSystemUtils__1getPathO
 
 /*
  * Class:     com_nokia_mj_impl_file_FileSystemUtils
- * Method:    _getForbiddenPaths
+ * Method:    _getMidpRoot
  * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_file_FileSystemUtils__1getForbiddenPaths
-(JNIEnv *aJni, jclass)
+JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_file_FileSystemUtils__1getMidpRoot
+(JNIEnv *aEnv, jclass)
 {
-    JELOG2(EJavaFile);
-    jstring str = 0;
-    HBufC* names = 0;
+    std::string path;
+    java::util::JavaOsLayer::getMidpRoot(path);
 
-    SystemPropertyProvider::GetForbiddenPaths(names);
-    TPtrC namePtr(names->Des());
-    if (0 != names)
-    {
-        str = S60CommonUtils::NativeToJavaString(*aJni, namePtr);
-        delete names;
-    }
-    return str;
-}
-
-/*
- * Class:     com_nokia_mj_impl_file_FileSystemUtils
- * Method:    _getRestrictedPaths
- * Signature: ()Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_file_FileSystemUtils__1getRestrictedPaths
-(JNIEnv *aJni, jclass)
-{
-    JELOG2(EJavaFile);
-    jstring str = 0;
-    HBufC* names = 0;
-
-    TRAPD(err, SystemPropertyProvider::GetRestrictedPathsL(names));
-
-    if (KErrNone == err)
-    {
-        TPtrC namePtr(names->Des());
-        if (0 != names)
-        {
-            str = S60CommonUtils::NativeToJavaString(*aJni, namePtr);
-            delete names;
-        }
-    }
-    return str;
+    return aEnv->NewStringUTF((const char*)(path.c_str()));
 }

@@ -135,7 +135,11 @@ void CSwtBrowser::ConstructBrowserL(TBool aVisibility)
                             | TBrCtlDefs::ECapabilityCursorNavigation
                             | TBrCtlDefs::ECapabilityFavicon
                             | TBrCtlDefs::ECapabilityToolBar
-                            | TBrCtlDefs::ECapabilityFitToScreen;
+                            | TBrCtlDefs::ECapabilityFitToScreen
+#ifdef RD_JAVA_S60_RELEASE_9_2
+                            | TBrCtlDefs::ECapabilityPinchZoom
+#endif
+                            ;
 
     if ((iBrowserLevelStyle | KSwtStyleHScroll) || (iBrowserLevelStyle |  KSwtStyleVScroll))
     {
@@ -212,7 +216,7 @@ void CSwtBrowser::ConstructBrowserL(TBool aVisibility)
     iBrCtlInterface->SetBrowserSettingL(TBrCtlDefs::ESettingsAutoFormFillEnabled, Preferences().FormDataSaving());
 
     // Update browser local settings according to values stored in preferences
-    const TPreferencesValues& pref = iPreferences->AllPreferencesL();
+    const TPreferencesValues& pref = iPreferences->AllPreferences();
     iFontSize = pref.iFontSize;
     iTextWrap = pref.iTextWrap;
     iEncoding = pref.iEncoding;
@@ -220,6 +224,19 @@ void CSwtBrowser::ConstructBrowserL(TBool aVisibility)
     iBrCtlInterface->SetBrowserSettingL(TBrCtlDefs::ESettingsTextWrapEnabled, iTextWrap);
     iBrCtlInterface->SetBrowserSettingL(TBrCtlDefs::ESettingsCharacterset, iEncoding);
     iBrCtlInterface->SetBrowserSettingL(TBrCtlDefs::ESettingsLaunchAppUid, iDisplay.ApplicationUid());
+
+    if (pref.iZoomMin < pref.iZoomMax && pref.iZoomDef >= pref.iZoomMin && pref.iZoomDef <= pref.iZoomMax)
+    {
+        iBrCtlInterface->SetBrowserSettingL(TBrCtlDefs::ESettingsZoomLevelMin, pref.iZoomMin);
+        iBrCtlInterface->SetBrowserSettingL(TBrCtlDefs::ESettingsZoomLevelMax, pref.iZoomMax);
+        iBrCtlInterface->SetBrowserSettingL(TBrCtlDefs::ESettingsZoomLevelDefault, pref.iZoomDef);
+    }
+    else
+    {
+        iBrCtlInterface->SetBrowserSettingL(TBrCtlDefs::ESettingsZoomLevelMin, 10);
+        iBrCtlInterface->SetBrowserSettingL(TBrCtlDefs::ESettingsZoomLevelMax, 200);
+        iBrCtlInterface->SetBrowserSettingL(TBrCtlDefs::ESettingsZoomLevelDefault, 100);
+    }
 
     // WidgetExtension needs a valid base path.
     // Base path would be used to write preferences on Widget runtime context but
@@ -374,19 +391,32 @@ void CSwtBrowser::UpdateCbaL()
 }
 
 #ifdef RD_SCALABLE_UI_V2
+// ---------------------------------------------------------------------------
+// Originated from CSwtBrowserContainer, not CSwtShell.
+// ---------------------------------------------------------------------------
+//
 void CSwtBrowser::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 {
     iHandlingPointerEv = ETrue;
 
-    // From parent Shell coordinates to CSwtBrowserContainer coordinates
-    TPointerEvent event(aPointerEvent);
-    event.iPosition -= Rect().iTl;
-
-    iBrCtlInterface->HandlePointerEventL(event);
-
-    // Must grab to allow HandlePointerBufferReadyL to be forwarded to Browser
-    // Enables panning / touch scrolling.
-    iBrCtlInterface->ClaimPointerGrab(EFalse);
+    if (!iDisplay.RevertPointerEvent())
+    {
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        // From parent Shell coordinates to CSwtBrowserContainer coordinates
+        if (aPointerEvent.AdvancedPointerEvent())
+        {
+            TAdvancedPointerEvent event = *(static_cast<const TAdvancedPointerEvent*>(&aPointerEvent));
+            event.iPosition -= Rect().iTl;
+            iBrCtlInterface->HandlePointerEventL(event);
+        }
+        else
+#endif
+        {
+            TPointerEvent event = *(static_cast<const TPointerEvent *>(&aPointerEvent));
+            event.iPosition -= Rect().iTl;
+            iBrCtlInterface->HandlePointerEventL(event);
+        }
+    }
 
     iHandlingPointerEv = EFalse;
 }

@@ -154,7 +154,7 @@ class CanvasGraphicsItemPainter
             if (iGraphics == null)
             {
                 iGraphics = new Graphics(
-                    (Toolkit)iToolkit, this, iHandle,
+                    iToolkit, this, iHandle,
                     iItem.getWidth(), iItem.getHeight());
             }
 

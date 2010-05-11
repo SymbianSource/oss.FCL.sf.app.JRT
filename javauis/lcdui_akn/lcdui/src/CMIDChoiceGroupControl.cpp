@@ -1254,8 +1254,24 @@ void CMIDChoiceGroupControl::RequestScrollIfNeededL()
         return;
     }
 
+    TInt currentItem = KErrNotFound;
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    // First check if top visible item was set (only in case that
+    // ChoiceGroup was panned and now it is partially visible and
+    // got highlight by starting HW keys interaction).
+    // If item was set, do not scroll at all.
+    currentItem = iListBox->TopVisibleItemIndex();
+    if (currentItem == KErrNotFound)
+    {
+        // Top visible item was not set, i.e. ChoiceGroup already
+        // have highlight or it is fully visible or it is fully invisible.
+        currentItem = iListBox->CurrentItemIndex();
+    }
+#else
+    currentItem = iListBox->CurrentItemIndex();
+#endif // RD_JAVA_S60_RELEASE_9_2
+
     // Calculate current listbox item rect
-    TInt currentItem = iListBox->CurrentItemIndex();
     TRect lbitemRect = TRect(
                            iListBox->View()->ItemPos(currentItem),
                            iListBox->View()->ItemSize(currentItem));

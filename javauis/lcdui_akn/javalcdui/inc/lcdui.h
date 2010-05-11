@@ -720,13 +720,6 @@ public:
          */
         EDrwOpcBitBltRect = 1
 #endif // RD_JAVA_NGA_ENABLED
-
-        /**
-         * Indicates first ever canvas paint.
-         * Used to stop the splash screen.
-         * @since S60 9.2
-         */
-        ,EDrwOpcFirstPaint = 3
     };
 public:
     /**
@@ -830,6 +823,8 @@ public:
      */
     virtual void UpdateRect(const TRect& aRect) = 0;
 #endif // RD_JAVA_NGA_ENABLED
+    
+    virtual TBool ReadyToBlit() const = 0;
 };
 
 /**

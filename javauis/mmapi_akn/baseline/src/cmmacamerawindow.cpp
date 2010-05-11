@@ -206,7 +206,6 @@ void CMMACameraWindow::SetDrawRectThread(const TRect& aRect)
         // Stop and start ViewFinder to update position
         ResetViewFinder();
     }
-
 }
 
 
@@ -311,8 +310,6 @@ void CMMACameraWindow::SetWindowRect(
                 *this, CMMACameraWindow::EResetViewFinder);
         }
     }
-
-
 }
 
 
@@ -616,10 +613,6 @@ void CMMACameraWindow::SetViewFinderVisibility(TBool aVisible)
         {
             iUICamera->StopViewFinder();
         }
-        if (iDirectAccess->IsActive())
-        {
-            iDirectAccess->Cancel();
-        }
 
         iViewFinderVisible = EFalse;
     }
@@ -717,11 +710,12 @@ void CMMACameraWindow::StartViewFinder()
     }
     else
     {
-        DEBUG_INT(
-            "MMA::CMMACameraWindow::StartViewFinder()  - \
-StartViewFinderDirectL error=%d", vfError);
+        DEBUG_INT("MMA::CMMACameraWindow::StartViewFinder()  - \
+            StartViewFinderDirectL error=%d", vfError);
 
-        TRAP_IGNORE(DrawViewFinderErrorL(vfError, drawRect));
+        TRAPD(error, DrawViewFinderErrorL(vfError, drawRect));
+        DEBUG_INT("MMA::CMMACameraWindow::StartViewFinder, \
+            DrawViewFinderErrorL error = %d", error);
     }
 
     DEBUG(" > StartViewFinder");
@@ -738,8 +732,18 @@ void CMMACameraWindow::DrawViewFinderErrorL(
     const TInt /*aError*/,
     const TRect& aDrawRect)
 {
+    if (!iDirectAccess)
+    {
+        if (!iWs || !iScreenDevice || !iWindow) return;
 
-    ASSERT(iDirectAccess);
+        DEBUG("MMA::CMMACameraWindow::DrawViewFinderErrorL - \
+            Instantiating CDirectScreenAccess");
+        iDirectAccess = CDirectScreenAccess::NewL(*iWs,
+                                     *iScreenDevice,
+                                     *iWindow,
+                                     *this);
+    }
+
     TInt dcError = KErrNone;
     if (!iDirectAccess->IsActive())
     {
@@ -831,9 +835,12 @@ void CMMACameraWindow::ReleaseUiResources()
         delete iUICamera;
         iUICamera = NULL;
         iCameraPowerOn = EFalse;
-        iDirectAccess->Cancel();
-        delete iDirectAccess;
-        iDirectAccess = NULL;
+        if (iDirectAccess)
+        {
+            iDirectAccess->Cancel();
+            delete iDirectAccess;
+            iDirectAccess = NULL;
+        }
         delete iErrorIconBitmap;
         iErrorIconBitmap = NULL;
         delete iErrorIconMaskBitmap;
@@ -882,15 +889,6 @@ void CMMACameraWindow::MdcDSAResourcesCallback(
     CWsScreenDevice &aScreenDevice,
     RWindowBase &aWindow)
 {
-    TRAPD(error, iDirectAccess = CDirectScreenAccess::NewL(aWs,
-                                 aScreenDevice,
-                                 aWindow,
-                                 *this));
-    DEBUG_INT("MMA::CMMACameraWindow::MdcDSAResourcesCallback, error = %d", error);
-    if (KErrNone != error)
-    {
-        return;
-    }
     this->UIStartViewFinder(aWs, aScreenDevice, aWindow);
 }
 

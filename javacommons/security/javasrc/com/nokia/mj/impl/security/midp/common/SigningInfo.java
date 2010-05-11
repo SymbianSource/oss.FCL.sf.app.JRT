@@ -24,9 +24,6 @@ import com.nokia.mj.impl.security.common.Certificate;
  *  - protection domain
  *  - signing certificate (e.k.a end-entity certificate)
  *  - root certificate
- *
- * @author Nokia Corporation
- * @version $Rev: 0 $
  */
 public class SigningInfo
 {

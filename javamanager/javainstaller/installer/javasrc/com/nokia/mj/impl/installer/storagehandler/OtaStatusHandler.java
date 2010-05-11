@@ -44,9 +44,6 @@ import java.util.Vector;
  * Because JavaStorage limits the number of concurrent sessions to
  * one for each database, the OtaStatusHandler uses a separate
  * JavaOtaStorage database for storing the OTA status notifications.
- *
- * @author Nokia Corporation
- * @version $Rev: 9041 $ $Date: 2009-12-07 18:36:08 +0200 (Mon, 07 Dec 2009) $
  */
 public class OtaStatusHandler
 {

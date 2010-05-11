@@ -626,28 +626,18 @@ void CStartScreen::RunL()
 {
     if (mState == ESyncRead)
     {
-        if (iStatus == KErrUnderflow)
+        if (mWait.IsStarted())
         {
-            ELOG1(EJavaUI, "CStartScreen::RunL, "
-                  "CImageDecoder::Convert failed: %d", KErrUnderflow);
-            mDecoder->ContinueConvert(&iStatus);
-            SetActive();
+            mWait.AsyncStop();
         }
-        else
-        {
-            if (mWait.IsStarted())
-            {
-                mWait.AsyncStop();
-            }
 
-            // Release the lock on the file.
-            ASSERT(mDecoder);
-            delete mDecoder;
-            mDecoder = NULL;
+        // Release the lock on the file.
+        ASSERT(mDecoder);
+        delete mDecoder;
+        mDecoder = NULL;
 
-            // Reset state
-            mState = EIdle;
-        }
+        // Reset state
+        mState = EIdle;
     }
     else if (mState == EAsyncWrite)
     {

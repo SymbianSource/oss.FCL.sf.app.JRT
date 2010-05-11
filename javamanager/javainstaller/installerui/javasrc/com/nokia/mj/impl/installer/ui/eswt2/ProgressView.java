@@ -58,29 +58,29 @@ public class ProgressView extends ViewBase
     }
 
     /** Constructor */
-    protected ProgressView(InstallerUiEswt aInstaller, Composite aParent)
+    protected ProgressView(InstallerUiEswt aInstallerUi, Composite aParent)
     {
-        this(aInstaller, aParent, "");
+        this(aInstallerUi, aParent, "");
     }
 
     /** Constructor */
-    protected ProgressView(InstallerUiEswt aInstaller, Composite aParent, String aMsg)
+    protected ProgressView(InstallerUiEswt aInstallerUi, Composite aParent, String aMsg)
     {
-        this(aInstaller, aParent, aMsg, false);
+        this(aInstallerUi, aParent, aMsg, false);
     }
 
     /** Constructor */
-    protected ProgressView(InstallerUiEswt aInstaller, Composite aParent, String aMsg,
+    protected ProgressView(InstallerUiEswt aInstallerUi, Composite aParent, String aMsg,
                            boolean aIndeterminate)
     {
-        super(aInstaller, aParent, 8);
+        super(aInstallerUi, aParent, 8);
         iMsg = aMsg;
 
         // Add header.
         if (iInstallerUi != null && iInstallerUi.getInstallInfo() != null)
         {
             // Add header.
-            addHeader(aMsg, iInstallerUi.getInstallInfo(), null);
+            addHeader(aMsg, iInstallerUi.getInstallInfo(), null, false);
         }
         else
         {

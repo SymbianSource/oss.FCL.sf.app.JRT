@@ -23,6 +23,10 @@
 #include <fstream>
 #include <unistd.h>
 
+#ifndef __SYMBIAN32__
+#include <signal.h>
+#endif // __SYMBIAN32__
+
 #include "midpruntimestarter.h"
 #include "applicationinfosetter.h"
 #include "runtimeexception.h"
@@ -59,7 +63,7 @@ const wchar_t* const TRUE_WSTR          = L"true";
 
 
 MidpRuntimeStarter::MidpRuntimeStarter(): mMidletInfo(new MidletInfo()), // codescanner::nonleavenew
-        mRuntimeState(Constructed)
+        mRuntimeState(Constructed), mShudownOk(false)
 {
     JELOG2(EJavaRuntime);
 }
@@ -235,6 +239,14 @@ int MidpRuntimeStarter::start(int argc, char *argv[])
         mComms->disconnect();
     }
     CoreUi::releaseUi(coreUiLoader);
+
+    // Close the thread that ensures the exit.
+    if (mExitMonitor.get())
+    {
+        mShudownOk = true;
+        LOG(EJavaRuntime, EInfo, "Notifying exit thread.");
+        mExitMonitor->notify();
+    }
 
     return status;
 }
@@ -489,14 +501,47 @@ void MidpRuntimeStarter::doStateChange(StateChangeRequest request)
     }
 
 }
+
+void* MidpRuntimeStarter::ensureExit(void* ptr)
+{
+    JELOG2(EUtils);
+#ifdef __SYMBIAN32__
+    RThread().SetPriority(EPriorityMore);
+#endif // __SYMBIAN32__
+    MidpRuntimeStarter* starter = reinterpret_cast<MidpRuntimeStarter*>(ptr);
+    LOG(EJavaRuntime, EInfo, "Starting to wait for the shutdown.");
+    const int waitTime = 1000; // 1 second.
+    starter->mExitMonitor->wait(waitTime);
+    LOG(EJavaRuntime, EInfo, "woke up from monitor.");
+    if (!starter->mShudownOk)
+    {
+        LOG(EJavaRuntime, EInfo, "Killing process.");
+#ifdef __SYMBIAN32__
+        RProcess().Kill(0);
+#else
+        kill(getpid(), SIGTERM);
+#endif // __SYMBIAN32__
+    }
+    LOG(EJavaRuntime, EInfo, "Clean exit.");
+    return 0;
+}
+
 void MidpRuntimeStarter::closeRuntimeInd()
 {
     JELOG2(EJavaRuntime);
     LOG(EJavaRuntime, EInfo, "Starter got close indication from JVM");
+
+    // Create a thread for ensure the exit of the process, if something goes
+    // wrong.
+    pthread_t tid;
+    mExitMonitor.reset(Monitor::createMonitor());
+    pthread_create(&tid, 0, ensureExit, this);
+
     if (mMidletInfo->mPushStart)
     {
         closePush();
     }
+
 }
 
 void MidpRuntimeStarter::setUids(const Uid& midletUid, const Uid& midletSuiteUid)

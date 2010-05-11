@@ -86,7 +86,6 @@ void StorageHandler::getChainFromIndex(
     std::string& aChain)
 {
     int i = 1;
-    wstring chain = L"";
     bool foundPart = true;
     const wstring attrPrefix = L"MIDlet-Certificate-";
     JavaStorageEntry attr;
@@ -119,7 +118,9 @@ void StorageHandler::getChainFromIndex(
 
                 if (entryFinder != (*appIter).end())
                 {
-                    chain.append((*entryFinder).entryValue());
+                    char* tmp = JavaCommonUtils::wstringToUtf8((*entryFinder).entryValue());
+                    aChain.append(JavaCommonUtils::base64decode(tmp));
+                    delete [] tmp;
                 }
 
                 found = true;
@@ -135,11 +136,8 @@ void StorageHandler::getChainFromIndex(
         i++;
     }
     while (foundPart);
-
-    char* tempStr = JavaCommonUtils::wstringToUtf8(chain);
-    aChain.append(tempStr);
-    delete [] tempStr;
 }
+
 void StorageHandler::findEntry(const JavaStorageApplicationList_t& queryResult,
                                const std::wstring& eName,
                                std::wstring& eValue)

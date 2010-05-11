@@ -517,7 +517,7 @@ void CWriteableJavaRegistryEntry::PopulateCertChains() const
     {
         if ((*iter).size() > 0)
         {
-            string decoded = JavaCommonUtils::base64decode((*iter));
+            string decoded = (*iter);
 
             HBufC8* decodedBuf = HBufC8::New(decoded.size());
             TPtr8 decodedBufPtr(decodedBuf->Des());

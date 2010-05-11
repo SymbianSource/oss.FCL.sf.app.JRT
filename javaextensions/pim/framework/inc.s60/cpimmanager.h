@@ -43,6 +43,7 @@ class CPIMContactValidator;
 class CPIMEventValidator;
 class CPIMToDoValidator;
 class MPIMAdapterAccess;
+class CCalSession;
 
 // CLASS DECLARATION
 
@@ -77,7 +78,7 @@ public: // Constructors and destructor
      * Destructor.
      */
     virtual ~CPIMManager();
-
+	void DeleteSessions();
 public: // New functions
 
     /**
@@ -200,13 +201,13 @@ protected: // New functions
     CPIMToDoList* DoOpenToDoListL(
         const TDesC* aListName);
 
-    CDesCArray* CPIMManager::DoListPimListsL(
+    CDesCArray* DoListPimListsL(
         const TPIMListType& aPimListType);
 
-    pimbaselist* CPIMManager::DoOpenPimListL(
+    pimbaselist* DoOpenPimListL(
         const TPIMListType& aPimListType,
         const TDesC* aPimListName);
-
+	void CreateCalSessionL();
     void dispose();
 
 private: // Constructors
@@ -240,6 +241,13 @@ private: // Data
     /** Owned. */
     CPIMToDoValidator* iToDoValidator;
 
+    RLibrary iLocalizationLibrary;
+	
+    
+    /** Session to calendar server. Owned. */
+    CCalSession* iCalSession;
+    
+    
 
 };
 

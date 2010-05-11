@@ -180,14 +180,14 @@ public class LocalisationTest extends TestCase implements InstallerMain
             "Test %U[20",
             new Formatter("Test %U[20").arg("testMyTest").toString());
 
-        // Test %U[300] Skip
+        // Test %U[300]
         assertEquals(
-            "Test %U[300]",
+            "Test testMyTest",
             new Formatter("Test %U[300]").arg("testMyTest").toString());
 
-        // Test %U[8] Skip
+        // Test %U[8]
         assertEquals(
-            "Test %U[8]",
+            "Test testMyTe",
             new Formatter("Test %U[8]").arg("testMyTest").toString());
 
         // Test Max is higher than actual string. Expected output: whole string no padding.

@@ -238,11 +238,19 @@ public class InstallerResultMessage
      */
     public void send(int[] aEndpoints) throws InstallerException
     {
+        InstallerException installerException = null;
         if (aEndpoints != null)
         {
-            for (int i = 0; i < aEndpoints.length; i++)
+            try
             {
-                send(aEndpoints[i]);
+                for (int i = 0; i < aEndpoints.length; i++)
+                {
+                    send(aEndpoints[i]);
+                }
+            }
+            catch (InstallerException ie)
+            {
+                installerException = ie;
             }
         }
         if (iSifNotifier != null)
@@ -266,6 +274,10 @@ public class InstallerResultMessage
             {
                 Log.logError("InstallerResultMessage: SifNotifier.notifyEnd failed", t);
             }
+        }
+        if (installerException != null)
+        {
+            throw installerException;
         }
     }
 

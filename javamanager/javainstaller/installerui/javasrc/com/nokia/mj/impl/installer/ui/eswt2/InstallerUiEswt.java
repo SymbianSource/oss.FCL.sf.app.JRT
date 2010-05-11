@@ -28,6 +28,7 @@ import com.nokia.mj.impl.installer.ui.LaunchAppInfo;
 import com.nokia.mj.impl.installer.ui.PermissionInfo;
 import com.nokia.mj.impl.installer.ui.UninstallInfo;
 import com.nokia.mj.impl.installer.ui.eswt.MinimalUi;
+import com.nokia.mj.impl.rt.ui.ConfirmData;
 import com.nokia.mj.impl.rt.ui.RuntimeUi;
 import com.nokia.mj.impl.rt.ui.RuntimeUiFactory;
 import com.nokia.mj.impl.utils.ResourceUtil;
@@ -58,9 +59,6 @@ import org.eclipse.swt.widgets.Shell;
 
 /**
  * JavaInstaller eSWT UI.
- *
- * @author Nokia Corporation
- * @version $Rev: 0 $
  */
 public class InstallerUiEswt extends InstallerUi
 {
@@ -78,6 +76,9 @@ public class InstallerUiEswt extends InstallerUi
     private PermissionConfirmationView iPermissionConfirmationView = null;
     private UsernamePasswordView iUsernamePasswordView = null;
     private LaunchAppQueryView iLaunchAppQueryView = null;
+    private ErrorView iErrorView = null;
+    private ErrorDetailsView iErrorDetailsView = null;
+    private RuntimeConfirmationView iRuntimeConfirmationView = null;
     /** Synchronization object for waiting for the UI initialization. */
     private Object iInitWaitObject = new Object();
     /** Synchronization object for waiting for the UI termination. */
@@ -131,6 +132,7 @@ public class InstallerUiEswt extends InstallerUi
     {
         super.init(aMode, aListener);
         StartUpTrace.doTrace("InstallerUiEswt init");
+        InstallerRuntimeUi.init(this);
         // Create a hashtable for icons.
         iImageTable = new Hashtable();
         // Create a new thread to be the UI main thread.
@@ -270,6 +272,18 @@ public class InstallerUiEswt extends InstallerUi
         if (iLaunchAppQueryView != null)
         {
             iLaunchAppQueryView.confirmCancel();
+        }
+        if (iErrorView != null)
+        {
+            iErrorView.confirmCancel();
+        }
+        if (iErrorDetailsView != null)
+        {
+            iErrorDetailsView.confirmCancel();
+        }
+        if (iRuntimeConfirmationView != null)
+        {
+            iRuntimeConfirmationView.confirmCancel();
         }
         // Remove download progress bar if it visible.
         if (iDlProgressView != null && !iDlProgressView.isDisposed())
@@ -686,7 +700,7 @@ public class InstallerUiEswt extends InstallerUi
         {
             return;
         }
-        if (iDlProgressView != null)
+        if (iDlProgressView != null && !iDlProgressView.isDisposed())
         {
             iDlProgressView.dispose();
             iDlProgressView = null;
@@ -803,7 +817,6 @@ public class InstallerUiEswt extends InstallerUi
 
     /**
      * Notify user that an error has occurred.
-     * This method must return quickly.
      *
      * @param aInstallerException exception indicating the error reason
      */
@@ -812,17 +825,59 @@ public class InstallerUiEswt extends InstallerUi
         super.error(aInstallerException);
 
         waitForUi();
-        // InstallerUi does not have to be ready as long as
-        // RuntimeUi is used to display error messages.
-        //if (!isUiReady()) {
-        //    return;
-        //}
+        if (!isUiReady()) {
+            showRuntimeUiError(aInstallerException);
+            return;
+        }
 
+        // Use ErrorView to display error message.
+        if (iErrorView == null)
+        {
+            final Display display = iParent.getDisplay();
+            final InstallerUiEswt self = this;
+            display.syncExec(new Runnable()
+            {
+                public void run()
+                {
+                    iErrorView = new ErrorView(self, iDialog);
+                }
+            });
+        }
+        boolean result = iErrorView.error(aInstallerException);
+        iErrorView.dispose();
+        iErrorView = null;
+
+        if (result)
+        {
+            // Display error details.
+            if (iErrorDetailsView == null)
+            {
+                final Display display = iParent.getDisplay();
+                final InstallerUiEswt self = this;
+                display.syncExec(new Runnable()
+                {
+                    public void run()
+                    {
+                        iErrorDetailsView = new ErrorDetailsView(self, iDialog);
+                    }
+                });
+            }
+            result = iErrorDetailsView.error(aInstallerException);
+            iErrorDetailsView.dispose();
+            iErrorDetailsView = null;
+        }
+    }
+
+    /**
+     * Notify user that an error has occurred using RuntimeUI.
+     *
+     * @param aInstallerException exception indicating the error reason
+     */
+    private void showRuntimeUiError(InstallerExceptionBase aInstallerException)
+    {
         boolean identified = false;
-        //String tmpAppName = null;
         if (iInstallInfo != null)
         {
-            //tmpAppName = iInstallInfo.getName();
             if (iInstallInfo.getCertificates() != null)
             {
                 identified = true;
@@ -830,7 +885,6 @@ public class InstallerUiEswt extends InstallerUi
         }
         else if (iUninstallInfo != null)
         {
-            //tmpAppName = iUninstallInfo.getName();
             if (iUninstallInfo.getCertificates() != null)
             {
                 identified = true;
@@ -853,67 +907,50 @@ public class InstallerUiEswt extends InstallerUi
         {
             iProgressView.setVisible(false);
         }
-        // Use RuntimeUi to display error message.
+        // Use RuntimeUi to display uninstallation error message.
         RuntimeUi runtimeUi = RuntimeUiFactory.getRuntimeUi(identified);
         runtimeUi.error(tmpTitle, aInstallerException);
         runtimeUi.destroy();
+    }
 
-        /*
-        // Display error message using eSWT MessageBox.
-        final String appName = tmpAppName;
-        final String title = tmpTitle;
-        final String shortMsg = aInstallerException.getShortMessage();
-        final String detailedMsg = aInstallerException.getDetailedMessage();
-        // UI updates must be executed in UI thread.
-        iParent.getDisplay().syncExec
-            (new Runnable() {
-                    public void run() {
-                        if (detailedMsg == null || detailedMsg.length() == 0) {
-                            // No detailed msg, display only short msg.
-                            MessageBox messageBox = new MessageBox
-                                (iParent, SWT.ICON_ERROR | SWT.OK);
-                            messageBox.setText(title);
-                            messageBox.setMessage
-                                (getMessage(title, appName, shortMsg, false));
-                            messageBox.open();
-                        } else {
-                            // Display both short and detailed msgs.
-                            MessageBox messageBox = new MessageBox
-                                (iParent, SWT.ICON_ERROR | SWT.YES | SWT.NO);
-                            messageBox.setText(title);
-                            messageBox.setMessage
-                                (getMessage(title, appName, shortMsg, true));
-                            int answer = messageBox.open();
-                            if ((answer & SWT.YES) != 0) {
-                                // User wants to see details, display them.
-                                messageBox = new MessageBox
-                                    (iParent, SWT.ICON_ERROR | SWT.OK);
-                                messageBox.setText(title);
-                                messageBox.setMessage
-                                    (getMessage(title, appName, detailedMsg, false));
-                                messageBox.open();
-                            }
-                        }
-                    }
-                    private String getMessage(String aTitle, String aAppName,
-                                              String aMsg, boolean aDetailsQuery) {
-                        //String result = aTitle + "\n\n";
-                        String result = "";
-                        if (aAppName == null) {
-                            result += aMsg;
-                        } else {
-                            result += aAppName + "\n\n" + aMsg;
-                        }
-                        if (aDetailsQuery) {
-                            result += "\n\n";
-                            result += InstallerUiTexts.get
-                                (InstallerUiTexts.DETAILS_QUERY);
-                        }
-                        return result;
-                    }
-                });
+    /**
+     * Seeks confirmation from the user.
+     *
+     * @param aAppName     the name of the application on behalf of which the
+     *                     confirmation is requested
+     * @param aConfirmData the data to be confirmed. Unless the user has
+     *                     canceled the confirmation, this data will be filled
+     *                     in with user's answer upon return
+     * @return             true if the user has answered, false if the user has
+     *                     canceled the confirmation
+     */
+    public boolean confirm(String aAppName, ConfirmData aConfirmData)
+    {
+        waitForUi();
+        if (!isUiReady()) {
+            return true;
+        }
 
-        */
+        if (iRuntimeConfirmationView == null)
+        {
+            final Display display = iParent.getDisplay();
+            final InstallerUiEswt self = this;
+            final String appName = aAppName;
+            final ConfirmData confirmData = aConfirmData;
+            display.syncExec(new Runnable()
+            {
+                public void run()
+                {
+                    iRuntimeConfirmationView = new RuntimeConfirmationView(
+                        self, iDialog, appName, confirmData);
+                }
+            });
+        }
+        boolean result = iRuntimeConfirmationView.confirm();
+        iRuntimeConfirmationView.dispose();
+        iRuntimeConfirmationView = null;
+        log("Runtime confirmation returns " + result);
+        return result;
     }
 
     /**
@@ -1020,7 +1057,7 @@ public class InstallerUiEswt extends InstallerUi
     /**
      * Hides or unhides InstallerUi.
      */
-    protected void hide(boolean aHide)
+    public void hide(boolean aHide)
     {
         iParent.setMinimized(aHide);
     }

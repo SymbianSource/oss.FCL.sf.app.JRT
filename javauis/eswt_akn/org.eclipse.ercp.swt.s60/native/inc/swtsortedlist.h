@@ -43,7 +43,7 @@ public:
      * @return pointer to an object of this class
      */
     static CSwtSortedList* NewL(MSwtDisplay& aDisplay, TSwtPeer aPeer,
-                                MSwtComposite& aParent, TInt aStyle);
+    MSwtComposite& aParent, TInt aStyle);
 
 protected:
     /**
@@ -130,7 +130,7 @@ protected:
      * @param aSearchField the search field.
      */
     void UpdateSearchTextViewRect(const CAknSearchField* aSearchField);
-    
+
     /**
      * Rebound the filter.
      */

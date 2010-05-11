@@ -172,7 +172,7 @@ private:
         const TRect& aViewbox,
         const TPoint& aAnchor);
 
-    void CM2GRenderContext::RenderESWTL(
+    void RenderESWTL(
         TM2GSvgDocumentHandle& aSvgDocHandle,
         TReal32 aCurrentTime,
         const TRect& aViewbox,

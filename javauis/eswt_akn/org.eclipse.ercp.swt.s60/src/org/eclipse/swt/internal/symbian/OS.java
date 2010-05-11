@@ -21,7 +21,7 @@ import org.eclipse.swt.internal.Library;
 /**
  * @brief This is the place where all native functions are located.
  *
- * This class is not supposed to be instanciated as it only contains static
+ * This class is not supposed to be instantiated as it only contains static
  * methods. <b>Warning</b>: the content of this class is platform dependent.
  */
 public class OS
@@ -32,6 +32,12 @@ public class OS
     {
         Library.loadLibrary("eswt");
     }
+    
+    public static final int WS_SYMBIAN_S60_50 = 1;
+    public static final int WS_SYMBIAN_S60_92 = 2;
+
+    // Underlying window server.
+    public static final int windowServer = windowServer();
 
     /*
      * Class Device
@@ -301,6 +307,7 @@ public class OS
     public static final native void Shell_SetImeInputMode(int shellHandle, int mode);
     public static final native Rectangle Shell_GetDefaultBounds(int shellHandle);
     public static final native void Shell_SetAsyncPainting(int shellHandle, boolean status);
+    public static final native void Shell_SetTaskTip(int shellHandle);
 
     /*
      * Class Label
@@ -481,4 +488,8 @@ public class OS
     public static final native int ImageDataLoader_GetLogicalScreenHeight(int handle);
     public static final native int ImageDataLoader_GetLogicalScreenWidth(int handle);
 
+    /*
+     * General
+     */
+    private static final native int windowServer();
 }

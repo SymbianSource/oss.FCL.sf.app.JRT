@@ -42,7 +42,12 @@
 
 
 CMIDChoiceGroupListBox::CMIDChoiceGroupListBox(CMIDChoiceGroupControl* aChoiceControl)
-        : CAknColumnListBox(), iChoiceControl(aChoiceControl)
+        : CAknColumnListBox()
+        , iChoiceControl(aChoiceControl)
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        , iHighlight(EFalse)
+        , iTopVisibleItemIndex(KErrNotFound)
+#endif // RD_JAVA_S60_RELEASE_9_2
 {
     ASSERT(iChoiceControl);
 }
@@ -109,20 +114,65 @@ TKeyResponse CMIDChoiceGroupListBox::OfferKeyEventL(
     // First save the currently selected item
     TInt oldCurrent = iView->CurrentItemIndex();
 
-    // Let the listbox handle the key
-    TKeyResponse resp =
-        CAknColumnListBox::OfferKeyEventL(aKeyEvent, aType);
+    TKeyResponse resp = EKeyWasNotConsumed;
 
-    // If the key was up or down, and the current item did not change,
-    // we were apparently already on the first or last item.
-    // Return  EKeyWasNotConsumed so that the form knows to transfer focus
-    // BUT ONLY if not used in a popup (otherwise the form will get it and
-    // move focus under the popup)
+#ifdef RD_JAVA_S60_RELEASE_9_2
     if (iChoiceControl->ChoiceType() != MMIDChoiceGroup::EPopup)
     {
+        if (aType != EEventKey || iHighlight)
+        {
+            // Do not pass the EEventKey to ListBox in case of first
+            // HW key action after highlight was disabled.
+            resp = CAknColumnListBox::OfferKeyEventL(aKeyEvent, aType);
+        }
+        else
+        {
+            // This is first HW key action after highlight was disabled:
+            // highlight should be enabled
+            UpdateTopVisibleItemIndex();
+            if (iTopVisibleItemIndex > KErrNotFound)
+            {
+                // First top visible element should be highlighted
+                iView->SetCurrentItemIndex(iTopVisibleItemIndex);
+                // Item drawer must know, that highlight should be enabled
+                // from now.
+                CColumnListBoxItemDrawer* drawer = ItemDrawer();
+                if (drawer)
+                {
+                    drawer->ClearFlags(
+                        CListItemDrawer::ESingleClickDisabledHighlight);
+                }
+                // Report, that current highlighted element changed
+                ReportEventL(MCoeControlObserver::EEventStateChanged);
+                resp = EKeyWasConsumed;
+                DrawNow();
+                iTopVisibleItemIndex = KErrNotFound;
+            }
+            // Enable highlight flag for this ChoiceGroup, even if top visible
+            // element wasn't found (ChoiceGroup is now fully invisible).
+            iHighlight = ETrue;
+        }
+    }
+    else
+    {
+        // For popup ChoiceGroup, handle key events in usual way
+        resp = CAknColumnListBox::OfferKeyEventL(aKeyEvent, aType);
+    }
+#else
+    // Let the ListBox handle the key
+    resp = CAknColumnListBox::OfferKeyEventL(aKeyEvent, aType);
+#endif // RD_JAVA_S60_RELEASE_9_2
+
+    if (iChoiceControl->ChoiceType() != MMIDChoiceGroup::EPopup)
+    {
+        // If the key was up or down, and the current item did not change,
+        // we were apparently already on the first or last item.
+        // Return  EKeyWasNotConsumed so that the form knows to transfer focus
+        // BUT ONLY if not used in a popup (otherwise the form will get it and
+        // move focus under the popup)
         TInt newCurrent = iView->CurrentItemIndex();
         TBool change = oldCurrent != newCurrent;
-        TInt lastItemIdx = -1;
+        TInt lastItemIdx = KErrNotFound;
         if (iModel)
         {
             lastItemIdx = iModel->NumberOfItems() - 1;
@@ -349,6 +399,8 @@ void CMIDChoiceGroupListBox::HandlePointerEventL(const TPointerEvent& aPointerEv
     if (aPointerEvent.iType == TPointerEvent::EButton1Down)
     {
         iUpEventSent = EFalse;
+        iHighlight = EFalse;
+        UpdateTopVisibleItemIndex();
     }
 #endif // RD_JAVA_S60_RELEASE_9_2   
 
@@ -417,3 +469,65 @@ void CMIDChoiceGroupListBox::HandlePointerEventL(const TPointerEvent& aPointerEv
     }
 }
 #endif
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+/**
+ * Returns index of ChoiceGroup element, which is the first
+ * visible element in ChoiceGroup from top of Form.
+ * Used in CMIDChoiceGroupControl, which needs to know
+ * current element for possible scrolling
+ * (@see CMIDChoiceGroupControl::RequestScrollIfNeededL()).
+ */
+TInt CMIDChoiceGroupListBox::TopVisibleItemIndex()
+{
+    return iTopVisibleItemIndex;
+}
+
+/**
+ * Fuction calculates index of element, which is the first
+ * visible element in ChoiceGroup from top of Form.
+ */
+void CMIDChoiceGroupListBox::UpdateTopVisibleItemIndex()
+{
+    if (!iHighlight)
+    {
+        // There is touch interaction, so we need index for element,
+        // which will be highlighted, when user starts using HW keys
+        if (iPosition.iY < 0)
+        {
+            // ChoiceGroup is now partially visible and its top edge is
+            // above the Form top edge.
+
+            // Calculate index of first (partially) visible element
+            iTopVisibleItemIndex = Abs(iPosition.iY) / iView->ItemHeight();
+            TRect lbitemRect = TRect(
+                                   iView->ItemPos(iTopVisibleItemIndex),
+                                   iView->ItemSize(iTopVisibleItemIndex));
+            if (lbitemRect.iTl.iY < 0)
+            {
+                // Item is really partially visible.
+                // Because we don't want index of partially visible item,
+                // move index to next item
+                iTopVisibleItemIndex++;
+            }
+            if (iTopVisibleItemIndex >= iModel->NumberOfItems())
+            {
+                // ChoiceGroup is fully invisible (whole rect is above
+                // the Form top edge): no element is visible now
+                iTopVisibleItemIndex = KErrNotFound;
+            }
+        }
+        else
+        {
+            // Top item idge is lower than top edge of Form - is visible
+            iTopVisibleItemIndex = 0;
+        }
+    }
+    else
+    {
+        // In case of HW keys interaction, there is no highlight,
+        //  so we don't need highlight any element
+        iTopVisibleItemIndex = KErrNotFound;
+    }
+}
+#endif // RD_JAVA_S60_RELEASE_9_2

@@ -144,47 +144,22 @@ CSwtBrowserPreferences::~CSwtBrowserPreferences()
 
 void CSwtBrowserPreferences::RestoreSettingsL()
 {
-    // Read auto load images setting
     iAllPreferences.iAutoLoadImages = GetIntValue(KBrowserNGImagesEnabled);
-
-    // Read font size
     iAllPreferences.iFontSize = GetIntValue(KBrowserNGFontSize);
-
-    // Read Allow Cookies setting
-    if (GetIntValue(KBrowserNGCookiesEnabled))
-    {
-        iAllPreferences.iCookies = EWmlSettingsCookieAllow;
-    }
-    else
-    {
-        iAllPreferences.iCookies = EWmlSettingsCookieReject;
-    }
-
-    // Read ECMA Setting
-    if (GetIntValue(KBrowserNGECMAScriptSupport))
-    {
-        iAllPreferences.iEcma = EWmlSettingsECMAEnable;
-    }
-    else
-    {
-        iAllPreferences.iEcma = EWmlSettingsECMADisable;
-    }
+    iAllPreferences.iCookies = GetIntValue(KBrowserNGCookiesEnabled);
+    iAllPreferences.iEcma = GetIntValue(KBrowserNGECMAScriptSupport);
 
     TInt encoding;
     iRepository->Get(KBrowserNGEncoding, encoding);
-    iAllPreferences.iEncoding = static_cast< TUint32 >(encoding);
+    iAllPreferences.iEncoding = (TUint32)encoding;
 
-    // Read operator variated settings
-    iAllPreferences.iPageOverview = GetIntValue(
-                                        KBrowserNGPageOverview);
-    iAllPreferences.iBackList
-    = GetIntValue(KBrowserNGBackList);
-    iAllPreferences.iAutoRefresh
-    = GetIntValue(KBrowserNGAutoRefresh);
+    iAllPreferences.iPageOverview = GetIntValue(KBrowserNGPageOverview);
+    iAllPreferences.iBackList = GetIntValue(KBrowserNGBackList);
+    iAllPreferences.iAutoRefresh = GetIntValue(KBrowserNGAutoRefresh);
+    iAllPreferences.iIMEINotification = GetIntValue(KBrowserIMEINotification);
 
     // Read suppress security UI setting
-    iAllPreferences.iHTTPSecuritySupressed
-    = GetIntValue(KBrowserSecurityUI);
+    iAllPreferences.iHTTPSecuritySupressed = GetIntValue(KBrowserSecurityUI);
 
     // Read show connection queries setting
     iAllPreferences.iConnDialogs = GetIntValue(CSwtLafFacade::GetUintConstant(
@@ -207,9 +182,8 @@ void CSwtBrowserPreferences::RestoreSettingsL()
                                          CSwtLafFacade::EBrowserNGPopupBlocking));
 
     // Form Data Saving
-    iAllPreferences.iFormDataSaving
-    = static_cast< TWmlSettingsFormData >(GetIntValue(
-                                              CSwtLafFacade::GetUintConstant(CSwtLafFacade::EBrowserFormDataSaving)));
+    iAllPreferences.iFormDataSaving = GetIntValue(
+                                          CSwtLafFacade::GetUintConstant(CSwtLafFacade::EBrowserFormDataSaving));
 
     // Search Page, dont't want search page
     if (iAllPreferences.iSearchPgURL)
@@ -218,21 +192,28 @@ void CSwtBrowserPreferences::RestoreSettingsL()
         iAllPreferences.iSearchPgURL = NULL;
     }
 
-    // Web reed feeds settings
+    // Web feeds settings
     iAllPreferences.iAutomaticUpdating = static_cast< TWmlSettingsAutomaticUpdating >
                                          (GetIntValue(KBrowserNGAutomaticUpdating));
 
     iAllPreferences.iAutomaticUpdatingAP = GetIntValue(
                                                KBrowserNGAutomaticUpdatingAccessPoint);
 
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    iAllPreferences.iZoomMax = GetIntValue(KBrowserNGZoomMax);
+    iAllPreferences.iZoomMin = GetIntValue(KBrowserNGZoomMin);
+    iAllPreferences.iZoomDef = GetIntValue(KBrowserNGZoomDefault);
+#endif
+
     // Read Accesss point selection mode for advanced settings
     iAllPreferences.iAccessPointSelectionMode
-    =  GetIntValue(KBrowserAccessPointSelectionMode);
+    = GetIntValue(KBrowserAccessPointSelectionMode);
 
     // Read default AP setting
-    // get application specific ap
+    // Get application specific ap
     TUint32 appId =  iApiProvider.Display().ApplicationUid();
-    // get applicatin specific ap
+
+    // Get applicatin specific ap
     TUint32 ap = CSwtLafFacade::JavaAPNL(appId);
 
     if (ap == CSwtLafFacade::GetUintConstant(
@@ -246,7 +227,7 @@ void CSwtBrowserPreferences::RestoreSettingsL()
     if (ap == CSwtLafFacade::GetUintConstant(
                 CSwtLafFacade::EMIDletSuiteAPNNotSpecified))
     {
-        // try to get ap from browser NG reposictory
+        // Try to get ap from browser NG reposictory
         ap = GetIntValue(KBrowserDefaultAccessPoint);
     }
     if (!ap)
@@ -425,7 +406,7 @@ TInt CSwtBrowserPreferences::GetIntValue(TUint32 aKey) const
     return retVal;
 }
 
-const TPreferencesValues& CSwtBrowserPreferences::AllPreferencesL()
+const TPreferencesValues& CSwtBrowserPreferences::AllPreferences() const
 {
     return iAllPreferences;
 }
@@ -489,17 +470,17 @@ TBool CSwtBrowserPreferences::AutoRefresh() const
     return iAllPreferences.iAutoRefresh;
 }
 
-TWmlSettingsCookies CSwtBrowserPreferences::Cookies() const
+TBool CSwtBrowserPreferences::Cookies() const
 {
     return iAllPreferences.iCookies;
 }
 
-TWmlSettingsECMA CSwtBrowserPreferences::Ecma() const
+TBool CSwtBrowserPreferences::Ecma() const
 {
     return iAllPreferences.iEcma;
 }
 
-TWmlSettingsIMEI CSwtBrowserPreferences::IMEINotification() const
+TBool CSwtBrowserPreferences::IMEINotification() const
 {
     return iAllPreferences.iIMEINotification;
 }
@@ -514,7 +495,7 @@ TBool CSwtBrowserPreferences::PageOverview() const
     return iAllPreferences.iPageOverview;
 }
 
-TWmlSettingsFormData CSwtBrowserPreferences::FormDataSaving() const
+TUint CSwtBrowserPreferences::FormDataSaving() const
 {
     return iAllPreferences.iFormDataSaving;
 }

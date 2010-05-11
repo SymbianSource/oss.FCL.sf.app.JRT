@@ -23,8 +23,6 @@ package com.nokia.mj.impl.installer.jsrpluginnotifier;
  * This plugin does not implement InstallerExtension interface although
  * it has all the correct functions.
  *
- * @author Nokia Corporation
- * @version $Rev: 9336 $ $Date: 2010-01-14 14:18:29 +0200 (Thu, 14 Jan 2010) $
  * @see InstallerExtension
  */
 public class BadTestPlugin

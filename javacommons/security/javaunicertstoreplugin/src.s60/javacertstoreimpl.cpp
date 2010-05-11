@@ -18,9 +18,7 @@
 #include <e32std.h>
 #include <memory>
 
-#ifndef RD_JAVA_S60_RELEASE_5_0_IAD
 #include <javausermessages.rsg>
-#endif
 
 #include <avkon.rsg>
 #include <AknGlobalConfirmationQuery.h>
@@ -49,9 +47,7 @@
 
 //_LIT(KMIDP2TrustRoot, "J2ME MIDP2 Trust Root");
 _LIT(KMIDP2TrustRoot, "Java Trust Root");
-#ifndef RD_JAVA_S60_RELEASE_5_0_IAD
 _LIT(KJavaUserMessagesResourceFileName, "javausermessages.rsc");
-#endif
 //_LIT( KRuntimeSecPolicyResourceFileName, "z:midp2runtimesecuritypolicy.rsc" );
 
 //const TUid KCertManUIViewTrustJavaInstallingId = { 0x101F9B28 };
@@ -177,6 +173,10 @@ void CJavaCertStoreImpl::RunL()
         SendDisableMsg(status);
         return;
 
+    case EPreDeleting:
+        SendDeleteMsg(status);
+        return;
+        
     default:
         //Do nothing.
         break;
@@ -230,7 +230,6 @@ void CJavaCertStoreImpl::CancelAdd()
  */
 void CJavaCertStoreImpl::Remove(const CCTCertInfo& aCertInfo,TRequestStatus& aStatus)
 {
-
     aStatus = KRequestPending;
     TRequestStatus* pRequestStatus = &aStatus;
 
@@ -252,24 +251,10 @@ void CJavaCertStoreImpl::Remove(const CCTCertInfo& aCertInfo,TRequestStatus& aSt
         User::RequestComplete(pRequestStatus,KErrArgument);
         return;
     }
-
-    CommsMessage commsMsg;
-    commsMsg.setReceiver(IPC_ADDRESS_JAVA_CAPTAIN_C);
-    commsMsg.setSender(IPC_ADDRESS_JAVA_CAPTAIN_C);
-    commsMsg.setModuleId(PLUGIN_ID_JAVA_CERT_STORE_EXTENSION_C);
-    commsMsg.setMessageId(JAVA_CERT_STORE_MSG_ID_REQUEST);
-    commsMsg << JAVA_CERT_STORE_OPERATION_DELETE_CERT;
-    commsMsg << certData->mId;
-    int err = mComms.send(commsMsg);
-    if (0 != err)
-    {
-        std::string errTxt("Sending a comms request failed: ");
-        errTxt.append(java::util::JavaCommonUtils::intToString(err));
-        ELOG1(EJavaSecurity, "ERROR!!! %s",errTxt.c_str());
-        User::RequestComplete(pRequestStatus,KErrCommsBreak);
-    }
-    certData->mDeleted = ETrue;
-    User::RequestComplete(pRequestStatus,KErrNone);
+    
+    mState = EPreDeleting;
+    mTempCertData = certData;
+    HandleDeleteDisableQuery(aStatus, false /* disableCertQuery */);
 }
 
 /**
@@ -330,7 +315,7 @@ void CJavaCertStoreImpl::SetApplicability(const CCTCertInfo& aCertInfo,
 #else
         mState = state;
         mTempCertData = certData;
-        HandleDisableQuery(aStatus);
+        HandleDeleteDisableQuery(aStatus, true /* disableCertQuery */);
 #endif
         return;
     }
@@ -832,6 +817,32 @@ TBool CJavaCertStoreImpl::SendDisableEnableCommsMsg(const std::string& aId,
 /**
  *
  */
+TBool CJavaCertStoreImpl::SendDeleteCommsMsg(const std::string& aId,
+        TRequestStatus* aRequestStatus)
+{
+    CommsMessage commsMsg;
+    commsMsg.setReceiver(IPC_ADDRESS_JAVA_CAPTAIN_C);
+    commsMsg.setSender(IPC_ADDRESS_JAVA_CAPTAIN_C);
+    commsMsg.setModuleId(PLUGIN_ID_JAVA_CERT_STORE_EXTENSION_C);
+    commsMsg.setMessageId(JAVA_CERT_STORE_MSG_ID_REQUEST);
+    commsMsg << JAVA_CERT_STORE_OPERATION_DELETE_CERT;
+    commsMsg << aId;
+    int err = mComms.send(commsMsg);
+    if (0 != err)
+    {
+        std::string errTxt("Sending a comms request failed: ");
+        errTxt.append(java::util::JavaCommonUtils::intToString(err));
+        ELOG1(EJavaSecurity, "ERROR!!! %s",errTxt.c_str());
+        User::RequestComplete(aRequestStatus,KErrCommsBreak);
+        return EFalse;
+    }
+    
+    return ETrue;
+}
+
+/**
+ *
+ */
 TBool CJavaCertStoreImpl::CheckCapability(const TCapability& aCapability,TRequestStatus* aRequestStatus)
 {
     RThread thread;
@@ -847,10 +858,19 @@ TBool CJavaCertStoreImpl::CheckCapability(const TCapability& aCapability,TReques
 /**
  *
  */
-void CJavaCertStoreImpl::HandleDisableQuery(TRequestStatus &aRequestStatus)
+void CJavaCertStoreImpl::HandleDeleteDisableQuery(TRequestStatus &aRequestStatus, bool disableCertQuery)
 {
-
-    TRAPD(leaveStatus,ShowQueryL());
+    TInt leaveStatus = KErrNone;
+    if (disableCertQuery)
+    {
+#ifndef RD_JAVA_S60_RELEASE_5_0_IAD
+    TRAP(leaveStatus,ShowQueryL(R_JAVA_SECUR_CERT_DISABLING));
+#endif
+    }
+    else
+    {
+    TRAP(leaveStatus,ShowQueryL(R_JAVA_SECUR_CERT_DELETING));
+    }
     if (KErrNone == leaveStatus)
     {
         mClientStatus = &aRequestStatus;
@@ -866,21 +886,16 @@ void CJavaCertStoreImpl::HandleDisableQuery(TRequestStatus &aRequestStatus)
 /**
  *
  */
-void CJavaCertStoreImpl::ShowQueryL()
+void CJavaCertStoreImpl::ShowQueryL(TInt resourceId)
 {
-
-#ifndef RD_JAVA_S60_RELEASE_5_0_IAD
-
     TFileName resourceFileName = java::util::S60CommonUtils::ResourceLanguageFileNameL(
                                      KJavaUserMessagesResourceFileName);
 
     std::auto_ptr<CStringResourceReader> reader(CStringResourceReader::NewL(resourceFileName));
-    std::auto_ptr<HBufC> queryPrompt(reader->ReadResourceString(R_JAVA_SECUR_CERT_DISABLING).AllocL());
+    std::auto_ptr<HBufC> queryPrompt(reader->ReadResourceString(resourceId).AllocL());
 
     mQuery.reset(CAknGlobalConfirmationQuery::NewL());
     mQuery->ShowConfirmationQueryL(iStatus,queryPrompt->Des(),R_AVKON_SOFTKEYS_OK_CANCEL);
-
-#endif
 }
 
 /**
@@ -898,6 +913,23 @@ void CJavaCertStoreImpl::SendDisableMsg(TInt aStatus)
         return;
     }
     HandleSendingEnableDisableMsg(mClientStatus,EPreDisabling,*mTempCertData);
+}
+
+/**
+ *
+ */
+void CJavaCertStoreImpl::SendDeleteMsg(TInt aStatus)
+{
+
+    mState = EInitial;
+    delete mQuery.release();
+    mState = EInitial;
+    if (EAknSoftkeyOk != aStatus)
+    {
+        User::RequestComplete(mClientStatus,KErrCancel);
+        return;
+    }
+    HandleSendingDeleteMsg(mClientStatus,*mTempCertData);
 }
 
 /**
@@ -922,6 +954,25 @@ void CJavaCertStoreImpl::HandleSendingEnableDisableMsg(TRequestStatus* aRequestS
     {
         aCertDataObj.mIsDisabled = ETrue;
     }
+
+    User::RequestComplete(aRequestStatus,KErrNone);
+}
+
+/**
+ *
+ */
+void CJavaCertStoreImpl::HandleSendingDeleteMsg(TRequestStatus* aRequestStatus,
+    CJavaCertData& aCertDataObj)
+{
+
+    TBool flag = SendDeleteCommsMsg(aCertDataObj.mId,aRequestStatus);
+    if (!flag)
+    {
+        //SendDeleteCommsMsg() operation calls RequestComplete()
+        //operation in the error situation.
+        return;
+    }
+    aCertDataObj.mDeleted = ETrue;    
 
     User::RequestComplete(aRequestStatus,KErrNone);
 }

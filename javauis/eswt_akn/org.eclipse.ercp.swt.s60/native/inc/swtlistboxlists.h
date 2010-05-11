@@ -259,6 +259,14 @@ public:
         TInt aListType,
         CEikTextListBox* aList,
         TInt aHorizontal, TInt aVertical);
+
+    /**
+     * Change stretching
+     */
+    static void EnableStretching(
+        TInt aListType,
+        CEikTextListBox* aList,
+        TBool aEnabled);
 };
 
 #endif // SWTLISTBOXLISTS_H

@@ -48,12 +48,16 @@ public final class SifNotifier
     private String iGlobalComponentId = null;
     /** Component name (i.e. suite name). */
     private String iComponentName = null;
-    /** Array of pplication names. */
+    /** Application names. */
     private String[] iApplicationNames = null;
+    /** Applications icons. */
+    private String[] iApplicationIcons = null;
     /** Component initial size. */
     private int iComponentSize = 0;
-    /** Component icon path. */
-    private String iComponentIconPath = null;
+    /** Icon dir. */
+    private String iIconDir = null;
+    /** Component icon. */
+    private String iComponentIcon = null;
 
     /*** ----------------------------- PUBLIC ------------------------------ */
 
@@ -79,15 +83,17 @@ public final class SifNotifier
      */
     public void notifyStart(
         int aOperation, String aGlobalComponentId, String aComponentName,
-        String[] aApplicationNames, int aComponentSize,
-        String aComponentIconPath)
+        String[] aApplicationNames, String[] aApplicationIcons,
+        int aComponentSize, String aIconDir, String aComponentIcon)
     {
         iOperation = aOperation;
         iGlobalComponentId = aGlobalComponentId;
         iComponentName = aComponentName;
         iApplicationNames = aApplicationNames;
+        iApplicationIcons = aApplicationIcons;
         iComponentSize = aComponentSize;
-        iComponentIconPath = aComponentIconPath;
+        iIconDir = aIconDir;
+        iComponentIcon = aComponentIcon;
     }
 
     /**

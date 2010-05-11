@@ -17,117 +17,59 @@
 
 // FullScreen
 enum TWmlSettingsFullScreen
-    {
+{
     EWmlSettingsFullScreenSoftkeysOnly,
     EWmlSettingsFullScreenFullScreen
-    };
+};
 
 // MediaVolume
 enum TWmlSettingsMediaVolume
-    {
+{
     EWmlSettingsVolumeMuted = 0,
     EWmlSettingsVolume1     = 2,
     EWmlSettingsVolume2     = 5,
     EWmlSettingsVolume3     = 8,
     EWmlSettingsVolume4     = 10
-    };
+};
 
 // Automatic updating
 enum TWmlSettingsAutomaticUpdating
-    {
+{
     EWmlSettingsAutomaticUpdatingWeekly,
     EWmlSettingsAutomaticUpdatingDaily,
     EWmlSettingsAutomaticUpdating4hours,
     EWmlSettingsAutomaticUpdatingHourly,
     EWmlSettingsAutomaticUpdating15min,
     EWmlSettingsAutomaticUpdatingOff
-    };
+};
 
 // Cookies
 enum TWmlSettingsCookies
-    {
+{
     EWmlSettingsCookieReject,
     EWmlSettingsCookieAllow
-    };
+};
 
 // ECMA
 enum TWmlSettingsECMA
-    {
+{
     EWmlSettingsECMADisable,
     EWmlSettingsECMAEnable
-    };
+};
 
 // IMEI
 enum TWmlSettingsIMEI
-    {
+{
     EWmlSettingsIMEIDisable,
     EWmlSettingsIMEIEnable
-    };
-
-// HomePage
-enum TWmlSettingsHomePage
-    {
-    EWmlSettingsHomePageAccessPoint,        // 0
-    EWmlSettingsHomePageAddress,            // 1
-    EWmlSettingsHomePageUseCurrent,         // 2
-    EWmlSettingsHomePageBookmarks           // 3
-    };
-
-// FormData
-enum TWmlSettingsFormData
-    {
-    EWmlSettingsFormDataOff,        // 0
-    EWmlSettingsFormDataOnly,         // 1
-    EWmlSettingsFormDataPlusPassword  // 2
-    };
-
-// settings listbox items
-enum TWmlBrowserSettingsItems
-    {
-    // Main Settings Categories
-    EWmlSettingsGeneral = 0,
-    EWmlSettingsPage,
-    EWmlSettingsPrivacy,
-    EWmlSettingsWebFeeds,
-
-    // Individual Settings
-    EWmlSettingsAccesspoint,
-    EWmlSettingsAutoLoadImages,
-    EWmlSettingsPageOverview,
-    EWmlSettingsBackList,
-    EWmlSettingsAutoRefresh,
-    EWmlSettingsEncoding,
-    EWmlSettingsFullScreen,
-    EWmlSettingsCookies,
-    EWmlSettingsEcma,
-    EWmlSettingsHttpSecurityWarnings,
-    EWmlSettingsIMEINotification,
-
-    EWmlSettingsMediaVolume,
-    EWmlSettingsAutomaticUpdating,
-    EWmlSettingsAutomaticUpdatingAP,
-    EWmlSettingsHomePage,
-    EWmlSettingsFormDataSaving,
-    EWmlSettingsFontSize,
-
-    // Multiple Windows Support
-    EWmlSettingsPopupBlocking,
-
-    
-
-    // For CDMA settings, use any values within this range
-    EWmlSettingsCDMAMin = 50,
-    EWmlSettingsSendReferrer,
-    EWmlSettingsCDMAMax = 70
-    };
-    
+};
 
 // Default Access Point
 enum TWmlSettingsAccessPointSelectionMode
-    {
+{
     EWmlSettingsAccessPointSelectionModeUserDefined,
     EWmlSettingsAccessPointSelectionModeAlwaysAsk
-    };
+};
 
 #endif // ESWTEXPANDED_HRH
 

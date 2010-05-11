@@ -36,9 +36,6 @@ import com.nokia.mj.impl.utils.Logger;
 /**
  * A class to be extended by the MIDlet applcation. See MIDP spec for
  * further details.
- *
- * @author Nokia Corporation
- * @version $Rev$
  */
 public abstract class MIDlet
 {

@@ -614,7 +614,7 @@ void CSwtText::Draw(const TRect& /*aRect*/) const
     {
         return;
     }
-    
+
     // Update editor's visibility, otherwise text will be drawn
     // when performing clipboard operations on invisible control.
     const TBool visible = GetVisibleRecursively();

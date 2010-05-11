@@ -18,6 +18,8 @@ import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
@@ -76,8 +78,6 @@ import org.eclipse.ercp.swt.mobile.internal.OS;
  */
 public class TaskTip extends Widget
 {
-    private int handle = 0;
-
     private Shell tasktipShell = null;
     private Label tasktipLabel = null;
     private ProgressBar tasktipBar = null;
@@ -88,8 +88,6 @@ public class TaskTip extends Widget
 
     private Shell topShell = null;
     private ControlListener topShellListener = null;
-
-    private boolean hasText = false;
 
     /**
      *
@@ -151,13 +149,22 @@ public class TaskTip extends Widget
             SWT.error(SWT.ERROR_NULL_ARGUMENT);
         }
 
-        handle = OS.TaskTip_New(this, getStyle());
-
         tasktipShell = new Shell(shell, SWT.NO_FOCUS|SWT.ON_TOP|SWT.NO_TRIM);
-        tasktipLabel = new Label(tasktipShell, SWT.NONE);
+        GridLayout layout = new GridLayout();
+        layout.marginBottom = 0;
+        layout.marginTop = 0;
+        layout.marginLeft = 0;
+        layout.marginRight = 0;
+        layout.marginHeight = 0;
+        layout.marginWidth = 0;
+        layout.verticalSpacing = 1;
+        layout.horizontalSpacing = 0;
+        tasktipShell.setLayout(layout);
+        tasktipShell.internal_setTaskTip();
         if (getStyle() != SWT.NONE)
         {
             tasktipBar = new ProgressBar(tasktipShell, getStyle());
+            tasktipBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
         }
 
         // If the parent shell is disposed task tip is disposed also
@@ -351,18 +358,25 @@ public class TaskTip extends Widget
     public void setText(String string)
     {
         checkWidget();
-        boolean hasTextPrev = hasText;
+        boolean prevLabel = tasktipLabel != null;
         if (string == null)
         {
-            tasktipLabel.setText("");
-            hasText = false;
+            if (tasktipLabel != null)
+            {
+                tasktipLabel.dispose();
+                tasktipLabel = null;
+            }
         }
         else
         {
+            if (tasktipLabel == null)
+            {
+                tasktipLabel = new Label(tasktipShell, SWT.NONE);
+                tasktipLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
+            }
             tasktipLabel.setText(removeLine(string));
-            hasText = true;
         }
-        if (hasTextPrev != hasText)
+        if (prevLabel != (tasktipLabel != null))
         {
             rebound();
         }
@@ -402,16 +416,6 @@ public class TaskTip extends Widget
         tasktipShell.setVisible(visible);
     }
 
-    protected void internal_releaseHandle()
-    {
-        if (handle != 0)
-        {
-            OS.TaskTip_Dispose(handle);
-            handle = 0;
-        }
-        super.internal_releaseHandle();
-    }
-
     protected void internal_releaseResources()
     {
         if (tasktipShell != null)
@@ -428,31 +432,14 @@ public class TaskTip extends Widget
 
     private void rebound()
     {
-        int heightDifference = 0;
-        Rectangle labelRect = new Rectangle(0,0,0,0);
-        Rectangle shellRect = OS.TaskTip_GetShellDefaultBounds(handle, hasText);
-        if (hasText)
-        {
-            labelRect = OS.TaskTip_GetLabelDefaultBounds(handle, hasText);
-            labelRect.x -= shellRect.x;
-            labelRect.y -= shellRect.y;
-            Point labelPrefSize = tasktipLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-            if (labelPrefSize.y > labelRect.height)
-            {
-                heightDifference = labelPrefSize.y - labelRect.height;
-                labelRect.height = labelPrefSize.y;
-            }
-        }
-        shellRect.height += heightDifference;
+        Rectangle shellRect = OS.TaskTip_DefaultBounds();
+        
+        Point idealSize = tasktipShell.computeSize(shellRect.width, SWT.DEFAULT);
+        if (shellRect.height < idealSize.y)
+            shellRect.height = idealSize.y;
+        
         tasktipShell.setBounds(shellRect);
-        tasktipLabel.setBounds(labelRect);
-        if (tasktipBar != null)
-        {
-            Rectangle barRect = OS.TaskTip_GetBarDefaultBounds(handle, hasText);
-            barRect.x -= shellRect.x;
-            barRect.y -= shellRect.y;
-            tasktipBar.setBounds(barRect);
-        }
+        tasktipShell.layout();
     }
 
     private String removeLine(String aString)

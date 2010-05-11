@@ -15,7 +15,7 @@
 #
 
 TEMPLATE=app
-TARGET=javastandalone
+TARGET=javatest
 CONFIG += omj no_icon stl
 CONFIG -= qt
 

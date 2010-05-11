@@ -72,12 +72,7 @@ public final class FileSystemRegistryImpl implements DriveListener
 
         for (int index = 0; index < rootVector.size(); index++)
         {
-            if (FileAccessHelper.accessAllowed(
-                        (String) rootVector.elementAt(index),
-                        FileConstants.INTENT_READ, domain, false))
-            {
                 retValue.addElement(rootVector.elementAt(index));
-            }
         }
 
         FileLogger.Log("<-- FileSystemRegistry.listRoots()");

@@ -27,9 +27,6 @@ import com.nokia.mj.impl.utils.Uid;
 /**
  * MIDP installation step NotifyJsrPlugins.
  * Added to MIDP2 Install table in com.nokia.mj.impl.installer.Installer
- *
- * @author Nokia Corporation
- * @version $Rev: 9041 $ $Date: 2009-12-07 18:36:08 +0200 (Mon, 07 Dec 2009) $
  */
 public class NotifyJsrPlugins extends ExeStep
 {

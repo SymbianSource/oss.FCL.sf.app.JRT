@@ -96,7 +96,7 @@ public final class FileConnectionImpl implements FileConnection
         }
 
         // Check access.
-        checkAccess(actual, aMode, true);
+        checkAccess(actual);
 
         // Go ahead to prompt the user
         checkSecurityPermission(actual, aMode);
@@ -175,22 +175,6 @@ public final class FileConnectionImpl implements FileConnection
         }
     }
 
-    /**
-     * Checks access to a specified path given its absolute path and the mode in
-     * which the connection has been opened.
-     *
-     * @param aAbsolutePath
-     *            path of the connection
-     * @param aMode
-     *            mode in which the connection has been opened.
-     * @throws SecurityException
-     *             in case access was allowed for the application for the given
-     *             intent and target.
-     */
-    private static void checkAccess(String aAbsolutePath, int aMode)
-    {
-        checkAccess(aAbsolutePath, aMode, false);
-    }
 
     /**
      * Checks access to a specified path given its absolute path and the mode in
@@ -198,37 +182,15 @@ public final class FileConnectionImpl implements FileConnection
      *
      * @param aAbsolutePath
      *            path of the connection
-     * @param aMode
-     *            mode in which the connection has been opened.
-     * @param aIsOpening
-     *            specifies if the access check is being made on a method that
-     *            is considered as open operation (setFileConnection and
-     *            Connector.open)
      * @throws SecurityException
      *             in case access was allowed for the application for the given
      *             intent and target.
      */
-    private static void checkAccess(String aAbsolutePath, int aMode,
-                                    boolean aIsOpening)
+    private static void checkAccess(String aAbsolutePath)
     {
-        FileLogger.Log("FileConnectionImpl: Check Access to " + aAbsolutePath
-                       + " in " + aMode + " mode");
-
-        String modeString;
-        switch (aMode)
-        {
-        case Connector.READ:
-            modeString = FileAccessHelper.INTENT_READ;
-            break;
-        case Connector.WRITE:
-            modeString = FileAccessHelper.INTENT_WRITE;
-            break;
-        default:
-            modeString = FileAccessHelper.INTENT_READ_WRITE;
-        }
-
-        if (!(FileAccessHelper.accessAllowed(aAbsolutePath, modeString,
-                                             FileSystemUtils.getProtectionDomain(), aIsOpening)))
+        FileLogger.Log("FileConnectionImpl: Check Access to " + aAbsolutePath );
+                       
+        if (!FileAccessHelper.accessAllowed(aAbsolutePath,FileSystemUtils.getProtectionDomain()))
         {
             // Access to the specified path not allowed.
             // Throw Security Exception
@@ -257,15 +219,6 @@ public final class FileConnectionImpl implements FileConnection
 
         String domain = FileSystemUtils.getProtectionDomain();
 
-        // We need to check if we have access to base directory and not the file
-        // itself :-)
-        if (!FileAccessHelper.isCreateAllowedWithinDir(iFileUtility.getPath(),
-                domain))
-        {
-            throw new SecurityException("Permission denied: "
-                                        + iFileUtility.getAbsolutePath());
-        }
-
         if (!iFileUtility.createNewFile())
         {
             FileLogger.WLog("FileConnectionImpl: File Creation failed. "
@@ -284,7 +237,7 @@ public final class FileConnectionImpl implements FileConnection
 
         checkConnection();
         checkConnectionMode(Connector.READ);
-        checkAccess(iFileUtility.getAbsolutePath(), Connector.WRITE);
+        checkAccess(iFileUtility.getAbsolutePath());
 
         if (!iFileUtility.rename(aName))
         {
@@ -313,7 +266,7 @@ public final class FileConnectionImpl implements FileConnection
     {
         checkConnection();
         checkConnectionMode(Connector.READ);
-        checkAccess(iFileUtility.getAbsolutePath(), Connector.WRITE);
+        checkAccess(iFileUtility.getAbsolutePath());
 
         FileLogger.Log("FileConnectionImpl: mkdir(): "
                        + iFileUtility.getAbsolutePath());
@@ -333,7 +286,7 @@ public final class FileConnectionImpl implements FileConnection
     {
         checkConnection();
         checkConnectionMode(Connector.READ);
-        checkAccess(iFileUtility.getAbsolutePath(), Connector.WRITE);
+        checkAccess(iFileUtility.getAbsolutePath());
 
         FileLogger.Log("FileConnectionImpl: delete(): "
                        + iFileUtility.getAbsolutePath());
@@ -489,7 +442,7 @@ public final class FileConnectionImpl implements FileConnection
     public void setReadable(boolean aReadable) throws IOException
     {
         checkConnection();
-        checkAccess(iFileUtility.getAbsolutePath(), Connector.WRITE);
+        checkAccess(iFileUtility.getAbsolutePath());
         checkConnectionMode(Connector.READ);
         iFileUtility.setReadable(aReadable);
     }
@@ -500,7 +453,7 @@ public final class FileConnectionImpl implements FileConnection
     public void setWritable(boolean aWritable) throws IOException
     {
         checkConnection();
-        checkAccess(iFileUtility.getAbsolutePath(), Connector.WRITE);
+        checkAccess(iFileUtility.getAbsolutePath());
         checkConnectionMode(Connector.READ);
         iFileUtility.setWritable(aWritable);
     }
@@ -511,7 +464,7 @@ public final class FileConnectionImpl implements FileConnection
     public void setHidden(boolean aHidden) throws IOException
     {
         checkConnection();
-        checkAccess(iFileUtility.getAbsolutePath(), Connector.WRITE);
+        checkAccess(iFileUtility.getAbsolutePath());
         checkConnectionMode(Connector.READ);
         iFileUtility.setHidden(aHidden);
     }
@@ -552,7 +505,6 @@ public final class FileConnectionImpl implements FileConnection
         String domain = FileSystemUtils.getProtectionDomain();
 
         // Check if read access is allowed to all contents in the list.
-        boolean accessCheckNeeded = FileAccessHelper.isDirRestricted(parent);
         boolean accessAllowed = true;
 
         for (int index = 0; index < fileList.length; index++)
@@ -562,12 +514,8 @@ public final class FileConnectionImpl implements FileConnection
             if (FileUtility.matchString(filter.toLowerCase(), fileList[index]))
             {
                 // If it passes the filter, check if midlet has access.
-                // if check access is true, then accessAllowed is not checked.
-                if (accessCheckNeeded)
-                {
-                    accessAllowed = FileAccessHelper.accessAllowed(fullPath,
-                                    FileConstants.INTENT_READ, domain, true);
-                }
+                accessAllowed = FileAccessHelper.accessAllowed(fullPath,
+                                     domain);
 
                 if (accessAllowed)
                 {
@@ -585,7 +533,7 @@ public final class FileConnectionImpl implements FileConnection
     {
         checkConnection();
         checkConnectionMode(Connector.READ);
-        checkAccess(iFileUtility.getAbsolutePath(), Connector.WRITE);
+        checkAccess(iFileUtility.getAbsolutePath());
         iFileUtility.truncate(aByteOffset);
     }
 
@@ -654,7 +602,7 @@ public final class FileConnectionImpl implements FileConnection
 
             // See if access is allowed. True because setting to new target is
             // as good as opening.
-            checkAccess(tempTarget.getAbsolutePath(), iMode, true);
+            checkAccess(tempTarget.getAbsolutePath());
             checkSecurityPermission(tempTarget.getAbsolutePath(), iMode);
 
             // if we reach here, it is fine :-)
@@ -701,7 +649,7 @@ public final class FileConnectionImpl implements FileConnection
 
         // See if access is allowed. True because setting to new target is
         // as good as opening.
-        checkAccess(tempTarget.getAbsolutePath(), iMode, true);
+        checkAccess(tempTarget.getAbsolutePath());
         checkSecurityPermission(tempTarget.getAbsolutePath(), iMode);
 
         // If no exception is thrown, its safe to set connection

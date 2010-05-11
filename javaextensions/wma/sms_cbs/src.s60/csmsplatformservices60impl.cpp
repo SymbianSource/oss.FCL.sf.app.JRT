@@ -166,13 +166,16 @@ int CSmsPlatformServiceS60Impl::getSmsDataSegments(const int aMsgType,
     TRAPD(error,
     {
         HBufC* smsData = convertToDes(aData,aMsgType,aLength);
+        CleanupStack::PushL(smsData);
         std::auto_ptr<HBufC> smsAddress(stringToDes(aHostAddress));
         // The sms message takes ownership of the buffer
         CSmsBuffer* buffer = CSmsBuffer::NewL();
+        CleanupStack::PushL(buffer);
         delete mSendMessage;
         mSendMessage = 0;
         RFs fileServer;
         mSendMessage = CSmsMessage::NewL(fileServer,CSmsPDU::ESmsSubmit,buffer);
+        CleanupStack::Pop(buffer);
         if (smsAddress->Length()> 0)
         {
             // set the destination address
@@ -212,7 +215,7 @@ int CSmsPlatformServiceS60Impl::getSmsDataSegments(const int aMsgType,
         numberOfSegments = (int)mSendMessage->NumMessagePDUsL();
         LOG2(EWMA, EInfo,"SMS :number of segments %d data length %d",
              numberOfSegments, aLength);
-        delete smsData;
+        CleanupStack::PopAndDestroy(smsData);
     });
     return (error == KErrNone)? numberOfSegments : error;
 }
@@ -234,6 +237,7 @@ getEncodingSchemeL(const TDesC& aSmsData,const TInt aMsgType,RFs& aFs)
         TInt nonConvertibleCharacters;
         CCnvCharacterSetConverter* cConverter =
             CCnvCharacterSetConverter::NewL();
+        CleanupStack::PushL(cConverter);
         CCnvCharacterSetConverter::TAvailability cnvAvailable =
             cConverter->PrepareToConvertToOrFromL(
                 KCharacterSetIdentifierSms7Bit, aFs);
@@ -266,8 +270,7 @@ getEncodingSchemeL(const TDesC& aSmsData,const TInt aMsgType,RFs& aFs)
         }
         (isGSM7Convertible)?msgEncoding = TSmsDataCodingScheme::ESmsAlphabet7Bit
                                           :msgEncoding = TSmsDataCodingScheme::ESmsAlphabetUCS2;
-        delete cConverter;
-        cConverter = 0;
+        CleanupStack::PopAndDestroy(cConverter);
     }
     else
     {

@@ -22,6 +22,8 @@ import com.nokia.mj.impl.installer.applicationregistrator.SifNotifier;
 import com.nokia.mj.impl.installer.exetable.ExeBall;
 import com.nokia.mj.impl.installer.exetable.ExeStep;
 import com.nokia.mj.impl.installer.storagehandler.ApplicationInfo;
+import com.nokia.mj.impl.installer.utils.FileRoots;
+import com.nokia.mj.impl.installer.utils.FileUtils;
 import com.nokia.mj.impl.installer.utils.InstallerException;
 import com.nokia.mj.impl.installer.utils.Log;
 
@@ -53,6 +55,11 @@ public class StartProgressNotifications extends ExeStep
 
         // Init application names array.
         Vector appNamesVector = ball.iSuite.getApplications();
+        if (ball.iOldSuite != null)
+        {
+            // In update get the names of previously installed applications.
+            appNamesVector = ball.iOldSuite.getApplications();
+        }
         String[] appNames = new String[appNamesVector.size()];
         for (int i = 0; i < appNamesVector.size(); i++)
         {
@@ -60,9 +67,26 @@ public class StartProgressNotifications extends ExeStep
                 ((ApplicationInfo)appNamesVector.elementAt(i)).getName();
         }
 
-        // Use default icon for now.
-        String componentIconPath =
-            ball.iApplicationRegistrator.getDefaultIconPath();
+        // Initialize icon filenames and icon dir.
+        String iconDir = null;
+        String componentIcon = null;
+        String[] appIcons = null;
+        if (ball.iOldSuite != null)
+        {
+            // In update get the icons of previously installed applications.
+            iconDir = FileRoots.getRegisteredIconDir(
+                FileUtils.getDrive(ball.iOldSuite.getRootDir())) +
+                ball.iOldSuite.getUid().toString();
+            appIcons = ball.iOldSuite.getRegisteredAppIcons();
+            if (appIcons != null)
+            {
+                for (int i = 0; i < appIcons.length; i++)
+                {
+                    Log.log("Old app icon " + appIcons[i] +
+                            " for "+ appNames[i] + " from " + iconDir);
+                }
+            }
+        }
 
         try
         {
@@ -70,8 +94,8 @@ public class StartProgressNotifications extends ExeStep
                 (ball.iOldSuite != null?
                  ball.iSifNotifier.OP_UPDATE: ball.iSifNotifier.OP_INSTALL),
                 ball.iSuite.getGlobalId(), ball.iSuite.getName(),
-                appNames, ball.iSuite.calculateInitialSize(),
-                componentIconPath);
+                appNames, appIcons, ball.iSuite.calculateInitialSize(),
+                iconDir, componentIcon);
         }
         catch (Throwable t)
         {

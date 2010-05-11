@@ -895,6 +895,22 @@ void CSwtListBox::SetLayoutStyleL(TInt aLayoutStyle)
     // This is needed for the case where the theme has animated highlights.
     iList->SetFocus(ETrue, ENoDrawNow);
 
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    // Disable stretching for two line lists
+    switch (iProps.iListType)
+    {
+    case ESwtLbDouble:
+    case ESwtLbDoubleGraphic:
+    case ESwtLbDoubleLarge:
+        // Disable stretching to keep items double line in landscape
+        CSwtListBoxLists::EnableStretching(iProps.iListType, iList, EFalse);
+        break;
+    default:
+        // Do nothing
+        break;
+    }
+#endif
+
     // Must trigger SizeChanged which Avkon lists use to create the layout
     // columns. Not calling this will result in invisible lists or incorrect
     // list layouts. Also important is to hide the list while is being
@@ -1249,6 +1265,11 @@ void CSwtListBox::HandleSizeChangedL()
     // The listbox looses the custom color after resize, therefore reset.
     if (iColor)
         UpdateListColor();
+
+    // Suppress margins - they are drawn over scrollbars
+    // We need to update margins here one more time, because previous
+    // code re-sets them
+    CSwtListBoxLists::SetMargins(iProps.iListType, iList, 0, 0);
 }
 
 // ---------------------------------------------------------------------------
@@ -1444,6 +1465,7 @@ CEikTextListBox* CSwtListBox::CreateListL(TInt aListType)
         list->SetCurrentItemIndex(0);
         list->SetComponentsToInheritVisibility(ETrue);
         CreateScrollBarsL(list);
+
 #ifdef RD_SCALABLE_UI_V2
         list->SetListBoxObserver(this);
 #endif // RD_SCALABLE_UI_V2

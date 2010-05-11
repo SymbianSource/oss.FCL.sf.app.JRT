@@ -21,8 +21,6 @@ package com.nokia.mj.impl.installer.jsrpluginnotifier;
 /**
  * Installer Jsr plugin just for test purposes.
  *
- * @author Nokia Corporation
- * @version $Rev: 9336 $ $Date: 2010-01-14 14:18:29 +0200 (Thu, 14 Jan 2010) $
  * @see InstallerExtension
  */
 public class TestPlugin2 implements InstallerExtension

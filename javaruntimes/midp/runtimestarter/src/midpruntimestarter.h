@@ -280,6 +280,13 @@ public:
 private: // Methods
 
     /**
+     * A thread entry point for a thread that ensure that the runtime process
+     * will be exited if something goes wrong in shutdown sequence.
+     * @param ptr A pointer to MidpRuntimeStarter.
+     */
+    static void* ensureExit(void* ptr);
+
+    /**
      * Parses the arguments provided by Java Captain when creating the
      * process. The argument interpretations are stored into a member variable
      * mMidletInfo for easy future access. Any Unknown argument
@@ -445,6 +452,11 @@ private: //Members
     std::auto_ptr<java::util::Monitor>              mMonitor;
 
     /**
+     * A lock for exit case.
+     */
+    std::auto_ptr<java::util::Monitor>              mExitMonitor;
+
+    /**
      * A library loader for push case.
      */
     std::auto_ptr<java::util::DynamicLibLoader>     mPushLib;
@@ -453,6 +465,11 @@ private: //Members
      * Utility for making methods thread safe.
      */
     std::wstring                                    mPushAdditionalInfo;
+
+    /**
+     * Did the shutdown go ok.
+     */
+     bool                                           mShudownOk;
 
 };
 

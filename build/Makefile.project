@@ -166,16 +166,6 @@ ifdef RD_JAVA_NGA_ENABLED
   PROJECT_DEFINES += RD_JAVA_NGA_ENABLED
 endif
 
-# Uiaccelerator AlfDrawer is supported since 9.2
-ifndef RD_JAVA_S60_RELEASE_5_0
-  ifneq ($(wildcard $(EPOCROOT)epoc32/include/platform/mw/alf/alfdrawer.h),)
-    RD_JAVA_UI_ALFDRAWER_ENABLED = 1
-  endif
-endif
-ifdef RD_JAVA_UI_ALFDRAWER_ENABLED
-  PROJECT_DEFINES += RD_JAVA_UI_ALFDRAWER_ENABLED
-endif
-
 # Check if USIF is supported
 ifneq ($(wildcard $(EPOCROOT:\=/)epoc32/include/mw/usif/scr/scr.h),)
   RD_JAVA_USIF_ENABLED = 1

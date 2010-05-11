@@ -250,14 +250,14 @@ void CSwtCommandArranger::ComputeAndRefreshCbaAndMenuL(TBool aFocusedControlOnly
 
     // Get pointer to first control (the one that is actually focused) to process
     const MSwtControl* control = GetFirstFocusedControl();
-    
+
 #ifdef RD_JAVA_S60_RELEASE_9_2
-    if (control) 
+    if (control)
     {
         control = control->GetShell().Control();
     }
 #endif // RD_JAVA_S60_RELEASE_9_2
-    
+
     const MSwtControl* focusedControl(control);
 
     TFixedArray<TBool, KCbaButtonCountMax> cbaIsAvailable;
@@ -760,7 +760,7 @@ void CSwtCommandArranger::ComputeNumberOfContextOptionsMenuItems()
         if (iCommandMenuOK)
         {
             TInt numberOfOKCommands(iCommandMenuOK->CountDisplayableItems());
-    
+
             // If MSK enabled, not in fullscreen, no control menu items,
             // and there is only one OK (or SELECT) command,
             // this command is not included in the context options menu since
@@ -774,7 +774,7 @@ void CSwtCommandArranger::ComputeNumberOfContextOptionsMenuItems()
             {
                 numberOfOKCommands = 0;
             }
-    
+
             // Addition of control menu items and OK (or SELECT) commands
             iNumberOfContextOptionMenuItems =
                 numberOfOKCommands + numberOfControlMenuItems;
@@ -1287,7 +1287,7 @@ TBool CSwtCommandArranger::IsClearOperationSet() const
 //
 // From MEikCommandObserver
 // Notified from CEikCba::OfferKeyEventL > CEikButtonGroupContainer::ProcessCommandL
-// 
+//
 void CSwtCommandArranger::ProcessCommandL(TInt aCommandId)
 {
     TInt cmdIndex(aCommandId - KSwtCommandBaseId);
@@ -1442,7 +1442,7 @@ TBool CSwtCommandArranger::ControlHasStylusPopupMenu(const MSwtControl& aControl
     {
         return ETrue;
     }
-    
+
 #ifdef RD_JAVA_S60_RELEASE_9_2
     if (aControl.IsShell())
     {

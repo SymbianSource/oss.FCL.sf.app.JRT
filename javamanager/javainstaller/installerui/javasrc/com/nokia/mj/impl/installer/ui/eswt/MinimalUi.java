@@ -28,9 +28,6 @@ import com.nokia.mj.impl.rt.ui.RuntimeUiFactory;
 /**
  * Minimal UI for JavaInstaller. This UI will only show simplified
  * confirmation dialogs using RuntimeUi.
- *
- * @author Nokia Corporation
- * @version $Rev: 0 $
  */
 public class MinimalUi extends InstallerUi
 {

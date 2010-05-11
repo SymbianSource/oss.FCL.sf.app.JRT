@@ -56,7 +56,7 @@ public:
 
     void PositionChanged();
 protected: // from CMIDEdwin
-    void AddCommandsToEdwinL(RPointerArray<MMIDCommand>& aArray);
+    void AddCommandToEdwinL(MMIDCommand& aCommand);
 
 private: // Constructors
     /**

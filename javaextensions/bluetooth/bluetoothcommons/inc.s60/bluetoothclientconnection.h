@@ -73,8 +73,8 @@ public:
      * connection open, all we do here is to add the object to Active Scheduler.
      */
     OS_IMPORT
-    void BluetoothClientConnection::initialize(int protocol,
-            TInt64 aRemoteAddr, int aReceiveMtu, int aTransmitMtu);
+    void initialize(int protocol, TInt64 aRemoteAddr, 
+        int aReceiveMtu, int aTransmitMtu);
 
     /**
      * Used to Initialize the protocol specific options of the Bluetooth Socket.

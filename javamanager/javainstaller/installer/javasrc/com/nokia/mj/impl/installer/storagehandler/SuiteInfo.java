@@ -18,13 +18,16 @@
 
 package com.nokia.mj.impl.installer.storagehandler;
 
+import com.nokia.mj.impl.fileutils.FileUtility;
 import com.nokia.mj.impl.installer.utils.ComponentId;
 import com.nokia.mj.impl.installer.utils.FileRoots;
 import com.nokia.mj.impl.installer.utils.FileUtils;
+import com.nokia.mj.impl.installer.utils.Log;
 import com.nokia.mj.impl.utils.Attribute;
 import com.nokia.mj.impl.utils.Uid;
 import com.nokia.mj.impl.utils.Version;
 
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -71,6 +74,8 @@ public class SuiteInfo
     // Flag telling if application suite is trusted
     private boolean iTrusted = false;
 
+    /** Flag telling if default icon should be used. */
+    private boolean iUseDefaultIcon = false;
     /** Filename for converted icon. This member is not saved into storage. */
     private String iConvertedIconPath = null;
     /** Application installation group. This member is not saved into storage. */
@@ -384,8 +389,7 @@ public class SuiteInfo
     }
 
     /**
-     * Get icon path for converted icon for speccified
-     * application in the suite.
+     * Get registered icon path for specified application in the suite.
      */
     public String getRegisteredIconPath(int aAppIndex)
     {
@@ -407,6 +411,56 @@ public class SuiteInfo
     }
 
     /**
+     * Get names of application icon files from the directory where
+     * icons registered to the platform are. This method finds filenames
+     * from the disk, so it can only be used for a suite that has been
+     * installed.
+     */
+    public String[] getRegisteredAppIcons()
+    {
+        String iconDirName =
+            FileRoots.getRegisteredIconDir(FileUtils.getDrive(getRootDir())) +
+            getUid().toString();
+        Vector filenames = new Vector();
+        try
+        {
+            FileUtility iconDir = new FileUtility(iconDirName);
+            if (iconDir.exists())
+            {
+                Enumeration e = iconDir.list();
+                while (e.hasMoreElements())
+                {
+                    String filename = (String)e.nextElement();
+                    filenames.addElement(filename);
+                }
+            }
+        }
+        catch (IOException ioe)
+        {
+            Log.logWarning(
+                "Cannot list application icons from " + iconDirName, ioe);
+            return null;
+        }
+        Uid[] appUids = getApplicationUids();
+        String[] appIcons = new String[appUids.length];
+        String filename = null;
+        for (int i = 0; i < appUids.length; i++)
+        {
+            appIcons[i] = null;
+            for (int j = 0; j < filenames.size(); j++)
+            {
+                filename = (String)filenames.elementAt(j);
+                if (filename.startsWith(appUids[i].toString()))
+                {
+                    appIcons[i] = filename;
+                    break;
+                }
+            }
+        }
+        return appIcons;
+    }
+
+    /**
      * Tells if application suite is trusted.
      *
      * @return true if suite is trusted, false otherwise
@@ -414,6 +468,22 @@ public class SuiteInfo
     public boolean isTrusted()
     {
         return iTrusted;
+    }
+
+    /**
+     * Returns true if default icon should be used, false otherwise.
+     */
+    public boolean getUseDefaultIcon()
+    {
+        return iUseDefaultIcon;
+    }
+
+    /**
+     * Set flag telling if default icon should be used.
+     */
+    public void setUseDefaultIcon(boolean aUseDefaultIcon)
+    {
+        iUseDefaultIcon = aUseDefaultIcon;
     }
 
     /**

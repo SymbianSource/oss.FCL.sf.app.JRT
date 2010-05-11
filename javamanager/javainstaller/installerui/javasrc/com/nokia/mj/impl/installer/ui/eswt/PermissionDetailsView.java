@@ -77,7 +77,6 @@ public class PermissionDetailsView extends ConfirmationViewBase
             }
         }
 
-        /*
         // Add permissions details message.
         if (iPermissionInfo.getPermissionsDetails() != null)
         {
@@ -86,7 +85,6 @@ public class PermissionDetailsView extends ConfirmationViewBase
                 iPermissionInfo.getPermissionsDetails(),
                 horizontalSpan, labelStyle);
         }
-        */
     }
 
     /**

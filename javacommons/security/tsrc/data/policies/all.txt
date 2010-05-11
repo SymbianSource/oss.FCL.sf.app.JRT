@@ -3,4 +3,5 @@ domain All;
 grant assigned {
     permission java.util.PropertyPermission "microedition.*" "read";
     permission javax.microedition.PropertyPermission "mobinfo.publicinfo" "read";
+    permission javax.microedition.PropertyPermission "mobinfo.cellid" "read";   
 }

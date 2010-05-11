@@ -58,7 +58,7 @@ public: // Constructors and destructor
      */
     virtual ~CMIDTextEditorEdwinCustomDraw();
 
-public: // From
+public: // From CLafEdwinCustomDrawBase
 
     /**
      * Called by the editor FW in order to draw the background for
@@ -112,7 +112,35 @@ public: // From
         const TDesC& aText,
         const TPoint& aTextOrigin,
         TInt aExtraPixels) const;
-
+    
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    /**
+     * Called by the editor FW in order to draw the the content of
+     * the editor.
+     *
+     * Currently delegates the drawing to the parent custom drawer.
+     *
+     * @param aParam Drawing parameters.
+     * @param aLineInfo The line information.
+     * @param aFormat The current character format.
+     * @param aText The content to draw.
+     * @param aStart 
+     * @param aEnd 
+     * @param aTextOrigin The origin of the text.
+     * @param aExtraPixels The amount of extra pixels.
+     * @since S60 5.0
+     */
+    void DrawText(
+        const TParam& aParam,
+        const TLineInfo& aLineInfo,
+        const TCharFormat& aFormat,
+        const TDesC& aText,
+        const TInt aStart,
+        const TInt aEnd,
+        const TPoint& aTextOrigin,
+        TInt aExtraPixels) const;
+#endif
+    
     /**
      * Retrieves the system color for the specified color index.
      *
@@ -120,7 +148,7 @@ public: // From
      * @param aDefaultColor The default color for the specified index.
      * @return The system's (or custom) color for the specified color
      *         index.
-         * @since S60 5.0
+     * @since S60 5.0
      */
     TRgb SystemColor(
         TUint aColorIndex,

@@ -25,9 +25,6 @@ import java.util.Hashtable;
  * MIDP runtime. It is assumed that the arguments are provided so that
  * there is always a key starting with '-' available and after that the
  * value. Keys without value are not supported.
- *
- * @author Nokia Corporation
- * @version $Rev$
  */
 public final class MainArgs
 {

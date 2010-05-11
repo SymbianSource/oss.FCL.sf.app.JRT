@@ -23,7 +23,7 @@
 #include    "clapilandmarksearchfactory.h"
 #include    "clapilandmark.h"
 #include    "tlapisearchcriteria.h"
-#include    "cleanupresetanddestroy.h"
+#include    "javasymbianoslayer.h"
 #include    "lapipanics.h"
 #include    "logger.h"
 
