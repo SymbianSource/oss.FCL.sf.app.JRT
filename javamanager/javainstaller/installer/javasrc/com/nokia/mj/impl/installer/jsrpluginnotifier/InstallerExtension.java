@@ -22,9 +22,6 @@ package com.nokia.mj.impl.installer.jsrpluginnotifier;
  * JSR Installer Plugin interface. All Java Installer
  * JSR plugins must implement this interface and have
  * constructor that accepts empty argument list.
- *
- * @author Nokia Corporation
- * @version $Rev: 9337 $ $Date: 2010-01-14 14:27:46 +0200 (Thu, 14 Jan 2010) $
  * @see JsrPluginNotifier
  */
 public interface InstallerExtension

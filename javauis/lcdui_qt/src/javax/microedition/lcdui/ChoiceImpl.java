@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -23,18 +23,21 @@ import java.util.Vector;
  * <br> List and ChoiceGroup class use this class as their member to implement
  * their own functionality.
  */
-final class ChoiceImpl {
+final class ChoiceImpl
+{
 
     /**
      * Internal class for storing Choice data.
      */
-    private class ChoiceData {
+    private class ChoiceData
+    {
         String text;
         Image img;
         Font font;
         boolean sel;
 
-        ChoiceData(String text, Image img, Font font, boolean sel) {
+        ChoiceData(String text, Image img, Font font, boolean sel)
+        {
             this.text = text;
             this.img = img;
             this.font = font;
@@ -62,7 +65,8 @@ final class ChoiceImpl {
      *
      * @param multiSel multi or single selection
      */
-    ChoiceImpl(boolean multiSel) {
+    ChoiceImpl(boolean multiSel)
+    {
         this.multiSel = multiSel;
     }
 
@@ -72,33 +76,39 @@ final class ChoiceImpl {
      * @param textElements string array
      * @param imgElements  image array
      */
-    void check(String[] textElements, Image[] imgElements) {
+    void check(String[] textElements, Image[] imgElements)
+    {
         // check textElements
-        if (textElements == null) {
+        if(textElements == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.CHOICE_EXCEPTION_TEXT_ARRAY_NULL);
+                MsgRepository.CHOICE_EXCEPTION_TEXT_ARRAY_NULL);
         }
         // check every text element
-        for (int i = 0; i < textElements.length; i++) {
-            if (textElements[i] == null) {
+        for(int i = 0; i < textElements.length; i++)
+        {
+            if(textElements[i] == null)
+            {
                 throw new NullPointerException(
-                        MsgRepository.CHOICE_EXCEPTION_ITEM_NULL + i);
+                    MsgRepository.CHOICE_EXCEPTION_ITEM_NULL + i);
             }
         }
         // check imgElements array length
-        if (imgElements != null && imgElements.length != textElements.length) {
+        if(imgElements != null && imgElements.length != textElements.length)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.CHOICE_EXCEPTION_INVALID_ARRAY_LENGTHS);
+                MsgRepository.CHOICE_EXCEPTION_INVALID_ARRAY_LENGTHS);
         }
     }
 
     /**
      * Append item with specified text and image.
      */
-    int append(String text, Image image) {
+    int append(String text, Image image)
+    {
         validateString(text);
         ChoiceData data = new ChoiceData(text, image, Font.getDefaultFont(),
-                (!multiSel && size() == 0));
+                                         (!multiSel && size() == 0));
         items.addElement(data);
         // return index of added element
         return size() - 1;
@@ -107,18 +117,20 @@ final class ChoiceImpl {
     /**
      * Insert item with specified text and image.
      */
-    void insert(int elementNum, String text, Image image) {
+    void insert(int elementNum, String text, Image image)
+    {
         validateString(text);
         validatePosition(elementNum, size() + 1);
         ChoiceData data = new ChoiceData(text, image, Font.getDefaultFont(),
-                (!multiSel && size() == 0));
+                                         (!multiSel && size() == 0));
         items.insertElementAt(data, elementNum);
     }
 
     /**
      * Set item with specified text and image.
      */
-    void set(int elementNum, String text, Image image) {
+    void set(int elementNum, String text, Image image)
+    {
         validateString(text);
         validatePosition(elementNum, size());
         ChoiceData data = (ChoiceData) items.elementAt(elementNum);
@@ -129,7 +141,8 @@ final class ChoiceImpl {
     /**
      * Set item's font.
      */
-    void setFont(int elementNum, Font font) {
+    void setFont(int elementNum, Font font)
+    {
         validatePosition(elementNum, size());
         Font checkedFont = (font == null ? Font.getDefaultFont() : font);
         ((ChoiceData) items.elementAt(elementNum)).font = checkedFont;
@@ -138,15 +151,19 @@ final class ChoiceImpl {
     /**
      * Delete item from specified position.
      */
-    void delete(int elementNum) {
+    void delete(int elementNum)
+    {
         validatePosition(elementNum, size());
-        if (!multiSel && isSelected(elementNum) && size() > 1) {
+        if(!multiSel && isSelected(elementNum) && size() > 1)
+        {
             // we are removing the selected item and there are more
-            if (elementNum == size() - 1) {
+            if(elementNum == size() - 1)
+            {
                 // select previous item
                 setSelected(elementNum - 1, true);
             }
-            else {
+            else
+            {
                 // select next item
                 setSelected(elementNum + 1, true);
             }
@@ -157,21 +174,24 @@ final class ChoiceImpl {
     /**
      * Delete all items.
      */
-    void deleteAll() {
+    void deleteAll()
+    {
         items.removeAllElements();
     }
 
     /**
      * Get fit policy.
      */
-    int getFitPolicy() {
+    int getFitPolicy()
+    {
         return fitPolicy;
     }
 
     /**
      * Get the Font of a given item.
      */
-    Font getFont(int elementNum) {
+    Font getFont(int elementNum)
+    {
         validatePosition(elementNum, size());
         return ((ChoiceData) items.elementAt(elementNum)).font;
     }
@@ -179,7 +199,8 @@ final class ChoiceImpl {
     /**
      * Get the image of a given item.
      */
-    Image getImage(int elementNum) {
+    Image getImage(int elementNum)
+    {
         validatePosition(elementNum, size());
         return ((ChoiceData) items.elementAt(elementNum)).img;
     }
@@ -187,7 +208,8 @@ final class ChoiceImpl {
     /**
      * Get the text of a given item.
      */
-    String getString(int elementNum) {
+    String getString(int elementNum)
+    {
         validatePosition(elementNum, size());
         return ((ChoiceData) items.elementAt(elementNum)).text;
     }
@@ -195,16 +217,18 @@ final class ChoiceImpl {
     /**
      * Set fit policy.
      */
-    void setFitPolicy(int newFitPolicy) {
-        switch (newFitPolicy) {
-            case Choice.TEXT_WRAP_DEFAULT:
-            case Choice.TEXT_WRAP_OFF:
-            case Choice.TEXT_WRAP_ON:
-                fitPolicy = newFitPolicy;
-                break;
-            default:
-                throw new IllegalArgumentException(
-                        MsgRepository.CHOICE_EXCEPTION_INVALID_FIT_POLICY);
+    void setFitPolicy(int newFitPolicy)
+    {
+        switch(newFitPolicy)
+        {
+        case Choice.TEXT_WRAP_DEFAULT:
+        case Choice.TEXT_WRAP_OFF:
+        case Choice.TEXT_WRAP_ON:
+            fitPolicy = newFitPolicy;
+            break;
+        default:
+            throw new IllegalArgumentException(
+                MsgRepository.CHOICE_EXCEPTION_INVALID_FIT_POLICY);
         }
     }
 
@@ -212,11 +236,15 @@ final class ChoiceImpl {
      * Get the selection index. Returns the first selection index if multiple
      * selection is allowed.
      */
-    int getSelectedIndex() {
+    int getSelectedIndex()
+    {
         final int size = size();
-        if (!multiSel) {
-            for (int i = 0; i < size; i++) {
-                if (isSelected(i)) {
+        if(!multiSel)
+        {
+            for(int i = 0; i < size; i++)
+            {
+                if(isSelected(i))
+                {
                     return i;
                 }
             }
@@ -227,7 +255,8 @@ final class ChoiceImpl {
     /**
      * Checks if an item is selected.
      */
-    boolean isSelected(int elementNum) {
+    boolean isSelected(int elementNum)
+    {
         validatePosition(elementNum, size());
         return ((ChoiceData) items.elementAt(elementNum)).sel;
     }
@@ -235,16 +264,21 @@ final class ChoiceImpl {
     /**
      * Sets an item's selection.
      */
-    void setSelected(int elementNum, boolean select) {
+    void setSelected(int elementNum, boolean select)
+    {
         validatePosition(elementNum, size());
-        if (multiSel) {
+        if(multiSel)
+        {
             ((ChoiceData) items.elementAt(elementNum)).sel = select;
         }
-        else {
-            if (select) {
+        else
+        {
+            if(select)
+            {
                 // clear all
                 final int size = size();
-                for (int i = 0; i < size; i++) {
+                for(int i = 0; i < size; i++)
+                {
                     ((ChoiceData) items.elementAt(i)).sel = false;
                 }
                 // set just one
@@ -256,16 +290,20 @@ final class ChoiceImpl {
     /**
      * Get selection flags.
      */
-    int getSelectedFlags(boolean[] selectedArray) {
+    int getSelectedFlags(boolean[] selectedArray)
+    {
         validateSelectedArray(selectedArray);
         final int size = size();
         int numSelected = 0;
-        for (int i = 0; i < size; i++) {
-            if (((ChoiceData) items.elementAt(i)).sel) {
+        for(int i = 0; i < size; i++)
+        {
+            if(((ChoiceData) items.elementAt(i)).sel)
+            {
                 selectedArray[i] = true;
                 numSelected++;
             }
-            else {
+            else
+            {
                 selectedArray[i] = false;
             }
         }
@@ -275,19 +313,26 @@ final class ChoiceImpl {
     /**
      * Set selection flags.
      */
-    void setSelectedFlags(boolean[] selectedArray) {
+    void setSelectedFlags(boolean[] selectedArray)
+    {
         validateSelectedArray(selectedArray);
         final int size = size();
-        if (size > 0) {
-            if (multiSel) {
-                for (int i = 0; i < size; i++) {
+        if(size > 0)
+        {
+            if(multiSel)
+            {
+                for(int i = 0; i < size; i++)
+                {
                     ((ChoiceData) items.elementAt(i)).sel = selectedArray[i];
                 }
             }
-            else {
+            else
+            {
                 int firstSelected = 0;
-                for (int i = 0; i < size; i++) {
-                    if (selectedArray[i]) {
+                for(int i = 0; i < size; i++)
+                {
+                    if(selectedArray[i])
+                    {
                         firstSelected = i;
                         break;
                     }
@@ -302,7 +347,8 @@ final class ChoiceImpl {
      *
      * @return the lists size
      */
-    int size() {
+    int size()
+    {
         return items.size();
     }
 
@@ -312,10 +358,12 @@ final class ChoiceImpl {
      * @param position an index of the text array
      * @param upperBoundary upper boundary for position
      */
-    private void validatePosition(int position, int upperBoundary) {
-        if (position < 0 || position >= upperBoundary) {
+    private void validatePosition(int position, int upperBoundary)
+    {
+        if(position < 0 || position >= upperBoundary)
+        {
             throw new IndexOutOfBoundsException(
-                    MsgRepository.CHOICE_EXCEPTION_INVALID_ITEM_INDEX);
+                MsgRepository.CHOICE_EXCEPTION_INVALID_ITEM_INDEX);
         }
     }
 
@@ -324,10 +372,12 @@ final class ChoiceImpl {
      *
      * @param str string
      */
-    private void validateString(String str) {
-        if (str == null) {
+    private void validateString(String str)
+    {
+        if(str == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.CHOICE_EXCEPTION_STRING_NULL);
+                MsgRepository.CHOICE_EXCEPTION_STRING_NULL);
         }
     }
 
@@ -336,14 +386,17 @@ final class ChoiceImpl {
      *
      * @param selectedArray selected array
      */
-    private void validateSelectedArray(boolean[] selectedArray) {
-        if (selectedArray == null) {
+    private void validateSelectedArray(boolean[] selectedArray)
+    {
+        if(selectedArray == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.CHOICE_EXCEPTION_ARRAY_NULL);
+                MsgRepository.CHOICE_EXCEPTION_ARRAY_NULL);
         }
-        if (selectedArray.length < size()) {
+        if(selectedArray.length < size())
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.CHOICE_EXCEPTION_INVALID_ARRAY_SIZE);
+                MsgRepository.CHOICE_EXCEPTION_INVALID_ARRAY_SIZE);
         }
     }
 

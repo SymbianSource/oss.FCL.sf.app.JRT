@@ -95,7 +95,7 @@ public:
      * @param aUid uid of the required entry
      * @param[out] aProperties entry are read in this parameter
      */
-    void CJavaRegServer::GetEntryL(
+    void GetEntryL(
         TUid aUid,
         CJavaPropertyArray*& aProperties, TBool aAllEntries = EFalse);
 

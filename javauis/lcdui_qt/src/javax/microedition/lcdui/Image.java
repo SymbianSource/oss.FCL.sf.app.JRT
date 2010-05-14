@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -29,7 +29,8 @@ import org.eclipse.swt.graphics.Internal_GfxPackageSupport;
  * LCDUI accepts path "/TestMIDlets/images/100x100.png" but corresponding path
  * with this image-class must be "/100x100.png".
  */
-public class Image {
+public class Image
+{
 
     private static Image createImageReturnValue;
 
@@ -45,33 +46,42 @@ public class Image {
     /**
      * Constructor.
      */
-    Image(org.eclipse.swt.graphics.Image eswtImage, boolean isMutable) {
+    Image(org.eclipse.swt.graphics.Image eswtImage, boolean isMutable)
+    {
         this.eswtImage = eswtImage;
         this.mutable = isMutable;
         eswtImageWidth = eswtImage.getBounds().width;
         eswtImageHeight = eswtImage.getBounds().height;
         finalizer = ((finalizer != null) ? finalizer
-                : new com.nokia.mj.impl.rt.support.Finalizer() {
-                    public void finalizeImpl() {
-                        if (finalizer != null) {
-                            finalizer = null;
-                            if (!ESWTUIThreadRunner.isDisposed()) {
-                                dispose();
-                            }
-                        }
+                     : new com.nokia.mj.impl.rt.support.Finalizer()
+        {
+            public void finalizeImpl()
+            {
+                if(finalizer != null)
+                {
+                    finalizer = null;
+                    if(!ESWTUIThreadRunner.isDisposed())
+                    {
+                        dispose();
                     }
-                });
+                }
+            }
+        });
         ESWTUIThreadRunner.update(getClass().getName(), 1);
     }
 
     /**
      * Called by finalizer when Image is ready to free its resources.
      */
-    void dispose() {
+    void dispose()
+    {
         ESWTUIThreadRunner.update(getClass().getName(), -1);
-        ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-            public void run() {
-                if (eswtImage != null) {
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        {
+            public void run()
+            {
+                if(eswtImage != null)
+                {
                     eswtImage.dispose();
                     eswtImage = null;
                 }
@@ -82,7 +92,8 @@ public class Image {
     /**
      * Return eSWT Image object.
      */
-    org.eclipse.swt.graphics.Image getESWTImage() {
+    org.eclipse.swt.graphics.Image getESWTImage()
+    {
         return eswtImage;
     }
 
@@ -92,8 +103,10 @@ public class Image {
      * @param img Image
      * @return eSWT Image
      */
-    static org.eclipse.swt.graphics.Image getESWTImage(Image img) {
-        if (img != null) {
+    static org.eclipse.swt.graphics.Image getESWTImage(Image img)
+    {
+        if(img != null)
+        {
             return img.eswtImage;
         }
         return null;
@@ -107,23 +120,29 @@ public class Image {
      * @return Image created.
      * @throws IllegalArgumentException if width or height are zero or less.
      */
-    public static Image createImage(int w, int h) {
-        if (w <= 0 || h <= 0) {
+    public static Image createImage(int w, int h)
+    {
+        if(w <= 0 || h <= 0)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.IMAGE_EXCEPTION_INVALID_DIMENSIONS);
+                MsgRepository.IMAGE_EXCEPTION_INVALID_DIMENSIONS);
         }
 
         final int width = w;
         final int height = h;
-        ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        {
+            public void run()
+            {
                 org.eclipse.swt.graphics.Image eswtImg =
                     eswtCreateImage(width, height);
 
-                if (eswtImg != null) {
+                if(eswtImg != null)
+                {
                     createImageReturnValue = new Image(eswtImg, true);
                 }
-                else {
+                else
+                {
                     createImageReturnValue = null;
                     throw new OutOfMemoryError();
                 }
@@ -142,23 +161,29 @@ public class Image {
      * @return the resized Image.
      * @throws NullPointerException if aImage is null.
      */
-    static Image createImage(Image srcImage, int width, int height) {
-        if (srcImage == null) {
+    static Image createImage(Image srcImage, int width, int height)
+    {
+        if(srcImage == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.IMAGE_EXCEPTION_IS_NULL);
+                MsgRepository.IMAGE_EXCEPTION_IS_NULL);
         }
         final Image finalImage = srcImage;
         final int finalWidth = width;
         final int finalHeight = height;
-        ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        {
+            public void run()
+            {
                 org.eclipse.swt.graphics.Image eswtImg =
                     eswtCreateImage(finalImage.eswtImage, finalWidth, finalHeight);
 
-                if (eswtImg != null) {
+                if(eswtImg != null)
+                {
                     createImageReturnValue = new Image(eswtImg, false);
                 }
-                else {
+                else
+                {
                     createImageReturnValue = null;
                     throw new OutOfMemoryError();
                 }
@@ -174,26 +199,33 @@ public class Image {
      * @return Image created.
      * @throws NullPointerException if source image is null.
      */
-    public static Image createImage(Image srcImage) {
-        if (srcImage == null) {
+    public static Image createImage(Image srcImage)
+    {
+        if(srcImage == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.IMAGE_EXCEPTION_IS_NULL);
+                MsgRepository.IMAGE_EXCEPTION_IS_NULL);
         }
 
-        if (!srcImage.isMutable()) {
+        if(!srcImage.isMutable())
+        {
             return srcImage;
         }
 
         final Image finalImage = srcImage;
-        ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        {
+            public void run()
+            {
                 org.eclipse.swt.graphics.Image eswtImg =
                     eswtCreateImage(finalImage.eswtImage);
 
-                if (eswtImg != null) {
+                if(eswtImg != null)
+                {
                     createImageReturnValue = new Image(eswtImg, false);
                 }
-                else {
+                else
+                {
                     createImageReturnValue = null;
                     throw new OutOfMemoryError();
                 }
@@ -211,26 +243,32 @@ public class Image {
      * @throws IOException If resource doesn't exist, data cannot be loaded or
      *             data is invalid.
      */
-    public static Image createImage(String name) throws IOException {
-        if (name == null) {
+    public static Image createImage(String name) throws IOException
+    {
+        if(name == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.IMAGE_EXCEPTION_FILE_NAME_IS_NULL);
+                MsgRepository.IMAGE_EXCEPTION_FILE_NAME_IS_NULL);
         }
 
         String fileName = name;
-        if (!fileName.startsWith("/")) {
+        if(!fileName.startsWith("/"))
+        {
             fileName = "/" + fileName;
         }
 
         InputStream stream = Image.class.getResourceAsStream(fileName);
-        if (stream == null) {
+        if(stream == null)
+        {
             throw new IOException(MsgRepository.IMAGE_EXCEPTION_IO_ERROR);
         }
         Image image = createImage(stream);
-        try {
+        try
+        {
             stream.close();
         }
-        catch (IOException e) {
+        catch(IOException e)
+        {
             // ignore
         }
         return image;
@@ -246,25 +284,32 @@ public class Image {
      * @throws java.io.IOException If I/O error occurs or data from stream is
      *             invalid.
      */
-    public static Image createImage(InputStream stream) throws java.io.IOException {
-        if (stream == null) {
+    public static Image createImage(InputStream stream) throws java.io.IOException
+    {
+        if(stream == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.IMAGE_EXCEPTION_FILE_STREAM_IS_NULL);
+                MsgRepository.IMAGE_EXCEPTION_FILE_STREAM_IS_NULL);
         }
         final InputStream finalStream = stream;
-        ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        {
+            public void run()
+            {
                 org.eclipse.swt.graphics.Image eswtImg = eswtCreateImage(finalStream);
 
-                if (eswtImg != null) {
+                if(eswtImg != null)
+                {
                     createImageReturnValue = new Image(eswtImg, false);
                 }
-                else {
+                else
+                {
                     createImageReturnValue = null;
                 }
             }
         });
-        if (createImageReturnValue == null) {
+        if(createImageReturnValue == null)
+        {
             throw new IOException(MsgRepository.IMAGE_EXCEPTION_IO_ERROR);
         }
         return createImageReturnValue;
@@ -282,33 +327,42 @@ public class Image {
      * @throws NullPointerException if imgData is null.
      * @throws IllegalArgumentException if imgData content is invalid.
      */
-    public static Image createImage(byte[] imgData, int imgOffset, int imgLength) {
-        if (imgData == null) {
+    public static Image createImage(byte[] imgData, int imgOffset, int imgLength)
+    {
+        if(imgData == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.IMAGE_EXCEPTION_DATA_IS_NULL);
+                MsgRepository.IMAGE_EXCEPTION_DATA_IS_NULL);
         }
-        if (imgOffset + imgLength > imgData.length) {
+        if(imgOffset + imgLength > imgData.length)
+        {
             throw new ArrayIndexOutOfBoundsException(
-                    MsgRepository.IMAGE_EXCEPTION_INVALID_BOUNDS);
+                MsgRepository.IMAGE_EXCEPTION_INVALID_BOUNDS);
         }
-        if (imgOffset < 0 || imgLength < 0) {
+        if(imgOffset < 0 || imgLength < 0)
+        {
             throw new ArrayIndexOutOfBoundsException(
-                    MsgRepository.IMAGE_EXCEPTION_INVALID_BOUNDS);
+                MsgRepository.IMAGE_EXCEPTION_INVALID_BOUNDS);
         }
 
         InputStream inputStream = new ByteArrayInputStream(imgData, imgOffset, imgLength);
-        try {
+        try
+        {
             createImageReturnValue = createImage(inputStream);
         }
-        catch (IOException e) {
+        catch(IOException e)
+        {
             throw new IllegalArgumentException(
-                        MsgRepository.IMAGE_EXCEPTION_INVALID_DATA);
+                MsgRepository.IMAGE_EXCEPTION_INVALID_DATA);
         }
-        finally {
-            try {
+        finally
+        {
+            try
+            {
                 inputStream.close();
             }
-            catch (IOException e) {
+            catch(IOException e)
+            {
                 // ignore
             }
         }
@@ -337,22 +391,27 @@ public class Image {
                                     int y,
                                     int w,
                                     int h,
-                                    int transform) {
-        if (srcImage == null) {
+                                    int transform)
+    {
+        if(srcImage == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.IMAGE_EXCEPTION_IS_NULL);
+                MsgRepository.IMAGE_EXCEPTION_IS_NULL);
         }
-        if (w <= 0 || h <= 0) {
+        if(w <= 0 || h <= 0)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.IMAGE_EXCEPTION_INVALID_DIMENSIONS);
+                MsgRepository.IMAGE_EXCEPTION_INVALID_DIMENSIONS);
         }
-        if (!validateTransform(transform)) {
+        if(!validateTransform(transform))
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.IMAGE_EXCEPTION_INVALID_TRANSFORM);
+                MsgRepository.IMAGE_EXCEPTION_INVALID_TRANSFORM);
         }
-        if (!validateRegion(srcImage.getWidth(), srcImage.getHeight(), x, y, w, h)) {
+        if(!validateRegion(srcImage.getWidth(), srcImage.getHeight(), x, y, w, h))
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.IMAGE_EXCEPTION_INVALID_REGION);
+                MsgRepository.IMAGE_EXCEPTION_INVALID_REGION);
         }
 
         final Image fImage = srcImage;
@@ -361,26 +420,30 @@ public class Image {
         final int fw = w;
         final int fh = h;
         final int fTransform = transform;
-        ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        {
+            public void run()
+            {
                 org.eclipse.swt.internal.qt.graphics.Image srcCgImage =
                     Internal_GfxPackageSupport.getImage(fImage.getESWTImage());
 
                 org.eclipse.swt.internal.qt.graphics.Image cgImage =
                     new org.eclipse.swt.internal.qt.graphics.Image(
-                            srcCgImage, fx, fy, fw, fh);
+                    srcCgImage, fx, fy, fw, fh);
 
                 cgImage.transform(getCgTransformValue(fTransform));
 
                 org.eclipse.swt.graphics.Image eswtImg =
                     Internal_GfxPackageSupport.new_Image(
-                            ESWTUIThreadRunner.getInstance().getDisplay(),
-                            cgImage);
+                        ESWTUIThreadRunner.getInstance().getDisplay(),
+                        cgImage);
 
-                if (eswtImg != null) {
+                if(eswtImg != null)
+                {
                     createImageReturnValue = new Image(eswtImg, false);
                 }
-                else {
+                else
+                {
                     createImageReturnValue = null;
                     throw new OutOfMemoryError();
                 }
@@ -394,7 +457,8 @@ public class Image {
      * bounds. Method is package-private, used by Graphics.drawRegion as well.
      */
     static boolean validateRegion(int srcWidth, int srcHeight, int x, int y,
-            int w, int h) {
+                                  int w, int h)
+    {
         return x >= 0 && y >= 0 && w <= srcWidth && h <= srcHeight;
     }
 
@@ -402,56 +466,59 @@ public class Image {
      * Validates if transform has a valid value. Method is package-private, used
      * by Graphics.drawRegion as well.
      */
-    static boolean validateTransform(int transform) {
+    static boolean validateTransform(int transform)
+    {
         return transform == Sprite.TRANS_NONE
-            || transform == Sprite.TRANS_MIRROR
-            || transform == Sprite.TRANS_MIRROR_ROT90
-            || transform == Sprite.TRANS_MIRROR_ROT180
-            || transform == Sprite.TRANS_MIRROR_ROT270
-            || transform == Sprite.TRANS_ROT90
-            || transform == Sprite.TRANS_ROT180
-            || transform == Sprite.TRANS_ROT270;
+               || transform == Sprite.TRANS_MIRROR
+               || transform == Sprite.TRANS_MIRROR_ROT90
+               || transform == Sprite.TRANS_MIRROR_ROT180
+               || transform == Sprite.TRANS_MIRROR_ROT270
+               || transform == Sprite.TRANS_ROT90
+               || transform == Sprite.TRANS_ROT180
+               || transform == Sprite.TRANS_ROT270;
     }
 
     /**
      *  Maps LCDUI transform constants to Common Graphics. Method is package-private, used
      *  by Graphics.drawRegion as well.
      */
-    static int getCgTransformValue(int transform) {
+    static int getCgTransformValue(int transform)
+    {
         int retVal = org.eclipse.swt.internal.qt.graphics.Image.TRANS_NONE;
-        switch (transform) {
-            case Sprite.TRANS_NONE:
-                retVal = org.eclipse.swt.internal.qt.graphics.Image.TRANS_NONE;
-                break;
-            case Sprite.TRANS_ROT90:
-                retVal = org.eclipse.swt.internal.qt.graphics.Image.TRANS_ROT90;
-                break;
-            case Sprite.TRANS_ROT180:
-                retVal =
-                    org.eclipse.swt.internal.qt.graphics.Image.TRANS_ROT180;
-                break;
-            case Sprite.TRANS_ROT270:
-                retVal =
-                    org.eclipse.swt.internal.qt.graphics.Image.TRANS_ROT270;
-                break;
-            case Sprite.TRANS_MIRROR:
-                retVal =
-                    org.eclipse.swt.internal.qt.graphics.Image.TRANS_MIRROR;
-                break;
-            case Sprite.TRANS_MIRROR_ROT90:
-                retVal = org.eclipse.swt.internal.qt.graphics.
-                                            Image.TRANS_MIRROR_ROT90;
-                break;
-            case Sprite.TRANS_MIRROR_ROT180:
-                retVal = org.eclipse.swt.internal.qt.graphics.
-                                            Image.TRANS_MIRROR_ROT180;
-                break;
-            case Sprite.TRANS_MIRROR_ROT270:
-                retVal = org.eclipse.swt.internal.qt.graphics.
-                                            Image.TRANS_MIRROR_ROT270;
-                break;
-            default:
-                break;
+        switch(transform)
+        {
+        case Sprite.TRANS_NONE:
+            retVal = org.eclipse.swt.internal.qt.graphics.Image.TRANS_NONE;
+            break;
+        case Sprite.TRANS_ROT90:
+            retVal = org.eclipse.swt.internal.qt.graphics.Image.TRANS_ROT90;
+            break;
+        case Sprite.TRANS_ROT180:
+            retVal =
+                org.eclipse.swt.internal.qt.graphics.Image.TRANS_ROT180;
+            break;
+        case Sprite.TRANS_ROT270:
+            retVal =
+                org.eclipse.swt.internal.qt.graphics.Image.TRANS_ROT270;
+            break;
+        case Sprite.TRANS_MIRROR:
+            retVal =
+                org.eclipse.swt.internal.qt.graphics.Image.TRANS_MIRROR;
+            break;
+        case Sprite.TRANS_MIRROR_ROT90:
+            retVal = org.eclipse.swt.internal.qt.graphics.
+                     Image.TRANS_MIRROR_ROT90;
+            break;
+        case Sprite.TRANS_MIRROR_ROT180:
+            retVal = org.eclipse.swt.internal.qt.graphics.
+                     Image.TRANS_MIRROR_ROT180;
+            break;
+        case Sprite.TRANS_MIRROR_ROT270:
+            retVal = org.eclipse.swt.internal.qt.graphics.
+                     Image.TRANS_MIRROR_ROT270;
+            break;
+        default:
+            break;
         }
         return retVal;
     }
@@ -463,9 +530,11 @@ public class Image {
      * @return new eSWT image.
      */
     private static org.eclipse.swt.graphics.Image eswtCreateImage(
-                                    org.eclipse.swt.graphics.Image srcImage) {
+        org.eclipse.swt.graphics.Image srcImage)
+    {
         org.eclipse.swt.graphics.Image ret = null;
-        try {
+        try
+        {
             org.eclipse.swt.internal.qt.graphics.Image cgImage =
                 Internal_GfxPackageSupport.getImage(srcImage);
 
@@ -473,16 +542,19 @@ public class Image {
                 new org.eclipse.swt.internal.qt.graphics.Image(cgImage);
 
             ret = Internal_GfxPackageSupport.new_Image(
-                    ESWTUIThreadRunner.getInstance().getDisplay(), cgImage2);
+                      ESWTUIThreadRunner.getInstance().getDisplay(), cgImage2);
         }
-        catch (IllegalArgumentException ex) {
+        catch(IllegalArgumentException ex)
+        {
             // Device is null or there's no current device.
             ret = null;
         }
-        catch (org.eclipse.swt.SWTException ex) {
+        catch(org.eclipse.swt.SWTException ex)
+        {
             ret = null;
         }
-        catch (org.eclipse.swt.SWTError err) {
+        catch(org.eclipse.swt.SWTError err)
+        {
             ret = null;
         }
         return ret;
@@ -492,21 +564,26 @@ public class Image {
      * Creates eSWT image of the specified size from the given image.
      */
     static org.eclipse.swt.graphics.Image eswtCreateImage(
-            org.eclipse.swt.graphics.Image image, int newWidth, int newHeight) {
+        org.eclipse.swt.graphics.Image image, int newWidth, int newHeight)
+    {
         org.eclipse.swt.graphics.Image ret = null;
-        try {
+        try
+        {
             ret = new org.eclipse.swt.graphics.Image(
-                    ESWTUIThreadRunner.getInstance().getDisplay(),
-                    image.getImageData().scaledTo(newWidth, newHeight));
+                ESWTUIThreadRunner.getInstance().getDisplay(),
+                image.getImageData().scaledTo(newWidth, newHeight));
         }
-        catch (IllegalArgumentException ex) {
+        catch(IllegalArgumentException ex)
+        {
             // Device is null or there's no current device.
             ret = null;
         }
-        catch (org.eclipse.swt.SWTException ex) {
+        catch(org.eclipse.swt.SWTException ex)
+        {
             ret = null;
         }
-        catch (org.eclipse.swt.SWTError err) {
+        catch(org.eclipse.swt.SWTError err)
+        {
             ret = null;
         }
         return ret;
@@ -515,20 +592,25 @@ public class Image {
     /**
      * Creates eSWT image of the specified size.
      */
-    static org.eclipse.swt.graphics.Image eswtCreateImage(int width, int height) {
+    static org.eclipse.swt.graphics.Image eswtCreateImage(int width, int height)
+    {
         org.eclipse.swt.graphics.Image ret = null;
-        try {
+        try
+        {
             ret = new org.eclipse.swt.graphics.Image(
-                    ESWTUIThreadRunner.getInstance().getDisplay(), width, height);
+                ESWTUIThreadRunner.getInstance().getDisplay(), width, height);
         }
-        catch (IllegalArgumentException ex) {
+        catch(IllegalArgumentException ex)
+        {
             // Device is null or there's no current device.
             ret = null;
         }
-        catch (org.eclipse.swt.SWTException ex) {
+        catch(org.eclipse.swt.SWTException ex)
+        {
             ret = null;
         }
-        catch (org.eclipse.swt.SWTError err) {
+        catch(org.eclipse.swt.SWTError err)
+        {
             ret = null;
         }
         return ret;
@@ -537,20 +619,25 @@ public class Image {
     /**
      * Creates and eSWT image out of the InputStream.
      */
-    static org.eclipse.swt.graphics.Image eswtCreateImage(InputStream inputStream) {
+    static org.eclipse.swt.graphics.Image eswtCreateImage(InputStream inputStream)
+    {
         org.eclipse.swt.graphics.Image ret = null;
-        try {
+        try
+        {
             ret = new org.eclipse.swt.graphics.Image(
-                    ESWTUIThreadRunner.getInstance().getDisplay(), inputStream);
+                ESWTUIThreadRunner.getInstance().getDisplay(), inputStream);
         }
-        catch (IllegalArgumentException ex) {
+        catch(IllegalArgumentException ex)
+        {
             // Device is null or there's no current device.
             ret = null;
         }
-        catch (org.eclipse.swt.SWTException ex) {
+        catch(org.eclipse.swt.SWTException ex)
+        {
             ret = null;
         }
-        catch (org.eclipse.swt.SWTError err) {
+        catch(org.eclipse.swt.SWTError err)
+        {
             ret = null;
         }
         return ret;
@@ -573,38 +660,46 @@ public class Image {
     public static Image createRGBImage(int[] rgbData,
                                        int width,
                                        int height,
-                                       boolean processAlpha) {
+                                       boolean processAlpha)
+    {
 
-        if (rgbData == null) {
+        if(rgbData == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.IMAGE_EXCEPTION_DATA_IS_NULL);
+                MsgRepository.IMAGE_EXCEPTION_DATA_IS_NULL);
         }
-        if (width <= 0 || height <= 0) {
+        if(width <= 0 || height <= 0)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.IMAGE_EXCEPTION_INVALID_DIMENSIONS);
+                MsgRepository.IMAGE_EXCEPTION_INVALID_DIMENSIONS);
         }
-        if (width * height > rgbData.length) {
+        if(width * height > rgbData.length)
+        {
             throw new ArrayIndexOutOfBoundsException(
-                    MsgRepository.IMAGE_EXCEPTION_INVALID_BOUNDS);
+                MsgRepository.IMAGE_EXCEPTION_INVALID_BOUNDS);
         }
 
         final int[] rgb = rgbData;
         final int w = width;
         final int h = height;
         final boolean alpha = processAlpha;
-        ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        {
+            public void run()
+            {
                 org.eclipse.swt.internal.qt.graphics.Image cgImage =
                     new org.eclipse.swt.internal.qt.graphics.Image(rgb, w, h, alpha);
 
                 org.eclipse.swt.graphics.Image eswtImg =
                     Internal_GfxPackageSupport.new_Image(
-                            ESWTUIThreadRunner.getInstance().getDisplay(), cgImage);
+                        ESWTUIThreadRunner.getInstance().getDisplay(), cgImage);
 
-                if (eswtImg != null) {
+                if(eswtImg != null)
+                {
                     createImageReturnValue = new Image(eswtImg, false);
                 }
-                else {
+                else
+                {
                     createImageReturnValue = null;
                     throw new OutOfMemoryError();
                 }
@@ -631,20 +726,24 @@ public class Image {
                        int xPos,
                        int yPos,
                        int width,
-                       int height) {
+                       int height)
+    {
 
-        if (rgbData == null) {
+        if(rgbData == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.IMAGE_EXCEPTION_DATA_IS_NULL);
+                MsgRepository.IMAGE_EXCEPTION_DATA_IS_NULL);
         }
-        if (!validateRegion(this.getWidth(), this.getHeight(),
-             xPos, yPos, width, height)) {
+        if(!validateRegion(this.getWidth(), this.getHeight(),
+                           xPos, yPos, width, height))
+        {
             throw new IllegalArgumentException(
-                                MsgRepository.IMAGE_EXCEPTION_INVALID_BOUNDS);
+                MsgRepository.IMAGE_EXCEPTION_INVALID_BOUNDS);
         }
-        if (Math.abs(length) < width) {
+        if(Math.abs(length) < width)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.IMAGE_EXCEPTION_INVALID_SCANLENGTH);
+                MsgRepository.IMAGE_EXCEPTION_INVALID_SCANLENGTH);
         }
 
         final int[] localRgbData = rgbData;
@@ -654,11 +753,13 @@ public class Image {
         final int localY = yPos;
         final int localW = width;
         final int localH = height;
-        ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        {
+            public void run()
+            {
                 org.eclipse.swt.internal.qt.graphics.Image cgImage = Internal_GfxPackageSupport.getImage(eswtImage);
                 cgImage.getRGB(localRgbData, localOffset, localLength,
-                        localX, localY, localW, localH);
+                               localX, localY, localW, localH);
             }
         });
     }
@@ -669,11 +770,16 @@ public class Image {
      * @return New Graphics-object.
      * @throws IllegalStateException if image is immutable.
      */
-    public Graphics getGraphics() {
-        if (mutable) {
-            if (imageGraphics == null) {
-                ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                    public void run() {
+    public Graphics getGraphics()
+    {
+        if(mutable)
+        {
+            if(imageGraphics == null)
+            {
+                ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                    public void run()
+                    {
                         // instantiate the Graphics object
                         imageGraphics = new Graphics();
                         // bind the GC to the Image target
@@ -691,7 +797,8 @@ public class Image {
      *
      * @return Image width.
      */
-    public int getWidth() {
+    public int getWidth()
+    {
         return eswtImageWidth;
     }
 
@@ -700,7 +807,8 @@ public class Image {
      *
      * @return Image height.
      */
-    public int getHeight() {
+    public int getHeight()
+    {
         return eswtImageHeight;
     }
 
@@ -709,7 +817,8 @@ public class Image {
      *
      * @return true, if image is mutable.
      */
-    public boolean isMutable() {
+    public boolean isMutable()
+    {
         return mutable;
     }
 

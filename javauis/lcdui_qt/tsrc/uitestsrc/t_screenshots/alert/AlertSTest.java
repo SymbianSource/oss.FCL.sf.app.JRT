@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package t_screenshots.alert;
@@ -32,19 +32,20 @@ import t_uirobot.UITestBase;
  *
  * @created 2008-07-23
  */
-public class AlertSTest extends UITestBase {
+public class AlertSTest extends UITestBase
+{
 
     private static String shortString = "Lorem ipsum";
 
     private static String longString = "Lorem ipsum dolor sit amet, "
-            + "consectetuer adipiscing elit. Cras turpis ligula, "
-            + "condimentum nec, rhoncus quis, molestie in, arcu. "
-            + "Curabitur id lacus. Quisque dictum nulla id odio. "
-            + "Nullam nec urna. Cras ac lacus nec lacus iaculis aliquet."
-            + " Integer ut eros. Proin laoreet justo et augue. "
-            + "Praesent dui. Proin vel leo a eros auctor convallis. "
-            + "Aenean urna nunc, sagittis vel, pellentesque a, "
-            + "luctus a, metus. Phasellus posuere lacus nec augue.";
+                                       + "consectetuer adipiscing elit. Cras turpis ligula, "
+                                       + "condimentum nec, rhoncus quis, molestie in, arcu. "
+                                       + "Curabitur id lacus. Quisque dictum nulla id odio. "
+                                       + "Nullam nec urna. Cras ac lacus nec lacus iaculis aliquet."
+                                       + " Integer ut eros. Proin laoreet justo et augue. "
+                                       + "Praesent dui. Proin vel leo a eros auctor convallis. "
+                                       + "Aenean urna nunc, sagittis vel, pellentesque a, "
+                                       + "luctus a, metus. Phasellus posuere lacus nec augue.";
 
     private TextBox textBox;
     private Command exitCmd;
@@ -52,7 +53,8 @@ public class AlertSTest extends UITestBase {
     /**
      * Constructor.
      */
-    public AlertSTest() {
+    public AlertSTest()
+    {
     }
 
     /**
@@ -61,21 +63,24 @@ public class AlertSTest extends UITestBase {
      * @param sTestName name of the test
      * @param rTestMethod TestMethod used
      */
-    public AlertSTest(String sTestName, TestMethod rTestMethod) {
+    public AlertSTest(String sTestName, TestMethod rTestMethod)
+    {
         super(sTestName, rTestMethod);
     }
 
     /**
      * Any pre-test setup can be done here
      */
-    protected void setUp() throws Exception {
+    protected void setUp() throws Exception
+    {
         super.setUp();
         exitCmd = new Command("exit", "exit", Command.EXIT, 0);
         textBox = new TextBox("textBox", "", 100, 0);
         textBox.addCommand(exitCmd);
     }
 
-    protected void tearDown() throws Exception {
+    protected void tearDown() throws Exception
+    {
         textBox.removeCommand(exitCmd);
         textBox = null;
         exitCmd = null;
@@ -87,11 +92,14 @@ public class AlertSTest extends UITestBase {
      *
      * @return New testsuite.
      */
-    public Test suite() {
+    public Test suite()
+    {
         TestSuite aSuite = new TestSuite();
 
-        aSuite.addTest(new AlertSTest("testMethod", new TestMethod() {
-            public void run(TestCase tc) {
+        aSuite.addTest(new AlertSTest("testMethod", new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
                 ((AlertSTest) tc).testMethod();
             }
         }));
@@ -102,7 +110,8 @@ public class AlertSTest extends UITestBase {
     /**
      * Test method.
      */
-    public void testMethod() {
+    public void testMethod()
+    {
         setCurrent(textBox);
 
         Gauge smallInd = new Gauge(null, false, 100, 0);
@@ -110,16 +119,20 @@ public class AlertSTest extends UITestBase {
 
         Image smallImg = null;
         Image largeImg = null;
-        try {
+        try
+        {
             smallImg = Image.createImage("100x100.png");
         }
-        catch (IOException e) {
+        catch(IOException e)
+        {
             fail("Cannot load image 100x100.png");
         }
-        try {
+        try
+        {
             largeImg = Image.createImage("200x200.png");
         }
-        catch (IOException e) {
+        catch(IOException e)
+        {
             fail("Cannot load image 200x200.png");
         }
 
@@ -141,51 +154,57 @@ public class AlertSTest extends UITestBase {
 
         boolean match = true;
 
-        for (int i = 0; i < textArr.length; i++) {
-            switch (i) {
+        for(int i = 0; i < textArr.length; i++)
+        {
+            switch(i)
+            {
+            case 0:
+                alert.setString(null);
+                break;
+            case 1:
+                alert.setString(shortString);
+                break;
+            case 2:
+                alert.setString(longString);
+                break;
+            default:
+                break;
+            }
+            for(int j = 0; j < imgArr.length; j++)
+            {
+                switch(j)
+                {
                 case 0:
-                    alert.setString(null);
+                    alert.setImage(null);
                     break;
                 case 1:
-                    alert.setString(shortString);
+                    alert.setImage(smallImg);
                     break;
                 case 2:
-                    alert.setString(longString);
+                    alert.setImage(largeImg);
                     break;
                 default:
                     break;
-            }
-            for (int j = 0; j < imgArr.length; j++) {
-                switch (j) {
+                }
+                for(int k = 0; k < indArr.length; k++)
+                {
+                    switch(k)
+                    {
                     case 0:
-                        alert.setImage(null);
+                        alert.setIndicator(null);
                         break;
                     case 1:
-                        alert.setImage(smallImg);
+                        alert.setIndicator(smallInd);
                         break;
                     case 2:
-                        alert.setImage(largeImg);
+                        alert.setIndicator(largeInd);
                         break;
                     default:
                         break;
-                }
-                for (int k = 0; k < indArr.length; k++) {
-                    switch (k) {
-                        case 0:
-                            alert.setIndicator(null);
-                            break;
-                        case 1:
-                            alert.setIndicator(smallInd);
-                            break;
-                        case 2:
-                            alert.setIndicator(largeInd);
-                            break;
-                        default:
-                            break;
                     }
                     block(CHANGE_DISPLAYABLE_DELAY); // 0.3 sec
                     String filename = fnamePrefix
-                         + textArr[i] + imgArr[j] + indArr[k] + fnamePostfix;
+                                      + textArr[i] + imgArr[j] + indArr[k] + fnamePostfix;
                     match = takeScreenshot(filename) && match;
                 }
             }

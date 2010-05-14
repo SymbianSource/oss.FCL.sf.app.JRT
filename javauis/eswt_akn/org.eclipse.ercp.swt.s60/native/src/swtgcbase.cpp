@@ -22,9 +22,9 @@
 #include <graphics/openfontconstants.h>
 #endif
 
-#ifdef RD_JAVA_UI_ALFDRAWER_ENABLED
+#ifdef RD_JAVA_S60_RELEASE_9_2
 #include <alf/alfdrawer.h>
-#endif // RD_JAVA_UI_ALFDRAWER_ENABLED
+#endif // RD_JAVA_S60_RELEASE_9_2
 
 /*
  * This method is used only for M2G support purposes
@@ -674,14 +674,14 @@ void CSwtGcBase::CopyArea(const TRect& aSource, const TPoint& aDestination)
 TInt CSwtGcBase::FinishOperationL()
 {
     TInt err = KErrNone;
-#ifdef RD_JAVA_UI_ALFDRAWER_ENABLED
+#ifdef RD_JAVA_S60_RELEASE_9_2
     CAlfDrawer* drawer = CAlfDrawer::NewL();
     CleanupStack::PushL(drawer);
     err = drawer->Finish();
     CleanupStack::PopAndDestroy(drawer);
 #else
     err = CCoeEnv::Static()->WsSession().Finish();
-#endif // RD_JAVA_UI_ALFDRAWER_ENABLED
+#endif // RD_JAVA_S60_RELEASE_9_2
     return err;
 }
 #endif // RD_JAVA_NGA_ENABLED

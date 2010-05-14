@@ -526,13 +526,13 @@ void CMIDTextEditor::SetPosition(TInt aX, TInt aY)
 }
 
 // ---------------------------------------------------------------------------
-// CMIDTextEditor::SetCaretXY
+// CMIDTextEditor::SetCaretXYL
 // (other items are commented in the header file)
 // ---------------------------------------------------------------------------
 //
 void CMIDTextEditor::SetCaretXYL(TInt aX, TInt aY)
 {
-    DEBUG_INT2("CMIDTextEditor::SetCaretXY +, aX=%d, aY=%d", aX, aY);
+    DEBUG_INT2("CMIDTextEditor::SetCaretXYL +, aX=%d, aY=%d", aX, aY);
 
     // Requested point should be already recalculated to be relative
     // to editor position on canvas.
@@ -540,14 +540,14 @@ void CMIDTextEditor::SetCaretXYL(TInt aX, TInt aY)
     // If position will be found in formatted text, posInfo will be filled
     // with desired informations.
     TTmPosInfo2 posInfo;
-
+    
     if (iTextEdwin->TextLayout()->FindXyPos(pos, posInfo))
     {
         // Position was found. Try to set cursor to found position.
         iTextEdwin->SetCursorPosL(posInfo.iDocPos.iPos, EFalse);
     }
 
-    DEBUG("CMIDTextEditor::SetCaretXY -");
+    DEBUG("CMIDTextEditor::SetCaretXYL -");    
 }
 
 // ---------------------------------------------------------------------------
@@ -582,7 +582,7 @@ void CMIDTextEditor::SetFocusStateL(TBool aFocusState)
             iTextEdwin->SetCursorVisible(EFalse);
         }
         else if (iEditingStateIndicator->EnabledState() ==
-                 CMIDEditingStateIndicator::EIndicatorStateRelative)
+            CMIDEditingStateIndicator::EIndicatorStateRelative)
         {
             // Enable the custom indicators as in Avkon if not controlled
             // by the client application
@@ -1076,7 +1076,7 @@ void CMIDTextEditor::SetMultilineL(TBool aMultiline)
     // if the constraint modifier PASSWORD is set. Passwords are single
     // line editors due to CMIDEdwinUtils::CPasswordText implementation.
     if (aMultiline == iTextEdwin->IsWrapEnabled() ||
-            iConstraints & MMIDTextField::EPassword)
+        iConstraints & MMIDTextField::EPassword)
     {
         DEBUG("CMIDTextEditor::SetMultilineL -, ignoring request");
 
@@ -1103,6 +1103,8 @@ void CMIDTextEditor::SetMultilineL(TBool aMultiline)
     // Text has been changed so inform the editor window that
     // it needs to redraw itself again.
     iTextEdwin->HandleTextChangedL();
+    // Cursor position handling is done in CMIDTextEditorEdwin
+    iTextEdwin->SetCursorPosL(iTextEdwin->CursorPos(), EFalse); 
 
     DEBUG("CMIDTextEditor::SetMultilineL -");
 }
@@ -1386,7 +1388,6 @@ void CMIDTextEditor::SetFontL(MMIDFont* aFont)
     {
         TSize size = EditorSize();
         TInt newEditorWindowHeight = iTextEdwin->EditorWindowHeight();
-
         if (size.iHeight != newEditorWindowHeight)
         {
             SetEditorSize(size.iWidth, newEditorWindowHeight);
@@ -1929,7 +1930,7 @@ void CMIDTextEditor::UpdateIndicatorPosition()
 
         DEBUG_INT2(
             "CMIDTextEditor::UpdateIndicatorPosition, indicatorPos.X=%d, \
-indicatorPos.Y=%d", x, y);
+                indicatorPos.Y=%d", x, y);
 
         iEditingStateIndicator->SetPosition(x, y);
 

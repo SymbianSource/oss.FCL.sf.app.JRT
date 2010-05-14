@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui.game;
@@ -19,7 +19,8 @@ package javax.microedition.lcdui.game;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
-public class TiledLayer extends Layer {
+public class TiledLayer extends Layer
+{
 
     // Animated tile array increment
     private static final int ANIM_ARRAY_INCREMENT = 4;
@@ -31,12 +32,14 @@ public class TiledLayer extends Layer {
     private int[] animArray;
     private int animCount;
 
-    public TiledLayer(int cols, int rows, Image tileImage, int tileWidth, int tileHeight) {
+    public TiledLayer(int cols, int rows, Image tileImage, int tileWidth, int tileHeight)
+    {
         super(tileImage, tileWidth, tileHeight);
 
-        if (cols < 1 || rows < 1) {
+        if(cols < 1 || rows < 1)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.TILEDLAYER_EXCEPTION_INVALID_DIMENSIONS);
+                MsgRepository.TILEDLAYER_EXCEPTION_INVALID_DIMENSIONS);
         }
 
         this.cols = cols;
@@ -46,7 +49,8 @@ public class TiledLayer extends Layer {
         animCount = 0;
     }
 
-    public void setStaticTileSet(Image tileImage, int tileWidth, int tileHeight) {
+    public void setStaticTileSet(Image tileImage, int tileWidth, int tileHeight)
+    {
         final int oldTileCount = tileCount;
 
         setTileImage(tileImage, tileWidth, tileHeight);
@@ -56,44 +60,54 @@ public class TiledLayer extends Layer {
         // If not, the contents of the grid will be cleared (all cells will
         // contain index 0) and all animated tiles will be deleted.
         //
-        if (tileCount < oldTileCount) {
+        if(tileCount < oldTileCount)
+        {
             fillCells(0, 0, cols, rows, 0);
             animCount = 0;
         }
     }
 
-    public void setCell(int col, int row, int aTileIndex) {
+    public void setCell(int col, int row, int aTileIndex)
+    {
         validateTileIndex(aTileIndex);
         cells[row][col] = aTileIndex;
     }
 
-    public int getCell(int col, int row) {
+    public int getCell(int col, int row)
+    {
         return cells[row][col];
     }
 
-    public void fillCells(int col, int row, int numCols, int numRows, int tileIndex) {
-        if (numCols < 0) {
+    public void fillCells(int col, int row, int numCols, int numRows, int tileIndex)
+    {
+        if(numCols < 0)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.TILEDLAYER_EXCEPTION_INVALID_NUMBER_OF_COLUMNS);
+                MsgRepository.TILEDLAYER_EXCEPTION_INVALID_NUMBER_OF_COLUMNS);
         }
-        if (numRows < 0) {
+        if(numRows < 0)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.TILEDLAYER_EXCEPTION_INVALID_NUMBER_OF_ROWS);
+                MsgRepository.TILEDLAYER_EXCEPTION_INVALID_NUMBER_OF_ROWS);
         }
         validateTileIndex(tileIndex);
 
-        for (int i = col + numCols; --i >= col;) {
+        for(int i = col + numCols; --i >= col;)
+        {
             cells[row][i] = tileIndex;
         }
-        for (int i = row + numRows; --i > row;) {
+        for(int i = row + numRows; --i > row;)
+        {
             System.arraycopy(cells[row], col, cells[i], col, numCols);
         }
     }
 
-    public int createAnimatedTile(int tileIndex) {
-        if (tileIndex < 0 || tileIndex > tileCount) {
+    public int createAnimatedTile(int tileIndex)
+    {
+        if(tileIndex < 0 || tileIndex > tileCount)
+        {
             throw new IndexOutOfBoundsException(
-                    MsgRepository.TILEDLAYER_EXCEPTION_INVALID_TILE_INDEX);
+                MsgRepository.TILEDLAYER_EXCEPTION_INVALID_TILE_INDEX);
         }
 
         final int index = animCount;
@@ -106,55 +120,68 @@ public class TiledLayer extends Layer {
     /**
      * Grows the animated tile array if required.
      */
-    private void checkCapacity(int requiredLength) {
+    private void checkCapacity(int requiredLength)
+    {
         int length = animArray.length;
-        if (requiredLength > length) {
+        if(requiredLength > length)
+        {
             int[] array = new int[length + ANIM_ARRAY_INCREMENT];
             System.arraycopy(animArray, 0, array, 0, length);
             animArray = array;
         }
     }
 
-    public void setAnimatedTile(int animIndex, int tileIndex) {
+    public void setAnimatedTile(int animIndex, int tileIndex)
+    {
         final int index = ~animIndex;
-        if (index >= animCount) {
+        if(index >= animCount)
+        {
             throw new IndexOutOfBoundsException(
-                    MsgRepository.TILEDLAYER_EXCEPTION_INVALID_ANIMTILE_INDEX);
+                MsgRepository.TILEDLAYER_EXCEPTION_INVALID_ANIMTILE_INDEX);
         }
-        if (tileIndex < 0 || tileIndex > tileCount) {
+        if(tileIndex < 0 || tileIndex > tileCount)
+        {
             throw new IndexOutOfBoundsException(
-                    MsgRepository.TILEDLAYER_EXCEPTION_INVALID_TILE_INDEX);
+                MsgRepository.TILEDLAYER_EXCEPTION_INVALID_TILE_INDEX);
         }
         animArray[index] = tileIndex;
     }
 
-    public int getAnimatedTile(int animIndex) {
+    public int getAnimatedTile(int animIndex)
+    {
         final int index = ~animIndex;
-        if (index >= animCount) {
+        if(index >= animCount)
+        {
             throw new IndexOutOfBoundsException(
-                    MsgRepository.TILEDLAYER_EXCEPTION_INVALID_ANIMTILE_INDEX);
+                MsgRepository.TILEDLAYER_EXCEPTION_INVALID_ANIMTILE_INDEX);
         }
         return animArray[index];
     }
 
-    public final int getCellWidth() {
+    public final int getCellWidth()
+    {
         return tileWidth;
     }
 
-    public final int getCellHeight() {
+    public final int getCellHeight()
+    {
         return tileHeight;
     }
 
-    public final int getColumns() {
+    public final int getColumns()
+    {
         return cols;
     }
 
-    public final int getRows() {
+    public final int getRows()
+    {
         return rows;
     }
 
-    public final void paint(Graphics aGraphics) {
-        if (visible) {
+    public final void paint(Graphics aGraphics)
+    {
+        if(visible)
+        {
             aGraphics.translate(x, y);
 
             int clipX1 = aGraphics.getClipX();
@@ -182,10 +209,13 @@ public class TiledLayer extends Layer {
             int dx;
             int dy;
 
-            for (int row = begRow; row <= endRow; row++) {
-                for (int col = begCol; col <= endCol; col++) {
+            for(int row = begRow; row <= endRow; row++)
+            {
+                for(int col = begCol; col <= endCol; col++)
+                {
                     final int index = validateTileIndex(cells[row][col]);
-                    if (index >= 0) {
+                    if(index >= 0)
+                    {
                         // Future performace improvement suggestion: accumulate
                         // region
                         //
@@ -211,10 +241,10 @@ public class TiledLayer extends Layer {
                         sy = tr * th;
 
                         aGraphics.drawRegion(tileImage,
-                                sx, sy,
-                                tw, th,
-                                Sprite.TRANS_NONE,
-                                dx, dy, 0);
+                                             sx, sy,
+                                             tw, th,
+                                             Sprite.TRANS_NONE,
+                                             dx, dy, 0);
                     }
                 }
             }
@@ -223,20 +253,24 @@ public class TiledLayer extends Layer {
         }
     }
 
-    private int validateTileIndex(int tileIndex) {
-        if (tileIndex > tileCount) {
+    private int validateTileIndex(int tileIndex)
+    {
+        if(tileIndex > tileCount)
+        {
             throw new IndexOutOfBoundsException(
-                    MsgRepository.TILEDLAYER_EXCEPTION_INVALID_TILE_INDEX);
+                MsgRepository.TILEDLAYER_EXCEPTION_INVALID_TILE_INDEX);
         }
         // check createAnimatedTile has been called, getAnimatedTile will throw
         // exception if hasn't.
-        if (tileIndex < 0) {
+        if(tileIndex < 0)
+        {
             tileIndex = getAnimatedTile(tileIndex);
         }
         return tileIndex - 1;
     }
 
-    boolean collidesCell(int aX1, int aY1, int aX2, int aY2) {
+    boolean collidesCell(int aX1, int aY1, int aX2, int aY2)
+    {
         // tiled layer rect in painter's coordinates
         int tlX1 = x;
         int tlY1 = y;
@@ -251,7 +285,8 @@ public class TiledLayer extends Layer {
         tlY2 = Math.min(tlY2, aY2);
 
         // return false if empty intersection.
-        if (!((tlX1 < tlX2) && (tlY1 < tlY2))) {
+        if(!((tlX1 < tlX2) && (tlY1 < tlY2)))
+        {
             return false;
         }
 
@@ -266,9 +301,12 @@ public class TiledLayer extends Layer {
         int endRow = (tlY2 - 1) / tileHeight;
         int endCol = (tlX2 - 1) / tileWidth;
 
-        for (int row = startRow; row <= endRow; row++) {
-            for (int col = startCol; col <= endCol; col++) {
-                if (cells[row][col] != 0) {
+        for(int row = startRow; row <= endRow; row++)
+        {
+            for(int col = startCol; col <= endCol; col++)
+            {
+                if(cells[row][col] != 0)
+                {
                     // at least one cell is not empty
                     return true;
                 }
@@ -279,11 +317,13 @@ public class TiledLayer extends Layer {
         return false;
     }
 
-    int getLayerWidth() {
+    int getLayerWidth()
+    {
         return cols * tileWidth;
     }
 
-    int getLayerHeight() {
+    int getLayerHeight()
+    {
         return rows * tileHeight;
     }
 }

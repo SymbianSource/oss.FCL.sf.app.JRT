@@ -56,7 +56,8 @@ public class DlListener implements DownloadListener
             }
             catch (Throwable t)
             {
-                Log.logError("InstallerUi.started threw exception", t);
+                Log.logError(
+                    "DlListener: InstallerUi.started threw exception", t);
             }
         }
     }
@@ -74,7 +75,8 @@ public class DlListener implements DownloadListener
             }
             catch (Throwable t)
             {
-                Log.logError("InstallerUi.updateProgress threw exception", t);
+                Log.logError(
+                    "DlListener: InstallerUi.updateProgress threw exception", t);
             }
         }
         if (iBall.iSifNotifier != null)
@@ -90,7 +92,8 @@ public class DlListener implements DownloadListener
             }
             catch (Throwable t)
             {
-                Log.logError("SifNotifier.notifyProgress threw exception", t);
+                Log.logError(
+                    "DlListener: SifNotifier.notifyProgress threw exception", t);
             }
         }
     }
@@ -107,7 +110,8 @@ public class DlListener implements DownloadListener
             }
             catch (Throwable t)
             {
-                Log.logError("InstallerUi.ended threw exception", t);
+                Log.logError(
+                    "DlListener: InstallerUi.ended threw exception", t);
             }
         }
         if (iBall != null)
@@ -145,7 +149,8 @@ public class DlListener implements DownloadListener
             }
             catch (Throwable t)
             {
-                Log.logError("InstallerUi.getUsernamePassword threw exception", t);
+                Log.logError(
+                    "DlListener: InstallerUi.getUsernamePassword threw exception", t);
             }
         }
         return result;

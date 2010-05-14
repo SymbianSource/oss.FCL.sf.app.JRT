@@ -151,7 +151,7 @@ void CMMADisplay::SetClippingRegion()
     // If visible then set a new clip rect
     if (iVisible && iContainerVisible)
     {
-        iClipRect.SetRect(TPoint(0,0),iWindow->WindowRect().Size());
+        iClipRect = iWindow->DrawRect();
 
         if (!iClipRect.IsEmpty())
         {
@@ -205,7 +205,7 @@ void CMMADisplay::AddClippingRegion()
     // If visible then set a new clip rect
     if (iVisible)
     {
-        iClipRect.SetRect(TPoint(0,0),iWindow->WindowRect().Size());
+        iClipRect = iWindow->DrawRect();
 
         if (!iClipRect.IsEmpty())
         {

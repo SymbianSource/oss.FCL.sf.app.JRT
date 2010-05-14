@@ -27,9 +27,6 @@ import com.nokia.mj.impl.security.midp.authorization.PermissionGranter;
 
 /**
  * Removes application's security data from storage.
- *
- * @author Nokia Corporation
- * @version $Rev:  $ $Date:  $
  */
 public class RemoveSecurityData extends ExeStep
 {

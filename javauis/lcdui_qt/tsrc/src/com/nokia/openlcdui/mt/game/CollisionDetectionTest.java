@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt.game;
@@ -27,12 +27,14 @@ import com.nokia.openlcdui.mt.SWTTestCase;
 /**
  * Unit tests for LCDUI Sprite collision detection.
  */
-public class CollisionDetectionTest extends SWTTestCase {
+public class CollisionDetectionTest extends SWTTestCase
+{
 
     /**
      * Constructor.
      */
-    public CollisionDetectionTest() {
+    public CollisionDetectionTest()
+    {
     }
 
     /**
@@ -41,7 +43,8 @@ public class CollisionDetectionTest extends SWTTestCase {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public CollisionDetectionTest(String sTestName) {
+    public CollisionDetectionTest(String sTestName)
+    {
         super(sTestName);
     }
 
@@ -51,23 +54,26 @@ public class CollisionDetectionTest extends SWTTestCase {
      *
      * @return new testsuite.
      */
-    public static Test suite() {
-		TestSuite suite = new TestSuite();
+    public static Test suite()
+    {
+        TestSuite suite = new TestSuite();
 
-	    java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Vector methodNames;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = CollisionDetectionTest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new CollisionDetectionTest((String)e.nextElement()));
-	    }
+        // Add widget tests
+        methodNames = CollisionDetectionTest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new CollisionDetectionTest((String)e.nextElement()));
+        }
 
-		return suite;
-	}
+        return suite;
+    }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testSpriteImageCollision");
         methodNames.addElement("testSpriteSpriteCollision");
@@ -75,27 +81,31 @@ public class CollisionDetectionTest extends SWTTestCase {
         methodNames.addElement("testCollisionTransform");
         return methodNames;
     }
-    
-    protected void runTest() throws Throwable {
-        if (getName().equals("testSpriteImageCollision")) testSpriteImageCollision();
-        else if (getName().equals("testSpriteSpriteCollision")) testSpriteSpriteCollision();
-        else if (getName().equals("testSpriteTiledLayerCollision")) testSpriteTiledLayerCollision();
-        else if (getName().equals("testCollisionTransform")) testCollisionTransform();
+
+    protected void runTest() throws Throwable
+    {
+        if(getName().equals("testSpriteImageCollision")) testSpriteImageCollision();
+        else if(getName().equals("testSpriteSpriteCollision")) testSpriteSpriteCollision();
+        else if(getName().equals("testSpriteTiledLayerCollision")) testSpriteTiledLayerCollision();
+        else if(getName().equals("testCollisionTransform")) testCollisionTransform();
         else super.runTest();
     }
-    
+
     /** Tests collision between sprite and image.
      */
-    public void testSpriteImageCollision() {
+    public void testSpriteImageCollision()
+    {
         Image image1 = null;
         Image image2 = null;
-        try {
+        try
+        {
             //100x100, 0,0, -> 50,50 full opaque, 0,50 -> 50,70 partially
             //transparent, other area full transparent.
             image1 = Image.createImage("opaqueTest.png");
             image2 = Image.createImage("opaqueTest.png");
         }
-        catch (java.io.IOException e) {
+        catch(java.io.IOException e)
+        {
             System.out.println(e);
             fail("" + e);
         }
@@ -175,16 +185,19 @@ public class CollisionDetectionTest extends SWTTestCase {
 
     /** Tests collision between two sprites.
      */
-    public void testSpriteSpriteCollision() {
+    public void testSpriteSpriteCollision()
+    {
         Image image1 = null;
         Image image2 = null;
-        try {
+        try
+        {
             //100x100, 0,0, -> 50,50 full opaque, 0,50 -> 50,70 partially
             //transparent, other area full transparent.
             image1 = Image.createImage("opaqueTest.png");
             image2 = Image.createImage("opaqueTest.png");
         }
-        catch (java.io.IOException e) {
+        catch(java.io.IOException e)
+        {
             System.out.println(e);
             fail("" + e);
         }
@@ -278,17 +291,20 @@ public class CollisionDetectionTest extends SWTTestCase {
 
     /** Tests collision between sprite and TiledLayer.
      */
-    public void testSpriteTiledLayerCollision() {
+    public void testSpriteTiledLayerCollision()
+    {
         Image image1 = null;
         Image image2 = null;
         TiledLayer tiledLayer = null;
-        try {
+        try
+        {
             //100x100, 0,0, -> 50,50 full opaque, 0,50 -> 50,70 partially
             //transparent, other area full transparent.
             image1 = Image.createImage("opaqueTest.png");
             image2 = Image.createImage("opaqueTest.png");
         }
-        catch (java.io.IOException e) {
+        catch(java.io.IOException e)
+        {
             fail(e.toString());
         }
 
@@ -372,9 +388,11 @@ public class CollisionDetectionTest extends SWTTestCase {
     }
 
 
-    public void testCollisionTransform() {
+    public void testCollisionTransform()
+    {
         int[] rgb1 = { 0xFF00FF00, 0xFF00FF00, 0x0000FF00,
-                       0x0000FF00, 0x0000FF00, 0xFF00FF00 };
+                       0x0000FF00, 0x0000FF00, 0xFF00FF00
+                     };
         // O O T
         // T T O
 
@@ -384,7 +402,8 @@ public class CollisionDetectionTest extends SWTTestCase {
 
         int[] rgb2 = { 0xFF0000FF, 0x000000FF,
                        0x000000FF, 0xFF0000FF,
-                       0xFF0000FF, 0x000000FF, };
+                       0xFF0000FF, 0x000000FF,
+                     };
         // O T
         // T O
         // O T
@@ -395,13 +414,16 @@ public class CollisionDetectionTest extends SWTTestCase {
         sprite2.defineCollisionRectangle(1, 0, 1, 1);
 
         // should not get collision - one transparent, one opaque
-        for (int transform1 = 0; transform1 < 8; transform1++) {
+        for(int transform1 = 0; transform1 < 8; transform1++)
+        {
             sprite1.setTransform(transform1);
-            for (int transform2 = 0; transform2 < 8; transform2++) {
+            for(int transform2 = 0; transform2 < 8; transform2++)
+            {
                 sprite2.setTransform(transform2);
                 sprite2.setRefPixelPosition(0, 0);
                 boolean result = !sprite1.collidesWith(sprite2, true);
-                if (!result) {
+                if(!result)
+                {
                     print("1. Sprite should't collide with Sprite - frame 1");
                     fail("transform1=" + transform1 + " transform2=" + transform2);
                 }
@@ -411,12 +433,15 @@ public class CollisionDetectionTest extends SWTTestCase {
         sprite1.nextFrame(); // frame 2
         sprite2.nextFrame(); // frame 2
         // should always get collision - both opaque
-        for (int transform1 = 0; transform1 < 8; transform1++) {
+        for(int transform1 = 0; transform1 < 8; transform1++)
+        {
             sprite1.setTransform(transform1);
-            for (int transform2 = 0; transform2 < 8; transform2++) {
+            for(int transform2 = 0; transform2 < 8; transform2++)
+            {
                 sprite2.setTransform(transform2);
                 boolean result = sprite1.collidesWith(sprite2, true);
-                if (!result) {
+                if(!result)
+                {
                     print("2. Sprite should collide with Sprite - frame 2");
                     fail("transform1=" + transform1 + " transform2=" + transform2);
                 }
@@ -426,12 +451,15 @@ public class CollisionDetectionTest extends SWTTestCase {
         sprite1.nextFrame(); // frame 3
         sprite2.nextFrame(); // frame 3
         // should not get collision - both transparent
-        for (int transform1 = 0; transform1 < 8; transform1++) {
+        for(int transform1 = 0; transform1 < 8; transform1++)
+        {
             sprite1.setTransform(transform1);
-            for (int transform2 = 0; transform2 < 8; transform2++) {
+            for(int transform2 = 0; transform2 < 8; transform2++)
+            {
                 sprite2.setTransform(transform2);
                 boolean result = !sprite1.collidesWith(sprite2, true);
-                if (!result) {
+                if(!result)
+                {
                     print("3. Sprite should't collide with Sprite - frame 3");
                     fail("transform1=" + transform1 + " transform2=" + transform2);
                 }
@@ -443,11 +471,13 @@ public class CollisionDetectionTest extends SWTTestCase {
         Image image = Image.createRGBImage(rgb1, 1, 2, true);
         sprite2.setFrame(0);
         // should not get collision - sprite transparent
-        for (int transform = 0; transform < 8; transform++) {
+        for(int transform = 0; transform < 8; transform++)
+        {
             sprite2.setTransform(transform);
             sprite2.setRefPixelPosition(0, 0);
             boolean result = !sprite2.collidesWith(image, 0, 0, true);
-            if (!result) {
+            if(!result)
+            {
                 print("4. Sprite should't collide with Image - frame 1");
                 fail("transform=" + transform);
             }
@@ -455,11 +485,13 @@ public class CollisionDetectionTest extends SWTTestCase {
 
         sprite2.setFrame(1);
         // should get collision - sprite opaque
-        for (int transform = 0; transform < 8; transform++) {
+        for(int transform = 0; transform < 8; transform++)
+        {
             sprite2.setTransform(transform);
             sprite2.setRefPixelPosition(0, 0);
             boolean result = sprite2.collidesWith(image, 0, 0, true);
-            if (!result) {
+            if(!result)
+            {
                 print("5. Sprite should collide with Image - frame 2");
                 fail("transform=" + transform);
             }
@@ -476,11 +508,13 @@ public class CollisionDetectionTest extends SWTTestCase {
 
         sprite2.setFrame(0);
         // should not get collision - sprite transparent
-        for (int transform = 0; transform < 8; transform++) {
+        for(int transform = 0; transform < 8; transform++)
+        {
             sprite2.setTransform(transform);
             sprite2.setRefPixelPosition(0, 0);
             boolean result = !sprite2.collidesWith(tiledLayer, true);
-            if (!result) {
+            if(!result)
+            {
                 print("6. Sprite should't collide with TiledLayer - frame 1");
                 fail("transform=" + transform);
             }
@@ -488,11 +522,13 @@ public class CollisionDetectionTest extends SWTTestCase {
 
         sprite2.setFrame(1);
         // should get collision - sprite opaque
-        for (int transform = 0; transform < 8; transform++) {
+        for(int transform = 0; transform < 8; transform++)
+        {
             sprite2.setTransform(transform);
             sprite2.setRefPixelPosition(0, 0);
             boolean result = sprite2.collidesWith(tiledLayer, true);
-            if (!result) {
+            if(!result)
+            {
                 print("7. Sprite should collide with TiledLayer - frame 2");
                 fail("transform=" + transform);
             }

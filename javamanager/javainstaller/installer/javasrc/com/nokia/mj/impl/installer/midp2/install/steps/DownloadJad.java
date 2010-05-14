@@ -31,9 +31,6 @@ import com.nokia.mj.impl.installer.utils.Log;
  * This is mostly used in Linux platform because in S60 platform
  * either jad or Jar is already present in the device when
  * installation is started.
- *
- * @author Nokia Corporation
- * @version $Rev:  $ $Date:  $
  */
 public class DownloadJad extends ExeStep
 {

@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package t_uirobot.customitem;
@@ -32,22 +32,24 @@ import com.nokia.mj.impl.uitestutils.Key;
  * <br>
  * Created: 2008-12-01
  */
-public class CustomItemTest extends ItemUITestBase {
+public class CustomItemTest extends ItemUITestBase
+{
 
     private static String longString = "Lorem ipsum dolor sit amet, "
-        + "consectetuer adipiscing elit. Cras turpis ligula, "
-        + "condimentum nec, rhoncus quis, molestie in, arcu. "
-        + "Curabitur id lacus. Quisque dictum nulla id odio. "
-        + "Nullam nec urna. Cras ac lacus nec lacus iaculis aliquet."
-        + " Integer ut eros. Proin laoreet justo et augue. "
-        + "Praesent dui. Proin vel leo a eros auctor convallis. "
-        + "Aenean urna nunc, sagittis vel, pellentesque a, "
-        + "luctus a, metus. Phasellus posuere lacus nec augue.";
+                                       + "consectetuer adipiscing elit. Cras turpis ligula, "
+                                       + "condimentum nec, rhoncus quis, molestie in, arcu. "
+                                       + "Curabitur id lacus. Quisque dictum nulla id odio. "
+                                       + "Nullam nec urna. Cras ac lacus nec lacus iaculis aliquet."
+                                       + " Integer ut eros. Proin laoreet justo et augue. "
+                                       + "Praesent dui. Proin vel leo a eros auctor convallis. "
+                                       + "Aenean urna nunc, sagittis vel, pellentesque a, "
+                                       + "luctus a, metus. Phasellus posuere lacus nec augue.";
 
     /**
      * Constructor.
      */
-    public CustomItemTest() {
+    public CustomItemTest()
+    {
     }
 
     /**
@@ -56,7 +58,8 @@ public class CustomItemTest extends ItemUITestBase {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public CustomItemTest(String sTestName, TestMethod rTestMethod) {
+    public CustomItemTest(String sTestName, TestMethod rTestMethod)
+    {
         super(sTestName, rTestMethod);
     }
 
@@ -66,36 +69,45 @@ public class CustomItemTest extends ItemUITestBase {
      *
      * @return New testsuite.
      */
-    public Test suite() {
+    public Test suite()
+    {
         TestSuite aSuite = new TestSuite();
 
         aSuite.addTest(new CustomItemTest("testBasicMethodCalls",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((CustomItemTest) tc).testBasicMethodCalls();
-                    }
-                }));
+                                          new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((CustomItemTest) tc).testBasicMethodCalls();
+            }
+        }));
 
         aSuite.addTest(new CustomItemTest("testInnerTraverse1",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((CustomItemTest) tc).testInnerTraversal(1);
-                    }
-                }));
+                                          new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((CustomItemTest) tc).testInnerTraversal(1);
+            }
+        }));
 
         aSuite.addTest(new CustomItemTest("testInnerTraverse3",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((CustomItemTest) tc).testInnerTraversal(3);
-                    }
-                }));
+                                          new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((CustomItemTest) tc).testInnerTraversal(3);
+            }
+        }));
 
         aSuite.addTest(new CustomItemTest("testInnerTraverse5",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((CustomItemTest) tc).testInnerTraversal(5);
-                    }
-                }));
+                                          new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((CustomItemTest) tc).testInnerTraversal(5);
+            }
+        }));
 
         return aSuite;
     }
@@ -103,7 +115,8 @@ public class CustomItemTest extends ItemUITestBase {
     /**
      * Tests that getMinimumSize returns non-zero values.
      */
-    public void testBasicMethodCalls() {
+    public void testBasicMethodCalls()
+    {
         Form bg = new Form("background");
         setCurrent(bg);
 
@@ -120,11 +133,11 @@ public class CustomItemTest extends ItemUITestBase {
         setCurrent(form);
 
         assertEquals("1. Invalid CustomItem state",
-                MyCustomItem.TEST_SIZECHANGE
-                | MyCustomItem.TEST_SHOW
-                | MyCustomItem.TEST_PAINT
-                | MyCustomItem.TEST_TRAVERSEIN,
-                ci1.getState());
+                     MyCustomItem.TEST_SIZECHANGE
+                     | MyCustomItem.TEST_SHOW
+                     | MyCustomItem.TEST_PAINT
+                     | MyCustomItem.TEST_TRAVERSEIN,
+                     ci1.getState());
 
         assertTrue("invalid width", ci1.width < 1000);
 
@@ -134,22 +147,22 @@ public class CustomItemTest extends ItemUITestBase {
         key(Key.CBA1);
         key(Key.CBA2);
         assertEquals("2. Invalid CustomItem state",
-                MyCustomItem.TEST_KEYPRESS
-                | MyCustomItem.TEST_KEYRELEASE,
-                ci1.getState());
+                     MyCustomItem.TEST_KEYPRESS
+                     | MyCustomItem.TEST_KEYRELEASE,
+                     ci1.getState());
 
 
         // Hide form
         setCurrent(bg);
         assertTrue("hideNotify() not called",
-                ci1.isCalled(MyCustomItem.TEST_HIDE));
+                   ci1.isCalled(MyCustomItem.TEST_HIDE));
 
         // Set current item
         ci1.clearState();
         display.setCurrentItem(ci1);
         block(CHANGE_DISPLAYABLE_DELAY);
         assertTrue("showNotify() not called",
-                ci1.isCalled(MyCustomItem.TEST_SHOW));
+                   ci1.isCalled(MyCustomItem.TEST_SHOW));
 
         // partial repaint
         ci1.clearState();
@@ -157,11 +170,12 @@ public class CustomItemTest extends ItemUITestBase {
         block(KEYEVENT_DELAY);
         assertTrue("paint() not called", ci1.isCalled(MyCustomItem.TEST_PAINT));
         assertTrue("wrong clipping area",
-                ci1.clipX == 10 && ci1.clipY == 5 &&
-                ci1.clipW == 20 && ci1.clipH == 10);
+                   ci1.clipX == 10 && ci1.clipY == 5 &&
+                   ci1.clipW == 20 && ci1.clipH == 10);
     }
 
-    void testInnerTraversal(int numInnerTraversals) {
+    void testInnerTraversal(int numInnerTraversals)
+    {
         Form fg = new Form("InnerTraverse " + numInnerTraversals);
         MyCustomItem ci1 = new MyCustomItem("CustomItem 1", numInnerTraversals);
         ci1.sizeChanged(1000, 75);
@@ -178,39 +192,43 @@ public class CustomItemTest extends ItemUITestBase {
         // Traversing to CI 2
         ci1.clearState();
         ci2.clearState();
-        for (int i = 0; i < numInnerTraversals; i++) {
+        for(int i = 0; i < numInnerTraversals; i++)
+        {
             assertTrue("Illegal traversing to CI 2",
-                    !ci1.isCalled(MyCustomItem.TEST_TRAVERSEOUT)
-                    && !ci2.isCalled(MyCustomItem.TEST_TRAVERSEIN));
+                       !ci1.isCalled(MyCustomItem.TEST_TRAVERSEOUT)
+                       && !ci2.isCalled(MyCustomItem.TEST_TRAVERSEIN));
             key(Key.DownArrow);
         }
         assertTrue("Should traverse to CI 2",
-                ci1.isCalled(MyCustomItem.TEST_TRAVERSEOUT)
-                && ci2.isCalled(MyCustomItem.TEST_TRAVERSEIN));
+                   ci1.isCalled(MyCustomItem.TEST_TRAVERSEOUT)
+                   && ci2.isCalled(MyCustomItem.TEST_TRAVERSEIN));
 
         // Traversing back to CI 1
         ci1.clearState();
         ci2.clearState();
-        for (int i = 0; i < numInnerTraversals - 1; i++) {
+        for(int i = 0; i < numInnerTraversals - 1; i++)
+        {
             assertTrue("1. Illegal traversing to CI 1",
-                    !ci1.isCalled(MyCustomItem.TEST_TRAVERSEIN)
-                    && !ci2.isCalled(MyCustomItem.TEST_TRAVERSEOUT));
+                       !ci1.isCalled(MyCustomItem.TEST_TRAVERSEIN)
+                       && !ci2.isCalled(MyCustomItem.TEST_TRAVERSEOUT));
             key(Key.DownArrow);
         }
 
-        for (int i = 0; i < numInnerTraversals; i++) {
+        for(int i = 0; i < numInnerTraversals; i++)
+        {
             assertTrue("2. Illegal traversing to CI 1",
-                    !ci1.isCalled(MyCustomItem.TEST_TRAVERSEIN)
-                    && !ci2.isCalled(MyCustomItem.TEST_TRAVERSEOUT));
+                       !ci1.isCalled(MyCustomItem.TEST_TRAVERSEIN)
+                       && !ci2.isCalled(MyCustomItem.TEST_TRAVERSEOUT));
             key(Key.UpArrow);
         }
 
         assertTrue("Should traverse to CI 1",
-                ci1.isCalled(MyCustomItem.TEST_TRAVERSEIN)
-                && ci2.isCalled(MyCustomItem.TEST_TRAVERSEOUT));
+                   ci1.isCalled(MyCustomItem.TEST_TRAVERSEIN)
+                   && ci2.isCalled(MyCustomItem.TEST_TRAVERSEOUT));
     }
 
-    class MyCustomItem extends CustomItem {
+    class MyCustomItem extends CustomItem
+    {
 
         static final int TEST_SHOW = 1;
         static final int TEST_HIDE = 2;
@@ -228,77 +246,95 @@ public class CustomItemTest extends ItemUITestBase {
         int clipX, clipY, clipW, clipH;
         int width, height;
 
-        protected MyCustomItem(String label, int numInnerFocus) {
+        protected MyCustomItem(String label, int numInnerFocus)
+        {
             super(label);
             numFocus = Math.max(1, numInnerFocus);
             focus = -1;
         }
 
-        void clearState() {
+        void clearState()
+        {
             state = 0;
         }
 
-        int getState() {
+        int getState()
+        {
             return state;
         }
 
-        boolean isCalled(int mask) {
+        boolean isCalled(int mask)
+        {
             return (state & mask) != 0;
         }
 
-        private void setState(int newState) {
+        private void setState(int newState)
+        {
             state |= newState;
         }
 
-        void doRepaint(int x, int y, int w, int h) {
+        void doRepaint(int x, int y, int w, int h)
+        {
             repaint(x, y, w, h);
         }
 
-        protected void keyPressed(int keyCode) {
+        protected void keyPressed(int keyCode)
+        {
             setState(TEST_KEYPRESS);
         }
 
-        protected void keyReleased(int keyCode) {
+        protected void keyReleased(int keyCode)
+        {
             setState(TEST_KEYRELEASE);
         }
 
-        protected void showNotify() {
+        protected void showNotify()
+        {
             setState(TEST_SHOW);
         }
 
-        protected void hideNotify() {
+        protected void hideNotify()
+        {
             setState(TEST_HIDE);
         }
 
-        protected void sizeChanged(int width, int height) {
+        protected void sizeChanged(int width, int height)
+        {
             this.width = width;
             this.height = height;
             setState(TEST_SIZECHANGE);
         }
 
         protected boolean traverse(int dir, int viewportWidth,
-                int viewportHeight, int[] visRect_inout) {
+                                   int viewportHeight, int[] visRect_inout)
+        {
             boolean ret = false;
 
             setState(TEST_TRAVERSEIN);
-            if (numFocus == 1) {
+            if(numFocus == 1)
+            {
                 focus = 0;
             }
-            else if (numFocus > 1) {
+            else if(numFocus > 1)
+            {
                 int div = numFocus + 1;
                 focus++;
-                if (dir == Canvas.UP || dir == Canvas.LEFT) {
+                if(dir == Canvas.UP || dir == Canvas.LEFT)
+                {
                     focus = (focus - 1 + div) % div;
                 }
-                else if (dir == Canvas.DOWN || dir == Canvas.RIGHT) {
+                else if(dir == Canvas.DOWN || dir == Canvas.RIGHT)
+                {
                     focus = (focus + 1 + div) % div;
                 }
-                else {
+                else
+                {
                     focus = 1;
                 }
                 focus--;
 
-                if (focus > -1) {
+                if(focus > -1)
+                {
                     ret = true;
                 }
             }
@@ -306,13 +342,15 @@ public class CustomItemTest extends ItemUITestBase {
             return ret;
         }
 
-        protected void traverseOut() {
+        protected void traverseOut()
+        {
             setState(TEST_TRAVERSEOUT);
             focus = -1;
             repaint();
         }
 
-        protected void paint(Graphics g, int w, int h) {
+        protected void paint(Graphics g, int w, int h)
+        {
             setState(TEST_PAINT);
 
             clipX = g.getClipX();
@@ -323,25 +361,30 @@ public class CustomItemTest extends ItemUITestBase {
             g.setColor(0xffffff);
             g.fillRect(0, 0, w, h);
 
-            if (focus > -1) {
+            if(focus > -1)
+            {
                 g.setColor(0x000000);
-                g.fillRect(0, focus * (h / numFocus), w, h / numFocus);
+                g.fillRect(0, focus *(h / numFocus), w, h / numFocus);
             }
         }
 
-        protected int getMinContentHeight() {
+        protected int getMinContentHeight()
+        {
             return height;
         }
 
-        protected int getMinContentWidth() {
+        protected int getMinContentWidth()
+        {
             return width;
         }
 
-        protected int getPrefContentHeight(int h) {
+        protected int getPrefContentHeight(int h)
+        {
             return height;
         }
 
-        protected int getPrefContentWidth(int w) {
+        protected int getPrefContentWidth(int w)
+        {
             return width;
         }
 

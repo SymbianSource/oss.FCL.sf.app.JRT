@@ -42,7 +42,7 @@ public:
     void doReadCallback(TInt aStatus,jobject &aPeer);
 
     void vmAttached();
-    ~NativeHttpSession();
+    
 private:
     NativeHttpSession();
 
@@ -51,7 +51,7 @@ private:
 private:
 
     TInt ExecuteCreateHttpSessionL(int aSelf, TInt aType,  TInt aAPNId, TInt* apnerr);
-    void ExecuteCloseHttpSessionL(int aSelf);
+    
 private:
     HttpSessionClient* iHttpSessionClient;
     TInt                iSuiteId;

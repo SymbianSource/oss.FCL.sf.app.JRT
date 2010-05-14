@@ -49,7 +49,6 @@
 #include "swtmultipagedialog.h"
 #include "swtscreen.h"
 #include "swtsortedlist.h"
-#include "swttasktip.h"
 #include "swttextextension.h"
 #include "swttimedmessagebox.h"
 #include "swtquerydialog.h"
@@ -390,14 +389,6 @@ HBufC* CSwtFactory::RunQueryDialogConvertDefaultValueL(
     TInt aQueryType) const
 {
     return CSwtQueryDialog::ConvertDefaultValueL(aString, aQueryType);
-}
-
-MSwtTaskTip* CSwtFactory::NewTaskTipL(
-    MSwtDisplay& aDisplay,
-    TSwtPeer aPeer,
-    TInt aStyle) const
-{
-    return CSwtTaskTip::NewL(aDisplay, aPeer, aStyle);
 }
 
 MSwtTextExtension* CSwtFactory::NewTextExtensionL(

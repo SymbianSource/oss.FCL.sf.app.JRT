@@ -31,9 +31,6 @@ import com.nokia.mj.impl.utils.Uid;
  * This version registers MIDlet to Symbian AppArc.
  * startSession() must be called before the other methods of this
  * class can be used.
- *
- * @author Nokia Corporation
- * @version $Rev: 9041 $
  */
 public final class ApplicationRegistrator
 {

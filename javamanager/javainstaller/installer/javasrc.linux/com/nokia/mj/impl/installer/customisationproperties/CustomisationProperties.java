@@ -25,9 +25,6 @@ import java.util.Vector;
 /**
  * Fetches product program/operator specific customizable settings.
  * In Linux platform some of these are fetched from ???
- *
- * @author Nokia Corporation
- * @version $Rev: 10289 $
  */
 public final class CustomisationProperties extends CustomisationPropertiesBase
 {

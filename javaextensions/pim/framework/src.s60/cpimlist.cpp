@@ -25,7 +25,7 @@
 #include  "cpimitem.h"
 #include  "cpimitemmatcher.h"
 #include  "cpimstringmatcher.h"
-#include  "cleanupresetanddestroy.h"
+#include  "javasymbianoslayer.h"
 #include  "pimexternalchanges.h"
 #include  "pimpanics.h"
 #include  "pimjnitools.h"
@@ -927,9 +927,9 @@ RPointerArray<CPIMItem>* CPIMList::UpdateListL(CPIMItem* aMatchingItem)
         User::LeaveIfError(newAndRemovedItems->Append(
                                tempRemovedItems[i]));
     }
-
+		CleanupStack::Pop(newAndRemovedItems);
     CleanupStack::Pop(); // newAndRemovedItems cleanup close
-    CleanupStack::Pop(newAndRemovedItems);
+    
 
     CleanupStack::PopAndDestroy(); // tempRemovedItems cleanup close
     CleanupStack::PopAndDestroy(); // tempNewItems cleanup close
@@ -1187,6 +1187,7 @@ void CPIMList::HandleItemChangeNewL(const TPIMItemID aNewItemId,
     CleanupStack::Pop(newItem);
 
     // Add to list of new items
+    CleanupClosePushL(aTempNewItems);
     TInt errAddToNewItems = aTempNewItems.Append(newItem);
     if (errAddToNewItems != KErrNone)
     {
@@ -1194,6 +1195,7 @@ void CPIMList::HandleItemChangeNewL(const TPIMItemID aNewItemId,
         delete newItem;
         User::Leave(errAddToNewItems);
     }
+    CleanupStack::Pop(&aTempNewItems);
 }
 
 void CPIMList::HandleItemChangeModifiedL(CPIMItem& aModifiedItem)
@@ -1224,6 +1226,7 @@ void CPIMList::HandleItemChangeRemovedL(TInt aRemovedItemIndex,
                                         RPointerArray<CPIMItem>& aTempRemovedItems)
 {
     JELOG2(EPim);
+    CleanupClosePushL(aTempRemovedItems);
     CPIMItem* removedItem = iItems[aRemovedItemIndex];
 
     // Add to list of removed items
@@ -1237,6 +1240,7 @@ void CPIMList::HandleItemChangeRemovedL(TInt aRemovedItemIndex,
     // Remove from item list and remove adapter association
     iItems.Remove(aRemovedItemIndex);
     removedItem->RemoveAdapterAssociation();
+    CleanupStack::Pop(&aTempRemovedItems);
 }
 
 void CPIMList::RefreshModifiedItemsL()

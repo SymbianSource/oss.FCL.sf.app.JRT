@@ -25,11 +25,14 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 
 /**
  * Layouter for StringItems.
  */
-class StringItemLayouter extends ItemLayouter {
+class StringItemLayouter extends ItemLayouter
+{
 
     /**
      * Key name for hyperlink filter.
@@ -38,14 +41,15 @@ class StringItemLayouter extends ItemLayouter {
 
     private static final String LINE_CUT_INDICATOR = "...";
 
-    private HyperLinkFilter hyperLinkFilter = new HyperLinkFilter();
+    private HyperLinkListener hLinkListener = new HyperLinkListener();
 
     /**
      * Constructor.
      *
      * @param dflp DefaultFormLayoutPolicy
      */
-    StringItemLayouter(DefaultFormLayoutPolicy dflp) {
+    StringItemLayouter(DefaultFormLayoutPolicy dflp)
+    {
         super(dflp);
     }
 
@@ -59,27 +63,32 @@ class StringItemLayouter extends ItemLayouter {
      *            at least one command in it.
      * @return Control
      */
-    Control eswtGetControl(Composite parent, Item item) {
+    Control eswtGetControl(Composite parent, Item item)
+    {
         StringItem stringItem = (StringItem) item;
-        if (stringItem.getAppearanceMode() == Item.BUTTON
-                && item.getNumCommands() > 0) {
+        if(stringItem.getAppearanceMode() == Item.BUTTON
+                && item.getNumCommands() > 0)
+        {
             Button button = new Button(parent, SWT.PUSH);
             button.setFont(Font.getESWTFont(stringItem.getFont()));
             int areaWidth = 0;
             String line = stringItem.getText();
-            if ((areaWidth = item.getLockedPreferredWidth()) == -1) {
+            if((areaWidth = item.getLockedPreferredWidth()) == -1)
+            {
                 areaWidth = getMaximumItemWidth(item);
             }
             line = truncateIfNewLine(line);
-            if (stringItem.getFont().stringWidth(line) > areaWidth) {
+            if(stringItem.getFont().stringWidth(line) > areaWidth)
+            {
                 // Wrap string to find out how many lines it would take:
                 Vector strings = StringWrapper.wrapString(line,
-                       stringItem.getFont(), true, areaWidth, areaWidth);
-                if (strings != null && strings.size() > 1) {
+                                 stringItem.getFont(), true, areaWidth, areaWidth);
+                if(strings != null && strings.size() > 1)
+                {
 
-                   line =  (String) strings.elementAt(0);
-                   line = line.substring(0, line.length())
-                              + LINE_CUT_INDICATOR;
+                    line = (String) strings.elementAt(0);
+                    line = line.substring(0, line.length())
+                           + LINE_CUT_INDICATOR;
                 }
             }
             button.setText(line);
@@ -91,48 +100,39 @@ class StringItemLayouter extends ItemLayouter {
     /**
      * Add listeners to Layouter specific control.
      */
-    void eswtAddSpecificListeners(Item item, Control control) {
+    void eswtAddSpecificListeners(Item item, Control control)
+    {
         super.eswtAddSpecificListeners(item, control);
-        if (isHyperlink(item)) {
-            Display disp = ESWTUIThreadRunner.getInstance().getDisplay();
-            Listener listener = (Listener) disp.getData(HYPERLINK_FILTER);
-            if (listener == null) {
-                Logger.method(this, "eswtAddSpecificListener");
-                disp.addFilter(SWT.KeyDown, hyperLinkFilter);
-                disp.setData(HYPERLINK_FILTER, hyperLinkFilter);
-            }
-        }
+        Logger.method(this, "eswtAddSpecificListener");
     }
 
     /**
      * Remove listeners from Layouter specific control.
      */
-    void eswtRemoveSpecificListeners(Item item, Control control) {
+    void eswtRemoveSpecificListeners(Item item, Control control)
+    {
         super.eswtRemoveSpecificListeners(item, control);
-        if (isHyperlink(item)) {
-            Display disp = ESWTUIThreadRunner.getInstance().getDisplay();
-            Listener listener = (Listener) disp.getData(HYPERLINK_FILTER);
-            if (listener != null) {
-                Logger.method(this, "eswtRemoveSpecificListener");
-                disp.removeFilter(SWT.KeyDown, hyperLinkFilter);
-                disp.setData(HYPERLINK_FILTER, null);
-            }
-        }
+        Logger.method(this, "eswtRemoveSpecificListener");
     }
 
     /**
      * Returns true if this eSWT control is Layouter specific.
      */
-    boolean eswtIsSpecificControl(Item item, Control control) {
-        if (item.getNumCommands() > 0) {
+    boolean eswtIsSpecificControl(Item item, Control control)
+    {
+        if(item.getNumCommands() > 0)
+        {
             int am = ((StringItem) item).getAppearanceMode();
-            if (am == Item.BUTTON) {
-                if (control instanceof Button) {
+            if(am == Item.BUTTON)
+            {
+                if(control instanceof Button)
+                {
                     return true;
                 }
                 return false;
             }
-            else if (am == Item.HYPERLINK) {
+            else if(am == Item.HYPERLINK)
+            {
                 return true;
             }
         }
@@ -143,7 +143,8 @@ class StringItemLayouter extends ItemLayouter {
     /**
      * Updates the values of StringItem.
      */
-    void eswtUpdateItem(Item item, Control control, int reason, Object param) {
+    void eswtUpdateItem(Item item, Control control, int reason, Object param)
+    {
         // No implementation needed.
     }
 
@@ -153,24 +154,30 @@ class StringItemLayouter extends ItemLayouter {
      * @param row current Row
      * @param item Item to layout
      */
-    void eswtLayoutItem(Row row, Item item) {
+    void eswtLayoutItem(Row row, Item item)
+    {
         StringItem stringItem = (StringItem) item;
-        if (stringItem.getNumCommands() > 0) {
-            if (stringItem.getAppearanceMode() == StringItem.BUTTON) {
+        if(stringItem.getNumCommands() > 0)
+        {
+            if(stringItem.getAppearanceMode() == StringItem.BUTTON)
+            {
                 // BUTTON
                 dfi.eswtAddNewLayoutObject(
-                        new LayoutObject(item, eswtGetCaptionedControl(item)));
+                    new LayoutObject(item, eswtGetCaptionedControl(item)));
             }
-            else {
+            else
+            {
                 // HYPERLINK
                 eswtLayoutPlainStringItem(row, stringItem, true);
-                if (item.isFocused()) {
+                if(item.isFocused())
+                {
                     // Highlight hyperlink if it is focused:
                     eswtHighlightHyperlinkItem(item, true);
                 }
             }
         }
-        else {
+        else
+        {
             // PLAIN
             eswtLayoutPlainStringItem(row, stringItem, false);
         }
@@ -185,8 +192,10 @@ class StringItemLayouter extends ItemLayouter {
      *            Otherwise creates plain StringItem.
      */
     private void eswtLayoutPlainStringItem(Row row, StringItem item,
-            boolean isHyperlink) {
-        if (item.isSizeLocked()) {
+                                           boolean isHyperlink)
+    {
+        if(item.isSizeLocked())
+        {
             eswtLayoutLockedPlainStringItem(item, isHyperlink);
             return;
         }
@@ -194,24 +203,26 @@ class StringItemLayouter extends ItemLayouter {
         String label = item.getLabel();
 
         Vector strings = StringWrapper.wrapString(item.getText(),
-                item.getFont(), dfi.getForm().getLeftRightLanguage(),
-                row.getRowWidth(), row.getFreeSpace());
+                         item.getFont(), dfi.getForm().getLeftRightLanguage(),
+                         row.getRowWidth(), row.getFreeSpace());
 
-        if (strings != null) {
-            for (int i = 0; i < strings.size(); i++) {
+        if(strings != null)
+        {
+            for(int i = 0; i < strings.size(); i++)
+            {
                 // create primitive StringItem
                 Control control = eswtCreateLabeledPrimitiveStringItem(
-                        dfi.getForm().getFormComposite(),
-                        (String) strings.elementAt(i),
-                        label, item.getFont(), isHyperlink,
-                        getMaximumItemWidth(item));
+                                      dfi.getForm().getFormComposite(),
+                                      (String) strings.elementAt(i),
+                                      label, item.getFont(), isHyperlink,
+                                      getMaximumItemWidth(item));
 
                 // because add label to first primitive only:
                 label = null;
 
                 // layoutObject which represent primitive StringItem
                 dfi.eswtAddNewLayoutObject(
-                        new LayoutObject(item, control), i != 0);
+                    new LayoutObject(item, control), i != 0);
             }
         }
     }
@@ -228,20 +239,22 @@ class StringItemLayouter extends ItemLayouter {
      *      created. Otherwise creates plain StringItem.
      */
     private void eswtLayoutLockedPlainStringItem(StringItem item,
-            boolean isHyperlink) {
+            boolean isHyperlink)
+    {
 
         int width = item.getPreferredWidth();
         int height = item.getPreferredHeight();
 
         Vector strings = StringWrapper.wrapString(item.getText(),
-                item.getFont(), dfi.getForm().getLeftRightLanguage(),
-                width, width);
+                         item.getFont(), dfi.getForm().getLeftRightLanguage(),
+                         width, width);
 
         // Create composite which will contain the lines of locked stringitem:
         Composite comp = new Composite(formComposite, SWT.NONE);
         comp.setSize(width, height);
 
-        if (strings != null) {
+        if(strings != null)
+        {
             // layout labels in vertical rows
             comp.setLayout(new RowLayout(SWT.VERTICAL));
 
@@ -251,25 +264,30 @@ class StringItemLayouter extends ItemLayouter {
 
             // Calculate the index of last visible line:
             int spaceForRows = height;
-            if (item.hasLabel()) {
+            if(item.hasLabel())
+            {
                 spaceForRows -= getLabelSize(LINE_CUT_INDICATOR).y;
             }
             int indexOfLastVisibleRow =
                 Math.max(spaceForRows / lineHeight - 1, 0);
 
             boolean lastLineReached = false;
-            for (int i = 0; !lastLineReached && i < strings.size(); i++) {
+            for(int i = 0; !lastLineReached && i < strings.size(); i++)
+            {
                 String line = (String) strings.elementAt(i);
 
                 // If there are rows left after this row but no more space ...
-                if ((i < strings.size() - 1) && (i == indexOfLastVisibleRow)) {
+                if((i < strings.size() - 1) && (i == indexOfLastVisibleRow))
+                {
                     // ... display three dots at the end of the line:
-                    if (line.length() >= LINE_CUT_INDICATOR.length()) {
+                    if(line.length() >= LINE_CUT_INDICATOR.length())
+                    {
                         line = line.substring(0, line.length()
-                                - LINE_CUT_INDICATOR.length())
-                                + LINE_CUT_INDICATOR;
+                                              - LINE_CUT_INDICATOR.length())
+                               + LINE_CUT_INDICATOR;
                     }
-                    else {
+                    else
+                    {
                         line = LINE_CUT_INDICATOR;
                     }
                     lastLineReached = true;
@@ -277,7 +295,7 @@ class StringItemLayouter extends ItemLayouter {
 
                 // create primitive StringItem
                 eswtCreateLabeledPrimitiveStringItem(comp, line, label, item
-                        .getFont(), isHyperlink,width);
+                                                     .getFont(), isHyperlink,width);
 
                 // because add label to first primitive only:
                 label = null;
@@ -299,11 +317,19 @@ class StringItemLayouter extends ItemLayouter {
      */
     private Control eswtCreateLabeledPrimitiveStringItem(Composite parent,
             String txt, String label, Font font, boolean hyperlink,
-            int availableWidth) {
-        if (label == null || label.length()<1) {
-            return eswtCreatePrimitiveStringItem(parent, txt, font, hyperlink);
+            int availableWidth)
+    {
+        if(label == null || label.length()<1)
+        {
+            Control text = eswtCreatePrimitiveStringItem(parent, txt, font, hyperlink);
+            if(hyperlink)
+            {
+                ((HyperLink) text).addSelectionListener(hLinkListener);
+            }
+            return text;
         }
-        else {
+        else
+        {
             Composite comp = new Composite(parent, SWT.NONE);
 
             Label header = new Label(comp, SWT.WRAP);
@@ -311,25 +337,28 @@ class StringItemLayouter extends ItemLayouter {
             header.pack();
 
             int headerWidth = header.getBounds().width;
-            if (headerWidth > availableWidth)
+            if(headerWidth > availableWidth)
             {
-               Point size = header.computeSize(availableWidth,SWT.DEFAULT);
-               header.setBounds(0,0,size.x,size.y);
-               headerWidth = header.getBounds().width;
+                Point size = header.computeSize(availableWidth,SWT.DEFAULT);
+                header.setBounds(0,0,size.x,size.y);
+                headerWidth = header.getBounds().width;
             }
 
             Control text = eswtCreatePrimitiveStringItem(comp, txt, font,
-                    hyperlink);
-
+                           hyperlink);
+            if(hyperlink)
+            {
+                ((HyperLink) text).addSelectionListener(hLinkListener);
+            }
             int textWidth = text.getBounds().width;
             int objectWidth = Math.max(textWidth, headerWidth);
 
             header.setLocation(ItemLayouter.getXLocation(objectWidth,
-                    headerWidth, dfi.getLanguageSpecificLayoutDirective()), 0);
+                               headerWidth, dfi.getLanguageSpecificLayoutDirective()), 0);
 
             text.setLocation(ItemLayouter.getXLocation(objectWidth, textWidth,
-                    dfi.getLanguageSpecificLayoutDirective()),
-                    header.getBounds().height);
+                             dfi.getLanguageSpecificLayoutDirective()),
+                             header.getBounds().height);
 
             comp.pack();
             return comp;
@@ -346,13 +375,16 @@ class StringItemLayouter extends ItemLayouter {
      * @return
      */
     private static Control eswtCreatePrimitiveStringItem(Composite parent, String txt,
-            Font font, boolean isHyperlink) {
+            Font font, boolean isHyperlink)
+    {
         Control text = null;
-        if (isHyperlink) {
+        if(isHyperlink)
+        {
             text = new HyperLink(parent, SWT.NONE, HyperLink.URL);
             ((HyperLink) text).setText(txt);
         }
-        else {
+        else
+        {
             text = new Label(parent, SWT.NONE);
             ((Label) text).setText(txt);
         }
@@ -368,13 +400,18 @@ class StringItemLayouter extends ItemLayouter {
      * @param stringItem StringItem object
      * @return Minimum area needed to display StringItem with specified Font.
      */
-    static Point calculateMinimumBounds(final StringItem stringItem) {
+    static Point calculateMinimumBounds(final StringItem stringItem)
+    {
         final Point minSize = new Point(0, 0);
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 Point size = null;
-                if (stringItem.getNumCommands() > 0) {
-                    if (stringItem.getAppearanceMode() == StringItem.BUTTON) {
+                if(stringItem.getNumCommands() > 0)
+                {
+                    if(stringItem.getAppearanceMode() == StringItem.BUTTON)
+                    {
                         // BUTTON:
                         Button but = new Button(eswtGetStaticShell(), SWT.PUSH);
                         but.setFont(Font.getESWTFont(stringItem.getFont()));
@@ -384,39 +421,41 @@ class StringItemLayouter extends ItemLayouter {
                         but.dispose();
                         applyMinMargins(stringItem, size);
                     }
-                    else {
+                    else
+                    {
                         // HYPERLINK:
                         HyperLink hl = new HyperLink(eswtGetStaticShell(),
-                                SWT.NONE, HyperLink.URL);
+                                                     SWT.NONE, HyperLink.URL);
                         hl.setFont(Font.getESWTFont(stringItem.getFont()));
                         hl.setText(LINE_CUT_INDICATOR);
                         hl.pack();
                         size = hl.computeSize(SWT.DEFAULT, SWT.DEFAULT);
                         hl.dispose();
-                        if (stringItem.hasLabel())
+                        if(stringItem.hasLabel())
                         {
-                           Label header = new Label(eswtGetStaticShell(),SWT.NONE);
-                           header.setText(LINE_CUT_INDICATOR);
-                           header.pack();
-                           size.y += (header.computeSize(SWT.DEFAULT,SWT.DEFAULT)).y;
-                           header.dispose();
+                            Label header = new Label(eswtGetStaticShell(),SWT.NONE);
+                            header.setText(LINE_CUT_INDICATOR);
+                            header.pack();
+                            size.y += (header.computeSize(SWT.DEFAULT,SWT.DEFAULT)).y;
+                            header.dispose();
                         }
                     }
                 }
-                else {
+                else
+                {
                     Label text = new Label(eswtGetStaticShell(), SWT.NONE); // SWT.LEFT
                     text.setFont(Font.getESWTFont(stringItem.getFont()));
                     text.setText(LINE_CUT_INDICATOR);
                     text.pack();
                     size = text.computeSize(SWT.DEFAULT, SWT.DEFAULT);
                     text.dispose();
-                    if (stringItem.hasLabel())
+                    if(stringItem.hasLabel())
                     {
-                       Label header = new Label(eswtGetStaticShell(),SWT.NONE);
-                       header.setText(LINE_CUT_INDICATOR);
-                       header.pack();
-                       size.y += (header.computeSize(SWT.DEFAULT,SWT.DEFAULT)).y;
-                       header.dispose();
+                        Label header = new Label(eswtGetStaticShell(),SWT.NONE);
+                        header.setText(LINE_CUT_INDICATOR);
+                        header.pack();
+                        size.y += (header.computeSize(SWT.DEFAULT,SWT.DEFAULT)).y;
+                        header.dispose();
                     }
                 }
                 minSize.x = size.x;
@@ -433,19 +472,24 @@ class StringItemLayouter extends ItemLayouter {
      * @return Preferred size needed to display Item. x is width and y is
      *         height.
      */
-    static Point calculatePreferredBounds(Item item) {
+    static Point calculatePreferredBounds(Item item)
+    {
         StringItem stringItem = (StringItem) item;
-        if (stringItem.getNumCommands() > 0) {
-            if (stringItem.getAppearanceMode() == StringItem.BUTTON) {
+        if(stringItem.getNumCommands() > 0)
+        {
+            if(stringItem.getAppearanceMode() == StringItem.BUTTON)
+            {
                 // BUTTON
                 return calculateButtonPreferredBounds(stringItem);
             }
-            else {
+            else
+            {
                 // HYPERLINK
                 return calculateStringItemPreferredBounds(stringItem, true);
             }
         }
-        else {
+        else
+        {
             // PLAIN
             return calculateStringItemPreferredBounds(stringItem, false);
         }
@@ -458,21 +502,26 @@ class StringItemLayouter extends ItemLayouter {
      * @param item Item.
      * @return Preferred size.
      */
-    private static Point calculateButtonPreferredBounds(final StringItem item) {
+    private static Point calculateButtonPreferredBounds(final StringItem item)
+    {
         final Point prefSize = new Point(0, 0);
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 Button button = new Button(eswtGetStaticShell(), SWT.PUSH);
                 button.setFont(Font.getESWTFont(item.getFont()));
 
                 int areaWidth = 0;
                 String line = item.getText();
-                if ((areaWidth = item.getLockedPreferredWidth()) == -1) {
+                if((areaWidth = item.getLockedPreferredWidth()) == -1)
+                {
                     areaWidth = getMaximumItemWidth(item);
                 }
                 line = truncateIfNewLine(line);
-                if (item.getFont().stringWidth(line) < areaWidth){
-                   areaWidth = SWT.DEFAULT;
+                if(item.getFont().stringWidth(line) < areaWidth)
+                {
+                    areaWidth = SWT.DEFAULT;
                 }
                 button.setText(line);
                 button.pack();
@@ -499,31 +548,37 @@ class StringItemLayouter extends ItemLayouter {
      * @return Preferred size.
      */
     private static Point calculateStringItemPreferredBounds(
-            final StringItem item, final boolean isHyperlink) {
+        final StringItem item, final boolean isHyperlink)
+    {
         final Point preferredSize = new Point(0, 0);
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 // Find out the width of the area where the StringItem should
                 // be layouted:
                 int areaWidth = 0;
-                if (item.getLockedPreferredWidth() != -1) {
+                if(item.getLockedPreferredWidth() != -1)
+                {
                     areaWidth = item.getLockedPreferredWidth();
                 }
-                else {
+                else
+                {
                     areaWidth = getMaximumItemWidth(item);
                 }
 
                 // Wrap string to find out how many lines it would take:
                 Vector strings = StringWrapper.wrapString(item.getText(),
-                        item.getFont(), true, areaWidth, areaWidth);
+                                 item.getFont(), true, areaWidth, areaWidth);
 
-                if (strings != null && strings.size() > 0) {
+                if(strings != null && strings.size() > 0)
+                {
                     // Calculate the size of the first line:
                     Control ctrl = eswtCreatePrimitiveStringItem(
-                            eswtGetStaticShell(),
-                            (String) strings.elementAt(0),
-                            item.getFont(),
-                            isHyperlink);
+                                       eswtGetStaticShell(),
+                                       (String) strings.elementAt(0),
+                                       item.getFont(),
+                                       isHyperlink);
                     Point size = ctrl.computeSize(SWT.DEFAULT, SWT.DEFAULT);
                     ctrl.dispose();
 
@@ -531,17 +586,18 @@ class StringItemLayouter extends ItemLayouter {
                     // be form's content area width or locked width and the
                     // height would be the height of a line times number of
                     // lines:
-                    if (strings.size() > 1) {
+                    if(strings.size() > 1)
+                    {
                         size.x = areaWidth;
                         size.y *= strings.size();
                     }
-                    if (item.hasLabel())
+                    if(item.hasLabel())
                     {
-                       Label header = new Label(eswtGetStaticShell(),SWT.NONE);
-                       header.setText(item.getLabel());
-                       header.pack();
-                       size.y += (header.computeSize(areaWidth,SWT.DEFAULT)).y;
-                       header.dispose();
+                        Label header = new Label(eswtGetStaticShell(),SWT.NONE);
+                        header.setText(item.getLabel());
+                        header.pack();
+                        size.y += (header.computeSize(areaWidth,SWT.DEFAULT)).y;
+                        header.dispose();
                     }
                     preferredSize.x = size.x;
                     preferredSize.y = size.y;
@@ -554,10 +610,12 @@ class StringItemLayouter extends ItemLayouter {
     /**
      * Returns if this Item is hyperlink.
      */
-    private boolean isHyperlink(Item item) {
-        if (item.getNumCommands() > 0
+    private boolean isHyperlink(Item item)
+    {
+        if(item.getNumCommands() > 0
                 && item instanceof StringItem
-                && (((StringItem) item).getAppearanceMode() != Item.BUTTON)) {
+                && (((StringItem) item).getAppearanceMode() != Item.BUTTON))
+        {
             return true;
         }
         return false;
@@ -566,9 +624,11 @@ class StringItemLayouter extends ItemLayouter {
     /**
      * Called when item gains focus.
      */
-    void eswtFocusGained(Item item, int dir) {
+    void eswtFocusGained(Item item, int dir)
+    {
         super.eswtFocusGained(item, dir);
-        if (isHyperlink(item)) {
+        if(isHyperlink(item))
+        {
             // Highlight hyperlink:
             eswtHighlightHyperlinkItem(item, true);
         }
@@ -577,9 +637,11 @@ class StringItemLayouter extends ItemLayouter {
     /**
      * Called when item losts focus.
      */
-    void eswtFocusLost(Item item) {
+    void eswtFocusLost(Item item)
+    {
         super.eswtFocusLost(item);
-        if (isHyperlink(item)) {
+        if(isHyperlink(item))
+        {
             // Remove hyperlink highlighting:
             eswtHighlightHyperlinkItem(item, false);
         }
@@ -591,11 +653,14 @@ class StringItemLayouter extends ItemLayouter {
      * @param item highlight StringItem
      * @param highlight enable or disable
      */
-    private void eswtHighlightHyperlinkItem(Item item, boolean highlight) {
+    private void eswtHighlightHyperlinkItem(Item item, boolean highlight)
+    {
         LayoutObject lo = null;
         Control c = null;
-        while ((lo = dfi.getNextLayoutObjectOfItem(lo, item)) != null) {
-            if ((c = lo.getControl()) != null) {
+        while((lo = dfi.getNextLayoutObjectOfItem(lo, item)) != null)
+        {
+            if((c = lo.getControl()) != null)
+            {
                 eswtHighlightHyperlink(c, highlight);
             }
         }
@@ -604,19 +669,23 @@ class StringItemLayouter extends ItemLayouter {
     private static Color fgColor;
     private static Color bgColor;
 
-    private static Color getFgColor() {
-        if (fgColor == null) {
+    private static Color getFgColor()
+    {
+        if(fgColor == null)
+        {
             fgColor = new Color(ESWTUIThreadRunner.getInstance().getDisplay(),
-                    0x99, 0x00, 0x00);
+                                0x99, 0x00, 0x00);
             ESWTUIThreadRunner.ds.addObject(fgColor);
         }
         return fgColor;
     }
 
-    private static Color getBgColor() {
-        if (bgColor == null) {
+    private static Color getBgColor()
+    {
+        if(bgColor == null)
+        {
             bgColor = new Color(ESWTUIThreadRunner.getInstance().getDisplay(),
-                    0xee, 0xee, 0xee);
+                                0xee, 0xee, 0xee);
             ESWTUIThreadRunner.ds.addObject(bgColor);
         }
         return bgColor;
@@ -629,22 +698,28 @@ class StringItemLayouter extends ItemLayouter {
      *
      * @param c Control where to start highlighting.
      */
-    private void eswtHighlightHyperlink(Control c, boolean highlight) {
+    private void eswtHighlightHyperlink(Control c, boolean highlight)
+    {
         // TODO: eSWT support required - hyperlink highlighting.
-        if (c instanceof Composite) {
+        if(c instanceof Composite)
+        {
             Control[] children = ((Composite) c).getChildren();
-            for (int i = 0; i < children.length; i++) {
+            for(int i = 0; i < children.length; i++)
+            {
                 Control child = children[i];
-                if (child instanceof Composite) {
+                if(child instanceof Composite)
+                {
                     eswtHighlightHyperlink(child, highlight);
                 }
             }
         }
-        if (highlight) {
+        if(highlight)
+        {
             c.setBackground(getBgColor());
             c.setForeground(getFgColor());
         }
-        else {
+        else
+        {
             c.setBackground(null);
             c.setForeground(null);
         }
@@ -666,19 +741,23 @@ class StringItemLayouter extends ItemLayouter {
      * @return truncated String if newline characters found. Otherwise returns
      *         the string provided as parameter.
      */
-    private static String truncateIfNewLine(String text) {
+    private static String truncateIfNewLine(String text)
+    {
         int indexOfFirstNewLineChar = -1;
-        for (int i = 0; i < text.length(); i++) {
-            if ((text.charAt(i) == '\r')
+        for(int i = 0; i < text.length(); i++)
+        {
+            if((text.charAt(i) == '\r')
                     || (text.charAt(i) == '\n')
-                    || (text.charAt(i) == '\u2028')) {
+                    || (text.charAt(i) == '\u2028'))
+            {
                 indexOfFirstNewLineChar = i;
                 break;
             }
         }
-        if (indexOfFirstNewLineChar != -1) {
+        if(indexOfFirstNewLineChar != -1)
+        {
             return text.substring(0, indexOfFirstNewLineChar)
-                    + LINE_CUT_INDICATOR;
+                   + LINE_CUT_INDICATOR;
         }
         return text;
     }
@@ -687,24 +766,20 @@ class StringItemLayouter extends ItemLayouter {
      * Filter that blocks events if current selected item is a StringItem of
      * type HYPERLINK (or plain with commands).
      */
-    class HyperLinkFilter implements Listener {
+    class HyperLinkListener implements SelectionListener
+    {
 
-        /**
-         * Handles event.
-         *
-         * @param event Event.
-         */
-        public void handleEvent(Event event) {
+        public void widgetDefaultSelected(SelectionEvent e)
+        {
+            Logger.method(this, "widgetDefaultSelected");
+        }
+
+        public void widgetSelected(SelectionEvent e)
+        {
+            Logger.method(this, "widgetSelected");
+            e.doit = false;
             Item item = dfi.getCurrentSelectedItem();
-            if (event.keyCode == Config.STRINGITEM_MSK_KEYCODE) {
-                if (isHyperlink(item)) {
-                    // Do not allow event to go forward because it will
-                    // start browser and that's not how it should work:
-                    event.doit = false;
-                    // Instead activate command associated with MSK button:
-                    item.callCommandAction(item.getMSKCommand());
-                }
-            }
+            item.callCommandAction(item.getMSKCommand());
         }
     }
 

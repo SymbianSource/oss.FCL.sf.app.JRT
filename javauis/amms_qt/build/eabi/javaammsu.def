@@ -1,0 +1,6 @@
+EXPORTS
+	_Z10jni_lookupPKc @ 1 NONAME
+	_ZN13CTimeOutTimer4NewLEiR14MTimeOutNotify @ 2 NONAME
+	_ZTI13CTimeOutTimer @ 3 NONAME
+	_ZTV13CTimeOutTimer @ 4 NONAME
+

@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package t_uirobot.spacer;
@@ -35,7 +35,8 @@ import com.nokia.mj.impl.uitestutils.Key;
  * <br>
  * Created: 2008-10-20
  */
-public class SpacerTest extends ItemUITestBase {
+public class SpacerTest extends ItemUITestBase
+{
 
     private Command latestCommand;
     private Item latestItem;
@@ -44,7 +45,8 @@ public class SpacerTest extends ItemUITestBase {
     /**
      * Constructor.
      */
-    public SpacerTest() {
+    public SpacerTest()
+    {
     }
 
     /**
@@ -53,19 +55,23 @@ public class SpacerTest extends ItemUITestBase {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public SpacerTest(String sTestName, TestMethod rTestMethod) {
+    public SpacerTest(String sTestName, TestMethod rTestMethod)
+    {
         super(sTestName, rTestMethod);
     }
 
     /**
      * Any pre-test setup can be done here
      */
-    protected void setUp() throws Exception {
+    protected void setUp() throws Exception
+    {
         super.setUp();
-    	try {
+        try
+        {
             smallImage = Image.createImage("32x32.jpeg");
         }
-        catch (IOException e) {
+        catch(IOException e)
+        {
             //
         }
     }
@@ -76,15 +82,18 @@ public class SpacerTest extends ItemUITestBase {
      *
      * @return New testsuite.
      */
-    public Test suite() {
+    public Test suite()
+    {
         TestSuite aSuite = new TestSuite();
 
         aSuite.addTest(new SpacerTest("testSizeChange",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((SpacerTest) tc).testSizeChange();
-                    }
-                }));
+                                      new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((SpacerTest) tc).testSizeChange();
+            }
+        }));
 
 
 
@@ -94,11 +103,12 @@ public class SpacerTest extends ItemUITestBase {
     /**
      * Tests the basic functionality of command added to Hyperlink.
      */
-    public void testSizeChange() {
+    public void testSizeChange()
+    {
         ImageItem button = new ImageItem("label", smallImage, 0, "small",
-                ImageItem.BUTTON);
+                                         ImageItem.BUTTON);
         ImageItem button2 = new ImageItem("label", smallImage, 0, "small",
-                ImageItem.BUTTON);
+                                          ImageItem.BUTTON);
         Spacer spacer = new Spacer(0, 0);
 
         Command ok = new Command("Ok", "", Command.ITEM, 0);
@@ -118,18 +128,18 @@ public class SpacerTest extends ItemUITestBase {
         // Click command and verify it works:
         key(Key.CBA1);
         assertEquals("Command not activated or not correct command.(case 1)",
-                ok, latestCommand);
+                     ok, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method.(case 1)",
-                button, latestItem);
+                     button, latestItem);
         latestCommand = null;
         latestItem = null;
         // Check that after arrowDown focus didn't change.
         key(Key.DownArrow);
         key(Key.CBA1);
         assertEquals("Command not activated or not correct command.(case 2)",
-                ok, latestCommand);
+                     ok, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method.(case 2)",
-                button, latestItem);
+                     button, latestItem);
         latestCommand = null;
         latestItem = null;
         // change spacers's size to form width and again press arrow down.
@@ -139,9 +149,9 @@ public class SpacerTest extends ItemUITestBase {
         key(Key.DownArrow);
         key(Key.CBA1);
         assertEquals("Command not activated or not correct "
-                + "command when using MSK.(case 3)", ok2, latestCommand);
+                     + "command when using MSK.(case 3)", ok2, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when using MSK.(case 3)", button2, latestItem);
+                     + " when using MSK.(case 3)", button2, latestItem);
     }
 
     /**
@@ -150,7 +160,8 @@ public class SpacerTest extends ItemUITestBase {
      * @param c Command
      * @param item item
      */
-    public void commandAction(Command c, Item item) {
+    public void commandAction(Command c, Item item)
+    {
         latestCommand = c;
         latestItem = item;
     }

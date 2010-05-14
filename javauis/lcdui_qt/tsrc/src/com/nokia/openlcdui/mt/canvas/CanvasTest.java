@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt.canvas;
@@ -25,11 +25,13 @@ import com.nokia.openlcdui.mt.SWTTestCase;
 /**
  * CanvasTest.
  */
-public class CanvasTest extends SWTTestCase {
+public class CanvasTest extends SWTTestCase
+{
 
     private TestCanvas testCanvas;
 
-    final int[][] refKeyToGameTable = {
+    final int[][] refKeyToGameTable =
+    {
         {50, Canvas.UP},
         {-1, Canvas.UP},
         {56, Canvas.DOWN},
@@ -47,7 +49,8 @@ public class CanvasTest extends SWTTestCase {
         {35, Canvas.GAME_D},
     };
 
-    final int[][] refGameToKeyTable = {
+    final int[][] refGameToKeyTable =
+    {
         {-1, Canvas.UP},
         {-2, Canvas.DOWN},
         {-3, Canvas.LEFT},
@@ -62,7 +65,8 @@ public class CanvasTest extends SWTTestCase {
     /**
      * Constructor.
      */
-    public CanvasTest() {
+    public CanvasTest()
+    {
     }
 
     /**
@@ -71,14 +75,16 @@ public class CanvasTest extends SWTTestCase {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public CanvasTest(String sTestName) {
+    public CanvasTest(String sTestName)
+    {
         super(sTestName);
     }
 
     /* (non-Javadoc)
      * @see junit.framework.TestCase#setUp()
      */
-    protected void setUp() throws Exception {
+    protected void setUp() throws Exception
+    {
         super.setUp();
         System.out.println("CanvasTest setup enter");
         testCanvas = new TestCanvas();
@@ -89,7 +95,8 @@ public class CanvasTest extends SWTTestCase {
     /* (non-Javadoc)
      * @see junit.framework.TestCase#tearDown()
      */
-    protected void tearDown() throws Exception {
+    protected void tearDown() throws Exception
+    {
         super.tearDown();
         System.out.println("CanvasTest teadDown");
         testCanvas = null;
@@ -101,23 +108,26 @@ public class CanvasTest extends SWTTestCase {
      *
      * @return new testsuite.
      */
-    public static Test suite() {
-		TestSuite suite = new TestSuite();
+    public static Test suite()
+    {
+        TestSuite suite = new TestSuite();
 
-	    java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Vector methodNames;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = CanvasTest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new CanvasTest((String)e.nextElement()));
-	    }
+        // Add widget tests
+        methodNames = CanvasTest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new CanvasTest((String)e.nextElement()));
+        }
 
-		return suite;
-	}
+        return suite;
+    }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testCreateCanvas");
         methodNames.addElement("testIsDoubleBuffered");
@@ -132,149 +142,177 @@ public class CanvasTest extends SWTTestCase {
         methodNames.addElement("testGraphicsProperties");
         return methodNames;
     }
-    
-    protected void runTest() throws Throwable {
-        if (getName().equals("testCreateCanvas")) testCreateCanvas();
-        else if (getName().equals("testIsDoubleBuffered")) testIsDoubleBuffered();
-        else if (getName().equals("testHasPointerEvents")) testHasPointerEvents();
-        else if (getName().equals("testHasPointerMotionEvents")) testHasPointerMotionEvents();
-        else if (getName().equals("testHasRepeatEvents")) testHasRepeatEvents();
-        else if (getName().equals("testSetFullScreenMode")) testSetFullScreenMode();
-        else if (getName().equals("testGetGameAction")) testGetGameAction();
-        else if (getName().equals("testGetKeyCode")) testGetKeyCode();
-        else if (getName().equals("testGetKeyName")) testGetKeyName();
-        else if (getName().equals("testServiceRepaints")) testServiceRepaints();
-        else if (getName().equals("testGraphicsProperties")) testGraphicsProperties();
+
+    protected void runTest() throws Throwable
+    {
+        if(getName().equals("testCreateCanvas")) testCreateCanvas();
+        else if(getName().equals("testIsDoubleBuffered")) testIsDoubleBuffered();
+        else if(getName().equals("testHasPointerEvents")) testHasPointerEvents();
+        else if(getName().equals("testHasPointerMotionEvents")) testHasPointerMotionEvents();
+        else if(getName().equals("testHasRepeatEvents")) testHasRepeatEvents();
+        else if(getName().equals("testSetFullScreenMode")) testSetFullScreenMode();
+        else if(getName().equals("testGetGameAction")) testGetGameAction();
+        else if(getName().equals("testGetKeyCode")) testGetKeyCode();
+        else if(getName().equals("testGetKeyName")) testGetKeyName();
+        else if(getName().equals("testServiceRepaints")) testServiceRepaints();
+        else if(getName().equals("testGraphicsProperties")) testGraphicsProperties();
         else super.runTest();
     }
 
-    
-    public void testCreateCanvas() {
+
+    public void testCreateCanvas()
+    {
         Canvas canv = new TestCanvas();
         canv.isDoubleBuffered();
     }
 
-    public void testShowNotify() {
+    public void testShowNotify()
+    {
         fail("Canvas.showNotify is not supported due to not implemented ShellListener.shellActivated");
     }
 
-    public void testHideNotify() {
+    public void testHideNotify()
+    {
         fail("Canvas.hideNotify is not supported due to not implemented ShellListener.shellDeactivated");
     }
 
-    public void testIsDoubleBuffered() {
+    public void testIsDoubleBuffered()
+    {
         assertTrue("Canvas.isDoubleBuffered returned false", testCanvas.isDoubleBuffered());
     }
 
-    public void testHasPointerEvents() {
+    public void testHasPointerEvents()
+    {
         assertTrue("Canvas.hasPointerEvents returned false", testCanvas.hasPointerEvents());
     }
 
-    public void testHasPointerMotionEvents() {
+    public void testHasPointerMotionEvents()
+    {
         assertTrue("Canvas.hasPointerMotionEvents returned false", testCanvas.hasPointerMotionEvents());
     }
 
-    public void testHasRepeatEvents() {
+    public void testHasRepeatEvents()
+    {
         assertTrue("Canvas.hasRepeatEvents returned false", testCanvas.hasRepeatEvents());
     }
 
-    public void testSetFullScreenMode() {
+    public void testSetFullScreenMode()
+    {
         testCanvas.setFullScreenMode(true);
         testCanvas.setFullScreenMode(false);
     }
 
-    public void testGetGameAction() {
-        for (int i = 0; i < refGameToKeyTable.length; i++) {
+    public void testGetGameAction()
+    {
+        for(int i = 0; i < refGameToKeyTable.length; i++)
+        {
             int refKeyCode = refGameToKeyTable[i][0];
             int refGameAction = refGameToKeyTable[i][1];
 
             int testGameAction = testCanvas.getGameAction(refKeyCode);
             assertTrue("Game action for keycode " + refKeyCode + " invalid. Returned: "
-                    + testGameAction + ", expected: " + refGameAction,
-                    refGameAction == testGameAction);
+                       + testGameAction + ", expected: " + refGameAction,
+                       refGameAction == testGameAction);
         }
 
         // now test for invalid input
-        try {
-			testCanvas.getGameAction(0);
-			fail("IllegalArgumentException not throw for invalid input");
-		}
-        catch (IllegalArgumentException e) {
-			// Ok
-		}
+        try
+        {
+            testCanvas.getGameAction(0);
+            fail("IllegalArgumentException not throw for invalid input");
+        }
+        catch(IllegalArgumentException e)
+        {
+            // Ok
+        }
     }
 
 
-    public void testGetKeyCode() {
-        for (int i = 0; i < refGameToKeyTable.length; i++) {
+    public void testGetKeyCode()
+    {
+        for(int i = 0; i < refGameToKeyTable.length; i++)
+        {
             int refKeyCode = refGameToKeyTable[i][0];
             int refGameAction = refGameToKeyTable[i][1];
 
             int testKeyCode = testCanvas.getKeyCode(refGameAction);
             assertTrue("Key code for game action " + refGameAction + " invalid. Returned: "
-                    + testKeyCode + ", expected: " + refKeyCode,
-                    refKeyCode == testKeyCode);
+                       + testKeyCode + ", expected: " + refKeyCode,
+                       refKeyCode == testKeyCode);
         }
 
         // now test for invalid input
 
-        try {
+        try
+        {
             testCanvas.getKeyCode(-111);
             fail("IllegalArgumentException not throw for invalid input");
-		}
-        catch (IllegalArgumentException e) {
-			// Ok
-		}
+        }
+        catch(IllegalArgumentException e)
+        {
+            // Ok
+        }
     }
 
-    public void testGetKeyName() {
-        for (int i = 0; i < refKeyToGameTable.length; i++) {
+    public void testGetKeyName()
+    {
+        for(int i = 0; i < refKeyToGameTable.length; i++)
+        {
             int refKeyCode = refKeyToGameTable[i][0];
             String testKeyName = testCanvas.getKeyName(refKeyCode);
             assertTrue("Canvas.getKeyName() returned null", testKeyName != null);
         }
     }
 
-    public void testServiceRepaints() {
+    public void testServiceRepaints()
+    {
         testCanvas.repaint();
         testCanvas.serviceRepaints();
     }
 
-    public void testGraphicsProperties() {
+    public void testGraphicsProperties()
+    {
         testCanvas.reset();
         testCanvas.repaint();
         testCanvas.serviceRepaints();
         assertTrue(testCanvas.failMsg, testCanvas.passed);
     }
 
-    class TestCanvas extends Canvas {
+    class TestCanvas extends Canvas
+    {
 
         public boolean passed;
         public String failMsg;
 
-        public TestCanvas() {
+        public TestCanvas()
+        {
             reset();
         };
 
-        public void reset() {
+        public void reset()
+        {
             passed = true;
             failMsg = "";
         }
 
-        protected void paint(Graphics g) {
-            if (g.getClipWidth() <= 0) {
+        protected void paint(Graphics g)
+        {
+            if(g.getClipWidth() <= 0)
+            {
                 failMsg = "Graphics.getClipWidth() returns <= 0 in Canvas.paint()";
                 passed = false;
                 return;
             }
 
-            if (g.getClipHeight() <= 0) {
+            if(g.getClipHeight() <= 0)
+            {
                 failMsg = "Graphics.getClipHeight() returns <= 0 in Canvas.paint()";
                 passed = false;
                 return;
             }
 
-            if (g.getColor() != 0x0000000) {
+            if(g.getColor() != 0x0000000)
+            {
                 failMsg = "Graphics.getColor() returns not black in Canvas.paint()";
                 passed = false;
                 return;
@@ -283,29 +321,33 @@ public class CanvasTest extends SWTTestCase {
             Font graphicsFont = g.getFont();
             Font defaultFont = Font.getDefaultFont();
 
-            if (graphicsFont.getFace() != defaultFont.getFace()
+            if(graphicsFont.getFace() != defaultFont.getFace()
                     || graphicsFont.getStyle() != defaultFont.getStyle()
-                    || graphicsFont.getSize() != defaultFont.getSize()) {
+                    || graphicsFont.getSize() != defaultFont.getSize())
+            {
                 failMsg = "Graphics.getFont() returns not default font in Canvas.paint()";
                 passed = false;
                 return;
             }
 
-            if (g.getStrokeStyle() != Graphics.SOLID) {
+            if(g.getStrokeStyle() != Graphics.SOLID)
+            {
                 failMsg = "Graphics.getStrokeStyle() returns not SOLID in Canvas.paint()";
                 passed = false;
                 return;
             }
 
-            if (g.getTranslateX() != 0
-                    || g.getTranslateY() != 0) {
+            if(g.getTranslateX() != 0
+                    || g.getTranslateY() != 0)
+            {
                 failMsg = "Graphics.getTranslateX() and getTranslateY() "
-                        + "return not (0,0) in Canvas.paint()";
+                          + "return not (0,0) in Canvas.paint()";
                 passed = false;
                 return;
             }
 
-            if (!isShown()) {
+            if(!isShown())
+            {
                 failMsg = "Canvas.isShown returns false in Canvas.paint()";
                 passed = false;
                 return;
@@ -313,7 +355,7 @@ public class CanvasTest extends SWTTestCase {
 
             g.setColor(255, 255, 0);
             g.setFont(Font.getFont(Font.FACE_MONOSPACE, Font.STYLE_ITALIC,
-                    Font.SIZE_LARGE));
+                                   Font.SIZE_LARGE));
             g.setStrokeStyle(Graphics.DOTTED);
             g.translate(20, 30);
         }

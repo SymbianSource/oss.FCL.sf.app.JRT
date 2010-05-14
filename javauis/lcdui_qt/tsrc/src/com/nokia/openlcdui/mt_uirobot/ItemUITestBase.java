@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt_uirobot;
@@ -25,7 +25,8 @@ import javax.microedition.lcdui.ItemStateListener;
 import com.nokia.mj.impl.uitestutils.Key;
 
 public abstract class ItemUITestBase extends UITestBase implements ItemCommandListener,
-        ItemStateListener {
+    ItemStateListener
+{
 
     private Command lastItemCommand;
     private Item lastItem;
@@ -33,15 +34,18 @@ public abstract class ItemUITestBase extends UITestBase implements ItemCommandLi
 
     protected Form form;
 
-    public ItemUITestBase() {
-    	this("");
+    public ItemUITestBase()
+    {
+        this("");
     }
-    
-    public ItemUITestBase(String name) {
+
+    public ItemUITestBase(String name)
+    {
         super(name);
     }
 
-    protected void setUp() throws Exception {
+    protected void setUp() throws Exception
+    {
         super.setUp();
         form = new Form("Form: " + getName());
         form.setItemStateListener(this);
@@ -54,7 +58,8 @@ public abstract class ItemUITestBase extends UITestBase implements ItemCommandLi
      *
      * @param item an item
      */
-    protected void testCommand(Item item) {
+    protected void testCommand(Item item)
+    {
         Command cmd = new Command("ItemCmd", Command.ITEM, 0);
 
         item.addCommand(cmd);
@@ -74,19 +79,23 @@ public abstract class ItemUITestBase extends UITestBase implements ItemCommandLi
      * @param expCmd expected Command
      * @param expItem expected Item
      */
-    protected void assertItemCmdListener(String msg, Command expCmd, Item expItem) {
+    protected void assertItemCmdListener(String msg, Command expCmd, Item expItem)
+    {
         block(100);
         boolean expNull = (expCmd == null && expItem == null);
         boolean lastNull = (lastItemCommand == null && lastItem == null);
-        if (lastNull && !expNull) {
+        if(lastNull && !expNull)
+        {
             fail(msg + " - Listener should have been called with "
-                    + expCmd + " on " + expItem);
+                 + expCmd + " on " + expItem);
         }
-        else if (!lastNull && expNull) {
+        else if(!lastNull && expNull)
+        {
             fail(msg + " - Listener should not be called with "
-                    + lastItemCommand + " on " + lastItem);
+                 + lastItemCommand + " on " + lastItem);
         }
-        else {
+        else
+        {
             assertEquals(msg + " - Listener item mismatch ", expItem, lastItem);
             assertEquals(msg + " - Listener cmd mismatch ", expCmd, lastItemCommand);
         }
@@ -94,7 +103,8 @@ public abstract class ItemUITestBase extends UITestBase implements ItemCommandLi
         lastItemCommand = null;
     }
 
-    public void commandAction(Command cmd, Item item) {
+    public void commandAction(Command cmd, Item item)
+    {
         lastItem = item;
         lastItemCommand = cmd;
     }
@@ -104,24 +114,29 @@ public abstract class ItemUITestBase extends UITestBase implements ItemCommandLi
      *
      * @param expItem expected Item
      */
-    protected void assertItemStateChanged(String msg, Item expItem) {
+    protected void assertItemStateChanged(String msg, Item expItem)
+    {
         block(100);
         boolean expNull = (expItem == null);
         boolean lastNull = (lastStateListenerItem == null);
-        if (lastNull && !expNull) {
+        if(lastNull && !expNull)
+        {
             fail(msg + " - Listener should have been called on " + expItem);
         }
-        else if (!lastNull && expNull) {
+        else if(!lastNull && expNull)
+        {
             fail(msg + " - Listener should not be called on "
-                    + lastStateListenerItem);
+                 + lastStateListenerItem);
         }
-        else {
+        else
+        {
             assertEquals(msg + " - Listener item mismatch ", expItem, lastStateListenerItem);
         }
         lastStateListenerItem = null;
     }
 
-    public void itemStateChanged(Item item) {
+    public void itemStateChanged(Item item)
+    {
         lastStateListenerItem = item;
     }
 

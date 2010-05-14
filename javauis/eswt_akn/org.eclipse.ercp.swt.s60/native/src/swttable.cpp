@@ -1710,13 +1710,13 @@ void CSwtTable::UpdateItemHeight(const TInt& aChangedFontHeight)
     // Now we know the highest item checkbox/image/font height.
     // Just add margins and set it.
     TInt newItemHeight(highestHeight + marginTop + marginBottom);
-    
+
     MSwtUiUtils& utils = iDisplay.UiUtils();
     TMargins8 padding = iDisplay.UiUtils().InlineReferencePadding();
     TInt height = utils.InlineReferenceFontHeight();
     height += padding.iTop + padding.iBottom;
     if (newItemHeight < height) newItemHeight = height;
-    
+
     if (oldItemHeight != newItemHeight)
     {
         TRAP_IGNORE(
@@ -2096,7 +2096,7 @@ void CSwtTable::SetFontL(const MSwtFont* aFont)
     {
         PackColumn(0);
     }
-    
+
     Redraw();
 }
 

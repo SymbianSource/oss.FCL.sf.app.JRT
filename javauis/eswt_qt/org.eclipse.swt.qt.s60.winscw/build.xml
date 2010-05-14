@@ -255,6 +255,7 @@ make.sis           : Create OMJ SIS package
             <class name="org.eclipse.swt.internal.qt.OS"/>
 			<class name="org.eclipse.swt.internal.qt.graphics.OS"/>
             <class name="org.eclipse.swt.internal.qt.s60.OS"/>
+            <class name="org.eclipse.swt.internal.extension.OS"/>
         </javah>
  
         <!-- check  if symexports needs to be called  by checking if the either os.h and gfxos.h is never than jni_lookup-cpp  -->

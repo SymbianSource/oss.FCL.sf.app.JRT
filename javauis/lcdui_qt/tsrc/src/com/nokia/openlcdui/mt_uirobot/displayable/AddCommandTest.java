@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt_uirobot.displayable;
@@ -34,35 +34,41 @@ import com.nokia.mj.impl.uitestutils.Key;
  * <br>
  * Created: 2008-04-30
  */
-public class AddCommandTest extends UITestBase {
+public class AddCommandTest extends UITestBase
+{
 
     private static final int MAX_CHARS = 100;
 
-    public AddCommandTest() {
-		super();
-	}
+    public AddCommandTest()
+    {
+        super();
+    }
 
-	public AddCommandTest(String name) {
-		super(name);
-	}
+    public AddCommandTest(String name)
+    {
+        super(name);
+    }
 
-    public static Test suite() {
+    public static Test suite()
+    {
         TestSuite suite = new TestSuite();
 
         java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = AddCommandTest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new AddCommandTest((String)e.nextElement()));
-	    }
-        
+        // Add widget tests
+        methodNames = AddCommandTest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new AddCommandTest((String)e.nextElement()));
+        }
+
         return suite;
     }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testAddCommandBeforeListener");
         methodNames.addElement("testAddCommandAfterListener");
@@ -71,21 +77,23 @@ public class AddCommandTest extends UITestBase {
         methodNames.addElement("testAddCommandTwice");
         return methodNames;
     }
-    
-    public void runTest() throws Throwable {
-        if (getName().equals("testAddCommandBeforeListener")) testAddCommandBeforeListener();
-        else if (getName().equals("testAddCommandAfterListener")) testAddCommandAfterListener();
-        else if (getName().equals("testRemoveListener")) testRemoveListener();
-        else if (getName().equals("testAddToManyDisplayables")) testAddToManyDisplayables();
-        else if (getName().equals("testAddCommandTwice")) testAddCommandTwice();
+
+    public void runTest() throws Throwable
+    {
+        if(getName().equals("testAddCommandBeforeListener")) testAddCommandBeforeListener();
+        else if(getName().equals("testAddCommandAfterListener")) testAddCommandAfterListener();
+        else if(getName().equals("testRemoveListener")) testRemoveListener();
+        else if(getName().equals("testAddToManyDisplayables")) testAddToManyDisplayables();
+        else if(getName().equals("testAddCommandTwice")) testAddCommandTwice();
         else super.runTest();
-    }	
-	
+    }
+
 
     /**
      * Test command adding before CommandListener is set.
      */
-    public void testAddCommandBeforeListener() {
+    public void testAddCommandBeforeListener()
+    {
         TextBox textBox = new TextBox("title", "content", MAX_CHARS, 0);
         Command c1 = new Command("item1", "item1", Command.ITEM, 0);
 
@@ -103,7 +111,8 @@ public class AddCommandTest extends UITestBase {
     /**
      * Test command adding after CommandListener is set.
      */
-    public void testAddCommandAfterListener() {
+    public void testAddCommandAfterListener()
+    {
         TextBox textBox = new TextBox("title", "content", MAX_CHARS, 0);
         Command c1 = new Command("item1", "item1", Command.ITEM, 0);
 
@@ -122,7 +131,8 @@ public class AddCommandTest extends UITestBase {
      * Test that removing CommandListener will work and no commands are
      * delivered to CommandListener anymore.
      */
-    public void testRemoveListener() {
+    public void testRemoveListener()
+    {
         TextBox textBox = new TextBox("title", "content", MAX_CHARS, 0);
         Command c1 = new Command("item1", "item1", Command.ITEM, 0);
 
@@ -144,7 +154,8 @@ public class AddCommandTest extends UITestBase {
      * In LCDUI it's possible to add same Command to many Displayables. This
      * test tests that events occurs correctly in such case.
      */
-    public void testAddToManyDisplayables() {
+    public void testAddToManyDisplayables()
+    {
         // There are two Displayables and one Command in this test:
         TextBox textBox = new TextBox("title", "content", MAX_CHARS, 0);
         TextBox textBox2 = new TextBox("title2", "content2", MAX_CHARS, 0);
@@ -198,7 +209,8 @@ public class AddCommandTest extends UITestBase {
      * Tests that nothing happens if command is added to the displayable which
      * already contains the command.
      */
-    public void testAddCommandTwice() {
+    public void testAddCommandTwice()
+    {
         TextBox textBox = new TextBox("title", "content", MAX_CHARS, 0);
         Command c1 = new Command("item1", "item1", Command.ITEM, 0);
 

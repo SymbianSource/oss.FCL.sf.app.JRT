@@ -124,7 +124,6 @@ SOURCES += ../src/cswtclient.cpp \
            ../src/swttableitemdrawer.cpp \
            ../src/swttablelistbox.cpp \
            ../src/swttablelistboxview.cpp \
-           ../src/swttasktip.cpp \
            ../src/swttext.cpp \
            ../src/swttextbase.cpp \
            ../src/swttextextension.cpp \

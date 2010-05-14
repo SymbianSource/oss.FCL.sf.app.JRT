@@ -794,7 +794,9 @@ public Shell getActiveShell () {
     if (activeWindowHandle != 0) {
         Widget widget = getWidget(activeWindowHandle);
         if(widget instanceof org.eclipse.swt.widgets.Shell) {
+            if(!Internal_PackageSupport.isInternalWidget(widget)) {
             activeShell = (Shell)widget;
+            }
         }
     }
     return activeShell;

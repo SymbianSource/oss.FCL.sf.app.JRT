@@ -119,7 +119,6 @@ const TInt KPhoneScreen = 0;
 
 #define KZeroSize TSize()
 
-
 // ---------------------------------------------------------------------------
 // TBitBltData
 // BitBlt buffer data datatype.
@@ -776,7 +775,7 @@ TBool CMIDCanvas::NetworkIndicatorLocation(
 
 #ifdef RD_TACTILE_FEEDBACK
 // ---------------------------------------------------------------------------
-// From MMIDCancas.
+// From MMIDCanvas.
 // CMIDCanvas::TactileFeedbackComponent
 // Retutrns this as tactile feedback component.
 // ---------------------------------------------------------------------------
@@ -786,6 +785,16 @@ MMIDTactileFeedbackComponent* CMIDCanvas::TactileFeedbackComponent()
     return this;
 }
 #endif // RD_TACTILE_FEEDBACK
+
+
+// ---------------------------------------------------------------------------
+// From class MMIDCanvas.
+// ---------------------------------------------------------------------------
+//
+TBool CMIDCanvas::ReadyToBlit() const
+{
+    return iFirstPaintState != EFirstPaintNeverOccurred;
+}
 
 #ifdef RD_JAVA_NGA_ENABLED
 
@@ -841,18 +850,23 @@ TBool CMIDCanvas::ProcessL(
     break;
     case EDrwOpcBitBltRect:
     {
+        if (iFirstPaintState == EFirstPaintNeverOccurred)
+        {
+            iFirstPaintState = EFirstPaintInitiated;
+        }
+        
         const TBitBltData& data = BitBltData(aRead);
         UpdateL(data.iRect);
     }
     break;
     case EDrwOpcBitBlt:
     {
+        if (iFirstPaintState == EFirstPaintNeverOccurred)
+        {
+            iFirstPaintState = EFirstPaintInitiated;
+        }
+        
         UpdateL(iViewRect);
-    }
-    break;
-    case EDrwOpcFirstPaint:
-    {
-        java::ui::CoreUiAvkonLcdui::getInstance().getJavaUiAppUi()->stopStartScreen();
     }
     break;
     default:
@@ -941,11 +955,6 @@ TBool CMIDCanvas::ProcessL(
             Update(rect);
         }
         break;
-        case EDrwOpcFirstPaint:
-        {
-            java::ui::CoreUiAvkonLcdui::getInstance().getJavaUiAppUi()->stopStartScreen();
-        }
-        break;
         default:
             User::Leave(KErrNotSupported);
             break;
@@ -954,9 +963,26 @@ TBool CMIDCanvas::ProcessL(
         aRead += aRead->Size();
     }
 #endif // CANVAS_DOUBLE_BUFFER
-
+    
+    if (iFirstPaintState == EFirstPaintNeverOccurred)
+    {
+        if (iForeground)
+        {
+            // The canvas is current, therefore we can flush 
+            // the graphics and take the start screen snapshot.
+            iFirstPaintState = EFirstPaintOccurred;
+            java::ui::CoreUiAvkonLcdui::getInstance().getJavaUiAppUi()->stopStartScreen();
+        }
+        else
+        {
+            // The window is not visible, the start screen snapshot
+            // will be taken when the canvas will be set current.
+            iFirstPaintState = EFirstPaintInitiated;
+        }
+    }
+    
     DEBUG("- CMIDCanvas::ProcessL");
-
+    
     return EFalse;
 }
 #endif // RD_JAVA_NGA_ENABLED
@@ -1699,7 +1725,14 @@ void CMIDCanvas::DrawWindowNgaL(const TRect& aRect)
             ELOG1(EJavaUI, "eglSwapBuffers() failed, eglError=%d", eglGetError());
             ASSERT(EFalse);
         }
+        
         SetCurrentEglType(EEglNone);
+        
+        if (iFirstPaintState != EFirstPaintOccurred)
+        {
+            iFirstPaintState = EFirstPaintOccurred;
+            java::ui::CoreUiAvkonLcdui::getInstance().getJavaUiAppUi()->stopStartScreen();
+        }
     }
 }
 #endif // RD_JAVA_NGA_ENABLED
@@ -2160,6 +2193,7 @@ void CMIDCanvas::HandlePointerEventL(const TPointerEvent& aPointerEvent)
         }
 
         if (!consumed && (iFocusedComponent != KComponentFocusedNone) &&
+                (iFocusedComponent < iCustomComponents.Count()) &&
                 (iCustomComponents[iFocusedComponent]->IsTouchEnabled()))
         {
             consumed = HandlePointerEventInControlsL(aPointerEvent);
@@ -2359,6 +2393,12 @@ void CMIDCanvas::FocusChanged(TDrawNow /* aDrawNow */)
             CustomComponentControl(KComponentMainControl)->
             SetFocus(EFalse);
         }
+        
+#ifdef RD_JAVA_NGA_ENABLED        
+        // Avoid the situation when the content is drawn over the menu
+        SuspendPixelSource();
+#endif // RD_JAVA_NGA_ENABLED
+        
         // Repaint to ensure that fading will be displayed correctly for Alert
         // or PopupTextBox when DSA is paused.
         DrawDeferred();
@@ -2762,8 +2802,8 @@ void CMIDCanvas::ConstructL(CCoeControl& aWindow)
     iPointerEventSuppressor->SetMaxTapMove(TSize(pointerMovementInPixels,
                                            pointerMovementInPixels));
 
-#ifdef RD_JAVA_NGA_ENABLED
     iForeground = EFalse;
+#ifdef RD_JAVA_NGA_ENABLED
     iEglDisplay = EGL_NO_DISPLAY;
     iEglWindowSurface = EGL_NO_SURFACE;
     iEglWindowSurfaceContext = EGL_NO_CONTEXT;
@@ -3358,8 +3398,6 @@ TBool CMIDCanvas::IsNetworkIndicatorEnabledL() const
     return enabled;
 }
 
-#ifdef RD_JAVA_NGA_ENABLED
-
 // ---------------------------------------------------------------------------
 // CMIDCanvas::HandleForeground
 // Relases resources in graphics HW (=pixel source or EGL resources)
@@ -3369,8 +3407,10 @@ TBool CMIDCanvas::IsNetworkIndicatorEnabledL() const
 void CMIDCanvas::HandleForeground(TBool aForeground)
 {
     DEBUG_INT("CMIDCanvas::HandleForeground(%d) ++", aForeground);
+    
     iForeground = aForeground;
 
+#ifdef RD_JAVA_NGA_ENABLED
     if (!iForeground)
     {
         if (IsEglAvailable())
@@ -3388,8 +3428,12 @@ void CMIDCanvas::HandleForeground(TBool aForeground)
 
         SuspendPixelSource();
     }
+#endif // RD_JAVA_NGA_ENABLED
+    
     DEBUG("CMIDCanvas::HandleForeground --");
 }
+
+#ifdef RD_JAVA_NGA_ENABLED
 
 // ---------------------------------------------------------------------------
 // CMIDCanvas::InitPixelSourceL()
@@ -3467,8 +3511,16 @@ void CMIDCanvas::ActivatePixelSourceL()
         return;
     }
 
-    iAlfCompositionPixelSource->ActivateSyncL();
+    // ProduceNewFrameL() is called in some cases 
+    // directly from ActivateSyncL(), need to set iFrameReady
+    // before ActivateSyncL()
     iFrameReady = ETrue;
+    TRAPD(err, iAlfCompositionPixelSource->ActivateSyncL());
+    if (err != KErrNone)
+    {
+        iFrameReady = EFalse;
+        User::Leave(err);
+    }
 
     if (iPixelSourceSuspended)
     {
@@ -3527,34 +3579,53 @@ TBool CMIDCanvas::ProduceNewFrameL(const TRegion& aVisibleRegion, TUint8*& aBuff
 
     // If iDirectContents.Count() > 0, canvas hasn't received
     // MdcNotifyContentAdded in LCDUI thread yet.
+    TBool res;
     if (!iFrameReady || iDirectContents.Count() > 0)
     {
         DEBUG("CMIDCanvas::ProduceNewFrameL - FRAME IS NOT READY --");
         NotifyMonitor();
-        return EFalse;
+        res = EFalse;
     }
-
-    NotifyMonitor();
-
-    TUint8* from = (TUint8*)iFrameBuffer->DataAddress();
-
-    TBool downScaling = IsDownScaling(iContentSize, iViewRect);
-    TInt width =  downScaling ? iViewRect.Width()  : iContentSize.iWidth;
-    TInt height = downScaling ? iViewRect.Height() : iContentSize.iHeight;
-
-    TUint bytes = width * KBytesPerPixel;
-    TInt scanLength = CFbsBitmap::ScanLineLength(
-                          iFrameBuffer->SizeInPixels().iWidth, iFrameBuffer->DisplayMode());
-
-    for (TInt y = 0; y < height; ++y)
+    else
     {
-        Mem::Copy(aBuffer, from, bytes);
-        aBuffer += iAlfBufferAttributes.iStride;
-        from += scanLength;
+        NotifyMonitor();
+    
+        TUint8* from = (TUint8*)iFrameBuffer->DataAddress();
+    
+        TBool downScaling = IsDownScaling(iContentSize, iViewRect);
+        TInt width =  downScaling ? iViewRect.Width()  : iContentSize.iWidth;
+        TInt height = downScaling ? iViewRect.Height() : iContentSize.iHeight;
+    
+        TUint bytes = width * KBytesPerPixel;
+        TInt scanLength = CFbsBitmap::ScanLineLength(
+                              iFrameBuffer->SizeInPixels().iWidth, iFrameBuffer->DisplayMode());
+    
+        for (TInt y = 0; y < height; ++y)
+        {
+            Mem::Copy(aBuffer, from, bytes);
+            aBuffer += iAlfBufferAttributes.iStride;
+            from += scanLength;
+        }
+    
+        res = ETrue;
     }
-
+    
+    if (iFirstPaintState == EFirstPaintInitiated || iFirstPaintState == EFirstPaintPrepared)
+    {
+        if (iFirstPaintState == EFirstPaintInitiated)
+        {
+            iFirstPaintState = EFirstPaintPrepared;
+        }
+        else
+        {
+            iFirstPaintState = EFirstPaintOccurred;
+            java::ui::CoreUiAvkonLcdui::getInstance().getJavaUiAppUi()->stopStartScreen();
+        }
+    }
+    
     DEBUG("CMIDCanvas::ProduceNewFrameL --");
-    return ETrue;
+    
+    return res;
 }
 
 // ---------------------------------------------------------------------------
@@ -4710,11 +4781,11 @@ void CMIDCanvas::BlitPBufferScaledToWindowSurface()
     glLoadIdentity();
 
     // position texture screen coordinates
-    pos[0] = (GLshort)iViewRect.iTl.iX;
+    pos[0] = (GLshort)iViewRect.iTl.iX - iPositionRelativeToScreen.iX;
     pos[1] = (GLshort)iViewRect.Height() + (height - iViewRect.iBr.iY);
     pos[2] = pos[0];
     pos[3] = (GLshort)height - iViewRect.iBr.iY;
-    pos[4] = (GLshort)iViewRect.iBr.iX;
+    pos[4] = (GLshort)iViewRect.iBr.iX - iPositionRelativeToScreen.iX;
     pos[5] = pos[1];
     pos[6] = pos[4];
     pos[7] = pos[3];

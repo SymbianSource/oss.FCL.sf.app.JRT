@@ -382,6 +382,7 @@ public:
     MMIDTactileFeedbackComponent* TactileFeedbackComponent();
 #endif // RD_TACTILE_FEEDBACK
 
+    TBool ReadyToBlit() const;
 
 // from base class MMIDBufferProcessor
 
@@ -1039,9 +1040,27 @@ private:
      *          returns EFalse.
      */
     TBool IsNetworkIndicatorEnabledL() const;
+    
+public:
+    /**
+     * Handles switching from foreground to
+     * background and vice versa. Mainly rendering
+     * context and surfaces need to be relased.
+     */
+    void HandleForeground(TBool aForeground);
+    
+private:
+    /** States of the first paint */
+    enum TFirstPainState {
+        EFirstPaintNeverOccurred = 0,
+        EFirstPaintInitiated,
+        EFirstPaintPrepared,
+        EFirstPaintOccurred
+    };
 
 #ifdef RD_JAVA_NGA_ENABLED
 
+private:
     /** EGL surface types */
     typedef enum
     {
@@ -1049,8 +1068,7 @@ private:
         EEglWindow,
         EEglPbuffer
     }  TEglType;
-
-
+    
 // from MAlfBufferProvider
 public:
     /**
@@ -1079,14 +1097,6 @@ public:
      */
     void ContextAboutToSuspend();
     void OnActivation();
-
-public:
-    /**
-     * Handles switching from foreground to
-     * background and vice versa. Mainly rendering
-     * context and surfaces need to be relased.
-     */
-    void HandleForeground(TBool aForeground);
 
 // From MMIDComponentNgaExtension
 public:
@@ -1550,15 +1560,15 @@ private: // data
 
     // Stores the control on which was press event generated
     MMIDCustomComponent* iPressedComponent;
-
-#ifdef RD_JAVA_NGA_ENABLED
-
+    
     /**
      * Flag incdicating the foreground status of canvas.
      * Set to EFalse when some other displayable is made current
      * or when MIDlet goes to background.
      */
     TBool iForeground;
+
+#ifdef RD_JAVA_NGA_ENABLED
 
     /**
      * CAlfCompositionPixelSource is used for drawing canvas
@@ -1680,6 +1690,12 @@ private: // data
      * All events, which started outside the canvas have to be ignored.
      */
     TBool iDragEventsStartedInside;
+    
+    /**
+     * Switched after any graphics have been sent to screen.
+     * Those graphics should be really drawn on the screen.
+     */
+    TInt iFirstPaintState;
 };
 
 #ifdef RD_JAVA_NGA_ENABLED

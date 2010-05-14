@@ -18,10 +18,7 @@
 package com.nokia.mj.impl.rt.midp;
 
 /**
- * A utility class for consuming DTM rights.
- *
- * @author Nokia Corporation
- * @version $Rev$
+ * A utility class for consuming DRM rights.
  */
 final class DrmUtil
 {

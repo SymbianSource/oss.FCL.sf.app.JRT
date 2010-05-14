@@ -24,9 +24,6 @@ import java.util.Hashtable;
 
 /**
  * Class defining InstallerUi texts.
- *
- * @author Nokia Corporation
- * @version 1.0
  */
 public class InstallerUiTexts
 {
@@ -40,6 +37,7 @@ public class InstallerUiTexts
     public static final String INSTALL = "progress";
     public static final String UNINSTALL = "uninstalling_progress";
     public static final String START = "start";
+    public static final String SHOW = "show";
     public static final String CLOSE = "close";
     public static final String INSTALL_QUERY = "query";
     public static final String UPDATE_QUERY = "update_query";

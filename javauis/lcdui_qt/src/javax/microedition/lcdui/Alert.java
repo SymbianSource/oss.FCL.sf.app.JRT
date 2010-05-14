@@ -34,7 +34,8 @@ import org.eclipse.swt.widgets.*;
  * <li>modal - user has to choose a command and dismiss the dialog
  *             explicitly</li>
  */
-public class Alert extends Screen {
+public class Alert extends Screen
+{
 
     /**
      * Timeout constant used for modal Alerts.
@@ -47,7 +48,7 @@ public class Alert extends Screen {
      * The default command triggered when dismissing an Alert.
      */
     public static final Command DISMISS_COMMAND =
-                new Command("", Command.OK, 0);
+        new Command("", Command.OK, 0);
 
     /**
      * Default command listener.
@@ -91,7 +92,8 @@ public class Alert extends Screen {
      *
      * @param aTitle the title string
      */
-    public Alert(String aTitle) {
+    public Alert(String aTitle)
+    {
         this(aTitle, null, null, null);
     }
 
@@ -103,7 +105,8 @@ public class Alert extends Screen {
      * @param image the image
      * @param type the alert type
      */
-    public Alert(String title, String text, Image image, AlertType type) {
+    public Alert(String title, String text, Image image, AlertType type)
+    {
         super(title);
         construct();
         this.type = type;
@@ -119,7 +122,8 @@ public class Alert extends Screen {
      *
      * @return custom eSWT dialog shell
      */
-    Shell eswtConstructShell(int style) {
+    Shell eswtConstructShell(int style)
+    {
         topShell = super.eswtConstructShell(style);
         Shell dialogShell = new Shell(topShell, style | SWT.DIALOG_TRIM | SWT.RESIZE);
         return dialogShell;
@@ -128,7 +132,8 @@ public class Alert extends Screen {
     /**
      * Creates content Composite.
      */
-    Composite eswtConstructContent(int style) {
+    Composite eswtConstructContent(int style)
+    {
         Composite comp = super.eswtConstructContent(SWT.VERTICAL);
 
         FormLayout layout = new FormLayout();
@@ -164,18 +169,20 @@ public class Alert extends Screen {
         return comp;
     }
 
-    int eswtGetPreferredContentHeight() {
+    int eswtGetPreferredContentHeight()
+    {
         int ret = getContentComp().computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
 
         // Point imgSize = (eswtImgLabel != null
-                // ? eswtImgLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT) : new Point(0, 0));
+        // ? eswtImgLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT) : new Point(0, 0));
         // int ret = Math.max(
-                    // Math.min(
-                        // eswtScrolledText.computeSize(topShell.getClientArea().width - imgSize.x, SWT.DEFAULT).y,
-                        // topShell.getClientArea().height / 2),
-                    // imgSize.y);
+        // Math.min(
+        // eswtScrolledText.computeSize(topShell.getClientArea().width - imgSize.x, SWT.DEFAULT).y,
+        // topShell.getClientArea().height / 2),
+        // imgSize.y);
 
-        if (eswtProgressBar != null && eswtProgressBar.isVisible()) {
+        if(eswtProgressBar != null && eswtProgressBar.isVisible())
+        {
             ret += eswtProgressBar.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
         }
         return ret;
@@ -192,19 +199,23 @@ public class Alert extends Screen {
      */
     void eswtUpdateProgressbar(Composite parent,
                                boolean indeterminate,
-                               boolean visible) {
+                               boolean visible)
+    {
         // Only dispose old ProgressBar if it has wrong style
-        if (eswtProgressBar != null) {
+        if(eswtProgressBar != null)
+        {
             boolean isIndeterminate =
                 (eswtProgressBar.getStyle() & SWT.INDETERMINATE) != 0;
-            if (indeterminate != isIndeterminate) {
+            if(indeterminate != isIndeterminate)
+            {
                 eswtProgressBar.setLayoutData(null);
                 eswtProgressBar.dispose();
                 eswtProgressBar = null;
             }
         }
         // create new ProgressBar
-        if (eswtProgressBar == null) {
+        if(eswtProgressBar == null)
+        {
             int newStyle = indeterminate ? SWT.INDETERMINATE : SWT.NONE;
             eswtProgressBar = new ProgressBar(parent, newStyle);
             eswtProgressBar.setLayoutData(eswtProgbarLD);
@@ -213,7 +224,8 @@ public class Alert extends Screen {
             imageLD.bottom = new FormAttachment(eswtProgressBar);
         }
         // set Progressbar visibility
-        if (eswtProgressBar != null) {
+        if(eswtProgressBar != null)
+        {
             eswtProgbarLD.top = (visible ? null : new FormAttachment(100));
             eswtProgressBar.setVisible(visible);
         }
@@ -226,8 +238,10 @@ public class Alert extends Screen {
      * @param maxValue the maximum value
      * @param selValue the value
      */
-    void eswtSetProgressbarValues(int minValue, int maxValue, int selValue) {
-        if (eswtProgressBar != null) {
+    void eswtSetProgressbarValues(int minValue, int maxValue, int selValue)
+    {
+        if(eswtProgressBar != null)
+        {
             eswtProgressBar.setMinimum(minValue);
             eswtProgressBar.setMaximum(maxValue);
             eswtProgressBar.setSelection(selValue);
@@ -237,24 +251,26 @@ public class Alert extends Screen {
     /* (non-Javadoc)
      * @see javax.microedition.lcdui.Displayable#handleShowEvent()
      */
-    void eswtHandleShowCurrentEvent() {
+    void eswtHandleShowCurrentEvent()
+    {
         super.eswtHandleShowCurrentEvent();
         topShell.addListener(SWT.Resize, resizeListener);
 
         // add key filter for scrollable text composite
         org.eclipse.swt.widgets.Display.getCurrent().addFilter(
-                SWT.KeyDown, keyListener);
+            SWT.KeyDown, keyListener);
         org.eclipse.swt.widgets.Display.getCurrent().addFilter(
-                SWT.Traverse, keyListener);
+            SWT.Traverse, keyListener);
         org.eclipse.swt.widgets.Display.getCurrent().addFilter(
-                SWT.MouseUp, keyListener);
+            SWT.MouseUp, keyListener);
         resetTimerTask(true);
     }
 
     /* (non-Javadoc)
      * @see javax.microedition.lcdui.Displayable#handleHideEvent()
      */
-    void eswtHandleHideCurrentEvent() {
+    void eswtHandleHideCurrentEvent()
+    {
         super.eswtHandleHideCurrentEvent();
         topShell.removeListener(SWT.Resize, resizeListener);
 
@@ -263,11 +279,11 @@ public class Alert extends Screen {
 
         // remove key filter for scrollable text composite
         org.eclipse.swt.widgets.Display.getCurrent().removeFilter(
-                SWT.KeyDown, keyListener);
+            SWT.KeyDown, keyListener);
         org.eclipse.swt.widgets.Display.getCurrent().removeFilter(
-                SWT.Traverse, keyListener);
+            SWT.Traverse, keyListener);
         org.eclipse.swt.widgets.Display.getCurrent().removeFilter(
-                SWT.MouseUp, keyListener);
+            SWT.MouseUp, keyListener);
     }
 
 
@@ -276,7 +292,8 @@ public class Alert extends Screen {
      *
      * @param next next displayable
      */
-    void setNextDisplayable(Displayable next) {
+    void setNextDisplayable(Displayable next)
+    {
         nextDisplayable = next;
     }
 
@@ -286,23 +303,30 @@ public class Alert extends Screen {
      * @param type the alert type
      * @return the default image based on the type or null if the type is null
      */
-    private static int getDefaultImageType(final AlertType type) {
-        if (type == AlertType.ERROR) {
-                return LabelExtension.STANDARDICON_ERROR;
+    private static int getDefaultImageType(final AlertType type)
+    {
+        if(type == AlertType.ERROR)
+        {
+            return LabelExtension.STANDARDICON_ERROR;
         }
-        else if (type == AlertType.WARNING) {
-                return LabelExtension.STANDARDICON_WARNING;
+        else if(type == AlertType.WARNING)
+        {
+            return LabelExtension.STANDARDICON_WARNING;
         }
-        else if (type == AlertType.INFO) {
-                return LabelExtension.STANDARDICON_INFO;
+        else if(type == AlertType.INFO)
+        {
+            return LabelExtension.STANDARDICON_INFO;
         }
-        else if (type == AlertType.CONFIRMATION) {
-                return LabelExtension.STANDARDICON_CONFIRMATION;
+        else if(type == AlertType.CONFIRMATION)
+        {
+            return LabelExtension.STANDARDICON_CONFIRMATION;
         }
-        else if (type == AlertType.ALARM) {
-                return LabelExtension.STANDARDICON_ALARM;
+        else if(type == AlertType.ALARM)
+        {
+            return LabelExtension.STANDARDICON_ALARM;
         }
-        else {
+        else
+        {
             return LabelExtension.STANDARDICON_ALARM;
         }
 
@@ -314,23 +338,30 @@ public class Alert extends Screen {
      * @param type the alert type
      * @return the default text based on the type
      */
-    private static String getDefaultText(final AlertType type) {
-        if (type == AlertType.ERROR) {
+    private static String getDefaultText(final AlertType type)
+    {
+        if(type == AlertType.ERROR)
+        {
             return MsgRepository.ALERT_DEFAULT_TEXT_ERROR;
         }
-        else if (type == AlertType.WARNING) {
+        else if(type == AlertType.WARNING)
+        {
             return MsgRepository.ALERT_DEFAULT_TEXT_WARNING;
         }
-        else if (type == AlertType.INFO) {
+        else if(type == AlertType.INFO)
+        {
             return MsgRepository.ALERT_DEFAULT_TEXT_INFO;
         }
-        else if (type == AlertType.CONFIRMATION) {
+        else if(type == AlertType.CONFIRMATION)
+        {
             return MsgRepository.ALERT_DEFAULT_TEXT_CONFIRMATION;
         }
-        else if (type == AlertType.ALARM) {
+        else if(type == AlertType.ALARM)
+        {
             return MsgRepository.ALERT_DEFAULT_TEXT_ALARM;
         }
-        else {
+        else
+        {
             return MsgRepository.ALERT_DEFAULT_TEXT_ALERT;
         }
     }
@@ -338,7 +369,8 @@ public class Alert extends Screen {
     /**
      * Returns if the Alert is modal.
      */
-    private boolean isModal() {
+    private boolean isModal()
+    {
         return ((timeout == FOREVER)
                 || (getNumCommands() > 1)
                 || isTextScrolling());
@@ -350,14 +382,17 @@ public class Alert extends Screen {
      * @param timeout the timeout value in milliseconds or FOREVER
      * @throws IllegalArgumentException if time is not positive nor FOREVER.
      */
-    public void setTimeout(int timeout) {
-        if (timeout > 0 || timeout == FOREVER) {
+    public void setTimeout(int timeout)
+    {
+        if(timeout > 0 || timeout == FOREVER)
+        {
             this.timeout = timeout;
             setCommandsVisibility(isModal());
         }
-        else {
+        else
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.ALERT_EXCEPTION_INVALID_TIMEOUT);
+                MsgRepository.ALERT_EXCEPTION_INVALID_TIMEOUT);
         }
     }
 
@@ -366,11 +401,14 @@ public class Alert extends Screen {
      *
      * @return timeout in milliseconds, or FOREVER
      */
-    public int getTimeout() {
-        if (isModal()) {
+    public int getTimeout()
+    {
+        if(isModal())
+        {
             return FOREVER;
         }
-        else {
+        else
+        {
             return timeout;
         }
     }
@@ -380,7 +418,8 @@ public class Alert extends Screen {
      *
      * @return default timeout in milliseconds
      */
-    public int getDefaultTimeout() {
+    public int getDefaultTimeout()
+    {
         return Config.ALERT_DEFAULT_TIMEOUT;
     }
 
@@ -389,13 +428,16 @@ public class Alert extends Screen {
      *
      * @param type an AlertType or null if it doesn't have a specific type
      */
-    public void setType(AlertType type) {
+    public void setType(AlertType type)
+    {
         this.type = type;
-        if (text == null) {
+        if(text == null)
+        {
             // show default text
             setString(text);
         }
-        if (image == null) {
+        if(image == null)
+        {
             // show default image
             setImage(image);
         }
@@ -406,7 +448,8 @@ public class Alert extends Screen {
      *
      * @return an AlertType or null if it doesn't have a specific type
      */
-    public AlertType getType() {
+    public AlertType getType()
+    {
         return type;
     }
 
@@ -415,74 +458,82 @@ public class Alert extends Screen {
      *
      * @param newImage an Image, or null if there is no image
      */
-    public void setImage(Image newImage) {
+    public void setImage(Image newImage)
+    {
         image = newImage;
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 Image temp = (image != null) ? image : null;
                 //Get the image size from QT Style for scaling
                 int scaleToSize = Style.pixelMetric(Style.QSTYLE_PM_MESSAGEBOXICONSIZE);
 
-                if (temp != null) {
+                if(temp != null)
+                {
 
                     //calculate the aspect ratio
                     float aspectRatio = (float)temp.getHeight()/temp.getWidth();
 
                     //check the image size
-                    if ( ( temp.getWidth() > scaleToSize ) ||
-                         ( temp.getHeight() > scaleToSize ) )
+                    if((temp.getWidth() > scaleToSize) ||
+                            (temp.getHeight() > scaleToSize))
                     {
                         // we need to scale down the image
-                        if( temp.getWidth() > scaleToSize )
+                        if(temp.getWidth() > scaleToSize)
                         {
                             //Width is greater
                             Image wScaled = Image.createImage(temp,
-                                                             scaleToSize,
-                                                             (int)(scaleToSize*aspectRatio));
+                                                              scaleToSize,
+                                                              (int)(scaleToSize*aspectRatio));
 
                             //now check the new dimension against height
-                            if(wScaled.getHeight() > scaleToSize )
+                            if(wScaled.getHeight() > scaleToSize)
                             {
                                 //scale the image again
                                 Image whScaled = Image.createImage(temp,
-                                                           scaleToSize,
-                                                           scaleToSize );
+                                                                   scaleToSize,
+                                                                   scaleToSize);
                                 eswtImgLabel.setImage(Image.getESWTImage(whScaled));
                             }
-                            else {
+                            else
+                            {
                                 //height was ok after scaling on width
                                 eswtImgLabel.setImage(Image.getESWTImage(wScaled));
                             }
                         }
-                        else if( temp.getHeight() > scaleToSize )
+                        else if(temp.getHeight() > scaleToSize)
                         {
                             //Height is greater
                             Image hScaled = Image.createImage(temp,
                                                               (int)(scaleToSize/aspectRatio),
-                                                              scaleToSize );
+                                                              scaleToSize);
 
                             //now check the new dimension against width
-                            if(hScaled.getWidth()> scaleToSize )
+                            if(hScaled.getWidth()> scaleToSize)
                             {
                                 //scale the image again
                                 Image hwScaled = Image.createImage(temp,
-                                                           scaleToSize,
-                                                           scaleToSize );
+                                                                   scaleToSize,
+                                                                   scaleToSize);
                                 eswtImgLabel.setImage(Image.getESWTImage(hwScaled));
                             }
-                            else {
+                            else
+                            {
                                 //widh was ok after scaling using height
                                 eswtImgLabel.setImage(Image.getESWTImage(hScaled));
                             }
                         }
 
                     }
-                    else {
+                    else
+                    {
                         // image is right size
                         eswtImgLabel.setImage(Image.getESWTImage(temp));
                     }
                 }
-                else {
+                else
+                {
                     // no image
                     if(type != null)
                     {
@@ -502,7 +553,8 @@ public class Alert extends Screen {
      *
      * @return an Image, or null if there is no image
      */
-    public Image getImage() {
+    public Image getImage()
+    {
         return image;
     }
 
@@ -511,9 +563,12 @@ public class Alert extends Screen {
      *
      * @return true if the scrollbar is visible.
      */
-    private boolean isTextScrolling() {
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+    private boolean isTextScrolling()
+    {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 textScrolling = eswtScrolledText.isTextScrolling();
             }
         });
@@ -525,10 +580,13 @@ public class Alert extends Screen {
      *
      * @param newText the Alert's text string, or null if there is no text
      */
-    public void setString(String newText) {
+    public void setString(String newText)
+    {
         text = newText;
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 String temp = (text != null) ? text : getDefaultText(type);
                 eswtScrolledText.setText(temp);
                 eswtSetPreferredContentSize(-1, eswtGetPreferredContentHeight());
@@ -543,7 +601,8 @@ public class Alert extends Screen {
      *
      * @return the Alert's text string, or null if there is no text
      */
-    public String getString() {
+    public String getString()
+    {
         return text;
     }
 
@@ -555,19 +614,23 @@ public class Alert extends Screen {
      * @throws IllegalArgumentException if indicator does not meet the
      *             restrictions for its use in an Alert
      */
-    public void setIndicator(Gauge newIndicator) {
-        if (newIndicator != null && !newIndicator.isSuitableForAlert()) {
+    public void setIndicator(Gauge newIndicator)
+    {
+        if(newIndicator != null && !newIndicator.isSuitableForAlert())
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.ALERT_EXCEPTION_INVALID_INDICATOR);
+                MsgRepository.ALERT_EXCEPTION_INVALID_INDICATOR);
         }
         // remove old Gauge parent
-        if (indicator != null) {
+        if(indicator != null)
+        {
             indicator.setParent(null);
         }
         // store the indicator
         indicator = newIndicator;
         // set new Gauge parent
-        if (indicator != null) {
+        if(indicator != null)
+        {
             indicator.setParent(this);
         }
         updateIndicator();
@@ -578,55 +641,66 @@ public class Alert extends Screen {
      *
      * @return the activity indicator of this Alert, or null if there is none
      */
-    public Gauge getIndicator() {
+    public Gauge getIndicator()
+    {
         return indicator;
     }
 
     /**
      * Update indicator if it changed.
      */
-    void updateIndicator() {
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
-                if (indicator != null) {
+    void updateIndicator()
+    {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
+                if(indicator != null)
+                {
                     // show ProgressBar
-                    if (indicator.isIndefinite()) {
+                    if(indicator.isIndefinite())
+                    {
                         // indefinite ProgressBar
-                        switch (indicator.getValue()) {
-                            case Gauge.CONTINUOUS_IDLE:
-                            case Gauge.INCREMENTAL_IDLE:
-                                // currently these are mapped to full progress bar
-                                // TODO: eSWT support required
-                                eswtUpdateProgressbar(getContentComp(), false, true);
+                        switch(indicator.getValue())
+                        {
+                        case Gauge.CONTINUOUS_IDLE:
+                        case Gauge.INCREMENTAL_IDLE:
+                            // currently these are mapped to full progress bar
+                            // TODO: eSWT support required
+                            eswtUpdateProgressbar(getContentComp(), false, true);
+                            eswtSetProgressbarValues(0, 1, 1);
+                            break;
+                        case Gauge.CONTINUOUS_RUNNING:
+                            eswtUpdateProgressbar(getContentComp(), true, true);
+                            break;
+                        case Gauge.INCREMENTAL_UPDATING:
+                            // currently this are mapped to blinking
+                            // empty and full progress bar
+                            // TODO: eSWT support required
+                            eswtUpdateProgressbar(getContentComp(), false, true);
+                            if(eswtProgressBar.getSelection() > 0)
+                            {
+                                eswtSetProgressbarValues(0, 1, 0);
+                            }
+                            else
+                            {
                                 eswtSetProgressbarValues(0, 1, 1);
-                                break;
-                            case Gauge.CONTINUOUS_RUNNING:
-                                eswtUpdateProgressbar(getContentComp(), true, true);
-                                break;
-                            case Gauge.INCREMENTAL_UPDATING:
-                                // currently this are mapped to blinking
-                                // empty and full progress bar
-                                // TODO: eSWT support required
-                                eswtUpdateProgressbar(getContentComp(), false, true);
-                                if (eswtProgressBar.getSelection() > 0) {
-                                    eswtSetProgressbarValues(0, 1, 0);
-                                }
-                                else {
-                                    eswtSetProgressbarValues(0, 1, 1);
-                                }
-                                break;
-                            default:
-                                break;
+                            }
+                            break;
+                        default:
+                            break;
                         }
                     }
-                    else {
+                    else
+                    {
                         // definite ProgressBar
                         eswtUpdateProgressbar(getContentComp(), false, true);
                         eswtSetProgressbarValues(0, indicator.getMaxValue(),
-                                indicator.getValue());
+                                                 indicator.getValue());
                     }
                 }
-                else {
+                else
+                {
                     // hide ProgressBar
                     eswtUpdateProgressbar(getContentComp(), false, false);
                 }
@@ -639,8 +713,10 @@ public class Alert extends Screen {
     /* (non-Javadoc)
      * @see Displayable#addCommand(Command)
      */
-    public void addCommand(Command command) {
-        if (command != DISMISS_COMMAND) {
+    public void addCommand(Command command)
+    {
+        if(command != DISMISS_COMMAND)
+        {
             super.addCommand(command);
             super.removeCommand(DISMISS_COMMAND);
             setCommandsVisibility(isModal());
@@ -650,10 +726,13 @@ public class Alert extends Screen {
     /* (non-Javadoc)
      * @see Displayable#removeCommand(Command)
      */
-    public void removeCommand(Command command) {
-        if (command != DISMISS_COMMAND) {
+    public void removeCommand(Command command)
+    {
+        if(command != DISMISS_COMMAND)
+        {
             super.removeCommand(command);
-            if (getNumCommands() == 0) {
+            if(getNumCommands() == 0)
+            {
                 super.addCommand(DISMISS_COMMAND);
             }
             setCommandsVisibility(isModal());
@@ -663,19 +742,24 @@ public class Alert extends Screen {
     /* (non-Javadoc)
      * @see Displayable#setCommandListener(CommandListener)
      */
-    public void setCommandListener(CommandListener listener) {
-        if (listener == null) {
+    public void setCommandListener(CommandListener listener)
+    {
+        if(listener == null)
+        {
             listener = implicitListener;
         }
         super.setCommandListener(listener);
     }
 
-    void resetTimerTask(boolean reset) {
-        if (timerTask != null) {
+    void resetTimerTask(boolean reset)
+    {
+        if(timerTask != null)
+        {
             timerTask.cancel();
             timerTask = null;
         }
-        if (reset && !isModal()) {
+        if(reset && !isModal())
+        {
             // if not modal schedule new timer
             timerTask = new AlertTimerTask();
             timer.schedule(timerTask, timeout);
@@ -685,11 +769,14 @@ public class Alert extends Screen {
     /**
      * Alert Timer task. Triggers the first command on the Alert.
      */
-    class AlertTimerTask extends TimerTask {
+    class AlertTimerTask extends TimerTask
+    {
 
-        public void run() {
+        public void run()
+        {
             // trigger the first available command on the listener
-            if (!isModal()) {
+            if(!isModal())
+            {
                 callCommandAction(getCommand(0));
             }
         }
@@ -699,9 +786,11 @@ public class Alert extends Screen {
     /**
      * Default (implicit) command listener. Any Commands close the Alert.
      */
-    class AlertCommandListener implements CommandListener {
+    class AlertCommandListener implements CommandListener
+    {
 
-        public void commandAction(Command aCommand, Displayable aSource) {
+        public void commandAction(Command aCommand, Displayable aSource)
+        {
             final Alert alert = (Alert) aSource;
             Display.getDisplay().setCurrent(alert.nextDisplayable);
         }
@@ -711,30 +800,39 @@ public class Alert extends Screen {
     /**
      * Key listener. Also handles scrolling of text composite.
      */
-    class KeyListener implements Listener {
+    class KeyListener implements Listener
+    {
 
-        public void handleEvent(Event e) {
-            if (e.type == SWT.Traverse) {
+        public void handleEvent(Event e)
+        {
+            if(e.type == SWT.Traverse)
+            {
                 e.doit = false;
             }
-            else if (e.type == SWT.KeyDown) {
-                if (!isModal()) {
+            else if(e.type == SWT.KeyDown)
+            {
+                if(!isModal())
+                {
                     resetTimerTask(false);
                     callCommandAction(getCommand(0));
                 }
-                else if (e.keyCode == SWT.ARROW_DOWN) {
+                else if(e.keyCode == SWT.ARROW_DOWN)
+                {
                     Point p = eswtScrolledText.getOrigin();
                     eswtScrolledText.setOrigin(p.x, p.y
-                            + Config.ALERT_TEXT_SCROLLING_DELTA);
+                                               + Config.ALERT_TEXT_SCROLLING_DELTA);
                 }
-                else if (e.keyCode == SWT.ARROW_UP) {
+                else if(e.keyCode == SWT.ARROW_UP)
+                {
                     Point p = eswtScrolledText.getOrigin();
                     eswtScrolledText.setOrigin(p.x, p.y
-                            - Config.ALERT_TEXT_SCROLLING_DELTA);
+                                               - Config.ALERT_TEXT_SCROLLING_DELTA);
                 }
             }
-            else if (e.type == SWT.MouseUp) {
-                if (!isModal()) {
+            else if(e.type == SWT.MouseUp)
+            {
+                if(!isModal())
+                {
                     resetTimerTask(false);
                     callCommandAction(getCommand(0));
                 }
@@ -747,9 +845,11 @@ public class Alert extends Screen {
      * Resize listener which listens to bottom shell's resize events and
      * forwards them to top shell.
      */
-    class ResizeListener implements Listener {
+    class ResizeListener implements Listener
+    {
 
-        public void handleEvent(Event event) {
+        public void handleEvent(Event event)
+        {
             // explicitly forward topShell resize events to dialogShell
             getShell().notifyListeners(SWT.Resize, event);
         }
@@ -759,10 +859,13 @@ public class Alert extends Screen {
     /**
      * Dispose Alert.
      */
-    void dispose() {
+    void dispose()
+    {
         super.dispose();
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 topShell.dispose();
             }
         });

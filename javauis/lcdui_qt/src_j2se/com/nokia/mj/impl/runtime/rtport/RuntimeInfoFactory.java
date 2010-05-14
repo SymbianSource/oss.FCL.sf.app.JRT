@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 
@@ -19,12 +19,12 @@
 package com.nokia.mj.impl.runtime.rtport;
 
 /**
- * Factory to get the RuntimeInfo implementation. 
+ * Factory to get the RuntimeInfo implementation.
  *
  * The RuntimeInfo implementation class is searched and dynamically loaded
- * based on the value of "nokia.rt.port" system property. 
+ * based on the value of "nokia.rt.port" system property.
  *
- * The class named "com.nokia.mj.impl.runtime.rtport.<value>.RuntimeInfoImpl" 
+ * The class named "com.nokia.mj.impl.runtime.rtport.<value>.RuntimeInfoImpl"
  * is tried to be loaded first, and if that is not found the value is tried to
  * be used as a full class name.
  *

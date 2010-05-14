@@ -11,10 +11,12 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
+
+import com.nokia.mj.impl.rt.support.ApplicationInfo;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -26,7 +28,8 @@ import org.eclipse.swt.widgets.*;
  * The behavior of this editor may be different according
  * to applied constraints.
  */
-public class TextBox extends Screen {
+public class TextBox extends Screen
+{
 
     private TextModifyListener modListener = new TextModifyListener();
 
@@ -42,7 +45,8 @@ public class TextBox extends Screen {
      * @param maxSize - maximum number of characters to insert
      * @param constraints - text constraint (e.g. URL, EMEAIL etc)
      */
-    public TextBox(String title, String text, int maxSize, int constraints) {
+    public TextBox(String title, String text, int maxSize, int constraints)
+    {
         super(title);
         textWrapper = new TextWrapper(text, maxSize, constraints);
         construct();
@@ -53,22 +57,33 @@ public class TextBox extends Screen {
      *
      * @return custom eSWT dialog shell
      */
-    Shell eswtConstructShell(int style) {
+    Shell eswtConstructShell(int style)
+    {
         Shell topShell = super.eswtConstructShell(style);
         // TextBox with null title and ANY constraint, should be Full-Screen
-        if (getTitle() == null && TextWrapper.getTypeConstraint(
-                        textWrapper.getConstraints()) == TextField.ANY) {
+        if(getTitle() == null && TextWrapper.getTypeConstraint(
+                    textWrapper.getConstraints()) == TextField.ANY)
+        {
             return topShell;
         }
-        else {
-            return new Shell(topShell, style | SWT.DIALOG_TRIM | SWT.RESIZE);
+        else
+        {
+            if(JadAttributeUtil.isValue(JadAttributeUtil.ATTRIB_NOKIA_UI_ENHANCEMENT, JadAttributeUtil.VALUE_FULLSCREEN_TEXTBOX))
+            {
+                return topShell;
+            }
+            else
+            {
+                return new Shell(topShell, style | SWT.DIALOG_TRIM | SWT.RESIZE);
+            }
         }
     }
 
     /* (non-Javadoc)
      * @see Displayable#eswtConstructContent(int)
      */
-    Composite eswtConstructContent(int style) {
+    Composite eswtConstructContent(int style)
+    {
         Composite ret = super.eswtConstructContent(style);
         textWrapper.eswtConstruct(ret, SWT.V_SCROLL);
         return ret;
@@ -77,17 +92,19 @@ public class TextBox extends Screen {
     /* (non-Javadoc)
      * @see Displayable#eswtHandleShowCurrentEvent()
      */
-    void eswtHandleShowCurrentEvent() {
+    void eswtHandleShowCurrentEvent()
+    {
         super.eswtHandleShowCurrentEvent();
         textWrapper.setModifyListener(modListener);
         eswtSetPreferredContentSize(-1, textWrapper
-                .getPreferredHeight(Config.TEXTBOX_MAX_VISIBLE_LINES));
+                                    .getPreferredHeight(Config.TEXTBOX_MAX_VISIBLE_LINES));
     }
 
     /* (non-Javadoc)
      * @see Displayable#eswtHandleHideCurrentEvent()
      */
-    void eswtHandleHideCurrentEvent() {
+    void eswtHandleHideCurrentEvent()
+    {
         super.eswtHandleHideCurrentEvent();
         textWrapper.setModifyListener(null);
     }
@@ -95,7 +112,8 @@ public class TextBox extends Screen {
     /* (non-Javadoc)
      * @see Displayable#eswtHandleResizeEvent(int, int)
      */
-    void eswtHandleResizeEvent(int width, int height) {
+    void eswtHandleResizeEvent(int width, int height)
+    {
         super.eswtHandleResizeEvent(width, height);
         textWrapper.setBounds(getContentComp().getClientArea());
     }
@@ -105,7 +123,8 @@ public class TextBox extends Screen {
      *
      * @return current caret position
      */
-    public int getCaretPosition() {
+    public int getCaretPosition()
+    {
         return textWrapper.getCaretPosition();
     }
 
@@ -114,7 +133,8 @@ public class TextBox extends Screen {
      *
      * @return String with TexBox content
      */
-    public String getString() {
+    public String getString()
+    {
         return textWrapper.getContent();
     }
 
@@ -123,7 +143,8 @@ public class TextBox extends Screen {
      *
      * @param newText - String to set into TextBox
      */
-    public void setString(String newText) {
+    public void setString(String newText)
+    {
         textWrapper.setContent(newText);
     }
 
@@ -133,14 +154,17 @@ public class TextBox extends Screen {
      * @param charData array where to copy TextBox content
      * @return number of copied characters.
      */
-    public int getChars(char[] charData) {
-        if (charData == null) {
+    public int getChars(char[] charData)
+    {
+        if(charData == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.TEXT_EXCEPTION_ARRAY_IS_NULL);
+                MsgRepository.TEXT_EXCEPTION_ARRAY_IS_NULL);
         }
-        if (charData.length < getString().length()) {
+        if(charData.length < getString().length())
+        {
             throw new ArrayIndexOutOfBoundsException(
-                    MsgRepository.TEXT_EXCEPTION_ARRAY_IS_TOO_SHORT);
+                MsgRepository.TEXT_EXCEPTION_ARRAY_IS_TOO_SHORT);
         }
         String content = textWrapper.getContent();
         content.getChars(0, content.length(), charData, 0);
@@ -155,13 +179,17 @@ public class TextBox extends Screen {
      * @param offset start index in charData.
      * @param length how many characters to copy.
      */
-    public void setChars(char[] charData, int offset, int length) {
+    public void setChars(char[] charData, int offset, int length)
+    {
         String extractedString = null;
-        if (charData != null) {
-            try {
+        if(charData != null)
+        {
+            try
+            {
                 extractedString = new String(charData, offset, length);
             }
-            catch (IndexOutOfBoundsException e) {
+            catch(IndexOutOfBoundsException e)
+            {
                 throw new ArrayIndexOutOfBoundsException();
             }
         }
@@ -174,7 +202,8 @@ public class TextBox extends Screen {
      * @param text text to insert, must not be null.
      * @param position where to insert.
      */
-    public void insert(String text, int position) {
+    public void insert(String text, int position)
+    {
         textWrapper.insert(text, position);
     }
 
@@ -186,16 +215,20 @@ public class TextBox extends Screen {
      * @param length number of characters to copy.
      * @param position in TextBox where to insert.
      */
-    public void insert(char[] charData, int offset, int length, int position) {
-        if (charData == null) {
+    public void insert(char[] charData, int offset, int length, int position)
+    {
+        if(charData == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.TEXT_EXCEPTION_ARRAY_IS_NULL);
+                MsgRepository.TEXT_EXCEPTION_ARRAY_IS_NULL);
         }
         String extractedString = null;
-        try {
+        try
+        {
             extractedString = new String(charData, offset, length);
         }
-        catch (IndexOutOfBoundsException e) {
+        catch(IndexOutOfBoundsException e)
+        {
             throw new ArrayIndexOutOfBoundsException();
         }
         textWrapper.insert(extractedString, position);
@@ -207,7 +240,8 @@ public class TextBox extends Screen {
      * @param offset - start index in TextBox to delete from.
      * @param length number of characters to delete.
      */
-    public void delete(int offset, int length) {
+    public void delete(int offset, int length)
+    {
         textWrapper.delete(offset, length);
     }
 
@@ -216,7 +250,8 @@ public class TextBox extends Screen {
      *
      * @return number of characters allowed for the TextBox.
      */
-    public int getMaxSize() {
+    public int getMaxSize()
+    {
         return textWrapper.getMaxSize();
     }
 
@@ -227,7 +262,8 @@ public class TextBox extends Screen {
      * @param newMaxSize sets the capacity of TextBox.
      * @return maxSize that was set.
      */
-    public int setMaxSize(int newMaxSize) {
+    public int setMaxSize(int newMaxSize)
+    {
         textWrapper.setMaxSize(newMaxSize);
         return textWrapper.getMaxSize();
     }
@@ -237,7 +273,8 @@ public class TextBox extends Screen {
      *
      * @return number if inputed Characters.
      */
-    public int size() {
+    public int size()
+    {
         return textWrapper.getSize();
     }
 
@@ -246,7 +283,8 @@ public class TextBox extends Screen {
      *
      * @param newConstraints constraint to apply to TextBox
      */
-    public void setConstraints(int newConstraints) {
+    public void setConstraints(int newConstraints)
+    {
         textWrapper.setConstraints(newConstraints);
     }
 
@@ -255,7 +293,8 @@ public class TextBox extends Screen {
      *
      * @return current applied constraints
      */
-    public int getConstraints() {
+    public int getConstraints()
+    {
         return textWrapper.getConstraints();
     }
 
@@ -264,24 +303,26 @@ public class TextBox extends Screen {
      *
      * @param inputMode input mode to set.
      */
-    public void setInitialInputMode(String inputMode) {
+    public void setInitialInputMode(String inputMode)
+    {
         textWrapper.setInputMode(inputMode);
     }
 
     /**
      * Text modify listener.
      */
-    class TextModifyListener implements ModifyListener {
+    class TextModifyListener implements ModifyListener
+    {
 
-        public void modifyText(ModifyEvent me) {
+        public void modifyText(ModifyEvent me)
+        {
             int lines = TextWrapper.eswtGetLineCount((Control) me.widget);
-            if (numLines != lines) {
+            if(numLines != lines)
+            {
                 // the number of lines changed
                 numLines = lines;
                 eswtSetPreferredContentSize(-1, textWrapper
-                        .getPreferredHeight(Config.TEXTBOX_MAX_VISIBLE_LINES));
-                // hide/show vertical scrollbar automatically
-                TextWrapper.eswtUpdateVScrollbar((Control) me.widget);
+                                            .getPreferredHeight(Config.TEXTBOX_MAX_VISIBLE_LINES));
             }
         }
 

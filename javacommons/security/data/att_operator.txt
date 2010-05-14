@@ -1,19 +1,18 @@
 domain Operator;
-grant user "Net Access" session,blanket,oneshot,no {
+grant user "Net Access" blanket,session,oneshot,no {
     permission javax.microedition.io.HttpProtocolPermission "http://*";
     permission javax.microedition.io.HttpsProtocolPermission "https://*";
+}
+grant user "Low Level Net Access" blanket,session,oneshot,no {
     permission javax.microedition.io.DatagramProtocolPermission "datagram://*";
     permission javax.microedition.io.DatagramProtocolPermission "datagram://";
     permission javax.microedition.io.SSLProtocolPermission "ssl://*";
-}
-
-grant user "Low Level Net Access" session,blanket,oneshot,no {
     permission javax.microedition.io.SocketProtocolPermission "socket://*";
     permission javax.microedition.io.SocketProtocolPermission "socket://";
     permission javax.microedition.io.Connector.rtsp "*";
 }
 
-grant user "Local Connectivity" session,blanket,oneshot,no {
+grant user "Local Connectivity" blanket,session,oneshot,no {
     permission javax.microedition.io.CommProtocolPermission "comm:*";
     permission javax.microedition.io.Connector.obex.server "*" "server";
     permission javax.microedition.io.Connector.obex.client "*" "client";
@@ -21,41 +20,32 @@ grant user "Local Connectivity" session,blanket,oneshot,no {
     permission javax.microedition.io.Connector.bluetooth.client "*" "client";
 }
 
-grant user "Read User Data Access" session,blanket,oneshot,no {
+grant user "Read User Data Access" blanket,session,oneshot,no {
     permission javax.microedition.io.FileProtocolPermission "*" "read";
     permission javax.microedition.pim.ContactList "pim://*" "read_contacts";
     permission javax.microedition.pim.EventList "pim://*" "read_events";
     permission javax.microedition.pim.ToDoList "pim://*" "read_todos";
 }
 
-grant user "Write User Data Access" session,blanket,oneshot,no {
+grant user "Write User Data Access" blanket,session,oneshot,no {
     permission javax.microedition.io.FileProtocolPermission "*" "write";
     permission javax.microedition.pim.ContactList "pim://*" "write_contacts";
     permission javax.microedition.pim.EventList "pim://*" "write_events";
     permission javax.microedition.pim.ToDoList "pim://*" "write_todos";
 }
 
-grant user "Messaging" session,blanket,oneshot,no {
+grant user "Messaging" blanket,session,oneshot,no {
     permission javax.microedition.io.Connector.sms "sms://*" "send";
     permission javax.microedition.io.Connector.mms "mms://*" "send";
 }
 
-grant user "Multimedia Recording" session,blanket,oneshot,no {
+grant user "Multimedia Recording" blanket,session,oneshot,no {
     permission javax.microedition.media.control.RecordControl "*" "record";
     permission javax.microedition.media.control.VideoControl.getSnapshot "*" "snapshot";
 }
 
-grant user "Application Auto Invocation" session,blanket,oneshot,no {
+grant user "Application Auto Invocation" blanket,session,oneshot,no {
     permission javax.microedition.io.PushRegistryPermission "*" "staticregistration,dynamicregistration,autoinvocation";
-}
-
-grant user "Location" session,blanket,oneshot,no {
-    permission javax.microedition.location.LocationPermission "location://*" "position,orientation";
-    permission javax.microedition.location.LocationPermission "landmarks://*" "read,write,category,management";
-}
-
-grant user "Restricted API Extensions" session,blanket,oneshot,no {
-    permission javax.microedition.PropertyPermission "mobinfo.imsi" "read";
 }
 
 grant allowed {

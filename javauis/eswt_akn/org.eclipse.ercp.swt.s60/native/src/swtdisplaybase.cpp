@@ -790,7 +790,7 @@ TBool ASwtDisplayBase::RevertPointerEvent() const
     return iRevertPointerEvent || iLongTapDetected;
 }
 
-void ASwtDisplayBase::SetRevertPointerEvent(TBool aStatus) 
+void ASwtDisplayBase::SetRevertPointerEvent(TBool aStatus)
 {
     iRevertPointerEvent = aStatus;
 }
@@ -1082,6 +1082,8 @@ void ASwtDisplayBase::TryDetectLongTapL(const TPointerEvent& aPointerEvent)
     {
         iLongTapControl = NULL;
         iLongTapDetected = EFalse;
+
+        // The Shell is required to already have handled the pointer down.
         MSwtControl* ctrl = iUiUtils->GetPointerGrabbingControl();
 
         // No long tap animation on scrollbars or trimings.
@@ -1091,7 +1093,7 @@ void ASwtDisplayBase::TryDetectLongTapL(const TPointerEvent& aPointerEvent)
             iLongTapControl = ctrl;
         }
     }
-    
+
     iLongTapPointerEvent = aPointerEvent;
 
     if (iLongTapControl)
@@ -1128,7 +1130,7 @@ void ASwtDisplayBase::HandleLongTapEventL(const TPoint& /*aPenEventLocation*/,
         return;
     }
 
-    // Will be switched back after the popup menu closes 
+    // Will be switched back after the popup menu closes
     // and the late pointer up event was delivered.
     iLongTapDetected = ETrue;
 
@@ -1148,7 +1150,7 @@ void ASwtDisplayBase::HandlePopupMenuClosedL()
         event.iType = TPointerEvent::EButton1Up;
         iLongTapControl->HandlePointerEventL(event); // revert
     }
-    
+
     // Just to clear the flags.
     CancelLongTapAnimation();
 }

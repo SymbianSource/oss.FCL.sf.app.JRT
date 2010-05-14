@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package t_uirobot.command;
@@ -34,7 +34,8 @@ import com.nokia.mj.impl.uitestutils.Key;
  * <br>
  * Created: 2008-05-02
  */
-public class DynamicUpdateTest extends UITestBase implements CommandListener {
+public class DynamicUpdateTest extends UITestBase implements CommandListener
+{
 
     private static final int MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX = 100;
 
@@ -51,7 +52,8 @@ public class DynamicUpdateTest extends UITestBase implements CommandListener {
     /**
      * Constructor.
      */
-    public DynamicUpdateTest() {
+    public DynamicUpdateTest()
+    {
     }
 
     /**
@@ -60,7 +62,8 @@ public class DynamicUpdateTest extends UITestBase implements CommandListener {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public DynamicUpdateTest(String sTestName, TestMethod rTestMethod) {
+    public DynamicUpdateTest(String sTestName, TestMethod rTestMethod)
+    {
         super(sTestName, rTestMethod);
     }
 
@@ -70,37 +73,46 @@ public class DynamicUpdateTest extends UITestBase implements CommandListener {
      *
      * @return New testsuite.
      */
-    public Test suite() {
+    public Test suite()
+    {
         TestSuite aSuite = new TestSuite();
 
         aSuite.addTest(new DynamicUpdateTest("testAddAndRemoveManyCommands",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((DynamicUpdateTest) tc).testAddAndRemoveManyCommands();
-                    }
-                }));
+                                             new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((DynamicUpdateTest) tc).testAddAndRemoveManyCommands();
+            }
+        }));
 
         aSuite.addTest(new DynamicUpdateTest("testCommandInEmptyForm",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((DynamicUpdateTest) tc).testCommandInEmptyForm();
-                    }
-                }));
+                                             new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((DynamicUpdateTest) tc).testCommandInEmptyForm();
+            }
+        }));
 
         aSuite.addTest(new DynamicUpdateTest(
-                "testAddCommandToManyDisplayables", new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((DynamicUpdateTest) tc)
-                                .testAddCommandToManyDisplayables();
-                    }
-                }));
+                           "testAddCommandToManyDisplayables", new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((DynamicUpdateTest) tc)
+                .testAddCommandToManyDisplayables();
+            }
+        }));
 
         aSuite.addTest(new DynamicUpdateTest("testManyCommandListeners",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((DynamicUpdateTest) tc).testManyCommandListeners();
-                    }
-                }));
+                                             new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((DynamicUpdateTest) tc).testManyCommandListeners();
+            }
+        }));
 
         return aSuite;
     }
@@ -109,14 +121,15 @@ public class DynamicUpdateTest extends UITestBase implements CommandListener {
      * Adds and removes many kind of commands to displayable and makes sure that
      * events occurs correctly all the time.
      */
-    public void testAddAndRemoveManyCommands() {
+    public void testAddAndRemoveManyCommands()
+    {
         boolean testPassed = true;
         String testMsg = "";
         latestCommand = null;
         latestDisplayable = null;
 
         TextBox textBox = new TextBox("title", "content",
-                MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX, 0);
+                                      MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX, 0);
 
         Command item1 = new Command("item", "item", Command.ITEM, 0);
         Command item2 = new Command("item2", "item2", Command.ITEM, 1);
@@ -140,15 +153,18 @@ public class DynamicUpdateTest extends UITestBase implements CommandListener {
         // Click it:
         key(Key.CBA1);
 
-        if (latestCommand == null) {
+        if(latestCommand == null)
+        {
             testPassed = false;
             testMsg = "no event from ITEM-command.";
         }
-        else if (latestCommand != item1) {
+        else if(latestCommand != item1)
+        {
             testPassed = false;
             testMsg = "not ITEM-command in event.";
         }
-        else if (latestDisplayable != textBox) {
+        else if(latestDisplayable != textBox)
+        {
             testPassed = false;
             testMsg = "unexpected displayable in event.";
         }
@@ -162,15 +178,18 @@ public class DynamicUpdateTest extends UITestBase implements CommandListener {
 
         key(Key.Select);
 
-        if (latestCommand == null) {
+        if(latestCommand == null)
+        {
             testPassed = false;
             testMsg = "no event from OK-command.";
         }
-        else if (latestCommand != ok1) {
+        else if(latestCommand != ok1)
+        {
             testPassed = false;
             testMsg = "not OK-command in event.";
         }
-        else if (latestDisplayable != textBox) {
+        else if(latestDisplayable != textBox)
+        {
             testPassed = false;
             testMsg = "unexpected displayable in event.";
         }
@@ -194,15 +213,18 @@ public class DynamicUpdateTest extends UITestBase implements CommandListener {
         key(Key.DownArrow, 0);
         key(Key.Select);
 
-        if (latestCommand == null) {
+        if(latestCommand == null)
+        {
             testPassed = false;
             testMsg = "no event from EXIT2-command.";
         }
-        else if (latestCommand != exit2) {
+        else if(latestCommand != exit2)
+        {
             testPassed = false;
             testMsg = "not EXIT2-command in event.";
         }
-        else if (latestDisplayable != textBox) {
+        else if(latestDisplayable != textBox)
+        {
             testPassed = false;
             testMsg = "unexpected displayable in event.";
         }
@@ -219,15 +241,18 @@ public class DynamicUpdateTest extends UITestBase implements CommandListener {
         key(Key.DownArrow, 0);
         key(Key.Select);
 
-        if (latestCommand == null) {
+        if(latestCommand == null)
+        {
             testPassed = false;
             testMsg = "no event from SCREEN1-command.";
         }
-        else if (latestCommand != screen1) {
+        else if(latestCommand != screen1)
+        {
             testPassed = false;
             testMsg = "not SCREEN1-command in event.";
         }
-        else if (latestDisplayable != textBox) {
+        else if(latestDisplayable != textBox)
+        {
             testPassed = false;
             testMsg = "unexpected displayable in event.";
         }
@@ -254,7 +279,8 @@ public class DynamicUpdateTest extends UITestBase implements CommandListener {
         key(Key.CBA2, 0);
         key(Key.Select);
 
-        if (latestCommand != null) {
+        if(latestCommand != null)
+        {
             testPassed = false;
             testMsg = "Event occured without commands.";
         }
@@ -265,7 +291,8 @@ public class DynamicUpdateTest extends UITestBase implements CommandListener {
     /**
      * Test to add command to empty form and verify it works.
      */
-    public void testCommandInEmptyForm() {
+    public void testCommandInEmptyForm()
+    {
         latestCommand = null;
         latestDisplayable = null;
 
@@ -281,25 +308,26 @@ public class DynamicUpdateTest extends UITestBase implements CommandListener {
         key(Key.CBA1);
 
         assertEquals("Command not activated or not correct command.",
-                ok, latestCommand);
+                     ok, latestCommand);
         assertEquals("Wrong displayable delivered to commandAction-method.",
-                form, latestDisplayable);
+                     form, latestDisplayable);
     }
 
     /**
      * Tests that it's possible to add one command to many displayables and
      * removing command from one displayable doesn't affect another displayable.
      */
-    public void testAddCommandToManyDisplayables() {
+    public void testAddCommandToManyDisplayables()
+    {
         boolean testPassed = true;
         String testMsg = "";
         latestCommand = null;
         latestDisplayable = null;
 
         TextBox textBox = new TextBox("title", "content",
-                MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX, 0);
+                                      MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX, 0);
         TextBox textBox2 = new TextBox("title2", "content2",
-                MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX, 0);
+                                       MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX, 0);
 
         Command item1 = new Command("item", "item", Command.ITEM, 0);
 
@@ -315,15 +343,18 @@ public class DynamicUpdateTest extends UITestBase implements CommandListener {
 
         key(Key.CBA1);
 
-        if (latestCommand == null) {
+        if(latestCommand == null)
+        {
             testPassed = false;
             testMsg = "no event from ITEM-command in first displayable.";
         }
-        else if (latestCommand != item1) {
+        else if(latestCommand != item1)
+        {
             testPassed = false;
             testMsg = "not ITEM-command in event in first displayable.";
         }
-        else if (latestDisplayable != textBox) {
+        else if(latestDisplayable != textBox)
+        {
             testPassed = false;
             testMsg = "unexpected displayable in event.";
         }
@@ -336,15 +367,18 @@ public class DynamicUpdateTest extends UITestBase implements CommandListener {
 
         key(Key.CBA1);
 
-        if (latestCommand == null) {
+        if(latestCommand == null)
+        {
             testPassed = false;
             testMsg = "no event from ITEM-command in second displayable.";
         }
-        else if (latestCommand != item1) {
+        else if(latestCommand != item1)
+        {
             testPassed = false;
             testMsg = "not ITEM-command in event in second displayable.";
         }
-        else if (latestDisplayable != textBox2) {
+        else if(latestDisplayable != textBox2)
+        {
             testPassed = false;
             testMsg = "unexpected displayable in event.";
         }
@@ -357,15 +391,18 @@ public class DynamicUpdateTest extends UITestBase implements CommandListener {
 
         key(Key.CBA1);
 
-        if (latestCommand == null) {
+        if(latestCommand == null)
+        {
             testPassed = false;
             testMsg = "no event from ITEM-command in second displayable.";
         }
-        else if (latestCommand != item1) {
+        else if(latestCommand != item1)
+        {
             testPassed = false;
             testMsg = "not ITEM-command in event in second displayable.";
         }
-        else if (latestDisplayable != textBox2) {
+        else if(latestDisplayable != textBox2)
+        {
             testPassed = false;
             testMsg = "unexpected displayable in event.";
         }
@@ -381,15 +418,18 @@ public class DynamicUpdateTest extends UITestBase implements CommandListener {
 
         key(Key.CBA1);
 
-        if (latestCommand == null) {
+        if(latestCommand == null)
+        {
             testPassed = false;
             testMsg = "no event from ITEM-command in first displayable.";
         }
-        else if (latestCommand != item1) {
+        else if(latestCommand != item1)
+        {
             testPassed = false;
             testMsg = "not ITEM-command in event in first displayable.";
         }
-        else if (latestDisplayable != textBox) {
+        else if(latestDisplayable != textBox)
+        {
             testPassed = false;
             testMsg = "unexpected displayable in event.";
         }
@@ -401,7 +441,8 @@ public class DynamicUpdateTest extends UITestBase implements CommandListener {
      * Tests the functionality of Command and CommandListener when there are
      * more than one CommandListener listening one Command.
      */
-    public void testManyCommandListeners() {
+    public void testManyCommandListeners()
+    {
         boolean testPassed = true;
         String testMsg = "";
         latestCommand2 = null;
@@ -414,21 +455,25 @@ public class DynamicUpdateTest extends UITestBase implements CommandListener {
         // Create two Displayables and two CommandListeners and add
         // same Command to both Displayables:
         TextBox textBox = new TextBox("title", "content",
-                MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX, 0);
+                                      MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX, 0);
         TextBox textBox2 = new TextBox("title2", "content2",
-                MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX, 0);
+                                       MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX, 0);
         Command item1 = new Command("item", "item", Command.ITEM, 0);
 
-        textBox.setCommandListener(new CommandListener() {
-            public void commandAction(Command c, Displayable d) {
+        textBox.setCommandListener(new CommandListener()
+        {
+            public void commandAction(Command c, Displayable d)
+            {
                 latestCommand2 = c;
                 latestDisplayable2 = d;
                 eventCount2++;
             }
         });
 
-        textBox2.setCommandListener(new CommandListener() {
-            public void commandAction(Command c, Displayable d) {
+        textBox2.setCommandListener(new CommandListener()
+        {
+            public void commandAction(Command c, Displayable d)
+            {
                 latestCommand3 = c;
                 latestDisplayable3 = d;
                 eventCount3++;
@@ -443,19 +488,23 @@ public class DynamicUpdateTest extends UITestBase implements CommandListener {
 
         key(Key.CBA1);
 
-        if (latestCommand3 == null) {
+        if(latestCommand3 == null)
+        {
             testPassed = false;
             testMsg = "no event in second displayable.";
         }
-        else if (latestCommand3 != item1) {
+        else if(latestCommand3 != item1)
+        {
             testPassed = false;
             testMsg = "wrong command in second displayable.";
         }
-        else if (latestDisplayable3 != textBox2) {
+        else if(latestDisplayable3 != textBox2)
+        {
             testPassed = false;
             testMsg = "unexpected displayable in event.";
         }
-        else if (eventCount3 != 1) {
+        else if(eventCount3 != 1)
+        {
             testPassed = false;
             testMsg = "Unexpected number of events: " + eventCount3;
         }
@@ -465,26 +514,31 @@ public class DynamicUpdateTest extends UITestBase implements CommandListener {
 
         key(Key.CBA1);
 
-        if (latestCommand2 == null) {
+        if(latestCommand2 == null)
+        {
             testPassed = false;
             testMsg = "no event in first displayable.";
         }
-        else if (latestCommand2 != item1) {
+        else if(latestCommand2 != item1)
+        {
             testPassed = false;
             testMsg = "wrong command in first displayable.";
         }
-        else if (latestDisplayable2 != textBox) {
+        else if(latestDisplayable2 != textBox)
+        {
             testPassed = false;
             testMsg = "unexpected displayable in event.";
         }
-        else if (eventCount2 != 1) {
+        else if(eventCount2 != 1)
+        {
             testPassed = false;
             testMsg = "Unexpected number of events: " + eventCount2;
         }
-        else if (eventCount3 != 1) {
+        else if(eventCount3 != 1)
+        {
             testPassed = false;
             testMsg = "Unexpected number of events in second displayable: "
-                    + eventCount2;
+                      + eventCount2;
         }
 
         // Clear counters, remove command from second displayable and
@@ -500,28 +554,34 @@ public class DynamicUpdateTest extends UITestBase implements CommandListener {
 
         key(Key.CBA1);
 
-        if (latestCommand2 == null) {
+        if(latestCommand2 == null)
+        {
             testPassed = false;
             testMsg = "no event in first displayable.";
         }
-        else if (latestCommand2 != item1) {
+        else if(latestCommand2 != item1)
+        {
             testPassed = false;
             testMsg = "wrong command in first displayable.";
         }
-        else if (latestDisplayable2 != textBox) {
+        else if(latestDisplayable2 != textBox)
+        {
             testPassed = false;
             testMsg = "unexpected displayable in event.";
         }
-        else if (eventCount2 != 1) {
+        else if(eventCount2 != 1)
+        {
             testPassed = false;
             testMsg = "Unexpected number of events: " + eventCount2;
         }
-        else if (eventCount3 != 0) {
+        else if(eventCount3 != 0)
+        {
             testPassed = false;
             testMsg = "Unexpected number of events in second displayable: "
-                    + eventCount3;
+                      + eventCount3;
         }
-        else if (latestCommand3 != null) {
+        else if(latestCommand3 != null)
+        {
             testPassed = false;
             testMsg = "Unexpected event in second displayable.";
         }
@@ -536,7 +596,8 @@ public class DynamicUpdateTest extends UITestBase implements CommandListener {
      * @param c Command.
      * @param d Displayable.
      */
-    public void commandAction(Command c, Displayable d) {
+    public void commandAction(Command c, Displayable d)
+    {
         latestCommand = c;
         latestDisplayable = d;
     }

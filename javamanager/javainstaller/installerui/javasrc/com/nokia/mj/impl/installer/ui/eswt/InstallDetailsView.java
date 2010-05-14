@@ -258,9 +258,6 @@ public class InstallDetailsView extends ConfirmationViewBase
                 addSoftKeyListenerFor(certLink);
             }
         }
-        /*
-        // Uncomment this to enable "application not certified"
-        // warning in installation details view.
         else
         {
             // Add not certified application link.
@@ -281,7 +278,6 @@ public class InstallDetailsView extends ConfirmationViewBase
             certLink.setLayoutData(gridData);
             addSoftKeyListenerFor(certLink);
         }
-        */
     }
 
     /**

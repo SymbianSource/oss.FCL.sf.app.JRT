@@ -81,6 +81,17 @@ public class CertificateDetailsView extends ConfirmationViewBase
                                  horizontalSpan, labelStyle);
         detailsLabel.setFont(iInstallerUi.getBoldFont());
 
+        // Add domain category label.
+        createLabel("", horizontalSpan, labelStyle);
+        Label domainLabel = createLabel(
+            InstallerUiTexts.get(
+                InstallerUiTexts.DOMAIN,
+                new String[] {
+                    InstallerUiTexts.get(InstallerUiTexts.DOMAIN_UTP)
+                }),
+            horizontalSpan, labelStyle);
+        createLabel("", horizontalSpan, labelStyle);
+
         // Add warning label.
         Label warningLabel = createLabel(
                                  InstallerUiTexts.get(InstallerUiTexts.NOT_CERTIFIED_WARNING),

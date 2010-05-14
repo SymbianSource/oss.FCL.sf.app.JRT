@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -30,9 +30,6 @@ import java.io.IOException;
  * NotificationPoster takes care of posting OTA status notifcations.
  * It uses a separate thread for posting pending notifications.
  * HTTP authentication is not supported for the OTA status notifications.
- *
- * @author Nokia Corporation
- * @version $Rev: 0 $ $Date$
  */
 abstract public class NotificationPoster implements Runnable
 {
@@ -104,6 +101,7 @@ abstract public class NotificationPoster implements Runnable
         }
         try
         {
+            iState = STATE_POSTING;
             doPost(aOtaStatusNotification, null);
         }
         catch (Throwable t)
@@ -115,6 +113,12 @@ abstract public class NotificationPoster implements Runnable
             aOtaStatusNotification.setLatestRetryTime
             (System.currentTimeMillis());
             iOtaStatusHandler.addNotification(aOtaStatusNotification);
+        }
+        finally
+        {
+            // Notify that waitForCompletion() can proceed.
+            iState = STATE_STOPPED;
+            this.notify();
         }
     }
 
@@ -255,7 +259,6 @@ abstract public class NotificationPoster implements Runnable
             iState = STATE_STOPPED;
             this.notify();
         }
-
     }
 
     /**

@@ -397,10 +397,9 @@ void CSwtJavaBufferDrawer::Draw(MSwtGc* aGc, TInt* aIntParams, TInt aIntCount, H
             TSize* size   = reinterpret_cast<TSize*>(&width);
             TPoint* pointDest = reinterpret_cast<TPoint*>(&destX);
 
-            (void)aWindow;    // Just to suppress a potential warning 
+            (void)aWindow;    // Just to suppress a potential warning
             (void)aDrawRect;  // Just to suppress a potential warning
-#ifdef RD_JAVA_NGA_ENABLED
-#ifdef RD_JAVA_UI_ALFDRAWER_ENABLED
+#ifdef RD_JAVA_S60_RELEASE_9_2
             aWindow->EndRedraw();
             TInt result = KErrAbort;
             TRAPD(err,result = aGc->FinishOperationL());
@@ -411,8 +410,7 @@ void CSwtJavaBufferDrawer::Draw(MSwtGc* aGc, TInt* aIntParams, TInt aIntCount, H
                 CCoeEnv::Static()->WsSession().Finish();
             }
             aWindow->BeginRedraw(aDrawRect);
-#endif // RD_JAVA_UI_ALFDRAWER_ENABLED
-#endif // RD_JAVA_NGA_ENABLED
+#endif // RD_JAVA_S60_RELEASE_9_2
 
             aGc->CopyArea(TRect(*pointSrc, *size), *pointDest);
         }
@@ -425,10 +423,9 @@ void CSwtJavaBufferDrawer::Draw(MSwtGc* aGc, TInt* aIntParams, TInt aIntCount, H
 
             TPoint pos(srcX, srcY);
 
-            (void)aWindow;    // Just to suppress a potential warning 
+            (void)aWindow;    // Just to suppress a potential warning
             (void)aDrawRect;  // Just to suppress a potential warning
-#ifdef RD_JAVA_NGA_ENABLED
-#ifdef RD_JAVA_UI_ALFDRAWER_ENABLED
+#ifdef RD_JAVA_S60_RELEASE_9_2
             aWindow->EndRedraw();
             TInt result = KErrAbort;
             TRAPD(err,result = aGc->FinishOperationL());
@@ -439,8 +436,8 @@ void CSwtJavaBufferDrawer::Draw(MSwtGc* aGc, TInt* aIntParams, TInt aIntCount, H
                 CCoeEnv::Static()->WsSession().Finish();
             }
             aWindow->BeginRedraw(aDrawRect);
-#endif // RD_JAVA_UI_ALFDRAWER_ENABLED
-#endif // RD_JAVA_NGA_ENABLED
+#endif // RD_JAVA_S60_RELEASE_9_2
+
             aGc->CopyAreaL(*image, pos);
         }
         break;

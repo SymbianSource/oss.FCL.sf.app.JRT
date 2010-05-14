@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt.list;
@@ -32,7 +32,8 @@ import com.nokia.openlcdui.mt.SWTTestCase;
  *
  * @created 1.8.2008
  */
-public class ListTest extends SWTTestCase {
+public class ListTest extends SWTTestCase
+{
 
     private static final int NUMITEMS = 20;
 
@@ -41,7 +42,8 @@ public class ListTest extends SWTTestCase {
     /**
      * Constructor.
      */
-    public ListTest() {
+    public ListTest()
+    {
     }
 
     /**
@@ -50,19 +52,23 @@ public class ListTest extends SWTTestCase {
      * @param sTestName name of the test
      * @param rTestMethod TestMethod used
      */
-    public ListTest(String sTestName) {
+    public ListTest(String sTestName)
+    {
         super(sTestName);
     }
 
     /**
      * Any pre-test setup can be done here
      */
-    protected void setUp() throws Exception {
-    	super.setUp();
-        try {
+    protected void setUp() throws Exception
+    {
+        super.setUp();
+        try
+        {
             itemImage = Image.createImage("32x32.jpg");
         }
-        catch (IOException ioe) {
+        catch(IOException ioe)
+        {
             ioe.printStackTrace();
         }
     }
@@ -73,46 +79,53 @@ public class ListTest extends SWTTestCase {
      *
      * @return New TestSuite.
      */
-    public static Test suite() {
-		TestSuite suite = new TestSuite();
+    public static Test suite()
+    {
+        TestSuite suite = new TestSuite();
 
-	    java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Vector methodNames;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = ListTest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new ListTest((String)e.nextElement()));
-	    }
+        // Add widget tests
+        methodNames = ListTest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new ListTest((String)e.nextElement()));
+        }
 
-		return suite;
-	}
+        return suite;
+    }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testConstructors");
         methodNames.addElement("testAccessors");
         methodNames.addElement("testMultiList");
         return methodNames;
     }
-    
-    protected void runTest() throws Throwable {
-        if (getName().equals("testConstructors")) testConstructors();
-        else if (getName().equals("testAccessors")) testAccessors();
-        else if (getName().equals("testMultiList")) testMultiList();
+
+    protected void runTest() throws Throwable
+    {
+        if(getName().equals("testConstructors")) testConstructors();
+        else if(getName().equals("testAccessors")) testAccessors();
+        else if(getName().equals("testMultiList")) testMultiList();
         else super.runTest();
     }
 
     /**
      * Test method.
      */
-    public void testConstructors() {
-        try {
+    public void testConstructors()
+    {
+        try
+        {
             new List(null, 0);
             fail("IllegalArgumentException should be thrown");
         }
-        catch (IllegalArgumentException iae) {
+        catch(IllegalArgumentException iae)
+        {
             // OK
         }
 
@@ -122,35 +135,42 @@ public class ListTest extends SWTTestCase {
 
         new List(null, Choice.IMPLICIT);
 
-        try {
+        try
+        {
             new List(null, Choice.IMPLICIT, null, null);
             fail("NullPointerException should be thrown");
         }
-        catch (NullPointerException npe) {
+        catch(NullPointerException npe)
+        {
             // OK
         }
 
         String[] goodStrArr = new String[] {"1", "2", "3", "4" };
         String[] badStrArr = new String[] {"1", null, "2", "3" };
         Image[] goodImgArr = new Image[] {itemImage, itemImage, itemImage,
-            itemImage, };
+                                          itemImage,
+                                         };
         Image[] badImgArr = new Image[] {itemImage, itemImage, itemImage, };
 
-        try {
+        try
+        {
             new List(null, Choice.IMPLICIT, badStrArr, null);
             fail("NullPointerException should be thrown - "
-                    + "for null item in text array");
+                 + "for null item in text array");
         }
-        catch (NullPointerException npe) {
+        catch(NullPointerException npe)
+        {
             // OK
         }
 
-        try {
+        try
+        {
             new List(null, Choice.IMPLICIT, goodStrArr, badImgArr);
             fail("IllegalArgumentException should be thrown - "
-                    + "text and image array length mismatch");
+                 + "text and image array length mismatch");
         }
-        catch (IllegalArgumentException iae) {
+        catch(IllegalArgumentException iae)
+        {
             // OK
         }
 
@@ -161,94 +181,109 @@ public class ListTest extends SWTTestCase {
     /**
      * Test method.
      */
-    public void testAccessors() {
+    public void testAccessors()
+    {
         List list = new List(null, Choice.IMPLICIT);
 
         list.setFitPolicy(Choice.TEXT_WRAP_DEFAULT);
         assertEquals("Fitpolicy mismatch", Choice.TEXT_WRAP_DEFAULT, list
-                .getFitPolicy());
+                     .getFitPolicy());
 
         list.setFitPolicy(Choice.TEXT_WRAP_ON);
         assertEquals("Fitpolicy mismatch", Choice.TEXT_WRAP_ON, list
-                .getFitPolicy());
+                     .getFitPolicy());
 
         list.setFitPolicy(Choice.TEXT_WRAP_OFF);
         assertEquals("Fitpolicy mismatch", Choice.TEXT_WRAP_OFF, list
-                .getFitPolicy());
+                     .getFitPolicy());
 
-        try {
+        try
+        {
             list.setFitPolicy(Choice.TEXT_WRAP_OFF + 1);
             fail("IllegalArgumentException not thrown - "
-                    + "for invalid fit policy");
+                 + "for invalid fit policy");
         }
-        catch (IllegalArgumentException iae) {
+        catch(IllegalArgumentException iae)
+        {
             assertEquals("Fitpolicy mismatch", Choice.TEXT_WRAP_OFF, list
-                    .getFitPolicy());
+                         .getFitPolicy());
         }
 
         // append
-        for (int i = 0; i < NUMITEMS; i++) {
+        for(int i = 0; i < NUMITEMS; i++)
+        {
             list.append("item" + i, itemImage);
         }
         assertEquals("List size - after append", NUMITEMS, list.size());
 
         // invalid append
-        try {
+        try
+        {
             list.append(null, itemImage);
             fail("NullPointerException not thrown - "
-                    + "for invalid string append");
+                 + "for invalid string append");
         }
-        catch (NullPointerException npe) {
+        catch(NullPointerException npe)
+        {
             // Fall-through
         }
 
         // delete
-        for (int i = 0; i < NUMITEMS; i++) {
+        for(int i = 0; i < NUMITEMS; i++)
+        {
             list.delete(0);
         }
         assertEquals("List size - after delete", 0, list.size());
 
         // insert
-        for (int i = 0; i < NUMITEMS; i++) {
+        for(int i = 0; i < NUMITEMS; i++)
+        {
             list.insert(0, "item" + i, itemImage);
         }
         assertEquals("List size - after insert", NUMITEMS, list.size());
 
         // invalid insert
-        try {
+        try
+        {
             list.insert(NUMITEMS * 2, "item" + NUMITEMS * 2, itemImage);
             fail("IndexOutOfBoundsException not thrown - "
-                    + "for invalid insert index");
+                 + "for invalid insert index");
         }
-        catch (IndexOutOfBoundsException iobe) {
+        catch(IndexOutOfBoundsException iobe)
+        {
             // Fall-through
         }
 
         // set
-        for (int i = 0; i < NUMITEMS; i++) {
+        for(int i = 0; i < NUMITEMS; i++)
+        {
             list.set(i, "item" + i * 2, itemImage);
         }
         assertEquals("List size - after set", NUMITEMS, list.size());
 
         // check item strings individually
-        for (int i = 0; i < NUMITEMS; i++) {
+        for(int i = 0; i < NUMITEMS; i++)
+        {
             assertEquals("Item " + i + " mismatch", "item" + i * 2, list
-                    .getString(i));
+                         .getString(i));
         }
 
         // create fonts to plain=0, bold=1, italic=2
         Font[] fonts = new Font[3];
-        for (int i = 0; i < 3; i++) {
+        for(int i = 0; i < 3; i++)
+        {
             fonts[i] = Font.getFont(Font.FACE_SYSTEM, i, Font.SIZE_MEDIUM);
         }
         // set list fonts
-        for (int i = 0; i < NUMITEMS; i++) {
+        for(int i = 0; i < NUMITEMS; i++)
+        {
             list.setFont(i, fonts[i % 3]);
         }
         // check item fonts individually
-        for (int i = 0; i < NUMITEMS; i++) {
+        for(int i = 0; i < NUMITEMS; i++)
+        {
             assertEquals("Font " + i + " mismatch", fonts[i % 3], list
-                    .getFont(i));
+                         .getFont(i));
         }
 
         int selIndex = list.getSelectedIndex();
@@ -262,31 +297,37 @@ public class ListTest extends SWTTestCase {
     /**
      * Test method.
      */
-    public void testMultiList() {
+    public void testMultiList()
+    {
         List list = new List(null, Choice.MULTIPLE);
 
         // append
-        for (int i = 0; i < NUMITEMS; i++) {
+        for(int i = 0; i < NUMITEMS; i++)
+        {
             list.append("item" + i, itemImage);
         }
         assertEquals("List size - after append", NUMITEMS, list.size());
 
-        try {
+        try
+        {
             list.setSelectedFlags(null);
             fail("NullPointerException not thrown - "
-                    + "for null selected array");
+                 + "for null selected array");
         }
-        catch (NullPointerException npe) {
+        catch(NullPointerException npe)
+        {
             // OK
         }
 
-        try {
+        try
+        {
             boolean[] badSelArr = new boolean[NUMITEMS / 2];
             list.setSelectedFlags(badSelArr);
             fail("IllegalArgumentException not thrown - "
-                    + "for invalid selected array size");
+                 + "for invalid selected array size");
         }
-        catch (IllegalArgumentException iae) {
+        catch(IllegalArgumentException iae)
+        {
             // OK
         }
 
@@ -294,26 +335,30 @@ public class ListTest extends SWTTestCase {
         boolean[] getSelArr = new boolean[NUMITEMS];
 
         // select odd items
-        for (int i = 0; i < NUMITEMS; i++) {
+        for(int i = 0; i < NUMITEMS; i++)
+        {
             setSelArr[i] = (i % 2 == 0);
         }
         list.setSelectedFlags(setSelArr);
         list.getSelectedFlags(getSelArr);
         // check each item individually
-        for (int i = 0; i < NUMITEMS; i++) {
+        for(int i = 0; i < NUMITEMS; i++)
+        {
             assertTrue("Selection mismatch at item " + i,
-                    setSelArr[i] == getSelArr[i]);
+                       setSelArr[i] == getSelArr[i]);
         }
 
         // flip each item
-        for (int i = 0; i < NUMITEMS; i++) {
+        for(int i = 0; i < NUMITEMS; i++)
+        {
             list.setSelectedIndex(i, !setSelArr[i]);
         }
 
         // check each item individually
-        for (int i = 0; i < NUMITEMS; i++) {
+        for(int i = 0; i < NUMITEMS; i++)
+        {
             assertTrue("Selection mismatch at item " + i, setSelArr[i] != list
-                    .isSelected(i));
+                       .isSelected(i));
         }
     }
 

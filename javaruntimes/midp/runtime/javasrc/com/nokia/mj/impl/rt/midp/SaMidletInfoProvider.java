@@ -36,9 +36,6 @@ import com.nokia.mj.impl.rt.support.ApplicationInfo;
 /**
  * A utility class for reading the standalone MIDlet specfic data from Jar and
  * Jad file (if Jad provided).
- *
- * @author Nokia Corporation
- * @version $Rev$
  */
 final class SaMidletInfoProvider
 {
@@ -91,7 +88,6 @@ final class SaMidletInfoProvider
         try
         {
             InputStream is = midletInfo.getClass().getResourceAsStream("/META-INF/MANIFEST.MF");
-            Log.logE("MIKKO is = " + is);
             jarAttributes = ManifestReader.getAttributes(is);
             is.close();
             is = null;

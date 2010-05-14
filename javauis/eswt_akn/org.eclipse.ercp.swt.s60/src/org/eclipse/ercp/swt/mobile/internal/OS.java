@@ -210,11 +210,7 @@ public class OS
     /*
      * Class TaskTip
      */
-    public static final native int TaskTip_New(TaskTip peer, int style);
-    public static final native void TaskTip_Dispose(int handle);
-    public static final native Rectangle TaskTip_GetBarDefaultBounds(int handle, boolean hasText);
-    public static final native Rectangle TaskTip_GetLabelDefaultBounds(int handle, boolean hasText);
-    public static final native Rectangle TaskTip_GetShellDefaultBounds(int handle, boolean hasText);
+    public static final native Rectangle TaskTip_DefaultBounds();
 
     /*
      * Class TextExtension

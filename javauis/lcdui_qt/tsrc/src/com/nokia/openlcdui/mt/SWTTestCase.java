@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt;
@@ -35,7 +35,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
 
-public class SWTTestCase extends TestCase {
+public class SWTTestCase extends TestCase
+{
 
     public static final Point POINTER_LSK = new Point(10, 470);
     public static final Point POINTER_MSK = new Point(160, 470);
@@ -48,33 +49,39 @@ public class SWTTestCase extends TestCase {
     public static final Point POINTER_MENU_ITEM_5 = new Point(160, 240);
     public static final Point POINTER_MESSAGE_BOX = new Point(160, 375);
 
-    public class TestDisabledException extends RuntimeException {
-    	private static final long serialVersionUID = 3005532374213580596L;
-    	}
-    
+    public class TestDisabledException extends RuntimeException
+    {
+        private static final long serialVersionUID = 3005532374213580596L;
+    }
+
     static Vector disabledTests = new Vector();
     private UITestUtils uiTestUtils;
-    
-    private class TestMIDlet extends MIDlet {
 
-		protected void destroyApp(boolean arg0) throws MIDletStateChangeException {
-		}
+    private class TestMIDlet extends MIDlet
+    {
 
-		protected void pauseApp() {
-		}
+        protected void destroyApp(boolean arg0) throws MIDletStateChangeException
+        {
+        }
 
-		protected void startApp() throws MIDletStateChangeException {
-		}};
-    
-	private static TestMIDlet midlet;
+        protected void pauseApp()
+        {
+        }
 
-	/**
+        protected void startApp() throws MIDletStateChangeException
+        {
+        }};
+
+    private static TestMIDlet midlet;
+
+    /**
      * Constructor.
      */
-    public SWTTestCase() {
-    	super();
-    	uiTestUtils = new UITestUtils();
-    	if (midlet == null) midlet = new TestMIDlet();
+    public SWTTestCase()
+    {
+        super();
+        uiTestUtils = new UITestUtils();
+        if(midlet == null) midlet = new TestMIDlet();
     }
 
     /**
@@ -83,10 +90,11 @@ public class SWTTestCase extends TestCase {
      * @param name
      * @param method
      */
-    public SWTTestCase(String name) {
+    public SWTTestCase(String name)
+    {
         super(name);
         uiTestUtils = new UITestUtils();
-        if (midlet == null) midlet = new TestMIDlet();
+        if(midlet == null) midlet = new TestMIDlet();
     }
 
     /**
@@ -96,10 +104,11 @@ public class SWTTestCase extends TestCase {
      *
      * @return A vector of test case names of disabled tests
      */
-    static public Vector getDisabledTests() {
+    static public Vector getDisabledTests()
+    {
         return disabledTests;
     }
-    
+
     /**
      * Call this in the beginning of a test case to temporarily disable it. I.e.
      * test will be skipped and it will show as passed. There will be a warning
@@ -107,10 +116,11 @@ public class SWTTestCase extends TestCase {
      * to temporarily hide the known issues so that it's easier to spot the real
      * failures that are not being worked on yet.
      */
-    protected void DISABLE_TEST() {
+    protected void DISABLE_TEST()
+    {
         throw new TestDisabledException();
     }
-    
+
     /**
      * Block execution for the given time without blocking the UI Thread. This
      * method should be used instead of the Thread.sleep, which will block the
@@ -118,11 +128,14 @@ public class SWTTestCase extends TestCase {
      *
      * @param miliseconds
      */
-    protected void block(int milliseconds) {
-        try {
+    protected void block(int milliseconds)
+    {
+        try
+        {
             Thread.sleep(milliseconds);
         }
-        catch (InterruptedException e) {
+        catch(InterruptedException e)
+        {
             e.printStackTrace();
         }
     }
@@ -130,15 +143,19 @@ public class SWTTestCase extends TestCase {
     /**
      * Convenience method for dispatching all events for the current UI thread.
      */
-    protected void flush() {
+    protected void flush()
+    {
         Display display = Display.getCurrent();
-        if (display != null) {
-            while (display.readAndDispatch()) {
+        if(display != null)
+        {
+            while(display.readAndDispatch())
+            {
             }
         }
     }
 
-    protected void tearDown() throws Exception {
+    protected void tearDown() throws Exception
+    {
         super.tearDown();
         flush();
 
@@ -160,15 +177,17 @@ public class SWTTestCase extends TestCase {
     /**
      * System out print.
      */
-    public void log(String aLogString) {
+    public void log(String aLogString)
+    {
         System.out.println(aLogString);
     }
 
     /**
      * MIDlet instance.
      */
-    public MIDlet getMIDlet() {
-    	return midlet;
+    public MIDlet getMIDlet()
+    {
+        return midlet;
     }
 
     /**
@@ -181,7 +200,8 @@ public class SWTTestCase extends TestCase {
     /**
      * Emulate key event.
      */
-    public void key(int aKeyCode) {
+    public void key(int aKeyCode)
+    {
         //spede().triggerKeyPressEvent(new Key(aKeyCode));
         block(500);
     }
@@ -189,9 +209,11 @@ public class SWTTestCase extends TestCase {
     /**
      * Emulate key event with delay after.
      */
-    public void key(int aKeyCode, int aTimeout) {
+    public void key(int aKeyCode, int aTimeout)
+    {
         //spede().triggerKeyPressEvent(new Key(aKeyCode));
-        if (aTimeout > 0) {
+        if(aTimeout > 0)
+        {
             block(aTimeout);
         }
     }
@@ -199,23 +221,26 @@ public class SWTTestCase extends TestCase {
     /**
      * Takes a reference screenshot and writes results to a file.
      */
-    public boolean takeScreenshot(String screenShotName) {
-    	//return spede().takeScreenshot(screenShotName);
-    	return false;
+    public boolean takeScreenshot(String screenShotName)
+    {
+        //return spede().takeScreenshot(screenShotName);
+        return false;
     }
 
     /**
      * Add comment to test results log.
      */
-    public void print(String s) {
+    public void print(String s)
+    {
         uiTestUtils.log(s);
     }
 
     /**
      * Add exception to test results log.
      */
-    public void print(Throwable t) {
-    	uiTestUtils.log(t.toString());
+    public void print(Throwable t)
+    {
+        uiTestUtils.log(t.toString());
     }
 
     /**
@@ -223,7 +248,8 @@ public class SWTTestCase extends TestCase {
      * cases to take screenshots so that waiting for the screen to paint can be
      * handled efficiently.
      */
-    public boolean screen(String title) {
+    public boolean screen(String title)
+    {
         return screen(title, new Rectangle(0, 0, 0, 0));
     }
 
@@ -234,7 +260,8 @@ public class SWTTestCase extends TestCase {
      * corresponding area in reference image. If given rectangle area is empty,
      * the whole screen is compared.
      */
-    public boolean screen(String title, Rectangle compareArea) {
+    public boolean screen(String title, Rectangle compareArea)
+    {
         final int DEFAULT_MAXWAITTIME = 1000;
         return screen(title, DEFAULT_MAXWAITTIME, compareArea);
     }
@@ -244,7 +271,8 @@ public class SWTTestCase extends TestCase {
      * time to stabilise, for example in a complex layout test case, then this
      * method should be used and a longer wait time given.
      */
-    public boolean screen(String title, int maxWaitTime) {
+    public boolean screen(String title, int maxWaitTime)
+    {
         return screen(title, maxWaitTime, new Rectangle(0, 0, 0, 0));
     }
 
@@ -255,7 +283,8 @@ public class SWTTestCase extends TestCase {
      * area of screenshot to corresponding area in reference image. If given
      * rectangle area is empty, the whole screen is compared.
      */
-    public boolean screen(String title, int maxWaitTime, Rectangle compareArea) {
+    public boolean screen(String title, int maxWaitTime, Rectangle compareArea)
+    {
         final int WAIT_INITIAL = 100;
         final int WAIT_RETRY = 100;
 
@@ -264,13 +293,15 @@ public class SWTTestCase extends TestCase {
 
         boolean screenMatchesReferenceImage = false;
         boolean finalAttempt = false;
-        while (waitSum < maxWaitTime && !screenMatchesReferenceImage) {
-            if (!(waitSum + WAIT_RETRY < maxWaitTime))
+        while(waitSum < maxWaitTime && !screenMatchesReferenceImage)
+        {
+            if(!(waitSum + WAIT_RETRY < maxWaitTime))
                 finalAttempt = true;
             screenMatchesReferenceImage = doTakeScreenShot(title, finalAttempt,
-                    compareArea);
+                                          compareArea);
 
-            if (!screenMatchesReferenceImage) {
+            if(!screenMatchesReferenceImage)
+            {
                 block(WAIT_RETRY);
                 waitSum += WAIT_RETRY;
             }
@@ -288,7 +319,8 @@ public class SWTTestCase extends TestCase {
      *            If false then results will be written only after successful
      *            comparison to the reference image.
      */
-    protected boolean doTakeScreenShot(String title, boolean finalAttempt) {
+    protected boolean doTakeScreenShot(String title, boolean finalAttempt)
+    {
         return doTakeScreenShot(title, finalAttempt, new Rectangle(0, 0, 0, 0));
     }
 
@@ -304,9 +336,11 @@ public class SWTTestCase extends TestCase {
      *            comparison to the reference image.
      */
     protected boolean doTakeScreenShot(String title, boolean finalAttempt,
-            Rectangle compareArea) {
+                                       Rectangle compareArea)
+    {
         String actualTitle = getName();
-        if (title != "") {
+        if(title != "")
+        {
             actualTitle += "_" + title;
         }
         //return spede().takeScreenshot(actualTitle, finalAttempt, compareArea);
@@ -316,28 +350,32 @@ public class SWTTestCase extends TestCase {
     /**
      * Take screenshot.
      */
-    public boolean screen() {
+    public boolean screen()
+    {
         return screen("");
     }
 
     /**
      * Take screenshot.
      */
-    public boolean screen(int maxWaitTime) {
+    public boolean screen(int maxWaitTime)
+    {
         return screen("", maxWaitTime);
     }
 
     /**
      * Take screenshot.
      */
-    public boolean screen(Rectangle compareArea) {
+    public boolean screen(Rectangle compareArea)
+    {
         return screen("", compareArea);
     }
 
     /**
      * Take screenshot.
      */
-    public void screenAssert() {
+    public void screenAssert()
+    {
         boolean res = true;
         res = screen();
         assertTrue("Screenshot mismatch", res);
@@ -346,7 +384,8 @@ public class SWTTestCase extends TestCase {
     /**
      * Take screenshot.
      */
-    public void screenAssert(String title) {
+    public void screenAssert(String title)
+    {
         boolean res = true;
         res = screen(title);
         assertTrue("Screenshot " + title + " mismatch", res);
@@ -356,7 +395,8 @@ public class SWTTestCase extends TestCase {
     /**
      * Emulate pointer event.
      */
-    public void pointerTap(int x, int y) {
+    public void pointerTap(int x, int y)
+    {
         uiTestUtils.triggerPointerDownEvent(x, y);
         uiTestUtils.triggerPointerUpEvent(x, y);
     }
@@ -364,7 +404,8 @@ public class SWTTestCase extends TestCase {
     /**
      * Emulate pointer event.
      */
-    public void pointerLongTap(int x, int y) {
+    public void pointerLongTap(int x, int y)
+    {
         //spede().longTap(x, y);
         //block(500);
     }
@@ -372,21 +413,24 @@ public class SWTTestCase extends TestCase {
     /**
      * Emulate pointer event.
      */
-    public void pointerDown(int x, int y) {
+    public void pointerDown(int x, int y)
+    {
         uiTestUtils.triggerPointerDownEvent(x, y);
     }
 
     /**
      * Emulate pointer event.
      */
-    public void pointerUp(int x, int y) {
+    public void pointerUp(int x, int y)
+    {
         uiTestUtils.triggerPointerUpEvent(x, y);
     }
 
     /**
      * Emulate pointer event.
      */
-    public void pointerDrag(int x1, int y1, int x2, int y2) {
+    public void pointerDrag(int x1, int y1, int x2, int y2)
+    {
         //spede().pointerDrag(x1, y1, x2, y2);
         //block(500);
         //uiTestUtils.triggerPointerDragEvent(arg0, arg1)
@@ -395,79 +439,87 @@ public class SWTTestCase extends TestCase {
     /**
      * Emulate pointer event.
      */
-    public void pointerTap(Point p) {
+    public void pointerTap(Point p)
+    {
         pointerTap(p.x, p.y);
     }
 
     /**
      * Emulate pointer event.
      */
-    public void pointerLongTap(Point p) {
+    public void pointerLongTap(Point p)
+    {
         pointerLongTap(p.x, p.y);
     }
 
     /**
      * Emulate pointer event.
      */
-    public void pointerDown(Point p) {
+    public void pointerDown(Point p)
+    {
         pointerDown(p.x, p.y);
     }
 
     /**
      * Emulate pointer event.
      */
-    public void pointerUp(Point p) {
+    public void pointerUp(Point p)
+    {
         pointerUp(p.x, p.y);
     }
 
     /**
      * Emulate pointer event.
      */
-    public void pointerDrag(Point p1, Point p2) {
+    public void pointerDrag(Point p1, Point p2)
+    {
         pointerDrag(p1.x, p1.y, p2.x, p2.y);
     }
 
     /**
      * Control tapping target.
      */
-    public Point pointerTarget(Control aCtrl, int aType) {
+    public Point pointerTarget(Control aCtrl, int aType)
+    {
         assertTrue(aCtrl.getSize().x > 0 && aCtrl.getSize().y > 0);
         Point res = new Point(0, 0);
         Rectangle rect = aCtrl.getBounds();
-        switch (aType) {
-            case SWT.CENTER:
-                res = new Point(rect.x + rect.width / 2, rect.y + rect.height
-                        / 2);
-                break;
-            case SWT.TOP:
-                res = new Point(rect.x + rect.width / 2, rect.y);
-                break;
-            case SWT.BOTTOM:
-                res = new Point(rect.x + rect.width / 2, rect.y + rect.height);
-                break;
-            case SWT.LEFT:
-                res = new Point(rect.x, rect.y + rect.height / 2);
-                break;
-            case SWT.RIGHT:
-                res = new Point(rect.x + rect.width, rect.y + rect.height / 2);
-                break;
-            case SWT.TOP | SWT.LEFT:
-                res = new Point(rect.x, rect.y);
-                break;
-            case SWT.TOP | SWT.RIGHT:
-                res = new Point(rect.x + rect.width, rect.y);
-                break;
-            case SWT.BOTTOM | SWT.LEFT:
-                res = new Point(rect.x, rect.y + rect.height);
-                break;
-            case SWT.BOTTOM | SWT.RIGHT:
-                res = new Point(rect.x + rect.width, rect.y + rect.height);
-                break;
-            default:
-                assertTrue("No such pointer target type", false);
-                break;
+        switch(aType)
+        {
+        case SWT.CENTER:
+            res = new Point(rect.x + rect.width / 2, rect.y + rect.height
+                            / 2);
+            break;
+        case SWT.TOP:
+            res = new Point(rect.x + rect.width / 2, rect.y);
+            break;
+        case SWT.BOTTOM:
+            res = new Point(rect.x + rect.width / 2, rect.y + rect.height);
+            break;
+        case SWT.LEFT:
+            res = new Point(rect.x, rect.y + rect.height / 2);
+            break;
+        case SWT.RIGHT:
+            res = new Point(rect.x + rect.width, rect.y + rect.height / 2);
+            break;
+        case SWT.TOP | SWT.LEFT:
+            res = new Point(rect.x, rect.y);
+            break;
+        case SWT.TOP | SWT.RIGHT:
+            res = new Point(rect.x + rect.width, rect.y);
+            break;
+        case SWT.BOTTOM | SWT.LEFT:
+            res = new Point(rect.x, rect.y + rect.height);
+            break;
+        case SWT.BOTTOM | SWT.RIGHT:
+            res = new Point(rect.x + rect.width, rect.y + rect.height);
+            break;
+        default:
+            assertTrue("No such pointer target type", false);
+            break;
         }
-        if (aCtrl.getParent() != null) {
+        if(aCtrl.getParent() != null)
+        {
             res = aCtrl.getParent().toDisplay(res);
         }
         return res;
@@ -476,32 +528,41 @@ public class SWTTestCase extends TestCase {
     /**
      * Control tapping target.
      */
-    public Point pointerTarget(Control aCtrl) {
+    public Point pointerTarget(Control aCtrl)
+    {
         return pointerTarget(aCtrl, SWT.CENTER);
     }
 
-    public boolean isTouchEnabled() {
+    public boolean isTouchEnabled()
+    {
         //return spede().isTouchEnabled();
-    	return true;
+        return true;
     }
 
-    public void runBare() throws Throwable {
+    public void runBare() throws Throwable
+    {
         long startMillis = 0;
-        try {
+        try
+        {
             startMillis = System.currentTimeMillis();
             setUp();
             runTest();
-        } catch (TestDisabledException e) {
-        	if(disabledTests == null) throw new Exception("Test " + getName() + " is disabled");
+        }
+        catch(TestDisabledException e)
+        {
+            if(disabledTests == null) throw new Exception("Test " + getName() + " is disabled");
             disabledTests.addElement(getName() + " (" + getClass().getName() + ")");
-        } finally {
+        }
+        finally
+        {
             tearDown();
-            if (startMillis > 0) {
-				long totalTime = System.currentTimeMillis() - startMillis;
-				print("Total test case execution time: "
-						+ (Float.valueOf(Long.toString(totalTime)).floatValue() / 1000)
-						+ " s");
-			}
+            if(startMillis > 0)
+            {
+                long totalTime = System.currentTimeMillis() - startMillis;
+                print("Total test case execution time: "
+                      + (Float.valueOf(Long.toString(totalTime)).floatValue() / 1000)
+                      + " s");
+            }
             // Requests disposing all resources
             javax.microedition.lcdui.Display.getDisplay(getMIDlet()).setCurrent(null);
         }

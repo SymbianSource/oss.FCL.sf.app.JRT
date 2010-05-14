@@ -52,7 +52,6 @@ class MSwtLink;
 class MSwtListBox;
 class MSwtListView;
 class MSwtSortedList;
-class MSwtTaskTip;
 class MSwtTextExtension;
 class MSwtClipboard;
 class MSwtTableColumn;
@@ -762,9 +761,9 @@ public:
     virtual TBool IsLongTapAnimationCandidate(const TPointerEvent& aPointerEvent) const =0;
 
     virtual void DoControlSpecificFeedback(const TBool& aFirstTap,
-                                           const TBool& aTappedToChildRect, 
+                                           const TBool& aTappedToChildRect,
                                            const TPointerEvent& aPointerEvent) const = 0;
-    
+
     virtual void PostMouseEventL(const TPointerEvent& aPointerEvent) = 0;
 };
 
@@ -956,7 +955,7 @@ public:
      * In case this is a ScrolledComposite, returns one of the possible physics actions defined in eswt.h
      */
     virtual TInt ScrolledCompositePysicsAction() const = 0;
-    
+
     /**
      * Draw scrollbar background.
      */
@@ -1128,7 +1127,7 @@ public:
  * Interface class for the org.eclipse.swt.widgets.Shell class
  * A class that implements MSwtShell must also implement MSwtDecorations.
  */
-class MSwtShell 
+class MSwtShell
         : public MEikStatusPaneObserver
 {
 public:
@@ -1397,12 +1396,18 @@ public:
      */
     virtual TBool AsyncPainting() const = 0;
     virtual void SetAsyncPainting(TBool aStatus) = 0;
-    
+
     /**
      * Attached CBA to the Shell. Cannot be undone.
      */
     virtual void InstallCba() = 0;
     virtual TBool HasCba() const = 0;
+
+    /**
+     * Set task tip style.
+     */
+    virtual void SetTaskTip() = 0;
+    virtual TBool IsTaskTip() const = 0;
 };
 
 /**
@@ -2798,18 +2803,18 @@ public:
       * Returns number of active browsers in applicaition.
       */
     virtual TInt ActiveBrowserCount() const = 0;
-    
+
     /**
      * Setter and getter for key input flag.
      */
     virtual TBool NaviKeyInput() const = 0;
     virtual void SetNaviKeyInput(TBool aKeyInput) = 0;
-    
+
     /**
      * This should be always used to hide, show the CBA.
      */
     virtual void SetCbaVisible(TBool aVisible) = 0;
-    
+
     /**
      * Returns the pointer to the control that is currently receiving the pointer events
      * because it has received EButton1Down event. This returns a valid control only between
@@ -2817,6 +2822,22 @@ public:
      * @return Pointer to the control that is receiving the pointer events currently or NULL.
      */
     virtual MSwtControl* GetPointerGrabbingControl() = 0;
+
+    /**
+     * Default bounds for TaskTips
+     */
+    virtual TRect TaskTipRect() const = 0;
+
+    /**
+     * Sets the pointerGrabbingControl
+     * Calling with NULL of course unsets.
+     */
+    virtual void SetPointerCaptureControl(MSwtControl* aControl) = 0;
+
+    /**
+     * Returns the current control that is grabbing the pointer events.
+     */
+    virtual MSwtControl* PointerCaptureControl() = 0;
 };
 
 
@@ -3155,14 +3176,6 @@ public:
      */
     virtual MSwtSortedList* NewSortedListL(MSwtDisplay& aDisplay,
                                            TSwtPeer aPeer, MSwtComposite& aParent, TInt aStyle) const =0;
-
-    /**
-     * Constructs a TaskTip
-     * @param aDisplay     The Display this TaskTip belongs to.
-     * @param aPeer        The Java object associated with this C++ object
-     */
-    virtual MSwtTaskTip* NewTaskTipL(MSwtDisplay& aDisplay,
-                                     TSwtPeer aPeer, TInt aStyle) const =0;
 
     /**
      * Constructs a TextExtension

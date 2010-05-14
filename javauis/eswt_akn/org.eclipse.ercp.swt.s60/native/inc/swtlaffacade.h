@@ -149,19 +149,8 @@ public:
         EChildShellWithoutTitlePane,
         EMenuItemPane,
         ESubMenuItemPane,
-
-        /**
-         * popup_eswt_tasktip_window(0): task tip bar + label
-         * popup_eswt_tasktip_window(1): task tip bar or label only
-         */
         EPopupEswtTasktipWindow,
-
-        /**
-         * wait_bar_pane_cp71(0): progress bar in task tip bar + label
-         * wait_bar_pane_cp71(1): progress bar in task tip bar or label only
-         */
         EWaitBarPaneCp71,
-
         EChildShellTitleImagePane,
         EFindPane,
         EPopupMidpNoteAlarmWindowG1,
@@ -202,14 +191,7 @@ public:
         EListDoubleLargeGraphicPaneT2,
         ECellEswtAppPaneT1,
         EFormDataWideGraphicFieldTextsLine2,
-
-        /**
-         * popup_eswt_tasktip_window_t1(0): label in task tip bar + label
-         * popup_eswt_tasktip_window_t1(1): label in task tip bar or label only
-         */
-        EPopupEswtTasktipWindowT1,
         ETabs4ActivePaneT1,
-
         ECellHcAppPaneT1,
         ECellAppPaneT1,
     };

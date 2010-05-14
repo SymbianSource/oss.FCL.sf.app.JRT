@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -21,11 +21,13 @@ import java.util.Vector;
 /**
  * Utility class used to wrap a string for StringItem layout.
  */
-final class StringWrapper {
+final class StringWrapper
+{
 
     private static final String DELIM_STR = " ,.;:!?-\n";
 
-    private StringWrapper() {
+    private StringWrapper()
+    {
         super();
     }
 
@@ -43,13 +45,16 @@ final class StringWrapper {
                              Font stringItemFont,
                              boolean leftToRightLayout,
                              int fullWidth,
-                             int freeWidth) {
-        if (leftToRightLayout) {
+                             int freeWidth)
+    {
+        if(leftToRightLayout)
+        {
             // if left-to-right then just call wrapping method
             return doWrapString(inputString, stringItemFont, fullWidth,
-                    freeWidth);
+                                freeWidth);
         }
-        else {
+        else
+        {
             // if right-to-left then:
             // 1) reverse the string
             // 2) do wrapping
@@ -58,9 +63,10 @@ final class StringWrapper {
             StringBuffer temp = new StringBuffer(inputString);
 
             Vector ret = doWrapString(temp.reverse().toString(),
-                    stringItemFont, fullWidth, freeWidth);
+                                      stringItemFont, fullWidth, freeWidth);
 
-            for (int i = 0; i < ret.size(); i++) {
+            for(int i = 0; i < ret.size(); i++)
+            {
                 temp.setLength(0);
                 temp.append((String) ret.elementAt(i));
                 ret.setElementAt(temp.reverse().toString(), i);
@@ -81,11 +87,13 @@ final class StringWrapper {
     private static Vector doWrapString(String inputString,
                                        Font font,
                                        int fullWidth,
-                                       int freeWidth) {
+                                       int freeWidth)
+    {
         Vector result = new Vector();
         // Could happen if StringItem.setText(null) or StringItem.setText("")
         // was called
-        if (inputString == null) {
+        if(inputString == null)
+        {
             result.addElement("");
             return result;
         }
@@ -98,16 +106,20 @@ final class StringWrapper {
         String str = inputString;
         String token = "";
 
-        while (str.length() > 0) {
+        while(str.length() > 0)
+        {
             nextDelimiterPos = findNextDelimiter(str, nextDelimiterPos + 1);
             token = str.substring(0, nextDelimiterPos).trim();
             tokenWidth = font.stringWidth(token);
 
-            if (tokenWidth > availableWidth) {
-                if (delimiterPos == 0) {
+            if(tokenWidth > availableWidth)
+            {
+                if(delimiterPos == 0)
+                {
                     // even the first word in the string is too long to fit
-                    if ((availableWidth < fullWidth)
-                            && (tokenWidth <= fullWidth)) {
+                    if((availableWidth < fullWidth)
+                            && (tokenWidth <= fullWidth))
+                    {
                         // the long word would fit to the next full row
                         // result.addElement("");
                         availableWidth = fullWidth;
@@ -116,7 +128,8 @@ final class StringWrapper {
                         continue;
                     }
 
-                    if (tokenWidth > fullWidth) {
+                    if(tokenWidth > fullWidth)
+                    {
                         // the long word does not fit to a full row
                         // do character-boundary wrapping
                         delimiterPos =
@@ -138,15 +151,17 @@ final class StringWrapper {
                 continue;
             }
 
-            if (nextDelimiterPos == str.length()) {
+            if(nextDelimiterPos == str.length())
+            {
                 result.addElement(token);
                 availableWidth = fullWidth;
                 str = str.substring(nextDelimiterPos);
                 continue;
             }
 
-            if (nextDelimiterPos < str.length()
-                    && str.charAt(nextDelimiterPos) == '\n') {
+            if(nextDelimiterPos < str.length()
+                    && str.charAt(nextDelimiterPos) == '\n')
+            {
                 result.addElement(token);
                 availableWidth = fullWidth;
                 str = str.substring(nextDelimiterPos + 1);
@@ -166,9 +181,11 @@ final class StringWrapper {
      * @param word - Word to break
      * @return Part of word that fits in the current available space
      */
-    private static int findWordBreak(String word, Font font, int width) {
+    private static int findWordBreak(String word, Font font, int width)
+    {
         int breakPos = word.length();
-        while (font.substringWidth(word, 0, breakPos) > width) {
+        while(font.substringWidth(word, 0, breakPos) > width)
+        {
             breakPos--;
         }
         return breakPos;
@@ -182,13 +199,17 @@ final class StringWrapper {
      * @param startPos Start position for search
      * @return The first delimiter found
      */
-    private static int findNextDelimiter(String str, int startPos) {
+    private static int findNextDelimiter(String str, int startPos)
+    {
         int strLen = str.length();
         int pos = startPos;
-        for (; pos < strLen; pos++) {
+        for(; pos < strLen; pos++)
+        {
             int delimiter = DELIM_STR.indexOf(str.charAt(pos));
-            if (delimiter >= 0) {
-                if (delimiter < 8) {
+            if(delimiter >= 0)
+            {
+                if(delimiter < 8)
+                {
                     // 8 is the '\n' character's index
                     return pos + 1;
                 }

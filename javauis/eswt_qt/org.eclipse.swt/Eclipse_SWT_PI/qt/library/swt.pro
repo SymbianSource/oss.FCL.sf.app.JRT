@@ -51,15 +51,13 @@ symbian {
     INCLUDEPATH += \epoc32\include\middleware \
                    \epoc32\include\domain\middleware
 
-    # J9 stuff that Mikko knows about
+    # J9 VM specific definitions
     DEFINES+=J9EPOC32
 
     # Std cpp requirements
     LIBS += -llibc
     LIBS += -leuser
     LIBS += -llibstdcpp
-    LIBS += -lxqservice
-    LIBS += -lQtContacts
     
     DEFINES+= MACRO_WCHAR_T_DECLARED
     QMAKE_CXXFLAGS.CW += -wchar_t on

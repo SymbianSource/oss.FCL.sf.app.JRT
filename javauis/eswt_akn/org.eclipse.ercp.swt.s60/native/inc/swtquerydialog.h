@@ -54,7 +54,7 @@ NONSHARABLE_CLASS(CSwtQueryDialogText)
         : public CAknTextQueryDialog
 {
 private:
-    CSwtQueryDialogText::CSwtQueryDialogText(TInt aMinimum, TDes& aResult);
+    CSwtQueryDialogText(TInt aMinimum, TDes& aResult);
 
 public:
     enum TTextDialogStyle
@@ -86,7 +86,7 @@ NONSHARABLE_CLASS(CSwtQueryDialogNumeric)
         : public CAknFloatingPointQueryDialog
 {
 private:
-    CSwtQueryDialogNumeric::CSwtQueryDialogNumeric(TReal& aResult,
+    CSwtQueryDialogNumeric(TReal& aResult,
     const TDesC& aDefaultValue, TInt aMinimum, TInt aMaximum);
 
 public:
@@ -114,7 +114,7 @@ NONSHARABLE_CLASS(CSwtQueryDialogDateTime)
         : public CAknTimeQueryDialog
 {
 private:
-    CSwtQueryDialogDateTime::CSwtQueryDialogDateTime(TTime& aTime);
+    CSwtQueryDialogDateTime(TTime& aTime);
 
 public:
     enum TDateTimeDialogStyle

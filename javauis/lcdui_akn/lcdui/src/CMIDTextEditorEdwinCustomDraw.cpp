@@ -122,6 +122,47 @@ void CMIDTextEditorEdwinCustomDraw::DrawText(
         aExtraPixels);
 }
 
+#ifdef RD_JAVA_S60_RELEASE_9_2
+// ---------------------------------------------------------------------------
+// CMIDTextEditorEdwinCustomDraw::DrawText
+// (other items were commented in the header file)
+// ---------------------------------------------------------------------------
+//
+void CMIDTextEditorEdwinCustomDraw::DrawText(
+    const TParam& aParam,
+    const TLineInfo& aLineInfo,
+    const TCharFormat& aFormat,
+    const TDesC& aText,
+    const TInt aStart,
+    const TInt aEnd,
+    const TPoint& aTextOrigin,
+    TInt aExtraPixels) const
+{
+    // If transparency is enabled, check that if draw has not been invoked
+    // yet and issue redraw in that case. This removes the issue with
+    // transparency so that the old content does not cause corruption to
+    // the new text drawn on top of the old content. Otherwise it is ok
+    // to draw the text because opaque background draws on top of the old
+    // content in the editor.
+
+    if (iEdwin.IsTransparent() && !iEdwin.DrawOngoing())
+    {
+        iEdwin.Redraw();
+        return;
+    }
+
+    iParentDraw.DrawText(
+        aParam,
+        aLineInfo,
+        aFormat,
+        aText,
+        aStart,
+        aEnd,
+        aTextOrigin,
+        aExtraPixels);
+}
+#endif
+
 // ---------------------------------------------------------------------------
 // CMIDTextEditorEdwinCustomDraw::SystemColor
 // (other items were commented in the header file)

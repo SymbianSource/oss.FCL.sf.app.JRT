@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package t_uirobot.gauge;
@@ -33,7 +33,8 @@ import com.nokia.mj.impl.uitestutils.Key;
  * <br>
  * Created: 2008-09-15
  */
-public class GaugeCommandsTest extends ItemUITestBase {
+public class GaugeCommandsTest extends ItemUITestBase
+{
 
     private static final int GAUGE_MAX_VALUE = 10;
     private static final int GAUGE_MAX_VALUE_2 = 5;
@@ -42,7 +43,8 @@ public class GaugeCommandsTest extends ItemUITestBase {
     /**
      * Constructor.
      */
-    public GaugeCommandsTest() {
+    public GaugeCommandsTest()
+    {
     }
 
     /**
@@ -51,7 +53,8 @@ public class GaugeCommandsTest extends ItemUITestBase {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public GaugeCommandsTest(String sTestName, TestMethod rTestMethod) {
+    public GaugeCommandsTest(String sTestName, TestMethod rTestMethod)
+    {
         super(sTestName, rTestMethod);
     }
 
@@ -61,15 +64,18 @@ public class GaugeCommandsTest extends ItemUITestBase {
      *
      * @return New testsuite.
      */
-    public Test suite() {
+    public Test suite()
+    {
         TestSuite aSuite = new TestSuite();
 
         aSuite.addTest(new GaugeCommandsTest("testCommands",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((GaugeCommandsTest) tc).testCommands();
-                    }
-                }));
+                                             new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((GaugeCommandsTest) tc).testCommands();
+            }
+        }));
 
         // TODO: currently failing because ProgressBar is not focusable.
         // It is not clear should it be focusable in future?
@@ -83,50 +89,56 @@ public class GaugeCommandsTest extends ItemUITestBase {
          */
 
         aSuite.addTest(new GaugeCommandsTest("testValueChange",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((GaugeCommandsTest) tc).testValueChange();
-                    }
-                }));
+                                             new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((GaugeCommandsTest) tc).testValueChange();
+            }
+        }));
 
         aSuite.addTest(new GaugeCommandsTest("testItemState",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((GaugeCommandsTest) tc).testItemState();
-                    }
-                }));
+                                             new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((GaugeCommandsTest) tc).testItemState();
+            }
+        }));
 
         return aSuite;
     }
 
     /**
-	 * Tests the basic functionality of command added to Gauge.
-	 */
-	public void testCommands() {
-		Gauge gauge = new Gauge("interactive, max=10, initial=0", true,
-				GAUGE_MAX_VALUE, 0);
+     * Tests the basic functionality of command added to Gauge.
+     */
+    public void testCommands()
+    {
+        Gauge gauge = new Gauge("interactive, max=10, initial=0", true,
+                                GAUGE_MAX_VALUE, 0);
 
-		Command ok = new Command("Ok", "", Command.ITEM, 0);
-		gauge.addCommand(ok);
-		gauge.setItemCommandListener(this);
+        Command ok = new Command("Ok", "", Command.ITEM, 0);
+        gauge.addCommand(ok);
+        gauge.setItemCommandListener(this);
 
-		form.append(gauge);
+        form.append(gauge);
 
-		Display.getDisplay(getMIDlet()).setCurrent(form);
-		block(CHANGE_DISPLAYABLE_DELAY);
+        Display.getDisplay(getMIDlet()).setCurrent(form);
+        block(CHANGE_DISPLAYABLE_DELAY);
 
-		// Click command and verify it works:
-		key(Key.CBA1);
-		assertItemCmdListener("", ok, gauge);
-	}
+        // Click command and verify it works:
+        key(Key.CBA1);
+        assertItemCmdListener("", ok, gauge);
+    }
 
     /**
-	 * It should be possible to add commands to non-interactive gauges too and
-	 * in that case gauges should be selectable.
-	 */
-    public void testNoninteractiveCommands() {
+     * It should be possible to add commands to non-interactive gauges too and
+     * in that case gauges should be selectable.
+     */
+    public void testNoninteractiveCommands()
+    {
         Gauge gauge = new Gauge("non-interactive, max=10, initial=0",
-                false, GAUGE_MAX_VALUE, 0);
+                                false, GAUGE_MAX_VALUE, 0);
         Command ok = new Command("Ok", "", Command.ITEM, 0);
         StringItem button1 = new StringItem("", "click!", Item.BUTTON);
         button1.addCommand(new Command("Ok1", "", Command.ITEM, 0));
@@ -141,7 +153,7 @@ public class GaugeCommandsTest extends ItemUITestBase {
 
         // Click LSK and verify it activates command:
         key(Key.CBA1);
-		assertItemCmdListener("case1", ok, gauge);
+        assertItemCmdListener("case1", ok, gauge);
 
         // Add button, change focus to it and make sure it is possible
         // to move focus back to gauge:
@@ -155,64 +167,66 @@ public class GaugeCommandsTest extends ItemUITestBase {
     }
 
     /**
-	 * Tests Gauge's value changing.
-	 */
-	public void testValueChange() {
-		Gauge gauge = new Gauge("interactive, max=10, initial=0", true,
-				GAUGE_MAX_VALUE, 0);
-		StringItem button1 = new StringItem("", "click!", Item.BUTTON);
-		button1.addCommand(new Command("Ok1", "", Command.ITEM, 0));
+     * Tests Gauge's value changing.
+     */
+    public void testValueChange()
+    {
+        Gauge gauge = new Gauge("interactive, max=10, initial=0", true,
+                                GAUGE_MAX_VALUE, 0);
+        StringItem button1 = new StringItem("", "click!", Item.BUTTON);
+        button1.addCommand(new Command("Ok1", "", Command.ITEM, 0));
 
-		form.append(gauge);
+        form.append(gauge);
 
-		// Add dummy button after gauge. This makes sure that the focus
-		// is not moving when pressing right-arrow when gauge is selected.
-		form.append(button1);
+        // Add dummy button after gauge. This makes sure that the focus
+        // is not moving when pressing right-arrow when gauge is selected.
+        form.append(button1);
 
-		setCurrent(form);
+        setCurrent(form);
 
-		// Change gauge value:
-		key(Key.RightArrow);
-		assertEquals("Wrong gauge value (case 1).", 1, gauge.getValue());
+        // Change gauge value:
+        key(Key.RightArrow);
+        assertEquals("Wrong gauge value (case 1).", 1, gauge.getValue());
 
-		// Change gauge value back to original:
-		key(Key.LeftArrow);
-		assertEquals("Wrong gauge value (case 2).", 0, gauge.getValue());
+        // Change gauge value back to original:
+        key(Key.LeftArrow);
+        assertEquals("Wrong gauge value (case 2).", 0, gauge.getValue());
 
-		// Change value dynamically:
-		gauge.setValue(GAUGE_MAX_VALUE);
+        // Change value dynamically:
+        gauge.setValue(GAUGE_MAX_VALUE);
 
-		// Change maximum value to be lower than current value:
-		gauge.setMaxValue(GAUGE_MAX_VALUE_2);
+        // Change maximum value to be lower than current value:
+        gauge.setMaxValue(GAUGE_MAX_VALUE_2);
 
-		// Make sure the current value is changed to maximum:
-		assertEquals("Current value not changed to maximum.",
-				GAUGE_MAX_VALUE_2, gauge.getValue());
+        // Make sure the current value is changed to maximum:
+        assertEquals("Current value not changed to maximum.",
+                     GAUGE_MAX_VALUE_2, gauge.getValue());
 
-		// Set value to minimum and then move value by using keypresses.
-		// That makes sure the visual appearance of gauge is changed dynamically
-		// when value is changed programmatically:
-		gauge.setValue(0);
-		key(Key.RightArrow);
-		key(Key.RightArrow);
+        // Set value to minimum and then move value by using keypresses.
+        // That makes sure the visual appearance of gauge is changed dynamically
+        // when value is changed programmatically:
+        gauge.setValue(0);
+        key(Key.RightArrow);
+        key(Key.RightArrow);
 
-		assertEquals("Value not expected after setValue()-call.",
-				GAUGE_TEST_VALUE, gauge.getValue());
+        assertEquals("Value not expected after setValue()-call.",
+                     GAUGE_TEST_VALUE, gauge.getValue());
 
-		// Remove gauge from form and try to set value again:
-		form.deleteAll();
-		gauge.setValue(GAUGE_TEST_VALUE);
-		assertEquals("Value not expected after gauge removed from form.",
-				GAUGE_TEST_VALUE, gauge.getValue());
-	}
+        // Remove gauge from form and try to set value again:
+        form.deleteAll();
+        gauge.setValue(GAUGE_TEST_VALUE);
+        assertEquals("Value not expected after gauge removed from form.",
+                     GAUGE_TEST_VALUE, gauge.getValue());
+    }
 
     /**
-	 * Tests that Form receives ItemStateChanged-events when gauge's value is
-	 * changed.
-	 */
-    public void testItemState() {
+     * Tests that Form receives ItemStateChanged-events when gauge's value is
+     * changed.
+     */
+    public void testItemState()
+    {
         Gauge gauge = new Gauge("interactive, max=10, initial=0",
-                true, GAUGE_MAX_VALUE, 0);
+                                true, GAUGE_MAX_VALUE, 0);
 
         form.append(gauge);
 

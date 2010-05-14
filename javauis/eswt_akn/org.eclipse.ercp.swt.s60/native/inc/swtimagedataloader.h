@@ -95,7 +95,7 @@ private:
      * Set the logical values for height or width equal to
      * the values of the greatest frame (for height or width).
      */
-    void CSwtImageDataLoader::SetLogicalScreenValues(const TFrameInfo& aInfo);
+    void SetLogicalScreenValues(const TFrameInfo& aInfo);
 
     /**
      * Set the x and y coordinates of the image in the current frame.

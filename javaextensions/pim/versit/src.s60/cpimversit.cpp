@@ -22,7 +22,7 @@
 #include "cpimcardconverter.h"
 #include "cpimcalendarconverter.h"
 #include "cpimitem.h"
-#include "cleanupresetanddestroy.h"
+#include "javasymbianoslayer.h"
 #include "logger.h"
 #include <s32mem.h> // RBufWriteStream
 #include <vtoken.h>

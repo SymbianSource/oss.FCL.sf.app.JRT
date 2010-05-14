@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package t_uirobot.display;
@@ -34,7 +34,8 @@ import com.nokia.mj.impl.uitestutils.Key;
  * <br>
  * Created: 2008-05-23
  */
-public class FlashAndVibrateTest extends UITestBase {
+public class FlashAndVibrateTest extends UITestBase
+{
 
     private static final int MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX = 100;
     private static final int SEND_BACKGROUND_DELAY = 300;
@@ -46,7 +47,8 @@ public class FlashAndVibrateTest extends UITestBase {
     /**
      * Constructor.
      */
-    public FlashAndVibrateTest() {
+    public FlashAndVibrateTest()
+    {
     }
 
     /**
@@ -55,7 +57,8 @@ public class FlashAndVibrateTest extends UITestBase {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public FlashAndVibrateTest(String sTestName, TestMethod rTestMethod) {
+    public FlashAndVibrateTest(String sTestName, TestMethod rTestMethod)
+    {
         super(sTestName, rTestMethod);
     }
 
@@ -65,7 +68,8 @@ public class FlashAndVibrateTest extends UITestBase {
      *
      * @return New testsuite.
      */
-    public Test suite() {
+    public Test suite()
+    {
         TestSuite aSuite = new TestSuite();
 
         /*
@@ -86,13 +90,14 @@ public class FlashAndVibrateTest extends UITestBase {
      * flashing and vibration are supported and will pass even if there's
      * no support to the functionality.
      */
-    public void testMethodsWhenBackground() {
+    public void testMethodsWhenBackground()
+    {
         boolean testPassed = true;
         String testMsg = "";
 
         Display display = Display.getDisplay(getMIDlet());
         TextBox textBox = new TextBox("title", "content",
-                MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX, 0);
+                                      MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX, 0);
 
         setCurrent(textBox);
 
@@ -101,15 +106,17 @@ public class FlashAndVibrateTest extends UITestBase {
 
         key(Key.Applications, SEND_BACKGROUND_DELAY);
 
-        if (display.vibrate(VIBRA_TIME)) {
+        if(display.vibrate(VIBRA_TIME))
+        {
             testPassed = false;
             testMsg = "vibrate() returned true when MIDlet was in background.";
         }
 
-        if (display.flashBacklight(FLASH_TIME)) {
+        if(display.flashBacklight(FLASH_TIME))
+        {
             testPassed = false;
             testMsg = "flashBacklights() returned true when MIDlet"
-                    + " was in background.";
+                      + " was in background.";
         }
 
         //Move MIDlet back to foreground:

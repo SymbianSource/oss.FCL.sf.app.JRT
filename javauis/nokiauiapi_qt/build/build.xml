@@ -36,8 +36,8 @@
     <property name="javah.classnames" value="com.nokia.mid.ui.internal.OS"/>
 
     <target name="create.public.api.jar">
-         <omj.public.apis includes="com/nokia/mid/ui/TactileFeedback.class,
-			            com/nokia/mid/ui/internal/OS.class"/>
+         <omj.public.apis includes="com/nokia/mid/ui/TactileFeedback.class, 
+                                    com/nokia/mid/ui/DeviceControl.class"/>
     </target>
 
 

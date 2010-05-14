@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -22,51 +22,52 @@ import org.eclipse.swt.SWT;
  * class should begin with prefix "CLASSNAME_" where CLASSNAME is the name of
  * the class which is using the constant.
  */
-final class MsgRepository {
+final class MsgRepository
+{
 
     // Command labels:
     public static final String COMMAND_LABEL_SCREEN =
-    	OpenLcduiLocalization.getMessage("key_select");
+        OpenLcduiLocalization.getMessage("key_select");
 
     public static final String COMMAND_LABEL_BACK =
-    	OpenLcduiLocalization.getMessage("back");
+        OpenLcduiLocalization.getMessage("back");
 
     public static final String COMMAND_LABEL_CANCEL =
-    	SWT.getMessage("cancel");
+        SWT.getMessage("cancel");
 
     public static final String COMMAND_LABEL_OK =
-    	SWT.getMessage("ok");
+        SWT.getMessage("ok");
 
     public static final String COMMAND_LABEL_HELP =
-    	OpenLcduiLocalization.getMessage("help");
+        OpenLcduiLocalization.getMessage("help");
 
     public static final String COMMAND_LABEL_STOP =
-    	OpenLcduiLocalization.getMessage("key_stop");
+        OpenLcduiLocalization.getMessage("key_stop");
 
     public static final String COMMAND_LABEL_EXIT =
-    	OpenLcduiLocalization.getMessage("close");
+        OpenLcduiLocalization.getMessage("close");
 
     public static final String COMMAND_LABEL_ITEM =
-    	OpenLcduiLocalization.getMessage("key_select");
+        OpenLcduiLocalization.getMessage("key_select");
 
     // Alert texts:
     public static final String ALERT_DEFAULT_TEXT_ERROR =
-    	OpenLcduiLocalization.getMessage("alert_error");
+        OpenLcduiLocalization.getMessage("alert_error");
 
     public static final String ALERT_DEFAULT_TEXT_WARNING =
-    	OpenLcduiLocalization.getMessage("alert_warning");
+        OpenLcduiLocalization.getMessage("alert_warning");
 
     public static final String ALERT_DEFAULT_TEXT_INFO =
-    	OpenLcduiLocalization.getMessage("alert_info");
+        OpenLcduiLocalization.getMessage("alert_info");
 
     public static final String ALERT_DEFAULT_TEXT_CONFIRMATION =
-    	OpenLcduiLocalization.getMessage("alert_conf");
+        OpenLcduiLocalization.getMessage("alert_conf");
 
     public static final String ALERT_DEFAULT_TEXT_ALARM =
-    	OpenLcduiLocalization.getMessage("alert_alarm");
+        OpenLcduiLocalization.getMessage("alert_alarm");
 
     public static final String ALERT_DEFAULT_TEXT_ALERT =
-    	OpenLcduiLocalization.getMessage("alert_null");
+        OpenLcduiLocalization.getMessage("alert_null");
 
 
     // Exceptions below - dont need translation !!!
@@ -330,7 +331,7 @@ final class MsgRepository {
         "Image data is null";
 
     public static final String IMAGE_EXCEPTION_INVALID_BOUNDS =
-         "Invalid image array bounds";
+        "Invalid image array bounds";
 
     public static final String IMAGE_EXCEPTION_IS_NULL =
         "Image is null";
@@ -358,6 +359,7 @@ final class MsgRepository {
     /**
      * Private Constructor.
      */
-    private MsgRepository() {
+    private MsgRepository()
+    {
     }
 }

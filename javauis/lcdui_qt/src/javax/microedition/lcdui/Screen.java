@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -20,12 +20,14 @@ package javax.microedition.lcdui;
  * Super class for all high level UI classes e.g Form, TextBox. Appearance and
  * interaction is defined in subclasses.
  */
-public abstract class Screen extends Displayable {
+public abstract class Screen extends Displayable
+{
 
     /**
      * Constructor.
      */
-    Screen(String title) {
+    Screen(String title)
+    {
         super(title);
     }
 

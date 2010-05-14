@@ -986,9 +986,7 @@ void CMIDDisplayable::HandleForegroundL(TBool aForeground)
         form->HandleForegroundL(aForeground);
     }
 
-#ifdef RD_JAVA_NGA_ENABLED
-    HandleCanvasForeground(aForeground);
-#endif // RD_JAVA_NGA_ENABLED    
+    HandleCanvasForeground(aForeground);   
 
     if (aForeground)
     {
@@ -1236,13 +1234,15 @@ TRect CMIDDisplayable::GetCanvasRectFromLaf()
                 {
                     canvasRect.LayoutRect(resultRect, AknLayoutScalable_Avkon::midp_canvas_pane(10).LayoutLine());
                 }
-                else  //default mode:Softkeys bottom
+                else
                 {
-                    resultRect = TRect(80,0,560,360);//temp code here.LAF correction needed!
-                    //canvasRect.LayoutRect( resultRect, AknLayoutScalable_Avkon::midp_canvas_pane(9).LayoutLine() );
-
+#ifdef RD_JAVA_S60_RELEASE_9_2
+                    canvasRect.LayoutRect( resultRect, AknLayoutScalable_Avkon::midp_canvas_pane(9).LayoutLine() );
+#else
+                    resultRect = TRect(80,0,560,360); // Layout data not defined in older releases.
                     DEBUG("- CMIDDisplayable::GetCanvasRectFromLaf");
-                    return resultRect; //Temp code here.LAF correction needed!
+                    return resultRect;
+#endif // RD_JAVA_S60_RELEASE_9_2
                 }
             }
         }
@@ -1368,9 +1368,7 @@ void CMIDDisplayable::HandleCurrentL(TBool aCurrent)
     iActive = aCurrent;
     const TType type = iContent->Type();
 
-#ifdef RD_JAVA_NGA_ENABLED
     HandleCanvasForeground(aCurrent);
-#endif // RD_JAVA_NGA_ENABLED
 
     if (aCurrent)
     {
@@ -1585,13 +1583,22 @@ void CMIDDisplayable::UpdateVisualAppearanceL()
     CEikStatusPane* pane = iAppUi->StatusPane();
     pane->MakeVisible(!iIsFullScreenMode);
 
-    java::ui::CoreUiAvkonAppUi* appUi = java::ui::CoreUiAvkonLcdui::getInstance().getJavaUiAppUi();
+    java::ui::CoreUiAvkonAppUi* appUi =
+        java::ui::CoreUiAvkonLcdui::getInstance().getJavaUiAppUi();
     if (!iIsFullScreenMode && appUi && appUi->hidesIndicators())
     {
         HideIndicators();
     }
 
-    iCba->MakeVisible(!iIsFullScreenMode);
+    if (iCba)
+    {
+        iCba->MakeVisible(!iIsFullScreenMode);
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        // To enable clock pane in landscape after MIDlet was started
+        iCba->SetBoundingRect(TRect(0, 0, 0, 0));
+#endif // RD_JAVA_S60_RELEASE_9_2
+    }
 
     // Close fixed toolbar for full screen Canvas.
     CAknToolbar* toolbar = iAppUi->CurrentFixedToolbar();
@@ -1601,7 +1608,9 @@ void CMIDDisplayable::UpdateVisualAppearanceL()
     }
 
 #ifdef RD_SCALABLE_UI_V2
-    if ((iActive && iCanvasKeypad) || (!iActive && this->DrawableWindow()->IsFaded() && iCanvasKeypad))
+    if ((iActive && iCanvasKeypad)
+            || (!iActive && this->DrawableWindow()->IsFaded()
+                && iCanvasKeypad))
     {
         if (iUseOnScreenKeypad)
         {
@@ -2213,6 +2222,21 @@ void CMIDDisplayable::InitializeCbasL()
     TInt numSoftKeys = iSoftKeys.Count();
     ResetSoftKeysAndCommands(lists);
 
+    // Variable implicitList is used when mapping commands to soft keys
+    // In case of IMPLICIT List with only OK or ITEM commands,
+    // no command is mapped to soft key and these commands are not
+    // populated to Options menu
+    TBool implicitList = EFalse;
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    if (iContent && iContent->Type() == EList && iContentControl)
+    {
+        CMIDList* list = static_cast<CMIDList*>(iContentControl);
+        // Important: Set to ETrue only if List is IMPLICIT and there is no highlight
+        implicitList = (list->ListChoiceType() == MMIDChoiceGroup::EImplicit) &&
+                       !list->IsHighlighted();
+    }
+#endif // RD_JAVA_S60_RELEASE_9_2
+
     // First map one command to every softkey if possible,
     // sks must have been ordered correctly, ie right key before
     // left key or else left key might get BACK cmd if not other
@@ -2223,7 +2247,7 @@ void CMIDDisplayable::InitializeCbasL()
         {
             if (lists[j])
             {
-                TInt index = lists[j]->FindCommandForSoftKey(*iSoftKeys[i]);
+                TInt index = lists[j]->FindCommandForSoftKey(*iSoftKeys[i], implicitList);
                 if (index != KErrNotFound)
                 {
                     TInt commandId = lists[j]->CommandOffset() + index;
@@ -2240,14 +2264,26 @@ void CMIDDisplayable::InitializeCbasL()
     // Then for the sk that can potentially accept an options menu,
     // see if the mapped command must be replaced by the options menu
     // when there is at least one command that has not been mapped to any sk.
+    // Important: Do not set Options menu in case of IMPLICIT List
+    // with only OK or ITEM commands
     TBool needToDisplayMenu = EFalse;
     for (TInt j = 0; j < numLists && !needToDisplayMenu; j++)
     {
         if (lists[j])
         {
+            // Looping trough all commands
             for (TInt i = 0; i < lists[j]->Count() && !needToDisplayMenu; i++)
             {
-                needToDisplayMenu = !CommandIsMappedToSk(lists[j]->At(i).iCommand);
+                CMIDCommand* cmd = lists[j]->At(i).iCommand;
+                // In case that displayable is IMPLICIT List, we need to know,
+                // if it has only OK or ITEM commands
+                if (!(implicitList && (cmd->CommandType() == MMIDCommand::EOk ||
+                                       cmd->CommandType() == MMIDCommand::EItem)))
+                {
+                    // There is at least one command, which is not mapped yet,
+                    // so it will be populated to Options menu.
+                    needToDisplayMenu = !CommandIsMappedToSk(cmd);
+                }
             }
         }
     }
@@ -3082,7 +3118,6 @@ void CMIDDisplayable::RenewFullscreenCanvasLabelCacheL()
     DEBUG("- CMIDDisplayable::RenewFullscreenCanvasLabelCacheL");
 }
 
-#ifdef RD_JAVA_NGA_ENABLED
 void CMIDDisplayable::HandleCanvasForeground(TBool aForeground)
 {
     if (iContent && iContentControl &&
@@ -3093,7 +3128,6 @@ void CMIDDisplayable::HandleCanvasForeground(TBool aForeground)
         canvas->HandleForeground(aForeground);
     }
 }
-#endif // RD_JAVA_NGA_ENABLED
 
 void CMIDDisplayable::HandleApplicationBackground()
 {
@@ -3104,9 +3138,7 @@ void CMIDDisplayable::HandleApplicationBackground()
         iCanvasKeypad->HandleApplicationBackground();
     }
 
-#ifdef RD_JAVA_NGA_ENABLED
-    HandleCanvasForeground(EFalse);
-#endif // RD_JAVA_NGA_ENABLED    
+    HandleCanvasForeground(EFalse);    
 }
 
 void CMIDDisplayable::ProcessMSKCommandL()

@@ -11,12 +11,13 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
 
-abstract class FormLayoutPolicy {
+abstract class FormLayoutPolicy
+{
 
     /**
      * Layouts the Form.
@@ -84,5 +85,5 @@ abstract class FormLayoutPolicy {
      * @param item Item to be layouted.
      * @return ItemLayouter or null if no Layouter found.
      */
-    abstract ItemLayouter getLayouter(Item item);    
+    abstract ItemLayouter getLayouter(Item item);
 }

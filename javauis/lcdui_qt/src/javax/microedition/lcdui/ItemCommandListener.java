@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -19,11 +19,12 @@ package javax.microedition.lcdui;
 /**
  * Listener which receives events from commands associated with item.
  */
-public interface ItemCommandListener {
+public interface ItemCommandListener
+{
 
     /**
      * Called when event occurred.
-     * 
+     *
      * @param command Command which invoked the event.
      * @param item Item containing the command.
      */

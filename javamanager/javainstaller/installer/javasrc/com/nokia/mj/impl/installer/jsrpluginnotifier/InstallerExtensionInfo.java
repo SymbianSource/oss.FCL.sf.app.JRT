@@ -25,9 +25,6 @@ import java.util.Hashtable;
 /**
  * Information passed to JSR plugins when installing or uninstalling
  * Java applications
- *
- * @author Nokia Corporation
- * @version $Rev: 10381 $ $Date: 2010-04-06 15:34:34 +0300 (Tue, 06 Apr 2010) $
  * @see JsrPluginNotifier
  */
 public final class InstallerExtensionInfo

@@ -31,7 +31,7 @@ OS_EXPORT void RuntimeUiQt::errorL(const TDesC& /*aAppName*/, const TDesC& aShor
     CleanupStack::PushL(messageBox);
 
     messageBox->SetTextL(aShortMsg);
-    messageBox->SetTimeoutL(HbPopup::NoTimeout);
+    messageBox->SetTimeout(HbPopup::NoTimeout);
 
     // Read localised versions instead of hard coded values.
     _LIT(KOkButtonText, "OK");
@@ -41,13 +41,13 @@ OS_EXPORT void RuntimeUiQt::errorL(const TDesC& /*aAppName*/, const TDesC& aShor
         _LIT(KDetailsButtonText, "Details");
 
         messageBox->SetButtonTextL(CHbDeviceMessageBoxSymbian::EAcceptButton, KOkButtonText);
-        messageBox->SetButtonL(CHbDeviceMessageBoxSymbian::EAcceptButton, ETrue);
+        messageBox->SetButton(CHbDeviceMessageBoxSymbian::EAcceptButton, ETrue);
         messageBox->SetButtonTextL(CHbDeviceMessageBoxSymbian::ERejectButton, KDetailsButtonText);
-        messageBox->SetButtonL(CHbDeviceMessageBoxSymbian::ERejectButton, ETrue);
+        messageBox->SetButton(CHbDeviceMessageBoxSymbian::ERejectButton, ETrue);
 
         if (messageBox->ExecL() == CHbDeviceMessageBoxSymbian::ERejectButton)
         {
-            messageBox->SetButtonL(CHbDeviceMessageBoxSymbian::ERejectButton, EFalse);
+            messageBox->SetButton(CHbDeviceMessageBoxSymbian::ERejectButton, EFalse);
             messageBox->SetTextL(aDetailedMsg);
             (void)messageBox->ExecL();
         }
@@ -55,7 +55,7 @@ OS_EXPORT void RuntimeUiQt::errorL(const TDesC& /*aAppName*/, const TDesC& aShor
     else
     {
         messageBox->SetButtonTextL(CHbDeviceMessageBoxSymbian::EAcceptButton, KOkButtonText);
-        messageBox->SetButtonL(CHbDeviceMessageBoxSymbian::EAcceptButton, ETrue);
+        messageBox->SetButton(CHbDeviceMessageBoxSymbian::EAcceptButton, ETrue);
         (void)messageBox->ExecL();
     }
     messageBox->Close();
@@ -69,16 +69,16 @@ OS_EXPORT int RuntimeUiQt::confirmL(const TDesC& /*aAppName*/, const TDesC& aQue
     CleanupStack::PushL(messageBox);
 
     messageBox->SetTextL(aQuestion);
-    messageBox->SetTimeoutL(HbPopup::NoTimeout);
+    messageBox->SetTimeout(HbPopup::NoTimeout);
 
     // Read localised versions instead of hard coded values.
     _LIT(KAllowButtonText, "Allow");
     _LIT(KDenyButtonText, "Deny");
 
     messageBox->SetButtonTextL(CHbDeviceMessageBoxSymbian::EAcceptButton, KAllowButtonText);
-    messageBox->SetButtonL(CHbDeviceMessageBoxSymbian::EAcceptButton, ETrue);
+    messageBox->SetButton(CHbDeviceMessageBoxSymbian::EAcceptButton, ETrue);
     messageBox->SetButtonTextL(CHbDeviceMessageBoxSymbian::ERejectButton, KDenyButtonText);
-    messageBox->SetButtonL(CHbDeviceMessageBoxSymbian::ERejectButton, ETrue);
+    messageBox->SetButton(CHbDeviceMessageBoxSymbian::ERejectButton, ETrue);
 
     // by default the answer is Allow
     int result = 0;

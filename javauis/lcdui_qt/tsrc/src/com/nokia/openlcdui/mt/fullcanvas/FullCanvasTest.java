@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt.fullcanvas;
@@ -31,12 +31,14 @@ import com.nokia.mid.ui.FullCanvas;
  * <br>
  * Created: 2009-02-10
  */
-public class FullCanvasTest extends SWTTestCase implements CommandListener {
+public class FullCanvasTest extends SWTTestCase implements CommandListener
+{
 
     /**
      * Constructor.
      */
-    public FullCanvasTest() {
+    public FullCanvasTest()
+    {
     }
 
     /**
@@ -45,7 +47,8 @@ public class FullCanvasTest extends SWTTestCase implements CommandListener {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public FullCanvasTest(String sTestName) {
+    public FullCanvasTest(String sTestName)
+    {
         super(sTestName);
     }
 
@@ -55,64 +58,76 @@ public class FullCanvasTest extends SWTTestCase implements CommandListener {
      *
      * @return New testsuite.
      */
-    public static Test suite() {
-		TestSuite suite = new TestSuite();
+    public static Test suite()
+    {
+        TestSuite suite = new TestSuite();
 
-	    java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Vector methodNames;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = FullCanvasTest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new FullCanvasTest((String)e.nextElement()));
-	    }
+        // Add widget tests
+        methodNames = FullCanvasTest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new FullCanvasTest((String)e.nextElement()));
+        }
 
-		return suite;
-	}
+        return suite;
+    }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testAccessors");
         return methodNames;
     }
-    
-    protected void runTest() throws Throwable {
-        if (getName().equals("testAccessors")) testAccessors();
+
+    protected void runTest() throws Throwable
+    {
+        if(getName().equals("testAccessors")) testAccessors();
         else super.runTest();
     }
-    
-    public void commandAction(Command com, Displayable d) {
+
+    public void commandAction(Command com, Displayable d)
+    {
     }
 
     /**
      * Tests basic functionality of FullCanvas methods.
      */
-    public void testAccessors() {
+    public void testAccessors()
+    {
 
         TestFullCanvas fc = new TestFullCanvas();
         Command c = new Command("test", "", Command.ITEM, 0);
-        try {
+        try
+        {
             fc.addCommand(c);
             fail("No IllegalStateException is thrown.");
         }
-        catch (IllegalStateException ex) {
+        catch(IllegalStateException ex)
+        {
             // OK
         }
 
         // Set null string and make sure an exception is thrown:
-        try {
+        try
+        {
             fc.setCommandListener(this);
             fail("No IllegalStateException is thrown.");
         }
-        catch (IllegalStateException ex) {
+        catch(IllegalStateException ex)
+        {
         }
     }
 
 }
 
-class TestFullCanvas extends FullCanvas {
-    public void paint(Graphics g) {
+class TestFullCanvas extends FullCanvas
+{
+    public void paint(Graphics g)
+    {
         //
     }
 }

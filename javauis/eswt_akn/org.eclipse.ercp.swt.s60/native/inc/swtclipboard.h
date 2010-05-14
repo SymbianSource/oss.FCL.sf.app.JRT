@@ -80,7 +80,7 @@ private: // Data
     * The java peer object
     */
     const TSwtPeer iPeer;
-    
+
     CEikonEnv* iCoeEnv;
 };
 

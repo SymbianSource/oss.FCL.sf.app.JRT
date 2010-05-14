@@ -29,6 +29,10 @@ contains(TEMPLATE,lib):isEmpty(TARGET.UID3):contains(PROJECT_DEFINES,RD_JAVA_S60
 
 }
 
+contains(TEMPLATE,lib):isEmpty(TARGET.UID3):contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_10_1) {
+  contains(TARGET, javacentrep): TARGET.UID3 = 0x2002DCE1
+}
+
 contains(TEMPLATE,lib):isEmpty(TARGET.UID3) {
 
 contains(TARGET, eswt): TARGET.UID3 = 0x2002DC93   # On >= 9.2 only
@@ -109,7 +113,6 @@ contains(TARGET, jvmnativeport): TARGET.UID3 = 0x2002DCDE  # On >= 9.2 only
 contains(TARGET, javaapplicationsettingsview): TARGET.UID3 = 0x2002DCDF
 contains(TARGET, javabroadcast): TARGET.UID3 = 0x2002DCE0
 contains(TARGET, javastarter): TARGET.UID3 = 0x2002E6A7
-# Free 0x2002DCE1
 
 contains(TARGET, openlcdui): TARGET.UID3 = 0x2002DCE2
 contains(TARGET, tckrunner): TARGET.UID3 = 0x2002DCE3

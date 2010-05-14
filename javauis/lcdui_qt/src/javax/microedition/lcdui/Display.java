@@ -18,10 +18,8 @@ package javax.microedition.lcdui;
 
 import javax.microedition.lcdui.EventDispatcher.LCDUIEvent;
 import javax.microedition.midlet.MIDlet;
-
-import org.eclipse.ercp.swt.mobile.MobileDevice;   
-import org.eclipse.ercp.swt.mobile.Screen;         
-
+import org.eclipse.ercp.swt.mobile.MobileDevice;
+import org.eclipse.ercp.swt.mobile.Screen;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.internal.extension.DisplayExtension;
@@ -30,7 +28,8 @@ import org.eclipse.swt.widgets.Event;
 /**
  * Display - represents device's display.
  */
-public class Display {
+public class Display
+{
 
     /**
      * Type of image for List element.
@@ -115,7 +114,8 @@ public class Display {
     /**
      * Constructor.
      */
-    private Display() {
+    private Display()
+    {
     }
 
     /**
@@ -125,10 +125,12 @@ public class Display {
      * @return display - unique display used by the midlet. note: current
      *         implementation supports 1 Display.
      */
-    public static Display getDisplay(MIDlet midlet) {
-        if (midlet == null) {
+    public static Display getDisplay(MIDlet midlet)
+    {
+        if(midlet == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.DISPLAY_EXCEPTION_MIDLET_IS_NULL);
+                MsgRepository.DISPLAY_EXCEPTION_MIDLET_IS_NULL);
         }
         // following code was removed to improve performance
         /*if (emptyForm == null) {
@@ -148,15 +150,18 @@ public class Display {
     /**
      * Returns the Display instance.
      */
-    static Display getDisplay() {
+    static Display getDisplay()
+    {
         return instance;
     }
 
     /**
      * Propagate event to current displayable.
      */
-    void eswtHandleEvent(Event e) {
-        if (currentDisplayable != null) {
+    void eswtHandleEvent(Event e)
+    {
+        if(currentDisplayable != null)
+        {
             currentDisplayable.eswtHandleEvent(e);
         }
     }
@@ -167,7 +172,8 @@ public class Display {
      * @return true if Display supports colors. false if black and white only
      *         supported.
      */
-    public boolean isColor() {
+    public boolean isColor()
+    {
         return true;
     }
 
@@ -176,9 +182,12 @@ public class Display {
      *
      * @return number of Colors supported by device.
      */
-    public int numColors() {
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+    public int numColors()
+    {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 numColors = eswtNumColors();
             }
         });
@@ -190,31 +199,38 @@ public class Display {
      *
      * @return numColors supported by device.
      */
-    public int eswtNumColors() {
-        
+    public int eswtNumColors()
+    {
+
         final int MAX_SHIFT = 30;
 
         Screen[] screens = MobileDevice.getMobileDevice().getScreens();
         Screen activeScreen = null;
         int depth = 0;
-        if (screens != null) {
-            for (int i = 0; i < screens.length; i++) {
-                if (screens[i].isActive()) {
+        if(screens != null)
+        {
+            for(int i = 0; i < screens.length; i++)
+            {
+                if(screens[i].isActive())
+                {
                     activeScreen = screens[i];
                 }
             }
             depth = activeScreen.getColorDepth();
-            if (depth > MAX_SHIFT) {
+            if(depth > MAX_SHIFT)
+            {
                 numColors = Integer.MAX_VALUE;
             }
-            else {
+            else
+            {
                 numColors = (1 << depth);
             }
         }
-        else {
+        else
+        {
             numColors = 0;
         }
-        
+
         numColors = 2 << 16;
         return numColors;
     }
@@ -224,9 +240,12 @@ public class Display {
      *
      * @return current Displayable
      */
-    public Displayable getCurrent() {
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+    public Displayable getCurrent()
+    {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 getcurrent = eswtGetCurrent();
             }
         });
@@ -238,9 +257,11 @@ public class Display {
      *
      * @return current Displayable object which is active for Display
      */
-    Displayable eswtGetCurrent() {
-        if (ESWTUIThreadRunner.getInstance().getDisplay().getActiveShell()
-                != null) {
+    Displayable eswtGetCurrent()
+    {
+        if(ESWTUIThreadRunner.getInstance().getDisplay().getActiveShell()
+                != null)
+        {
             return currentDisplayable;
         }
         return null;
@@ -251,30 +272,38 @@ public class Display {
      *
      * @param displayable new Displayable to be set active in midlet
      */
-    public void setCurrent(Displayable displayable) {
-        if (displayable != null) {
-            if (displayable instanceof Alert) {
+    public void setCurrent(Displayable displayable)
+    {
+        if(displayable != null)
+        {
+            if(displayable instanceof Alert)
+            {
                 Alert alert = (Alert) displayable;
-                if (currentDisplayable == null) {
+                if(currentDisplayable == null)
+                {
                     // if Alert is the first Displayable
                     alert.setNextDisplayable(null);
                     doSetCurrent(alert);
                 }
-                else {
+                else
+                {
                     setCurrent(alert, currentDisplayable);
                 }
             }
-            else {
+            else
+            {
                 doSetCurrent(displayable);
             }
         }
-        else {
+        else
+        {
             /*
              * If parameter is null, nothing is required to happen, optionally
              * bringing Midlet to background/foreground.
              */
 
-            if (currentDisplayable != null && currentDisplayable instanceof Alert) {
+            if(currentDisplayable != null && currentDisplayable instanceof Alert)
+            {
                 // Restarts Alert timer if any
                 Alert alert = (Alert) currentDisplayable;
                 alert.resetTimerTask(true);
@@ -291,18 +320,22 @@ public class Display {
      * @throws NullPointerException if aAlert or aNextDisplayable is null
      * @throws IllegalArgumentException if aNextDisplayable is an Alert
      */
-    public void setCurrent(Alert alert, Displayable nextDisplayable) {
-        if (alert == null) {
+    public void setCurrent(Alert alert, Displayable nextDisplayable)
+    {
+        if(alert == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.DISPLAY_EXCEPTION_ALERT_IS_NULL);
+                MsgRepository.DISPLAY_EXCEPTION_ALERT_IS_NULL);
         }
-        else if (nextDisplayable == null) {
+        else if(nextDisplayable == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.DISPLAY_EXCEPTION_NEXTDISP_IS_NULL);
+                MsgRepository.DISPLAY_EXCEPTION_NEXTDISP_IS_NULL);
         }
-        else if (nextDisplayable instanceof Alert) {
+        else if(nextDisplayable instanceof Alert)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.DISPLAY_EXCEPTION_NEXTDISP_IS_ALERT);
+                MsgRepository.DISPLAY_EXCEPTION_NEXTDISP_IS_ALERT);
         }
         alert.setNextDisplayable(nextDisplayable);
         doSetCurrent(alert);
@@ -318,18 +351,22 @@ public class Display {
      * @throws IllegalStateException If The Item is owned by an Alert.
      * @throws NullPointerException If the Item is null.
      */
-    public void setCurrentItem(Item item) {
-        if (item == null) {
+    public void setCurrentItem(Item item)
+    {
+        if(item == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.DISPLAY_EXCEPTION_ITEM_IS_NULL);
+                MsgRepository.DISPLAY_EXCEPTION_ITEM_IS_NULL);
         }
-        if (item.isContainedInAlert()) {
+        if(item.isContainedInAlert())
+        {
             throw new IllegalStateException(
-                    MsgRepository.ITEM_EXCEPTION_OWNED_BY_ALERT);
+                MsgRepository.ITEM_EXCEPTION_OWNED_BY_ALERT);
         }
-        if (item.getParent() == null) {
+        if(item.getParent() == null)
+        {
             throw new IllegalStateException(
-                    MsgRepository.DISPLAY_EXCEPTION_ITEM_HAS_NO_PARENT);
+                MsgRepository.DISPLAY_EXCEPTION_ITEM_HAS_NO_PARENT);
         }
         Logger.method(this, "setCurrentItem", item);
         ((Form) item.getParent()).setCurrentItem(item);
@@ -341,10 +378,14 @@ public class Display {
      *
      * @param displayable the Displayable to be set active
      */
-    private void doSetCurrent(final Displayable displayable) {
-        if (currentDisplayable != displayable) {
-            ESWTUIThreadRunner.syncExec(new Runnable() {
-                public void run() {
+    private void doSetCurrent(final Displayable displayable)
+    {
+        if(currentDisplayable != displayable)
+        {
+            ESWTUIThreadRunner.syncExec(new Runnable()
+            {
+                public void run()
+                {
                     eswtDoSetCurrent(displayable);
                 }
             });
@@ -354,16 +395,19 @@ public class Display {
     /**
      * eSWT callback for doSetCurrent
      */
-    private void eswtDoSetCurrent(Displayable displayable) {
+    private void eswtDoSetCurrent(Displayable displayable)
+    {
         Logger.info("Display :: " + currentDisplayable + " -> " + displayable);
         // hide old Displayable
-        if (currentDisplayable != null) {
+        if(currentDisplayable != null)
+        {
             currentDisplayable.eswtHandleHideCurrentEvent();
         }
         // change the current reference
         currentDisplayable = displayable;
         // show new Displayable
-        if (currentDisplayable != null) {
+        if(currentDisplayable != null)
+        {
             currentDisplayable.eswtHandleShowCurrentEvent();
         }
     }
@@ -373,8 +417,9 @@ public class Display {
      *
      * @param runnable to serialize.
      */
-    public void callSerially(Runnable runnable) {
-    	eswtCallSerially(runnable);
+    public void callSerially(Runnable runnable)
+    {
+        eswtCallSerially(runnable);
     }
 
     /**
@@ -382,11 +427,12 @@ public class Display {
      *
      * @param runnable to serialize.
      */
-    void eswtCallSerially(Runnable runnable) {
-    	EventDispatcher eventDispatcher = EventDispatcher.instance();
-    	LCDUIEvent event = eventDispatcher.newEvent(LCDUIEvent.RUNNABLE_CALLSERIALLY, this);
-    	event.runnable = runnable;
-    	eventDispatcher.postEvent(event);
+    void eswtCallSerially(Runnable runnable)
+    {
+        EventDispatcher eventDispatcher = EventDispatcher.instance();
+        LCDUIEvent event = eventDispatcher.newEvent(LCDUIEvent.RUNNABLE_CALLSERIALLY, this);
+        event.runnable = runnable;
+        eventDispatcher.postEvent(event);
     }
 
     /**
@@ -397,13 +443,14 @@ public class Display {
      *         feature is not supported.
      * @throws IllegalArgumentException if duration is negative.
      */
-    public boolean flashBacklight(int duration) {
-        if (duration < 0) {
+    public boolean flashBacklight(int duration)
+    {
+        if(duration < 0)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.DISPLAY_EXCEPTION_NEGATIVE_DURATION);
+                MsgRepository.DISPLAY_EXCEPTION_NEGATIVE_DURATION);
         }
-        // TODO: eSWT support required
-        return false;
+       return DisplayExtension.flashLights(duration);
     }
 
     /**
@@ -414,13 +461,14 @@ public class Display {
      *         or feature is not supported.
      * @throws IllegalArgumentException if duration is negative.
      */
-    public boolean vibrate(int duration) {
-        if (duration < 0) {
+    public boolean vibrate(int duration)
+    {
+    	if(duration < 0)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.DISPLAY_EXCEPTION_NEGATIVE_DURATION);
+                MsgRepository.DISPLAY_EXCEPTION_NEGATIVE_DURATION);
         }
-        // TODO: eSWT support required
-        return false;
+        return DisplayExtension.startVibra(duration);
     }
 
     /**
@@ -430,34 +478,38 @@ public class Display {
      * @return color in RGB. currently only 2 constants supported:
      *         COLOR_BACKGROUND and COLOR_FOREGROUND
      */
-    public int getColor(int specifier) {
+    public int getColor(int specifier)
+    {
         // TODO: eSWT support required - for other color constants in LCDUI
         int constant = 0;
-        switch (specifier) {
-            case COLOR_BACKGROUND:
-                constant = SWT.COLOR_WIDGET_BACKGROUND;
-                break;
-            case COLOR_FOREGROUND:
-                constant = SWT.COLOR_WIDGET_FOREGROUND;
-                break;
-            case COLOR_HIGHLIGHTED_BACKGROUND:
-                break;
-            case COLOR_HIGHLIGHTED_FOREGROUND:
-                break;
-            case COLOR_BORDER:
-                break;
-            case COLOR_HIGHLIGHTED_BORDER:
-                break;
-            default:
-                throw new IllegalArgumentException(
-                      MsgRepository.DISPLAY_EXCEPTION_INVALID_COLOR_IDENTIFIER);
+        switch(specifier)
+        {
+        case COLOR_BACKGROUND:
+            constant = SWT.COLOR_WIDGET_BACKGROUND;
+            break;
+        case COLOR_FOREGROUND:
+            constant = SWT.COLOR_WIDGET_FOREGROUND;
+            break;
+        case COLOR_HIGHLIGHTED_BACKGROUND:
+            break;
+        case COLOR_HIGHLIGHTED_FOREGROUND:
+            break;
+        case COLOR_BORDER:
+            break;
+        case COLOR_HIGHLIGHTED_BORDER:
+            break;
+        default:
+            throw new IllegalArgumentException(
+                MsgRepository.DISPLAY_EXCEPTION_INVALID_COLOR_IDENTIFIER);
         }
 
         final int finalConstant = constant;
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 eswtTempRgb = ESWTUIThreadRunner.getInstance().getDisplay()
-                        .getSystemColor(finalConstant).getRGB();
+                              .getSystemColor(finalConstant).getRGB();
             }
         });
 
@@ -475,7 +527,8 @@ public class Display {
      * @param isHighlighted true if component is highlighted
      * @return Border style of a UI component.
      */
-    public int getBorderStyle(boolean isHighlighted) {
+    public int getBorderStyle(boolean isHighlighted)
+    {
         return Graphics.SOLID;
     }
 
@@ -484,7 +537,8 @@ public class Display {
      *
      * @return number of supported alpha levels
      */
-    public int numAlphaLevels() {
+    public int numAlphaLevels()
+    {
         // Number of alpha levels is always 256, this implementation does
         // not support monochrome or 2-bit transparency.
         return 256;
@@ -496,7 +550,8 @@ public class Display {
      * @param imgType Image type.
      * @return Best image width in pixels.
      */
-    public int getBestImageWidth(int imgType) {
+    public int getBestImageWidth(int imgType)
+    {
         return DisplayExtension.getBestImageWidth(imgType);
     }
 
@@ -506,18 +561,21 @@ public class Display {
      * @param imgType Image type.
      * @return Best image height in pixels.
      */
-    public int getBestImageHeight(int imgType) {
+    public int getBestImageHeight(int imgType)
+    {
         return DisplayExtension.getBestImageHeight(imgType);
     }
 
     /*
      * Dispatcher thread calls.
      */
-    void doCallback(LCDUIEvent event) {
-    	switch(event.type) {
-    	case LCDUIEvent.RUNNABLE_CALLSERIALLY:
-    		event.runnable.run();
-    		break;
-    	}
+    void doCallback(LCDUIEvent event)
+    {
+        switch(event.type)
+        {
+        case LCDUIEvent.RUNNABLE_CALLSERIALLY:
+            event.runnable.run();
+            break;
+        }
     }
 }

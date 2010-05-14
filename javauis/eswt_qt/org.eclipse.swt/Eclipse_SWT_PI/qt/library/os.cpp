@@ -86,7 +86,10 @@
 
 #ifdef __SYMBIAN32__
 #include <xqservicerequest.h>
+#include <xqcallinfo.h>
 #include <cntservicescontact.h>
+#include <qnetworkconfigmanager.h>
+#include <qnetworkconfiguration.h>
 #endif
 
 #include <org_eclipse_swt_internal_qt_OS.h>
@@ -11591,7 +11594,6 @@ JNIEXPORT jboolean JNICALL OS_NATIVE( SwtFontCache_1isCached )
     return result ? JNI_TRUE : JNI_FALSE;
     }
 
-
 //
 // QInputContextFactory
 //
@@ -11610,7 +11612,6 @@ JNIEXPORT jint JNICALL OS_NATIVE( QInputContextFactory_1create )
     SWT_CATCH
     return reinterpret_cast<jint>(inputContext);
     }
-
 
 JNIEXPORT jstring JNICALL OS_NATIVE( QInputContextFactory_1swt_1key )
     (JNIEnv* aJniEnv, jclass, jstring aLanguage)
@@ -11673,10 +11674,6 @@ JNIEXPORT void JNICALL OS_NATIVE( SwtApplication_1postDeferredEvents )
     SWT_CATCH
     }
 
-
-
-
-
 //
 // XQServiceRequest
 //
@@ -11702,8 +11699,6 @@ return NULL;
 #endif
     }
 
-
-
 JNIEXPORT void JNICALL OS_NATIVE( XQServiceRequest_1swt_1setArgumentsForFetchEmail )
 #ifdef __SYMBIAN32__
 (JNIEnv* aJniEnv, jclass, jint aHandle, jstring aTitle, jstring aAction, jstring aFilter)
@@ -11725,7 +11720,6 @@ JNIEXPORT void JNICALL OS_NATIVE( XQServiceRequest_1swt_1setArgumentsForFetchEma
 #endif    
     }
 
-
 JNIEXPORT void JNICALL OS_NATIVE( XQServiceRequest_1swt_1setArgumentsForDial )
 #ifdef __SYMBIAN32__
 (JNIEnv* aJniEnv, jclass, jint aHandle, jstring aNumber, jboolean aAsyncAnswer)
@@ -11745,7 +11739,6 @@ JNIEXPORT void JNICALL OS_NATIVE( XQServiceRequest_1swt_1setArgumentsForDial )
     SWT_CATCH
 #endif    
     }
-
 
 JNIEXPORT jboolean JNICALL OS_NATIVE( XQServiceRequest_1send )
 #ifdef __SYMBIAN32__
@@ -11812,190 +11805,9 @@ JNIEXPORT jobjectArray  JNICALL OS_NATIVE( CntServicesContactList_1swt_1contacts
 #endif    
     }
 
-
 //
-// Other
+// MobileDevice, Screen, Input
 //
-
-JNIEXPORT jint JNICALL OS_NATIVE(EventHandler_1new)
-  ( JNIEnv* aJniEnv, jclass)
-    {
-    EventCallback* cb = NULL;
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-
-        // Event handler is owned by the Java peer (Display instance)
-        cb = new EventCallback();
-        }
-    SWT_CATCH
-    return POINTER_TO_HANDLE( cb );
-    }
-
-JNIEXPORT void JNICALL OS_NATIVE(EventHandler_1destroy)
-  (JNIEnv* aJniEnv , jclass, jint aHandle)
-    {
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-        SWT_LOG_DATA_1("handle=%x", aHandle);
-
-        HANDLE_TO_POINTER( EventCallback*, cb, aHandle );
-        cb->Destroy();
-        }
-    SWT_CATCH
-    }
-
-JNIEXPORT jint JNICALL OS_NATIVE(SignalHandler_1new)
-  (JNIEnv* aJniEnv, jclass, jint aWidget, jobject aPeer, jint aSignalId )
-    {
-    SlotCallback* cb = NULL;
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-        SWT_LOG_DATA_1("peer=%x", aPeer);
-
-        HANDLE_TO_POINTER( QObject*, widget, aWidget );
-
-        // Widget takes ownership of the signal handler instance
-        cb = new SlotCallback( aJniEnv, aPeer, widget, aSignalId );
-        }
-    SWT_CATCH
-    return POINTER_TO_HANDLE( cb );
-    }
-
-JNIEXPORT jint JNICALL OS_NATIVE( JniUtils_1new )
-  (JNIEnv* aJniEnv, jclass, jobject aDisplay)
-    {
-    // Note that JNI callbacks are not possible before first successfully creating jniUtils
-    JniUtils* jniUtils = NULL;
-    try {
-        jniUtils = new JniUtils(aJniEnv, aDisplay);
-        }
-    catch(...)
-        {
-        // Can't throw an exception because there's no jniUtils
-        }
-    return POINTER_TO_HANDLE( jniUtils );
-    }
-
-JNIEXPORT jboolean JNICALL OS_NATIVE( JniUtils_1safeToDelete )
-  (JNIEnv* aJniEnv, jclass, jint aHandle, jint aQObjectHandle)
-{
-    bool result = false;
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-        SWT_LOG_DATA_2("handle=%x qobject=%x", aHandle, aQObjectHandle);
-
-        HANDLE_TO_POINTER( JniUtils*, jniUtils, aHandle);
-        HANDLE_TO_POINTER( QObject*, object, aQObjectHandle );
-
-        result = jniUtils->safeToDelete(object);
-        }
-    SWT_CATCH
-    return result ? JNI_TRUE : JNI_FALSE;
-}
-
-
-JNIEXPORT jint JNICALL OS_NATIVE( windowServer )
-  (JNIEnv* aJniEnv , jclass)
-    {
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-        }
-    SWT_CATCH
-#ifndef Q_WS_X11
-    return 1;
-#else
-    return 2;
-#endif
-    }
-
-
-JNIEXPORT jint JNICALL OS_NATIVE( initUiThread )
-  (JNIEnv*
-#ifdef __SYMBIAN32__
-          aJniEnv
-#endif
-          , jclass, jint
-#ifdef __SYMBIAN32__
-          aUid
-#endif
-          )
-    {
-    jint retVal = 0;
-#ifdef __SYMBIAN32__
-    retVal = static_cast<jint>(SymbianUtils::initUiThread(aJniEnv, static_cast<TInt>(aUid)));
-#endif
-    return retVal;
-    }
-
-JNIEXPORT void JNICALL OS_NATIVE( cleanUpUiThread )
-  (JNIEnv*, jclass)
-    {
-#ifdef __SYMBIAN32__
-    SymbianUtils::cleanupUiThread();
-#endif
-    }
-
-
-JNIEXPORT void JNICALL OS_NATIVE( setSymbianAppName )
-#ifdef __SYMBIAN32__
-  (JNIEnv* aJniEnv, jclass, jstring aName)
-#else
-  (JNIEnv*, jclass, jstring)
-#endif
-    {
-#ifdef __SYMBIAN32__
-        SymbianUtils::setAppName(aJniEnv, aName);
-#endif
-    }
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_qt_s60_OS__1startUI
-#ifdef __SYMBIAN32__
-  (JNIEnv* aJniEnv, jclass, jobject aRunner, jint aUid)
-#else
-(JNIEnv*, jclass, jobject, jint)
-#endif
-    {
-    jint retVal = 0;
-#ifdef __SYMBIAN32__
-    retVal = static_cast<jint>(SymbianUtils::startUI( aJniEnv, aRunner,  aUid));
-#endif
-    return retVal;
-    }
-
-JNIEXPORT jint JNICALL OS_NATIVE( getScreenDeviceNumber )
-  (JNIEnv*, jclass)
-    {
-    jint screenNumber = -1;
-#ifdef __SYMBIAN32__
-        screenNumber = SymbianUtils::GetScreenDeviceNumber();
-#endif
-    return screenNumber;    
-    }
-
-JNIEXPORT jint JNICALL OS_NATIVE( getColorDepth )
-  (JNIEnv*, jclass)
-    {
-    jint colorDepth = 24;
-#ifdef __SYMBIAN32__
-    colorDepth = SymbianUtils::GetColorDepth();
-#endif
-    return colorDepth;    
-    }
-
-JNIEXPORT jint JNICALL OS_NATIVE( getHwInputs )
-  (JNIEnv*, jclass)
-    {
-    jint hwInputs = 0;
-#ifdef __SYMBIAN32__
-        hwInputs = SymbianUtils::GetHwInputs();
-#endif
-    return hwInputs;    
-    }
 
 JNIEXPORT jint JNICALL OS_NATIVE( MobileDevice_1new )
   (JNIEnv*, jclass)
@@ -12101,7 +11913,340 @@ JNIEXPORT jboolean JNICALL OS_NATIVE( MobileDevice_1vibration )
 #endif
     return ( vibraSupport ? JNI_TRUE : JNI_FALSE );
     }
-// Add new stuff above the Other, Other is the last category
+
+JNIEXPORT jint JNICALL OS_NATIVE( getScreenDeviceNumber )
+  (JNIEnv*, jclass)
+    {
+    jint screenNumber = -1;
+#ifdef __SYMBIAN32__
+        screenNumber = SymbianUtils::GetScreenDeviceNumber();
+#endif
+    return screenNumber;    
+    }
+
+JNIEXPORT jint JNICALL OS_NATIVE( getColorDepth )
+  (JNIEnv*, jclass)
+    {
+    jint colorDepth = 24;
+#ifdef __SYMBIAN32__
+    colorDepth = SymbianUtils::GetColorDepth();
+#endif
+    return colorDepth;    
+    }
+
+JNIEXPORT jint JNICALL OS_NATIVE( getHwInputs )
+  (JNIEnv*, jclass)
+    {
+    jint hwInputs = 0;
+#ifdef __SYMBIAN32__
+        hwInputs = SymbianUtils::GetHwInputs();
+#endif
+    return hwInputs;    
+    }
+
+//
+// QNetworkConfigurationManager
+//
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_extension_OS_QNetworkConfigurationManager_1new
+#ifdef __SYMBIAN32__
+(JNIEnv* aJniEnv, jclass, jint aParent)
+#else
+(JNIEnv*, jclass, jint)
+#endif
+{
+    jint result = 0;
+#ifdef __SYMBIAN32__    
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        SWT_LOG_DATA_1("parent=%x", aParent);
+        HANDLE_TO_POINTER(QObject*, parent, aParent);
+        result = POINTER_TO_HANDLE(new QtMobility::QNetworkConfigurationManager(parent));
+        }
+    SWT_CATCH
+#endif
+    return result;
+}
+
+JNIEXPORT jintArray JNICALL Java_org_eclipse_swt_internal_extension_OS_QNetworkConfigurationManager_1allConfigurations
+#ifdef __SYMBIAN32__
+(JNIEnv* aJniEnv, jclass, jint aHandle, jint aFilter)
+#else
+(JNIEnv*, jclass, jint, jint)
+#endif
+{
+    jintArray javaArray = NULL;
+#ifdef __SYMBIAN32__
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        SWT_LOG_DATA_2("handle=%x filter=%x", aHandle, aFilter);
+
+        HANDLE_TO_POINTER(QtMobility::QNetworkConfigurationManager*, manager, aHandle);
+        
+        QList<QtMobility::QNetworkConfiguration> configs = 
+                manager->allConfigurations(static_cast<QtMobility::QNetworkConfiguration::StateFlags>(aFilter));
+
+        int count = configs.size();
+        QVector<int> handles(count);
+        int* handleData = handles.data();
+        for(int i = 0; i < count; ++i)
+            {
+            handleData[i] = reinterpret_cast<int>(new QtMobility::QNetworkConfiguration(configs.at(i)));
+            }
+        javaArray = swtApp->jniUtils().NewJavaIntArray(aJniEnv, handleData, count);
+        }
+    SWT_CATCH
+#endif
+    return javaArray;
+}
+
+//
+// QNetworkConfiguration
+//
+
+JNIEXPORT jstring JNICALL Java_org_eclipse_swt_internal_extension_OS_QNetworkConfiguration_1bearerName
+#ifdef __SYMBIAN32__
+(JNIEnv* aJniEnv, jclass, jint aHandle)
+#else
+(JNIEnv *, jclass, jint)
+#endif
+{
+#ifdef __SYMBIAN32__
+    jstring result = NULL;
+#ifdef __SYMBIAN32__    
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        SWT_LOG_DATA_1("handle=%x", aHandle);
+        QtMobility::QNetworkConfiguration* config = reinterpret_cast<QtMobility::QNetworkConfiguration*>(aHandle);
+        result = swtApp->jniUtils().QStringToJavaString(aJniEnv, config->bearerName());
+        }
+    SWT_CATCH
+#endif
+    return result;
+#endif
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_extension_OS_QNetworkConfiguration_1delete
+#ifdef __SYMBIAN32__
+(JNIEnv* aJniEnv, jclass, jint aHandle)
+#else
+(JNIEnv *, jclass, jint)
+#endif
+{
+#ifdef __SYMBIAN32__
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        SWT_LOG_DATA_1("handle=%x", aHandle);
+        delete reinterpret_cast<QtMobility::QNetworkConfiguration*>(aHandle);
+        }
+    SWT_CATCH
+#endif
+}
+
+//
+// XQCallInfo
+//
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_extension_OS_XQCallInfo_1create
+#ifdef __SYMBIAN32__
+(JNIEnv* aJniEnv, jclass)
+#else
+(JNIEnv *, jclass)
+#endif
+{
+    jint result = 0;
+#ifdef __SYMBIAN32__
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+#ifndef __WINSCW__
+        result = POINTER_TO_HANDLE(XQCallInfo::create());
+#endif
+        }
+    SWT_CATCH
+#endif
+    return result;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_extension_OS_XQCallInfo_1swt_1hasCalls
+#ifdef __SYMBIAN32__
+(JNIEnv* aJniEnv, jclass, jint aHandle)
+#else
+(JNIEnv *, jclass, jint)
+#endif
+{
+    jboolean result = JNI_FALSE;
+#ifdef __SYMBIAN32__
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        SWT_LOG_DATA_1("handle=%x", aHandle);
+        HANDLE_TO_POINTER(XQCallInfo*, callInfo, aHandle);
+        QList<CallInfo> callInfos;
+        callInfo->getCalls(callInfos);
+        result = callInfos.empty() ? JNI_FALSE : JNI_TRUE;
+        }
+    SWT_CATCH
+#endif
+    return result;
+}
+
+//
+// Other
+//
+
+JNIEXPORT jint JNICALL OS_NATIVE(EventHandler_1new)
+  ( JNIEnv* aJniEnv, jclass)
+    {
+    EventCallback* cb = NULL;
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+
+        // Event handler is owned by the Java peer (Display instance)
+        cb = new EventCallback();
+        }
+    SWT_CATCH
+    return POINTER_TO_HANDLE( cb );
+    }
+
+JNIEXPORT void JNICALL OS_NATIVE(EventHandler_1destroy)
+  (JNIEnv* aJniEnv , jclass, jint aHandle)
+    {
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        SWT_LOG_DATA_1("handle=%x", aHandle);
+
+        HANDLE_TO_POINTER( EventCallback*, cb, aHandle );
+        cb->Destroy();
+        }
+    SWT_CATCH
+    }
+
+JNIEXPORT jint JNICALL OS_NATIVE(SignalHandler_1new)
+  (JNIEnv* aJniEnv, jclass, jint aWidget, jobject aPeer, jint aSignalId )
+    {
+    SlotCallback* cb = NULL;
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        SWT_LOG_DATA_1("peer=%x", aPeer);
+
+        HANDLE_TO_POINTER( QObject*, widget, aWidget );
+
+        // Widget takes ownership of the signal handler instance
+        cb = new SlotCallback( aJniEnv, aPeer, widget, aSignalId );
+        }
+    SWT_CATCH
+    return POINTER_TO_HANDLE( cb );
+    }
+
+JNIEXPORT jint JNICALL OS_NATIVE( JniUtils_1new )
+  (JNIEnv* aJniEnv, jclass, jobject aDisplay)
+    {
+    // Note that JNI callbacks are not possible before first successfully creating jniUtils
+    JniUtils* jniUtils = NULL;
+    try {
+        jniUtils = new JniUtils(aJniEnv, aDisplay);
+        }
+    catch(...)
+        {
+        // Can't throw an exception because there's no jniUtils
+        }
+    return POINTER_TO_HANDLE( jniUtils );
+    }
+
+JNIEXPORT jboolean JNICALL OS_NATIVE( JniUtils_1safeToDelete )
+  (JNIEnv* aJniEnv, jclass, jint aHandle, jint aQObjectHandle)
+{
+    bool result = false;
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        SWT_LOG_DATA_2("handle=%x qobject=%x", aHandle, aQObjectHandle);
+
+        HANDLE_TO_POINTER( JniUtils*, jniUtils, aHandle);
+        HANDLE_TO_POINTER( QObject*, object, aQObjectHandle );
+
+        result = jniUtils->safeToDelete(object);
+        }
+    SWT_CATCH
+    return result ? JNI_TRUE : JNI_FALSE;
+}
+
+JNIEXPORT jint JNICALL OS_NATIVE( windowServer )
+  (JNIEnv* aJniEnv , jclass)
+    {
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        }
+    SWT_CATCH
+#ifndef Q_WS_X11
+    return 1;
+#else
+    return 2;
+#endif
+    }
+
+JNIEXPORT jint JNICALL OS_NATIVE( initUiThread )
+  (JNIEnv*
+#ifdef __SYMBIAN32__
+          aJniEnv
+#endif
+          , jclass, jint
+#ifdef __SYMBIAN32__
+          aUid
+#endif
+          )
+    {
+    jint retVal = 0;
+#ifdef __SYMBIAN32__
+    retVal = static_cast<jint>(SymbianUtils::initUiThread(aJniEnv, static_cast<TInt>(aUid)));
+#endif
+    return retVal;
+    }
+
+JNIEXPORT void JNICALL OS_NATIVE( cleanUpUiThread )
+  (JNIEnv*, jclass)
+    {
+#ifdef __SYMBIAN32__
+    SymbianUtils::cleanupUiThread();
+#endif
+    }
+
+JNIEXPORT void JNICALL OS_NATIVE( setSymbianAppName )
+#ifdef __SYMBIAN32__
+  (JNIEnv* aJniEnv, jclass, jstring aName)
+#else
+  (JNIEnv*, jclass, jstring)
+#endif
+    {
+#ifdef __SYMBIAN32__
+        SymbianUtils::setAppName(aJniEnv, aName);
+#endif
+    }
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_qt_s60_OS__1startUI
+#ifdef __SYMBIAN32__
+  (JNIEnv* aJniEnv, jclass, jobject aRunner, jint aUid)
+#else
+(JNIEnv*, jclass, jobject, jint)
+#endif
+    {
+    jint retVal = 0;
+#ifdef __SYMBIAN32__
+    retVal = static_cast<jint>(SymbianUtils::startUI( aJniEnv, aRunner,  aUid));
+#endif
+    return retVal;
+    }
+
+// Add new stuff above the category "Other", that is the last category
 
 #ifdef __cplusplus
 }

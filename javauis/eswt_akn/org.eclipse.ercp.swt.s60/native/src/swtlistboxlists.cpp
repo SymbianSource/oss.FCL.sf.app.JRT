@@ -204,19 +204,24 @@ TRect CSwtListBoxTemplate<T, U, V>::ClientRect(TRect aRect, TGulBorder aBorder,
                 && aSbFrame->ScrollBarVisibility(CEikScrollBar::EVertical)
                 != CEikScrollBarFrame::EOff)
         {
+            TInt breadth(0);
+            if (iListObserver)
+            {
+                breadth = iListObserver->Utils().ScrollBarBreadth(
+                              aSbFrame->VerticalScrollBar());
+            }
+            else
+            {
+                breadth = aSbFrame->ScrollBarBreadth(CEikScrollBar::EVertical);
+            }
+
             if (!AknLayoutUtils::LayoutMirrored())
             {
-                TInt breadth(0);
-                if (iListObserver)
-                {
-                    breadth = iListObserver->Utils().ScrollBarBreadth(
-                                  aSbFrame->VerticalScrollBar());
-                }
-                else
-                {
-                    breadth = aSbFrame->ScrollBarBreadth(CEikScrollBar::EVertical);
-                }
                 clientRect.iBr.iX -= breadth;
+            }
+            else
+            {
+                clientRect.iTl.iX += breadth;
             }
         }
     }
@@ -471,6 +476,34 @@ void CSwtListBoxLists::SetMargins(TInt aListType,
     }
 }
 
+// ---------------------------------------------------------------------------
+// CSwtListBoxLists::EnableStretching
+// ---------------------------------------------------------------------------
+//
+void CSwtListBoxLists::EnableStretching(TInt aListType, CEikTextListBox* aList,
+                                        TBool aEnabled)
+{
+    ASSERT(IsListType(aListType));
+
+    switch (aListType)
+    {
+    case ESwtLbDouble:
+        STATIC_CAST(CSwtListBoxDouble*, aList)
+        ->EnableStretching(aEnabled);
+        break;
+    case ESwtLbDoubleGraphic:
+        STATIC_CAST(CSwtListBoxDoubleGraphic*, aList)
+        ->EnableStretching(aEnabled);
+        break;
+    case ESwtLbDoubleLarge:
+        STATIC_CAST(CSwtListBoxDoubleLarge*, aList)
+        ->EnableStretching(aEnabled);
+        break;
+    default:
+        // Other list types are not supported
+        break;
+    }
+}
 
 // The compiler does not automatically instantiate templates defined in other
 // files. Because of this, code written will often produce undefined symbol

@@ -57,15 +57,15 @@ abstract public class ConfirmationViewBase extends ViewBase
     }
 
     /** Constructor */
-    protected ConfirmationViewBase(InstallerUiEswt aInstaller, Composite aParent, int aColumns)
+    protected ConfirmationViewBase(InstallerUiEswt aInstallerUi, Composite aParent, int aColumns)
     {
-        this(aInstaller, aParent, aColumns, false);
+        this(aInstallerUi, aParent, aColumns, false);
     }
 
     /** Constructor */
-    protected ConfirmationViewBase(InstallerUiEswt aInstaller, Composite aParent, int aColumns, boolean aScrollable)
+    protected ConfirmationViewBase(InstallerUiEswt aInstallerUi, Composite aParent, int aColumns, boolean aScrollable)
     {
-        super(aInstaller, aParent, aColumns, aScrollable);
+        super(aInstallerUi, aParent, aColumns, aScrollable);
     }
 
     /**

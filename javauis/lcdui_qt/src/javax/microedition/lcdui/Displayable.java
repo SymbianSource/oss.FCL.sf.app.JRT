@@ -33,7 +33,8 @@ import com.nokia.mj.impl.rt.support.ApplicationInfo;
 /**
  * Implementation of LCDUI <code>Displayable</code> class.
  */
-public abstract class Displayable {
+public abstract class Displayable
+{
 
     private EswtCommandListener eswtCommandListener = new EswtCommandListener();
 
@@ -94,19 +95,24 @@ public abstract class Displayable {
     /**
      * Default Constructor.
      */
-    Displayable(String title) {
+    Displayable(String title)
+    {
         this.title = title;
         finalizer = ((finalizer != null) ? finalizer
-                : new com.nokia.mj.impl.rt.support.Finalizer() {
-                    public void finalizeImpl() {
-                        if (finalizer != null) {
-                            finalizer = null;
-                            if (!ESWTUIThreadRunner.isDisposed()) {
-                                dispose();
-                            }
-                        }
+                     : new com.nokia.mj.impl.rt.support.Finalizer()
+        {
+            public void finalizeImpl()
+            {
+                if(finalizer != null)
+                {
+                    finalizer = null;
+                    if(!ESWTUIThreadRunner.isDisposed())
+                    {
+                        dispose();
                     }
-                });
+                }
+            }
+        });
         ESWTUIThreadRunner.update(getClass().getName(), 1);
     }
 
@@ -114,9 +120,12 @@ public abstract class Displayable {
      * Performs eSWT construction of shell and content composite. <br>
      * Should be called from child level constructors.
      */
-    final void construct() {
-        ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-            public void run() {
+    final void construct()
+    {
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        {
+            public void run()
+            {
                 shell = eswtConstructShell(SWT.SYSTEM_MODAL);
                 eswtSetTitle();
                 contentComp = eswtConstructContent(SWT.NONE);
@@ -128,14 +137,19 @@ public abstract class Displayable {
     /**
      * Dispose Displayable.
      */
-    void dispose() {
-        if (ticker != null) {
+    void dispose()
+    {
+        if(ticker != null)
+        {
             ticker.removeLabel(tickerLabel);
         }
         ESWTUIThreadRunner.update(getClass().getName(), -1);
-        ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-            public void run() {
-                if (shell != null) {
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        {
+            public void run()
+            {
+                if(shell != null)
+                {
                     shell.dispose();
                 }
             }
@@ -150,7 +164,8 @@ public abstract class Displayable {
      *
      * @return eSWT shell
      */
-    Shell eswtConstructShell(int style) {
+    Shell eswtConstructShell(int style)
+    {
         return new MobileShell(ESWTUIThreadRunner.getInstance().getDisplay(), style);
     }
 
@@ -162,7 +177,8 @@ public abstract class Displayable {
      *
      * @return Composite where the content is placed.
      */
-    Composite eswtConstructContent(int style) {
+    Composite eswtConstructContent(int style)
+    {
         Composite comp = new CompositeExtension(shell, style);
         return comp;
     }
@@ -170,8 +186,10 @@ public abstract class Displayable {
     /**
      * Called by Display when Displayable should become visible.
      */
-    void eswtHandleShowCurrentEvent() {
-        if (!shell.isDisposed()) {
+    void eswtHandleShowCurrentEvent()
+    {
+        if(!shell.isDisposed())
+        {
             eswtUpdateSizes();
             shell.addShellListener(eswtShellListener);
             shell.addDisposeListener(eswtDisposeListener);
@@ -196,9 +214,11 @@ public abstract class Displayable {
     /**
      * Called by Display when Displayable should become hidden.
      */
-    void eswtHandleHideCurrentEvent() {
+    void eswtHandleHideCurrentEvent()
+    {
         isLcduiVisible = false;
-        if (!shell.isDisposed()) {
+        if(!shell.isDisposed())
+        {
             shell.removeShellListener(eswtShellListener);
             shell.removeDisposeListener(eswtDisposeListener);
             shell.removeControlListener(eswtControlListener);
@@ -211,7 +231,8 @@ public abstract class Displayable {
      *
      * @param e eSWT event
      */
-    void eswtHandleEvent(Event e) {
+    void eswtHandleEvent(Event e)
+    {
         // implementation in child classes
         // Logger.method(this, "eswtHandleEvent", e);
     }
@@ -219,35 +240,42 @@ public abstract class Displayable {
     /**
      * Called by ShellListener when shell gets activated.
      */
-    void handleShellActivatedEvent() {
-       // Implementation in child-classes
-       // Logger.method(this, "handleShellActivatedEvent");
-       if (ESWTUIThreadRunner.getInstance().getDisplay().getActiveShell()
-                                                                      != null) {
-           if ( JadAttributeUtil.isValue(JadAttributeUtil.ATTRIB_NOKIA_MIDLET_BACKGROUND_EVENT,
-        		   JadAttributeUtil.VALUE_PAUSE)) {
-             ApplicationUtils.getInstance().resumeApplication();
-          }
-          isShellActive = true;
-       }
+    void handleShellActivatedEvent()
+    {
+        // Implementation in child-classes
+        // Logger.method(this, "handleShellActivatedEvent");
+        if(ESWTUIThreadRunner.getInstance().getDisplay().getActiveShell()
+                != null)
+        {
+            if(JadAttributeUtil.isValue(JadAttributeUtil.ATTRIB_NOKIA_MIDLET_BACKGROUND_EVENT,
+                                        JadAttributeUtil.VALUE_PAUSE))
+            {
+                ApplicationUtils.getInstance().resumeApplication();
+            }
+            isShellActive = true;
+        }
     }
 
     /**
      * Called by ShellListener when shell gets de-activated.
      */
-    void handleShellDeActivatedEvent() {
-       // Implementation in child-classes
-       // Logger.method(this, "handleShellDeActivatedEvent");
-       if(isShellActive) {
-          if (ESWTUIThreadRunner.getInstance().getDisplay().getActiveShell()
-                                                                      == null) {
-              if ( JadAttributeUtil.isValue(JadAttributeUtil.ATTRIB_NOKIA_MIDLET_BACKGROUND_EVENT,
-           		   JadAttributeUtil.VALUE_PAUSE)) {
-                 ApplicationUtils.getInstance().pauseApplication();
-                 isShellActive = false;
-              }
-          }
-       }
+    void handleShellDeActivatedEvent()
+    {
+        // Implementation in child-classes
+        // Logger.method(this, "handleShellDeActivatedEvent");
+        if(isShellActive)
+        {
+            if(ESWTUIThreadRunner.getInstance().getDisplay().getActiveShell()
+                    == null)
+            {
+                if(JadAttributeUtil.isValue(JadAttributeUtil.ATTRIB_NOKIA_MIDLET_BACKGROUND_EVENT,
+                                            JadAttributeUtil.VALUE_PAUSE))
+                {
+                    ApplicationUtils.getInstance().pauseApplication();
+                    isShellActive = false;
+                }
+            }
+        }
     }
 
     /**
@@ -257,9 +285,10 @@ public abstract class Displayable {
      * @param width new width of Displayable.
      * @param height new height of Displayable.
      */
-    void eswtHandleResizeEvent(int width, int height) {
+    void eswtHandleResizeEvent(int width, int height)
+    {
         Logger.method(this, "eswtHandleResizeEvent",
-                String.valueOf(width), String.valueOf(height));
+                      String.valueOf(width), String.valueOf(height));
         LCDUIEvent event = EventDispatcher.instance().newEvent(LCDUIEvent.DISPLAYABLE_SIZECHANGED, this);
         event.width = width;
         event.height = height;
@@ -269,7 +298,8 @@ public abstract class Displayable {
     /**
      * Returns if the shell is Dialog styled.
      */
-    private boolean isDialogShell() {
+    private boolean isDialogShell()
+    {
         return (shell.getStyle() & SWT.DIALOG_TRIM) == SWT.DIALOG_TRIM;
     }
 
@@ -279,18 +309,21 @@ public abstract class Displayable {
      * @param aWidth required width or -1 to ignore
      * @param aHeight required height or -1 to ignore
      */
-    void eswtSetPreferredContentSize(int aWidth, int aHeight) {
-        if (isDialogShell()) {
+    void eswtSetPreferredContentSize(int aWidth, int aHeight)
+    {
+        if(isDialogShell())
+        {
             // aHeight += Config.DISPLAYABLE_DIALOGSHELL_HEIGHT_DISPLACEMENT;
 
             Logger.method(this, "eswtSetPreferredContentSize",
-                    String.valueOf(aWidth), String.valueOf(aHeight));
+                          String.valueOf(aWidth), String.valueOf(aHeight));
 
             Rectangle contentBounds = contentComp.getBounds();
             int newWidth = (aWidth > 0 ? aWidth : contentBounds.width);
             int newHeight = (aHeight > 0 ? aHeight : contentBounds.height);
 
-            if (tickerLabel != null) {
+            if(tickerLabel != null)
+            {
                 newHeight += tickerLabel.getBounds().height;
             }
 
@@ -304,14 +337,17 @@ public abstract class Displayable {
         }
     }
 
-    Rectangle eswtLayoutShellContent() {
+    Rectangle eswtLayoutShellContent()
+    {
         Rectangle shellArea = shell.getClientArea();
-        if (tickerLabel != null) {
+        if(tickerLabel != null)
+        {
             int tickerHeight = tickerLabel.getBounds().height;
             contentComp.setBounds(0, tickerHeight,
-                    shellArea.width, shellArea.height - tickerHeight);
+                                  shellArea.width, shellArea.height - tickerHeight);
         }
-        else {
+        else
+        {
             contentComp.setBounds(0, 0, shellArea.width, shellArea.height);
         }
         return contentComp.getClientArea();
@@ -320,15 +356,18 @@ public abstract class Displayable {
     /**
      * Update internal size of Displayable.
      */
-    void eswtUpdateSizes() {
+    void eswtUpdateSizes()
+    {
         Rectangle newArea = eswtLayoutShellContent();
         // if the content size has changed or its not initialized
-        if (!initialized
+        if(!initialized
                 || newArea.width != contentArea.width
-                || newArea.height != contentArea.height) {
+                || newArea.height != contentArea.height)
+        {
             contentArea = newArea;
             initialized = true;
-            if (ticker != null) {
+            if(ticker != null)
+            {
                 ticker.updateSpeed();
             }
             eswtHandleResizeEvent(contentArea.width, contentArea.height);
@@ -340,9 +379,12 @@ public abstract class Displayable {
      *
      * @return true if this Displayable is currently visible.
      */
-    public synchronized boolean isShown() {
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+    public synchronized boolean isShown()
+    {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 isShownReturnValue = eswtIsShown();
             }
         });
@@ -352,14 +394,17 @@ public abstract class Displayable {
     /**
      * eSWT call-back that verifies that the Displayable is shown.
      */
-    boolean eswtIsShown() {
-        if (!isLcduiVisible || !isShellActive) {
+    boolean eswtIsShown()
+    {
+        if(!isLcduiVisible || !isShellActive)
+        {
             // shell.isVisible() doesn't return false if MIDlet
             // is in background. That's why isVisible-variable is
             // used instead.
             return false;
         }
-        if (shell.isDisposed() || !shell.isEnabled()) {
+        if(shell.isDisposed() || !shell.isEnabled())
+        {
             return false;
         }
         return true;
@@ -370,10 +415,12 @@ public abstract class Displayable {
      *
      * @param command a Command
      */
-    void validateCommand(Command command) {
-        if (command == null) {
+    void validateCommand(Command command)
+    {
+        if(command == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.DISPLAYABLE_EXCEPTION_NULL_PARAMETER);
+                MsgRepository.DISPLAYABLE_EXCEPTION_NULL_PARAMETER);
         }
     }
 
@@ -382,17 +429,24 @@ public abstract class Displayable {
      *
      * @param enableCmds visibility switch
      */
-    void setCommandsVisibility(boolean enableCmds) {
-        if (enableCmds != isEnabledCmds) {
+    void setCommandsVisibility(boolean enableCmds)
+    {
+        if(enableCmds != isEnabledCmds)
+        {
             isEnabledCmds = enableCmds;
-            ESWTUIThreadRunner.syncExec(new Runnable() {
-                public void run() {
+            ESWTUIThreadRunner.syncExec(new Runnable()
+            {
+                public void run()
+                {
                     int numCmd = getNumCommands();
-                    for (int i = 0; i < numCmd; i++) {
-                        if (isEnabledCmds) {
+                    for(int i = 0; i < numCmd; i++)
+                    {
+                        if(isEnabledCmds)
+                        {
                             eswtAddCommand(getCommand(i));
                         }
-                        else {
+                        else
+                        {
                             eswtRemoveCommand(getCommand(i));
                         }
                     }
@@ -408,15 +462,20 @@ public abstract class Displayable {
      *            to this Displayable, nothing happens.
      * @throws NullPointerException If parameter is null.
      */
-    public void addCommand(Command command) {
+    public void addCommand(Command command)
+    {
         validateCommand(command);
-        if (!commands.contains(command)) {
+        if(!commands.contains(command))
+        {
             commands.addElement(command);
             // Command is not yet added to this Displayable.
-            if (isEnabledCmds) {
+            if(isEnabledCmds)
+            {
                 final Command finalCommand = command;
-                ESWTUIThreadRunner.syncExec(new Runnable() {
-                    public void run() {
+                ESWTUIThreadRunner.syncExec(new Runnable()
+                {
+                    public void run()
+                    {
                         eswtAddCommand(finalCommand);
                     }
                 });
@@ -427,9 +486,11 @@ public abstract class Displayable {
     /**
      * eSWT callback to add a Command.
      */
-    void eswtAddCommand(Command cmd) {
+    void eswtAddCommand(Command cmd)
+    {
         cmd.eswtAddESWTCommand(shell, false);
-        if (eswtIsShown()) {
+        if(eswtIsShown())
+        {
             cmd.eswtAddCommandSelectionListener(shell, eswtCommandListener);
         }
     }
@@ -440,14 +501,19 @@ public abstract class Displayable {
      * @param command Command to be removed. If parameter is null or Command
      *            isn't added to Displayable, nothing happens.
      */
-    public void removeCommand(Command command) {
-        if (command != null && commands.contains(command)) {
+    public void removeCommand(Command command)
+    {
+        if(command != null && commands.contains(command))
+        {
             // Remove command from iCommands-vector
             commands.removeElement(command);
-            if (isEnabledCmds) {
+            if(isEnabledCmds)
+            {
                 final Command finalCommand = command;
-                ESWTUIThreadRunner.syncExec(new Runnable() {
-                    public void run() {
+                ESWTUIThreadRunner.syncExec(new Runnable()
+                {
+                    public void run()
+                    {
                         eswtRemoveCommand(finalCommand);
                     }
                 });
@@ -458,8 +524,10 @@ public abstract class Displayable {
     /**
      * eSWT callback to remove a Command.
      */
-    void eswtRemoveCommand(Command cmd) {
-        if (eswtIsShown()) {
+    void eswtRemoveCommand(Command cmd)
+    {
+        if(eswtIsShown())
+        {
             cmd.eswtRemoveCommandSelectionListener(shell, eswtCommandListener);
         }
         cmd.eswtRemoveESWTCommand(shell);
@@ -473,13 +541,16 @@ public abstract class Displayable {
      *            CommandListener is removed. If null and no CommandListener
      *            exists, nothing happens.
      */
-    public void setCommandListener(CommandListener commandListener) {
+    public void setCommandListener(CommandListener commandListener)
+    {
         this.iCommandListener = commandListener;
     }
 
-    public boolean hasCommandListener() {
-        if(this.iCommandListener != null) {
-        	return true;
+    public boolean hasCommandListener()
+    {
+        if(this.iCommandListener != null)
+        {
+            return true;
         }
         return false;
     }
@@ -488,9 +559,11 @@ public abstract class Displayable {
     /**
      * Add command listener for all Commands added to this Displayable.
      */
-    void eswtAddSelectionListenerForCommands() {
+    void eswtAddSelectionListenerForCommands()
+    {
         Command cmd = null;
-        for (Enumeration e = commands.elements(); e.hasMoreElements();) {
+        for(Enumeration e = commands.elements(); e.hasMoreElements();)
+        {
             cmd = (Command) e.nextElement();
             cmd.eswtAddCommandSelectionListener(shell, eswtCommandListener);
         }
@@ -499,9 +572,11 @@ public abstract class Displayable {
     /**
      * Remove command listener from Commands added to this Displayable.
      */
-    void eswtRemoveSelectionListenerForCommands() {
+    void eswtRemoveSelectionListenerForCommands()
+    {
         Command cmd = null;
-        for (Enumeration e = commands.elements(); e.hasMoreElements();) {
+        for(Enumeration e = commands.elements(); e.hasMoreElements();)
+        {
             cmd = (Command) e.nextElement();
             cmd.eswtRemoveCommandSelectionListener(shell, eswtCommandListener);
         }
@@ -512,8 +587,10 @@ public abstract class Displayable {
      *
      * @param command the Command
      */
-    final void callCommandAction(Command command) {
-        if (iCommandListener != null && command != null) {
+    final void callCommandAction(Command command)
+    {
+        if(iCommandListener != null && command != null)
+        {
             LCDUIEvent event = EventDispatcher.instance().newEvent(LCDUIEvent.DISPLAYABLE_COMMANDACTION, this);
             event.command = command;
             event.commandListener = iCommandListener;
@@ -526,7 +603,8 @@ public abstract class Displayable {
      *
      * @return the number of commands in this Displayable
      */
-    final int getNumCommands() {
+    final int getNumCommands()
+    {
         return commands.size();
     }
 
@@ -536,7 +614,8 @@ public abstract class Displayable {
      * @param index index of command
      * @return the command
      */
-    final Command getCommand(int index) {
+    final Command getCommand(int index)
+    {
         return (Command) commands.elementAt(index);
     }
 
@@ -545,7 +624,8 @@ public abstract class Displayable {
      *
      * @return Width of the Displayable in pixels.
      */
-    public int getWidth() {
+    public int getWidth()
+    {
         return contentArea.width;
     }
 
@@ -554,7 +634,8 @@ public abstract class Displayable {
      *
      * @return Height of the Displayable in pixels.
      */
-    public int getHeight() {
+    public int getHeight()
+    {
         return contentArea.height;
     }
 
@@ -565,33 +646,41 @@ public abstract class Displayable {
      *
      * @param newTicker New ticker. If null, current ticker is removed.
      */
-    public void setTicker(Ticker newTicker) {
-        if (ticker == newTicker) {
+    public void setTicker(Ticker newTicker)
+    {
+        if(ticker == newTicker)
+        {
             return;
         }
-        if (ticker != null) {
+        if(ticker != null)
+        {
             // Ticker exists, removing it:
             ticker.removeLabel(getTickerLabel());
         }
         ticker = newTicker;
-        if (ticker != null) {
+        if(ticker != null)
+        {
             ticker.addLabel(getTickerLabel());
         }
 
         final Ticker finalTicker = ticker;
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
-                if (finalTicker != null) {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
+                if(finalTicker != null)
+                {
                     // Setting ticker:
                     tickerLabel.setText(finalTicker.getFormattedString());
                     tickerLabel.pack();
                     // Avoid ticker flashing by setting it out of the
                     // screen first:
                     tickerLabel.setBounds(Integer.MIN_VALUE, 0,
-                            tickerLabel.getBounds().width,
-                            tickerLabel.getBounds().height);
+                                          tickerLabel.getBounds().width,
+                                          tickerLabel.getBounds().height);
                 }
-                else {
+                else
+                {
                     // Removing ticker:
                     tickerLabel.setText("");
                     tickerLabel.setBounds(Integer.MIN_VALUE, 0, 0, 0);
@@ -599,7 +688,8 @@ public abstract class Displayable {
                 eswtUpdateSizes();
             }
         });
-        if (ticker != null) {
+        if(ticker != null)
+        {
             // Start to scroll the ticker. Ticker may be already running
             // if it exists in some other displayable already, but
             // calling this again wont do any harm:
@@ -612,7 +702,8 @@ public abstract class Displayable {
      *
      * @return Current ticker or null if no ticker set.
      */
-    public Ticker getTicker() {
+    public Ticker getTicker()
+    {
         return ticker;
     }
 
@@ -621,7 +712,8 @@ public abstract class Displayable {
      *
      * @return The title of the Displayable, or null if no title set.
      */
-    public String getTitle() {
+    public String getTitle()
+    {
         return title;
     }
 
@@ -630,10 +722,13 @@ public abstract class Displayable {
      *
      * @param newTitle new title or null for no title.
      */
-    public void setTitle(String newTitle) {
+    public void setTitle(String newTitle)
+    {
         this.title = newTitle;
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 eswtSetTitle();
             }
         });
@@ -642,7 +737,8 @@ public abstract class Displayable {
     /**
      * Sets shell's title. Nulls are not allowed.
      */
-    void eswtSetTitle() {
+    void eswtSetTitle()
+    {
         // eSWT Shell doesn't take null value as title
         shell.setText((title != null ? title : ""));
     }
@@ -650,12 +746,16 @@ public abstract class Displayable {
     /**
      * Creates singleton Label instance used by Ticker.
      */
-    private Label getTickerLabel() {
-        if (tickerLabel == null) {
-            ESWTUIThreadRunner.syncExec(new Runnable() {
-                public void run() {
+    private Label getTickerLabel()
+    {
+        if(tickerLabel == null)
+        {
+            ESWTUIThreadRunner.syncExec(new Runnable()
+            {
+                public void run()
+                {
                     tickerLabel = new Label(shell,
-                            SWT.SHADOW_NONE | SWT.HORIZONTAL | SWT.CENTER);
+                                            SWT.SHADOW_NONE | SWT.HORIZONTAL | SWT.CENTER);
                 }
             });
         }
@@ -669,13 +769,15 @@ public abstract class Displayable {
      * @param width new width of Displayable.
      * @param height new height of Displayable.
      */
-    protected void sizeChanged(int width, int height) {
+    protected void sizeChanged(int width, int height)
+    {
     }
 
     /**
      * eSWT callback to get the Shell of the Displayable.
      */
-    final Shell getShell() {
+    final Shell getShell()
+    {
         return this.shell;
     }
 
@@ -684,7 +786,8 @@ public abstract class Displayable {
      *
      * @return Composite.
      */
-    Composite getContentComp() {
+    Composite getContentComp()
+    {
         return contentComp;
     }
 
@@ -692,31 +795,36 @@ public abstract class Displayable {
      * The client area. It's ensured that after the construction this is always
      * set.
      */
-    final Rectangle getContentArea() {
-    	return contentArea;
+    final Rectangle getContentArea()
+    {
+        return contentArea;
     }
 
     /*
      * Dispatcher thread calls.
      */
-    void doCallback(LCDUIEvent event) {
-    	switch(event.type) {
-    	case LCDUIEvent.DISPLAYABLE_SIZECHANGED:
-    		sizeChanged(event.width, event.height);
-    		break;
-    	case LCDUIEvent.DISPLAYABLE_COMMANDACTION:
-    		event.commandListener.commandAction(event.command, this);
-    		break;
-    	}
+    void doCallback(LCDUIEvent event)
+    {
+        switch(event.type)
+        {
+        case LCDUIEvent.DISPLAYABLE_SIZECHANGED:
+            sizeChanged(event.width, event.height);
+            break;
+        case LCDUIEvent.DISPLAYABLE_COMMANDACTION:
+            event.commandListener.commandAction(event.command, this);
+            break;
+        }
     }
 
     /**
      * Inner class which receives SelectionEvents from eSWT and convert and
      * forwards those events to LCDUI's CommandListener.
      */
-    class EswtCommandListener implements SelectionListener {
+    class EswtCommandListener implements SelectionListener
+    {
 
-        public void widgetDefaultSelected(SelectionEvent e) {
+        public void widgetDefaultSelected(SelectionEvent e)
+        {
         }
 
         /**
@@ -724,14 +832,17 @@ public abstract class Displayable {
          * Displayable's CommandListener if event source matches with the
          * Commands added to the Displayable.
          */
-        public void widgetSelected(SelectionEvent event) {
+        public void widgetSelected(SelectionEvent event)
+        {
             // Go through all Commands added to this Displayable:
-            for (Enumeration e = commands.elements(); e.hasMoreElements();) {
+            for(Enumeration e = commands.elements(); e.hasMoreElements();)
+            {
                 Command cmd = (Command) e.nextElement();
                 // Select eSWT Command from Command which is connected to
                 // this Displayable and compare it to the widget which
                 // launched the event:
-                if (cmd.getESWTCommand(shell) == event.widget) {
+                if(cmd.getESWTCommand(shell) == event.widget)
+                {
                     callCommandAction(cmd);
                     break;
                 }
@@ -743,52 +854,66 @@ public abstract class Displayable {
      * Every Displayable must listen shell events to be able to tell is the
      * MIDlet sent to background.
      */
-    class EswtShellListener implements ShellListener {
+    class EswtShellListener implements ShellListener
+    {
 
-        public void shellActivated(ShellEvent e) {
-           if (!isShellActive) {
-              handleShellActivatedEvent();
-           }
+        public void shellActivated(ShellEvent e)
+        {
+            if(!isShellActive)
+            {
+                handleShellActivatedEvent();
+            }
         }
 
-        public void shellDeactivated(ShellEvent e) {
-           ESWTUIThreadRunner.getInstance().getDisplay()
-                             .asyncExec(new Runnable() {
-               public void run() {
-                  handleShellDeActivatedEvent();
-           }
-           });
+        public void shellDeactivated(ShellEvent e)
+        {
+            ESWTUIThreadRunner.getInstance().getDisplay()
+            .asyncExec(new Runnable()
+            {
+                public void run()
+                {
+                    handleShellDeActivatedEvent();
+                }
+            });
 
         }
 
-        public void shellClosed(ShellEvent e) {
+        public void shellClosed(ShellEvent e)
+        {
         }
 
-        public void shellIconified(ShellEvent e) {
+        public void shellIconified(ShellEvent e)
+        {
         }
 
-        public void shellDeiconified(ShellEvent e) {
+        public void shellDeiconified(ShellEvent e)
+        {
         }
 
     }
 
-    class EswtDisposeListener implements DisposeListener {
+    class EswtDisposeListener implements DisposeListener
+    {
 
-      public void widgetDisposed(DisposeEvent e) {
-        isShellActive = false;
-      }
+        public void widgetDisposed(DisposeEvent e)
+        {
+            isShellActive = false;
+        }
     }
 
     /**
      * Displayable must listen resize-events to be able to call
      * sizeChanged()-method at the right time.
      */
-    class EswtControlListener implements ControlListener {
-        public void controlResized(ControlEvent e) {
+    class EswtControlListener implements ControlListener
+    {
+        public void controlResized(ControlEvent e)
+        {
             eswtUpdateSizes();
         }
 
-        public void controlMoved(ControlEvent e) {
+        public void controlMoved(ControlEvent e)
+        {
         }
     }
 

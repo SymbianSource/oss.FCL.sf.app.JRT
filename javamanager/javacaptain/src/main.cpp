@@ -21,6 +21,7 @@
 #include "signalhandler.h"
 #endif /* __SYMBIAN32__ */
 
+#include <cstdio>
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>

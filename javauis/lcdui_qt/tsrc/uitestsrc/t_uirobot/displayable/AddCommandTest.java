@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package t_uirobot.displayable;
@@ -34,62 +34,76 @@ import com.nokia.mj.impl.uitestutils.Key;
  * <br>
  * Created: 2008-04-30
  */
-public class AddCommandTest extends UITestBase {
+public class AddCommandTest extends UITestBase
+{
 
     private static final int MAX_CHARS = 100;
 
-    public AddCommandTest() {
-		super();
-	}
+    public AddCommandTest()
+    {
+        super();
+    }
 
-	public AddCommandTest(String name, TestMethod method) {
-		super(name, method);
-	}
+    public AddCommandTest(String name, TestMethod method)
+    {
+        super(name, method);
+    }
 
-	/**
+    /**
     /**
      * Creates the test suite. You need to add a new aSuite.addTest antry for
      * any new test methods, otherwise they won't be run.
      *
      * @return New testsuite.
      */
-    public Test suite() {
+    public Test suite()
+    {
         TestSuite aSuite = new TestSuite();
 
         aSuite.addTest(new AddCommandTest("testAddCommandBeforeListener",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((AddCommandTest) tc).testAddCommandBeforeListener();
-                    }
-                }));
+                                          new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((AddCommandTest) tc).testAddCommandBeforeListener();
+            }
+        }));
 
         aSuite.addTest(new AddCommandTest("testAddCommandAfterListener",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((AddCommandTest) tc).testAddCommandAfterListener();
-                    }
-                }));
+                                          new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((AddCommandTest) tc).testAddCommandAfterListener();
+            }
+        }));
 
         aSuite.addTest(new AddCommandTest("testRemoveListener",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((AddCommandTest) tc).testRemoveListener();
-                    }
-                }));
+                                          new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((AddCommandTest) tc).testRemoveListener();
+            }
+        }));
 
         aSuite.addTest(new AddCommandTest("testAddToManyDisplayables",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((AddCommandTest) tc).testAddToManyDisplayables();
-                    }
-                }));
+                                          new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((AddCommandTest) tc).testAddToManyDisplayables();
+            }
+        }));
 
         aSuite.addTest(new AddCommandTest("testAddCommandTwice",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((AddCommandTest) tc).testAddCommandTwice();
-                    }
-                }));
+                                          new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((AddCommandTest) tc).testAddCommandTwice();
+            }
+        }));
 
         return aSuite;
     }
@@ -97,7 +111,8 @@ public class AddCommandTest extends UITestBase {
     /**
      * Test command adding before CommandListener is set.
      */
-    public void testAddCommandBeforeListener() {
+    public void testAddCommandBeforeListener()
+    {
         TextBox textBox = new TextBox("title", "content", MAX_CHARS, 0);
         Command c1 = new Command("item1", "item1", Command.ITEM, 0);
 
@@ -115,7 +130,8 @@ public class AddCommandTest extends UITestBase {
     /**
      * Test command adding after CommandListener is set.
      */
-    public void testAddCommandAfterListener() {
+    public void testAddCommandAfterListener()
+    {
         TextBox textBox = new TextBox("title", "content", MAX_CHARS, 0);
         Command c1 = new Command("item1", "item1", Command.ITEM, 0);
 
@@ -134,7 +150,8 @@ public class AddCommandTest extends UITestBase {
      * Test that removing CommandListener will work and no commands are
      * delivered to CommandListener anymore.
      */
-    public void testRemoveListener() {
+    public void testRemoveListener()
+    {
         TextBox textBox = new TextBox("title", "content", MAX_CHARS, 0);
         Command c1 = new Command("item1", "item1", Command.ITEM, 0);
 
@@ -156,7 +173,8 @@ public class AddCommandTest extends UITestBase {
      * In LCDUI it's possible to add same Command to many Displayables. This
      * test tests that events occurs correctly in such case.
      */
-    public void testAddToManyDisplayables() {
+    public void testAddToManyDisplayables()
+    {
         // There are two Displayables and one Command in this test:
         TextBox textBox = new TextBox("title", "content", MAX_CHARS, 0);
         TextBox textBox2 = new TextBox("title2", "content2", MAX_CHARS, 0);
@@ -210,7 +228,8 @@ public class AddCommandTest extends UITestBase {
      * Tests that nothing happens if command is added to the displayable which
      * already contains the command.
      */
-    public void testAddCommandTwice() {
+    public void testAddCommandTwice()
+    {
         TextBox textBox = new TextBox("title", "content", MAX_CHARS, 0);
         Command c1 = new Command("item1", "item1", Command.ITEM, 0);
 

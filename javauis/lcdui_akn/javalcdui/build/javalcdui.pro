@@ -46,6 +46,7 @@ LIBS += -lapgrfx \
         -lhwrmlightclient \
         -lgfxtrans \
         -lws32 \
+        -lCentralRepository \ 
 #ifdef RD_JAVA_NGA_ENABLED
 	-llibegl \
 	-llibglesv1_cm

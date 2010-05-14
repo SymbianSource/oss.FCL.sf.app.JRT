@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt_uirobot.form;
@@ -33,13 +33,15 @@ import com.nokia.mj.impl.uitestutils.Key;
  * <br>
  * Created: 2008-11-12
  */
-public class FormItemTest extends ItemUITestBase {
+public class FormItemTest extends ItemUITestBase
+{
 
     /**
      * Constructor.
      */
-    public FormItemTest() {
-    	super();
+    public FormItemTest()
+    {
+        super();
     }
 
     /**
@@ -48,27 +50,31 @@ public class FormItemTest extends ItemUITestBase {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public FormItemTest(String sTestName) {
+    public FormItemTest(String sTestName)
+    {
         super(sTestName);
     }
 
-    public static Test suite() {
+    public static Test suite()
+    {
         TestSuite suite = new TestSuite();
 
         java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = FormItemTest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new FormItemTest((String)e.nextElement()));
-	    }
-        
+        // Add widget tests
+        methodNames = FormItemTest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new FormItemTest((String)e.nextElement()));
+        }
+
         return suite;
     }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testAppendItemAfterSetCurrent");
         methodNames.addElement("testRemoveCommandFromLabeledFocusedItem");
@@ -76,21 +82,23 @@ public class FormItemTest extends ItemUITestBase {
         methodNames.addElement("testRemoveItemsWhenBackground");
         return methodNames;
     }
-    
-    public void runTest() throws Throwable {
-        if (getName().equals("testAppendItemAfterSetCurrent")) testAppendItemAfterSetCurrent();
-        else if (getName().equals("testRemoveCommandFromLabeledFocusedItem")) testRemoveCommandFromLabeledFocusedItem();
-        else if (getName().equals("testAddRemoveItems")) testAddRemoveItems();
-        else if (getName().equals("testRemoveItemsWhenBackground")) testRemoveItemsWhenBackground();
+
+    public void runTest() throws Throwable
+    {
+        if(getName().equals("testAppendItemAfterSetCurrent")) testAppendItemAfterSetCurrent();
+        else if(getName().equals("testRemoveCommandFromLabeledFocusedItem")) testRemoveCommandFromLabeledFocusedItem();
+        else if(getName().equals("testAddRemoveItems")) testAddRemoveItems();
+        else if(getName().equals("testRemoveItemsWhenBackground")) testRemoveItemsWhenBackground();
         else super.runTest();
-    }    
-    
+    }
+
 
     /**
      * Tests to remove command from focused item which has label and
      * verifies that focus is moved to next/previous focusable item.
      */
-    public void testRemoveCommandFromLabeledFocusedItem() {
+    public void testRemoveCommandFromLabeledFocusedItem()
+    {
         StringItem button1 = new StringItem("label", "click!", Item.BUTTON);
         StringItem button2 = new StringItem("label", "click2!", Item.BUTTON);
 
@@ -129,7 +137,8 @@ public class FormItemTest extends ItemUITestBase {
     /**
      * Tests to add and remove items to/from form.
      */
-    public void testAddRemoveItems() {
+    public void testAddRemoveItems()
+    {
         Command ok1 = new Command("Ok1", "", Command.ITEM, 0);
         Command ok2 = new Command("Ok2", "", Command.ITEM, 0);
 
@@ -171,11 +180,12 @@ public class FormItemTest extends ItemUITestBase {
      * Tests to append item to form after form is set current. Then
      * verifies the focus transfer works.
      */
-    public void testAppendItemAfterSetCurrent() {
+    public void testAppendItemAfterSetCurrent()
+    {
         StringItem hyperlink = new StringItem("label", "url",
-                StringItem.HYPERLINK);
+                                              StringItem.HYPERLINK);
         StringItem button1 = new StringItem(null, "button1",
-                StringItem.BUTTON);
+                                            StringItem.BUTTON);
 
         Command dummyCommand = new Command("dummy", "", Command.ITEM, 0);
         button1.addCommand(dummyCommand);
@@ -207,9 +217,10 @@ public class FormItemTest extends ItemUITestBase {
     /**
      * Test that command are working properly in case of
      */
-    public void testRemoveItemsWhenBackground() {
-        Form forma = new Form ("Form A");
-        Form formb = new Form ("Form B");
+    public void testRemoveItemsWhenBackground()
+    {
+        Form forma = new Form("Form A");
+        Form formb = new Form("Form B");
         Command dummyCommand1 = new Command("dummy1", "", Command.ITEM, 0);
         Command dummyCommand2 = new Command("dummy2", "", Command.ITEM, 0);
         Command dummyCommand3 = new Command("dummy3", "", Command.ITEM, 0);

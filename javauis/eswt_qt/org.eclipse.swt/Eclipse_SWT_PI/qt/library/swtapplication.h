@@ -15,6 +15,7 @@
 #include <QObject>
 #include <QApplication>
 #include <QTime>
+#include <QPointer>
 #include <jni.h>
 #include "jniutils.h"
 

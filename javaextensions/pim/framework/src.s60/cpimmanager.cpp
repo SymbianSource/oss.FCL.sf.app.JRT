@@ -20,6 +20,7 @@
 #include "cpimmanager.h"
 #include <e32std.h>
 #include <badesca.h>
+#include <calsession.h>
 #include "pimcommon.h"
 #include "mpimcontactadaptermanager.h"
 #include "mpimeventadaptermanager.h"
@@ -44,8 +45,13 @@
 #include "pimjnitools.h"
 #include "pimutils.h"
 #include "jstringutils.h"
+#include "fs_methodcall.h"
 #include "logger.h"
 #include "cpimlocalizationmanager.h"
+
+#include "s60commonutils.h"
+
+
 
 // CONSTANTS
 
@@ -74,7 +80,23 @@ void CPIMManager::ConstructL()
     = (MPIMLocalizationManager*)(CPIMLocalizationManager::NewL());
 
     createServerToNewThread();
-}
+        CallMethodL(this, &CPIMManager::CreateCalSessionL, this);
+    }
+
+void CPIMManager::CreateCalSessionL()
+    {
+    		iCalSession = CCalSession::NewL();    	   		
+    		TRAPD(err, iCalSession->OpenL(iCalSession->DefaultFileNameL()));
+        if ( KErrNotFound == err)
+        {
+          iCalSession->CreateCalFileL(iCalSession->DefaultFileNameL());
+          iCalSession->OpenL(iCalSession->DefaultFileNameL());
+        }
+        else
+        {
+          User::LeaveIfError(err);
+        }      			    			
+    }
 
 pimbasemanager* pimbasemanager::getInstance()
 {
@@ -134,10 +156,17 @@ CPIMManager::~CPIMManager()
     iContactValidator = NULL;
     delete iEventValidator;
     iEventValidator = NULL;
-    delete iToDoValidator;
+    delete iToDoValidator;    
+    CallMethod(this, &CPIMManager::DeleteSessions, this);   
+
     iToDoValidator = NULL;
     stopServer();
 }
+void CPIMManager::DeleteSessions()
+	{
+    delete iCalSession;
+    iCalSession = NULL;
+	}
 
 void CPIMManager::dispose()
 {
@@ -335,12 +364,11 @@ CPIMEventList* CPIMManager::DoOpenEventListL(const TDesC* aListName)
 
     MPIMEventAdapterManager* eventAdapterManager = NULL;
     MPIMEventListAdapter* eventListAdapter = NULL;
-    MPIMLocalizationData* localizationData = NULL;
-
+    MPIMLocalizationData* localizationData = NULL;    
     const TInt n = iAdapterAccesses.Count();
     for (TInt i = 0; i < n; i++)
     {
-        if (iAdapterAccesses[i]->OpenEventListL(aListName,
+        if (iAdapterAccesses[i]->OpenEventListL(iCalSession,aListName,
                                                 &eventAdapterManager, &eventListAdapter, &localizationData))
         {
             // got one
@@ -369,12 +397,11 @@ CPIMToDoList* CPIMManager::DoOpenToDoListL(const TDesC* aListName)
 
     MPIMToDoAdapterManager* toDoAdapterManager = NULL;
     MPIMToDoListAdapter* toDoListAdapter = NULL;
-    MPIMLocalizationData* localizationData = NULL;
-
+    MPIMLocalizationData* localizationData = NULL;    
     const TInt n = iAdapterAccesses.Count();
     for (TInt i = 0; i < n; i++)
     {
-        if (iAdapterAccesses[i]->OpenToDoListL(aListName, &toDoAdapterManager,
+        if (iAdapterAccesses[i]->OpenToDoListL(iCalSession,aListName, &toDoAdapterManager,
                                                &toDoListAdapter, &localizationData))
         {
             // got one

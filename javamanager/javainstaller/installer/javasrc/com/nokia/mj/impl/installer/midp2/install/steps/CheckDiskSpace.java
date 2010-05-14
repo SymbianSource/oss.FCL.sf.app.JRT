@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -66,6 +66,7 @@ public class CheckDiskSpace extends ExeStep
                 Log.log("Choosing default installation drive");
                 Vector drives = new Vector();
                 SysUtil.getUserVisibleDrives(drives);
+                logDrives("User visible drives:", drives);
                 if (ball.iOldSuite == null ||
                         !SysUtil.isDrivePresent(ball.iInstallationDrive))
                 {
@@ -131,6 +132,7 @@ public class CheckDiskSpace extends ExeStep
         Vector aDrives, int aSizeInBytes)
     {
         sortDrives(aDrives);
+        logDrives("Sorted drives:", aDrives);
         for (int i = 0; i < aDrives.size(); i++)
         {
             DriveInfo drive = (DriveInfo)aDrives.elementAt(i);
@@ -163,14 +165,16 @@ public class CheckDiskSpace extends ExeStep
      */
     private static void sortDrives(Vector aDrives)
     {
-        for (int i = 1; i < aDrives.size(); i++)
+        for (int i = 0; i < aDrives.size(); i++)
         {
-            for (int j = 0; j < i; j++)
+            for (int j = i+1; j < aDrives.size(); j++)
             {
-                DriveInfo d1 = (DriveInfo)aDrives.elementAt(j);
-                DriveInfo d2 = (DriveInfo)aDrives.elementAt(i);
+                DriveInfo d1 = (DriveInfo)aDrives.elementAt(i);
+                DriveInfo d2 = (DriveInfo)aDrives.elementAt(j);
                 if (hasHigherPriority(d1, d2))
                 {
+                    Log.log(d1.getNumber() + " < " + d2.getNumber() +
+                            ", swap [" + i + "] and [" + j + "]");
                     aDrives.removeElementAt(j);
                     aDrives.insertElementAt(d2, i);
                 }
@@ -190,6 +194,23 @@ public class CheckDiskSpace extends ExeStep
                 }
             }
         }
+    }
+
+    /**
+     * Logs list of drives to info log.
+     */
+    private static void logDrives(String aMsg, Vector aDrives)
+    {
+        StringBuffer sortedDrives = new StringBuffer();
+        for (int i = 0; i < aDrives.size(); i++)
+        {
+            DriveInfo drive = (DriveInfo)aDrives.elementAt(i);
+            sortedDrives.append(" ").append(drive.getNumber())
+                .append(" (").append(drive.getDriveType())
+                .append(", ").append(drive.getFreeSpace()).append(")");
+
+        }
+        Log.log(aMsg + sortedDrives);
     }
 
     /**

@@ -167,6 +167,11 @@ public:
     void HandleResourceChangeL(TInt aType);
 
 private:
+    /**
+     * Resets user inactivity timers
+     */
+    void ResetInactivityTimeL();
+
     static TInt CreateToolkitL
     (
         JNIEnv&             aJni,

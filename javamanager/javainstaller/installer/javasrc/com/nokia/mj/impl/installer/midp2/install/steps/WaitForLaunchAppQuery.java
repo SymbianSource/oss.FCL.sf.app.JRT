@@ -27,9 +27,6 @@ import com.nokia.mj.impl.utils.Uid;
 /**
  * Installation step which waits until user has
  * answered to launch application query.
- *
- * @author Nokia Corporation
- * @version $Rev:  $ $Date:  $
  */
 public class WaitForLaunchAppQuery extends ExeStep
 {

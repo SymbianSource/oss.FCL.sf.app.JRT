@@ -135,7 +135,7 @@ private:
      * Link fragment text color.
      */
     TRgb iLinkColor;
-    
+
     /**
      * Link fragment text color when highlighted.
      */
@@ -162,7 +162,7 @@ private:
      * Not own.
      */
     MTouchFeedback* iFeedback;
-    
+
     /**
      * True for as long as pressed by pointer.
      * Eclipses ASwtControlBase::iPressed!

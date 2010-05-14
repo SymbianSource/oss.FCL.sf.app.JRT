@@ -72,7 +72,8 @@ public class OcspListener implements OcspEventListener
                 }
                 catch (Throwable t)
                 {
-                    Log.logError("Exception from InstallerUi.setOcspIndicator", t);
+                    Log.logError(
+                        "OcspListener: Exception from InstallerUi.setOcspIndicator", t);
                 }
             }
             if (iBall.iSifNotifier != null)
@@ -85,7 +86,8 @@ public class OcspListener implements OcspEventListener
                 }
                 catch (Throwable t)
                 {
-                    Log.logError("SifNotifier.notifyProgress threw exception", t);
+                    Log.logError(
+                        "OcspListener: SifNotifier.notifyProgress threw exception", t);
                 }
             }
         }
@@ -101,7 +103,8 @@ public class OcspListener implements OcspEventListener
                     }
                     catch (Throwable t)
                     {
-                        Log.logError("Exception from InstallerUi.setOcspIndicator", t);
+                        Log.logError(
+                            "OcspListener: Exception from InstallerUi.setOcspIndicator", t);
                     }
                 }
                 if (iBall.iSifNotifier != null)
@@ -114,7 +117,8 @@ public class OcspListener implements OcspEventListener
                     }
                     catch (Throwable t)
                     {
-                        Log.logError("SifNotifier.notifyProgress threw exception", t);
+                        Log.logError(
+                            "OcspListener: SifNotifier.notifyProgress threw exception", t);
                     }
                 }
                 // Notify InstallBall so that WaitForOcsp step can proceed.
@@ -123,7 +127,8 @@ public class OcspListener implements OcspEventListener
         }
         else
         {
-            Log.logError("OcspListener.ocspEvent: Unknown event: " + aEventId);
+            Log.logError(
+                "OcspListener.ocspEvent: Unknown event: " + aEventId);
         }
     }
 }

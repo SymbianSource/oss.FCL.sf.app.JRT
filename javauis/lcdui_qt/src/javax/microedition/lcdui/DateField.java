@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -23,7 +23,8 @@ import org.eclipse.swt.graphics.Point;
 /**
  * Implementation of LCDUI <code>DateField</code> class.
  */
-public class DateField extends Item {
+public class DateField extends Item
+{
 
     /**
      * Input mode that displays only date.
@@ -54,7 +55,8 @@ public class DateField extends Item {
      * @throws IllegalArgumentException if input mode is not one of the
      *      constants defined in this class.
      */
-    public DateField(String label, int mode) {
+    public DateField(String label, int mode)
+    {
         this(label, mode, null);
     }
 
@@ -67,7 +69,8 @@ public class DateField extends Item {
      * @throws IllegalArgumentException if input mode is not one of the
      *             constants defined in this class.
      */
-    public DateField(String label, int mode, TimeZone timeZone) {
+    public DateField(String label, int mode, TimeZone timeZone)
+    {
         setLabel(label);
         setInputMode(mode);
         this.timeZone = timeZone;
@@ -78,22 +81,26 @@ public class DateField extends Item {
      *
      * @return Date, or null if date not set.
      */
-    public Date getDate() {
-    	 if (date == null) {
-    		 return null;
-    	 }
-    	 Calendar calendar = Calendar.getInstance();
-    	 calendar.setTime(date);
-    	 if (mode == TIME) {
-    	    calendar.set(Calendar.YEAR,Config.DATEFIELD_ZERO_EPOCH_YEAR);
-			    calendar.set(Calendar.MONTH,Calendar.JANUARY);
-			    calendar.set(Calendar.DAY_OF_MONTH,1);
+    public Date getDate()
+    {
+        if(date == null)
+        {
+            return null;
         }
-        else if (mode == DATE) {
-        	 calendar.set(Calendar.HOUR_OF_DAY,0);
-			     calendar.set(Calendar.MINUTE,0);
-			     calendar.set(Calendar.SECOND,0);
-			  }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        if(mode == TIME)
+        {
+            calendar.set(Calendar.YEAR,Config.DATEFIELD_ZERO_EPOCH_YEAR);
+            calendar.set(Calendar.MONTH,Calendar.JANUARY);
+            calendar.set(Calendar.DAY_OF_MONTH,1);
+        }
+        else if(mode == DATE)
+        {
+            calendar.set(Calendar.HOUR_OF_DAY,0);
+            calendar.set(Calendar.MINUTE,0);
+            calendar.set(Calendar.SECOND,0);
+        }
         return calendar.getTime();//date;
     }
 
@@ -102,7 +109,8 @@ public class DateField extends Item {
      *
      * @param newDate New date. If null, current date is cleared.
      */
-    public void setDate(Date newDate) {
+    public void setDate(Date newDate)
+    {
         internalSetDate(newDate);
         updateParent(UPDATE_CONTENT);
     }
@@ -112,7 +120,8 @@ public class DateField extends Item {
      *
      * @return Input mode.
      */
-    public int getInputMode() {
+    public int getInputMode()
+    {
         return mode;
     }
 
@@ -124,12 +133,14 @@ public class DateField extends Item {
      * @throws IllegalArgumentException if input mode is not one of the
      *      constants defined in this class.
      */
-    public void setInputMode(int inputMode) {
-        if ((inputMode != DATE)
+    public void setInputMode(int inputMode)
+    {
+        if((inputMode != DATE)
                 && (inputMode != TIME)
-                && (inputMode != DATE_TIME)) {
+                && (inputMode != DATE_TIME))
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.DATEFIELD_EXCEPTION_INVALID_MODE);
+                MsgRepository.DATEFIELD_EXCEPTION_INVALID_MODE);
         }
         mode = inputMode;
         updateParent(UPDATE_SIZE_CHANGED);
@@ -140,7 +151,8 @@ public class DateField extends Item {
      *
      * @return Minimum size.
      */
-    Point calculateMinimumSize() {
+    Point calculateMinimumSize()
+    {
         return DateFieldLayouter.calculateMinimumBounds(this);
     }
 
@@ -149,7 +161,8 @@ public class DateField extends Item {
      *
      * @return Preferred size.
      */
-    Point calculatePreferredSize() {
+    Point calculatePreferredSize()
+    {
         return DateFieldLayouter.calculatePreferredBounds(this);
     }
 
@@ -158,7 +171,8 @@ public class DateField extends Item {
      *
      * @return Timezone or null if no timezone set.
      */
-    TimeZone getTimeZone() {
+    TimeZone getTimeZone()
+    {
         return timeZone;
     }
 
@@ -167,38 +181,45 @@ public class DateField extends Item {
      *
      * @param newDate new date
      */
-    void internalSetDate(Date newDate) {
-        if (newDate == null) {
+    void internalSetDate(Date newDate)
+    {
+        if(newDate == null)
+        {
             date = null;
         }
-        else {
+        else
+        {
             Calendar calendar = Calendar.getInstance();
-            if (timeZone != null) {
+            if(timeZone != null)
+            {
                 calendar.setTimeZone(timeZone);
             }
             calendar.setTime(newDate);
 
-            switch (mode) {
-                case TIME:
-                    if ((calendar.get(Calendar.YEAR) != Config.DATEFIELD_ZERO_EPOCH_YEAR)
-                            || (calendar.get(Calendar.MONTH) != Calendar.JANUARY)
-                            || (calendar.get(Calendar.DAY_OF_MONTH) != 1)) {
-                        date = null;
-                    }
-                    else {
-                        date = calendar.getTime();
-                    }
-                    break;
-                case DATE:
-                    calendar.set(Calendar.HOUR_OF_DAY, 0);
-                    calendar.set(Calendar.MINUTE, 0);
+            switch(mode)
+            {
+            case TIME:
+                if((calendar.get(Calendar.YEAR) != Config.DATEFIELD_ZERO_EPOCH_YEAR)
+                        || (calendar.get(Calendar.MONTH) != Calendar.JANUARY)
+                        || (calendar.get(Calendar.DAY_OF_MONTH) != 1))
+                {
+                    date = null;
+                }
+                else
+                {
                     date = calendar.getTime();
-                    break;
-                case DATE_TIME:
-                    date = calendar.getTime();
-                    break;
-                default:
-                    break;
+                }
+                break;
+            case DATE:
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+                calendar.set(Calendar.MINUTE, 0);
+                date = calendar.getTime();
+                break;
+            case DATE_TIME:
+                date = calendar.getTime();
+                break;
+            default:
+                break;
             }
         }
     }
@@ -208,14 +229,16 @@ public class DateField extends Item {
      *
      * @return layout directive.
      */
-    int internalGetLayout() {
+    int internalGetLayout()
+    {
         return super.internalGetLayout() | Item.LAYOUT_NEWLINE_BEFORE;
     }
 
     /* (non-Javadoc)
      * @see javax.microedition.lcdui.Item#isFocusable()
      */
-    boolean isFocusable() {
+    boolean isFocusable()
+    {
         return true;
     }
 }

@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -19,7 +19,8 @@ package javax.microedition.lcdui;
 /**
  * Implementation of LCDUI <code>AlertType</code> class.
  */
-public class AlertType extends Object {
+public class AlertType extends Object
+{
 
     /**
      * Alarm Alert type.
@@ -49,7 +50,8 @@ public class AlertType extends Object {
     /**
      * Protected constructor for subclasses.
      */
-    protected AlertType() {
+    protected AlertType()
+    {
     }
 
     /**
@@ -58,10 +60,12 @@ public class AlertType extends Object {
      * @param display on which the sound should be played
      * @return true is the sound was played, false otherwise.
      */
-    public boolean playSound(Display display) {
-        if (display == null) {
+    public boolean playSound(Display display)
+    {
+        if(display == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.ALERTTYPE_EXCEPTION_PLAYSOUND_NULL_POINTER);
+                MsgRepository.ALERTTYPE_EXCEPTION_PLAYSOUND_NULL_POINTER);
         }
         // TODO: eSWT support required
         return false;

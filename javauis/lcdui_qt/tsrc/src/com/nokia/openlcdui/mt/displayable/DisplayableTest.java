@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt.displayable;
@@ -30,7 +30,8 @@ import com.nokia.openlcdui.mt.SWTTestCase;
  * <br>
  * Created: 2008-04-21
  */
-public class DisplayableTest extends SWTTestCase {
+public class DisplayableTest extends SWTTestCase
+{
 
     private static final int MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX = 100;
 
@@ -39,7 +40,8 @@ public class DisplayableTest extends SWTTestCase {
     /**
      * Constructor.
      */
-    public DisplayableTest() {
+    public DisplayableTest()
+    {
     }
 
     /**
@@ -48,12 +50,14 @@ public class DisplayableTest extends SWTTestCase {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public DisplayableTest(String sTestName) {
+    public DisplayableTest(String sTestName)
+    {
         super(sTestName);
     }
 
-    protected void setUp() throws Exception {
-    	display = Display.getDisplay(getMIDlet());
+    protected void setUp() throws Exception
+    {
+        display = Display.getDisplay(getMIDlet());
     }
 
     /**
@@ -62,23 +66,26 @@ public class DisplayableTest extends SWTTestCase {
      *
      * @return New testsuite.
      */
-    public static Test suite() {
-		TestSuite suite = new TestSuite();
+    public static Test suite()
+    {
+        TestSuite suite = new TestSuite();
 
-	    java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Vector methodNames;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = DisplayableTest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new DisplayableTest((String)e.nextElement()));
-	    }
+        // Add widget tests
+        methodNames = DisplayableTest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new DisplayableTest((String)e.nextElement()));
+        }
 
-		return suite;        
+        return suite;
     }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testAddNullCommand");
         methodNames.addElement("testRemoveCommandCrash");
@@ -87,29 +94,33 @@ public class DisplayableTest extends SWTTestCase {
         methodNames.addElement("testAddRemoveCommandWithoutListener");
         return methodNames;
     }
-    
-    protected void runTest() throws Throwable {
-        if (getName().equals("testAddNullCommand")) testAddNullCommand();
-        else if (getName().equals("testRemoveCommandCrash")) testRemoveCommandCrash();
-        else if (getName().equals("testAccessors")) testAccessors();
-        else if (getName().equals("testNullAndEmptyTitle")) testNullAndEmptyTitle();
-        else if (getName().equals("testAddRemoveCommandWithoutListener")) testAddRemoveCommandWithoutListener();
+
+    protected void runTest() throws Throwable
+    {
+        if(getName().equals("testAddNullCommand")) testAddNullCommand();
+        else if(getName().equals("testRemoveCommandCrash")) testRemoveCommandCrash();
+        else if(getName().equals("testAccessors")) testAccessors();
+        else if(getName().equals("testNullAndEmptyTitle")) testNullAndEmptyTitle();
+        else if(getName().equals("testAddRemoveCommandWithoutListener")) testAddRemoveCommandWithoutListener();
         else super.runTest();
     }
-    
-    
+
+
     /**
      * Test that addCommand throws NullPointerException if parameter is null.
      */
-    public void testAddNullCommand() {
+    public void testAddNullCommand()
+    {
         TextBox textBox = new TextBox(getName(), "content",
-                MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX, 0);
+                                      MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX, 0);
 
-        try {
+        try
+        {
             textBox.addCommand(null);
             fail("NullPointerException should be thrown");
         }
-        catch (NullPointerException ex) {
+        catch(NullPointerException ex)
+        {
             // Ok
         }
     }
@@ -117,9 +128,10 @@ public class DisplayableTest extends SWTTestCase {
     /**
      * Make some tests for invalid operations on Commands.
      */
-    public void testRemoveCommandCrash() {
+    public void testRemoveCommandCrash()
+    {
         TextBox textBox = new TextBox(getName(), "content",
-                MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX, 0);
+                                      MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX, 0);
         Command c1 = new Command("item1", Command.ITEM, 0);
         Command c2 = new Command("item2", Command.ITEM, 0);
 
@@ -144,38 +156,44 @@ public class DisplayableTest extends SWTTestCase {
     /**
      * Tests the basic functionality of the accessor methods.
      */
-    public void testAccessors() {
+    public void testAccessors()
+    {
         TextBox textBox = new TextBox(getName(), "content",
-                MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX, 0);
+                                      MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX, 0);
 
         Ticker ticker = new Ticker("test ticker");
 
         // No ticker should exist by default:
-        if (textBox.getTicker() != null) {
+        if(textBox.getTicker() != null)
+        {
             fail("getTicker() returned non-null value by default.");
         }
 
         // Test to set ticker and verify that the correct ticker is returned
         // when queried.
         textBox.setTicker(ticker);
-        if (textBox.getTicker() != ticker) {
+        if(textBox.getTicker() != ticker)
+        {
             fail("getTicker() returned null or wrong ticker.");
         }
 
         // Test title set in constructor:
-        if (!textBox.getTitle().equals(getName())) {
+        if(!textBox.getTitle().equals(getName()))
+        {
             fail("Invalid initial title returned.");
         }
 
         // Test to set title and verify results:
         textBox.setTitle("newTitle");
-        if (!textBox.getTitle().equals("newTitle")) {
+        if(!textBox.getTitle().equals("newTitle"))
+        {
             fail("Invalid title returned.");
         }
 
         // Test to remove title and verify results:
         textBox.setTitle(null);
-        if (textBox.getTitle() != null) {
+        if(textBox.getTitle() != null)
+        {
             fail("title not removed.");
         }
 
@@ -184,7 +202,8 @@ public class DisplayableTest extends SWTTestCase {
         display.setCurrent(textBox);
         block(200);
 
-        if (!textBox.isShown()) {
+        if(!textBox.isShown())
+        {
             fail("isShown() returned false even when displayable is visible.");
         }
         textBox.setTicker(null);
@@ -194,19 +213,22 @@ public class DisplayableTest extends SWTTestCase {
      * Tests to set and get null and empty string to title and verifies that
      * returned value is always what was set.
      */
-    public void testNullAndEmptyTitle() {
+    public void testNullAndEmptyTitle()
+    {
         TextBox textBox = new TextBox(getName(), "content",
-                MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX, 0);
+                                      MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX, 0);
 
         // Use empty string as title and verify getTitle()'s return value:
         textBox.setTitle("");
-        if (!textBox.getTitle().equals("")) {
+        if(!textBox.getTitle().equals(""))
+        {
             fail("failed to use empty string as title.");
         }
 
         // Test to set title to null and verify results:
         textBox.setTitle(null);
-        if (textBox.getTitle() != null) {
+        if(textBox.getTitle() != null)
+        {
             fail("title not null when expected.");
         }
     }
@@ -215,9 +237,10 @@ public class DisplayableTest extends SWTTestCase {
      * Test to add command to displayable and then remove it without setting
      * command listener before or after.
      */
-    public void testAddRemoveCommandWithoutListener() {
+    public void testAddRemoveCommandWithoutListener()
+    {
         TextBox textBox = new TextBox(getName(), "content",
-                MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX, 0);
+                                      MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX, 0);
 
         Command c1 = new Command("CommandForDisplayable", Command.CANCEL, 1);
 

@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui.game;
@@ -22,7 +22,8 @@ import javax.microedition.lcdui.Image;
 /**
  * LCDUI Layer class.
  */
-public abstract class Layer {
+public abstract class Layer
+{
 
     int x;
     int y;
@@ -40,12 +41,14 @@ public abstract class Layer {
      * Package level constructor prevents Layer being subclassed. This is
      * consistent with the MIDP 2.0 RI.
      */
-    Layer(Image tileImage, int frameWidth, int frameHeight) {
+    Layer(Image tileImage, int frameWidth, int frameHeight)
+    {
         visible = true;
         setTileImage(tileImage, frameWidth, frameHeight);
     }
 
-    Layer(Layer from) {
+    Layer(Layer from)
+    {
         x = from.x;
         y = from.y;
         visible = from.visible;
@@ -56,37 +59,45 @@ public abstract class Layer {
         tileColumns = from.tileColumns;
     }
 
-    public void setPosition(int x, int y) {
+    public void setPosition(int x, int y)
+    {
         this.x = x;
         this.y = y;
     }
 
-    public void move(int deltaX, int deltaY) {
+    public void move(int deltaX, int deltaY)
+    {
         x += deltaX;
         y += deltaY;
     }
 
-    public final int getX() {
+    public final int getX()
+    {
         return x;
     }
 
-    public final int getY() {
+    public final int getY()
+    {
         return y;
     }
 
-    public final int getWidth() {
+    public final int getWidth()
+    {
         return getLayerWidth();
     }
 
-    public final int getHeight() {
+    public final int getHeight()
+    {
         return getLayerHeight();
     }
 
-    public void setVisible(boolean visible) {
+    public void setVisible(boolean visible)
+    {
         this.visible = visible;
     }
 
-    public final boolean isVisible() {
+    public final boolean isVisible()
+    {
         return visible;
     }
 
@@ -100,8 +111,10 @@ public abstract class Layer {
      * Set the source image and tile size. checks that the image is completely
      * tiled. computes the tile count.
      */
-    void setTileImage(Image tileImage, int tileWidth, int tileHeight) {
-        if (tileWidth > 0 && tileHeight > 0) {
+    void setTileImage(Image tileImage, int tileWidth, int tileHeight)
+    {
+        if(tileWidth > 0 && tileHeight > 0)
+        {
             final int imageWidth = tileImage.getWidth();
             final int imageHeight = tileImage.getHeight();
 
@@ -111,7 +124,8 @@ public abstract class Layer {
             int totalHeight = rows * tileHeight;
             int totalWidth = cols * tileWidth;
 
-            if (totalHeight == imageHeight && totalWidth == imageWidth) {
+            if(totalHeight == imageHeight && totalWidth == imageWidth)
+            {
                 this.tileImage = tileImage;
                 this.tileWidth = tileWidth;
                 this.tileHeight = tileHeight;
@@ -121,13 +135,14 @@ public abstract class Layer {
             }
         }
         throw new IllegalArgumentException(
-                MsgRepository.LAYER_EXCEPTION_INVALID_TILE_WIDTH_HEIGHT);
+            MsgRepository.LAYER_EXCEPTION_INVALID_TILE_WIDTH_HEIGHT);
     }
 
     /**
      * Is Layer visible in Graphics clip region.
      */
-    final boolean isVisible(Graphics graphics, int pX, int pY) {
+    final boolean isVisible(Graphics graphics, int pX, int pY)
+    {
         int x1 = x + pX;
         int y1 = y + pY;
         int x2 = x1 + getWidth();

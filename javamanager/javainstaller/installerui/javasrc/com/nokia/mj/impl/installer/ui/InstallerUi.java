@@ -372,17 +372,21 @@ public class InstallerUi
     }
 
     /**
+     * Hides or unhides InstallerUi.
+     */
+    public void hide(boolean aHide)
+    {
+    }
+
+    /**
      * Writes an info log entry to JavaInstaller log.
      *
      * @param aMsg message to be logged
      */
     public static void log(String aMsg)
     {
-        if (Logger.Activated[Logger.EJavaInstaller])
-        {
-            String msg = iThisClassName + ": " + aMsg;
-            Logger.LOG(Logger.EJavaInstaller, Logger.EInfo, msg);
-        }
+        String msg = iThisClassName + ": " + aMsg;
+        Logger.ILOG(Logger.EJavaInstaller, msg);
     }
 
     /**

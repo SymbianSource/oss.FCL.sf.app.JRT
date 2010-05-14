@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package t_screenshots.textbox;
@@ -60,13 +60,15 @@ import com.nokia.mj.impl.uitestutils.Key;
  *
  */
 
-public class TextBoxInputModeSTest extends UITestBase {
+public class TextBoxInputModeSTest extends UITestBase
+{
     private static final int LENGTH = 2000;
 
     /**
      * Empty constructor.
      */
-    public TextBoxInputModeSTest() {
+    public TextBoxInputModeSTest()
+    {
 
     }
 
@@ -75,65 +77,77 @@ public class TextBoxInputModeSTest extends UITestBase {
      * @param sTestName name of the test
      * @param rTestMethod TestMethod used
      */
-    public TextBoxInputModeSTest(String sTestName, TestMethod rTestMethod) {
-		super(sTestName, rTestMethod);
-	}
+    public TextBoxInputModeSTest(String sTestName, TestMethod rTestMethod)
+    {
+        super(sTestName, rTestMethod);
+    }
 
     /***************************************************************************
-	 * To create the test suite. You need to add a new aSuite.addTest antry for
-	 * any new test methods.
-	 *
-	 * @return test suite
-	 */
-    public Test suite() {
+     * To create the test suite. You need to add a new aSuite.addTest antry for
+     * any new test methods.
+     *
+     * @return test suite
+     */
+    public Test suite()
+    {
         TestSuite aSuite = new TestSuite();
 
 
 
         aSuite.addTest(new TextBoxInputModeSTest("testEditOptWhenLatDigits",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((TextBoxInputModeSTest) tc).testEditOptWhenLatDigits();
-                    }
-                }
-        ));
+                       new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((TextBoxInputModeSTest) tc).testEditOptWhenLatDigits();
+            }
+        }
+                                                ));
 
         aSuite.addTest(new TextBoxInputModeSTest("testEditOptionsWhenLatin",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((TextBoxInputModeSTest) tc).testEditOptionsWhenLatin();
-                    }
-                }
-        ));
+                       new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((TextBoxInputModeSTest) tc).testEditOptionsWhenLatin();
+            }
+        }
+                                                ));
 
         aSuite.addTest(new TextBoxInputModeSTest("testEditOptionsWhenArabic",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((TextBoxInputModeSTest) tc)
-                            .testEditOptionsWhenArabic();
-                    }
-                }
-        ));
+                       new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((TextBoxInputModeSTest) tc)
+                .testEditOptionsWhenArabic();
+            }
+        }
+                                                ));
 
         aSuite.addTest(new TextBoxInputModeSTest(
-            "testEditOptionsWhenNonPredictive",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((TextBoxInputModeSTest) tc)
-                            .testEditOptionsWhenNonPredictive();
-                    }
-                }
-        ));
+                           "testEditOptionsWhenNonPredictive",
+                           new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((TextBoxInputModeSTest) tc)
+                .testEditOptionsWhenNonPredictive();
+            }
+        }
+                       ));
 
         aSuite.addTest(new TextBoxInputModeSTest(
-            "testEditOptionsWhenPassword",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((TextBoxInputModeSTest) tc)
-                            .testEditOptionsWhenPassword();
-                    }
-                }
-        ));
+                           "testEditOptionsWhenPassword",
+                           new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((TextBoxInputModeSTest) tc)
+                .testEditOptionsWhenPassword();
+            }
+        }
+                       ));
         return aSuite;
     }
 
@@ -142,14 +156,15 @@ public class TextBoxInputModeSTest extends UITestBase {
      * Tests EditOptions menu after setInitialInputMode("IS_LATIN_DIGITS")
      * in order to see that the user can change the input mode.
      */
-    private void testEditOptWhenLatDigits() {
+    private void testEditOptWhenLatDigits()
+    {
 
         doInputModeTest(getName(),
-                TextField.ANY, "IS_LATIN_DIGITS",
-                "",                             // initial content
-                // key presses
-                new int[]{'2', '3', '4', '5', Key.Edit, Key.CBA1},
-                null);
+                        TextField.ANY, "IS_LATIN_DIGITS",
+                        "",                             // initial content
+                        // key presses
+                        new int[] {'2', '3', '4', '5', Key.Edit, Key.CBA1},
+                        null);
     }
 
     /**
@@ -157,13 +172,14 @@ public class TextBoxInputModeSTest extends UITestBase {
      * in order to see that the user can change the input mode and
      * and the input language.
      */
-    private void testEditOptionsWhenLatin () {
+    private void testEditOptionsWhenLatin()
+    {
         doInputModeTest(getName(),
-                TextField.ANY, "IS_LATIN",
-                "",                             // initial content
-                // key presses
-                new int[]{'2', '3', '4', '5', Key.Edit, Key.CBA1},
-                null);
+                        TextField.ANY, "IS_LATIN",
+                        "",                             // initial content
+                        // key presses
+                        new int[] {'2', '3', '4', '5', Key.Edit, Key.CBA1},
+                        null);
     }
 
     /**
@@ -171,13 +187,14 @@ public class TextBoxInputModeSTest extends UITestBase {
      * in order to see that the user can change the input mode the
      * input language and also Arabic Number mode.
      */
-    private void testEditOptionsWhenArabic() {
+    private void testEditOptionsWhenArabic()
+    {
         doInputModeTest(getName(),
-                TextField.ANY, "UCB_ARABIC",
-                "",                             // initial content
-                // key presses
-                new int[]{'2', '3', '4', '5', Key.Edit, Key.CBA1},
-                null);  // no expected content, screenshot taken
+                        TextField.ANY, "UCB_ARABIC",
+                        "",                             // initial content
+                        // key presses
+                        new int[] {'2', '3', '4', '5', Key.Edit, Key.CBA1},
+                        null);  // no expected content, screenshot taken
     }
 
     /**
@@ -185,13 +202,14 @@ public class TextBoxInputModeSTest extends UITestBase {
      * when NON_PREDICTIVE. Edit Options menu does not contain any
      * "Predictive text on" menu item.
      */
-    private void testEditOptionsWhenNonPredictive() {
+    private void testEditOptionsWhenNonPredictive()
+    {
         doInputModeTest(getName(),
-                TextField.NON_PREDICTIVE, "UCB_GREEK",
-                "",                             // initial content
-                // key presses
-                new int[]{'2', '3', '4', '5', Key.Edit, Key.CBA1},
-                null);  // no expected content, screenshot taken
+                        TextField.NON_PREDICTIVE, "UCB_GREEK",
+                        "",                             // initial content
+                        // key presses
+                        new int[] {'2', '3', '4', '5', Key.Edit, Key.CBA1},
+                        null);  // no expected content, screenshot taken
     }
 
     /**
@@ -199,13 +217,14 @@ public class TextBoxInputModeSTest extends UITestBase {
      * when PASSWORD. Edit Options menu does not contain any
      * "Predictive text on" menu item.
      */
-    private void testEditOptionsWhenPassword() {
+    private void testEditOptionsWhenPassword()
+    {
         doInputModeTest(getName(),
-                TextField.PASSWORD, "UCB_HEBREW",
-                "",                             // initial content
-                // key presses
-                new int[]{'2', '3', '4', '5', Key.Edit, Key.CBA1},
-                null);  // no expected content, screenshot taken
+                        TextField.PASSWORD, "UCB_HEBREW",
+                        "",                             // initial content
+                        // key presses
+                        new int[] {'2', '3', '4', '5', Key.Edit, Key.CBA1},
+                        null);  // no expected content, screenshot taken
     }
 
 
@@ -229,20 +248,24 @@ public class TextBoxInputModeSTest extends UITestBase {
                                  String initialInputMode,
                                  String initialContent,
                                  int[] pressedKeys,
-                                 String expectedContent) {
+                                 String expectedContent)
+    {
 
         boolean passed = true;
         SpedeRunner spede = (SpedeRunner) SpedeRunner.getInstance();
-        try {
+        try
+        {
             // Create TextBox
             TextBox textBox = new TextBox(
-                    testCaseName, // title
-                    initialContent, LENGTH, constraints);
+                testCaseName, // title
+                initialContent, LENGTH, constraints);
             // Set initial input mode before displaying TextBox
-            if ("NONE".equals(initialInputMode)) {
+            if("NONE".equals(initialInputMode))
+            {
                 // initial input mode not set
             }
-            else {
+            else
+            {
                 textBox.setInitialInputMode(initialInputMode);
                 block(KEYEVENT_DELAY);
             }
@@ -250,19 +273,23 @@ public class TextBoxInputModeSTest extends UITestBase {
             setCurrent(textBox);
 
             // Do key presses
-            if (pressedKeys != null) {
-                for (int i = 0; i < pressedKeys.length; i++) {
+            if(pressedKeys != null)
+            {
+                for(int i = 0; i < pressedKeys.length; i++)
+                {
                     key(pressedKeys[i]);
-                    if (pressedKeys[i] == Key.Edit) {
+                    if(pressedKeys[i] == Key.Edit)
+                    {
                         passed = spede.takeScreenshot(testCaseName + ".gif");
                     }
                 }
             }
 
         }
-        catch (Exception exc) {
+        catch(Exception exc)
+        {
             spede.addToResultsList(testCaseName + " test failed: "
-                    + exc.toString());
+                                   + exc.toString());
             spede.addToResultsList(exc);
             passed = false;
         }

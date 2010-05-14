@@ -12,7 +12,7 @@
 * Contributors:
 *
 * Description:  THIS FILE IS NOT INCLUDED INTO ECLIPSE CVS DELIVERY
-*               An interface to sent events from using CSwtDcObserver. 
+*               An interface to sent events from using CSwtDcObserver.
 *
 */
 
@@ -22,7 +22,7 @@
 class MSwtDcEventConsumer
 {
 public:
-    virtual void HandleDcEvent(int aType) = 0;    
+    virtual void HandleDcEvent(int aType) = 0;
 };
 
 #endif // SWTDCEVENTCONSUMER_H

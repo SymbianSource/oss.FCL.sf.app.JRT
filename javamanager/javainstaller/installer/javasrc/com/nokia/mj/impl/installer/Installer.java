@@ -70,9 +70,6 @@ import java.util.Vector;
  * JavaInstaller main class. JavaInstaller can be started either with
  * #main(String[]) or #mainWithResult(String[]) methods. Negative return
  * values indicate that execution has failed.
- *
- * @author Nokia Corporation
- * @version $Rev: 10413 $
  */
 public class Installer
 {

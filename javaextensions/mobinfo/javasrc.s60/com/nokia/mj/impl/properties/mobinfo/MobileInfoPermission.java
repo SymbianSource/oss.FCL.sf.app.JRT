@@ -27,6 +27,7 @@ public class MobileInfoPermission extends PermissionBase
     // the known target names
     private static final String IMSI_TARGET_NAME = "mobinfo.imsi";
     private static final String MSISDN_TARGET_NAME = "mobinfo.msisdn";
+    private static final String CELLID_TARGET_NAME = "mobinfo.cellid";
     private static final String PUBLIC_INFO_TARGET_NAME = "mobinfo.publicinfo";
 
     private String iTarget = null;
@@ -38,6 +39,7 @@ public class MobileInfoPermission extends PermissionBase
         // figure out the target
         if (IMSI_TARGET_NAME.equals(aUri)
                 || MSISDN_TARGET_NAME.equals(aUri)
+                || CELLID_TARGET_NAME.equals(aUri)
                 || PUBLIC_INFO_TARGET_NAME.equals(aUri))
         {
             // aUri contains a known target name -> save it as such
@@ -55,6 +57,10 @@ public class MobileInfoPermission extends PermissionBase
             else if (MobileInfoProperties.MSISDN.equals(aUri))
             {
                 iTarget = MSISDN_TARGET_NAME;
+            }
+            else if (MobileInfoProperties.CELLID.equals(aUri))
+            {
+                iTarget = CELLID_TARGET_NAME;
             }
             else
             {

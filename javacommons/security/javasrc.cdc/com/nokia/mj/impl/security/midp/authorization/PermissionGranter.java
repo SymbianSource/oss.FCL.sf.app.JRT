@@ -345,7 +345,8 @@ public final class PermissionGranter
             boolean permissions_from_mutually_exclusive_list_2 = false;
             boolean permissions_from_sensitive_combination_list_1 = false;
             boolean permissions_from_sensitive_combination_list_2 = false;
-            String blanketPermissionsDetails = "settings_inst_query_perm_sec";
+            boolean local_connectivity = false;
+            boolean net_access = false;
             Vector blanketPermissions =
                 new Vector();
             for (int i=0; i<grantedPermissions.size(); i++)
@@ -390,20 +391,28 @@ public final class PermissionGranter
                 {
                     permissions_from_mutually_exclusive_list_2 = true;
                     permissions_from_sensitive_combination_list_1 = true;
-                    blanketPermissionsDetails = "settings_inst_query_perm_net";
+                    net_access = true;
                 }
                 else if (settings.getName().equalsIgnoreCase(
-                             UserSecuritySettings.LOW_LEVEL_NET_ACCESS_SETTINGS)
-                         || settings.getName().equalsIgnoreCase(
+                             UserSecuritySettings.LOW_LEVEL_NET_ACCESS_SETTINGS))
+                {
+                    permissions_from_sensitive_combination_list_1 = true;
+                    net_access = true;
+                }
+                else if (settings.getName().equalsIgnoreCase(
                              UserSecuritySettings.MESSAGING_SETTINGS)
                          || settings.getName().equalsIgnoreCase(
                              UserSecuritySettings.RESTRICTED_MESSAGING_SETTINGS)
                          || settings.getName().equalsIgnoreCase(
-                             UserSecuritySettings.CALL_CONTROL_SETTINGS)
-                         || settings.getName().equalsIgnoreCase(
+                             UserSecuritySettings.CALL_CONTROL_SETTINGS))
+                {
+                    permissions_from_sensitive_combination_list_1 = true;
+                }
+                else if (settings.getName().equalsIgnoreCase(
                              UserSecuritySettings.LOCAL_CONNECTIVITY_SETTINGS))
                 {
                     permissions_from_sensitive_combination_list_1 = true;
+                    local_connectivity = true;
                 }
                 else if (settings.getName().equalsIgnoreCase(
                              UserSecuritySettings.MULTIMEDIA_RECORDING_SETTINGS)
@@ -433,6 +442,9 @@ public final class PermissionGranter
             if (permissions_from_sensitive_combination_list_1
                     && permissions_from_sensitive_combination_list_2)
             {
+                String blanketPermissionsDetails = ((local_connectivity && !net_access) ? 
+                    "settings_inst_query_perm_sec" : 
+                    "settings_inst_query_perm_net");
                 iBlanketPermissionsDetails.put(msUidKey,
                                                UserSecuritySettingsImpl.getLocalizedString(
                                                    blanketPermissionsDetails));

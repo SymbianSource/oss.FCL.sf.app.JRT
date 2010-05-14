@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -21,7 +21,8 @@ import org.eclipse.swt.graphics.Point;
 /**
  * Item representing a non-editable string.
  */
-public class StringItem extends Item {
+public class StringItem extends Item
+{
 
     private String text;
     private int appearanceMode;
@@ -33,7 +34,8 @@ public class StringItem extends Item {
      * @param label Label of StringItem.
      * @param txt Text of StringItem.
      */
-    public StringItem(String label, String txt) {
+    public StringItem(String label, String txt)
+    {
         this(label, txt, Item.PLAIN);
     }
 
@@ -48,11 +50,13 @@ public class StringItem extends Item {
      * @throws IllegalArgumentException If appearance mode is not one defined in
      *             Item-class.
      */
-    public StringItem(String label, String txt, int appMode) {
-        if ((appMode != Item.PLAIN) && (appMode != Item.BUTTON)
-                && (appMode != Item.HYPERLINK)) {
+    public StringItem(String label, String txt, int appMode)
+    {
+        if((appMode != Item.PLAIN) && (appMode != Item.BUTTON)
+                && (appMode != Item.HYPERLINK))
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.STRINGITEM_EXCEPTION_INVALID_APPMODE);
+                MsgRepository.STRINGITEM_EXCEPTION_INVALID_APPMODE);
         }
 
         appearanceMode = appMode;
@@ -66,7 +70,8 @@ public class StringItem extends Item {
      *
      * @return Text of the item. Could return null if the text is empty.
      */
-    public String getText() {
+    public String getText()
+    {
         return text;
     }
 
@@ -75,11 +80,14 @@ public class StringItem extends Item {
      *
      * @param newTxt Text to be set. If null, text is set to be empty.
      */
-    public void setText(String newTxt) {
-        if ((newTxt == null) || (newTxt.equals(""))) {
+    public void setText(String newTxt)
+    {
+        if((newTxt == null) || (newTxt.equals("")))
+        {
             text = null;
         }
-        else {
+        else
+        {
             text = newTxt;
         }
         updateParent(UPDATE_SIZE_CHANGED);
@@ -90,7 +98,8 @@ public class StringItem extends Item {
      *
      * @return The one of appearance modes defined in Item-class.
      */
-    public int getAppearanceMode() {
+    public int getAppearanceMode()
+    {
         return appearanceMode;
     }
 
@@ -101,7 +110,8 @@ public class StringItem extends Item {
      * @param f Font to be used. If null, system will use default font for this
      *            item.
      */
-    public void setFont(Font f) {
+    public void setFont(Font f)
+    {
         font = (f == null ? Font.getDefaultFont() : f);
         updateParent(UPDATE_SIZE_CHANGED);
     }
@@ -112,14 +122,16 @@ public class StringItem extends Item {
      *
      * @return Font set by setFont()-method.
      */
-    public Font getFont() {
+    public Font getFont()
+    {
         return font;
     }
 
     /* (non-Javadoc)
      * @see midp3javax.microedition.lcdui.Item#isFocusable()
      */
-    boolean isFocusable() {
+    boolean isFocusable()
+    {
         return (getNumCommands() > 0);
     }
 
@@ -128,7 +140,8 @@ public class StringItem extends Item {
      *
      * @return Minimum size.
      */
-    Point calculateMinimumSize() {
+    Point calculateMinimumSize()
+    {
         return StringItemLayouter.calculateMinimumBounds(this);
     }
 
@@ -137,7 +150,8 @@ public class StringItem extends Item {
      *
      * @return Preferred size.
      */
-    Point calculatePreferredSize() {
+    Point calculatePreferredSize()
+    {
         return StringItemLayouter.calculatePreferredBounds(this);
     }
 
@@ -146,11 +160,14 @@ public class StringItem extends Item {
      *
      * @return layout directive
      */
-    int internalGetLayout() {
-        if (hasLabel() && !isSizeLocked()) {
+    int internalGetLayout()
+    {
+        if(hasLabel() && !isSizeLocked())
+        {
             return super.internalGetLayout() | Item.LAYOUT_NEWLINE_BEFORE;
         }
-        else {
+        else
+        {
             return super.internalGetLayout();
         }
     }

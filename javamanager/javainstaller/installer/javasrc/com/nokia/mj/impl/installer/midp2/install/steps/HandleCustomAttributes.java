@@ -74,14 +74,7 @@ public class HandleCustomAttributes extends ExeStep
                 }
                 else
                 {
-                    Log.logError("Invalid " + attrName + " value " + attrValue);
-                    throw new InvalidAttributeException
-                    (InstallerErrorMessage.INST_CORRUPT_PKG, null,
-                     InstallerDetailedErrorMessage.ATTR_UNSUPPORTED,
-                     new String[] { attrName },
-                     (aBall.attributeExistsInJad(attrName)?
-                      OtaStatusCode.INVALID_DESCRIPTOR:
-                      OtaStatusCode.INVALID_JAR));
+                    Log.logWarning("Invalid " + attrName + " value " + attrValue);
                 }
             }
         }

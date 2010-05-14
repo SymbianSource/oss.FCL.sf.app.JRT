@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt_uirobot.datefield;
@@ -35,7 +35,8 @@ import com.nokia.mj.impl.uitestutils.Key;
  * <br>
  * Created: 2008-10-02
  */
-public class DateFieldUIRobotTest extends ItemUITestBase {
+public class DateFieldUIRobotTest extends ItemUITestBase
+{
 
     //2008-10-07 11:30:35 is 1223368235775 in millis.
     private static final long TEST_DATE_IN_MILLIS = 1223368235775L;
@@ -53,7 +54,8 @@ public class DateFieldUIRobotTest extends ItemUITestBase {
     /**
      * Constructor.
      */
-    public DateFieldUIRobotTest() {
+    public DateFieldUIRobotTest()
+    {
     }
 
     /**
@@ -62,27 +64,31 @@ public class DateFieldUIRobotTest extends ItemUITestBase {
      * @param testName Test name.
      * @param testMethod Test method.
      */
-    public DateFieldUIRobotTest(String testName) {
+    public DateFieldUIRobotTest(String testName)
+    {
         super(testName);
     }
 
-    public static Test suite() {
+    public static Test suite()
+    {
         TestSuite suite = new TestSuite();
 
         java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = DateFieldUIRobotTest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new DateFieldUIRobotTest((String)e.nextElement()));
-	    }
-        
+        // Add widget tests
+        methodNames = DateFieldUIRobotTest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new DateFieldUIRobotTest((String)e.nextElement()));
+        }
+
         return suite;
     }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testCommands");
         methodNames.addElement("testMinimumSize");
@@ -94,23 +100,25 @@ public class DateFieldUIRobotTest extends ItemUITestBase {
         methodNames.addElement("testSetAndGetDateTime");
         return methodNames;
     }
-    
-    public void runTest() throws Throwable {
-        if (getName().equals("testCommands")) testCommands();
-        else if (getName().equals("testMinimumSize")) testMinimumSize();
-        else if (getName().equals("testInputModeChange")) testInputModeChange();
-        else if (getName().equals("testItemStateChange")) testItemStateChange();
-        else if (getName().equals("testGetDateWhenModifying")) testGetDateWhenModifying();
-        else if (getName().equals("testSetAndGetDate")) testSetAndGetDate();
-        else if (getName().equals("testSetAndGetTime")) testSetAndGetTime();
-        else if (getName().equals("testSetAndGetDateTime")) testSetAndGetDateTime();
+
+    public void runTest() throws Throwable
+    {
+        if(getName().equals("testCommands")) testCommands();
+        else if(getName().equals("testMinimumSize")) testMinimumSize();
+        else if(getName().equals("testInputModeChange")) testInputModeChange();
+        else if(getName().equals("testItemStateChange")) testItemStateChange();
+        else if(getName().equals("testGetDateWhenModifying")) testGetDateWhenModifying();
+        else if(getName().equals("testSetAndGetDate")) testSetAndGetDate();
+        else if(getName().equals("testSetAndGetTime")) testSetAndGetTime();
+        else if(getName().equals("testSetAndGetDateTime")) testSetAndGetDateTime();
         else super.runTest();
     }
 
     /**
      * Tests the basic functionality of command added to DateField.
      */
-    public void testCommands() {
+    public void testCommands()
+    {
         DateField dateField = new DateField("label", DateField.DATE);
         testCommand(dateField);
     }
@@ -118,7 +126,8 @@ public class DateFieldUIRobotTest extends ItemUITestBase {
     /**
      * Tests that getMinimumSize returns non-zero values.
      */
-    public void testMinimumSize() {
+    public void testMinimumSize()
+    {
         //With label:
         DateField dateField = new DateField("label", DateField.DATE);
 
@@ -126,7 +135,8 @@ public class DateFieldUIRobotTest extends ItemUITestBase {
         int h = dateField.getMinimumHeight();
 
         print("Size returned (with label), w: " + w + ", h: " + h);
-        if ((w <= 0) || (h <= 0)) {
+        if((w <= 0) || (h <= 0))
+        {
             fail("Minimum width or height was zero or less.");
         }
 
@@ -137,7 +147,8 @@ public class DateFieldUIRobotTest extends ItemUITestBase {
         h = dateField2.getMinimumHeight();
 
         print("Size returned (without label), w: " + w + ", h: " + h);
-        if ((w <= 0) || (h <= 0)) {
+        if((w <= 0) || (h <= 0))
+        {
             fail("Minimum width or height was zero or less.");
         }
     }
@@ -145,7 +156,8 @@ public class DateFieldUIRobotTest extends ItemUITestBase {
     /**
      * Tests to change input mode dynamically.
      */
-    public void testInputModeChange() {
+    public void testInputModeChange()
+    {
         // Create DateField of input mode TIME:
         DateField dateField = new DateField("label", DateField.TIME);
         form.append(dateField);
@@ -171,13 +183,14 @@ public class DateFieldUIRobotTest extends ItemUITestBase {
         calendar.setTime(newDate);
 
         assertEquals("Wrong day returned after input mode changed.",
-                TEST_DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH));
+                     TEST_DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH));
     }
 
     /**
      * Tests the ItemStateChange-listener added to DateField.
      */
-    public void testItemStateChange() {
+    public void testItemStateChange()
+    {
         DateField dateField = new DateField("label", DateField.DATE);
         form.append(dateField);
         setCurrent(form);
@@ -193,7 +206,7 @@ public class DateFieldUIRobotTest extends ItemUITestBase {
         calendar.setTime(newDate);
 
         assertEquals("Wrong day returned.",
-                TEST_DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH));
+                     TEST_DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH));
 
         // Change item's state programmatically and make sure the
         // listener is _not_ called:
@@ -204,7 +217,8 @@ public class DateFieldUIRobotTest extends ItemUITestBase {
     /**
      * Test to get date when user is modifying datefield.
      */
-    public void testGetDateWhenModifying() {
+    public void testGetDateWhenModifying()
+    {
         DateField dateField = new DateField("label", DateField.DATE);
         form.append(dateField);
         setCurrent(form);
@@ -220,7 +234,8 @@ public class DateFieldUIRobotTest extends ItemUITestBase {
     /**
      * Test to set and get date.
      */
-    public void testSetAndGetDate() {
+    public void testSetAndGetDate()
+    {
         DateField dateField = new DateField("label", DateField.DATE);
         form.append(dateField);
         setCurrent(form);
@@ -246,17 +261,18 @@ public class DateFieldUIRobotTest extends ItemUITestBase {
         calendar.setTime(newDate);
 
         assertEquals("Wrong day returned.",
-                TEST_DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH));
+                     TEST_DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH));
         assertEquals("Wrong month returned.",
-                TEST_MONTH, calendar.get(Calendar.MONTH));
+                     TEST_MONTH, calendar.get(Calendar.MONTH));
         assertEquals("Wrong year returned.",
-                TEST_YEAR, calendar.get(Calendar.YEAR));
+                     TEST_YEAR, calendar.get(Calendar.YEAR));
     }
 
     /**
      * Test to set and get time.
      */
-    public void testSetAndGetTime() {
+    public void testSetAndGetTime()
+    {
         DateField dateField = new DateField("label", DateField.TIME);
         form.append(dateField);
         setCurrent(form);
@@ -281,15 +297,16 @@ public class DateFieldUIRobotTest extends ItemUITestBase {
         calendar.setTime(newDate);
 
         assertEquals("Wrong hour returned.",
-                TEST_HOUR, calendar.get(Calendar.HOUR));
+                     TEST_HOUR, calendar.get(Calendar.HOUR));
         assertEquals("Wrong minute returned.",
-                TEST_MINUTE, calendar.get(Calendar.MINUTE));
+                     TEST_MINUTE, calendar.get(Calendar.MINUTE));
     }
 
     /**
      * Test to set and get date_time.
      */
-    public void testSetAndGetDateTime() {
+    public void testSetAndGetDateTime()
+    {
         DateField dateField = new DateField("label", DateField.DATE_TIME);
         form.append(dateField);
         setCurrent(form);
@@ -323,15 +340,15 @@ public class DateFieldUIRobotTest extends ItemUITestBase {
         calendar.setTime(newDate);
 
         assertEquals("Wrong day returned.",
-                TEST_DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH));
+                     TEST_DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH));
         assertEquals("Wrong month returned.",
-                TEST_MONTH, calendar.get(Calendar.MONTH));
+                     TEST_MONTH, calendar.get(Calendar.MONTH));
         assertEquals("Wrong year returned.",
-                TEST_YEAR, calendar.get(Calendar.YEAR));
+                     TEST_YEAR, calendar.get(Calendar.YEAR));
         assertEquals("Wrong hour returned.",
-                TEST_HOUR, calendar.get(Calendar.HOUR));
+                     TEST_HOUR, calendar.get(Calendar.HOUR));
         assertEquals("Wrong minute returned.",
-                TEST_MINUTE, calendar.get(Calendar.MINUTE));
+                     TEST_MINUTE, calendar.get(Calendar.MINUTE));
     }
 
 }

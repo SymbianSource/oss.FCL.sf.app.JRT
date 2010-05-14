@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -21,7 +21,8 @@ import org.eclipse.swt.graphics.Point;
 /**
  * Item representing an editable TextField.
  */
-public class TextField extends Item {
+public class TextField extends Item
+{
     /**
      * Constant value shows that any text is allowed.
      */
@@ -96,7 +97,8 @@ public class TextField extends Item {
      * @param maxSize maximum number of characters allowed.
      * @param constraints TextField constraints.
      */
-    public TextField(String header, String txt, int maxSize, int constraints) {
+    public TextField(String header, String txt, int maxSize, int constraints)
+    {
         setLabel(header);
         textWrapper = new TextWrapper(txt, maxSize, constraints);
     }
@@ -106,7 +108,8 @@ public class TextField extends Item {
      *
      * @return index in TextField where caret is.
      */
-    public int getCaretPosition() {
+    public int getCaretPosition()
+    {
         return textWrapper.getCaretPosition();
     }
 
@@ -115,7 +118,8 @@ public class TextField extends Item {
      *
      * @return String which represents content of TextField;
      */
-    public String getString() {
+    public String getString()
+    {
         return textWrapper.getContent();
     }
 
@@ -124,7 +128,8 @@ public class TextField extends Item {
      *
      * @param newTxt text to set.
      */
-    public void setString(String newTxt) {
+    public void setString(String newTxt)
+    {
         textWrapper.setContent(newTxt);
         linesCount = 0;
         updateParent(Item.UPDATE_CONTENT | Item.UPDATE_HEIGHT_CHANGED);
@@ -136,14 +141,17 @@ public class TextField extends Item {
      * @param charData array where to copy.
      * @return number of copied characters.
      */
-    public int getChars(char[] charData) {
-        if (charData == null) {
+    public int getChars(char[] charData)
+    {
+        if(charData == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.TEXT_EXCEPTION_ARRAY_IS_NULL);
+                MsgRepository.TEXT_EXCEPTION_ARRAY_IS_NULL);
         }
-        if (charData.length < getString().length()) {
+        if(charData.length < getString().length())
+        {
             throw new ArrayIndexOutOfBoundsException(
-                    MsgRepository.TEXT_EXCEPTION_ARRAY_IS_TOO_SHORT);
+                MsgRepository.TEXT_EXCEPTION_ARRAY_IS_TOO_SHORT);
         }
         String content = textWrapper.getContent();
         content.getChars(0, content.length(), charData, 0);
@@ -157,15 +165,19 @@ public class TextField extends Item {
      * @param offset index in charData to start copy from.
      * @param length number of character to copy into TextField.
      */
-    public void setChars(char[] charData, int offset, int length) {
+    public void setChars(char[] charData, int offset, int length)
+    {
         String extractedString = null;
-        if (charData != null) {
-            try {
+        if(charData != null)
+        {
+            try
+            {
                 extractedString = new String(charData, offset, length);
             }
-            catch (IndexOutOfBoundsException e) {
+            catch(IndexOutOfBoundsException e)
+            {
                 throw new ArrayIndexOutOfBoundsException(
-                        MsgRepository.TEXT_EXCEPTION_ARRAY_INDEX_OUT_OF_BOUNDS);
+                    MsgRepository.TEXT_EXCEPTION_ARRAY_INDEX_OUT_OF_BOUNDS);
             }
         }
         textWrapper.setContent(extractedString);
@@ -179,7 +191,8 @@ public class TextField extends Item {
      * @param newTxt string to insert.
      * @param position where to insert.
      */
-    public void insert(String newTxt, int position) {
+    public void insert(String newTxt, int position)
+    {
         textWrapper.insert(newTxt, position);
         linesCount = 0;
         updateParent(Item.UPDATE_CONTENT | Item.UPDATE_HEIGHT_CHANGED);
@@ -193,18 +206,22 @@ public class TextField extends Item {
      * @param length number of characters to copy.
      * @param position index in TextField where to insert to.
      */
-    public void insert(char[] charData, int offset, int length, int position) {
-        if (charData == null) {
+    public void insert(char[] charData, int offset, int length, int position)
+    {
+        if(charData == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.TEXT_EXCEPTION_ARRAY_IS_NULL);
+                MsgRepository.TEXT_EXCEPTION_ARRAY_IS_NULL);
         }
         String extractedString = null;
-        try {
+        try
+        {
             extractedString = new String(charData, offset, length);
         }
-        catch (IndexOutOfBoundsException e) {
+        catch(IndexOutOfBoundsException e)
+        {
             throw new ArrayIndexOutOfBoundsException(
-                    MsgRepository.TEXT_EXCEPTION_ARRAY_INDEX_OUT_OF_BOUNDS);
+                MsgRepository.TEXT_EXCEPTION_ARRAY_INDEX_OUT_OF_BOUNDS);
         }
         textWrapper.insert(extractedString, position);
         linesCount = 0;
@@ -217,7 +234,8 @@ public class TextField extends Item {
      * @param offset start index where to start deletion.
      * @param length number of characters to delete.
      */
-    public void delete(int offset, int length) {
+    public void delete(int offset, int length)
+    {
         textWrapper.delete(offset, length);
         linesCount = 0;
         updateParent(Item.UPDATE_CONTENT | Item.UPDATE_HEIGHT_CHANGED);
@@ -228,7 +246,8 @@ public class TextField extends Item {
      *
      * @return number of characters which TextField can contain.
      */
-    public int getMaxSize() {
+    public int getMaxSize()
+    {
         return textWrapper.getMaxSize();
     }
 
@@ -239,7 +258,8 @@ public class TextField extends Item {
      * @return max size that was set, depending on implementation may be smaller
      *         then requested.
      */
-    public int setMaxSize(int newMaxSize) {
+    public int setMaxSize(int newMaxSize)
+    {
         textWrapper.setMaxSize(newMaxSize);
         linesCount = 0;
         updateParent(Item.UPDATE_CONTENT | Item.UPDATE_HEIGHT_CHANGED);
@@ -251,7 +271,8 @@ public class TextField extends Item {
      *
      * @return current content length.
      */
-    public int size() {
+    public int size()
+    {
         return textWrapper.getSize();
     }
 
@@ -260,7 +281,8 @@ public class TextField extends Item {
      *
      * @param newConstraints constraints to set.
      */
-    public void setConstraints(int newConstraints) {
+    public void setConstraints(int newConstraints)
+    {
         textWrapper.setConstraints(newConstraints);
         updateParent(Item.UPDATE_CONTENT | Item.UPDATE_SIZE_CHANGED);
     }
@@ -270,7 +292,8 @@ public class TextField extends Item {
      *
      * @return current constraints.
      */
-    public int getConstraints() {
+    public int getConstraints()
+    {
         return textWrapper.getConstraints();
     }
 
@@ -279,7 +302,8 @@ public class TextField extends Item {
      *
      * @param inputMode input mode to set.
      */
-    public void setInitialInputMode(String inputMode) {
+    public void setInitialInputMode(String inputMode)
+    {
         textWrapper.setInputMode(inputMode);
         updateParent(UPDATE_INITIAL_INPUT_MODE);
     }
@@ -289,7 +313,8 @@ public class TextField extends Item {
      *
      * @return inputMode currently set for TextField.
      */
-    String getInitialInputMode() {
+    String getInitialInputMode()
+    {
         return textWrapper.getInputMode();
     }
 
@@ -298,7 +323,8 @@ public class TextField extends Item {
      *
      * @return Minimum size.
      */
-    Point calculateMinimumSize() {
+    Point calculateMinimumSize()
+    {
         return TextFieldLayouter.calculateMinimumBounds(this);
     }
 
@@ -307,7 +333,8 @@ public class TextField extends Item {
      *
      * @return Preferred size.
      */
-    Point calculatePreferredSize() {
+    Point calculatePreferredSize()
+    {
         return TextFieldLayouter.calculatePreferredBounds(this);
     }
 
@@ -316,14 +343,16 @@ public class TextField extends Item {
      *
      * @return layout directive
      */
-    int internalGetLayout() {
+    int internalGetLayout()
+    {
         return super.internalGetLayout(); // | Item.LAYOUT_NEWLINE_BEFORE;
     }
 
     /**
      * @see javax.microedition.lcdui.Item#isFocusable()
      */
-    boolean isFocusable() {
+    boolean isFocusable()
+    {
         return true;
     }
 
@@ -332,7 +361,8 @@ public class TextField extends Item {
      *
      * @param newPosition new caret position.
      */
-    void internalSetCaretPosition(int newPosition) {
+    void internalSetCaretPosition(int newPosition)
+    {
         textWrapper.setCaretposition(newPosition);
     }
 
@@ -342,8 +372,10 @@ public class TextField extends Item {
      * @param newText new text.
      * @return true if this resulted in a change
      */
-    boolean internalSetString(String newText) {
-        if (textWrapper.getContent() != newText) {
+    boolean internalSetString(String newText)
+    {
+        if(!textWrapper.getContent().equals(newText))
+        {
             textWrapper.setContent(newText);
             return true;
         }
@@ -355,7 +387,8 @@ public class TextField extends Item {
      *
      * @param newLinesCount new number lines.
      */
-    void internalSetLinesCount(int newLinesCount) {
+    void internalSetLinesCount(int newLinesCount)
+    {
         linesCount = newLinesCount;
     }
 
@@ -364,7 +397,8 @@ public class TextField extends Item {
      *
      * @return lines count.
      */
-    int internalGetLinesCount() {
+    int internalGetLinesCount()
+    {
         return linesCount;
     }
 
@@ -373,7 +407,8 @@ public class TextField extends Item {
      *
      * @param newMax maximum visible lines allowed for TextField.
      */
-    void internalSetMaxVisibleLines(int newMax) {
+    void internalSetMaxVisibleLines(int newMax)
+    {
         maxVisibleLines = newMax;
     }
 
@@ -382,7 +417,8 @@ public class TextField extends Item {
      *
      * @return number of maximum visible lines to display on the Form.
      */
-    int internalGetMaxVisibleLines() {
+    int internalGetMaxVisibleLines()
+    {
         return maxVisibleLines;
     }
 

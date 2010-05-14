@@ -2526,81 +2526,16 @@ extern "C"
     }
 
 
-    /*
+    /**
      * Class TaskTip
      */
-    JNIEXPORT jint JNICALL Java_org_eclipse_ercp_swt_mobile_internal_OS_TaskTip_1New(
-        JNIEnv *aJniEnv,
-        jclass,
-        jobject aPeer,
-        jint aStyle)
+    JNIEXPORT jobject JNICALL Java_org_eclipse_ercp_swt_mobile_internal_OS_TaskTip_1DefaultBounds(
+        JNIEnv* aJniEnv, jclass)
     {
-        jweak peerRef = aJniEnv->NewWeakGlobalRef(aPeer);
-        if (peerRef == NULL)
-        {
-            return NULL;
-        }
-
-        CSwtDisplay& display = CSwtDisplay::Current();
-        const MSwtFactory* factory = &display.Factory();
-        MSwtTaskTip* result = NULL;
-        TRAPD(error, CallMethodL(result, factory, &MSwtFactory::NewTaskTipL, display, peerRef, aStyle));
-        if (error)
-        {
-            aJniEnv->DeleteWeakGlobalRef(peerRef);
-            Throw(error, aJniEnv);
-        }
-        INCREASE_INSTANCE_COUNT(result, TaskTip);
-
-        return reinterpret_cast<jint>(result);
-    }
-
-    JNIEXPORT void JNICALL Java_org_eclipse_ercp_swt_mobile_internal_OS_TaskTip_1Dispose(
-        JNIEnv* aJniEnv,
-        jclass,
-        jint aHandle)
-    {
-        MSwtTaskTip* tasktip = reinterpret_cast<MSwtTaskTip*>(aHandle);
-        TSwtPeer peerRef;
-        CallMethod(peerRef, tasktip, &MSwtTaskTip::Dispose);
-        ReleasePeer(aJniEnv, peerRef);
-        DECREASE_INSTANCE_COUNT(TaskTip);
-    }
-
-    JNIEXPORT jobject JNICALL Java_org_eclipse_ercp_swt_mobile_internal_OS_TaskTip_1GetBarDefaultBounds(
-        JNIEnv* aJniEnv,
-        jclass,
-        jint aHandle,
-        jboolean aHasText)
-    {
-        MSwtTaskTip* tasktip = reinterpret_cast<MSwtTaskTip*>(aHandle);
-        TRect bounds(TRect::EUninitialized);
-        CallMethod(bounds, tasktip, &MSwtTaskTip::GetBarDefaultBounds, aHasText);
-        return NewJavaRectangle(aJniEnv, bounds);
-    }
-
-    JNIEXPORT jobject JNICALL Java_org_eclipse_ercp_swt_mobile_internal_OS_TaskTip_1GetLabelDefaultBounds(
-        JNIEnv* aJniEnv,
-        jclass,
-        jint aHandle,
-        jboolean aHasText)
-    {
-        MSwtTaskTip* tasktip = reinterpret_cast<MSwtTaskTip*>(aHandle);
-        TRect bounds(TRect::EUninitialized);
-        CallMethod(bounds, tasktip, &MSwtTaskTip::GetLabelDefaultBounds, aHasText);
-        return NewJavaRectangle(aJniEnv, bounds);
-    }
-
-    JNIEXPORT jobject JNICALL Java_org_eclipse_ercp_swt_mobile_internal_OS_TaskTip_1GetShellDefaultBounds(
-        JNIEnv* aJniEnv,
-        jclass,
-        jint aHandle,
-        jboolean aHasText)
-    {
-        MSwtTaskTip* tasktip = reinterpret_cast<MSwtTaskTip*>(aHandle);
-        TRect bounds(TRect::EUninitialized);
-        CallMethod(bounds, tasktip, &MSwtTaskTip::GetShellDefaultBounds, aHasText);
-        return NewJavaRectangle(aJniEnv, bounds);
+        MSwtDisplay& display = CSwtDisplay::Current();
+        TRect res(TRect::EUninitialized);
+        CallMethod(res, &display.UiUtils(), &MSwtUiUtils::TaskTipRect);
+        return NewJavaRectangle(aJniEnv, res);
     }
 
 

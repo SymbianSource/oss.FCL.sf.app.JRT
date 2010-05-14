@@ -116,7 +116,7 @@ public:
     *   from the foreground.
     * @note Animation of non-interactive gauges is started/stopped.
     */
-    void HandleForegroundL(TBool aForeground);
+    virtual void HandleForegroundL(TBool aForeground);
 
 protected:
     /**
@@ -130,12 +130,7 @@ protected:
     void BaseConstructL(const TDesC& aLabel,TInt aMaxValue,
                         TInt aInitialValue);
 
-    void SetStateL(TInt aMaxValue,TInt aValue);
-
-    void DisposeTimer();
     void FocusChanged(TDrawNow aDrawNow);
-
-    virtual void DoSafeDraw() = 0;
 
     void CreateBitmapsIfNeededL();
 
@@ -226,10 +221,6 @@ protected:
     /** An array of SVG bitmaps stored in the TLS so that it can be shared amongst gauge items*/
     TGaugeFrameData* iGaugeFrameData;
 
-    CGaugeTimer* iTimer;
-
-    TBool iIsInForeground; // is application in foreground?
-
     friend class CGaugeTimer;
 };
 
@@ -275,6 +266,14 @@ public:
     //
     // From CMIDControlItem
     //
+    /**
+    * Handles event when application switches to/from the foreground.
+    *
+    * @param aForeground ETrue to switch to the foreground. EFalse to switch
+    *   from the foreground.
+    * @note Animation of non-interactive gauges is started/stopped.
+    */
+    void HandleForegroundL(TBool aForeground);
     void ResolutionChange(TInt aType);
 
     /**
@@ -295,6 +294,7 @@ public:
     void ColorChange(TInt aType);
 
     void SetGaugeListenerFromAlert(MMIDGaugeToAlertListner* aGaugeToAlertListner);
+
 private:
     /**
      * Ctor
@@ -314,6 +314,12 @@ private:
     void UpdateMemberVariables();
 
     /**
+     * Creats new instance of CAknBitmapAnimation for Gauge animation
+     * and sets it to iBitmapAnimation
+     */
+    void CreateNewBitmapAnimationIfNeededL();
+
+    /**
      * setting of size of iBitmapAnimation
      */
     void SetAnimationSize();
@@ -330,6 +336,28 @@ private:
 
     void ColorChangeL(TInt aType);
 
+    void DisposeTimer();
+
+    /**
+     * From CMIDGaugeItem.
+     * Starts animation timer (see iTimer) when needed.
+     * In case that timer is not needed, but has been created,
+     * it's disposed by this method.
+     *
+     * @since  S60 v5.0
+     */
+    void InstallGaugeTimerWhenNeededL();
+
+    /**
+     * Indicates that the current skin contains the animation and
+     * the animation has been instantiated to iBitmapAnimation.
+     *
+     * @return ETrue iBitmapAnimation has been created
+     *               and the animation is useful.
+     * @since  S60 v5.0
+     */
+    TBool BitmapAnimationUsed() const;
+
 private:
     CEikProgressInfo* iProgressInfo;
     MMIDGaugeToAlertListner* iGaugeToAlertListner;
@@ -342,6 +370,9 @@ private:
     // Note that label height has to be added to the y coordinate
     TPoint iProgressInfoWithLabelHeightTl; // Top left point of the progress info
     CAknBitmapAnimation* iBitmapAnimation; // Animation for animated Gauge
+    CGaugeTimer* iTimer;
+    // Indicates that the application is in foreground
+    TBool iIsInForeground;
 };
 
 NONSHARABLE_CLASS(CMIDInteractiveGauge) : public CMIDGaugeItem
@@ -409,6 +440,7 @@ private:
     TInt iOriginalSliderValue;
     TBool iPhysicsScrollingTriggered;
 };
+
 
 #endif // CMIDGAUGEITEM_H
 

@@ -48,7 +48,6 @@ COrientation::COrientation()
 //
 void COrientation::NewL(TInt* aHandle)
 {
-    //  CallMethodL(new(ELeave) COrientation(), aserver);
     COrientation* self = new(ELeave) COrientation();
     *aHandle = reinterpret_cast<TInt>(self);
 }
@@ -59,7 +58,7 @@ void COrientation::NewL(TInt* aHandle)
 //
 COrientation::~COrientation()
 {
-    if (iXYZChannel)
+    if (iXYZChannel)         
     {
         delete iXYZChannel;
         iXYZChannel = NULL;
@@ -79,105 +78,58 @@ COrientation::~COrientation()
 // COrientation::GetOrientation
 // ---------------------------------------------------------------------------
 //
-TInt COrientation::GetOrientationL()
+void COrientation::GetOrientationL()
 {
-    mJni = mFunctionServer->getValidJniEnv();
-    mPeer = mFunctionServer->getPeer();
-
+      
     iOrientationClass =
-        mJni->FindClass("javax/microedition/location/Orientation");
+        (mFunctionServer->getValidJniEnv())->FindClass(
+                                  "javax/microedition/location/Orientation");
 
     //Get Method ID of Azimuth Data Callback
-    mAzimuthDataMethod = mJni->GetStaticMethodID(iOrientationClass,
-                         "AzimuthDataCallBack",
-                         "(I)V");
+    mAzimuthDataMethod = (mFunctionServer->getValidJniEnv())->GetStaticMethodID(
+                                                      iOrientationClass,
+                                                          "AzimuthDataCallBack",
+                                                              "(I)V");
 
     //Check if all the JNI inits have succeeded
     if (NULL == mAzimuthDataMethod)
     {
-        return KErrGeneral;
+        User::Leave( KErrGeneral);
     }
 
-    TInt Err = KErrNone;
-    TInt result = this->OpenChannel();
+    OpenChannelL();
 
-    if (result == KErrNone)
-    {
-        TInt CalibErr = CheckCalibration();
+    CheckCalibrationL();
 
-        if (CalibErr < KErrNone)
-        {
-            return CalibErr;
-        }
+    iXYZChannel->StartDataListeningL(this, 1, 1, 0);
 
-        TRAP(Err, iXYZChannel->StartDataListeningL(this, 1, 1, 0));
-
-        if (Err == KErrNotFound)
-        {
-            return Err;
-        }
-        else if (Err == KErrAlreadyExists)
-        {
-            return Err;
-        }
-    }
-
-    return result;
 }
 
 // ---------------------------------------------------------------------------
 // COrientation::OpenChannel
 // ---------------------------------------------------------------------------
 //
-TInt COrientation::OpenChannel()
+void COrientation::OpenChannelL() 
 {
-    TInt ChnlFindErr = 0;
-    TRAP(ChnlFindErr, this->CreateChannelFinderL());
-
-    if (ChnlFindErr < 0)
-    {
-        return ChnlFindErr;
-    }
+    CreateChannelFinderL();
 
     iChannelInfoList.Reset();
 
-    TInt FindErr = 0;
-    TRAP(FindErr, iChannelFinder->FindChannelsL(iChannelInfoList,
-            ichannelInfo));
-
-    if (FindErr < KErrNone)
+    iChannelFinder->FindChannelsL(iChannelInfoList,
+                                  ichannelInfo);
+   
+    if (iChannelInfoList.Count() != 1)
     {
-        return FindErr;
-    }
-
-    else if (iChannelInfoList.Count() != 1)
-    {
-        return ERROR;
+        User::Leave( ERROR);
     }
     else
     {
-        TInt SensChanlErr = 0;
-        TRAP(SensChanlErr, this->CreateSensorChannelL());
+        
+        CreateSensorChannelL();
 
-        if (SensChanlErr < 0)
-        {
-            return SensChanlErr;
-        }
+        iXYZChannel->OpenChannelL();
 
-        TInt err = 0;
-        TRAP(err, iXYZChannel->OpenChannelL());
-
-        if (err == KErrNotFound)
-        {
-            return err;
-        }
-        else if (err == KErrAlreadyExists)
-        {
-            return err;
-        }
     }
-
-    return KErrNone;
 }
 
 // ---------------------------------------------------------------------------
@@ -207,9 +159,8 @@ void COrientation::DataReceived(CSensrvChannel& aChannel, TInt /*aCount*/,
         iXYZChannel->StopDataListening();
         iXYZChannel->CloseChannel();
 
-        mJni = mFunctionServer->getValidJniEnv();
-
-        (*mJni).CallStaticVoidMethod(iOrientationClass, mAzimuthDataMethod, err);
+        (mFunctionServer->getValidJniEnv())->CallStaticVoidMethod(
+                                   iOrientationClass, mAzimuthDataMethod, err);
     }
 }
 
@@ -227,12 +178,12 @@ void COrientation::DataError(CSensrvChannel& aChannel,
     iXYZChannel->StopDataListening();
     iXYZChannel->CloseChannel();
 
-    mJni = mFunctionServer->getValidJniEnv();
-
     if (info.iChannelType == KSensrvChannelTypeIdMagneticNorthData)
     {
-        (*mJni).CallStaticVoidMethod(iOrientationClass,
-                                     mAzimuthDataMethod, aError);
+        (mFunctionServer->getValidJniEnv())->CallStaticVoidMethod(
+                                               iOrientationClass,
+                                                   mAzimuthDataMethod,
+                                                       aError);
     }
 }
 
@@ -281,28 +232,21 @@ void COrientation::CreateSensorChannelL()
 // COrientation::CheckCalibration
 // ---------------------------------------------------------------------------
 //
-TInt COrientation::CheckCalibration()
+void COrientation::CheckCalibrationL()
 {
     TSensrvProperty property;
     TInt value(0);
     TInt maxValue(0);
-    TInt LeaveError(KErrNone);
 
-    TRAP(LeaveError, iXYZChannel->GetPropertyL(KSensrvPropCalibrationLevel,
-            KSensrvItemIndexNone, property));
-
-    if (LeaveError < KErrNone)
-    {
-        return LeaveError;
-    }
+    iXYZChannel->GetPropertyL(KSensrvPropCalibrationLevel,
+                              KSensrvItemIndexNone, property);
 
     property.GetValue(value);
     property.GetMaxValue(maxValue);
 
     if (value != maxValue)
     {
-        return CALIBRATIONERROR;
+        User::Leave( CALIBRATIONERROR);
     }
 
-    return KErrNone;
 }

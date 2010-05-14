@@ -57,7 +57,7 @@ void CleanUpResetAndDestroy(TAny *aArray)
 NativeHttpTransaction::NativeHttpTransaction(HttpSessionClient& aSession, FunctionServer* aFuncServer)
         :iSessionClient(aSession) //, java::util::FunctionServer("MyhttpServer2")
 {
-    //  createServerToNewThread();
+  
     iFuncServer = aFuncServer;
 }
 
@@ -72,8 +72,7 @@ TInt NativeHttpTransaction::NewL(JNIEnv &aJni, jobject aPeer, HttpSessionClient&
 {
     NativeHttpTransaction* self =   new(ELeave) NativeHttpTransaction(aSession,aFuncServer);
 
-    // Cleanup the event source object if a leave occurs during construction:
-    //TConstructor selfCleanup(self, aJni);
+    
     self->ConstructL(aJni, aPeer, /*aServer, */ aUri, aRequestMethod);
 
 
@@ -86,36 +85,17 @@ void NativeHttpTransaction::ConstructL(JNIEnv& aJni, jobject aPeer,/* TJavaEvent
 {
 
 
-    //  iJniPeer = aJni.NewWeakGlobalRef(aPeer);
     iJniPeer = aJni.NewWeakGlobalRef(aPeer);
-//  CJavaEventSourceBase::ConstructL(aJni, aPeer, aServer);
-    //Set up the Java Call Backs                                           HttpConnectionNative
-    /*
-    jclass httpNativeClass = aJni.FindClass( "com/nokia/mj/impl/http/HttpConnectionNative" );
-    if ( httpNativeClass == NULL )
-        {
-        User::Leave( KErrGeneral );
-        }
-    iTransactionCallbackMethod   = aJni.GetMethodID( httpNativeClass, "transactionSubmitCallback", "(I)V" );
-    if ( iTransactionCallbackMethod  == NULL )
-        {
-        User::Leave( KErrGeneral );
-        }
 
-    iNotifyDataReadyForReadMethod = aJni.GetMethodID( httpNativeClass, "dataReadyForReadCallBack", "(I)V" );
-    if ( iNotifyDataReadyForReadMethod == NULL )
-        {
-        User::Leave( KErrGeneral );
-        }
-        */
+
     // iFuncServer->attachToVm(aJni, aPeer);
     int handle = reinterpret_cast<int>(this);
     int urihandle = reinterpret_cast<int>(aUri);
     int methodhandle = reinterpret_cast<int>(aRequestMethod);
     //open the transaction
-    //User::LeaveIfError(ExecuteTrap(&NativeHttpTransaction::ExecuteCreateTransactionL, this , aUri , aRequestMethod));
+    
     CallMethodL(this, &NativeHttpTransaction::ExecuteCreateTransactionL,handle,urihandle , methodhandle, iFuncServer);
-    //ExecuteCreateTransactionL( this , aUri , aRequestMethod);
+    
 }
 
 void NativeHttpTransaction::ExecuteCreateTransactionL(int aSelfhandle, int aUrihandle, int aMethodhandle)
@@ -135,8 +115,7 @@ void NativeHttpTransaction::SubmitL(JNIEnv* aJni, jobject* /*aPeer*/,const jobje
     RPointerArray<HBufC8> rawHeaderArray;
     CleanupStack::PushL(TCleanupItem(CleanUpResetAndDestroy,&rawHeaderArray));
     iJniObject = aJni;
-    //iJniPeer = aPeer;
-    //iFuncServer->attachToVm(*aJni, *aPeer);
+    
 
     if (aHeaders!=NULL)
     {
@@ -188,13 +167,13 @@ void NativeHttpTransaction::SubmitL(JNIEnv* aJni, jobject* /*aPeer*/,const jobje
         postBuf = NULL;
     }
 
-//  ExecuteSubmitL( this, &rawHeaderArray , postBuf);
+
     CleanupStack::PopAndDestroy();//rawHeaderArray;
 }
 
 void NativeHttpTransaction::ExecuteSubmitL(int aSelfhandle , int aRawHeadershandle , int aPostBufhandle, int aResponseTimeout)
 {
-    //RPointerArray<HBufC8>* aRawHeaders;
+    
     NativeHttpTransaction *aSelf = reinterpret_cast<NativeHttpTransaction*>(aSelfhandle);
     RPointerArray<HBufC8>* aRawHeaders = reinterpret_cast<RPointerArray<HBufC8>*>(aRawHeadershandle);
     HBufC8* aPostBuf = reinterpret_cast<HBufC8*>(aPostBufhandle);
@@ -207,12 +186,12 @@ jobjectArray NativeHttpTransaction::GetResponseL(JNIEnv* aJni)
     jobjectArray objArray=NULL;
     RPointerArray<HBufC8> rawHeaders(KResponseGranularity);
     CleanupStack::PushL(TCleanupItem(CleanUpResetAndDestroy,&rawHeaders));
-    //User::LeaveIfError(ExecuteTrap(&NativeHttpTransaction::ExecuteGetResponseL, this, &rawHeaders));
+    
     int handle = reinterpret_cast<int>(this);
 
     int arrayhandle = reinterpret_cast<int>(&rawHeaders);
     CallMethodL(this, &NativeHttpTransaction::ExecuteGetResponseL,handle,arrayhandle , iFuncServer);
-    //ExecuteGetResponseL( this, &rawHeaders);
+    
     const TInt headerCount = rawHeaders.Count();
     if (headerCount>KErrNone)
     {
@@ -253,7 +232,7 @@ void NativeHttpTransaction::ExecuteGetResponseL(int aSelfhandle, int aRawHeaders
 */
 TInt NativeHttpTransaction::ReadBytes(TUint8* aBytes, TInt aLength)
 {
-    //return    Execute(&NativeHttpTransaction::ExecuteReadBytes, this, aBytes , aLength);
+    
     int handle = reinterpret_cast<int>(this);
     int uinthandle = reinterpret_cast<int>(aBytes);
 
@@ -261,7 +240,7 @@ TInt NativeHttpTransaction::ReadBytes(TUint8* aBytes, TInt aLength)
     CallMethod(ret,this, &NativeHttpTransaction::ExecuteReadBytes,handle,uinthandle,aLength,iFuncServer);
 
     return ret;
-    //return    ExecuteReadBytes( this, aBytes , aLength);
+    
 }
 
 TInt NativeHttpTransaction::ExecuteReadBytes(int aSelfhandle, int aByteshandle, TInt aLength)
@@ -277,26 +256,10 @@ void NativeHttpTransaction::SubmitComplete(TInt aStatus)
 {
     LOG(ESOCKET,EInfo,"+NativeHttpTransaction::SubmitComplete");
 
-//     jclass httpNativeClass = NULL;
-//     httpNativeClass = iJniObject->FindClass("com/nokia/mj/impl/http/HttpConnectionNative");
-//     jmethodID iMethodID  = NULL;
-//     iMethodID = iJniObject->GetMethodID( httpNativeClass, "transactionSubmitCallback", "(I)V" );
-//     if ( httpNativeClass == NULL )
-//       {
-//          LOG(ESOCKET,EInfo,"+httpNativeClass is null");
-//       }
-//     if ( iMethodID == NULL )
-//       {
-//          LOG(ESOCKET,EInfo,"+iMethodID is NULL");
-//       }
-    /*   if ( iJniPeer == NULL )
-         {
-            LOG(ESOCKET,EInfo,"+iJniPeer is null");
-         }*/
+
     NativeHttpSession* session = reinterpret_cast<NativeHttpSession*>(iFuncServer);
     session->doSubmitCallback(aStatus,iJniPeer);
 
-    // PostEvent(new (ELeave) CHttpTransactionEvent(iTransactionCallbackMethod, aStatus ),CJavaEventBase::ENotifyPriority);
     LOG(ESOCKET,EInfo,"-NativeHttpTransaction::SubmitComplete");
 }
 
@@ -304,17 +267,9 @@ void NativeHttpTransaction::DataReadyForRead(TInt aStatus)
 {
     LOG(ESOCKET,EInfo,"+NativeHttpTransaction::DataReadyForRead");
 
-//       jclass httpNativeClass = NULL;
-//     httpNativeClass = iJniObject->FindClass("com/nokia/mj/impl/http/HttpConnectionNative");
-//     jmethodID iMethodReadCallBackID  = NULL;
-//     iMethodReadCallBackID = iJniObject->GetMethodID( httpNativeClass, "dataReadyForReadCallBack", "(I)V" );
-//
-//       iFuncServer->mJniEnv->CallVoidMethod(mJavaPeerObject,iMethodReadCallBackID,1);
-
     NativeHttpSession* session = reinterpret_cast<NativeHttpSession*>(iFuncServer);
     session->doReadCallback(aStatus,iJniPeer);
 
-    //PostEvent(new (ELeave) CHttpTransactionEvent(iNotifyDataReadyForReadMethod, aStatus ),CJavaEventBase::ENotifyPriority);
     LOG(ESOCKET,EInfo,"-NativeHttpTransaction::DataReadyForRead");
 }
 
@@ -327,11 +282,9 @@ void NativeHttpTransaction::ExecuteCloseTransaction(int aSelfhandle)
 void NativeHttpTransaction::Dispose()
 {
     LOG(ESOCKET,EInfo,"+NativeHttpTransaction::Dispose()");
-    //iFuncServer->stopServer();
     CloseTransaction();
     delete iTransactionClient;
     iTransactionClient=NULL;
-//  iFuncServer->detachFromVm();
 
     LOG(ESOCKET,EInfo,"-NativeHttpTransaction::Dispose()");
 }
@@ -339,10 +292,8 @@ void NativeHttpTransaction::Dispose()
 
 void NativeHttpTransaction::CloseTransaction()
 {
-    //ExecuteV(&NativeHttpTransaction::ExecuteCloseTransaction, this);
     int handle = reinterpret_cast<int>(this);
     CallMethod(this, &NativeHttpTransaction::ExecuteCloseTransaction,handle,iFuncServer);
-    //ExecuteCloseTransaction( this);
 }
 
 

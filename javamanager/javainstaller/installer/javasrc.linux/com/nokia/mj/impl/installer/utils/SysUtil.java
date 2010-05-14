@@ -27,9 +27,6 @@ import java.util.Vector;
 
 /**
  * SysUtil provides system utility services.
- *
- * @author Nokia Corporation
- * @version $Rev: 10289 $
  */
 public final class SysUtil
 {

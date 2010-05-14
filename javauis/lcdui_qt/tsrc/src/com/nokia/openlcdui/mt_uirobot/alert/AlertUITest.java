@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt_uirobot.alert;
@@ -35,7 +35,8 @@ import com.nokia.mj.impl.uitestutils.Key;
  *
  * @created  2008-07-01
  */
-public class AlertUITest extends UITestBase {
+public class AlertUITest extends UITestBase
+{
 
     private static final int SETCURRENT_TIMEOUT = 6000;
     private static final int TEXBOX_LENGTH = 100;
@@ -43,19 +44,19 @@ public class AlertUITest extends UITestBase {
     private static String shortString = "Lorem ipsum";
 
     private static String longString = "Lorem ipsum dolor sit amet, "
-        + "consectetuer adipiscing elit. Cras turpis ligula, "
-        + "condimentum nec, rhoncus quis, molestie in, arcu. "
-        + "Curabitur id lacus. Quisque dictum nulla id odio. "
-        + "Nullam nec urna. Cras ac lacus nec lacus iaculis aliquet."
-        + " Integer ut eros. Proin laoreet justo et augue. "
-        + "Praesent dui. Proin vel leo a eros auctor convallis. "
-        + "Aenean urna nunc, sagittis vel, pellentesque a, "
-        + "luctus a, metus. Phasellus posuere lacus nec augue."
-        + "Nullam nec urna. Cras ac lacus nec lacus iaculis aliquet."
-        + " Integer ut eros. Proin laoreet justo et augue. "
-        + "Praesent dui. Proin vel leo a eros auctor convallis. "
-        + "Aenean urna nunc, sagittis vel, pellentesque a, "
-        + "luctus a, metus. Phasellus posuere lacus nec augue.";
+                                       + "consectetuer adipiscing elit. Cras turpis ligula, "
+                                       + "condimentum nec, rhoncus quis, molestie in, arcu. "
+                                       + "Curabitur id lacus. Quisque dictum nulla id odio. "
+                                       + "Nullam nec urna. Cras ac lacus nec lacus iaculis aliquet."
+                                       + " Integer ut eros. Proin laoreet justo et augue. "
+                                       + "Praesent dui. Proin vel leo a eros auctor convallis. "
+                                       + "Aenean urna nunc, sagittis vel, pellentesque a, "
+                                       + "luctus a, metus. Phasellus posuere lacus nec augue."
+                                       + "Nullam nec urna. Cras ac lacus nec lacus iaculis aliquet."
+                                       + " Integer ut eros. Proin laoreet justo et augue. "
+                                       + "Praesent dui. Proin vel leo a eros auctor convallis. "
+                                       + "Aenean urna nunc, sagittis vel, pellentesque a, "
+                                       + "luctus a, metus. Phasellus posuere lacus nec augue.";
 
     private TextBox textBox;
     private Command exitCmd;
@@ -63,8 +64,9 @@ public class AlertUITest extends UITestBase {
     /**
      * Constructor.
      */
-    public AlertUITest() {
-    	super();
+    public AlertUITest()
+    {
+        super();
     }
 
     /**
@@ -73,27 +75,31 @@ public class AlertUITest extends UITestBase {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public AlertUITest(String sTestName) {
+    public AlertUITest(String sTestName)
+    {
         super(sTestName);
     }
 
-    public static Test suite() {
+    public static Test suite()
+    {
         TestSuite suite = new TestSuite();
 
         java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = AlertUITest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new AlertUITest((String)e.nextElement()));
-	    }
-        
+        // Add widget tests
+        methodNames = AlertUITest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new AlertUITest((String)e.nextElement()));
+        }
+
         return suite;
     }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testShowTimedAlert");
         methodNames.addElement("testCustomListener");
@@ -103,31 +109,34 @@ public class AlertUITest extends UITestBase {
         methodNames.addElement("testImageAndTextCombinations");
         return methodNames;
     }
-    
-    public void runTest() throws Throwable {
-        if (getName().equals("testShowTimedAlert")) testShowTimedAlert();
-        else if (getName().equals("testCustomListener")) testCustomListener();
-        else if (getName().equals("testCustomListenerCustomCommand")) testCustomListenerCustomCommand();
-        else if (getName().equals("testKeypressOnCustomCommands")) testKeypressOnCustomCommands();
-        else if (getName().equals("testLongTextScrolling")) testLongTextScrolling();
-        else if (getName().equals("testImageAndTextCombinations")) testImageAndTextCombinations();
+
+    public void runTest() throws Throwable
+    {
+        if(getName().equals("testShowTimedAlert")) testShowTimedAlert();
+        else if(getName().equals("testCustomListener")) testCustomListener();
+        else if(getName().equals("testCustomListenerCustomCommand")) testCustomListenerCustomCommand();
+        else if(getName().equals("testKeypressOnCustomCommands")) testKeypressOnCustomCommands();
+        else if(getName().equals("testLongTextScrolling")) testLongTextScrolling();
+        else if(getName().equals("testImageAndTextCombinations")) testImageAndTextCombinations();
         else super.runTest();
     }
 
     /**
      * Any pre-test setup can be done here
      */
-    protected void setUp() throws Exception {
-    	super.setUp();
+    protected void setUp() throws Exception
+    {
+        super.setUp();
         exitCmd = new Command("exit", "exit", Command.EXIT, 0);
         textBox = new TextBox("textBox", "", TEXBOX_LENGTH, TextField.ANY);
         textBox.addCommand(exitCmd);
     }
-    
+
     /**
      * Tests showing a timed alert with default values.
      */
-    public void testShowTimedAlert() {
+    public void testShowTimedAlert()
+    {
         setCurrent(textBox);
 
         Alert alert = new Alert("timedAlert");
@@ -153,18 +162,19 @@ public class AlertUITest extends UITestBase {
         setCurrent(alert);
         block(timeout + CHANGE_DISPLAYABLE_DELAY);
         assertEquals("Textbox should be current",
-                textBox, display.getCurrent());
+                     textBox, display.getCurrent());
     }
 
     /**
      * Tests showing a timed alert with custom command listener.
      */
-    public void testCustomListener() {
-    	setCurrent(textBox);
+    public void testCustomListener()
+    {
+        setCurrent(textBox);
 
         Alert alert = new Alert("customListenerAlert");
         assertTrue("Alert should be timed",
-                alert.getTimeout() != Alert.FOREVER);
+                   alert.getTimeout() != Alert.FOREVER);
         alert.setCommandListener(this);
         setCurrent(alert);
         // wait for max 10sec to get command listener callback
@@ -176,12 +186,13 @@ public class AlertUITest extends UITestBase {
      * Tests showing a timed alert with custom command listener and custom
      * command.
      */
-    public void testCustomListenerCustomCommand() {
-    	setCurrent(textBox);
+    public void testCustomListenerCustomCommand()
+    {
+        setCurrent(textBox);
 
         Alert alert = new Alert("customCmdAlert");
         assertTrue("Alert should be timed",
-                alert.getTimeout() != Alert.FOREVER);
+                   alert.getTimeout() != Alert.FOREVER);
         alert.setCommandListener(this);
         Command testCmd = new Command("test", "test", Command.ITEM, 0);
         alert.addCommand(testCmd);
@@ -194,19 +205,20 @@ public class AlertUITest extends UITestBase {
     /**
      * Tests pressing keys on Alert's custom commands.
      */
-    public void testKeypressOnCustomCommands() {
-    	setCurrent(textBox);
+    public void testKeypressOnCustomCommands()
+    {
+        setCurrent(textBox);
 
         Alert alert = new Alert("keypressAlert");
         assertTrue("Alert should be timed",
-                alert.getTimeout() != Alert.FOREVER);
+                   alert.getTimeout() != Alert.FOREVER);
         alert.setCommandListener(this);
         Command testCmd1 = new Command("Cmd1", "Command 1", Command.SCREEN, 0);
         Command testCmd2 = new Command("Cmd2", "Command 2", Command.SCREEN, 1);
         alert.addCommand(testCmd1);
         alert.addCommand(testCmd2);
         assertTrue("Alert should be modal",
-                alert.getTimeout() == Alert.FOREVER);
+                   alert.getTimeout() == Alert.FOREVER);
 
         setCurrent(alert);
         key(Key.CBA1, 0);
@@ -224,17 +236,19 @@ public class AlertUITest extends UITestBase {
     /**
      * Tests scrolling a long text.
      */
-    public void testLongTextScrolling() {
-    	setCurrent(textBox);
+    public void testLongTextScrolling()
+    {
+        setCurrent(textBox);
 
         Alert alert = new Alert("scrollingAlert");
         alert.setString(longString);
         alert.setCommandListener(this);
         assertTrue("Alert should be modal",
-                alert.getTimeout() == Alert.FOREVER);
+                   alert.getTimeout() == Alert.FOREVER);
 
         setCurrent(alert);
-        for (int i = 0; i < 10; i++) {
+        for(int i = 0; i < 10; i++)
+        {
             key((i < 5 ? Key.DownArrow : Key.UpArrow));
         }
 
@@ -245,21 +259,26 @@ public class AlertUITest extends UITestBase {
     /**
      * Tests different text and image setting combinations.
      */
-    public void testImageAndTextCombinations() {
-    	setCurrent(textBox);
+    public void testImageAndTextCombinations()
+    {
+        setCurrent(textBox);
 
         Image smallImg = null;
         Image largeImg = null;
-        try {
+        try
+        {
             smallImg = Image.createImage("100x100.png");
         }
-        catch (IOException e) {
+        catch(IOException e)
+        {
             fail("Cannot load image 100x100.png");
         }
-        try {
+        try
+        {
             largeImg = Image.createImage("200x200.png");
         }
-        catch (IOException e) {
+        catch(IOException e)
+        {
             fail("Cannot load image 200x200.png");
         }
 
@@ -267,36 +286,40 @@ public class AlertUITest extends UITestBase {
         alert.setTimeout(Alert.FOREVER);
         alert.setCommandListener(this);
         assertTrue("Alert should be modal",
-                alert.getTimeout() == Alert.FOREVER);
+                   alert.getTimeout() == Alert.FOREVER);
 
         setCurrent(alert);
-        for (int textIndex = 0; textIndex < 3; textIndex++) {
-            switch (textIndex) {
+        for(int textIndex = 0; textIndex < 3; textIndex++)
+        {
+            switch(textIndex)
+            {
+            case 0:
+                alert.setString(null);
+                break;
+            case 1:
+                alert.setString(shortString);
+                break;
+            case 2:
+                alert.setString(longString);
+                break;
+            default:
+                break;
+            }
+            for(int imgIndex = 0; imgIndex < 3; imgIndex++)
+            {
+                switch(imgIndex)
+                {
                 case 0:
-                    alert.setString(null);
+                    alert.setImage(null);
                     break;
                 case 1:
-                    alert.setString(shortString);
+                    alert.setImage(smallImg);
                     break;
                 case 2:
-                    alert.setString(longString);
+                    alert.setImage(largeImg);
                     break;
                 default:
                     break;
-            }
-            for (int imgIndex = 0; imgIndex < 3; imgIndex++) {
-                switch (imgIndex) {
-                    case 0:
-                        alert.setImage(null);
-                        break;
-                    case 1:
-                        alert.setImage(smallImg);
-                        break;
-                    case 2:
-                        alert.setImage(largeImg);
-                        break;
-                    default:
-                        break;
                 }
                 block(CHANGE_DISPLAYABLE_DELAY); // 0.3 sec
             }

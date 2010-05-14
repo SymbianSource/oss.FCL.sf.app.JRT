@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package t_screenshots.textfield;
@@ -67,7 +67,8 @@ import com.nokia.mj.impl.uitestutils.Key;
  * Note: The references images differ from 3.0 to 3.1, and 3.2
  */
 
-public class SetInitInModeTest extends UITestBase {
+public class SetInitInModeTest extends UITestBase
+{
 
 
     // ==============================================================
@@ -76,7 +77,8 @@ public class SetInitInModeTest extends UITestBase {
     /**
      * Default constructor.
      */
-    public SetInitInModeTest() {
+    public SetInitInModeTest()
+    {
     }
 
     /**
@@ -86,7 +88,8 @@ public class SetInitInModeTest extends UITestBase {
      * @param rTestMethod test method.
      */
     public SetInitInModeTest(String sTestName,
-            TestMethod rTestMethod) {
+                             TestMethod rTestMethod)
+    {
         super(sTestName, rTestMethod);
     }
 
@@ -96,48 +99,59 @@ public class SetInitInModeTest extends UITestBase {
      *
      * @return test suite
      */
-    public Test suite() {
+    public Test suite()
+    {
         TestSuite aSuite = new TestSuite();
 
         aSuite.addTest(new SetInitInModeTest(
-                "test_EditOptionsWhenLatinDigits", new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((SetInitInModeTest) tc)
-                                .testEditOptionsWhenLatinDigits();
-                    }
-                }));
+                           "test_EditOptionsWhenLatinDigits", new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((SetInitInModeTest) tc)
+                .testEditOptionsWhenLatinDigits();
+            }
+        }));
 
         aSuite.addTest(new SetInitInModeTest(
-                "test_EditOptionsWhenLatin", new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((SetInitInModeTest) tc)
-                                .testEditOptionsWhenLatin();
-                    }
-                }));
+                           "test_EditOptionsWhenLatin", new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((SetInitInModeTest) tc)
+                .testEditOptionsWhenLatin();
+            }
+        }));
 
         aSuite.addTest(new SetInitInModeTest(
-                "test_EditOptionsWhenArabic", new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((SetInitInModeTest) tc)
-                                .testEditOptionsWhenArabic();
-                    }
-                }));
+                           "test_EditOptionsWhenArabic", new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((SetInitInModeTest) tc)
+                .testEditOptionsWhenArabic();
+            }
+        }));
 
         aSuite.addTest(new SetInitInModeTest(
-                "test_EditOptionsWhenNonPredictive", new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((SetInitInModeTest) tc)
-                                .testEditOptionsWhenNonPredictive();
-                    }
-                }));
+                           "test_EditOptionsWhenNonPredictive", new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((SetInitInModeTest) tc)
+                .testEditOptionsWhenNonPredictive();
+            }
+        }));
 
         aSuite.addTest(new SetInitInModeTest(
-                "test_EditOptionsWhenPassword", new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((SetInitInModeTest) tc)
-                                .testEditOptionsWhenPassword();
-                    }
-                }));
+                           "test_EditOptionsWhenPassword", new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((SetInitInModeTest) tc)
+                .testEditOptionsWhenPassword();
+            }
+        }));
 
 
 
@@ -151,22 +165,24 @@ public class SetInitInModeTest extends UITestBase {
      * Tests EditOptions menu after setInitialInputMode("IS_LATIN_DIGITS") in
      * order to see that the user can change the input mode.
      */
-    private void testEditOptionsWhenLatinDigits() {
+    private void testEditOptionsWhenLatinDigits()
+    {
         doInputModeTest(getName(), TextField.ANY, "IS_LATIN_DIGITS", "",
-                // initial content
-                new int[] {'2', '3', '4', '5', Key.Edit, }, // key presses
-                null);
+                        // initial content
+                        new int[] {'2', '3', '4', '5', Key.Edit, }, // key presses
+                        null);
     }
 
     /**
      * Tests EditOptions menu after setInitialInputMode("IS_LATIN") in order to
      * see that the user can change the input mode and and the input language.
      */
-    private void testEditOptionsWhenLatin() {
+    private void testEditOptionsWhenLatin()
+    {
         doInputModeTest(getName(), TextField.ANY, "IS_LATIN", "", // initial
-                                                                    // content
-                new int[] {'2', '3', '4', '5', Key.Edit, }, // key presses
-                null);
+                        // content
+                        new int[] {'2', '3', '4', '5', Key.Edit, }, // key presses
+                        null);
     }
 
     /**
@@ -174,11 +190,12 @@ public class SetInitInModeTest extends UITestBase {
      * to see that the user can change the input mode the input language and
      * also Arabic Number mode.
      */
-    private void testEditOptionsWhenArabic() {
+    private void testEditOptionsWhenArabic()
+    {
         doInputModeTest(getName(), TextField.ANY, "UCB_ARABIC", "", // initial
-                                                                    // content
-                new int[] {'2', '3', '4', '5', Key.Edit, }, // key presses
-                null); // no expected content, screenshot taken
+                        // content
+                        new int[] {'2', '3', '4', '5', Key.Edit, }, // key presses
+                        null); // no expected content, screenshot taken
     }
 
     /**
@@ -186,11 +203,12 @@ public class SetInitInModeTest extends UITestBase {
      * NON_PREDICTIVE. Edit Options menu does not contain any "Predictive text
      * on" menu item.
      */
-    private void testEditOptionsWhenNonPredictive() {
+    private void testEditOptionsWhenNonPredictive()
+    {
         doInputModeTest(getName(), TextField.NON_PREDICTIVE, "UCB_GREEK", "",
-             // initial content
-                new int[] {'2', '3', '4', '5', Key.Edit, }, // key presses
-                null); // no expected content, screenshot taken
+                        // initial content
+                        new int[] {'2', '3', '4', '5', Key.Edit, }, // key presses
+                        null); // no expected content, screenshot taken
     }
 
     /**
@@ -198,11 +216,12 @@ public class SetInitInModeTest extends UITestBase {
      * PASSWORD. Edit Options menu does not contain any "Predictive text on"
      * menu item.
      */
-    private void testEditOptionsWhenPassword() {
+    private void testEditOptionsWhenPassword()
+    {
         doInputModeTest(getName(), TextField.PASSWORD, "UCB_HEBREW", "",
-                // initial content
-                new int[] {'2', '3', '4', '5', Key.Edit, }, // key presses
-                null); // no expected content, screenshot taken
+                        // initial content
+                        new int[] {'2', '3', '4', '5', Key.Edit, }, // key presses
+                        null); // no expected content, screenshot taken
     }
 
 
@@ -223,24 +242,28 @@ public class SetInitInModeTest extends UITestBase {
      * @param expectedContent Expected content of TextField
      */
     private void doInputModeTest(String testCaseName, int constraints,
-            String initialInputMode, String initialContent, int[] pressedKeys,
-            String expectedContent) {
+                                 String initialInputMode, String initialContent, int[] pressedKeys,
+                                 String expectedContent)
+    {
 
         boolean passed = true;
 
-        try {
+        try
+        {
             // Create a form with two text fields
             Form form = new Form(testCaseName);
             TextField textField = new TextField("Text field", initialContent,
-                    normalSize, constraints);
+                                                normalSize, constraints);
             TextField otherField = new TextField("Other field", "", normalSize,
-                    TextField.ANY);
+                                                 TextField.ANY);
 
             // Set initial input mode before displaying TextField
-            if ("NONE".equals(initialInputMode)) {
+            if("NONE".equals(initialInputMode))
+            {
                 // initial input mode not set
             }
-            else {
+            else
+            {
                 textField.setInitialInputMode(initialInputMode);
             }
             form.append(textField);
@@ -252,8 +275,10 @@ public class SetInitInModeTest extends UITestBase {
 
 
             // Do key presses
-            if (pressedKeys != null) {
-                for (int i = 0; i < pressedKeys.length; i++) {
+            if(pressedKeys != null)
+            {
+                for(int i = 0; i < pressedKeys.length; i++)
+                {
                     key(pressedKeys[i]);
                 }
             }
@@ -261,12 +286,13 @@ public class SetInitInModeTest extends UITestBase {
 
             // Check the result of key presses (i.e. the used input mode)
             passed = checkResult(testCaseName, textField, expectedContent,
-                    expectedContent == null ? true : false);
+                                 expectedContent == null ? true : false);
 
         }
-        catch (Exception exc) {
+        catch(Exception exc)
+        {
             print(testCaseName + " test failed: " + exc.toString());
-			print(exc);
+            print(exc);
             passed = false;
         }
 
@@ -285,39 +311,45 @@ public class SetInitInModeTest extends UITestBase {
      * @return result Returns whether test case passed or failed
      */
     private boolean checkResult(String testCaseName, TextField textBox,
-            String expectedContent, boolean takeScreenshot) {
+                                String expectedContent, boolean takeScreenshot)
+    {
 
         boolean passed = true;
         SpedeRunner spede = (SpedeRunner) SpedeRunner.getInstance();
 
         // Check the expected content
-        if (expectedContent != null) {
-            if (!expectedContent.equals(textBox.getString())) {
+        if(expectedContent != null)
+        {
+            if(!expectedContent.equals(textBox.getString()))
+            {
                 passed = false;
                 spede.addToResultsList(testCaseName + " test "
-                        + " failed: content: " + textBox.getString()
-                        + ", expected: " + expectedContent);
+                                       + " failed: content: " + textBox.getString()
+                                       + ", expected: " + expectedContent);
             }
         }
 
         // Take the screenshot and compare it with the previous one
-        if (takeScreenshot) {
-            if (!spede.takeScreenshot(testCaseName + ".gif")) {
+        if(takeScreenshot)
+        {
+            if(!spede.takeScreenshot(testCaseName + ".gif"))
+            {
                 passed = false;
                 spede.addToResultsList(testCaseName + " test "
-                        + " failed: screenshot does not match");
+                                       + " failed: screenshot does not match");
 
                 spede.addToResultsList("If failure is caused by different "
-                        + "special characters which are show in the cell at "
-                        + "the top of the Edit Menu, please IGNORE the result"
-                        + " and treat the test as PASSED!");
+                                       + "special characters which are show in the cell at "
+                                       + "the top of the Edit Menu, please IGNORE the result"
+                                       + " and treat the test as PASSED!");
 
             }
         }
 
-        if (passed) {
+        if(passed)
+        {
             spede.addToResultsList(testCaseName + " test succeeded: "
-                    + textBox.getString());
+                                   + textBox.getString());
         }
         return passed;
     }

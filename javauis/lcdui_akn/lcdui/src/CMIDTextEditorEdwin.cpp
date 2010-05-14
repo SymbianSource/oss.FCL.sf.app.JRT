@@ -257,11 +257,6 @@ void CMIDTextEditorEdwin::Draw(const TRect& aRect) const
     // Part of transparency workaround. Set drawing not active.
     iDrawInvoked = EFalse;
 
-    if (iObserver)
-    {
-        iObserver->NotifyInputAction(
-            MMIDTextEditorObserver::EActionPaintRequest);
-    }
     DEBUG("CMIDTextEditorEdwin::Draw -");
 }
 
@@ -530,6 +525,7 @@ void CMIDTextEditorEdwin::HandleTextChangedL()
 //
 void CMIDTextEditorEdwin::HandleResourceChange(TInt aType)
 {
+    CCoeControl::HandleResourceChange(aType);
     // Notification about language change
     if (aType == KEikInputLanguageChange)
     {
@@ -584,8 +580,7 @@ void CMIDTextEditorEdwin::HandleEdwinEventL(
             // Check if cursor has moved. This must be done because
             // currently edwin does not report cursor position movement
             // when text is changed due to user input.
-            if ((iVisibleContentHeight != newVisiblecontentHeight) &&
-                    (iCursorPosForAction != CursorPos()))
+            if (iVisibleContentHeight != newVisiblecontentHeight)
             {
                 event |= MMIDTextEditorObserver::EActionScrollbarChange;
                 // Reported, reset here to avoid multiple notifications.

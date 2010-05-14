@@ -22,9 +22,6 @@ package javax.microedition.midlet;
  * An exception for the MIDlet to inform that it doesn't want to do the state
  * change requested by the life cycle.
  * @see MIDP spec for further details.
- *
- * @author Nokia Corporation
- * @version $Rev$
  */
 public class MIDletStateChangeException extends Exception
 {

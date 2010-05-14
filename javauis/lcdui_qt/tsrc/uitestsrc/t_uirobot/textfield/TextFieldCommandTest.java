@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package t_uirobot.textfield;
@@ -33,14 +33,16 @@ import com.nokia.mj.impl.uitestutils.Key;
  * <br>
  * Created: 2008-09-15
  */
-public class TextFieldCommandTest extends ItemUITestBase {
+public class TextFieldCommandTest extends ItemUITestBase
+{
 
     private static int maxsize = 2000;
 
     /**
      * Constructor.
      */
-    public TextFieldCommandTest() {
+    public TextFieldCommandTest()
+    {
     }
 
     /**
@@ -49,7 +51,8 @@ public class TextFieldCommandTest extends ItemUITestBase {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public TextFieldCommandTest(String sTestName, TestMethod rTestMethod) {
+    public TextFieldCommandTest(String sTestName, TestMethod rTestMethod)
+    {
         super(sTestName, rTestMethod);
     }
 
@@ -59,35 +62,43 @@ public class TextFieldCommandTest extends ItemUITestBase {
      *
      * @return New testsuite.
      */
-    public Test suite() {
+    public Test suite()
+    {
         TestSuite aSuite = new TestSuite();
 
         aSuite.addTest(new TextFieldCommandTest("testCommands",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((TextFieldCommandTest) tc).testCommands();
-                    }
-                }));
+                                                new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((TextFieldCommandTest) tc).testCommands();
+            }
+        }));
         aSuite.addTest(new TextFieldCommandTest("testTextFieldChange",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((TextFieldCommandTest) tc).testTextFieldChange();
-                    }
-                }));
+                                                new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((TextFieldCommandTest) tc).testTextFieldChange();
+            }
+        }));
         aSuite.addTest(new TextFieldCommandTest("testItemState",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((TextFieldCommandTest) tc).testItemState();
-                    }
-                }));
+                                                new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((TextFieldCommandTest) tc).testItemState();
+            }
+        }));
         return aSuite;
     }
 
     /**
      * Tests the basic functionality of command added to TextField.
      */
-    public void testCommands() {
-        TextField tf = new TextField ("name", "text", maxsize, TextField.ANY);
+    public void testCommands()
+    {
+        TextField tf = new TextField("name", "text", maxsize, TextField.ANY);
 
         Command ok = new Command("Ok", "", Command.ITEM, 0);
         tf.addCommand(ok);
@@ -106,11 +117,12 @@ public class TextFieldCommandTest extends ItemUITestBase {
     /**
      * Tests TextField's value changing.
      */
-    public void testTextFieldChange() {
+    public void testTextFieldChange()
+    {
         TextField tf1 = new TextField("TextField", "text1", maxsize,
-                TextField.ANY);
+                                      TextField.ANY);
         TextField tf2 = new TextField("TextField", "text2", maxsize,
-                TextField.ANY);
+                                      TextField.ANY);
         boolean case1 = true;
         boolean case2 = true;
         boolean case3 = true;
@@ -123,20 +135,22 @@ public class TextFieldCommandTest extends ItemUITestBase {
 
         // Change TextField CaretPosition
         key(Key.RightArrow);
-        if (tf1.getCaretPosition() != 0) {
+        if(tf1.getCaretPosition() != 0)
+        {
             case1 = false;
             reason = "Wrong CaretPosition(case1). " + "expected " + 0
-                + "but got" + tf1.getCaretPosition();
+                     + "but got" + tf1.getCaretPosition();
             reason += "<<<<<>>>>>>";
         }
-      //assertEquals("Wrong CaretPosition(case1).", 0, tf1.getCaretPosition());
+        //assertEquals("Wrong CaretPosition(case1).", 0, tf1.getCaretPosition());
 
         // Change TextField CaretPosition back to original:
         key(Key.LeftArrow);
-        if (tf1.size() != tf1.getCaretPosition()) {
+        if(tf1.size() != tf1.getCaretPosition())
+        {
             case2 = false;
             reason +=  "Wrong CaretPosition(case 2)." + "expected " + tf1.size()
-                + "but got" + tf1.getCaretPosition();
+                       + "but got" + tf1.getCaretPosition();
             reason += "<<<<<>>>>>>";
         }
         /*assertEquals("Wrong CaretPosition(case 2).", tf1.size(),
@@ -144,10 +158,11 @@ public class TextFieldCommandTest extends ItemUITestBase {
         */
         // Change focus to nextTextField
         key(Key.DownArrow);
-        if (tf2.getCaretPosition() != 0) {
+        if(tf2.getCaretPosition() != 0)
+        {
             case3 = false;
             reason +=  "Wrong CaretPosition(case 3)." + "expected " + 0
-                + "but got" + tf2.getCaretPosition();
+                       + "but got" + tf2.getCaretPosition();
             reason += "<<<<<>>>>>>";
         }
         /*assertEquals("Wrong CaretPosition(case 3).", 0,
@@ -155,10 +170,11 @@ public class TextFieldCommandTest extends ItemUITestBase {
 
         // Now Caret have to be in the end
         key(Key.LeftArrow);
-        if (tf2.size() != tf2.getCaretPosition()) {
+        if(tf2.size() != tf2.getCaretPosition())
+        {
             case4 = false;
             reason +=  "Wrong CaretPosition(case 4)." + "expected " + tf2.size()
-                + "but got" + tf2.getCaretPosition();
+                       + "but got" + tf2.getCaretPosition();
             reason += "<<<<<>>>>>>";
         }
         /*
@@ -168,10 +184,11 @@ public class TextFieldCommandTest extends ItemUITestBase {
         //go to first TextField
         key(Key.RightArrow);
         key(Key.UpArrow);
-        if (tf1.size() != tf1.getCaretPosition()) {
+        if(tf1.size() != tf1.getCaretPosition())
+        {
             case5 = false;
             reason +=  "Wrong CaretPosition(case 5)." + "expected " + tf1.size()
-                + "but got" + tf1.getCaretPosition();
+                       + "but got" + tf1.getCaretPosition();
         }
         assertTrue(reason, case1 & case2 & case3 & case4 & case5);
     }
@@ -180,9 +197,10 @@ public class TextFieldCommandTest extends ItemUITestBase {
      * Tests that Form receives ItemStateChanged-events when TextField's
      * value is changed.
      */
-    public void testItemState() {
+    public void testItemState()
+    {
         TextField tf = new TextField("header", "text", maxsize,
-                TextField.ANY);
+                                     TextField.ANY);
 
         form.append(tf);
 

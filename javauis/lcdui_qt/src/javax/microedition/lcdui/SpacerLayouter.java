@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -23,14 +23,16 @@ import org.eclipse.swt.widgets.Control;
 /**
  * Class responsible for correct layout of Spacer item.
  */
-class SpacerLayouter extends ItemLayouter {
+class SpacerLayouter extends ItemLayouter
+{
 
     /**
      * Constructor.
      *
      * @param dflp DefaultFormLayoutPolicy.
      */
-    SpacerLayouter(DefaultFormLayoutPolicy dflp) {
+    SpacerLayouter(DefaultFormLayoutPolicy dflp)
+    {
         super(dflp);
     }
 
@@ -40,7 +42,8 @@ class SpacerLayouter extends ItemLayouter {
      * @param parent for the control.
      * @param item Spacer item.
      */
-    Control eswtGetControl(Composite parent, Item item) {
+    Control eswtGetControl(Composite parent, Item item)
+    {
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setSize(item.getMinimumWidth(), item.getMinimumHeight());
         return composite;
@@ -53,7 +56,8 @@ class SpacerLayouter extends ItemLayouter {
      * @param control eSWT control.
      * @return true if this control is suitable for update
      */
-    boolean eswtIsSpecificControl(Item item, Control control) {
+    boolean eswtIsSpecificControl(Item item, Control control)
+    {
         return true;
     }
 
@@ -64,7 +68,8 @@ class SpacerLayouter extends ItemLayouter {
      * @param control eSWT control.
      * @param reason reason to update.
      */
-    void eswtUpdateItem(Item item, Control control, int reason, Object param) {
+    void eswtUpdateItem(Item item, Control control, int reason, Object param)
+    {
         // no implementation needed.
     }
 

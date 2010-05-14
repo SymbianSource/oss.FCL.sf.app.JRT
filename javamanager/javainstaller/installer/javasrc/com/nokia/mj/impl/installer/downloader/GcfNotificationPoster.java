@@ -30,9 +30,6 @@ import javax.microedition.io.HttpConnection;
 /**
  * GcfNotificationPoster implements NotificationPoster using
  * MIDP GCF classes.
- *
- * @author Nokia Corporation
- * @version $Rev: 0 $ $Date$
  */
 public class GcfNotificationPoster extends NotificationPoster
 {
@@ -98,8 +95,19 @@ public class GcfNotificationPoster extends NotificationPoster
         String url = getUrlWithTimeout(
                          GcfDownloader.getUrlWithAccessPoint(
                              aOtaStatusNotification.getUrl(), iIap, iSnap), 60);
-        Log.logInfoPrd("GcfNotificationPoster: opening " + url);
-        HttpConnection connection = (HttpConnection)Connector.open(url);
+        HttpConnection connection = null;
+        synchronized (this)
+        {
+            if (iState != STATE_POSTING)
+            {
+                throw new IOException("Posting cancelled before connection opening");
+            }
+            // Posting may not be stopped during connection opening,
+            // so open connection inside synchronization block.
+            Log.logInfoPrd("GcfNotificationPoster: opening " + url);
+            connection = (HttpConnection)Connector.open(url);
+            Log.logInfoPrd("GcfNotificationPoster: connection opened");
+        }
         connection.setRequestMethod(connection.POST); // we will post content
         connection.setRequestProperty("Content-Type", CONTENT_TYPE);
 

@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.mid.ui;
@@ -25,9 +25,11 @@ import com.nokia.mj.impl.nokialcdui.LCDUIInvoker;
 /**
  * DirectUtils class contains utility methods for lcdui classes.
  */
-public final class DirectUtils {
+public final class DirectUtils
+{
 
-    private DirectUtils() {
+    private DirectUtils()
+    {
     }
 
     /**
@@ -39,7 +41,8 @@ public final class DirectUtils {
      * @return mutable image
      */
     public static Image createImage(byte[] imageData, int imageOffset,
-            int imageLength) {
+                                    int imageLength)
+    {
         Image src = Image.createImage(imageData, imageOffset, imageLength);
         Image ret = Image.createImage(src.getWidth(), src.getHeight());
         ret.getGraphics().drawImage(src, 0, 0, 0);
@@ -54,7 +57,8 @@ public final class DirectUtils {
      * @param argbColor fill color
      * @return mutable image
      */
-    public static Image createImage(int width, int height, int argbColor) {
+    public static Image createImage(int width, int height, int argbColor)
+    {
         Image ret = Image.createImage(width, height);
         Graphics g = ret.getGraphics();
         LCDUIInvoker.getDirectGraphics(g).setARGBColor(argbColor);
@@ -68,7 +72,8 @@ public final class DirectUtils {
      * @param g graphics object
      * @return DirectGraphics object
      */
-    public static DirectGraphics getDirectGraphics(Graphics g) {
+    public static DirectGraphics getDirectGraphics(Graphics g)
+    {
         return LCDUIInvoker.getDirectGraphics(g);
     }
 
@@ -80,7 +85,8 @@ public final class DirectUtils {
      * @param height font height
      * @return custom font
      */
-    public static Font getFont(int face, int style, int height) {
+    public static Font getFont(int face, int style, int height)
+    {
         return LCDUIInvoker.getFreeSizedFont(face, style, height);
     }
 

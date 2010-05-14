@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -19,7 +19,8 @@ package javax.microedition.lcdui;
 /**
  * LCDUI <code>Choice</code> interface.
  */
-public interface Choice {
+public interface Choice
+{
 
     /**
      * One element selected at a time.

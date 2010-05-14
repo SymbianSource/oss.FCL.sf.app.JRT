@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 
@@ -24,7 +24,8 @@ package com.nokia.mj.impl.rt;
  * com.nokia.mj.impl.rt.properties + <jsr_package>.<PropertyName> hierarchy.
  *
  */
-public interface DynamicProperty {
+public interface DynamicProperty
+{
 
     /**
      * Sets the dynamic system property based on the received argument.

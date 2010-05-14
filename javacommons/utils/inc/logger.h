@@ -115,6 +115,7 @@ enum TComponents
     EDebugApi,          //  =34
     EJavaAppMngrPlugin, //  =35
     EJavaBroadcast,     //  =36
+    EJavaAMMS,					//  =37
     // add id of new components here
 };
 
@@ -171,6 +172,7 @@ const struct
     {"JavaDebugApi.log",     "[JavaDebugApi]"},       // EDebugApi
     {"JavaAppMngrPlugin.log","[JavaAppMngrPlugin]"},  // EJavaAppMngrPlugin
     {"JavaBroadcast.log",    "[JavaBroadcast]"},      // EJavaBroadcast
+    {"JavaMMAPI.log",         "[ MMAPPI ]"},					// EJavaAMMS
     // add new component file name and nickname here
 };
 

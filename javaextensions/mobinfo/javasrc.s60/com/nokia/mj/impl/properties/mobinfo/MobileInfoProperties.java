@@ -67,7 +67,7 @@ public class MobileInfoProperties implements SystemPropertyProvider
 
     private static final String EMAIL_SEND_SETTINGS = "com.nokia.mid.settings.email-send-protocol";
 
-    private static final String CELLID = "com.nokia.mid.cellid";
+    static final String CELLID = "com.nokia.mid.cellid";
 
     static final String MSISDN = "com.nokia.mid.msisdn";
 

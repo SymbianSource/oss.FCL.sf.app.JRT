@@ -20,7 +20,7 @@
 // INCLUDE FILES
 #include "tstsdistinguishednameconverter.h"
 #include "tstscharactersetconverter.h"
-#include "stscommon.h" // for CleanupResetAndDestroy
+#include "javasymbianoslayer.h" // for CleanupResetAndDestroy
 #include "stspkiconstants.h" // for error constants
 #include <x500dn.h>
 #include <charconv.h>

@@ -133,11 +133,9 @@ TInt CMIDGaugeItem::GetValue()
 CMIDGaugeItem::CMIDGaugeItem(CMIDUIManager* aUIManager)
         : CMIDControlItem(EDefault, aUIManager),
         iIndefiniteState(EIncrementalIdle),
-        iGaugeFrameData(NULL),
-        iTimer(NULL)
+        iGaugeFrameData(NULL)
 {
     iMMidItem = this;
-    iIsInForeground = ETrue;
 }
 
 CMIDGaugeItem::~CMIDGaugeItem()
@@ -175,7 +173,13 @@ void CMIDGaugeItem::BaseConstructL(const TDesC& aLabel,TInt aMaxValue,TInt aInit
     iMaxValue = aMaxValue;
     iValue = aInitialValue;
 
-    SetStateL(aMaxValue,aInitialValue);
+    iIndefinite = (aMaxValue == EIndefinite) ? ETrue : EFalse;
+
+    if (iIndefinite)
+    {
+        iIndefiniteState = aInitialValue;
+        iValue = 0;
+    }
 
     DEBUG("CMIDGaugeItem::BaseConstructL >");
 }
@@ -698,7 +702,6 @@ void CMIDGaugeItem::ResizeBitmapsInTlsL()
     }
 }
 
-
 void CMIDGaugeItem::ColorChange(TInt aType)
 {
     // call default implementation
@@ -720,62 +723,9 @@ void CMIDGaugeItem::ColorChange(TInt aType)
     }
 }
 
-void CMIDGaugeItem::HandleForegroundL(TBool aForeground)
+void CMIDGaugeItem::HandleForegroundL(TBool /*aForeground*/)
 {
-    // synchronize foreground flag
-    iIsInForeground = aForeground;
-
-    // if continuous-running ni-gauge is in foreground and it's timer
-    // is not created then create it else if gauge is in background
-    // and if it is inserted in form then dispose it's timer
-    if (iIsInForeground)
-    {
-        if ((iIndefiniteState == EContinuousRunning) && (!iTimer))
-        {
-            iTimer = CGaugeTimer::NewL(*this);
-            iTimer->After(TTimeIntervalMicroSeconds32(KDelayInMicroSeconds));
-        }
-    }
-    else if (iForm)
-    {
-        DisposeTimer();
-    }
-}
-
-void CMIDGaugeItem::SetStateL(TInt aMaxValue,TInt aValue)
-{
-    iIndefinite = (aMaxValue == EIndefinite) ? ETrue : EFalse;
-
-    if (iIndefinite)
-    {
-        iIndefiniteState = aValue;
-        iValue = 0;
-        switch (aValue)
-        {
-        case EContinuousIdle:
-        case EIncrementalIdle:
-            DisposeTimer();
-            break;
-        case EContinuousRunning:
-            if (!iTimer)
-            {
-                iTimer = CGaugeTimer::NewL(*this);
-                iTimer->After(TTimeIntervalMicroSeconds32(KDelayInMicroSeconds));
-            }
-            break;
-        case EIncrementalUpdating:
-            DisposeTimer();
-            break;
-        default:
-            ASSERT(EFalse);
-        }
-    }
-    else
-    {
-    }
-    //
-    // We're now back in normal mode
-    //
+    // Empty implementation. Inherited by CMIDNonInteractiveGauge.
 }
 
 #ifdef RD_SCALABLE_UI_V2
@@ -799,14 +749,6 @@ void CMIDGaugeItem::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 TBool CMIDGaugeItem::IsSelectable() const
 {
     return (iCommandList->Count() > 0 || !IsNonFocusing());
-}
-
-void CMIDGaugeItem::DisposeTimer()
-{
-    if (iTimer)
-        iTimer->Cancel();
-    delete iTimer;
-    iTimer = NULL;
 }
 
 void CMIDGaugeItem::FocusChanged(TDrawNow aDrawNow)
@@ -894,7 +836,9 @@ CMIDNonInteractiveGauge::~CMIDNonInteractiveGauge()
 //
 CMIDNonInteractiveGauge::CMIDNonInteractiveGauge(CMIDUIManager* aUIManager)
         : CMIDGaugeItem(aUIManager),
-        iBitmapAnimation(NULL)
+        iBitmapAnimation(NULL),
+        iTimer(NULL),
+        iIsInForeground(ETrue)
 {
     SetFocusing(EFalse);
 }
@@ -926,6 +870,30 @@ void CMIDNonInteractiveGauge::UpdateMemberVariables()
                               iWaitGaugeRect.Rect().iTl.iY - formRect.iTl.iY + ItemContentBottomMargin();
 }
 
+
+// ---------------------------------------------------------------------------
+// CMIDNonInteractiveGauge::InstallGaugeTimerWhenNeededL
+// If continuous-running NonInteractiveGauge is in foreground,
+// appended to form, bitmap animation is not used and
+// animation timer is not created then create it.
+// In all other cases the timer is not needed and disposed.
+// ---------------------------------------------------------------------------
+//
+void CMIDNonInteractiveGauge::InstallGaugeTimerWhenNeededL()
+{
+    if (iForm && iIsInForeground &&
+            iIndefiniteState == EContinuousRunning &&
+            !BitmapAnimationUsed() && !iTimer)
+    {
+        iTimer = CGaugeTimer::NewL(*this);
+        iTimer->After(TTimeIntervalMicroSeconds32(KDelayInMicroSeconds));
+    }
+    else
+    {
+        DisposeTimer();
+    }
+}
+
 void CMIDNonInteractiveGauge::ConstructProgressInfoL()
 {
     ASSERT(!iProgressInfo);
@@ -955,31 +923,36 @@ void CMIDNonInteractiveGauge::SetValueL(TInt aValue)
     {
         // indefinite gauge will not be updated when it is inserted in form
         // and the form is sent to background
-        TBool updateGauge = (iForm) ? iIsInForeground : ETrue;
+        TBool updateGauge = (iForm) ? iIsInForeground : EFalse;
 
         // update gauge state
         TInt oldIndefiniteState = iIndefiniteState;
         iIndefiniteState = aValue;
+        DisposeTimer();
+
+        if (BitmapAnimationUsed() && aValue != EContinuousRunning)
+        {
+            // Stoping of animation.
+            iBitmapAnimation->CancelAnimation();
+            delete iBitmapAnimation;
+            iBitmapAnimation = NULL;
+        }
+        else if (!BitmapAnimationUsed() && aValue == EContinuousRunning)
+        {
+            // Create new bitmap animation
+            CreateNewBitmapAnimationIfNeededL();
+        }
 
         switch (iIndefiniteState)
         {
         case EContinuousIdle:
-            iValue = 0;
-            DisposeTimer();
-            break;
         case EIncrementalIdle:
             iValue = 0;
-            DisposeTimer();
             break;
         case EContinuousRunning:
-            if (!iTimer && updateGauge)
-            {
-                iTimer = CGaugeTimer::NewL(*this);
-                iTimer->After(TTimeIntervalMicroSeconds32(KDelayInMicroSeconds));
-            }
+            InstallGaugeTimerWhenNeededL();
             break;
         case EIncrementalUpdating:
-            DisposeTimer();
 
             // update gauge's state
             if (updateGauge)
@@ -1005,13 +978,13 @@ void CMIDNonInteractiveGauge::SetValueL(TInt aValue)
             iGaugeToAlertListner->UpdateGaugeInAlertL(iValue);
         }
 
-        // eventually notify alert dialog that indefinite state changed
+        // Eventually notify alert dialog that indefinite state changed
         if (iGaugeToAlertListner && (iIndefiniteState != oldIndefiniteState))
         {
             iGaugeToAlertListner->GaugeTypeInAlertChangedL();
         }
 
-        // redraw gauge if it should be updated or if it's type changed
+        // Redraw gauge if it should be updated or if it's type changed
         if (updateGauge || (iIndefiniteState != oldIndefiniteState))
         {
             DoSafeDraw();
@@ -1019,6 +992,15 @@ void CMIDNonInteractiveGauge::SetValueL(TInt aValue)
     }
     else
     {
+        // Bitmap animation is used with indefinite only
+        if (BitmapAnimationUsed())
+        {
+            // Stoping of animation.
+            iBitmapAnimation->CancelAnimation();
+            delete iBitmapAnimation;
+            iBitmapAnimation = NULL;
+        }
+
         iValue = aValue;
 
         if (iGaugeToAlertListner)
@@ -1056,6 +1038,16 @@ void CMIDNonInteractiveGauge::SetMaxValueL(TInt aMaxValue)
     }
     else
     {
+        // If old value was indefinite and new one is not
+        // recreate progress bar, otherwise progress bar wont be updated
+        if (iMaxValue == EIndefinite && iMaxValue != aMaxValue)
+        {
+            // update progressinfo
+            delete iProgressInfo;
+            iProgressInfo = NULL;
+            ConstructProgressInfoL();
+        }
+
         // no timer needed for definite gauge
         DisposeTimer();
 
@@ -1101,6 +1093,11 @@ TInt CMIDNonInteractiveGauge::CountComponentControls() const
 {
     if (iIndefinite)
     {
+        if (BitmapAnimationUsed())
+        {
+            return 2; // to be able to access iBitmapAnimation
+        }
+
         return 1; // we will draw the gauge in our Draw() method
     }
     else
@@ -1116,6 +1113,11 @@ CCoeControl* CMIDNonInteractiveGauge::ComponentControl(TInt aIndex) const
     case 0:
         return iLabelControl;
     case 1:
+        if (BitmapAnimationUsed())
+        {
+            return iBitmapAnimation;
+        }
+
         return iProgressInfo;
     default:
         return NULL;
@@ -1141,8 +1143,7 @@ void CMIDNonInteractiveGauge::Draw(const TRect& /*aRect*/) const
     {
         // If Gauge animated in current skin, is drawn by iBitmapAnimation.
         // Otherwise is drawn in this block of code.
-        if ((!iBitmapAnimation) || (!(iBitmapAnimation->BitmapAnimData())) ||
-                (!(iBitmapAnimation->BitmapAnimData()->FrameArray().Count()> 0)))
+        if (!BitmapAnimationUsed())
         {
             CFbsBitmap* bitmap = NULL;
             CFbsBitmap* bitmapMask = NULL;
@@ -1238,8 +1239,7 @@ void CMIDNonInteractiveGauge::SizeChanged()
     CMIDControlItem::SizeChanged();
 
     // If Gauge is animated, the animation will be resized.
-    if (iBitmapAnimation && iBitmapAnimation->BitmapAnimData() &&
-            iBitmapAnimation->BitmapAnimData()->FrameArray().Count()> 0)
+    if (BitmapAnimationUsed())
     {
         // Stoping of animation.
         iBitmapAnimation->CancelAnimation();
@@ -1281,6 +1281,14 @@ void CMIDNonInteractiveGauge::SetContainerWindowL(const CCoeControl& aContainer)
 #endif //RD_SCALABLE_UI_V2
 }
 
+void CMIDNonInteractiveGauge::DisposeTimer()
+{
+    if (iTimer)
+        iTimer->Cancel();
+    delete iTimer;
+    iTimer = NULL;
+}
+
 void CMIDNonInteractiveGauge::DoSafeDraw()
 {
     if (iForm && DrawableWindow())
@@ -1293,6 +1301,14 @@ void CMIDNonInteractiveGauge::DoSafeDraw()
 
         DrawNow();
     }
+}
+
+void CMIDNonInteractiveGauge::HandleForegroundL(TBool aForeground)
+{
+    // synchronize foreground flag
+    iIsInForeground = aForeground;
+
+    InstallGaugeTimerWhenNeededL();
 }
 
 #ifdef RD_SCALABLE_UI_V2
@@ -1387,47 +1403,39 @@ void CMIDNonInteractiveGauge::ConstructAnimation(CAknBitmapAnimation* aBitmapAni
 
     // Set aAnimation like iBitmapAnimation
     iBitmapAnimation = aBitmapAnimation;
+
+    // Timer is not needed when iBitmapAnimation is used
+    DisposeTimer();
 }
+
 
 void CMIDNonInteractiveGauge::ItemAddedToFormL()
 {
     // call parent's implementation
     CMIDGaugeItem::ItemAddedToFormL();
 
-    CAknBitmapAnimation* bitmapAnimation = CAknBitmapAnimation::NewL();
-    CleanupStack::PushL(bitmapAnimation);
+    // Creates new bitmapAnimation, it sets bitmapAnimation to IBitmapAnimation
+    CreateNewBitmapAnimationIfNeededL();
 
-    TRect waitGaugeRect;
-
-    // setting of window of bitmapAnimation to this
-    bitmapAnimation->SetContainerWindowL(*this);
-
-    // costruction of bitmapAnimation by ID of Gauge
-    bitmapAnimation->ConstructFromSkinL(GetAknsItemID());
-
-    CleanupStack::Pop(bitmapAnimation);
-
-    // If bitmapAnimation exist, set bitmapAnimation to IBitmapAnimation.
-    if (bitmapAnimation && bitmapAnimation->BitmapAnimData()->FrameArray().Count() > 0)
+    // If bitmapAnimation does not exist create bitmap in TLS.
+    if (!BitmapAnimationUsed())
     {
-        ConstructAnimation(bitmapAnimation);
-    }
-    // Else create Bitmap in TLS.
-    else
-    {
+        // Create Bitmap in TLS.
         CreateBitmapsIfNeededL();
     }
 
-    // initially assume that gauge is in foreground so that indefinite ni-gauges
-    // can be updated and redrawn (gauge can be inserted into form after form
-    // is moved to foreground -> no notification to gauge)
-    HandleForegroundL(ETrue);
+    // Install timer when needed and able to be installed.
+    InstallGaugeTimerWhenNeededL();
 }
+
 
 void CMIDNonInteractiveGauge::ItemRemovedFromForm()
 {
     // call parent's implementation
     CMIDGaugeItem::ItemRemovedFromForm();
+
+    // Timer is not needed when item is removed from form.
+    DisposeTimer();
 
     // if indefinite ni-gauge is removed from form then no notifications
     // about moving to foreground/background are sent and so in order to ensure
@@ -1436,7 +1444,8 @@ void CMIDNonInteractiveGauge::ItemRemovedFromForm()
 
     if (err != KErrNone)
     {
-        DEBUG_INT("CMIDNonInteractiveGauge::ItemRemovedFromForm() - Exception from HandleForegroundL. Error = %d ", err);
+        DEBUG_INT("CMIDNonInteractiveGauge::ItemRemovedFromForm() - \
+            Exception from HandleForegroundL. Error = %d ", err);
     }
 
     // When NonInteractiveGauge was removed from form, then animation
@@ -1448,6 +1457,35 @@ void CMIDNonInteractiveGauge::ItemRemovedFromForm()
     }
 }
 
+void CMIDNonInteractiveGauge::CreateNewBitmapAnimationIfNeededL()
+{
+    if (iMaxValue == EIndefinite && iIndefiniteState == EContinuousRunning
+            && DrawableWindow())
+    {
+        // creating new instance of CAknBitmapAnimation
+        // for Gauge animation in new skin
+        CAknBitmapAnimation* bitmapAnimation = CAknBitmapAnimation::NewL();
+        CleanupStack::PushL(bitmapAnimation);
+
+        // setting of window of bitmapAnimation to this
+        bitmapAnimation->SetContainerWindowL(*this);
+
+        // costruction of bitmapAnimation by ID of Gauge
+        bitmapAnimation->ConstructFromSkinL(GetAknsItemID());
+        CleanupStack::Pop(bitmapAnimation);
+
+        TBool bitmapFrameCount =
+            bitmapAnimation ?
+            bitmapAnimation->BitmapAnimData()->FrameArray().Count() > 0 : EFalse;
+
+        // If bitmapAnimation exist, set bitmapAnimation to IBitmapAnimation.
+        if (bitmapFrameCount)
+        {
+            ConstructAnimation(bitmapAnimation);
+        }
+    }
+}
+
 void CMIDNonInteractiveGauge::ColorChange(TInt aType)
 {
     // The original CMIDNonInteractiveGauge::ColorChange is using
@@ -1456,56 +1494,29 @@ void CMIDNonInteractiveGauge::ColorChange(TInt aType)
     TRAPD(creatingErr, ColorChangeL(aType));
     if (creatingErr != KErrNone)
     {
-        DEBUG_INT("CMIDNonInteractiveGauge::ColorChange() - Exception. Error = %d ", creatingErr);
+        DEBUG_INT("CMIDNonInteractiveGauge::ColorChange() - \
+            Exception. Error = %d ", creatingErr);
     }
 }
 
 void CMIDNonInteractiveGauge::ColorChangeL(TInt aType)
 {
     // stopping and deleting iBitmapAnimation
-    if (iBitmapAnimation && iBitmapAnimation->BitmapAnimData()->FrameArray().Count()> 0)
+    if (BitmapAnimationUsed())
     {
         iBitmapAnimation->CancelAnimation();
         delete iBitmapAnimation;
         iBitmapAnimation = NULL;
     }
 
-    // creating new instance of CAknBitmapAnimation for Gauge animation in new skin
-    CAknBitmapAnimation* bitmapAnimation = NULL;
-    TRAPD(creatingErr, bitmapAnimation = CAknBitmapAnimation::NewL());
-    if (creatingErr != KErrNone)
-    {
-        DEBUG_INT("CMIDNonInteractiveGauge::ColorChange() - Exception from CAknBitmapAnimation::NewL. Error = %d ", creatingErr);
-    }
+    // Creates new bitmapAnimation, it sets bitmapAnimation to IBitmapAnimation
+    CreateNewBitmapAnimationIfNeededL();
 
-    // CleanupStack::PushL can not be in TRAPD macro.
-    CleanupStack::PushL(bitmapAnimation);
-
-    // setting of window of bitmapAnimation to this
-    TRAPD(setErr, bitmapAnimation->SetContainerWindowL(*this));
-    if (setErr != KErrNone)
-    {
-        DEBUG_INT("CMIDNonInteractiveGauge::ColorChange() - Exception from CAknBitmapAnimation::SetContainerWindowL. Error = %d ", setErr);
-    }
-
-    // costruction of bitmapAnimation by ID of Gauge
-    TRAPD(constructErr, bitmapAnimation->ConstructFromSkinL(GetAknsItemID()));
-    if (constructErr != KErrNone)
-    {
-        DEBUG_INT("CMIDNonInteractiveGauge::ColorChange() - Exception from CAknBitmapAnimation::ConstructFromSkinL. Error = %d ", constructErr);
-    }
-
-    CleanupStack::Pop(bitmapAnimation);
-
-    // If bitmapAnimation exist, it sets bitmapAnimation to IBitmapAnimation and
-    // sets correct size iBitmapAnimation.
-    if (bitmapAnimation->BitmapAnimData()->FrameArray().Count()> 0)
+    // If bitmapAnimation exist sets correct size iBitmapAnimation.
+    if (BitmapAnimationUsed())
     {
         // call of parent's implementation
         CMIDGaugeItem::ColorChange(aType);
-
-        // setting bitmapAnimation to IBitmapAnimation
-        ConstructAnimation(bitmapAnimation);
 
         // settting correct size iBitmapAnimation
         SetAnimationSize();
@@ -1514,15 +1525,23 @@ void CMIDNonInteractiveGauge::ColorChangeL(TInt aType)
         TRAPD(errStart, iBitmapAnimation->StartAnimationL());
         if (errStart != KErrNone)
         {
-            DEBUG_INT("CMIDNonInteractiveGauge::ColorChange() - Exception from CAknBitmapAnimation::StartAnimationL(). Error = %d ", errStart);
+            DEBUG_INT("CMIDNonInteractiveGauge::ColorChange() - \
+                Exception from CAknBitmapAnimation::StartAnimation. \
+                Error = %d ", errStart);
         }
 
         // Setting of animation mode (cycle).
-        TRAPD(errSet, iBitmapAnimation->Animation().SetPlayModeL(CBitmapAnimClientData::ECycle));
+        TRAPD(errSet, iBitmapAnimation->Animation().SetPlayModeL(
+                  CBitmapAnimClientData::ECycle));
         if (errSet != KErrNone)
         {
-            DEBUG_INT("CMIDNonInteractiveGauge::ColorChange() - Exception from RBitmapAnim::SetPlayModeL(). Error = %d ", errSet);
+            DEBUG_INT("CMIDNonInteractiveGauge::ColorChange() - \
+                Exception from RBitmapAnim::SetPlayMode. \
+                Error = %d ", errSet);
         }
+
+        // Timer is useless when iBitmapAnimation is used
+        DisposeTimer();
     }
     else
     {
@@ -1612,6 +1631,12 @@ TAknsItemID CMIDNonInteractiveGauge::GetAknsItemID()
         }
     }
     return KAknsIIDNone;
+}
+
+TBool CMIDNonInteractiveGauge::BitmapAnimationUsed() const
+{
+    return iBitmapAnimation && iBitmapAnimation->BitmapAnimData() &&
+           iBitmapAnimation->BitmapAnimData()->FrameArray().Count() > 0;
 }
 
 // ---------------------------------------------------------------------------

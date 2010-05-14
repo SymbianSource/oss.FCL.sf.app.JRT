@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -24,7 +24,8 @@ import org.eclipse.swt.graphics.Point;
  * must call setImage()-method again if modifications need to appear in
  * ImageItem too.
  */
-public class ImageItem extends Item {
+public class ImageItem extends Item
+{
 
     /**
      * Left here for source compatibility purposes. Use layout directives from
@@ -76,7 +77,8 @@ public class ImageItem extends Item {
      *            displayed for some reason.
      * @throws IllegalArgumentException if Layout is invalid.
      */
-    public ImageItem(String label, Image image, int layout, String altText) {
+    public ImageItem(String label, Image image, int layout, String altText)
+    {
         this(label, image, layout, altText, Item.PLAIN);
     }
 
@@ -93,12 +95,14 @@ public class ImageItem extends Item {
      * @throws IllegalArgumentException if Layout is invalid.
      */
     public ImageItem(String label, Image image, int layout, String altText,
-            int appMode) {
+                     int appMode)
+    {
 
-        if (appMode != Item.PLAIN && appMode != Item.BUTTON
-                && appMode != Item.HYPERLINK) {
+        if(appMode != Item.PLAIN && appMode != Item.BUTTON
+                && appMode != Item.HYPERLINK)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.IMAGEITEM_EXCEPTION_INVALID_APPMODE);
+                MsgRepository.IMAGEITEM_EXCEPTION_INVALID_APPMODE);
         }
 
         setLabel(label);
@@ -113,7 +117,8 @@ public class ImageItem extends Item {
      *
      * @return Image-object.
      */
-    public Image getImage() {
+    public Image getImage()
+    {
         return image;
     }
 
@@ -122,7 +127,8 @@ public class ImageItem extends Item {
      *
      * @param image Image to be set.
      */
-    public void setImage(Image image) {
+    public void setImage(Image image)
+    {
         this.image = image;
         updateParent(UPDATE_SIZE_CHANGED);
     }
@@ -132,7 +138,8 @@ public class ImageItem extends Item {
      *
      * @return Alternate text or null if no alternate text defined.
      */
-    public String getAltText() {
+    public String getAltText()
+    {
         return alternateText;
     }
 
@@ -141,7 +148,8 @@ public class ImageItem extends Item {
      *
      * @param newAltText Alternate text to be set.
      */
-    public void setAltText(String newAltText) {
+    public void setAltText(String newAltText)
+    {
         alternateText = newAltText;
         updateParent(UPDATE_SIZE_CHANGED);
     }
@@ -151,14 +159,16 @@ public class ImageItem extends Item {
      *
      * @return Appearance mode.
      */
-    public int getAppearanceMode() {
+    public int getAppearanceMode()
+    {
         return appearanceMode;
     }
 
     /* (non-Javadoc)
      * @see javax.microedition.lcdui.Item#isFocusable()
      */
-    boolean isFocusable() {
+    boolean isFocusable()
+    {
         return (getNumCommands() > 0);
     }
 
@@ -167,7 +177,8 @@ public class ImageItem extends Item {
      *
      * @return Minimum size.
      */
-    Point calculateMinimumSize() {
+    Point calculateMinimumSize()
+    {
         return ImageItemLayouter.calculateMinimumBounds(this);
     }
 
@@ -176,7 +187,8 @@ public class ImageItem extends Item {
      *
      * @return Preferred size.
      */
-    Point calculatePreferredSize() {
+    Point calculatePreferredSize()
+    {
         return ImageItemLayouter.calculatePreferredBounds(this);
     }
 

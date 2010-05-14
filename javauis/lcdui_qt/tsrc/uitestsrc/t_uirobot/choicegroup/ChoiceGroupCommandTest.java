@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package t_uirobot.choicegroup;
@@ -31,12 +31,14 @@ import t_uirobot.ItemUITestBase;
  * <br>
  * Created: 2008-11-04
  */
-public class ChoiceGroupCommandTest extends ItemUITestBase {
+public class ChoiceGroupCommandTest extends ItemUITestBase
+{
 
-	/**
+    /**
      * Constructor.
      */
-    public ChoiceGroupCommandTest() {
+    public ChoiceGroupCommandTest()
+    {
     }
 
     /**
@@ -45,7 +47,8 @@ public class ChoiceGroupCommandTest extends ItemUITestBase {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public ChoiceGroupCommandTest(String sTestName, TestMethod rTestMethod) {
+    public ChoiceGroupCommandTest(String sTestName, TestMethod rTestMethod)
+    {
         super(sTestName, rTestMethod);
     }
 
@@ -56,31 +59,37 @@ public class ChoiceGroupCommandTest extends ItemUITestBase {
      *
      * @return New testsuite.
      */
-    public Test suite() {
+    public Test suite()
+    {
         TestSuite aSuite = new TestSuite();
 
         aSuite.addTest(new ChoiceGroupCommandTest("testCommands - EXCLUSIVE",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ChoiceGroup item = new ChoiceGroup("Exclusive",
-                                Choice.EXCLUSIVE);
-                        ((ChoiceGroupCommandTest) tc).testCommand(item);
-                    }
-                }));
+                       new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ChoiceGroup item = new ChoiceGroup("Exclusive",
+                                                   Choice.EXCLUSIVE);
+                ((ChoiceGroupCommandTest) tc).testCommand(item);
+            }
+        }));
 
         aSuite.addTest(new ChoiceGroupCommandTest("testCommands - MULTIPLE",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ChoiceGroup item = new ChoiceGroup("Multiple",
-                                Choice.MULTIPLE);
-                        ((ChoiceGroupCommandTest) tc).testCommand(item);
-                    }
-                }));
+                       new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ChoiceGroup item = new ChoiceGroup("Multiple",
+                                                   Choice.MULTIPLE);
+                ((ChoiceGroupCommandTest) tc).testCommand(item);
+            }
+        }));
 
         return aSuite;
     }
 
-    public void testChoiceGroupExclusiveCmds() {
+    public void testChoiceGroupExclusiveCmds()
+    {
         ChoiceGroup choiceGroup = new ChoiceGroup("Exclusive", Choice.EXCLUSIVE);
         choiceGroup.append("item1", null);
         choiceGroup.append("item2", null);
@@ -89,7 +98,8 @@ public class ChoiceGroupCommandTest extends ItemUITestBase {
         testCommand(choiceGroup);
     }
 
-    public void testChoiceGroupMultipleCmds() {
+    public void testChoiceGroupMultipleCmds()
+    {
         ChoiceGroup choiceGroup = new ChoiceGroup("Multiple", Choice.MULTIPLE);
         choiceGroup.append("item1", null);
         choiceGroup.append("item2", null);

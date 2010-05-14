@@ -11,10 +11,43 @@
 
 package org.eclipse.swt.internal.extension;
 
+import org.eclipse.swt.internal.qt.OS;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Internal_PackageSupport;
 
 public final class DisplayExtension extends Display {
+
+private static final class VibraRunnable implements Runnable {
+		private final int duration;
+		private final Display display;
+		boolean result;
+		private VibraRunnable(int duration, Display display) {
+			this.duration = duration;
+			this.display = display;
+		}
+
+		public void run() {
+			result= OS.MobileDevice_vibration(
+                     Internal_PackageSupport.initializeMobileDevice(display),duration);
+
+		}
+	}
+private static final class FlashBacklightsRunnable implements Runnable {
+		private final Display display;
+		private final int duration;
+		boolean result;
+
+		private FlashBacklightsRunnable(Display display, int duration) {
+			this.display = display;
+			this.duration = duration;
+		}
+
+		public void run() {
+		result = OS.MobileDevice_flashLights(
+		            Internal_PackageSupport.initializeMobileDevice(
+		                display),duration);
+		}
+	}
 
 /* Image types, same values as MIDP */
 public static final int LIST_ELEMENT = 1;
@@ -50,7 +83,39 @@ public static int getBestImageHeight(int imageType) {
 public static Display getDisplayInstance() {
     return Internal_PackageSupport.getDisplayInstance();
 }
-
+/**
+  * Flashes devices backlight.
+  *
+  * @param duration Duration in milliseconds.
+  * @return false if no flashing happened because MIDlet was in background or
+  *         feature is not supported.
+ */
+public static boolean flashLights( final int duration ){
+	final Display display = getDisplayInstance();
+	if (display == null || display.isDisposed() ) return false;
+	FlashBacklightsRunnable runnable = new FlashBacklightsRunnable(display, duration);
+	display.syncExec(runnable);
+	return runnable.result;
+}
+/**
+ * Vibrates device
+ *
+ * @param duration Duration in milliseconds.
+ * @return false if no vibration happened because MIDlet was in background
+ *         or feature is not supported.
+ */
+public static boolean startVibra(final int duration) {
+	final Display display = getDisplayInstance();
+	if (display == null || display.isDisposed() ) return false;
+	VibraRunnable runnable = new VibraRunnable(duration, display);
+	display.syncExec(runnable);
+	return runnable.result;
+}
+/**
+ *
+ * @param imageType
+ * @return
+ */
 private static int getBestImageSize(int imageType) {
     switch (imageType) {
     case LIST_ELEMENT:
@@ -62,4 +127,6 @@ private static int getBestImageSize(int imageType) {
         return -1;
     }
 }
+
+
 }

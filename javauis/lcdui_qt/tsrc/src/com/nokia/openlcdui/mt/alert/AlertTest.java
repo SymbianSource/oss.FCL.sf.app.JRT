@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt.alert;
@@ -30,29 +30,30 @@ import com.nokia.openlcdui.mt.SWTTestCase;
  * <li>Collection of tests to test Alert's API functionality. <br>
  * <br>
  */
-public class AlertTest extends SWTTestCase {
+public class AlertTest extends SWTTestCase
+{
 
     private static String shortString = "Lorem ipsum";
 
     private static String longString = "Lorem ipsum dolor sit amet, "
-            + "consectetuer adipiscing elit. Cras turpis ligula, "
-            + "condimentum nec, rhoncus quis, molestie in, arcu. "
-            + "Curabitur id lacus. Quisque dictum nulla id odio. "
-            + "Nullam nec urna. Cras ac lacus nec lacus iaculis aliquet."
-            + " Integer ut eros. Proin laoreet justo et augue. "
-            + "Praesent dui. Proin vel leo a eros auctor convallis. "
-            + "Aenean urna nunc, sagittis vel, pellentesque a, "
-            + "luctus a, metus. Phasellus posuere lacus nec augue."
-            + "Nullam nec urna. Cras ac lacus nec lacus iaculis aliquet."
-            + " Integer ut eros. Proin laoreet justo et augue. "
-            + "Praesent dui. Proin vel leo a eros auctor convallis. "
-            + "Aenean urna nunc, sagittis vel, pellentesque a, "
-            + "luctus a, metus. Phasellus posuere lacus nec augue."
-            + "Nullam nec urna. Cras ac lacus nec lacus iaculis aliquet."
-            + " Integer ut eros. Proin laoreet justo et augue. "
-            + "Praesent dui. Proin vel leo a eros auctor convallis. "
-            + "Aenean urna nunc, sagittis vel, pellentesque a, "
-            + "luctus a, metus. Phasellus posuere lacus nec augue.";
+                                       + "consectetuer adipiscing elit. Cras turpis ligula, "
+                                       + "condimentum nec, rhoncus quis, molestie in, arcu. "
+                                       + "Curabitur id lacus. Quisque dictum nulla id odio. "
+                                       + "Nullam nec urna. Cras ac lacus nec lacus iaculis aliquet."
+                                       + " Integer ut eros. Proin laoreet justo et augue. "
+                                       + "Praesent dui. Proin vel leo a eros auctor convallis. "
+                                       + "Aenean urna nunc, sagittis vel, pellentesque a, "
+                                       + "luctus a, metus. Phasellus posuere lacus nec augue."
+                                       + "Nullam nec urna. Cras ac lacus nec lacus iaculis aliquet."
+                                       + " Integer ut eros. Proin laoreet justo et augue. "
+                                       + "Praesent dui. Proin vel leo a eros auctor convallis. "
+                                       + "Aenean urna nunc, sagittis vel, pellentesque a, "
+                                       + "luctus a, metus. Phasellus posuere lacus nec augue."
+                                       + "Nullam nec urna. Cras ac lacus nec lacus iaculis aliquet."
+                                       + " Integer ut eros. Proin laoreet justo et augue. "
+                                       + "Praesent dui. Proin vel leo a eros auctor convallis. "
+                                       + "Aenean urna nunc, sagittis vel, pellentesque a, "
+                                       + "luctus a, metus. Phasellus posuere lacus nec augue.";
 
 
     private static final int INVALID_ALERT_TIMEOUT = -3000;
@@ -62,7 +63,8 @@ public class AlertTest extends SWTTestCase {
     /**
      * Constructor.
      */
-    public AlertTest() {
+    public AlertTest()
+    {
     }
 
     /**
@@ -71,7 +73,8 @@ public class AlertTest extends SWTTestCase {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public AlertTest(String sTestName) {
+    public AlertTest(String sTestName)
+    {
         super(sTestName);
     }
 
@@ -81,23 +84,26 @@ public class AlertTest extends SWTTestCase {
      *
      * @return New testsuite.
      */
-    public static Test suite() {
+    public static Test suite()
+    {
         TestSuite suite = new TestSuite();
 
         java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = AlertTest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new AlertTest((String)e.nextElement()));
-	    }
-        
+        // Add widget tests
+        methodNames = AlertTest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new AlertTest((String)e.nextElement()));
+        }
+
         return suite;
     }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testConstructors");
         methodNames.addElement("testSetGetTimeout");
@@ -108,40 +114,48 @@ public class AlertTest extends SWTTestCase {
         methodNames.addElement("testCommands");
         return methodNames;
     }
-    
-    protected void runTest() throws Throwable {
-        if (getName().equals("testConstructors")) testConstructors();
-        else if (getName().equals("testSetGetTimeout")) testSetGetTimeout();
-        else if (getName().equals("testSetGetType")) testSetGetType();
-        else if (getName().equals("testSetGetImage")) testSetGetImage();
-        else if (getName().equals("testSetGetTexts")) testSetGetTexts();
-        else if (getName().equals("testSetGetIndicators")) testSetGetIndicators();
-        else if (getName().equals("testCommands")) testCommands();
+
+    protected void runTest() throws Throwable
+    {
+        if(getName().equals("testConstructors")) testConstructors();
+        else if(getName().equals("testSetGetTimeout")) testSetGetTimeout();
+        else if(getName().equals("testSetGetType")) testSetGetType();
+        else if(getName().equals("testSetGetImage")) testSetGetImage();
+        else if(getName().equals("testSetGetTexts")) testSetGetTexts();
+        else if(getName().equals("testSetGetIndicators")) testSetGetIndicators();
+        else if(getName().equals("testCommands")) testCommands();
         else super.runTest();
-    }    
-    
+    }
+
     /**
      * Tests the constructors.
      */
-    public void testConstructors() {
-        try {
+    public void testConstructors()
+    {
+        try
+        {
             new Alert(null);
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             fail("Exception - Constructor with null title - " + e.getMessage());
         }
 
-        try {
+        try
+        {
             new Alert(shortString);
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             fail("Exception - Constructor with short text - " + e.getMessage());
         }
 
-        try {
+        try
+        {
             new Alert(shortString, longString, null, null);
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             fail("Exception - Constructor with long text - " + e.getMessage());
         }
     }
@@ -149,18 +163,21 @@ public class AlertTest extends SWTTestCase {
     /**
      * Tests setter and getter t.
      */
-    public void testSetGetTimeout() {
+    public void testSetGetTimeout()
+    {
         Alert alert = new Alert(shortString);
         alert.setTimeout(VALID_ALERT_TIMEOUT);
         assertEquals("Timeouts don't match.", VALID_ALERT_TIMEOUT, alert
-                .getTimeout());
+                     .getTimeout());
         alert.setTimeout(Alert.FOREVER);
         assertEquals("Timeouts don't match.", Alert.FOREVER, alert.getTimeout());
-        try {
+        try
+        {
             alert.setTimeout(INVALID_ALERT_TIMEOUT);
             fail("IllegalArgumentException should be thrown");
         }
-        catch (IllegalArgumentException iae) {
+        catch(IllegalArgumentException iae)
+        {
             // OK
         }
     }
@@ -168,7 +185,8 @@ public class AlertTest extends SWTTestCase {
     /**
      * Tests set and get type.
      */
-    public void testSetGetType() {
+    public void testSetGetType()
+    {
         Alert alert = new Alert(shortString);
 
         alert.setType(AlertType.ALARM);
@@ -176,7 +194,7 @@ public class AlertTest extends SWTTestCase {
 
         alert.setType(AlertType.CONFIRMATION);
         assertEquals("Types don't match.", AlertType.CONFIRMATION, alert
-                .getType());
+                     .getType());
 
         alert.setType(AlertType.ERROR);
         assertEquals("Types don't match.", AlertType.ERROR, alert.getType());
@@ -191,8 +209,10 @@ public class AlertTest extends SWTTestCase {
     /**
      * Tests set and get image.
      */
-    public void testSetGetImage() {
-        try {
+    public void testSetGetImage()
+    {
+        try
+        {
             Alert alert = new Alert(shortString);
             alert.setImage(null);
             assertEquals("Images don't match.", null, alert.getImage());
@@ -201,7 +221,8 @@ public class AlertTest extends SWTTestCase {
             alert.setImage(param);
             assertEquals("Images don't match.", param, alert.getImage());
         }
-        catch (IOException e) {
+        catch(IOException e)
+        {
             fail("Cannot load image 100x100.png");
         }
     }
@@ -209,7 +230,8 @@ public class AlertTest extends SWTTestCase {
     /**
      * Tests set and get texts.
      */
-    public void testSetGetTexts() {
+    public void testSetGetTexts()
+    {
         Alert alert = new Alert(shortString);
         alert.setString(null);
         assertEquals("String don't match.", null, alert.getString());
@@ -217,76 +239,93 @@ public class AlertTest extends SWTTestCase {
         alert.setString(shortString);
         assertEquals("Strings dont match.", shortString, alert.getString());
         assertTrue("Alert with short text is modal",
-                alert.getTimeout() != Alert.FOREVER);
+                   alert.getTimeout() != Alert.FOREVER);
 
         alert.setString(longString);
         assertEquals("Strings dont match", longString, alert.getString());
         assertTrue("Alert with long text is not modal",
-                alert.getTimeout() == Alert.FOREVER);
+                   alert.getTimeout() == Alert.FOREVER);
     }
 
     /**
      * Tests set and get indicator methods and Gauge-Alert interaction related
      * Item methods.
      */
-    public void testSetGetIndicators() {
+    public void testSetGetIndicators()
+    {
         Alert alert = new Alert(shortString);
         Gauge param1 = new Gauge(null, false, 10, 0);
         alert.setIndicator(param1);
         assertEquals("Indicators don't match.", param1, alert.getIndicator());
 
-        try {
+        try
+        {
             Gauge param2 = new Gauge("Label", true, 10, 0);
             alert.setIndicator(param2);
             fail("1. IllegalArgumentException expected");
         }
-        catch (IllegalArgumentException iae) {
+        catch(IllegalArgumentException iae)
+        {
         }
 
-        try {
+        try
+        {
             param1.addCommand(new Command("Comm1", Command.ITEM, 0));
             fail("2. IllegalStateException expected");
         }
-        catch (IllegalStateException ise) {
+        catch(IllegalStateException ise)
+        {
         }
 
-        try {
+        try
+        {
             param1.setDefaultCommand(new Command("Comm1", Command.ITEM, 0));
             fail("3. IllegalStateException expected");
         }
-        catch (IllegalStateException ise) {
+        catch(IllegalStateException ise)
+        {
         }
 
-        try {
-            ItemCommandListener icl = new ItemCommandListener() {
-                public void commandAction(Command command, Item item) {
+        try
+        {
+            ItemCommandListener icl = new ItemCommandListener()
+            {
+                public void commandAction(Command command, Item item)
+                {
                 }
             };
             param1.setItemCommandListener(icl);
             fail("4. IllegalStateException expected");
         }
-        catch (IllegalStateException ise) {
+        catch(IllegalStateException ise)
+        {
         }
 
-        try {
+        try
+        {
             param1.setLabel("Label");
             fail("5. IllegalStateException expected");
         }
-        catch (IllegalStateException ise) {
+        catch(IllegalStateException ise)
+        {
         }
 
-        try {
+        try
+        {
             param1.setLayout(Item.LAYOUT_BOTTOM);
             fail("6. IllegalStateException expected");
         }
-        catch (IllegalStateException ise) {
+        catch(IllegalStateException ise)
+        {
         }
 
-        try {
+        try
+        {
             param1.setPreferredSize(10, 10);
             fail("7. IllegalStateException expected");
         }
-        catch (IllegalStateException ise) {
+        catch(IllegalStateException ise)
+        {
         }
 
         alert.setIndicator(null);
@@ -295,42 +334,51 @@ public class AlertTest extends SWTTestCase {
     /**
      * Tests commands on Alert.
      */
-    public void testCommands() {
-        try {
+    public void testCommands()
+    {
+        try
+        {
             Alert alert = new Alert(shortString);
-            CommandListener param = new CommandListener() {
-                public void commandAction(Command c, Displayable d) {
+            CommandListener param = new CommandListener()
+            {
+                public void commandAction(Command c, Displayable d)
+                {
                 }
             };
             alert.setCommandListener(param);
             alert.setCommandListener(null);
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             fail("Exception - Setting and removing CommandListener - "
-                    + e.getMessage());
+                 + e.getMessage());
         }
 
-        try {
+        try
+        {
             Alert alert = new Alert(shortString);
             // adding null command
             alert.addCommand(null);
             fail("NullPointerException expected - NULL command added to Alert");
         }
-        catch (NullPointerException npe) {
+        catch(NullPointerException npe)
+        {
             // Ok
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             fail("Wrong exception is thrown instead of NullPointerException - "
-                    + "NULL command added to Alert" + e.getMessage());
+                 + "NULL command added to Alert" + e.getMessage());
         }
 
-        try {
+        try
+        {
             Alert alert = new Alert(shortString);
 
             // test default command
             alert.addCommand(Alert.DISMISS_COMMAND);
             assertTrue("Default Alert shouldn't be modal",
-                    alert.getTimeout() != Alert.FOREVER);
+                       alert.getTimeout() != Alert.FOREVER);
             alert.removeCommand(Alert.DISMISS_COMMAND);
 
             Command c1 = new Command("Comm1", Command.ITEM, 0);
@@ -342,30 +390,31 @@ public class AlertTest extends SWTTestCase {
             // add commands
             alert.addCommand(c1);
             assertTrue("Default Alert with 1 command shouldn't be modal", alert
-                    .getTimeout() != Alert.FOREVER);
+                       .getTimeout() != Alert.FOREVER);
             alert.addCommand(c2);
             assertTrue("Default Alert with 2 commands should be modal", alert
-                    .getTimeout() == Alert.FOREVER);
+                       .getTimeout() == Alert.FOREVER);
             alert.addCommand(c3);
             alert.addCommand(c4);
             alert.addCommand(c5);
             assertTrue("Default Alert with 5 commands should be modal", alert
-                    .getTimeout() == Alert.FOREVER);
+                       .getTimeout() == Alert.FOREVER);
 
             // remove commands
             alert.removeCommand(c5);
             alert.removeCommand(c4);
             alert.removeCommand(c3);
             assertTrue("Default Alert with 2 commands should be modal", alert
-                    .getTimeout() == Alert.FOREVER);
+                       .getTimeout() == Alert.FOREVER);
             alert.removeCommand(c2);
             assertTrue("Default Alert with 1 command shouldn't be modal", alert
-                    .getTimeout() != Alert.FOREVER);
+                       .getTimeout() != Alert.FOREVER);
             alert.removeCommand(c1);
             assertTrue("Default Alert shouldn't be modal",
-                    alert.getTimeout() != Alert.FOREVER);
+                       alert.getTimeout() != Alert.FOREVER);
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             fail("Exception - Adding 5 commands - " + e.getMessage());
         }
     }

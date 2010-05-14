@@ -46,6 +46,9 @@ SOURCES += eventcallback.cpp \
 ##### Symbian specific items ######
 symbian {
 
+CONFIG += mobility
+MOBILITY += bearer
+
 HEADERS += swts60.h \
 	swtmobiledevice.h \
     swtflipwatch.h
@@ -64,6 +67,7 @@ LIBS += -lapgrfx
 LIBS += -lHWRMVibraClient
 LIBS += -lHWRMLightClient
 LIBS += -lxqservice
+LIBS += -lxqtelephonyservice
 LIBS += -lQtContacts
 
 }

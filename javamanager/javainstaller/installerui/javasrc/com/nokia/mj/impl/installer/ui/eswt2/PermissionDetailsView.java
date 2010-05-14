@@ -39,11 +39,11 @@ public class PermissionDetailsView extends ConfirmationViewBase
     }
 
     /** Constructor */
-    protected PermissionDetailsView(InstallerUiEswt aInstaller, Composite aParent,
-                                    String aTitle,
-                                    PermissionInfo aPermissionInfo)
+    protected PermissionDetailsView(
+        InstallerUiEswt aInstallerUi, Composite aParent,
+        String aTitle, PermissionInfo aPermissionInfo)
     {
-        super(aInstaller, aParent, 1, true);
+        super(aInstallerUi, aParent, 1, true);
         iPermissionInfo = aPermissionInfo;
         setTitle(aTitle);
         setCommands(null, InstallerUiTexts.get(InstallerUiTexts.OK));

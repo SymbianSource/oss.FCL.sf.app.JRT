@@ -383,6 +383,12 @@
 //
 #define qtn_java_secur_cert_disabling "Disabling a certificate may prevent you from installing or running some applications. Continue?"
 
+// d:Certificate management message
+// d:for deleting certificate
+// l:popup_note_window
+//
+#define qtn_java_secur_cert_deleting "Deleting a certificate may prevent you from installing or running some applications. Continue?"
+
 // d:Security message for platform message
 // d:for using network
 // l:popup_info_list_pane_t2/opt1

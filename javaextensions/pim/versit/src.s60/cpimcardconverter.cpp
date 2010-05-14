@@ -26,7 +26,7 @@
 #include "cpimcardpropertyconverter.h"
 #include "fs_methodcall.h"
 #include "logger.h"
-#include "cleanupresetanddestroy.h"
+#include "javasymbianoslayer.h"
 #include <vcard.h>
 
 // ============================ MEMBER FUNCTIONS ===============================
@@ -131,7 +131,7 @@ void CPIMCardConverter::ParserToItemL(CParserVCard& aParser, // parser to be con
                                       CArrayPtrFlat<CParserVCard>& aParserArray) // contained vCards here
 {
     JELOG2(EPim);
-    CleanupResetAndDestroyPushL(aItemArray);
+    CleanupClosePushL(aItemArray);
     CPIMContactItem* item = CPIMContactItem::NewLC(iContactValidator);
     // We don't take the ownership of the propertyArray, so the properties
     // are deleted when the parser is

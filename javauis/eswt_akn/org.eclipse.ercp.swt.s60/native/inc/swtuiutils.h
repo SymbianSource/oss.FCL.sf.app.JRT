@@ -85,17 +85,6 @@ public:
     void ShellActivabilityChanged(MSwtShell& aShell);
 
     /**
-     * Sets the pointerGrabbingControl
-     * Calling with NULL of course unsets.
-     */
-    void SetPointerCaptureControl(MSwtControl* aControl);
-
-    /**
-     * Returns the current control that is grabbing the pointer events.
-     */
-    MSwtControl* PointerCaptureControl();
-
-    /**
      * Sets next focused control. This function is called when app lost focus, which stores
      * a pointer of control that can be focused when app gains focus again.
      * Calling with NULL of course unsets.
@@ -195,7 +184,7 @@ private:
      * Highest inline control default font. See InlineReferenceFontHeight.
      */
     const CFont& InlineReferenceFont() const;
-    
+
     void HideIndicator(TInt aId);
     void HideIndicators();
 
@@ -237,10 +226,13 @@ public:
     void SetNaviKeyInput(TBool aStatus);
     void SetCbaVisible(TBool aVisible);
     MSwtControl* GetPointerGrabbingControl();
+    TRect TaskTipRect() const;
+    void SetPointerCaptureControl(MSwtControl* aControl);
+    MSwtControl* PointerCaptureControl();
 
 protected:
     void HandleFreeRamEventL(TInt aEventType);
-    
+
 // From MSwtAppFocusObserver
 public:
     void HandleAppFocusChangeL(TBool aFocused);
@@ -264,7 +256,7 @@ private:
      * Display reference needed for getting CEikEnv for now.
      */
     MSwtDisplay& iDisplay;
-    
+
     /**
      * All shells.
      * Not own.
@@ -385,14 +377,14 @@ private:
      * Cached scrollbar breadth. Valid till next resolution change.
      */
     TInt iScrollBarBreadth;
-    
+
     /**
      * Inline reference stuff
      */
     mutable const CFont* iInlineFont;
     mutable TInt iInlineFontHeight;
-    mutable TMargins8 iInlinePadding; 
-    
+    mutable TMargins8 iInlinePadding;
+
     /**
      * Key input flag.
      */

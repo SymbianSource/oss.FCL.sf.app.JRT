@@ -21,7 +21,6 @@
 #include <AknsFrameBackgroundControlContext.h>
 #include <centralrepository.h>
 #ifdef RD_JAVA_ADVANCED_TACTILE_FEEDBACK
-#include <touchfeedback.h>
 #include <swtlaffacade.h>
 #endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
 #include "swtcomposite.h"
@@ -44,6 +43,7 @@ CSwtComposite::CSwtComposite(MSwtDisplay& aDisplay, TSwtPeer aPeer,
     CAknControl::SetDimmed(aDimmed);
     SetFocusing(ETrue);
 #ifdef RD_JAVA_ADVANCED_TACTILE_FEEDBACK
+    iFeedback = MTouchFeedback::Instance();
     UpdateTactileFeedbackDensity();
 #endif // RD_JAVA_ADVANCED_TACTILE_FEEDBACK
 }
@@ -366,6 +366,10 @@ void CSwtComposite::HandlePointerEventL(const TPointerEvent& aPointerEvent)
                          iSbFrame->GetScrollBarHandle(CEikScrollBar::EVertical) : NULL;
     CEikScrollBar* hsb = iSbFrame ?
                          iSbFrame->GetScrollBarHandle(CEikScrollBar::EHorizontal) : NULL;
+
+#ifdef RD_JAVA_ADVANCED_TACTILE_FEEDBACK
+    iLastPointerEventType = aPointerEvent.iType;
+#endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
 
     // Check if we should start scrollbar grabbing
     if (aPointerEvent.iType == TPointerEvent::EButton1Down)
@@ -1444,28 +1448,11 @@ void CSwtComposite::ViewPositionChanged(const TPoint& aNewPosition,
     }
 
 #ifdef RD_JAVA_ADVANCED_TACTILE_FEEDBACK
+    // Flicking or panning the composite content should give the feedback
     if (iPhysicsAction == KSwtPhysicsPanning ||
             iPhysicsAction == KSwtPhysicsFlicking)
     {
-        TRect scrolledRect(coeCtrl.Rect());
-        TRect thisRect(CoeControl().Rect());
-        if (scrolledRect.iTl.iY < thisRect.iTl.iY &&
-                scrolledRect.iBr.iY > thisRect.iBr.iY)
-        {
-            TInt lastFeedbackDistanceY = Abs(iLastTactileFeedbackPos
-                                             - iPhysicsViewPos.iY);
-
-            if (lastFeedbackDistanceY >= iTactileFeedbackDensity)
-            {
-                iLastTactileFeedbackPos = iPhysicsViewPos.iY;
-
-                MTouchFeedback* feedback = MTouchFeedback::Instance();
-                if (feedback)
-                {
-                    feedback->InstantFeedback(ETouchFeedbackFlick);
-                }
-            }
-        }
+        DoScrollingFeedback();
     }
 #endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
 }
@@ -1629,8 +1616,61 @@ void CSwtComposite::PaintUrgently() const
 void CSwtComposite::UpdateTactileFeedbackDensity()
 {
     TAknLayoutRect layoutRect = CSwtLafFacade::GetLayoutRect(
-                                    CSwtLafFacade::EListDoubleLargeGraphicPane,
+                                    CSwtLafFacade::EListSingleHeadingPane,
                                     TRect(), 0, 0, 0);
     iTactileFeedbackDensity = layoutRect.Rect().Height();
+}
+
+void CSwtComposite::DoScrollingFeedback()
+{
+    if (!iScrlCompContent)
+    {
+        return;
+    }
+
+    TRect scrolledRect(iScrlCompContent->CoeControl().Rect());
+    TRect thisRect(CoeControl().Rect());
+
+    // Calculate distance between current content position
+    // and previous position, where last feedback happened
+    TInt lastFeedbackDistanceY = Abs(iLastTactileFeedbackPos
+                                     - iPhysicsViewPos.iY);
+    TTouchLogicalFeedback feedbackType(ETouchFeedbackNone);
+    if (lastFeedbackDistanceY >= iTactileFeedbackDensity)
+    {
+        if (scrolledRect.iTl.iY < thisRect.iTl.iY &&
+                scrolledRect.iBr.iY > thisRect.iBr.iY)
+        {
+            // If top (or bottom) edge of the content is outside
+            // of visible area of composite, do feedback every time
+            feedbackType = ETouchFeedbackSensitiveList;
+        }
+        else if (iLastPointerEventType != TPointerEvent::EButton1Up)
+        {
+            // Begining or end of the content reached (i.e. top or bottom
+            // egde of the contont is now visible): feedback is given
+            // only if user do panning. No feedback, if touch release
+            // happened.
+            feedbackType = ETouchFeedbackSensitiveList;
+        }
+        // Store the position of the content
+        iLastTactileFeedbackPos = iPhysicsViewPos.iY;
+    }
+
+    if (iFeedback && feedbackType != ETouchFeedbackNone)
+    {
+        if (iLastPointerEventType != TPointerEvent::EButton1Up)
+        {
+            iFeedback->EnableFeedbackForControl(this, ETrue, ETrue);
+        }
+        else
+        {
+            // Disable audion feedback on flicking (i.e. user don't pan by
+            // touch input)
+            iFeedback->EnableFeedbackForControl(this, ETrue, EFalse);
+        }
+        // Do the feedback if needed
+        iFeedback->InstantFeedback(this, feedbackType);
+    }
 }
 #endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK

@@ -194,8 +194,7 @@ public class HttpConnectionNative implements HttpConnection,
         iTransactionBlock = new BlockingOperation();
         iNativeDataReadyForRead = new BlockingOperation();
         iNativeDataReadyForRead.setResult(BlockingOperation.BLOCKED);
-        iFinalizer = registerForFinalization();
-        setShutdownListener();
+        iFinalizer = registerForFinalization();        
         Logger.LOG(Logger.ESOCKET, Logger.EInfo, "- HttpConnectionNative new ");
 
         ApplicationInfo appInfo = ApplicationInfo.getInstance();
@@ -245,65 +244,19 @@ public class HttpConnectionNative implements HttpConnection,
         };
     }
 
-    /**
-     * Registers for shutdown listener
-     */
-    private void setShutdownListener()
-    {
-        // if shutdown for first connection has been called, then dont delete
-        // session again
-        if (iIsSessionDeleted == true)
-            return;
-
-        iIsSessionDeleted = true;
-
-        // Get the instance of ApplicationUtils.
-        ApplicationUtils appUtils = ApplicationUtils.getInstance();
-
-        // Get the name of the application.
-        appUtils.addShutdownListener(new ShutdownListener()
-        {
-            public void shuttingDown()
-            {
-                Logger.LOG(Logger.ESOCKET, Logger.EInfo,
-                           "++HttpConnectionNative::shuttingDown ,this = " + this);
-                try
-                {
-                    // Do cleaning...
-                    close();
-                }
-                catch (IOException ex)
-                {
-                    // catch the exception and call dispose
-                }
-
-                if (iNativeHttpSessionHandle != 0)
-                {
-                    _dispose(iNativeHttpSessionHandle);
-                    iNativeHttpSessionHandle = 0;
-                }
-            }
-
-        });
-    }
 
     public void doFinalize()
     {
         Logger.LOG(Logger.ESOCKET, Logger.EInfo,
                    "++HttpConnectionNative::doFinalize ");
-        // if finalization for first connection has been called, then dont
-        // delete session again
-        if (iIsSessionDeleted == true)
-            return;
-
-        iIsSessionDeleted = true;
-
-        if (iNativeHttpSessionHandle != 0)
+        try
         {
-            _dispose(iNativeHttpSessionHandle);
-            iNativeHttpSessionHandle = 0;
+            close();
         }
-
+        catch(Exception e)
+        {
+ 	
+        }
         Logger.LOG(Logger.ESOCKET, Logger.EInfo,
                    "--HttpConnectionNative::doFinalize ");
     }
@@ -920,6 +873,7 @@ public class HttpConnectionNative implements HttpConnection,
         case CONNECTED:
         case REQUEST_HEADERS_SENT:
             ensureResponse();
+            break;
 
         default:
             // No-op
@@ -1350,7 +1304,6 @@ public class HttpConnectionNative implements HttpConnection,
     private native String[] _getResponse(int aNativeTransactionHande);
     private native int _getBytes(int aNativeTransactionHande, byte[] aBuffer,
                                  int aLength);
-    private native void _dispose(int iNativeHttpSessionHandle);
     private native void _closeTransaction(int aNativeTransactionHande);
     private native int _available(int aNativeTransactionHande);
     private native String _getUserAgentHeaderValue(boolean aMidpRuntime);

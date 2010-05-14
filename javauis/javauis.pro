@@ -18,6 +18,7 @@ SUBDIRS += eswt_qt/build/eswtqt.pro
 SUBDIRS += lcdui_qt/build/openlcdui.pro 
 SUBDIRS += runtimeui_qt/build/javaruntimeui.pro 
 SUBDIRS += nokiauiapi_qt/build/nokiauiapiqt.pro 
+SUBDIRS += mmapi_qt/build/javamobilemedia.pro 
 SUBDIRS += javalegacyutils 
 BLD_INF_RULES.prj_extensions += "$${LITERAL_HASH}include \"coreui/build/bld.inf\""  
 BLD_INF_RULES.prj_extensions += "prj_extensions" 

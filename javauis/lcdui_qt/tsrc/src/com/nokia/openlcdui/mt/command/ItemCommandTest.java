@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt.command;
@@ -32,19 +32,22 @@ import com.nokia.openlcdui.mt.SWTTestCase;
  * Created:    2008-08-04
  *
  */
-public class ItemCommandTest extends SWTTestCase {
+public class ItemCommandTest extends SWTTestCase
+{
 
     /**
      * Constructor.
      */
-    public ItemCommandTest() {
+    public ItemCommandTest()
+    {
     }
 
     /**
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public ItemCommandTest(String sTestName) {
+    public ItemCommandTest(String sTestName)
+    {
         super(sTestName);
     }
 
@@ -53,39 +56,44 @@ public class ItemCommandTest extends SWTTestCase {
      * any new test methods, otherwise they won't be run.
      * @return New testsuite.
      */
-    public static Test suite() {
-    	TestSuite suite = new TestSuite();
+    public static Test suite()
+    {
+        TestSuite suite = new TestSuite();
 
-	    java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Vector methodNames;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = ItemCommandTest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new ItemCommandTest((String)e.nextElement()));
-	    }
+        // Add widget tests
+        methodNames = ItemCommandTest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new ItemCommandTest((String)e.nextElement()));
+        }
 
-		return suite;
+        return suite;
     }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testAddCommand");
         methodNames.addElement("testRemoveCommand");
         return methodNames;
     }
-    
-    protected void runTest() throws Throwable {
-        if (getName().equals("testAddCommand")) testAddCommand();
-        else if (getName().equals("testRemoveCommand")) testRemoveCommand();
+
+    protected void runTest() throws Throwable
+    {
+        if(getName().equals("testAddCommand")) testAddCommand();
+        else if(getName().equals("testRemoveCommand")) testRemoveCommand();
         else super.runTest();
     }
-    
+
     /**
      * Tests to add command to form item.
      */
-    public void testAddCommand() {
+    public void testAddCommand()
+    {
         Form form = new Form("form");
         StringItem button1 = new StringItem("", "click!", Item.BUTTON);
         Command ok = new Command("Ok", "", Command.OK, 0);
@@ -96,7 +104,8 @@ public class ItemCommandTest extends SWTTestCase {
     /**
      * Tests to remove command from form item.
      */
-    public void testRemoveCommand() {
+    public void testRemoveCommand()
+    {
         Form form = new Form("form");
         StringItem button1 = new StringItem("", "click!", Item.BUTTON);
         StringItem button2 = new StringItem("", "click2!", Item.BUTTON);

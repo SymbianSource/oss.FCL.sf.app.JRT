@@ -361,10 +361,21 @@ int startJvm(int argc, char *argv[])
     }
 
 #ifdef RD_JAVA_INSTALLERUI_ENABLED
+#if 0 // Disable 10.1 JavaInstallerUi
+//#ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS
+    jvm->appendSystemProperty(
+        L"-Dcom.nokia.mj.impl.installer.ui="
+        L"com.nokia.mj.impl.installer.ui.eswt2.InstallerUiEswt");
+    // Replace RuntimeUi with installer specific implementation.
+    jvm->appendSystemProperty(
+        L"-Dcom.nokia.mj.impl.rt.ui="
+        L"com.nokia.mj.impl.installer.ui.eswt2.InstallerRuntimeUi");
+#else
     jvm->appendSystemProperty(
         L"-Dcom.nokia.mj.impl.installer.ui="
         L"com.nokia.mj.impl.installer.ui.eswt.InstallerUiEswt");
-#endif
+#endif // RD_JAVA_S60_RELEASE_10_1_ONWARDS
+#endif // RD_JAVA_INSTALLERUI_ENABLED
 
     std::wstring extendedBootClassPath;
     // This call is platform dependent.

@@ -24,9 +24,6 @@ import com.nokia.mj.impl.rt.support.Jvm;
 
 /**
  * Runtime UI AVKON implementation.
- *
- * @author Nokia Corporation
- * @version $Rev: 0 $
  */
 public class RuntimeUiAvkon extends RuntimeUi
 {

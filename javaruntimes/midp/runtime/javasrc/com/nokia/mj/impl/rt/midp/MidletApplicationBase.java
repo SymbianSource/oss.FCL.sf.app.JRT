@@ -44,9 +44,6 @@ import com.nokia.mj.impl.rt.legacy.LegacySupport;
  * MIDlet instance. During the construction of this class it will give a
  * reference to this to the MIDP life cycle, which will store the refernce in
  * order to delegate calls to MIDlet.
- *
- * @author Nokia Corporation
- * @version $Rev$
  */
 public abstract class MidletApplicationBase
 {

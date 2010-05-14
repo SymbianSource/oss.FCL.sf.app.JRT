@@ -225,8 +225,7 @@ protected:
     GetExternalItemModificationsByEntryTypeL(
         CCalEntry::TType aEntryType);
 
-    void CPIMAgnListAdapter::DoExternalItemModificationsByEntryTypeL(
-        CCalEntry::TType aEntryType);
+    void DoExternalItemModificationsByEntryTypeL(CCalEntry::TType aEntryType);
 
     /**
      * Fetches a CAgnEntry from the native Agenda Model.
@@ -268,7 +267,8 @@ protected: // Constructors
      *
      * @param aEntryType Entry type for change callbacks (ToDo/Event/all).
      */
-    void ConstructL(MCalChangeCallBack::TChangeEntryType aEntryType);
+    void ConstructL(MCalChangeCallBack::TChangeEntryType aEntryType,
+        CCalSession* aCalSession);
 
     void DoClose();
 

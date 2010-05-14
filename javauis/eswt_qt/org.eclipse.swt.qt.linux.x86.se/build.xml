@@ -212,6 +212,7 @@ run.tests                  : Run JUnit and MT tests
         <javah destdir="${lib.path}/${generated.native.dir}/" classpath="${plugin.dir}/bin" verbose="yes">
             <class name="org.eclipse.swt.internal.qt.OS"/>
             <class name="org.eclipse.swt.internal.qt.graphics.OS"/>
+            <class name="org.eclipse.swt.internal.extension.OS"/>
         </javah>
         <antcall target="qmake">
             <param name="qmake.dir" value="${lib.path}"/>
@@ -336,6 +337,7 @@ run.tests                  : Run JUnit and MT tests
             <arg value="CONFIG+=${qmake.target}"/>
             <arg value="DESTDIR=${qmake.target}"/>
             <arg value="OBJECTS_DIR=${qmake.target}/${qmake.spec}/build"/>
+            <arg value="INCLUDEPATH+=/usr/lib/jvm/java-1.5.0-sun/include;/usr/lib/jvm/java-1.5.0-sun/include/linux"/>
         </exec>
     </target>
 

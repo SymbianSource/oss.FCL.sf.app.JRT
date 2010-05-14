@@ -295,25 +295,6 @@ void CHttpTransactionClient::GetResponseL(RPointerArray<HBufC8>* aRawHeaders)
         {
             TInt err = headers.GetRawField(fieldNameStr,rawFldPtr);
 
-            // Work around for DRM download
-//          RStringF contentType = strP.StringF(HTTP::EContentType,RHTTPSession::GetTable());
-//          if (fieldNameStr == contentType)
-//          {
-//                  LOG(ESOCKET,EInfo,"content type header is  present");
-//                  TInt index = rawFldPtr.Match(KDRMHeader1);
-//                  //  LOG1(ESOCKET,EInfo,"rawFldPtr = %s ",rawFldPtr.str());
-//                      LOG1(ESOCKET,EInfo,"index of drm header is = %d",index);
-//              if(index == 0)
-//              {
-//                      iDrmDownload = true;
-//              }
-//              else
-//              {
-//                      index = rawFldPtr.Match(KDRMHeader2);
-//                      if(index == 0)
-//                              iDrmDownload = true;
-//              }
-//          }
             if (err==KErrNone)
             {
                 rawFieldLength += fieldNameStr.DesC().Length();
@@ -332,11 +313,7 @@ void CHttpTransactionClient::GetResponseL(RPointerArray<HBufC8>* aRawHeaders)
     while (!it.AtEnd());
 }
 
-// RHTTPResponse CHttpTransactionClient::GetResponseL()
-//  {
-//  LOG(ESOCKET,EInfo,"CHttpTransactionClient::GetResponseL");
-//  return iTransaction.Response();
-//  }
+
 /*
 * Returns the total number of bytes read into the buffer,
 * or -1 if there is no more data because the end of the stream
@@ -738,7 +715,6 @@ void CHttpTransactionClient::NotifyErrorL(TInt aErrorCode)
 
 void CHttpTransactionClient::CloseTransaction()
 {
-    //__ASSERT_DEBUGCOMP(iJavaWaitingOnCallBack==EFalse, User::Panic(_L("Http Java Waiting on notification"), KErrGeneral ));
     LOG(ESOCKET,EInfo,"CHttpTransactionClient::CloseTransaction + ");
     iClosing=ETrue;
     if (!iReleasedData)

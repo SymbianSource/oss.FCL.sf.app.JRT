@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui.game;
@@ -23,7 +23,8 @@ import com.nokia.mj.impl.nokialcdui.LCDUIInvoker;
 /**
  * GameCanvas class.
  */
-public abstract class GameCanvas extends javax.microedition.lcdui.Canvas {
+public abstract class GameCanvas extends javax.microedition.lcdui.Canvas
+{
 
     /**
      * Bit representing UP key. (1 << Canvas.UP)
@@ -75,7 +76,8 @@ public abstract class GameCanvas extends javax.microedition.lcdui.Canvas {
      *
      * @param suppressKeyEvents supress game key events.
      */
-    protected GameCanvas(boolean suppressKeyEvents) {
+    protected GameCanvas(boolean suppressKeyEvents)
+    {
         super();
         LCDUIInvoker.initGameCanvas(this, suppressKeyEvents);
     }
@@ -85,7 +87,8 @@ public abstract class GameCanvas extends javax.microedition.lcdui.Canvas {
      *
      * @return frameBuffer's Graphics
      */
-    protected Graphics getGraphics() {
+    protected Graphics getGraphics()
+    {
         return (Graphics) LCDUIInvoker.getGraphics(this);
     }
 
@@ -94,7 +97,8 @@ public abstract class GameCanvas extends javax.microedition.lcdui.Canvas {
      *
      * @return game key states
      */
-    public int getKeyStates() {
+    public int getKeyStates()
+    {
         return LCDUIInvoker.getKeyStates(this);
     }
 
@@ -103,7 +107,8 @@ public abstract class GameCanvas extends javax.microedition.lcdui.Canvas {
      *
      * @param g Graphics object
      */
-    public void paint(javax.microedition.lcdui.Graphics g) {
+    public void paint(javax.microedition.lcdui.Graphics g)
+    {
         // If the Graphics doesn't belong to the frame buffer
         LCDUIInvoker.renderGraphics(this, g);
     }
@@ -116,8 +121,10 @@ public abstract class GameCanvas extends javax.microedition.lcdui.Canvas {
      * @param w clip width
      * @param h clip height
      */
-    public void flushGraphics(int x, int y, int w, int h) {
-        if (w > 0 && h > 0) {
+    public void flushGraphics(int x, int y, int w, int h)
+    {
+        if(w > 0 && h > 0)
+        {
             LCDUIInvoker.flushGraphics(this, x, y, w, h);
         }
     }
@@ -125,7 +132,8 @@ public abstract class GameCanvas extends javax.microedition.lcdui.Canvas {
     /**
      * Flushes the frameBuffer to the display.
      */
-    public void flushGraphics() {
+    public void flushGraphics()
+    {
         LCDUIInvoker.flushGraphics(this, 0, 0, getWidth(), getHeight());
     }
 

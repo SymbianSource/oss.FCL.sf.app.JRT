@@ -28,9 +28,6 @@ import com.nokia.mj.impl.utils.Logger;
  * A class for caching important MIDlet specific data. This data
  * is used mostly to serve the ApplicationInfo APIs, but to some extent
  * this data is used by the life cycle.
- *
- * @author Nokia Corporation
- * @version $Rev$
  */
 final class MidletInfo
 {

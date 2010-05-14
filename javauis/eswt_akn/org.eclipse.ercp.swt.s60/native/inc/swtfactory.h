@@ -103,8 +103,6 @@ public:
                                MSwtComposite& aParent, TInt aStyle) const;
     MSwtSortedList* NewSortedListL(MSwtDisplay& aDisplay, TSwtPeer aPeer,
                                    MSwtComposite& aParent, TInt aStyle) const;
-    MSwtTaskTip* NewTaskTipL(MSwtDisplay& aDisplay, TSwtPeer aPeer,
-                             TInt aStyle) const;
     MSwtTextExtension* NewTextExtensionL(MSwtDisplay& aDisplay,
                                          TSwtPeer aPeer, MSwtComposite& aParent, TInt aStyle) const;
     void RunTimedMessageBoxDlgLD(const TDesC& aTitle, const TDesC& aMessage,

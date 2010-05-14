@@ -367,7 +367,7 @@ std::string PushServerConnPluginManager::resolveDllName(const std::wstring& aSch
     std::string dllNameStr(PREFIX_OF_SRV_CONN_PLUGIN);
     dllNameStr.append(schemeStr);
     dllNameStr.append(SUFFIX_OF_SRV_CONN_PLUGIN);
-    WLOG1(EJavaPush,"Name of the loaded dll: %s",dllNameStr.c_str());
+    ILOG1(EJavaPush,"Name of the loaded dll: %s",dllNameStr.c_str());
     return dllNameStr;
 }
 

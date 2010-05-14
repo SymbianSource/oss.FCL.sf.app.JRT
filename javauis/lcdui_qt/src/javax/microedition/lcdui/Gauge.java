@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -21,7 +21,8 @@ import org.eclipse.swt.graphics.Point;
 /**
  * Class representing the Gauge item.
  */
-public class Gauge extends Item {
+public class Gauge extends Item
+{
 
     /**
      * Indefinite constant.
@@ -60,7 +61,8 @@ public class Gauge extends Item {
      * @param maxVal the maximum value.
      * @param initVal the initial value.
      */
-    public Gauge(String name, boolean interactive, int maxVal, int initVal) {
+    public Gauge(String name, boolean interactive, int maxVal, int initVal)
+    {
         setLabel(name);
         this.interactive = interactive;
         setMaxValue(maxVal);
@@ -74,21 +76,25 @@ public class Gauge extends Item {
      * @param maxVal the maximum value.
      * @return validated value.
      */
-    private static int checkValue(int value, int maxVal) {
-        if (maxVal == INDEFINITE) {
-            switch (value) {
-                case CONTINUOUS_IDLE:
-                case INCREMENTAL_IDLE:
-                case CONTINUOUS_RUNNING:
-                case INCREMENTAL_UPDATING:
-                    break;
-                default:
-                    throw new IllegalArgumentException(
-                            MsgRepository.GAUGE_EXCEPTION_INVALID_VALUE);
+    private static int checkValue(int value, int maxVal)
+    {
+        if(maxVal == INDEFINITE)
+        {
+            switch(value)
+            {
+            case CONTINUOUS_IDLE:
+            case INCREMENTAL_IDLE:
+            case CONTINUOUS_RUNNING:
+            case INCREMENTAL_UPDATING:
+                break;
+            default:
+                throw new IllegalArgumentException(
+                    MsgRepository.GAUGE_EXCEPTION_INVALID_VALUE);
             }
             return value;
         }
-        else {
+        else
+        {
             // make sure the value is in [0, maxValue] range
             value = (value < 0 ? 0 : value);
             value = (value > maxVal ? maxVal : value);
@@ -103,15 +109,19 @@ public class Gauge extends Item {
      * @param interactive is interactive.
      * @return validated maximum value.
      */
-    private static int checkMaxValue(int maxVal, boolean interactive) {
-        if (!interactive) {
-            if (maxVal == INDEFINITE) {
+    private static int checkMaxValue(int maxVal, boolean interactive)
+    {
+        if(!interactive)
+        {
+            if(maxVal == INDEFINITE)
+            {
                 return maxVal;
             }
         }
-        if (maxVal <= 0) {
+        if(maxVal <= 0)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.GAUGE_EXCEPTION_INVALID_MAXVALUE);
+                MsgRepository.GAUGE_EXCEPTION_INVALID_MAXVALUE);
         }
         return maxVal;
     }
@@ -121,7 +131,8 @@ public class Gauge extends Item {
      *
      * @param value New value. Must be between zero and maxvalue inclusive.
      */
-    public void setValue(int value) {
+    public void setValue(int value)
+    {
         // TODO: eSWT support required
         /*
          * if Gauge state is incremental-updating and it is non-interactive and
@@ -137,7 +148,8 @@ public class Gauge extends Item {
      *
      * @return the value.
      */
-    public int getValue() {
+    public int getValue()
+    {
         return value;
     }
 
@@ -146,7 +158,8 @@ public class Gauge extends Item {
      *
      * @param maxValue the maximum value.
      */
-    public void setMaxValue(int maxValue) {
+    public void setMaxValue(int maxValue)
+    {
         this.maxValue = checkMaxValue(maxValue, interactive);
         this.value = checkValue(getValue(), this.maxValue);
         updateParent(UPDATE_CONTENT);
@@ -157,7 +170,8 @@ public class Gauge extends Item {
      *
      * @return the maximum value.
      */
-    public int getMaxValue() {
+    public int getMaxValue()
+    {
         return maxValue;
     }
 
@@ -166,7 +180,8 @@ public class Gauge extends Item {
      *
      * @return true if the Gauge is interactive.
      */
-    public boolean isInteractive() {
+    public boolean isInteractive()
+    {
         return interactive;
     }
 
@@ -175,11 +190,14 @@ public class Gauge extends Item {
      *
      * @see javax.microedition.lcdui.Item#updateParent(int)
      */
-    void updateParent(int updateReason) {
-        if (isContainedInAlert()) {
+    void updateParent(int updateReason)
+    {
+        if(isContainedInAlert())
+        {
             ((Alert) getParent()).updateIndicator();
         }
-        else {
+        else
+        {
             super.updateParent(updateReason);
         }
     }
@@ -189,7 +207,8 @@ public class Gauge extends Item {
      *
      * @return Minimum size.
      */
-    Point calculateMinimumSize() {
+    Point calculateMinimumSize()
+    {
         return GaugeLayouter.calculateMinimumBounds(this);
     }
 
@@ -198,14 +217,16 @@ public class Gauge extends Item {
      *
      * @return Preferred size.
      */
-    Point calculatePreferredSize() {
+    Point calculatePreferredSize()
+    {
         return GaugeLayouter.calculatePreferredBounds(this);
     }
 
     /**
      * Called by widget listeners to update Item value.
      */
-    void internalSetValue(int newValue) {
+    void internalSetValue(int newValue)
+    {
         this.value = checkValue(newValue, this.maxValue);
         // notify item state listener
         notifyStateChanged();
@@ -216,21 +237,24 @@ public class Gauge extends Item {
      *
      * @return layout directive
      */
-    int internalGetLayout() {
+    int internalGetLayout()
+    {
         return super.internalGetLayout() | Item.LAYOUT_NEWLINE_BEFORE;
     }
 
     /**
      * @return if the Gauge is indefinite.
      */
-    boolean isIndefinite() {
+    boolean isIndefinite()
+    {
         return (maxValue == INDEFINITE);
     }
 
     /**
      * Returns if this indicator meets the restrictions for its use in an Alert.
      */
-    boolean isSuitableForAlert() {
+    boolean isSuitableForAlert()
+    {
         return (!isInteractive()
                 && getParent() == null
                 && !hasLabel()
@@ -243,7 +267,8 @@ public class Gauge extends Item {
     /* (non-Javadoc)
      * @see javax.microedition.lcdui.Item#isFocusable()
      */
-    boolean isFocusable() {
+    boolean isFocusable()
+    {
         return (isInteractive() || (getNumCommands() > 0));
     }
 

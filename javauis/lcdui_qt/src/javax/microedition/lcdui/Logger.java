@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -20,13 +20,15 @@ package javax.microedition.lcdui;
 /**
  * Logger utility class.<br>
  */
-final class Logger {
+final class Logger
+{
 
     private static StringBuffer methodSb = new StringBuffer();
 
     private static boolean logVerbose = true;
 
-    private Logger() {
+    private Logger()
+    {
     }
 
     /**
@@ -34,18 +36,22 @@ final class Logger {
      *
      * @param level logging level
      */
-    static boolean isLogVerbose() {
+    static boolean isLogVerbose()
+    {
         return logVerbose;
     }
 
-    static void method(Object obj, String fn) {
+    static void method(Object obj, String fn)
+    {
         method(obj, fn, null, null, null);
     }
 
-    static void method(Object obj, String fn, Object p1) {
+    static void method(Object obj, String fn, Object p1)
+    {
         method(obj, fn, p1, null, null);
     }
-    static void method(Object obj, String fn, Object p1, Object p2) {
+    static void method(Object obj, String fn, Object p1, Object p2)
+    {
         method(obj, fn, p1, p2, null);
     }
 
@@ -58,28 +64,33 @@ final class Logger {
      * @param p2 second parameter
      * @param p3 third parameter
      */
-    static void method(Object obj, String fn, Object p1, Object p2, Object p3) {
-        if (logVerbose) {
+    static void method(Object obj, String fn, Object p1, Object p2, Object p3)
+    {
+        if(logVerbose)
+        {
             methodSb.setLength(0);
             methodSb.append(obj);
             methodSb.append("::");
             methodSb.append(fn);
             methodSb.append("(");
-            if (p1 != null) {
+            if(p1 != null)
+            {
                 methodSb.append(p1);
             }
-            if (p2 != null) {
+            if(p2 != null)
+            {
                 methodSb.append(", ");
                 methodSb.append(p2);
             }
-            if (p3 != null) {
+            if(p3 != null)
+            {
                 methodSb.append(", ");
                 methodSb.append(p3);
             }
             methodSb.append(")");
             com.nokia.mj.impl.utils.Logger.LOG(
-                    com.nokia.mj.impl.utils.Logger.EJavaUI,
-                    com.nokia.mj.impl.utils.Logger.EInfo, methodSb.toString());
+                com.nokia.mj.impl.utils.Logger.EJavaUI,
+                com.nokia.mj.impl.utils.Logger.EInfo, methodSb.toString());
         }
     }
 
@@ -88,10 +99,11 @@ final class Logger {
      *
      * @param msg a message
      */
-    static void verbose(String msg) {
+    static void verbose(String msg)
+    {
         com.nokia.mj.impl.utils.Logger.LOG(
-                com.nokia.mj.impl.utils.Logger.EJavaUI,
-                com.nokia.mj.impl.utils.Logger.EInfo, msg);
+            com.nokia.mj.impl.utils.Logger.EJavaUI,
+            com.nokia.mj.impl.utils.Logger.EInfo, msg);
     }
 
     /**
@@ -99,10 +111,11 @@ final class Logger {
      *
      * @param msg a message
      */
-    static void info(String msg) {
+    static void info(String msg)
+    {
         com.nokia.mj.impl.utils.Logger.LOG(
-                com.nokia.mj.impl.utils.Logger.EJavaUI,
-                com.nokia.mj.impl.utils.Logger.EInfo, msg);
+            com.nokia.mj.impl.utils.Logger.EJavaUI,
+            com.nokia.mj.impl.utils.Logger.EInfo, msg);
     }
 
     /**
@@ -110,9 +123,10 @@ final class Logger {
      *
      * @param msg a message
      */
-    static void warning(String msg) {
+    static void warning(String msg)
+    {
         com.nokia.mj.impl.utils.Logger.WLOG(
-                com.nokia.mj.impl.utils.Logger.EJavaUI, msg);
+            com.nokia.mj.impl.utils.Logger.EJavaUI, msg);
     }
 
     /**
@@ -120,9 +134,10 @@ final class Logger {
      *
      * @param msg a message
      */
-    static void exception(String msg, Exception e) {
+    static void exception(String msg, Exception e)
+    {
         com.nokia.mj.impl.utils.Logger.ELOG(
-                com.nokia.mj.impl.utils.Logger.EJavaUI, msg, e);
+            com.nokia.mj.impl.utils.Logger.EJavaUI, msg, e);
         // e.printStackTrace();
     }
 
@@ -131,17 +146,20 @@ final class Logger {
      *
      * @param msg a message
      */
-    static void error(String msg) {
+    static void error(String msg)
+    {
         com.nokia.mj.impl.utils.Logger.ELOG(
-                com.nokia.mj.impl.utils.Logger.EJavaUI, msg);
+            com.nokia.mj.impl.utils.Logger.EJavaUI, msg);
     }
 
     /**
      * Indents a string with the given number of spaces.
      */
-    static String indent(String str, int numSpacesBefore) {
+    static String indent(String str, int numSpacesBefore)
+    {
         String ret = (str == null ? "" : str);
-        for (int i = 0; i < numSpacesBefore; i++) {
+        for(int i = 0; i < numSpacesBefore; i++)
+        {
             ret = " " + ret;
         }
         return ret;

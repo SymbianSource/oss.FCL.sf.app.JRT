@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package t_uirobot.display;
@@ -33,7 +33,8 @@ import com.nokia.mj.impl.uitestutils.Key;
  * Created: 2008-08-26
  */
 public class SetCurrentItemTest extends UITestBase implements
-        ItemCommandListener {
+    ItemCommandListener
+{
 
     private static int count1;
     private static int count2;
@@ -53,7 +54,8 @@ public class SetCurrentItemTest extends UITestBase implements
     /**
      * Constructor.
      */
-    public SetCurrentItemTest() {
+    public SetCurrentItemTest()
+    {
     }
 
     /**
@@ -62,18 +64,21 @@ public class SetCurrentItemTest extends UITestBase implements
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public SetCurrentItemTest(String sTestName, TestMethod rTestMethod) {
+    public SetCurrentItemTest(String sTestName, TestMethod rTestMethod)
+    {
         super(sTestName, rTestMethod);
     }
 
     /**
      * Any pre-test setup can be done here
      */
-    protected void setUp() throws Exception {
+    protected void setUp() throws Exception
+    {
         super.setUp();
-		for (int i = 0; i < sia.length; i++) {
-			sia[i] = new StringItem("", "click" + (i + 1), Item.BUTTON);
-		}
+        for(int i = 0; i < sia.length; i++)
+        {
+            sia[i] = new StringItem("", "click" + (i + 1), Item.BUTTON);
+        }
     }
 
     /**
@@ -82,36 +87,45 @@ public class SetCurrentItemTest extends UITestBase implements
      *
      * @return New testsuite.
      */
-    public Test suite() {
+    public Test suite()
+    {
         TestSuite aSuite = new TestSuite();
 
         aSuite.addTest(new SetCurrentItemTest("testExceptions",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((SetCurrentItemTest) tc).testExceptions();
-                    }
-                }));
+                                              new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((SetCurrentItemTest) tc).testExceptions();
+            }
+        }));
 
         aSuite.addTest(new SetCurrentItemTest("testSetCurrentItem",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((SetCurrentItemTest) tc).testSetCurrentItem();
-                    }
-                }));
+                                              new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((SetCurrentItemTest) tc).testSetCurrentItem();
+            }
+        }));
 
 
         aSuite.addTest(new SetCurrentItemTest("testCrash",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((SetCurrentItemTest) tc).testCrash();
-                    }
-                }));
+                                              new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((SetCurrentItemTest) tc).testCrash();
+            }
+        }));
         aSuite.addTest(new SetCurrentItemTest("displayableSwithTest",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((SetCurrentItemTest) tc).displayableSwithTest();
-                    }
-                }));
+                                              new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((SetCurrentItemTest) tc).displayableSwithTest();
+            }
+        }));
 
         return aSuite;
     }
@@ -120,33 +134,40 @@ public class SetCurrentItemTest extends UITestBase implements
      * Makes sure that setCurrentItem() throws exceptions as
      * expected.
      */
-    public void testExceptions() {
+    public void testExceptions()
+    {
         boolean exceptionThrown = false;
 
         StringItem button1 = new StringItem("", "click!", Item.BUTTON);
 
         //Test null item:
-        try {
+        try
+        {
             display.setCurrentItem(null);
         }
-        catch (NullPointerException ex) {
+        catch(NullPointerException ex)
+        {
             exceptionThrown = true;
         }
 
-        if (!exceptionThrown) {
+        if(!exceptionThrown)
+        {
             fail("No exception when item was null.");
         }
 
         //Test to call method when item is not owned by a container:
         exceptionThrown = false;
-        try {
+        try
+        {
             display.setCurrentItem(button1);
         }
-        catch (IllegalStateException ex) {
+        catch(IllegalStateException ex)
+        {
             exceptionThrown = true;
         }
 
-        if (!exceptionThrown) {
+        if(!exceptionThrown)
+        {
             fail("No exception when item was not owned by a container.");
         }
     }
@@ -157,7 +178,8 @@ public class SetCurrentItemTest extends UITestBase implements
      * visible, is it focusable or not, but the check of item's visibility
      * is out of scope of this test.
      */
-    public void testSetCurrentItem() {
+    public void testSetCurrentItem()
+    {
         latestCommand = null;
         latestItem = null;
 
@@ -167,9 +189,10 @@ public class SetCurrentItemTest extends UITestBase implements
         StringItem button1 = new StringItem("", "click!", Item.BUTTON);
         StringItem button2 = new StringItem("", "click me2", Item.BUTTON);
         StringItem[] lotOfButtons = new StringItem[25];
-        for (int i = 0; i < lotOfButtons.length; i++) {
+        for(int i = 0; i < lotOfButtons.length; i++)
+        {
             lotOfButtons[i] = new StringItem(
-                    "", "button " + (i + 1), Item.BUTTON);
+                "", "button " + (i + 1), Item.BUTTON);
         }
 
         Command ok = new Command("Ok", "", Command.ITEM, 0);
@@ -184,14 +207,14 @@ public class SetCurrentItemTest extends UITestBase implements
         key(Key.Select);
 
         assertEquals("Command not activated or not correct command"
-                + " (case 1).",
-                ok, latestCommand);
+                     + " (case 1).",
+                     ok, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " (case 1).",
-                button1, latestItem);
+                     + " (case 1).",
+                     button1, latestItem);
         assertEquals("Unexpected displayable"
-                + " (case 1).",
-                form, display.getCurrent());
+                     + " (case 1).",
+                     form, display.getCurrent());
 
         latestCommand = null;
         latestItem = null;
@@ -203,14 +226,14 @@ public class SetCurrentItemTest extends UITestBase implements
         key(Key.Select);
 
         assertEquals("Command not activated or not correct command"
-                + " (case 2).",
-                ok, latestCommand);
+                     + " (case 2).",
+                     ok, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " (case 2).",
-                button1, latestItem);
+                     + " (case 2).",
+                     button1, latestItem);
         assertEquals("Unexpected displayable"
-                + " (case 2).",
-                form, display.getCurrent());
+                     + " (case 2).",
+                     form, display.getCurrent());
 
         latestCommand = null;
         latestItem = null;
@@ -225,14 +248,14 @@ public class SetCurrentItemTest extends UITestBase implements
         key(Key.Select);
 
         assertEquals("Command not activated or not correct command"
-                + " (case 3).",
-                ok, latestCommand);
+                     + " (case 3).",
+                     ok, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " (case 3).",
-                button1, latestItem);
+                     + " (case 3).",
+                     button1, latestItem);
         assertEquals("Unexpected displayable"
-                + " (case 3).",
-                form2, display.getCurrent());
+                     + " (case 3).",
+                     form2, display.getCurrent());
 
         latestCommand = null;
         latestItem = null;
@@ -240,7 +263,8 @@ public class SetCurrentItemTest extends UITestBase implements
         //Test method when item is in another displayable
         //and there are lot of items before the item:
         form2.deleteAll();
-        for (int i = 0; i < lotOfButtons.length; i++) {
+        for(int i = 0; i < lotOfButtons.length; i++)
+        {
             form.append(lotOfButtons[i]);
         }
         form.append(button1);
@@ -251,14 +275,14 @@ public class SetCurrentItemTest extends UITestBase implements
         block(500);
         key(Key.Select);
         assertEquals("Command not activated or not correct command"
-                + " (case 4).",
-                ok, latestCommand);
+                     + " (case 4).",
+                     ok, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " (case 4).",
-                button1, latestItem);
+                     + " (case 4).",
+                     button1, latestItem);
         assertEquals("Unexpected displayable"
-                + " (case 4).",
-                form, display.getCurrent());
+                     + " (case 4).",
+                     form, display.getCurrent());
 
         latestCommand = null;
         latestItem = null;
@@ -267,7 +291,8 @@ public class SetCurrentItemTest extends UITestBase implements
         //and there are lot of items before the item:
         form.deleteAll();
         form.append(button1);
-        for (int i = 0; i < lotOfButtons.length; i++) {
+        for(int i = 0; i < lotOfButtons.length; i++)
+        {
             form.append(lotOfButtons[i]);
         }
         form.append(button2);
@@ -281,14 +306,14 @@ public class SetCurrentItemTest extends UITestBase implements
         key(Key.Select);
 
         assertEquals("Command not activated or not correct command"
-                + " (case 5).",
-                ok, latestCommand);
+                     + " (case 5).",
+                     ok, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " (case 5).",
-                button1, latestItem);
+                     + " (case 5).",
+                     button1, latestItem);
         assertEquals("Unexpected displayable"
-                + " (case 5).",
-                form, display.getCurrent());
+                     + " (case 5).",
+                     form, display.getCurrent());
 
         latestCommand = null;
         latestItem = null;
@@ -307,7 +332,8 @@ public class SetCurrentItemTest extends UITestBase implements
      * Test tries to make setCurrentItem()-method crash or hang
      * the midlet somehow.
      */
-    public void testCrash() {
+    public void testCrash()
+    {
         Form form = new Form("form");
         Form form2 = new Form("form2");
         StringItem plain1 = new StringItem("", "not focusable.", Item.PLAIN);
@@ -330,7 +356,8 @@ public class SetCurrentItemTest extends UITestBase implements
 
         //Make many calls without delay:
         form.append(button1);
-        for (int i = 0; i < 10; i++) {
+        for(int i = 0; i < 10; i++)
+        {
             display.setCurrentItem(button1);
             display.setCurrentItem(plain1);
         }
@@ -342,7 +369,8 @@ public class SetCurrentItemTest extends UITestBase implements
      *  Displayable is switched to new one, but old still has
      *  doLayout() ongoing.
      */
-    public void displayableSwithTest() {
+    public void displayableSwithTest()
+    {
         Form form = new Form("form");
         Form form2 = new Form("form2");
 
@@ -360,7 +388,8 @@ public class SetCurrentItemTest extends UITestBase implements
         form.append(button1);
         form.append(button2);
 
-        for (int i = 0; i < sia.length; i++) {
+        for(int i = 0; i < sia.length; i++)
+        {
             form2.append(sia[i]);
             sia[i].addCommand(c3);
         }
@@ -372,7 +401,7 @@ public class SetCurrentItemTest extends UITestBase implements
         block(CHANGE_DISPLAYABLE_DELAY);
         key(Key.Select);
         assertEquals("Not Correct Comand was called, probable Displayable"
-                + " switched back to initial.", c3, latestCommand);
+                     + " switched back to initial.", c3, latestCommand);
     }
 
     /**
@@ -381,24 +410,28 @@ public class SetCurrentItemTest extends UITestBase implements
      * @param c Command
      * @param item item
      */
-    public void commandAction(Command c, Item item) {
+    public void commandAction(Command c, Item item)
+    {
         latestCommand = c;
         latestItem = item;
-        if (c == c1) {
+        if(c == c1)
+        {
             System.out.println("button1 clicked, command: " + c + " item: "
-                    + item);
+                               + item);
             button1.setText("clicks: " + (++count1));
             display.setCurrentItem(button3);
             //display.setCurrentItem(sia[sia.length-1]);
         }
-        else if (c == c2) {
+        else if(c == c2)
+        {
             System.out.println("button2 clicked, command: " + c + " item: "
-                    + item);
+                               + item);
             button2.setText("clicks: " + (++count2));
         }
-        else if (c == c3) {
+        else if(c == c3)
+        {
             System.out.println("button3 clicked, command: " + c + " item: "
-                    + item);
+                               + item);
             //button3.setText("clicks: "+ (++count3));
             display.setCurrentItem(button1);
         }

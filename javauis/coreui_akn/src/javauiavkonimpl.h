@@ -89,6 +89,11 @@ public:
      * Get the moment of startup.
      */
     TInt64 startupTime() const;
+    
+    /**
+     * Returns true, after the app has started to be destroyed.
+     */
+    bool destroying() const {return mDestroying;};
 
 public: // From CoreUiAvkonAppUi
     /**
@@ -223,6 +228,7 @@ private:
     bool                    mIsDefaultPriorityInUse;
     TInt64                  mStartupTime;
     bool                    mStartupCancelled;
+    bool                    mDestroying;
 };
 
 NONSHARABLE_CLASS(JavaUiAvkonApplication): public CAknApplication

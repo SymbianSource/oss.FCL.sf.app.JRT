@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt.game;
@@ -27,21 +27,23 @@ import com.nokia.openlcdui.mt.SWTTestCase;
 /**
 * GameCanvas non-interactive test.
 */
-public class GameCanvasTest extends SWTTestCase {
+public class GameCanvasTest extends SWTTestCase
+{
 
-	Sprite iSprite = null;
-	int [] iRGB =
-		{
-		0xFFFFFFFF, 0xFF000000, 0xFF000000, 0xFFFFFFFF,
-		0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000,
-		0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000,
-		0xFFFFFFFF, 0xFF000000, 0xFF000000, 0xFFFFFFFF
-		};
+    Sprite iSprite = null;
+    int [] iRGB =
+    {
+        0xFFFFFFFF, 0xFF000000, 0xFF000000, 0xFFFFFFFF,
+        0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000,
+        0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000,
+        0xFFFFFFFF, 0xFF000000, 0xFF000000, 0xFFFFFFFF
+    };
 
     /**
      * Constructor.
      */
-    public GameCanvasTest() {
+    public GameCanvasTest()
+    {
     }
 
     /**
@@ -50,11 +52,13 @@ public class GameCanvasTest extends SWTTestCase {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public GameCanvasTest(String sTestName) {
+    public GameCanvasTest(String sTestName)
+    {
         super(sTestName);
     }
 
-	protected void setUp() throws Exception {
+    protected void setUp() throws Exception
+    {
         super.setUp();
         iSprite = new Sprite(Image.createRGBImage(iRGB, 4, 4, true));
     }
@@ -65,42 +69,47 @@ public class GameCanvasTest extends SWTTestCase {
      *
      * @return new testsuite.
      */
-    public static Test suite() {
-		TestSuite suite = new TestSuite();
+    public static Test suite()
+    {
+        TestSuite suite = new TestSuite();
 
-	    java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Vector methodNames;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = GameCanvasTest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new GameCanvasTest((String)e.nextElement()));
-	    }
+        // Add widget tests
+        methodNames = GameCanvasTest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new GameCanvasTest((String)e.nextElement()));
+        }
 
-		return suite;
-	}
+        return suite;
+    }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testGraphics");
         methodNames.addElement("testPaint");
         return methodNames;
     }
-    
-    protected void runTest() throws Throwable {
-        if (getName().equals("testGraphics")) testGraphics();
-        else if (getName().equals("testPaint")) testPaint();
+
+    protected void runTest() throws Throwable
+    {
+        if(getName().equals("testGraphics")) testGraphics();
+        else if(getName().equals("testPaint")) testPaint();
         else super.runTest();
     }
 
     /**
-	* Tests following methods:<br>
-	* {@link javax.microedition.lcdui.game.GameCanvas#getGraphics}<br>
-	* {@link javax.microedition.lcdui.game.GameCanvas#flushGraphics()}<br>
-	* {@link javax.microedition.lcdui.game.GameCanvas#flushGraphics(int,int,int,int)}<br>
-	*/
-	public void testGraphics() {
+    * Tests following methods:<br>
+    * {@link javax.microedition.lcdui.game.GameCanvas#getGraphics}<br>
+    * {@link javax.microedition.lcdui.game.GameCanvas#flushGraphics()}<br>
+    * {@link javax.microedition.lcdui.game.GameCanvas#flushGraphics(int,int,int,int)}<br>
+    */
+    public void testGraphics()
+    {
         GameCanvasWithoutKeys canvas = new GameCanvasWithoutKeys();
         Graphics g = canvas.getBufferGraphics();
 
@@ -111,7 +120,7 @@ public class GameCanvasTest extends SWTTestCase {
 
         assertEquals("Current color should be black", 0, g.getColor());
         assertTrue("Font should be Font.getDefaultFont", (g.getFont())
-                .equals(Font.getDefaultFont()));
+                   .equals(Font.getDefaultFont()));
 
         assertEquals("Stroke should be SOLID", Graphics.SOLID, g.getStrokeStyle());
 
@@ -119,12 +128,13 @@ public class GameCanvasTest extends SWTTestCase {
         assertEquals("translateY should be 0", 0, g.getTranslateY());
     }
 
-	/**
-	* Tests following methods:<br>
-	* {@link javax.microedition.lcdui.game.GameCanvas#paint(javax.microedition.lcdui.Graphics)}<br>
-	*/
-	public void testPaint() {
-	    
+    /**
+    * Tests following methods:<br>
+    * {@link javax.microedition.lcdui.game.GameCanvas#paint(javax.microedition.lcdui.Graphics)}<br>
+    */
+    public void testPaint()
+    {
+
         // This test hangs (hang probably caused by GameCanvas command buffering), backlog item has been created.
         DISABLE_TEST();
 
@@ -148,11 +158,13 @@ public class GameCanvasTest extends SWTTestCase {
         imageGraphics = image.getGraphics();
         // clip
         imageGraphics.setClip(0, 0, 1, 4); // first column is in, rest is out
-        int[] compare2 = {
-                0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
-                0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
-                0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
-                0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF};
+        int[] compare2 =
+        {
+            0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+            0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+            0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+            0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF
+        };
         testPaint("paint with clip", canvas, image, imageGraphics, compare2);
 
         // testing paint - using external mutable image as screen
@@ -161,11 +173,13 @@ public class GameCanvasTest extends SWTTestCase {
         imageGraphics = image.getGraphics();
         // clip
         imageGraphics.translate(0, -1);
-        int[] compare3 = {
-                0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000,
-                0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000,
-                0xFFFFFFFF, 0xFF000000, 0xFF000000, 0xFFFFFFFF,
-                0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,};
+        int[] compare3 =
+        {
+            0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000,
+            0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000,
+            0xFFFFFFFF, 0xFF000000, 0xFF000000, 0xFFFFFFFF,
+            0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+        };
         testPaint("paint with translation", canvas, image, imageGraphics, compare3);
 
         // testing paint - using external mutable image as screen
@@ -175,32 +189,35 @@ public class GameCanvasTest extends SWTTestCase {
         // clip
         imageGraphics.translate(0, -1);
         imageGraphics.setClip(0, 0, 2, 4); // first two columns are in, rest is out
-        int[] compare4 = {
-                0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
-                0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
-                0xFFFFFFFF, 0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF,
-                0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,};
+        int[] compare4 =
+        {
+            0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+            0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+            0xFFFFFFFF, 0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF,
+            0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+        };
         testPaint("paint with translation and clip",
-                canvas, image, imageGraphics, compare4);
+                  canvas, image, imageGraphics, compare4);
     }
 
-	/**
-	* Checks the painted image against provided rgb array.
-	*
-	* The area of interest is four by four pixels located at 0,0.
-	*
-	* Note that the buffer background in the area of interest will be initialized
-	* to white before painting {@link #iSprite} into it at 0,0. This should be
-	* taken into account when generating the array for comparison.
-	*
-	* @param screenGraphics The graphics object to paint the GameCanvas to. This
-	*                        graphics may have clip and translation set
-	* @param screen         The image object that aScreenGraphics paints to.
-	* @param checkRGB        An array of integers with expected values for the
-	*                        area of interest.
-	*/
-	private void testPaint(String msg, GameCanvasWithoutKeys canvas,
-            Image screen, Graphics screenGraphics, int[] expectedRGB) {
+    /**
+    * Checks the painted image against provided rgb array.
+    *
+    * The area of interest is four by four pixels located at 0,0.
+    *
+    * Note that the buffer background in the area of interest will be initialized
+    * to white before painting {@link #iSprite} into it at 0,0. This should be
+    * taken into account when generating the array for comparison.
+    *
+    * @param screenGraphics The graphics object to paint the GameCanvas to. This
+    *                        graphics may have clip and translation set
+    * @param screen         The image object that aScreenGraphics paints to.
+    * @param checkRGB        An array of integers with expected values for the
+    *                        area of interest.
+    */
+    private void testPaint(String msg, GameCanvasWithoutKeys canvas,
+                           Image screen, Graphics screenGraphics, int[] expectedRGB)
+    {
 
         Graphics bufferGraphics = canvas.getBufferGraphics();
 
@@ -219,8 +236,10 @@ public class GameCanvasTest extends SWTTestCase {
         screen.getRGB(actualRGB, 0, 4, 0, 0, 4, 4);
 
         // compare to the sprite image
-        for (int i = 0; i < 16; i++) {
-            if (actualRGB[i] != expectedRGB[i]) {
+        for(int i = 0; i < 16; i++)
+        {
+            if(actualRGB[i] != expectedRGB[i])
+            {
                 printRGB(actualRGB, 4, 4);
                 printRGB(expectedRGB, 4, 4);
                 fail(msg);
@@ -228,70 +247,82 @@ public class GameCanvasTest extends SWTTestCase {
         }
     }
 
-	/**
+    /**
      * Prints out the image to standard output. If an image contains unexpected
      * colours, i.e. not those used to form images, this method will throw an
      * exception. This behaviour provides protection against hiding colour
      * discretization problem and reporting test error.
      */
-    private void printRGB(int[] data, int w, int h) {
+    private void printRGB(int[] data, int w, int h)
+    {
         int odd = 0;
-        for (int i = 0; i < h; i++) {
-            for (int j = 0; j < w; j++) {
+        for(int i = 0; i < h; i++)
+        {
+            for(int j = 0; j < w; j++)
+            {
                 int ind = i * w + j;
                 String cha = " ";
-                switch (data[ind]) {
-                    case 0xFFFFFFFF:
-                        cha = "W";
-                        break;
-                    case 0x00FFFFFF:
-                        cha = "w";
-                        break;
-                    case 0xFF000000:
-                        cha = "B";
-                        break;
-                    case 0x00000000:
-                        cha = "b";
-                        break;
-                    case 0xFF888888:
-                        cha = ".";
-                        break;
-                    case 0x00888888:
-                        cha = ",";
-                        break;
-                    default: {
-                        cha = "U";
-                        odd = data[ind];
-                    }
+                switch(data[ind])
+                {
+                case 0xFFFFFFFF:
+                    cha = "W";
+                    break;
+                case 0x00FFFFFF:
+                    cha = "w";
+                    break;
+                case 0xFF000000:
+                    cha = "B";
+                    break;
+                case 0x00000000:
+                    cha = "b";
+                    break;
+                case 0xFF888888:
+                    cha = ".";
+                    break;
+                case 0x00888888:
+                    cha = ",";
+                    break;
+                default:
+                {
+                    cha = "U";
+                    odd = data[ind];
+                }
                 }
                 System.out.print(cha);
             }
             System.out.println("");
         }
         System.out.println("");
-        if (odd != 0) {
+        if(odd != 0)
+        {
             fail("Unexpected colour in test image : 0x" + Integer.toHexString(odd));
         }
     }
 
-	class GameCanvasWithKeys extends GameCanvas {
+    class GameCanvasWithKeys extends GameCanvas
+    {
 
-	    public GameCanvasWithKeys() {
+        public GameCanvasWithKeys()
+        {
             super(false);
         }
 
-        public Graphics getTheGraphics() {
+        public Graphics getTheGraphics()
+        {
             return getGraphics();
         }
     }
 
-    class GameCanvasWithoutKeys extends GameCanvas {
+    class GameCanvasWithoutKeys extends GameCanvas
+    {
 
-        public GameCanvasWithoutKeys() {
+        public GameCanvasWithoutKeys()
+        {
             super(true);
         }
 
-        public Graphics getBufferGraphics() {
+        public Graphics getBufferGraphics()
+        {
             return getGraphics();
         }
     }

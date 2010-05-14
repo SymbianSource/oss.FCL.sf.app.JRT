@@ -27,9 +27,6 @@ import com.nokia.mj.impl.utils.exception.InstallerExceptionBase;
 /**
  * Installation step WaitForOcsp blocks and waits until
  * certificate validation (OCSP) has been completed.
- *
- * @author Nokia Corporation
- * @version $Rev:  $ $Date:  $
  */
 public class WaitForOcsp extends ExeStep
 {

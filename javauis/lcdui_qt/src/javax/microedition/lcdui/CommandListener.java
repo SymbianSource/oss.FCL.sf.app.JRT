@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -19,11 +19,12 @@ package javax.microedition.lcdui;
 /**
  * Classes which want to listen command events should implement this interface.
  */
-public interface CommandListener {
+public interface CommandListener
+{
 
     /**
      * Called by underlying system when event occurs.
-     * 
+     *
      * @param command a Command that occurred.
      * @param displayable The Displayable where event occurred.
      */

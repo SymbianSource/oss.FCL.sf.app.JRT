@@ -23,9 +23,6 @@ import com.nokia.mj.impl.utils.Uid;
 
 /**
  * Contains all information about a device drive needed by UI.
- *
- * @author Nokia Corporation
- * @version $Rev: 2572 $
  */
 public final class DriveInfo
 {

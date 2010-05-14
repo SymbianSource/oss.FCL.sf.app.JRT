@@ -41,7 +41,8 @@ import com.nokia.mj.impl.rt.support.*;
  * Also note that if the other thread which is running eSWT stops executing then
  * this class stops working too.
  */
-final class ESWTUIThreadRunner implements Listener, ShutdownListener, Runnable {
+final class ESWTUIThreadRunner implements Listener, ShutdownListener, Runnable
+{
 
     private static final int NONE = 1;
     private static final int CREATING = 2;
@@ -62,7 +63,8 @@ final class ESWTUIThreadRunner implements Listener, ShutdownListener, Runnable {
     private Display display;
     private int state = NONE;
 
-    static {
+    static
+    {
         // Create LCDUIInvoker for MMAPI to access underlying eSWT widgets
         LCDUIInvokerImpl.createInvoker();
 
@@ -79,7 +81,8 @@ final class ESWTUIThreadRunner implements Listener, ShutdownListener, Runnable {
     /**
      * Private Constructor. Singleton.
      */
-    private ESWTUIThreadRunner() {
+    private ESWTUIThreadRunner()
+    {
         Logger.info("Starting up");
 
         // TODO: check if the startUI throws RuntimeException on already
@@ -97,16 +100,20 @@ final class ESWTUIThreadRunner implements Listener, ShutdownListener, Runnable {
      *
      * @return Instance of this class.
      */
-    public static ESWTUIThreadRunner getInstance() {
-        synchronized (ESWTUIThreadRunner.class) {
-        	if (instance == null) {
-        		instance = new ESWTUIThreadRunner();
-        	}
+    public static ESWTUIThreadRunner getInstance()
+    {
+        synchronized(ESWTUIThreadRunner.class)
+        {
+            if(instance == null)
+            {
+                instance = new ESWTUIThreadRunner();
+            }
         }
         return instance;
     }
 
-    public static boolean isDisposed() {
+    public static boolean isDisposed()
+    {
         return getInstance().getDisplay().isDisposed();
     }
 
@@ -115,7 +122,8 @@ final class ESWTUIThreadRunner implements Listener, ShutdownListener, Runnable {
      *
      * @param runnable a runnable
      */
-    public static void syncExec(Runnable runnable) {
+    public static void syncExec(Runnable runnable)
+    {
         getInstance().getDisplay().syncExec(runnable);
     }
 
@@ -126,16 +134,21 @@ final class ESWTUIThreadRunner implements Listener, ShutdownListener, Runnable {
      *
      * @param runnable a Runnable
      */
-    public static void safeSyncExec(Runnable runnable) {
-        try {
+    public static void safeSyncExec(Runnable runnable)
+    {
+        try
+        {
             getInstance().getDisplay().syncExec(runnable);
         }
-        catch (SWTException swte) {
-            if (swte.getCause() != null && swte.getCause() instanceof RuntimeException) {
+        catch(SWTException swte)
+        {
+            if(swte.getCause() != null && swte.getCause() instanceof RuntimeException)
+            {
                 // if the cause is RuntimeException, throw it
-                throw (RuntimeException) swte.getCause();
+                throw(RuntimeException) swte.getCause();
             }
-            else {
+            else
+            {
                 // throw forward as a RuntimeException
                 throw new RuntimeException(swte.getMessage());
             }
@@ -145,19 +158,22 @@ final class ESWTUIThreadRunner implements Listener, ShutdownListener, Runnable {
     /**
      * Return last key's scancode.
      */
-    static int getLastKeyScancode() {
+    static int getLastKeyScancode()
+    {
         return lastKeyScancode;
     }
 
     /**
      * Return last key's modifier.
      */
-    static int getLastKeyModifier() {
+    static int getLastKeyModifier()
+    {
         return lastKeyModifier;
     }
 
-    static int getKeyRepeatCount() {
-    	return keyRepeatCount;
+    static int getKeyRepeatCount()
+    {
+        return keyRepeatCount;
     }
 
     /**
@@ -165,45 +181,56 @@ final class ESWTUIThreadRunner implements Listener, ShutdownListener, Runnable {
      *
      * @return eSWT Display.
      */
-    public Display getDisplay() {
+    public Display getDisplay()
+    {
         // wait until display is created or re-created
-        while (isState(NONE | CREATING)) {
+        while(isState(NONE | CREATING))
+        {
             doWait();
         }
         return display;
     }
 
-    private static void doWait() {
-        try {
+    private static void doWait()
+    {
+        try
+        {
             Thread.sleep(1);
         }
-        catch (InterruptedException ex) {
+        catch(InterruptedException ex)
+        {
             // ignore
         }
     }
 
-    private void onStartup() {
-        if (isState(CREATING)) {
+    private void onStartup()
+    {
+        if(isState(CREATING))
+        {
             display = Display.getDefault();
             display.addListener(SWT.Close, this);
             display.addFilter(SWT.KeyDown, this);
             display.addFilter(SWT.KeyUp, this);
             display.addFilter(SWT.Traverse, this);
-            if (display != null) {
+            if(display != null)
+            {
                 // We called Display.getDefault() first so we created the
                 // Display which means that we are running the UI-thread
                 // of this Display
                 changeState(RUNNING);
             }
-            else {
+            else
+            {
                 // We don't own the Display - we cannot run the UI-thread
                 changeState(EXITING);
             }
         }
     }
 
-    private void onShutdown() {
-        if (isState(EXITING)) {
+    private void onShutdown()
+    {
+        if(isState(EXITING))
+        {
             display.removeListener(SWT.Close, this);
             display.removeFilter(SWT.KeyDown, this);
             display.removeFilter(SWT.KeyUp, this);
@@ -211,11 +238,13 @@ final class ESWTUIThreadRunner implements Listener, ShutdownListener, Runnable {
             ds.dispose();
             Font.disposeFonts();
             listClassStat();
-            try {
+            try
+            {
                 // NullPointerException is simply caught and ignored
                 display.dispose();
             }
-            catch (Exception ex) {
+            catch(Exception ex)
+            {
                 Logger.exception("Display dispose", ex);
             }
         }
@@ -224,83 +253,105 @@ final class ESWTUIThreadRunner implements Listener, ShutdownListener, Runnable {
     /* (non-Javadoc)
      * @see org.eclipse.swt.widgets.Listener#handleEvent(org.eclipse.swt.widgets.Event)
      */
-    public void handleEvent(Event e) {
-        switch (e.type) {
-            case SWT.Close: {
-                Logger.info("Close event");
-                // Check if the No-Exit attribute is set
-                 if (JadAttributeUtil.isValue(JadAttributeUtil.ATTRIB_NOKIA_MIDLET_NO_EXIT, JadAttributeUtil.VALUE_TRUE)) {
-                    // don't exit
-                    e.doit = false;
-                }
-                break;
+    public void handleEvent(Event e)
+    {
+        switch(e.type)
+        {
+        case SWT.Close:
+        {
+            Logger.info("Close event");
+            // Check if the No-Exit attribute is set
+            if(JadAttributeUtil.isValue(JadAttributeUtil.ATTRIB_NOKIA_MIDLET_NO_EXIT, JadAttributeUtil.VALUE_TRUE))
+            {
+                // don't exit
+                e.doit = false;
             }
-            case SWT.KeyDown:
-            	if (e.keyCode == lastKeyScancode || lastKeyScancode == 0) {
-            		keyRepeatCount++;
-            	} else {
-            		keyRepeatCount = 0;
-            	}
-            	handleKey(e);
-            	break;
-            case SWT.KeyUp: {
-            	keyRepeatCount = 0;
-            	handleKey(e);
-            	// After KeyUp event has been handled, clear stored values
-            	lastKeyScancode = 0;
-            	lastKeyModifier = 0;
-                break;
+            break;
+        }
+        case SWT.KeyDown:
+            if(e.keyCode == lastKeyScancode || lastKeyScancode == 0)
+            {
+                keyRepeatCount++;
             }
-            case SWT.Traverse: {
-                javax.microedition.lcdui.Display.getDisplay().eswtHandleEvent(e);
+            else
+            {
+                keyRepeatCount = 0;
             }
-            default:
-                break;
+            handleKey(e);
+            break;
+        case SWT.KeyUp:
+        {
+            keyRepeatCount = 0;
+            handleKey(e);
+            // After KeyUp event has been handled, clear stored values
+            lastKeyScancode = 0;
+            lastKeyModifier = 0;
+            break;
+        }
+        case SWT.Traverse:
+        {
+            javax.microedition.lcdui.Display.getDisplay().eswtHandleEvent(e);
+        }
+        default:
+            break;
         }
     }
 
     /* (non-Javadoc)
      * @see com.nokia.mj.impl.rt.support.ShutdownListener#shuttingDown()
      */
-    public void shuttingDown() {
+    public void shuttingDown()
+    {
         Logger.info("Shutting Down");
-        EventDispatcher.instance().terminate(new Runnable() {
-        	public void run() {
+        EventDispatcher.instance().terminate(new Runnable()
+        {
+            public void run()
+            {
                 changeState(EXITING);
-        	}
+            }
         });
     }
 
     /**
      * Creates new eSWT Display and runs eSWT UI-thread.
      */
-    public void run() {
+    public void run()
+    {
         changeState(CREATING);
         onStartup();
-        while (isState(ALL - EXITING)) {
-            try {
+        while(isState(ALL - EXITING))
+        {
+            try
+            {
                 // Execute the eSWT event loop.
-                while (isState(RUNNING)) {
-                    if (!display.readAndDispatch()) {
+                while(isState(RUNNING))
+                {
+                    if(!display.readAndDispatch())
+                    {
                         display.sleep();
                     }
                 }
             }
-            catch (Exception ex) {
-                if (ex instanceof SWTException) {
+            catch(Exception ex)
+            {
+                if(ex instanceof SWTException)
+                {
                     Throwable t = ((SWTException) ex).getCause();
-                    if (t != null && t instanceof RuntimeException) {
+                    if(t != null && t instanceof RuntimeException)
+                    {
                         // this might be an expected exception of safeSyncExec
                         Logger.warning("eSWT Thread Exception: " + ex);
                         // t.printStackTrace();
                     }
                 }
-                else {
+                else
+                {
                     Logger.error("eSWT Thread Exception: " + ex);
                     ex.printStackTrace();
                 }
             }
-            catch (Error er) {
+            catch(Error er)
+            {
                 Logger.error("eSWT Thread Error" + er);
                 er.printStackTrace();
             }
@@ -309,45 +360,55 @@ final class ESWTUIThreadRunner implements Listener, ShutdownListener, Runnable {
         changeState(NONE);
     }
 
-    private boolean isState(int mask) {
-        synchronized (lock) {
+    private boolean isState(int mask)
+    {
+        synchronized(lock)
+        {
             return ((state & mask) != 0);
         }
     }
 
-    private void changeState(int newstate) {
+    private void changeState(int newstate)
+    {
         Logger.info(getStateString(state) + " --> " + getStateString(newstate));
-        if (display != null) {
-            try {
+        if(display != null)
+        {
+            try
+            {
                 display.wake();
             }
-            catch (Exception e) {
+            catch(Exception e)
+            {
                 // ignore
             }
         }
-        synchronized (lock) {
+        synchronized(lock)
+        {
             state = newstate;
         }
     }
 
-    private String getStateString(int aState) {
-        switch (aState) {
-            case NONE:
-                return "NONE";
-            case CREATING:
-                return "CREATING";
-            case RUNNING:
-                return "RUNNING";
-            case EXITING:
-                return "EXITING";
-            default:
-                return "";
+    private String getStateString(int aState)
+    {
+        switch(aState)
+        {
+        case NONE:
+            return "NONE";
+        case CREATING:
+            return "CREATING";
+        case RUNNING:
+            return "RUNNING";
+        case EXITING:
+            return "EXITING";
+        default:
+            return "";
         }
     }
 
-    private void handleKey(Event e) {
-    	lastKeyScancode = e.keyCode;
-    	/*
+    private void handleKey(Event e)
+    {
+        lastKeyScancode = e.keyCode;
+        /*
          * Left Shift  = 1280  = 0x00000500
          * Right Shift = 1536  = 0x00000600
          * Left Ctrl   = 160   = 0x000000A0
@@ -359,10 +420,12 @@ final class ESWTUIThreadRunner implements Listener, ShutdownListener, Runnable {
         lastKeyModifier = 0;
         int modifiers = e.stateMask & SWT.MODIFIER_MASK;
         // TODO: eSWT support required - howto map (left/right) SWT.SHIFT and SWT.CTRL
-        if ((modifiers & SWT.SHIFT) != 0) {
+        if((modifiers & SWT.SHIFT) != 0)
+        {
             lastKeyModifier |= 0x00000500; //left shift
         }
-        if ((modifiers & SWT.CTRL) != 0) {
+        if((modifiers & SWT.CTRL) != 0)
+        {
             lastKeyModifier |= 0x000000A0; //left control
         }
         /*if ((modifiers & SWT.COMMAND) != 0) {
@@ -371,17 +434,21 @@ final class ESWTUIThreadRunner implements Listener, ShutdownListener, Runnable {
         javax.microedition.lcdui.Display.getDisplay().eswtHandleEvent(e);
     }
 
-    static void update(String className, int delta) {
-        if (finalizers.containsKey(className)) {
+    static void update(String className, int delta)
+    {
+        if(finalizers.containsKey(className))
+        {
             delta += ((Integer) finalizers.get(className)).intValue();
         }
         finalizers.put(className, new Integer(delta));
     }
 
-    static void listClassStat() {
+    static void listClassStat()
+    {
         Logger.info("OpenLCDUI Unfinalized classes :");
         Enumeration e = finalizers.keys();
-        while (e.hasMoreElements()) {
+        while(e.hasMoreElements())
+        {
             String key = (String) e.nextElement();
             Logger.info(key + " : " + (finalizers.get(key)));
         }

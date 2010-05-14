@@ -87,6 +87,7 @@ public class SecurityPolicyModuleTests extends TestCase implements InstallerMain
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.imsi","read",null),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.msisdn","read",null),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.publicinfo","read",null),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.cellid","read",null),
     };
     static final SecurityPolicyPermission[] OPERATOR_PERMS =
     {
@@ -138,6 +139,7 @@ public class SecurityPolicyModuleTests extends TestCase implements InstallerMain
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.imsi","read",null),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.msisdn","read",null),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.publicinfo","read",null),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.cellid","read",null),
     };
     static final SecurityPolicyPermission[] IDENTIFIED_THIRD_PARTY_PERMS =
     {
@@ -260,6 +262,7 @@ public class SecurityPolicyModuleTests extends TestCase implements InstallerMain
                                      new SecurityPolicyPermissionSettings("Net Access",UserSecuritySettings.SESSION_INTERACTION_MODE,
                                                                           new int[]{UserSecuritySettings.BLANKET_INTERACTION_MODE,UserSecuritySettings.ONESHOT_INTERACTION_MODE,UserSecuritySettings.NO_INTERACTION_MODE,UserSecuritySettings.SESSION_INTERACTION_MODE})),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.publicinfo","read",null),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.cellid","read",null),
     };
     static final SecurityPolicyPermission[] UNIDENTIFIED_THIRD_PARTY_PERMS =
     {
@@ -368,14 +371,15 @@ public class SecurityPolicyModuleTests extends TestCase implements InstallerMain
                                                                           new int[]{UserSecuritySettings.ONESHOT_INTERACTION_MODE,UserSecuritySettings.NO_INTERACTION_MODE,UserSecuritySettings.SESSION_INTERACTION_MODE})),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.media.control.RecordControl"),"*", "record",
                                      new SecurityPolicyPermissionSettings("Multimedia Recording",UserSecuritySettings.ONESHOT_INTERACTION_MODE,
-                                                                          new int[]{UserSecuritySettings.NO_INTERACTION_MODE,UserSecuritySettings.SESSION_INTERACTION_MODE,UserSecuritySettings.ONESHOT_INTERACTION_MODE})),
+                                                                          new int[]{UserSecuritySettings.BLANKET_INTERACTION_MODE,UserSecuritySettings.NO_INTERACTION_MODE,UserSecuritySettings.SESSION_INTERACTION_MODE,UserSecuritySettings.ONESHOT_INTERACTION_MODE})),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.media.control.VideoControl.getSnapshot"),"*", "snapshot",
                                      new SecurityPolicyPermissionSettings("Multimedia Recording",UserSecuritySettings.ONESHOT_INTERACTION_MODE,
-                                                                          new int[]{UserSecuritySettings.NO_INTERACTION_MODE,UserSecuritySettings.SESSION_INTERACTION_MODE,UserSecuritySettings.ONESHOT_INTERACTION_MODE})),
+                                                                          new int[]{UserSecuritySettings.BLANKET_INTERACTION_MODE,UserSecuritySettings.NO_INTERACTION_MODE,UserSecuritySettings.SESSION_INTERACTION_MODE,UserSecuritySettings.ONESHOT_INTERACTION_MODE})),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.io.Connector.rtsp"),"*", null,
                                      new SecurityPolicyPermissionSettings("Net Access",UserSecuritySettings.SESSION_INTERACTION_MODE,
                                                                           new int[]{UserSecuritySettings.ONESHOT_INTERACTION_MODE,UserSecuritySettings.NO_INTERACTION_MODE,UserSecuritySettings.SESSION_INTERACTION_MODE})),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.publicinfo","read",null),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.cellid","read",null),
     };
 
     // Begin j2meunit test framework setup

@@ -26,7 +26,13 @@ COMPONENTS = \
 	location/build \
 	sensor/build
 
-SYMBIAN_ONLY = pim wma bluetooth satsa/build location/build sensor/build iapinfo/build mobinfo/build globalindicators/build comm/build
+ifeq ($(UI),AVKON)
+# Broadcast stub is available for now only on AVKON environments (where also MMAPI exists)
+COMPONENTS += \
+	broadcast_stub/build
+endif
+
+SYMBIAN_ONLY = pim wma bluetooth satsa/build location/build sensor/build iapinfo/build mobinfo/build globalindicators/build comm/build broadcast_stub/build
 
 LINUX_ONLY =
 

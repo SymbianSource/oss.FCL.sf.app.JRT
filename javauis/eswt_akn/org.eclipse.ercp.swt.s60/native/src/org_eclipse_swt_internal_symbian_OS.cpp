@@ -374,7 +374,7 @@ extern "C"
             }
         }
     }
-    
+
     JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_symbian_OS_Display_1NotifyFirstPaintComplete
     (JNIEnv *, jclass, jboolean aTopShell)
     {
@@ -1991,6 +1991,13 @@ extern "C"
         CallMethod(shell, &MSwtShell::SetAsyncPainting, aStatus);
     }
 
+    JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_symbian_OS_Shell_1SetTaskTip(
+        JNIEnv*, jclass, jint aHandle)
+    {
+        MSwtShell* shell = reinterpret_cast<MSwtShell*>(aHandle);
+        CallMethod(shell, &MSwtShell::SetTaskTip);
+    }
+
 
     /*
      * Class Label
@@ -3318,6 +3325,15 @@ extern "C"
         TInt result;
         result = imageDataLoader->GetLogicalScreenWidth();
         return result;
+    }
+
+    JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_symbian_OS_windowServer(JNIEnv *, jclass)
+    {
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        return 2;
+#else
+        return 1;
+#endif
     }
 
 } // extern "C"

@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -25,7 +25,8 @@ import org.eclipse.swt.widgets.ScrollBar;
  * Implementation of <code>ScrolledComposite</code> control.
  */
 class ScrolledComposite extends Composite implements FocusListener,
-        ControlListener {
+    ControlListener
+{
 
     private ScrollBar vBar;
 
@@ -35,10 +36,12 @@ class ScrolledComposite extends Composite implements FocusListener,
      * @param parent
      * @param style
      */
-    public ScrolledComposite(Composite parent, int style) {
+    public ScrolledComposite(Composite parent, int style)
+    {
         super(parent, style);
         vBar = parent.getVerticalBar();
-        if (vBar != null) {
+        if(vBar != null)
+        {
             vBar.addSelectionListener(new ScrollBarListener());
         }
 
@@ -53,16 +56,20 @@ class ScrolledComposite extends Composite implements FocusListener,
      * @param x X-coordinate
      * @param y Y-coordinate
      */
-    void setOrigin(int x, int y, boolean keyNavigation) {
+    void setOrigin(int x, int y, boolean keyNavigation)
+    {
         //setRedraw(false);
 
-        if (vBar != null) {
-            if (keyNavigation) {
+        if(vBar != null)
+        {
+            if(keyNavigation)
+            {
                 vBar.setSelection(y);
             }
             y = -vBar.getSelection();
         }
-        else {
+        else
+        {
             y = 0;
         }
 
@@ -73,64 +80,81 @@ class ScrolledComposite extends Composite implements FocusListener,
     /**
      * Updates range and thumb size of the ScrollBars.
      */
-    void updateScrollbar(int height) {
+    void updateScrollbar(int height)
+    {
         Rectangle clientArea = getParent().getClientArea();
-        if (vBar != null) {
+        if(vBar != null)
+        {
             vBar.setMinimum(0);
             vBar.setMaximum(height);
             vBar.setThumb(clientArea.height);
         }
     }
 
-    private class ScrollBarListener implements SelectionListener {
+    private class ScrollBarListener implements SelectionListener
+    {
 
-        public void widgetDefaultSelected(SelectionEvent e) {
+        public void widgetDefaultSelected(SelectionEvent e)
+        {
             Logger.verbose(e.toString());
         }
 
-        public void widgetSelected(SelectionEvent e) {
-            Logger.verbose(e.toString());
-        }
-    }
-
-    private class ScrollKeyListener implements KeyListener {
-
-        public void keyPressed(KeyEvent e) {
-            Logger.verbose(e.toString());
-        }
-
-        public void keyReleased(KeyEvent e) {
+        public void widgetSelected(SelectionEvent e)
+        {
             Logger.verbose(e.toString());
         }
     }
 
-    private class ScrollTraverseListener implements TraverseListener {
+    private class ScrollKeyListener implements KeyListener
+    {
 
-        public void keyTraversed(TraverseEvent e) {
+        public void keyPressed(KeyEvent e)
+        {
+            Logger.verbose(e.toString());
+        }
+
+        public void keyReleased(KeyEvent e)
+        {
+            Logger.verbose(e.toString());
         }
     }
 
-    private class ScrollControlListener implements ControlListener {
+    private class ScrollTraverseListener implements TraverseListener
+    {
 
-        public void controlMoved(ControlEvent e) {
-        }
-
-        public void controlResized(ControlEvent e) {
+        public void keyTraversed(TraverseEvent e)
+        {
         }
     }
 
-    public void focusGained(FocusEvent e) {
+    private class ScrollControlListener implements ControlListener
+    {
+
+        public void controlMoved(ControlEvent e)
+        {
+        }
+
+        public void controlResized(ControlEvent e)
+        {
+        }
+    }
+
+    public void focusGained(FocusEvent e)
+    {
         // makeVisible((Control) e.widget);
     }
 
-    public void focusLost(FocusEvent e) {
+    public void focusLost(FocusEvent e)
+    {
     }
 
-    public void controlMoved(ControlEvent e) {
+    public void controlMoved(ControlEvent e)
+    {
         updateScrollbar(0);
     }
 
-    public void controlResized(ControlEvent e) {
+    public void controlResized(ControlEvent e)
+    {
         updateScrollbar(0);
     }
 

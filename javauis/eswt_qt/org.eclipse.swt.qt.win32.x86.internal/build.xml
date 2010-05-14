@@ -211,6 +211,7 @@ run.tests                  : Run JUnit and MT tests
         <javah outputfile="${lib.path}/${generated.native.dir}/os.h" classpath="${plugin.dir}/bin" verbose="yes">
             <class name="org.eclipse.swt.internal.qt.OS"/>
             <class name="org.eclipse.swt.internal.qt.graphics.OS"/>
+            <class name="org.eclipse.swt.internal.extension.OS"/>
         </javah>
         <antcall target="qmake">
             <param name="qmake.dir" value="${lib.path}"/>

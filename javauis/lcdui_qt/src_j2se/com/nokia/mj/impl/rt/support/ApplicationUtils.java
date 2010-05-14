@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 
@@ -73,7 +73,8 @@ import java.security.AccessControlException;
 
 public class ApplicationUtils
 {
-    public ApplicationUtils() {
+    public ApplicationUtils()
+    {
     }
 
     /**
@@ -176,7 +177,8 @@ public class ApplicationUtils
      * and the runtime itself.
      *
      */
-    public void notifyExitCmd() {
+    public void notifyExitCmd()
+    {
         doShutdown();
     };
 
@@ -208,7 +210,7 @@ public class ApplicationUtils
     public abstract void checkPermission(Uid appUid,Permission p)
                                          throws AccessControlException,
                                                 NullPointerException;
-*/
+    */
     /**
      * Adds a shutdown notifications listener to receive notifications when
      * the application is about to close.
@@ -239,17 +241,17 @@ public class ApplicationUtils
      * This method can be used for pre-warming features. If the runtime is in
      * pre-warmed state where the application to be launched is not yet known,
      * this method will block. It is safe to call this method if the application
-     * is already known - in that case the method won't block. Once the 
-     * application is known all the waiters will be released. Knowing the 
-     * application doesn't necessarily mean that the application it self 
-     * has been created (might happen later). The method will provide info 
+     * is already known - in that case the method won't block. Once the
+     * application is known all the waiters will be released. Knowing the
+     * application doesn't necessarily mean that the application it self
+     * has been created (might happen later). The method will provide info
      * whether to continue or cancel the start up as a return value.
      * @return true if the user should continue starting, otherwise the user
      *              should do the required shut down proceures.
      */
     public boolean waitStart()
     {
-        synchronized (mApplicationStartLock)
+        synchronized(mApplicationStartLock)
         {
             if(mStartCmd == null)
             {
@@ -257,7 +259,7 @@ public class ApplicationUtils
                 {
                     mApplicationStartLock.wait();
                 }
-                catch (InterruptedException ie)
+                catch(InterruptedException ie)
                 {
                 }
             }
@@ -290,7 +292,7 @@ public class ApplicationUtils
     {
         if(mApplicationStartLock != null)
         {
-            synchronized (mApplicationStartLock)
+            synchronized(mApplicationStartLock)
             {
                 mStartCmd = new Boolean(doStart);
                 mApplicationStartLock.notifyAll();
@@ -306,10 +308,10 @@ public class ApplicationUtils
         if(mListeners != null)
         {
             Enumeration enumer = mListeners.elements();
-            while ( enumer.hasMoreElements())
+            while(enumer.hasMoreElements())
             {
                 ShutdownListener listener =
-                                (ShutdownListener)enumer.nextElement();
+                    (ShutdownListener)enumer.nextElement();
                 listener.shuttingDown();
             }
         }

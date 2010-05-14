@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -24,7 +24,8 @@ import org.eclipse.swt.SWT;
 /**
  * Responsible for implementing interaction in DefaultFormLayoutPolicy.
  */
-class DefaultFormInteraction extends DefaultFormLayoutPolicy {
+class DefaultFormInteraction extends DefaultFormLayoutPolicy
+{
 
     private static final int NO_DIRECTION = -1;
 
@@ -41,16 +42,19 @@ class DefaultFormInteraction extends DefaultFormLayoutPolicy {
      *
      * @param form where DFLP is applied.
      */
-    DefaultFormInteraction(Form form) {
+    DefaultFormInteraction(Form form)
+    {
         super(form);
     }
 
-    final void handleShowCurrentEvent() {
+    final void handleShowCurrentEvent()
+    {
         super.handleShowCurrentEvent();
         eswtApplyCurrentFocus();
     }
 
-    final void handleHideCurrentEvent() {
+    final void handleHideCurrentEvent()
+    {
         super.handleHideCurrentEvent();
         direction = NO_DIRECTION;
     }
@@ -58,25 +62,30 @@ class DefaultFormInteraction extends DefaultFormLayoutPolicy {
     /* (non-Javadoc)
      * @see DefaultFormLayoutPolicy#eswtLayoutForm(int)
      */
-    final void eswtLayoutForm(int startIndex) {
+    final void eswtLayoutForm(int startIndex)
+    {
         super.eswtLayoutForm(startIndex);
 
         // clear invalid selected item
         eswtCheckCurrentSelectedItem();
 
-        if (currentSelectedItem != null
-                && (currentSelectedItem.isFocusable())) {
+        if(currentSelectedItem != null
+                && (currentSelectedItem.isFocusable()))
+        {
             eswtApplyCurrentFocus();
         }
-        else {
+        else
+        {
             // If there's no item currently selected try to find first
             // focusable item and set it current (if found):
             Item found = eswtGetNextFocusableItem(
-                    getItem(startIndex - 1), SWT.ARROW_RIGHT);
-            if (found != null) {
+                             getItem(startIndex - 1), SWT.ARROW_RIGHT);
+            if(found != null)
+            {
                 eswtSetCurrentSelectedItem(found, NO_DIRECTION);
             }
-            else {
+            else
+            {
                 eswtApplyCurrentFocus();
             }
         }
@@ -85,9 +94,11 @@ class DefaultFormInteraction extends DefaultFormLayoutPolicy {
     /* (non-Javadoc)
      * @see DefaultFormLayoutPolicy#eswtSetCurrentItem(Item)
      */
-    boolean eswtSetCurrentItem(Item item) {
+    boolean eswtSetCurrentItem(Item item)
+    {
         boolean ret = super.eswtSetCurrentItem(item);
-        if (ret && item != null && item.isFocusable()) {
+        if(ret && item != null && item.isFocusable())
+        {
             eswtSetCurrentSelectedItem(item, NO_DIRECTION);
             Logger.info("eswtSetCurrentItem" + item);
         }
@@ -103,40 +114,48 @@ class DefaultFormInteraction extends DefaultFormLayoutPolicy {
      * @param keyCode eSWT key code.
      * @param keyType eSWT key type.
      */
-    final void handleKeyEvent(int keyCode, int keyType) {
+    final void handleKeyEvent(int keyCode, int keyType)
+    {
         Logger.method(this, "handleKeyEvent", currentSelectedItem,
-                String.valueOf(keyCode), String.valueOf(keyType));
+                      String.valueOf(keyCode), String.valueOf(keyType));
 
         boolean isDirectionalKey = isDirectionKey(keyCode);
-        if (keyType == SWT.KeyDown && isDirectionalKey) {
+        if(keyType == SWT.KeyDown && isDirectionalKey)
+        {
             eswtCheckCurrentSelectedItem();
         }
 
-        if (currentSelectedItem != null) {
-            if (getLayouter(currentSelectedItem).eswtOfferKeyEvent(
-                    currentSelectedItem, keyCode, keyType)) {
+        if(currentSelectedItem != null)
+        {
+            if(getLayouter(currentSelectedItem).eswtOfferKeyEvent(
+                        currentSelectedItem, keyCode, keyType))
+            {
                 // if the key has been consumed
                 return;
             }
         }
 
         // scrolling/focus traverse only happens on directional key's down event
-        if (keyType == SWT.KeyDown && isDirectionalKey) {
+        if(keyType == SWT.KeyDown && isDirectionalKey)
+        {
             // try to find next focusable item
             Item next = eswtGetNextFocusableItem(currentSelectedItem, keyCode);
 
             // if no visible & focusable item was found to transfer focus
-            if (next == currentSelectedItem) {
+            if(next == currentSelectedItem)
+            {
                 // try to scroll a bit
                 eswtSetScrollingPosition(getNextScrollingPosition(keyCode),
-                        true);
+                                         true);
                 // find next focusable after scrolling
                 next = eswtGetNextFocusableItem(currentSelectedItem, keyCode);
             }
 
-            if (next != currentSelectedItem) {
+            if(next != currentSelectedItem)
+            {
                 //textfield always have to be fully visible when focused.
-                if (next instanceof TextField) {
+                if(next instanceof TextField)
+                {
                     eswtScrollToItem(next);
                 }
                 eswtSetCurrentSelectedItem(next, keyCode);
@@ -149,9 +168,10 @@ class DefaultFormInteraction extends DefaultFormLayoutPolicy {
      *
      * @param keyCode key code
      */
-    private boolean isDirectionKey(int keyCode) {
+    private boolean isDirectionKey(int keyCode)
+    {
         return (keyCode == SWT.ARROW_DOWN || keyCode == SWT.ARROW_UP
-             || keyCode == SWT.ARROW_LEFT || keyCode == SWT.ARROW_RIGHT);
+                || keyCode == SWT.ARROW_LEFT || keyCode == SWT.ARROW_RIGHT);
     }
 
     /**
@@ -162,9 +182,10 @@ class DefaultFormInteraction extends DefaultFormLayoutPolicy {
      * @param y coordinate relative to scrolledComposite
      * @param type event type: SWT.MouseDown, SWT.MouseMove, SWT.MouseUp
      */
-    final void handlePointerEvent(int x, int y, int type) {
+    final void handlePointerEvent(int x, int y, int type)
+    {
         Logger.method(this, "handlePointerEvent", String.valueOf(x),
-                String.valueOf(y), String.valueOf(type));
+                      String.valueOf(y), String.valueOf(type));
 
         // TODO: change when DirectUI style arrives.
         /*
@@ -244,17 +265,22 @@ class DefaultFormInteraction extends DefaultFormLayoutPolicy {
      * @param y coordinate.
      * @return Item.
      */
-    Item eswtFindItemUnderMouse(int x, int y) {
+    Item eswtFindItemUnderMouse(int x, int y)
+    {
         Row itemRow;
-        for (int i = 0; i < getRowCount(); i++) {
+        for(int i = 0; i < getRowCount(); i++)
+        {
             itemRow = getRow(i);
-            if (itemRow.getYShift() <= y && y <= itemRow.getBottomPosition()) {
+            if(itemRow.getYShift() <= y && y <= itemRow.getBottomPosition())
+            {
                 LayoutObject lo;
-                for (int j = 0; j < itemRow.size(); j++) {
+                for(int j = 0; j < itemRow.size(); j++)
+                {
                     lo = itemRow.getLayoutObject(j);
-                    if (lo.contains(x, y)) {
+                    if(lo.contains(x, y))
+                    {
                         Logger.info("Item under mouse: "
-                                + lo.getOwningItem());
+                                    + lo.getOwningItem());
                         currentlyUnderMouse = lo;
                         return lo.getOwningItem();
                     }
@@ -268,7 +294,8 @@ class DefaultFormInteraction extends DefaultFormLayoutPolicy {
     /* (non-Javadoc)
      * @see DefaultFormLayoutPolicy#eswtHandleVisibilityChanges()
      */
-    protected void eswtHandleVisibilityChanges() {
+    protected void eswtHandleVisibilityChanges()
+    {
         super.eswtHandleVisibilityChanges();
         eswtCheckCurrentSelectedItem();
     }
@@ -282,77 +309,93 @@ class DefaultFormInteraction extends DefaultFormLayoutPolicy {
      *
      * @return Nearest focusable item or null if no item found.
      */
-    final Item eswtGetNextFocusableItem(Item fromItem, int dir) {
+    final Item eswtGetNextFocusableItem(Item fromItem, int dir)
+    {
         Item nextItem = fromItem;
 
-        switch (dir) {
-            case SWT.ARROW_RIGHT: {
-                LayoutObject obj = getLastLayoutObjectOfItem(fromItem);
-                while ((obj = getNextLayoutObjectOfItem(obj, null)) != null) {
-                    Item owner = obj.getOwningItem();
-                    if (owner != null && owner != fromItem
-                            && owner.isFocusable()
-                            && isPartiallyVisible(obj, Config.DFI_VISIBILITY_PERCENT)) {
+        switch(dir)
+        {
+        case SWT.ARROW_RIGHT:
+        {
+            LayoutObject obj = getLastLayoutObjectOfItem(fromItem);
+            while((obj = getNextLayoutObjectOfItem(obj, null)) != null)
+            {
+                Item owner = obj.getOwningItem();
+                if(owner != null && owner != fromItem
+                        && owner.isFocusable()
+                        && isPartiallyVisible(obj, Config.DFI_VISIBILITY_PERCENT))
+                {
+                    nextItem = owner;
+                    break;
+                }
+            }
+            break;
+        }
+
+        case SWT.ARROW_LEFT:
+        {
+            LayoutObject obj = getFirstLayoutObjectOfItem(fromItem);
+            while((obj = getPrevLayoutObjectOfItem(obj, null)) != null)
+            {
+                Item owner = obj.getOwningItem();
+                if(owner != null && owner != fromItem
+                        && owner.isFocusable()
+                        && isPartiallyVisible(obj, Config.DFI_VISIBILITY_PERCENT))
+                {
+                    nextItem = owner;
+                    break;
+                }
+            }
+            break;
+        }
+
+        case SWT.ARROW_DOWN:
+        {
+            int minDist = Integer.MAX_VALUE;
+            LayoutObject start = getLastLayoutObjectOfItem(fromItem);
+            LayoutObject obj = start;
+            while((obj = getNextLayoutObjectOfItem(obj, null)) != null)
+            {
+                Item owner = obj.getOwningItem();
+                if(owner != null && owner != fromItem
+                        && owner.isFocusable() && obj.isBelow(start)
+                        && isPartiallyVisible(obj, Config.DFI_VISIBILITY_PERCENT))
+                {
+                    int dist = obj.distanceTo(start);
+                    if(dist < minDist)
+                    {
+                        minDist = dist;
                         nextItem = owner;
-                        break;
                     }
                 }
-                break;
             }
+            break;
+        }
 
-            case SWT.ARROW_LEFT: {
-                LayoutObject obj = getFirstLayoutObjectOfItem(fromItem);
-                while ((obj = getPrevLayoutObjectOfItem(obj, null)) != null) {
-                    Item owner = obj.getOwningItem();
-                    if (owner != null && owner != fromItem
-                            && owner.isFocusable()
-                            && isPartiallyVisible(obj, Config.DFI_VISIBILITY_PERCENT)) {
+        case SWT.ARROW_UP:
+        {
+            int minDist = Integer.MAX_VALUE;
+            LayoutObject start = getFirstLayoutObjectOfItem(fromItem);
+            LayoutObject obj = start;
+            while((obj = getPrevLayoutObjectOfItem(obj, null)) != null)
+            {
+                Item owner = obj.getOwningItem();
+                if(owner != null && owner != fromItem
+                        && owner.isFocusable() && obj.isAbove(start)
+                        && isPartiallyVisible(obj, Config.DFI_VISIBILITY_PERCENT))
+                {
+                    int dist = obj.distanceTo(start);
+                    if(dist < minDist)
+                    {
+                        minDist = dist;
                         nextItem = owner;
-                        break;
                     }
                 }
-                break;
             }
+            break;
+        }
 
-            case SWT.ARROW_DOWN: {
-                int minDist = Integer.MAX_VALUE;
-                LayoutObject start = getLastLayoutObjectOfItem(fromItem);
-                LayoutObject obj = start;
-                while ((obj = getNextLayoutObjectOfItem(obj, null)) != null) {
-                    Item owner = obj.getOwningItem();
-                    if (owner != null && owner != fromItem
-                            && owner.isFocusable() && obj.isBelow(start)
-                            && isPartiallyVisible(obj, Config.DFI_VISIBILITY_PERCENT)) {
-                        int dist = obj.distanceTo(start);
-                        if (dist < minDist) {
-                            minDist = dist;
-                            nextItem = owner;
-                        }
-                    }
-                }
-                break;
-            }
-
-            case SWT.ARROW_UP: {
-                int minDist = Integer.MAX_VALUE;
-                LayoutObject start = getFirstLayoutObjectOfItem(fromItem);
-                LayoutObject obj = start;
-                while ((obj = getPrevLayoutObjectOfItem(obj, null)) != null) {
-                    Item owner = obj.getOwningItem();
-                    if (owner != null && owner != fromItem
-                            && owner.isFocusable() && obj.isAbove(start)
-                            && isPartiallyVisible(obj, Config.DFI_VISIBILITY_PERCENT)) {
-                        int dist = obj.distanceTo(start);
-                        if (dist < minDist) {
-                            minDist = dist;
-                            nextItem = owner;
-                        }
-                    }
-                }
-                break;
-            }
-
-            default:
+        default:
         }
 
         return nextItem;
@@ -362,10 +405,13 @@ class DefaultFormInteraction extends DefaultFormLayoutPolicy {
      * Check if the currentSelectedItem is valid and visible. If not then it
      * sets it to null.
      */
-    final void eswtCheckCurrentSelectedItem() {
-        if (currentSelectedItem != null) {
-            if (currentSelectedItem.getParent() != getForm()
-                    || !currentSelectedItem.isVisible()) {
+    final void eswtCheckCurrentSelectedItem()
+    {
+        if(currentSelectedItem != null)
+        {
+            if(currentSelectedItem.getParent() != getForm()
+                    || !currentSelectedItem.isVisible())
+            {
                 // we need to find another
                 Logger.method(this, "eswtCheckCurrentSelectedItem");
                 eswtSetCurrentSelectedItem(null, NO_DIRECTION);
@@ -381,26 +427,30 @@ class DefaultFormInteraction extends DefaultFormLayoutPolicy {
      * @param item Item to set as current selected. If null, nothing happens.
      * @param dir Direction which is delivered to layouter.
      */
-    void eswtSetCurrentSelectedItem(Item item, int dir) {
-        if (currentSelectedItem != item) {
+    void eswtSetCurrentSelectedItem(Item item, int dir)
+    {
+        if(currentSelectedItem != item)
+        {
             Logger.info(this + "::SelectedItem: "
-                    + currentSelectedItem + " --(" + dir + ")--> " + item);
+                        + currentSelectedItem + " --(" + dir + ")--> " + item);
 
             // Save direction
             direction = dir;
             // Remove focus from currentSelectedItem and notify its Layouter.
-            if (currentSelectedItem != null) {
+            if(currentSelectedItem != null)
+            {
                 getLayouter(currentSelectedItem).eswtFocusLost(
-                        currentSelectedItem);
+                    currentSelectedItem);
             }
 
             // Set new currentSelectedItem, must be focusable or null
             currentSelectedItem = item;
 
             // Set focus to currentSelectedItem and notify its Layouter.
-            if (currentSelectedItem != null) {
+            if(currentSelectedItem != null)
+            {
                 getLayouter(currentSelectedItem).eswtFocusGained(
-                        currentSelectedItem, dir);
+                    currentSelectedItem, dir);
             }
 
             // Apply eSWT focus to currentSelectedItem's control
@@ -416,24 +466,28 @@ class DefaultFormInteraction extends DefaultFormLayoutPolicy {
      * @param item Item to set as current selected. If null, nothing happens.
      * @param dir Direction which is delivered to layouter.
      */
-    void eswtSetCurrentSelectedItem(Item item) {
-        if (currentSelectedItem != item) {
+    void eswtSetCurrentSelectedItem(Item item)
+    {
+        if(currentSelectedItem != item)
+        {
             Logger.info(this + "::SelectedItem: "
-                    + currentSelectedItem + " ---> " + item);
+                        + currentSelectedItem + " ---> " + item);
 
             // Remove focus from currentSelectedItem and notify its Layouter.
-            if (currentSelectedItem != null) {
+            if(currentSelectedItem != null)
+            {
                 getLayouter(currentSelectedItem).eswtFocusLost(
-                        currentSelectedItem);
+                    currentSelectedItem);
             }
 
             // Set new currentSelectedItem, must be focusable or null
             currentSelectedItem = item;
 
             // Set focus to currentSelectedItem and notify its Layouter.
-            if (currentSelectedItem != null) {
+            if(currentSelectedItem != null)
+            {
                 getLayouter(currentSelectedItem).eswtFocusGained(
-                        currentSelectedItem, NO_DIRECTION);
+                    currentSelectedItem, NO_DIRECTION);
             }
 
             // Apply eSWT focus to currentSelectedItem's control
@@ -451,14 +505,18 @@ class DefaultFormInteraction extends DefaultFormLayoutPolicy {
      * If currentSelectedItem is null or form is not shown, this method has no
      * effect.
      */
-    void eswtApplyCurrentFocus() {
-        if (isFormCurrent()) {
+    void eswtApplyCurrentFocus()
+    {
+        if(isFormCurrent())
+        {
             // if any of the Item's LayoutObjects is visible
-            if (isItemPartiallyVisible(currentSelectedItem)) {
+            if(isItemPartiallyVisible(currentSelectedItem))
+            {
                 Logger.method(this, "ApplyFocus", currentSelectedItem);
                 eswtSetFocusToFirstControl(currentSelectedItem);
             }
-            else {
+            else
+            {
                 Logger.method(this, "ApplyFocus", "dummy");
                 formComposite.forceFocus();
             }
@@ -471,10 +529,13 @@ class DefaultFormInteraction extends DefaultFormLayoutPolicy {
      *
      * @param item an item which first LayoutObject is set focused.
      */
-    void eswtSetFocusToFirstControl(Item item) {
-        if (item != null && item.isFocusable()) {
+    void eswtSetFocusToFirstControl(Item item)
+    {
+        if(item != null && item.isFocusable())
+        {
             LayoutObject lo = getFirstLayoutObjectOfItem(item);
-            if (lo != null) {
+            if(lo != null)
+            {
                 lo.getControl().forceFocus();
             }
         }
@@ -485,7 +546,8 @@ class DefaultFormInteraction extends DefaultFormLayoutPolicy {
      *
      * @return Current selected item. May also return null.
      */
-    Item getCurrentSelectedItem() {
+    Item getCurrentSelectedItem()
+    {
         return currentSelectedItem;
     }
 
@@ -494,34 +556,41 @@ class DefaultFormInteraction extends DefaultFormLayoutPolicy {
      *
      * @return direction of scrolling.
      */
-    int getDirection() {
+    int getDirection()
+    {
         return direction;
     }
 
     /* (non-Javadoc)
      * @see DefaultFormLayoutPolicy#eswtResizeItemAndShift(Item)
      */
-    int eswtResizeItemAndShift(Item item) {
+    int eswtResizeItemAndShift(Item item)
+    {
         // save the state of the last row before resizing and Shifting.
         boolean itemWasVisible = isItemPartiallyVisible(item);
 
         int newVPosition = super.eswtResizeItemAndShift(item);
 
-        if (item == currentSelectedItem) {
-            if (itemWasVisible) {
+        if(item == currentSelectedItem)
+        {
+            if(itemWasVisible)
+            {
                 int itemTop = getItemTopPosition(item);
                 int itemBottom = getItemBottomPosition(item);
                 // currentSelectedItem has to be focused if it was focused
                 // before resizing e.g TextField when it is resized by adding a
                 // new row and it was in the bottom of the Screen.
-                if (newVPosition <= itemTop
-                        && (newVPosition + getFormHeight()) >= itemBottom) {
+                if(newVPosition <= itemTop
+                        && (newVPosition + getFormHeight()) >= itemBottom)
+                {
                     // do not change vPosition;
                 }
-                else if (newVPosition > itemTop) {
+                else if(newVPosition > itemTop)
+                {
                     newVPosition = itemTop;
                 }
-                else if ((newVPosition + getFormHeight()) < itemBottom) {
+                else if((newVPosition + getFormHeight()) < itemBottom)
+                {
                     newVPosition = itemBottom - getFormHeight();
                 }
             }
@@ -535,9 +604,12 @@ class DefaultFormInteraction extends DefaultFormLayoutPolicy {
     /**
      * Reset timer for do layout with a given start index.
      */
-    private void resetEventTimer(boolean directionUp, int y) {
-        if (eventTimer != null) {
-            if (eventTask != null) {
+    private void resetEventTimer(boolean directionUp, int y)
+    {
+        if(eventTimer != null)
+        {
+            if(eventTask != null)
+            {
                 eventTask.cancel();
                 eventTask = null;
             }
@@ -550,22 +622,27 @@ class DefaultFormInteraction extends DefaultFormLayoutPolicy {
     /**
      * Form Timer task. Triggers the formComposite to Layout.
      */
-    class EventGeneratorTask extends TimerTask {
+    class EventGeneratorTask extends TimerTask
+    {
 
         private boolean isUpDirection;
         private int localY;
 
-        public EventGeneratorTask(boolean direction, int y) {
+        public EventGeneratorTask(boolean direction, int y)
+        {
             isUpDirection = direction;
             localY = y;
             Logger.info("y is " + localY);
         }
 
-        public void run() {
-            if (isUpDirection) {
+        public void run()
+        {
+            if(isUpDirection)
+            {
                 localY -= Config.DFI_EVENT_MOVE_DELTA;
             }
-            else {
+            else
+            {
                 localY += Config.DFI_EVENT_MOVE_DELTA;
             }
             handlePointerEvent(0, localY, SWT.MouseMove);

@@ -32,9 +32,6 @@ import com.nokia.mj.impl.utils.exception.InstallerExceptionBase;
  * Uninstallation step for sending OTA status notifications.
  * This is the first and the last step in uninstallation execution table.
  * This execution step may not throw any exceptions.
- *
- * @author Nokia Corporation
- * @version $Rev:  $ $Date:  $
  */
 public class SendOtaStatus extends ExeStep
 {

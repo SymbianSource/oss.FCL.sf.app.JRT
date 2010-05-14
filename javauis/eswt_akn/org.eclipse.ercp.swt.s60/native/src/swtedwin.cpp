@@ -49,7 +49,7 @@ void CSwtEdwin::SetClippingRect(const TRect& aRect)
 //
 CLafEdwinCustomDrawBase* CSwtEdwin::CreateCustomDrawL()
 {
-    // Custom draw object is deleted by CEikEdwin 
+    // Custom draw object is deleted by CEikEdwin
     const MFormCustomDraw* edwinDrawer = CEikEdwin::CreateCustomDrawL();
     iClippingCustomDrawer = new(ELeave)CSwtEdwinCustomDrawer(
         iEikonEnv->LafEnv(), edwinDrawer, *this);
@@ -87,7 +87,7 @@ void CSwtIntegerEdwin::SetClippingRect(const TRect& aRect)
 //
 CLafEdwinCustomDrawBase* CSwtIntegerEdwin::CreateCustomDrawL()
 {
-    // Custom draw object is deleted by CEikEdwin 
+    // Custom draw object is deleted by CEikEdwin
     const MFormCustomDraw* edwinDrawer = CEikEdwin::CreateCustomDrawL();
     iClippingCustomDrawer = new(ELeave)CSwtEdwinCustomDrawer(
         iEikonEnv->LafEnv(), edwinDrawer, *this);
@@ -142,7 +142,7 @@ TCoeInputCapabilities CSwtFloatingPointEdwin::InputCapabilities() const
 //
 CLafEdwinCustomDrawBase* CSwtFloatingPointEdwin::CreateCustomDrawL()
 {
-    // Custom draw object is deleted by CEikEdwin 
+    // Custom draw object is deleted by CEikEdwin
     const MFormCustomDraw* edwinDrawer = CEikEdwin::CreateCustomDrawL();
     iClippingCustomDrawer = new(ELeave)CSwtEdwinCustomDrawer(
         iEikonEnv->LafEnv(), edwinDrawer, *this);

@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -27,7 +27,8 @@ import org.eclipse.swt.widgets.Control;
 /**
  * Responsible for correct layout of TextField in a Form.
  */
-class TextFieldLayouter extends ItemLayouter {
+class TextFieldLayouter extends ItemLayouter
+{
 
     /**
      * Key name for modify listener.
@@ -66,7 +67,8 @@ class TextFieldLayouter extends ItemLayouter {
      *
      * @param dflp DefaultFormLayoutPolicy`
      */
-    TextFieldLayouter(DefaultFormLayoutPolicy dflp) {
+    TextFieldLayouter(DefaultFormLayoutPolicy dflp)
+    {
         super(dflp);
     }
 
@@ -75,7 +77,8 @@ class TextFieldLayouter extends ItemLayouter {
      *
      * @param constraint
      */
-    static Control eswtGetStaticTextControl(int constraint) {
+    static Control eswtGetStaticTextControl(int constraint)
+    {
         Control ret = null;
 
         /*
@@ -88,31 +91,39 @@ class TextFieldLayouter extends ItemLayouter {
         }
         */
 
-        if (constraint == TextField.NUMERIC) {
-            if (numeric == null) {
+        if(constraint == TextField.NUMERIC)
+        {
+            if(numeric == null)
+            {
                 numeric = new ConstrainedText(eswtGetStaticShell(), SWT.SINGLE,
-                        ConstrainedText.NUMERIC);
+                                              ConstrainedText.NUMERIC);
             }
             ret = numeric;
         }
-        else if (constraint == TextField.DECIMAL) {
-            if (decimal == null) {
+        else if(constraint == TextField.DECIMAL)
+        {
+            if(decimal == null)
+            {
                 decimal = new ConstrainedText(eswtGetStaticShell(), SWT.SINGLE,
-                        ConstrainedText.DECIMAL);
+                                              ConstrainedText.DECIMAL);
             }
             ret = decimal;
         }
-        else if (constraint == TextField.PHONENUMBER) {
-            if (phonenr == null) {
+        else if(constraint == TextField.PHONENUMBER)
+        {
+            if(phonenr == null)
+            {
                 phonenr = new ConstrainedText(eswtGetStaticShell(), SWT.SINGLE,
-                        ConstrainedText.PHONENUMBER);
+                                              ConstrainedText.PHONENUMBER);
             }
             ret = phonenr;
         }
-        else {
+        else
+        {
             // TODO: eSWT support required - text validation on EMAIL and URL constraints
             // default
-            if (any == null) {
+            if(any == null)
+            {
                 any = new TextExtension(eswtGetStaticShell(), SWT.MULTI | SWT.WRAP);
             }
             ret = any;
@@ -127,15 +138,20 @@ class TextFieldLayouter extends ItemLayouter {
      * @param constraint TextField.NUMERIC etc.
      * @return true if text is correct for specified constraint.
      */
-    static boolean checkText(final int constraint, final String text) {
+    static boolean checkText(final int constraint, final String text)
+    {
         isCorrectText = true;
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
-                try {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
+                try
+                {
                     TextWrapper.eswtSetContent(
-                            eswtGetStaticTextControl(constraint), text);
+                        eswtGetStaticTextControl(constraint), text);
                 }
-                catch (IllegalArgumentException e) {
+                catch(IllegalArgumentException e)
+                {
                     isCorrectText = false;
                 }
             }
@@ -149,19 +165,21 @@ class TextFieldLayouter extends ItemLayouter {
      * @param parent for the control.
      * @param item TextField item.
      */
-    Control eswtGetControl(Composite parent, Item item) {
+    Control eswtGetControl(Composite parent, Item item)
+    {
         TextField textfield = (TextField) item;
 
         Control te = TextWrapper.eswtConstructText(parent,
-                SWT.WRAP | SWT.MULTI, textfield.getConstraints());
+                     SWT.WRAP | SWT.MULTI, textfield.getConstraints());
         TextWrapper.eswtSetMaxSize(te, textfield.getMaxSize());
         TextWrapper.eswtSetContent(te, textfield.getString());
         TextWrapper.eswtSetSelection(te,
-                textfield.getCaretPosition(), textfield.getCaretPosition());
+                                     textfield.getCaretPosition(), textfield.getCaretPosition());
 
-        if (textfield.getInitialInputMode() != null) {
+        if(textfield.getInitialInputMode() != null)
+        {
             eswtUpdateItem(textfield, te, TextField.UPDATE_INITIAL_INPUT_MODE,
-                    null);
+                           null);
         }
         return te;
     }
@@ -174,7 +192,8 @@ class TextFieldLayouter extends ItemLayouter {
      *
      * @return true if this control is suitable for update
      */
-    boolean eswtIsSpecificControl(Item item, Control control) {
+    boolean eswtIsSpecificControl(Item item, Control control)
+    {
         return (control instanceof TextExtension
                 || control instanceof ConstrainedText);
     }
@@ -186,15 +205,18 @@ class TextFieldLayouter extends ItemLayouter {
      * @param control eSWT control.
      * @param reason reason to update.
      */
-    void eswtUpdateItem(Item item, Control control, int reason, Object param) {
+    void eswtUpdateItem(Item item, Control control, int reason, Object param)
+    {
         TextField textfield = (TextField) item;
-        if (reason == Item.UPDATE_CONTENT) {
+        if(reason == Item.UPDATE_CONTENT)
+        {
             TextWrapper.eswtSetContent(control, textfield.getString());
         }
-        else if (reason == TextField.UPDATE_INITIAL_INPUT_MODE) {
+        else if(reason == TextField.UPDATE_INITIAL_INPUT_MODE)
+        {
             TextWrapper.eswtSetInputMode(control,
-                    textfield.getInitialInputMode(),
-                    textfield.getConstraints());
+                                         textfield.getInitialInputMode(),
+                                         textfield.getConstraints());
         }
     }
 
@@ -205,9 +227,11 @@ class TextFieldLayouter extends ItemLayouter {
      * @param control Control which represents TextField.
      * @param width which control must occupy.
      */
-    void eswtResizeControl(Item item, Control control, int width, int height) {
+    void eswtResizeControl(Item item, Control control, int width, int height)
+    {
         super.eswtResizeControl(item, control, width, height);
-        if (control instanceof TextExtension) {
+        if(control instanceof TextExtension)
+        {
             TextExtension te = (TextExtension) control;
             ((TextField) item).internalSetLinesCount(te.getLineCount());
         }
@@ -219,20 +243,24 @@ class TextFieldLayouter extends ItemLayouter {
      * @param item TextField.
      * @param key keyCode.
      */
-    boolean eswtOfferKeyPressed(Item item, int key) {
+    boolean eswtOfferKeyPressed(Item item, int key)
+    {
         TextField tf = (TextField) item;
-        if (item.hasLayout(Item.LAYOUT_SHRINK)) {
-            if ((key == SWT.ARROW_LEFT
+        if(item.hasLayout(Item.LAYOUT_SHRINK))
+        {
+            if((key == SWT.ARROW_LEFT
                     && tf.getCaretPosition() == 0)
-                || (key == SWT.ARROW_RIGHT
-                    && tf.getCaretPosition() == tf.size())) {
+                    || (key == SWT.ARROW_RIGHT
+                        && tf.getCaretPosition() == tf.size()))
+            {
                 return false;
             }
         }
-        if (((key == SWT.ARROW_UP)
-                    && (tf.getCaretPosition() == 0))
-            || ((key == SWT.ARROW_DOWN)
-                    && (tf.getCaretPosition() == tf.size()))) {
+        if(((key == SWT.ARROW_UP)
+                && (tf.getCaretPosition() == 0))
+                || ((key == SWT.ARROW_DOWN)
+                    && (tf.getCaretPosition() == tf.size())))
+        {
             return false;
         }
         return true;
@@ -246,14 +274,15 @@ class TextFieldLayouter extends ItemLayouter {
      * @param dir direction from which focus came, in case if it was set with
      *            setCurrentItem() default direction is used (-1).
      */
-    void eswtFocusGained(Item item, int dir) {
+    void eswtFocusGained(Item item, int dir)
+    {
         super.eswtFocusGained(item, dir);
         TextField tf = (TextField) item;
         // direction = dir;
         resetCaretPosition(tf, dir);
         Control control = eswtGetFirstSpecificControl(item);
         TextWrapper.eswtSetSelection(control,
-                tf.getCaretPosition(), tf.getCaretPosition());
+                                     tf.getCaretPosition(), tf.getCaretPosition());
     }
 
     /**
@@ -262,10 +291,13 @@ class TextFieldLayouter extends ItemLayouter {
      * @param textField TextField object
      * @return Minimum area needed to display TextField.
      */
-    static Point calculateMinimumBounds(final TextField textField) {
+    static Point calculateMinimumBounds(final TextField textField)
+    {
         final Point minSize = new Point(0, 0);
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 TextExtension tempExt = (TextExtension) eswtGetStaticTextControl(TextField.ANY);
                 tempExt.setText(ItemLayouter.MIN_TEXT);
                 tempExt.pack();
@@ -284,23 +316,26 @@ class TextFieldLayouter extends ItemLayouter {
      * @return Preferred area needed to display Item. x is width and y is
      *         height.
      */
-    static Point calculatePreferredBounds(Item item) {
+    static Point calculatePreferredBounds(Item item)
+    {
         final TextField textfield = (TextField) item;
         final Point prefSize = new Point(0, 0);
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 TextExtension te = (TextExtension) eswtGetStaticTextControl(TextField.ANY);
                 te.setText(textfield.getString());
 
                 int maxHeight = (formHeigh
-                        * Config.TEXTFIELD_MAX_SCREEN_PERCENTAGE / TOTAL_PERCENTAGE)
-                        - Config.TEXTFIELD_MARGIN;
+                                 * Config.TEXTFIELD_MAX_SCREEN_PERCENTAGE / TOTAL_PERCENTAGE)
+                                - Config.TEXTFIELD_MARGIN;
                 textfield.internalSetMaxVisibleLines(maxHeight
-                        / te.getLineHeight());
+                                                     / te.getLineHeight());
 
                 prefSize.x = getMaximumItemWidth(textfield);
                 prefSize.y = Config.TEXTFIELD_MARGIN + Math.min(
-                        te.computeSize(prefSize.x, SWT.DEFAULT).y, maxHeight);
+                                 te.computeSize(prefSize.x, SWT.DEFAULT).y, maxHeight);
                 // prefSize.y = Math.min(calc.y, maxHeight) + MARGIN;
                 applyPrefMargins(textfield, prefSize);
             }
@@ -314,22 +349,24 @@ class TextFieldLayouter extends ItemLayouter {
      * @param textfield TextField for which to update caret position.
      * @param dir direction of scrolling.
      */
-    private void resetCaretPosition(TextField textfield, int dir) {
-        switch (dir) {
-            case SWT.ARROW_DOWN:
-                textfield.internalSetCaretPosition(0);
-                break;
-            case SWT.ARROW_RIGHT:
-                textfield.internalSetCaretPosition(0);
-                break;
-            case SWT.ARROW_UP:
-                textfield.internalSetCaretPosition(textfield.size());
-                break;
-            case SWT.ARROW_LEFT:
-                textfield.internalSetCaretPosition(textfield.size());
-                break;
-            default:
-                break;
+    private void resetCaretPosition(TextField textfield, int dir)
+    {
+        switch(dir)
+        {
+        case SWT.ARROW_DOWN:
+            textfield.internalSetCaretPosition(0);
+            break;
+        case SWT.ARROW_RIGHT:
+            textfield.internalSetCaretPosition(0);
+            break;
+        case SWT.ARROW_UP:
+            textfield.internalSetCaretPosition(textfield.size());
+            break;
+        case SWT.ARROW_LEFT:
+            textfield.internalSetCaretPosition(textfield.size());
+            break;
+        default:
+            break;
         }
     }
 
@@ -339,7 +376,8 @@ class TextFieldLayouter extends ItemLayouter {
      * @param item TextField.
      * @param control Control which represents TextField.
      */
-    void eswtAddSpecificListeners(Item item, Control control) {
+    void eswtAddSpecificListeners(Item item, Control control)
+    {
         super.eswtAddSpecificListeners(item, control);
         TextField textfield = (TextField) item;
         ModifyListener listener = new TextFieldModifyListener(textfield);
@@ -359,20 +397,24 @@ class TextFieldLayouter extends ItemLayouter {
      * @param item TextField.
      * @param control Control which represents TextField.
      */
-    void eswtRemoveSpecificListeners(Item item, Control control) {
+    void eswtRemoveSpecificListeners(Item item, Control control)
+    {
         super.eswtRemoveSpecificListeners(item, control);
         ModifyListener l1 = (ModifyListener) control.getData(MODIFY_LISTENER);
-        if (l1 != null) {
+        if(l1 != null)
+        {
             TextWrapper.eswtRemoveModListener(control, l1);
             control.setData(MODIFY_LISTENER, null);
         }
         KeyListener l2 = (KeyListener) control.getData(KEY_LISTENER);
-        if (l2 != null) {
+        if(l2 != null)
+        {
             control.removeKeyListener(l2);
             control.setData(KEY_LISTENER, null);
         }
         MouseListener l4 = (MouseListener) control.getData(MOUSE_LISTENER);
-        if (l4 != null) {
+        if(l4 != null)
+        {
             control.removeMouseListener(l4);
             control.setData(MOUSE_LISTENER, null);
         }
@@ -382,45 +424,56 @@ class TextFieldLayouter extends ItemLayouter {
      * Class that receives ModifyEvents from TextExtension and updates values of
      * TextField.
      */
-    class TextFieldModifyListener implements ModifyListener {
+    class TextFieldModifyListener implements ModifyListener
+    {
 
         private TextField textfield;
 
-        TextFieldModifyListener(TextField textField) {
+        TextFieldModifyListener(TextField textField)
+        {
             this.textfield = textField;
         }
 
-        private void handleLinesChange(TextExtension te) {
+        private void handleLinesChange(TextExtension te)
+        {
             int lines = te.getLineCount();
             int visibleLines = te.getSize().y / te.getLineHeight();
-            if (lines != textfield.internalGetLinesCount()) {
+            if(lines != textfield.internalGetLinesCount())
+            {
                 textfield.internalSetLinesCount(lines);
                 Control control = eswtGetFirstControl(textfield);
-                if (control.getSize().y + te.getLineHeight()
-                        + Config.TEXTFIELD_MARGIN <= dfi.getFormHeight()) {
+                if(control.getSize().y + te.getLineHeight()
+                        + Config.TEXTFIELD_MARGIN <= dfi.getFormHeight())
+                {
                     textfield.updateParent(Item.UPDATE_HEIGHT_CHANGED);
                 }
-                if (textfield.internalGetLinesCount() > lines) {
-                    if ((te.getTopIndex() + visibleLines) > lines) {
+                if(textfield.internalGetLinesCount() > lines)
+                {
+                    if((te.getTopIndex() + visibleLines) > lines)
+                    {
                         te.setTopIndex(Math.max(0, lines - visibleLines));
                     }
-                    if (visibleLines > lines) {
+                    if(visibleLines > lines)
+                    {
                         textfield.updateParent(Item.UPDATE_HEIGHT_CHANGED);
                     }
                 }
 
                 te.setTopIndex(Math.max(te.getCaretLineNumber() + 1
-                        - textfield.internalGetMaxVisibleLines(), 0));
+                                        - textfield.internalGetMaxVisibleLines(), 0));
             }
         }
 
-        public void modifyText(ModifyEvent modifyEvent) {
+        public void modifyText(ModifyEvent modifyEvent)
+        {
             Control te = (Control) modifyEvent.widget;
-            if (textfield.internalSetString(TextWrapper.eswtGetContent(te))) {
+            if(textfield.internalSetString(TextWrapper.eswtGetContent(te)))
+            {
                 Logger.method(textfield, "modify", modifyEvent);
                 textfield.internalSetCaretPosition(
-                        TextWrapper.eswtGetCaretPosition(te));
-                if (te instanceof TextExtension) {
+                    TextWrapper.eswtGetCaretPosition(te));
+                if(te instanceof TextExtension)
+                {
                     handleLinesChange((TextExtension) te);
                 }
                 textfield.notifyStateChanged();
@@ -432,25 +485,30 @@ class TextFieldLayouter extends ItemLayouter {
      * Class that receives KeyEvents from TextExtension and updates
      * caret position for TextField.
      */
-    class TextFieldKeyListener implements KeyListener {
+    class TextFieldKeyListener implements KeyListener
+    {
 
         private TextField textfield;
 
-        TextFieldKeyListener(TextField textField) {
+        TextFieldKeyListener(TextField textField)
+        {
             this.textfield = textField;
         }
 
-        public void keyPressed(KeyEvent keyEvent) {
-            Control te =  (Control) keyEvent.widget;
+        public void keyPressed(KeyEvent keyEvent)
+        {
+            Control te = (Control) keyEvent.widget;
             int caretPos = TextWrapper.eswtGetCaretPosition(te);
             int caretLine = TextWrapper.eswtGetCaretLine(te);
 
-            if (keyEvent.keyCode == SWT.ARROW_UP && caretLine == 0) {
+            if(keyEvent.keyCode == SWT.ARROW_UP && caretLine == 0)
+            {
                 caretPos = 0;
                 TextWrapper.eswtSetSelection(te, caretPos, caretPos);
             }
-            else if (keyEvent.keyCode == SWT.ARROW_DOWN
-                    && (caretLine == (TextWrapper.eswtGetLineCount(te) - 1))) {
+            else if(keyEvent.keyCode == SWT.ARROW_DOWN
+                    && (caretLine == (TextWrapper.eswtGetLineCount(te) - 1)))
+            {
                 caretPos = textfield.size();
                 TextWrapper.eswtSetSelection(te, caretPos, caretPos);
             }
@@ -458,46 +516,56 @@ class TextFieldLayouter extends ItemLayouter {
             textfield.internalSetCaretPosition(caretPos);
         }
 
-        public void keyReleased(KeyEvent keyEvent) {
+        public void keyReleased(KeyEvent keyEvent)
+        {
             // this is needed if focus was changed with touch.
             // so ne scrolling was done in DFI.
-            if (!dfi.isItemFullyVisible(textfield)) {
+            if(!dfi.isItemFullyVisible(textfield))
+            {
                 dfi.eswtScrollToItem(textfield);
             }
             textfield.internalSetCaretPosition(
-                    TextWrapper.eswtGetCaretPosition((Control) keyEvent.widget));
+                TextWrapper.eswtGetCaretPosition((Control) keyEvent.widget));
         }
 
     }
 
-    class AllMouseListener implements MouseListener, MouseMoveListener {
+    class AllMouseListener implements MouseListener, MouseMoveListener
+    {
 
         private TextField textfield;
         private boolean isEnabled;
 
-        AllMouseListener(TextField tf) {
+        AllMouseListener(TextField tf)
+        {
             textfield = tf;
         }
 
-        public void enable(boolean enabled) {
+        public void enable(boolean enabled)
+        {
             isEnabled = enabled;
         }
 
-        public void mouseUp(MouseEvent me) {
-            if (isEnabled) {
+        public void mouseUp(MouseEvent me)
+        {
+            if(isEnabled)
+            {
                 //
             }
         }
 
-        public void mouseDown(MouseEvent me) {
+        public void mouseDown(MouseEvent me)
+        {
             textfield.internalSetCaretPosition(
-                    TextWrapper.eswtGetCaretPosition((Control) me.widget));
+                TextWrapper.eswtGetCaretPosition((Control) me.widget));
         }
 
-        public void mouseMove(MouseEvent me) {
+        public void mouseMove(MouseEvent me)
+        {
         }
 
-        public void mouseDoubleClick(MouseEvent me) {
+        public void mouseDoubleClick(MouseEvent me)
+        {
         }
 
     }

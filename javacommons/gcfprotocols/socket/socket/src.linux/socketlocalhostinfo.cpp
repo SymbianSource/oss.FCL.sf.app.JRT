@@ -20,6 +20,7 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <cstring>
 #include "socketlocalhostinfo.h"
 #include "logger.h"
 

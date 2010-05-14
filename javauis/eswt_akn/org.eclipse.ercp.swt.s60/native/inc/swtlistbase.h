@@ -222,8 +222,8 @@ protected:
     /**
      * Second phase constructor
      */
-    void ConstructL(); 
-    
+    void ConstructL();
+
 private:
     /**
      * Update the default font.
@@ -256,7 +256,7 @@ protected:
     void PositionChanged();
     void FocusChanged(TDrawNow aDrawNow);
     TTypeUid::Ptr MopSupplyObject(TTypeUid aId);
-    
+
 private:
     void Draw(const TRect& aRect) const;
 
@@ -358,12 +358,12 @@ protected:
      * Stores last known focus index. Use only during paint and key handlers.
      */
     TInt iPrevFocusIndex;
-    
+
     /**
      * Type of the list
      */
     TInt iListType;
-    
+
     /**
      * View visible rect at last draw
      */

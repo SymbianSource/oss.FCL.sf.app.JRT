@@ -35,7 +35,6 @@ import com.nokia.mj.impl.security.midp.common.SigningCertificate;
 import com.nokia.mj.impl.security.midp.common.AuthenticationAttribute;
 import com.nokia.mj.impl.security.midp.common.MIDPPermission;
 import com.nokia.mj.impl.security.midp.common.PermissionMappingTable;
-import com.nokia.mj.impl.security.midp.common.TestPermissionMappingTable;
 import com.nokia.mj.impl.utils.Attribute;
 import com.nokia.mj.impl.security.utils.*;
 import java.security.*;

@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt.gauge;
@@ -28,7 +28,8 @@ import com.nokia.openlcdui.mt.SWTTestCase;
  * <li>Collection of tests to test Gauge's API functionality. <br>
  * <br>
  */
-public class GaugeTest extends SWTTestCase {
+public class GaugeTest extends SWTTestCase
+{
 
     private static String label = "Label";
 
@@ -38,7 +39,8 @@ public class GaugeTest extends SWTTestCase {
     /**
      * Constructor.
      */
-    public GaugeTest() {
+    public GaugeTest()
+    {
     }
 
     /**
@@ -47,14 +49,16 @@ public class GaugeTest extends SWTTestCase {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public GaugeTest(String sTestName) {
+    public GaugeTest(String sTestName)
+    {
         super(sTestName);
     }
 
     /**
      * Any pre-test setup can be done here
      */
-    protected void setUp() throws Exception {
+    protected void setUp() throws Exception
+    {
     }
 
     /**
@@ -63,41 +67,46 @@ public class GaugeTest extends SWTTestCase {
      *
      * @return New testsuite.
      */
-    public static Test suite() {
-		TestSuite suite = new TestSuite();
+    public static Test suite()
+    {
+        TestSuite suite = new TestSuite();
 
-	    java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Vector methodNames;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = GaugeTest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new GaugeTest((String)e.nextElement()));
-	    }
+        // Add widget tests
+        methodNames = GaugeTest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new GaugeTest((String)e.nextElement()));
+        }
 
-		return suite;
-	}
-    
-    public static java.util.Vector methodNames() {
+        return suite;
+    }
+
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testAccessors");
         return methodNames;
     }
-    
-    protected void runTest() throws Throwable {
-        if (getName().equals("testAccessors")) testAccessors();
+
+    protected void runTest() throws Throwable
+    {
+        if(getName().equals("testAccessors")) testAccessors();
         else super.runTest();
     }
     /**
      * Tests the gauge accessor methods.
      */
-    public void testAccessors() {
+    public void testAccessors()
+    {
         Gauge gauge = new Gauge(null, false, POSITIVE_INT, 0);
 
         assertTrue("Should be noninteractive", !gauge.isInteractive());
         assertEquals("Maxvalues don't match", POSITIVE_INT,
-                gauge.getMaxValue());
+                     gauge.getMaxValue());
         assertEquals("Labels don't match", null, gauge.getLabel());
 
         gauge.setLabel(label);
@@ -110,80 +119,88 @@ public class GaugeTest extends SWTTestCase {
         assertEquals("Values mismatch", POSITIVE_INT, gauge.getValue());
 
         gauge.setValue(0);
-        try {
+        try
+        {
             gauge.setMaxValue(NEGATIVE_INT);
             fail("1. IllegalArgumentException expected");
         }
-        catch (IllegalArgumentException iae) {
+        catch(IllegalArgumentException iae)
+        {
         }
 
         gauge.setMaxValue(Gauge.INDEFINITE);
 
-        try {
+        try
+        {
             gauge.setValue(NEGATIVE_INT);
             fail("2. IllegalArgumentException expected");
         }
-        catch (IllegalArgumentException iae) {
+        catch(IllegalArgumentException iae)
+        {
         }
 
-        try {
+        try
+        {
             gauge.setValue(Gauge.CONTINUOUS_IDLE);
             gauge.setValue(Gauge.INCREMENTAL_IDLE);
             gauge.setValue(Gauge.CONTINUOUS_RUNNING);
             gauge.setValue(Gauge.INCREMENTAL_UPDATING);
         }
-        catch (IllegalArgumentException iae) {
+        catch(IllegalArgumentException iae)
+        {
             fail("3. IllegalArgumentException thrown " + iae.getMessage());
         }
 
-        try {
+        try
+        {
             gauge.setValue(POSITIVE_INT);
             fail("4. IllegalArgumentException expected");
         }
-        catch (IllegalArgumentException iae) {
+        catch(IllegalArgumentException iae)
+        {
         }
 
         // Test minimum bounds, non-interactive:
         gauge.setLabel(null);
         assertTrue("Minimum height was zero or negative, case 1.",
-                gauge.getMinimumHeight() > 0);
+                   gauge.getMinimumHeight() > 0);
         //print("non-interactive minimum height: "
         //        + gauge.getMinimumHeight());
         assertTrue("Minimum width was zero or negative, case 1.",
-                gauge.getMinimumWidth() > 0);
+                   gauge.getMinimumWidth() > 0);
         //print("non-interactive minimum width: "
         //        + gauge.getMinimumWidth());
 
         // Minimum bounds, interactive:
         Gauge gauge2 = new Gauge(null, true, POSITIVE_INT, 0);
         assertTrue("Minimum height was zero or negative, case 2.",
-                gauge2.getMinimumHeight() > 0);
+                   gauge2.getMinimumHeight() > 0);
         //print("interactive minimum height: "
         //        + gauge2.getMinimumHeight());
         assertTrue("Minimum width was zero or negative, case 2.",
-                gauge2.getMinimumWidth() > 0);
+                   gauge2.getMinimumWidth() > 0);
         //print("interactive minimum width: "
         //        + gauge2.getMinimumWidth());
 
         // Minimum bounds, non-interactive with label:
         Gauge gauge3 = new Gauge("label", false, POSITIVE_INT, 0);
         assertTrue("Minimum height was zero or negative, case 3.",
-                gauge3.getMinimumHeight() > 0);
+                   gauge3.getMinimumHeight() > 0);
         //print("labeled non-interactive minimum height: "
         //        + gauge3.getMinimumHeight());
         assertTrue("Minimum width was zero or negative, case 3.",
-                gauge3.getMinimumWidth() > 0);
+                   gauge3.getMinimumWidth() > 0);
         //print("labeled non-interactive minimum width: "
         //        + gauge3.getMinimumWidth());
 
         // Minimum bounds, interactive with label:
         Gauge gauge4 = new Gauge("label", true, POSITIVE_INT, 0);
         assertTrue("Minimum height was zero or negative, case 4.",
-                gauge4.getMinimumHeight() > 0);
+                   gauge4.getMinimumHeight() > 0);
         //print("labeled interactive minimum height: "
         //        + gauge4.getMinimumHeight());
         assertTrue("Minimum width was zero or negative, case 4.",
-                gauge4.getMinimumWidth() > 0);
+                   gauge4.getMinimumWidth() > 0);
         //print("labeled interactive minimum width: "
         //        + gauge4.getMinimumWidth());
     }

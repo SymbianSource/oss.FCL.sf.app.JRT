@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt.image;
@@ -29,12 +29,14 @@ import com.nokia.openlcdui.mt.SWTTestCase;
 /**
  * Unit tests for LCDUI Image class.
  */
-public class ImageTest extends SWTTestCase {
+public class ImageTest extends SWTTestCase
+{
 
     /**
      * Constructor.
      */
-    public ImageTest() {
+    public ImageTest()
+    {
     }
 
     /**
@@ -43,7 +45,8 @@ public class ImageTest extends SWTTestCase {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public ImageTest(String sTestName) {
+    public ImageTest(String sTestName)
+    {
         super(sTestName);
     }
 
@@ -53,23 +56,26 @@ public class ImageTest extends SWTTestCase {
      *
      * @return new testsuite.
      */
-    public static Test suite() {
-		TestSuite suite = new TestSuite();
+    public static Test suite()
+    {
+        TestSuite suite = new TestSuite();
 
-	    java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Vector methodNames;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = ImageTest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new ImageTest((String)e.nextElement()));
-	    }
+        // Add widget tests
+        methodNames = ImageTest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new ImageTest((String)e.nextElement()));
+        }
 
-		return suite;
-	}
+        return suite;
+    }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testCreate");
         methodNames.addElement("testCreateFromFile");
@@ -80,45 +86,51 @@ public class ImageTest extends SWTTestCase {
         methodNames.addElement("testGetRGB");
         return methodNames;
     }
-    
-    protected void runTest() throws Throwable {
-        if (getName().equals("testCreate")) testCreate();
-        else if (getName().equals("testCreateFromFile")) testCreateFromFile();
-        else if (getName().equals("testCreateFromImage")) testCreateFromImage();
-        else if (getName().equals("testCreateFromARGB")) testCreateFromARGB();
-        else if (getName().equals("testCreateFromDataBuffer")) testCreateFromDataBuffer();
-        else if (getName().equals("testCreateFromImageTrans")) testCreateFromImageTrans();
-        else if (getName().equals("testGetRGB")) testGetRGB();
+
+    protected void runTest() throws Throwable
+    {
+        if(getName().equals("testCreate")) testCreate();
+        else if(getName().equals("testCreateFromFile")) testCreateFromFile();
+        else if(getName().equals("testCreateFromImage")) testCreateFromImage();
+        else if(getName().equals("testCreateFromARGB")) testCreateFromARGB();
+        else if(getName().equals("testCreateFromDataBuffer")) testCreateFromDataBuffer();
+        else if(getName().equals("testCreateFromImageTrans")) testCreateFromImageTrans();
+        else if(getName().equals("testGetRGB")) testGetRGB();
         else super.runTest();
     }
-    
-    
+
+
     /**
      * Tests for image creation.
      * Tests Image.createImage(int width, int height).
      */
-    public void testCreate() {
+    public void testCreate()
+    {
 
         Image testImage = null;
         final int testSize = 20;
         // Test IllegalArgumentException
-        try {
+        try
+        {
             testImage = Image.createImage(0, -1);
             fail("No IllegalArgumentException calling "
-                    + "Image.createImage(0, -1); in testCreateImage1");
+                 + "Image.createImage(0, -1); in testCreateImage1");
         }
-        catch (IllegalArgumentException e) {
-        	// Ok
+        catch(IllegalArgumentException e)
+        {
+            // Ok
         }
 
         // Test valid inputs
-        try {
+        try
+        {
             testImage = Image.createImage(testSize, testSize);
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             fail("Unexpected exception calling Image.createImage("
-                    + testSize + ", " + testSize
-                    + ") in testCreateImage1:" + e);
+                 + testSize + ", " + testSize
+                 + ") in testCreateImage1:" + e);
         }
 
         assertTrue("Image.createImage(int, int) "
@@ -140,12 +152,14 @@ public class ImageTest extends SWTTestCase {
                    + "expected - true",
                    testImage.isMutable());
 
-        try {
+        try
+        {
             testImage.getGraphics();
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             fail("Unexpected exception on Image.getGraphics() "
-                  + "for immutable Image in testCreateImage2: " + e);
+                 + "for immutable Image in testCreateImage2: " + e);
         }
 
 
@@ -174,33 +188,40 @@ public class ImageTest extends SWTTestCase {
      *  Tests for image creation from a file.
      *  Tests Image.createImage(String fileName)
      */
-    public void testCreateFromFile() {
+    public void testCreateFromFile()
+    {
 
         Image testImage = null;
 
         // Test NullPointerException
-        try {
+        try
+        {
             testImage = Image.createImage((String) null);
             fail("NullPointerException not thrown in createImage(null)");
         }
-        catch (NullPointerException ioE) {
-        	// Ok
+        catch(NullPointerException ioE)
+        {
+            // Ok
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             fail("Unexpected exception calling "
                  + "Image.createImage(null) in testCreateImage2: " + e);
         }
 
         // Test createImage for non-existing file
         String invalidName = "12345678.90";
-        try {
+        try
+        {
             testImage = Image.createImage(invalidName);
             fail("IOException not thrown when calling Image.createImage(invalidName)");
         }
-        catch (IOException ioE) {
-        	// Ok
+        catch(IOException ioE)
+        {
+            // Ok
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             fail("Unexpected exception calling "
                  + "Image.createImage(invalidName) in testCreateImage2: " + e);
         }
@@ -212,7 +233,7 @@ public class ImageTest extends SWTTestCase {
             fail("IOException not thrown when calling Image.createImage(invalidFile)");
         }
         catch (IOException ioE) {
-        	// Ok
+            // Ok
         }
         catch (Exception e) {
             fail("Unexpected exception calling "
@@ -221,13 +242,16 @@ public class ImageTest extends SWTTestCase {
 
         // Test createImage for the file that contains valid data
         String imgFile = "image1.jpg";
-        try {
+        try
+        {
             testImage = Image.createImage(imgFile);
         }
-        catch (IOException ioE) {
+        catch(IOException ioE)
+        {
             fail("I/O exception in testCreateImage2");
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             fail("Unexpected exception in testCreateImage2: " + e);
         }
 
@@ -240,16 +264,19 @@ public class ImageTest extends SWTTestCase {
                    + "expected - false",
                    !testImage.isMutable());
 
-        try {
+        try
+        {
             Graphics g = testImage.getGraphics();
             fail("IllegalStateException not thrown for Image.getGraphics with immutable Image");
         }
-        catch (IllegalStateException e) {
-        	// Ok
+        catch(IllegalStateException e)
+        {
+            // Ok
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             fail("Unexpected exception on Image.getGraphics() "
-                  + "for immutable Image in testCreateImage2: " + e);
+                 + "for immutable Image in testCreateImage2: " + e);
         }
     }
 
@@ -257,45 +284,54 @@ public class ImageTest extends SWTTestCase {
      *  Tests for image creation from another image.
      *  Tests Image.createImage(Image img)
      */
-    public void testCreateFromImage() {
+    public void testCreateFromImage()
+    {
         Image srcImage = null;
         Image testImage = null;
 
         // Test NullPointerException
-        try {
+        try
+        {
             testImage = Image.createImage((Image) null);
             fail("NullPointerException not thrown in createImage(null)");
         }
-        catch (NullPointerException ioE) {
-        	// Ok
+        catch(NullPointerException ioE)
+        {
+            // Ok
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             fail("Unexpected exception calling "
                  + "Image.createImage(null) in testCreateImage3: " + e);
         }
 
         final int testSize = 20;
-        try {
+        try
+        {
             srcImage = Image.createImage(testSize, testSize);
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             fail("Unexpected exception calling Image.createImage("
-                    + testSize + ", " + testSize
-                    + ") in testCreateImage3: " + e);
+                 + testSize + ", " + testSize
+                 + ") in testCreateImage3: " + e);
         }
 
-        try {
+        try
+        {
             testImage = Image.createImage(srcImage);
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             fail("Unexpected exception calling Image.createImage(Image)"
-                    + " in testCreateImage3: " + e);
+                 + " in testCreateImage3: " + e);
         }
 
         assertTrue("Image.createImage(Image) returned null in testCreateImage3",
-                testImage != null);
+                   testImage != null);
 
-        if (testImage.isMutable()) {
+        if(testImage.isMutable())
+        {
             fail("Image must be immutable in testCreateImage3");
         }
     }
@@ -307,9 +343,11 @@ public class ImageTest extends SWTTestCase {
                                    int height,
                                    boolean processAlpha);
      */
-    public void testCreateFromARGB() {
+    public void testCreateFromARGB()
+    {
 
-        final int[] argb = {
+        final int[] argb =
+        {
             0xFFFFFFFF,
             0x00000000,
             0x01010101,
@@ -321,54 +359,65 @@ public class ImageTest extends SWTTestCase {
         Image testImage = null;
 
         // Test NullPoiterException
-		try {
-			testImage = Image.createRGBImage(null, w, h, true);
-			fail("NullPointerException not thrown on Image.createRGBImage(null, w, h, true)");
-		}
-		catch (NullPointerException e) {
-			// Ok
-		}
-		catch (Exception e) {
-			fail("Unexpected exception calling "
-					+ "Image.createRGBImage(null, w, h, true);"
-					+ " in testCreateRGBImage: " + e);
-		}
+        try
+        {
+            testImage = Image.createRGBImage(null, w, h, true);
+            fail("NullPointerException not thrown on Image.createRGBImage(null, w, h, true)");
+        }
+        catch(NullPointerException e)
+        {
+            // Ok
+        }
+        catch(Exception e)
+        {
+            fail("Unexpected exception calling "
+                 + "Image.createRGBImage(null, w, h, true);"
+                 + " in testCreateRGBImage: " + e);
+        }
 
-		// Test IllegalArgumentException
-		try {
-			testImage = Image.createRGBImage(argb, 0, -1, true);
-			fail("IllegalArgumentException not thrown on Image.createRGBImage(argb, 0, -1, true)");
-		}
-		catch (IllegalArgumentException e) {
-			// Ok
-		}
-		catch (Exception e) {
-			fail("Unexpected exception "
-					+ "calling Image.createRGBImage(argb, 0, -1, true); "
-					+ "in testCreateRGBImage: " + e);
-		}
+        // Test IllegalArgumentException
+        try
+        {
+            testImage = Image.createRGBImage(argb, 0, -1, true);
+            fail("IllegalArgumentException not thrown on Image.createRGBImage(argb, 0, -1, true)");
+        }
+        catch(IllegalArgumentException e)
+        {
+            // Ok
+        }
+        catch(Exception e)
+        {
+            fail("Unexpected exception "
+                 + "calling Image.createRGBImage(argb, 0, -1, true); "
+                 + "in testCreateRGBImage: " + e);
+        }
 
-		// Test ArrayIndexOutOfBoundsException
-		try {
-			testImage = Image.createRGBImage(argb, 2 * w, h, true);
-			fail("ArrayIndexOutOfBoundsException not thrown on Image.createRGBImage(argb, 2 * w, h, true)");
-		}
-		catch (ArrayIndexOutOfBoundsException e) {
-			// Ok
-		}
-        catch (Exception e) {
+        // Test ArrayIndexOutOfBoundsException
+        try
+        {
+            testImage = Image.createRGBImage(argb, 2 * w, h, true);
+            fail("ArrayIndexOutOfBoundsException not thrown on Image.createRGBImage(argb, 2 * w, h, true)");
+        }
+        catch(ArrayIndexOutOfBoundsException e)
+        {
+            // Ok
+        }
+        catch(Exception e)
+        {
             fail("Unexpected exception calling "
                  + "Image.createRGBImage(argb, 2 * w, h, true); "
                  + "in testCreateRGBImage: " + e);
         }
 
         // Test valid inputs
-        try {
+        try
+        {
             testImage = Image.createRGBImage(argb, w, h, true);
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             fail("Unexpected exception calling Image.createImage(Image)"
-                    + " in testCreateRGBImage: " + e);
+                 + " in testCreateRGBImage: " + e);
         }
 
         assertTrue("Image.createRGBImage() returned null", testImage != null);
@@ -379,47 +428,56 @@ public class ImageTest extends SWTTestCase {
      *  Tests for image creation from an encoded data buffer.
      *  Tests Image.createImage(byte[] data, int offset, int dataLength).
      */
-    public void testCreateFromDataBuffer() {
+    public void testCreateFromDataBuffer()
+    {
 
-    	DISABLE_TEST();
+        DISABLE_TEST();
         Image testImage = null;
         String imgFile = "/image1.jpg";
         int dataLen = 0;
         byte[] dataBuffer = null;
 
         // Test NullPointerException
-        try {
+        try
+        {
             testImage = Image.createImage(null, 10, 10);
             fail("NullPointerException not thrown on Image.createImage(null, 10, 10)");
         }
-        catch (NullPointerException e) {
-        	// Ok
+        catch(NullPointerException e)
+        {
+            // Ok
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             fail("Unspecified exception in "
                  + "Image.createImage(null, 10, 10) in testCreateImage5: " + e);
         }
 
-        try {
+        try
+        {
             java.io.InputStream fis = Image.class.getResourceAsStream(imgFile);
             dataLen = fis.available();
             dataBuffer = new byte[dataLen];
             fis.read(dataBuffer);
             fis.close();
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             fail("Exception reading a buffer in testCreateImage5: " + e);
         }
 
         // Test ArrayIndexOutOfBoundsException
-        try {
+        try
+        {
             testImage = Image.createImage(dataBuffer, 0, dataLen * 2);
             fail("ArrayIndexOutOfBoundsException not thrown on Image.createImage(dataBuffer, 0, dataLen*2)");
         }
-        catch (ArrayIndexOutOfBoundsException e) {
-        	// Ok
+        catch(ArrayIndexOutOfBoundsException e)
+        {
+            // Ok
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             fail("Unspecified exception in "
                  + "Image.createImage(dataBuffer, 0, dataLen*2)"
                  + " in testCreateImage5: " + e);
@@ -430,28 +488,34 @@ public class ImageTest extends SWTTestCase {
         // create some invalid data
         byte[] invalidBuffer = new byte[dataLen];
         System.arraycopy(dataBuffer, 0, invalidBuffer, 0, dataLen);
-        for (int i = 0; i < dataLen; i += 5) {
-            invalidBuffer[i] = (byte) (System.currentTimeMillis() % 255);
+        for(int i = 0; i < dataLen; i += 5)
+        {
+            invalidBuffer[i] = (byte)(System.currentTimeMillis() % 255);
         }
 
-        try {
+        try
+        {
             testImage = Image.createImage(invalidBuffer, 0, dataLen);
             fail("IllegalArgumentException not thrown on Image.createImage(invalidBuffer, 0, dataLen)");
         }
-        catch (IllegalArgumentException  e) {
-        	// Ok
+        catch(IllegalArgumentException  e)
+        {
+            // Ok
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             fail("Unexpected exception in "
                  + "Image.createImage(invalidBuffer, 0, dataLen) "
                  + "in testCreateImage5: " + e);
         }
 
         // Test valid inputs
-        try {
+        try
+        {
             testImage = Image.createImage(dataBuffer, 0, dataLen);
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             fail("Unexpected exception: " + e);
         }
 
@@ -464,16 +528,19 @@ public class ImageTest extends SWTTestCase {
                    + "expected - false",
                    !testImage.isMutable());
 
-        try {
+        try
+        {
             Graphics g = testImage.getGraphics();
             fail("IllegalStateException not thrown on Image.getGraphics for immutable Image");
         }
-        catch (IllegalStateException e) {
-        	// Ok
+        catch(IllegalStateException e)
+        {
+            // Ok
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             fail("Unexpected exception on Image.getGraphics() "
-                  + "for immutable Image in testCreateImage5: " + e);
+                 + "for immutable Image in testCreateImage5: " + e);
         }
     }
 
@@ -482,84 +549,99 @@ public class ImageTest extends SWTTestCase {
      *  Tests Image.createImage(Image img, int x, int y,
      *                          int w, int h, int transform).
      */
-    public void testCreateFromImageTrans() {
+    public void testCreateFromImageTrans()
+    {
 
         Image srcImage = null;
         Image testImage = null;
         final int INVALID_TRANSFORM = 0xfff;
 
         String imgFile = "image1.jpg";
-        try {
-            try {
+        try
+        {
+            try
+            {
                 srcImage = Image.createImage(imgFile);
             }
-            catch (IOException ioE) {
+            catch(IOException ioE)
+            {
                 fail("I/O exception in testCreateImage6");
             }
 
             // Test null source image
-            try {
+            try
+            {
                 testImage = Image.createImage(null, 10, 10,
                                               20, 30, Sprite.TRANS_NONE);
 
                 fail("NullPointerException not thrown for null source image");
             }
-            catch (NullPointerException e) {
-            	// Ok
+            catch(NullPointerException e)
+            {
+                // Ok
             }
 
             // Test illegal width/height < 0 values
-            try {
+            try
+            {
                 testImage = Image.createImage(srcImage, 10, 10,
                                               -1, 0, Sprite.TRANS_NONE);
                 fail("IllegalArgumentException not thrown for width/height < 0");
             }
-            catch (IllegalArgumentException e) {
-            	// Ok
+            catch(IllegalArgumentException e)
+            {
+                // Ok
             }
 
             // Test invalid region bounds
-            try {
+            try
+            {
                 testImage = Image.createImage(srcImage, -10, -10,
                                               20, 30, Sprite.TRANS_NONE);
                 fail("IllegalArgumentException not thrown for "
                      + "negative bounds invalid region");
             }
-            catch (IllegalArgumentException e) {
-            	// Ok
+            catch(IllegalArgumentException e)
+            {
+                // Ok
             }
 
-            try {
+            try
+            {
                 testImage = Image.createImage(srcImage, 10, 10,
                                               2000, 30, Sprite.TRANS_NONE);
                 fail("IllegalArgumentException not thrown "
                      + "for too big invalid region");
             }
-            catch (IllegalArgumentException e) {
-            	// Ok
+            catch(IllegalArgumentException e)
+            {
+                // Ok
             }
 
             // Test invalid transform value
-            try {
+            try
+            {
                 testImage = Image.createImage(srcImage, 10, 10,
                                               20, 30, INVALID_TRANSFORM);
                 fail("IllegalArgumentException not thrown "
-						+ "for illegal transform ");
+                     + "for illegal transform ");
             }
-            catch (IllegalArgumentException e) {
-            	// Ok
+            catch(IllegalArgumentException e)
+            {
+                // Ok
             }
 
             testImage = Image.createImage(srcImage, 10, 10,
                                           20, 30, Sprite.TRANS_NONE);
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             fail("Unexpected exception in testCreateImage6: " + e);
             e.printStackTrace();
         }
 
         assertTrue("Image.createImage(Image img, int x, int y, int w, "
-                    + "int h, int transform) returned null", testImage != null);
+                   + "int h, int transform) returned null", testImage != null);
     }
 
     /**
@@ -572,7 +654,8 @@ public class ImageTest extends SWTTestCase {
      *              int width,
      *              int height)
      */
-    public void testGetRGB() {
+    public void testGetRGB()
+    {
 
         String imgFile = "image1.jpg";
 
@@ -581,11 +664,14 @@ public class ImageTest extends SWTTestCase {
 
         Image srcImage = null;
 
-        try {
-            try {
+        try
+        {
+            try
+            {
                 srcImage = Image.createImage(imgFile);
             }
-            catch (IOException ioE) {
+            catch(IOException ioE)
+            {
                 fail("Unable to load test image in testGetRGB");
             }
 
@@ -594,45 +680,54 @@ public class ImageTest extends SWTTestCase {
                                    * srcImage.getHeight() / 10];
 
             // Test NullPointerException
-            try {
+            try
+            {
                 srcImage.getRGB(null, 10, 10, 10,  10, 10, 10);
                 fail("NullPointerException not thrown in testGetRGB");
             }
-            catch (NullPointerException e) {
-            	// Ok
+            catch(NullPointerException e)
+            {
+                // Ok
             }
 
             // Test IllegalArgumentException on invalid bounds
-            try {
+            try
+            {
                 srcImage.getRGB(longImgData, 0, 500, 0,  0, 1000, 1000);
                 fail("IllegalArgumentException not thrown on invalid bounds (case1)");
             }
-            catch (IllegalArgumentException e) {
-            	// Ok
+            catch(IllegalArgumentException e)
+            {
+                // Ok
             }
 
             // Test IllegalArgumentException if abs(scanlength)  < width
             int regionWidth = 50;
-            try {
+            try
+            {
                 srcImage.getRGB(longImgData, 0,
                                 regionWidth - 1, 0,  0, regionWidth, 10);
                 fail("IllegalArgumentException not thrown on invalid bounds (case2)");
             }
-            catch (IllegalArgumentException e) {
-            	// Ok
+            catch(IllegalArgumentException e)
+            {
+                // Ok
             }
 
-            try {
+            try
+            {
                 srcImage.getRGB(longImgData, 0,
                                 -regionWidth + 1, 0,  0, regionWidth, 10);
                 fail("IllegalArgumentException not thrown on invalid bounds (case3)");
             }
-            catch (IllegalArgumentException e) {
-            	// Ok
+            catch(IllegalArgumentException e)
+            {
+                // Ok
             }
 
             // Test ArrayIndexOutOfBoundsException
-            try {
+            try
+            {
                 int imgWidth = srcImage.getWidth();
                 int imgHeight = srcImage.getHeight();
                 srcImage.getRGB(shortImgData, 0,
@@ -640,8 +735,9 @@ public class ImageTest extends SWTTestCase {
 
                 fail("ArrayIndexOutOfBoundsException not thrown");
             }
-            catch (ArrayIndexOutOfBoundsException e) {
-            	// Ok
+            catch(ArrayIndexOutOfBoundsException e)
+            {
+                // Ok
             }
 
             // Test valid inputs
@@ -661,7 +757,8 @@ public class ImageTest extends SWTTestCase {
 //            assertTrue("Image.getRGB returned no RGB data with scanLength < 0",
 //                    longImgData[longImgData.length - 1] != 0);
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             fail("Unexpected exception in testGetRGB: " + e);
             e.printStackTrace();
         }

@@ -20,9 +20,6 @@ package com.nokia.mj.impl.installer.exetable;
 
 /**
  * Execution engine progress listener interface.
- *
- * @author Nokia Corporation
- * @version $Rev: 9041 $ $Date: 2009-12-07 18:36:08 +0200 (Mon, 07 Dec 2009) $
  */
 public interface ExeProgressListener
 {

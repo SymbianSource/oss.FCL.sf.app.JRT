@@ -359,8 +359,10 @@ void JavaOsLayer::listDirectory(std::string& aDirPath, std::vector<std::string>&
     {
         std::string errorMsg("Cannot read ROM ODC files: ");
         errorMsg.append(strerror(errno));
+        errorMsg.append(" : dir: ");
+        errorMsg.append(aDirPath.c_str());
         ELOG(EUtils, errorMsg.c_str());
-        throw ExceptionBase(errorMsg, __FILE__, __FUNCTION__, __LINE__);
+        // Suppres error if no Java at all on device ROM.
     }
 
     struct dirent* pDirEnt = readdir(pDIR);

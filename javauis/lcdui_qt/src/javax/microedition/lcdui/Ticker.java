@@ -24,7 +24,8 @@ import org.eclipse.swt.widgets.Label;
 /**
  * Implementation of LCDUI <code>Ticker</code> class.
  */
-public class Ticker {
+public class Ticker
+{
 
     /**
      * How many pixels the ticker will move after every delay.
@@ -60,7 +61,8 @@ public class Ticker {
      *
      * @param txt Displayed string. If null, throws NullPointerException.
      */
-    public Ticker(String txt) {
+    public Ticker(String txt)
+    {
         setString(txt);
     }
 
@@ -69,21 +71,27 @@ public class Ticker {
      *
      * @param txt Displayed string. If null, throws NullPointerException.
      */
-    public void setString(String txt) {
-        if (txt == null) {
+    public void setString(String txt)
+    {
+        if(txt == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.TICKER_EXCEPTION_NULL_STRING);
+                MsgRepository.TICKER_EXCEPTION_NULL_STRING);
         }
         text = txt;
         updateDirection();
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
-                for (int i = 0; i < labels.size(); i++) {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
+                for(int i = 0; i < labels.size(); i++)
+                {
                     Label label = ((Label) labels.elementAt(i));
-                    if (!label.isDisposed()) {
-                       label.setText(getFormattedString());
-                       label.pack();
-                     }
+                    if(!label.isDisposed())
+                    {
+                        label.setText(getFormattedString());
+                        label.pack();
+                    }
                 }
             }
         });
@@ -94,7 +102,8 @@ public class Ticker {
      *
      * @return the displayed string.
      */
-    public String getString() {
+    public String getString()
+    {
         return text;
     }
 
@@ -105,17 +114,22 @@ public class Ticker {
      *
      * @return String where newline characters are replaced with spaces.
      */
-    String getFormattedString() {
+    String getFormattedString()
+    {
         StringBuffer formattedText = new StringBuffer(text.length());
-        for (int i = 0; i < text.length(); i++) {
-            if (text.charAt(i) == '\r') {
+        for(int i = 0; i < text.length(); i++)
+        {
+            if(text.charAt(i) == '\r')
+            {
                 continue;
             }
-            else if ((text.charAt(i) == '\n')
-                || (text.charAt(i) == '\u2028')) {
+            else if((text.charAt(i) == '\n')
+                    || (text.charAt(i) == '\u2028'))
+            {
                 formattedText.append(" ");
             }
-            else {
+            else
+            {
                 formattedText.append(text.charAt(i));
             }
         }
@@ -130,10 +144,14 @@ public class Ticker {
      *
      * @param label Label to add.
      */
-    void addLabel(final Label label) {
-        if (label != null) {
-            ESWTUIThreadRunner.syncExec(new Runnable() {
-                public void run() {
+    void addLabel(final Label label)
+    {
+        if(label != null)
+        {
+            ESWTUIThreadRunner.syncExec(new Runnable()
+            {
+                public void run()
+                {
                     labels.addElement(label);
                 }
             });
@@ -146,10 +164,14 @@ public class Ticker {
      *
      * @param label Label to be removed. If null, nothing happens.
      */
-    void removeLabel(final Label label) {
-        if (label != null) {
-            ESWTUIThreadRunner.syncExec(new Runnable() {
-                public void run() {
+    void removeLabel(final Label label)
+    {
+        if(label != null)
+        {
+            ESWTUIThreadRunner.syncExec(new Runnable()
+            {
+                public void run()
+                {
                     labels.removeElement(label);
                 }
             });
@@ -163,12 +185,16 @@ public class Ticker {
      * Ticker speed is adjusted so that it takes about 7 seconds
      * for every character to run across the screen.
      */
-    void updateSpeed() {
-        if (labels.size() > 0) {
-            ESWTUIThreadRunner.syncExec(new Runnable() {
-                public void run() {
+    void updateSpeed()
+    {
+        if(labels.size() > 0)
+        {
+            ESWTUIThreadRunner.syncExec(new Runnable()
+            {
+                public void run()
+                {
                     screenWidth = ((Label) labels.elementAt(0)).getParent()
-                            .getBounds().width;
+                                  .getBounds().width;
                 }
             });
             stepSize = (screenWidth * Config.TICKER_MOVEMENT_DELAY) / Config.TICKER_DISPLAY_TIME;
@@ -187,8 +213,10 @@ public class Ticker {
      * It is ok to call this method even if Ticker is already running.
      * In that case the method will just return.
      */
-    void start() {
-        if (isRunning) {
+    void start()
+    {
+        if(isRunning)
+        {
             // Ticker already running.
             return;
         }
@@ -198,16 +226,21 @@ public class Ticker {
 
 
 
-        if (timer == null) {
+        if(timer == null)
+        {
             timer = new Timer();
         }
 
-        timerTask = new TimerTask() {
-            public void run() {
-                if (isRunning) {
+        timerTask = new TimerTask()
+        {
+            public void run()
+            {
+                if(isRunning)
+                {
                     updateLocation();
                 }
-                else {
+                else
+                {
                     timerTask.cancel();
                 }
             }
@@ -216,37 +249,47 @@ public class Ticker {
         timer.schedule(timerTask, 0, Config.TICKER_MOVEMENT_DELAY);
     }
 
-	private void updateDirection() {
-		leftToRight = StringUtil.isRightToLeftText(text);
-        if (leftToRight) {
+    private void updateDirection()
+    {
+        leftToRight = StringUtil.isRightToLeftText(text);
+        if(leftToRight)
+        {
             tickerX = Integer.MAX_VALUE;
         }
-        else {
+        else
+        {
             tickerX = Integer.MIN_VALUE;
         }
-	}
+    }
 
     /**
      * Updates ticker location.
      */
-    private void updateLocation() {
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
-                if (labels.size() <= 0) {
+    private void updateLocation()
+    {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
+                if(labels.size() <= 0)
+                {
                     // Ticker is removed from all displayables
                     // so it is ok to stop it.
                     isRunning = false;
                     return;
                 }
 
-                for (int i = 0; i < labels.size(); i++) {
+                for(int i = 0; i < labels.size(); i++)
+                {
                     Label label = ((Label) labels.elementAt(i));
-                    if (!label.isDisposed()) {
+                    if(!label.isDisposed())
+                    {
                         label.setLocation((int) tickerX, 0);
                     }
                 }
 
-                if (((Label) labels.elementAt(0)).isDisposed()) {
+                if(((Label) labels.elementAt(0)).isDisposed())
+                {
                     // Label is disposed. This may happen only
                     // when MIDlet is closing and in that case
                     // this method would throw exception without
@@ -256,23 +299,29 @@ public class Ticker {
                 }
 
                 int labelWidth = ((Label) labels.elementAt(0)).
-                    getBounds().width;
+                                 getBounds().width;
 
-                if (leftToRight) {
+                if(leftToRight)
+                {
                     // Scrolling from left to right:
-                    if (tickerX > screenWidth) {
+                    if(tickerX > screenWidth)
+                    {
                         tickerX = -labelWidth;
                     }
-                    else {
+                    else
+                    {
                         tickerX += stepSize;
                     }
                 }
-                else {
+                else
+                {
                     // Scrolling from right to left:
-                    if (tickerX < -labelWidth) {
+                    if(tickerX < -labelWidth)
+                    {
                         tickerX = screenWidth;
                     }
-                    else {
+                    else
+                    {
                         tickerX -= stepSize;
                     }
                 }

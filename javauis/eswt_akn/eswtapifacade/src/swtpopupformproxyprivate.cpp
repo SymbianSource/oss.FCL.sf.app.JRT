@@ -110,7 +110,6 @@ TBool CSwtPopupFormProxyPrivate::OkToExitL(TInt aButtonId)
 //
 void CSwtPopupFormProxyPrivate::ProcessCommandL(TInt aCommandId)
 {
-
     if (iTimeOut)
     {
         // if timed messsagebox
@@ -134,11 +133,19 @@ void CSwtPopupFormProxyPrivate::ProcessCommandL(TInt aCommandId)
 TKeyResponse CSwtPopupFormProxyPrivate::OfferKeyEventL(const TKeyEvent& aKeyEvent,
         TEventCode aType)
 {
-
     if (!iTimeOut)
     {
         // Other than TimedMessageBox
-        CAknPopupForm::OfferKeyEventL(aKeyEvent, aType);
+        TKeyResponse res = CAknPopupForm::OfferKeyEventL(aKeyEvent, aType);
+        if (aType == EEventKey && res == EKeyWasNotConsumed)
+        {
+            if (aKeyEvent.iCode == EKeyEnter || aKeyEvent.iCode == EKeyOK)
+            {
+                // Trigger the positive CBA action / soft key
+                TKeyEvent ev = {EKeyCBA1, EStdKeyDevice0, 0, 0};
+                TRAP_IGNORE(CCoeEnv::Static()->SimulateKeyEventL(ev, EEventKey));
+            }
+        }
     }
     else
     {
@@ -152,7 +159,7 @@ TKeyResponse CSwtPopupFormProxyPrivate::OfferKeyEventL(const TKeyEvent& aKeyEven
             CAknPopupForm::OfferKeyEventL(aKeyEvent, aType);
         }
     }
-    
+
     // Keys cannot be allowed to "pass trough" the dialog.
     return EKeyWasConsumed;
 }
@@ -166,7 +173,6 @@ TKeyResponse CSwtPopupFormProxyPrivate::OfferKeyEventL(const TKeyEvent& aKeyEven
 void CSwtPopupFormProxyPrivate::HandlePointerEventL(
     const TPointerEvent& aPointerEvent)
 {
-
     if (!iTimeOut)
     {
         // if not a timed messagebox

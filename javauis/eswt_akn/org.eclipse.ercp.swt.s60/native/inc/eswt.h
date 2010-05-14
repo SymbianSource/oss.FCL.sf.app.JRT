@@ -801,7 +801,7 @@ public:
      * Unregisters a resource change observer.
      */
     virtual void RemoveResourceChangeObserver(MSwtResourceChangeObserver* aObserver) = 0;
-    
+
     /**
      * Registers app focus observer.
      * MSwtUiUtils and MSwtShell instances are already informed separately so don't add them.
@@ -1138,7 +1138,7 @@ public:
      * Checks if the UI has started to be displayed on screen.
      */
     virtual TBool IsUiReady() const =0;
-    
+
     /**
      * Whatever UI component is getting ready to be displayed should notify the display.
      * @param aFullScreenUi Specifies if the starting ui is full screen.
@@ -1155,15 +1155,15 @@ public:
      * Returns names of all fonts according to aScalable parameter.
      */
     virtual CDesC16ArrayFlat* GetFontNamesL(TBool aScalable) const =0;
-    
+
     /**
-     * Check if the current pointer event being handled is 
+     * Check if the current pointer event being handled is
      * intended to revert the state of the grabbing control.
      */
     virtual TBool RevertPointerEvent() const =0;
-    
+
     /**
-     * Set the current pointer event being handled as 
+     * Set the current pointer event being handled as
      * intended to revert the state of the grabbing control.
      */
     virtual void SetRevertPointerEvent(TBool aStatus) =0;

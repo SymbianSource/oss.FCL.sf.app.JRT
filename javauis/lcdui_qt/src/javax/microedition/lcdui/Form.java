@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -28,7 +28,8 @@ import org.eclipse.swt.widgets.*;
 /**
  * This class represents LCDUI Form.
  */
-public class Form extends Screen {
+public class Form extends Screen
+{
 
     /**
      * Abstract layouting policy.
@@ -64,7 +65,8 @@ public class Form extends Screen {
      *
      * @param title the title string
      */
-    public Form(String title) {
+    public Form(String title)
+    {
         super(title);
         construct();
         layoutPolicy = new DefaultFormInteraction(this);
@@ -76,10 +78,13 @@ public class Form extends Screen {
      * @param title the title string
      * @param formItems array of items on the formComposite
      */
-    public Form(String title, Item[] formItems) {
+    public Form(String title, Item[] formItems)
+    {
         this(title);
-        if (formItems != null) {
-            for (int i = 0; i < formItems.length; i++) {
+        if(formItems != null)
+        {
+            for(int i = 0; i < formItems.length; i++)
+            {
                 this.append(formItems[i]);
             }
         }
@@ -88,10 +93,12 @@ public class Form extends Screen {
     /* (non-Javadoc)
      * @see javax.microedition.lcdui.Displayable#eswtConstructContent(int)
      */
-    Composite eswtConstructContent(int style) {
+    Composite eswtConstructContent(int style)
+    {
         Composite comp = super.eswtConstructContent(SWT.VERTICAL);
         ScrollBar vBar = comp.getVerticalBar();
-        if (vBar != null) {
+        if(vBar != null)
+        {
             vBar.setVisible(true);
             vBar.setEnabled(true);
         }
@@ -102,10 +109,12 @@ public class Form extends Screen {
     /* (non-Javadoc)
      * @see Displayable#eswtHandleShowCurrentEvent()
      */
-    void eswtHandleShowCurrentEvent() {
+    void eswtHandleShowCurrentEvent()
+    {
         super.eswtHandleShowCurrentEvent();
         ScrollBar vBar = getContentComp().getVerticalBar();
-        if (vBar != null) {
+        if(vBar != null)
+        {
             vBar.addSelectionListener(fsbl);
         }
         layoutPolicy.handleShowCurrentEvent();
@@ -114,11 +123,13 @@ public class Form extends Screen {
     /* (non-Javadoc)
      * @see Displayable#eswtHandleHideCurrentEvent()
      */
-    void eswtHandleHideCurrentEvent() {
+    void eswtHandleHideCurrentEvent()
+    {
         super.eswtHandleHideCurrentEvent();
 
         ScrollBar vBar = getContentComp().getVerticalBar();
-        if (vBar != null) {
+        if(vBar != null)
+        {
             vBar.removeSelectionListener(fsbl);
         }
         layoutPolicy.handleHideCurrentEvent();
@@ -127,9 +138,11 @@ public class Form extends Screen {
     /* (non-Javadoc)
      * @see Displayable#eswtHandleResizeEvent(int, int)
      */
-    void eswtHandleResizeEvent(int width, int height) {
+    void eswtHandleResizeEvent(int width, int height)
+    {
         super.eswtHandleResizeEvent(width, height);
-        if (formComposite != null) {
+        if(formComposite != null)
+        {
             formComposite.setRedraw(false);
             formComposite.setOrigin(0, 0, true);
             formComposite.setSize(width, height);
@@ -144,12 +157,15 @@ public class Form extends Screen {
      *
      * @param e eSWT event
      */
-    void eswtHandleEvent(Event e) {
+    void eswtHandleEvent(Event e)
+    {
         super.eswtHandleEvent(e);
-        if (e.type == SWT.Traverse) {
+        if(e.type == SWT.Traverse)
+        {
             e.doit = false;
         }
-        else {
+        else
+        {
             layoutPolicy.handleKeyEvent(e.keyCode, e.type);
         }
     }
@@ -160,17 +176,21 @@ public class Form extends Screen {
      * @param item Item to append to a Form.
      * @return index of Item in Form
      */
-    public int append(Item item) {
-        if (item == null) {
+    public int append(Item item)
+    {
+        if(item == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.FORM_EXCEPTION_ITEM_NULL_POINTER);
+                MsgRepository.FORM_EXCEPTION_ITEM_NULL_POINTER);
         }
-        if (item.getParent() != null) {
+        if(item.getParent() != null)
+        {
             throw new IllegalStateException(
-                    MsgRepository.FORM_EXCEPTION_ITEM_OWNED_BY_CONTAINER);
+                MsgRepository.FORM_EXCEPTION_ITEM_OWNED_BY_CONTAINER);
         }
         int returnValue = -1;
-        synchronized (layoutPolicy) {
+        synchronized(layoutPolicy)
+        {
             item.setParent(this);
             items.addElement(item);
             returnValue = items.indexOf(item);
@@ -185,10 +205,12 @@ public class Form extends Screen {
      * @param text - text for StringItem.
      * @return index of StringITem in a Form.
      */
-    public int append(String text) {
-        if (text == null) {
+    public int append(String text)
+    {
+        if(text == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.FORM_EXCEPTION_STRING_NULL_POINTER);
+                MsgRepository.FORM_EXCEPTION_STRING_NULL_POINTER);
         }
         return append(new StringItem(null, text, Item.LAYOUT_DEFAULT));
     }
@@ -199,10 +221,12 @@ public class Form extends Screen {
      * @param img - Image for ImageItem.
      * @return index of ImageItem in a Form.
      */
-    public int append(Image img) {
-        if (img == null) {
+    public int append(Image img)
+    {
+        if(img == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.FORM_EXCEPTION_IMAGE_NULL_POINTER);
+                MsgRepository.FORM_EXCEPTION_IMAGE_NULL_POINTER);
         }
         return append(new ImageItem(null, img, Item.LAYOUT_DEFAULT, null));
     }
@@ -214,20 +238,25 @@ public class Form extends Screen {
      * @param item item insert.
      * @throws IndexOutOfBoundsException if position is incorrect.
      */
-    public void insert(int position, Item item) {
-        if (item == null) {
+    public void insert(int position, Item item)
+    {
+        if(item == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.FORM_EXCEPTION_ITEM_NULL_POINTER);
+                MsgRepository.FORM_EXCEPTION_ITEM_NULL_POINTER);
         }
-        if (item.getParent() != null) {
+        if(item.getParent() != null)
+        {
             throw new IllegalStateException(
-                    MsgRepository.FORM_EXCEPTION_ITEM_OWNED_BY_CONTAINER);
+                MsgRepository.FORM_EXCEPTION_ITEM_OWNED_BY_CONTAINER);
         }
-        if ((position < 0) || (position > (items.size() - 1))) {
+        if((position < 0) || (position > (items.size() - 1)))
+        {
             throw new IndexOutOfBoundsException(
-                    MsgRepository.FORM_EXCEPTION_INVALID_ITEM_INDEX);
+                MsgRepository.FORM_EXCEPTION_INVALID_ITEM_INDEX);
         }
-        synchronized (layoutPolicy) {
+        synchronized(layoutPolicy)
+        {
             item.setParent(this);
             items.insertElementAt(item, position);
             resetLayoutTimer(items.indexOf(item));
@@ -240,12 +269,15 @@ public class Form extends Screen {
      * @param position - index of Item to delete from Form.
      * @throws IndexOutOfBoundsException if position is incorrect.
      */
-    public void delete(int position) {
-        if ((position < 0) || (position > (items.size() - 1))) {
+    public void delete(int position)
+    {
+        if((position < 0) || (position > (items.size() - 1)))
+        {
             throw new IndexOutOfBoundsException(
-                    MsgRepository.FORM_EXCEPTION_INVALID_ITEM_INDEX);
+                MsgRepository.FORM_EXCEPTION_INVALID_ITEM_INDEX);
         }
-        synchronized (layoutPolicy) {
+        synchronized(layoutPolicy)
+        {
             ((Item) items.elementAt(position)).setParent(null);
             items.removeElementAt(position);
             resetLayoutTimer(position - 1);
@@ -255,9 +287,12 @@ public class Form extends Screen {
     /**
      * Delete all items from the formComposite.
      */
-    public void deleteAll() {
-        synchronized (layoutPolicy) {
-            for (int i = 0; i < items.size(); i++) {
+    public void deleteAll()
+    {
+        synchronized(layoutPolicy)
+        {
+            for(int i = 0; i < items.size(); i++)
+            {
                 ((Item) items.elementAt(i)).setParent(null);
             }
             items.removeAllElements();
@@ -272,20 +307,25 @@ public class Form extends Screen {
      * @param newItem new item to set.
      * @throws IndexOutOfBoundsException if position is incorrect.
      */
-    public void set(int position, Item newItem) {
-        if (newItem == null) {
+    public void set(int position, Item newItem)
+    {
+        if(newItem == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.FORM_EXCEPTION_ITEM_NULL_POINTER);
+                MsgRepository.FORM_EXCEPTION_ITEM_NULL_POINTER);
         }
-        if (newItem.getParent() != null) {
+        if(newItem.getParent() != null)
+        {
             throw new IllegalStateException(
-                    MsgRepository.FORM_EXCEPTION_ITEM_OWNED_BY_CONTAINER);
+                MsgRepository.FORM_EXCEPTION_ITEM_OWNED_BY_CONTAINER);
         }
-        if ((position < 0) || (position > (items.size() - 1))) {
+        if((position < 0) || (position > (items.size() - 1)))
+        {
             throw new IndexOutOfBoundsException(
-                    MsgRepository.FORM_EXCEPTION_INVALID_ITEM_INDEX);
+                MsgRepository.FORM_EXCEPTION_INVALID_ITEM_INDEX);
         }
-        synchronized (layoutPolicy) {
+        synchronized(layoutPolicy)
+        {
             newItem.setParent(this);
             // clear reference to a form for "old" item.
             get(position).setParent(null);
@@ -301,13 +341,17 @@ public class Form extends Screen {
      * @return Item - specified by position
      * @throws IndexOutOfBoundsException if position is incorrect.
      */
-    public Item get(int position) {
+    public Item get(int position)
+    {
         Item returnItem = null;
-        synchronized (layoutPolicy) {
-            try {
+        synchronized(layoutPolicy)
+        {
+            try
+            {
                 returnItem = (Item) items.elementAt(position);
             }
-            catch (ArrayIndexOutOfBoundsException e) {
+            catch(ArrayIndexOutOfBoundsException e)
+            {
                 throw new IndexOutOfBoundsException(e.getMessage());
             }
         }
@@ -319,7 +363,8 @@ public class Form extends Screen {
      *
      * @return number of Items in Form.
      */
-    public int size() {
+    public int size()
+    {
         return items.size();
     }
 
@@ -328,7 +373,8 @@ public class Form extends Screen {
      *
      * @param itemStateListener New ItemStateListener.
      */
-    public void setItemStateListener(ItemStateListener itemStateListener) {
+    public void setItemStateListener(ItemStateListener itemStateListener)
+    {
         this.itemStateListener = itemStateListener;
     }
 
@@ -338,7 +384,8 @@ public class Form extends Screen {
      *
      * @param item The Item which should be set visible.
      */
-    void setCurrentItem(Item item) {
+    void setCurrentItem(Item item)
+    {
         layoutPolicy.setCurrentItem(item);
     }
 
@@ -347,15 +394,20 @@ public class Form extends Screen {
      *
      * @param item which triggered this event.
      */
-    void notifyItemStateChanged(final Item item) {
-        if (item != null && item.getParent() == this) {
-            if (itemStateListener != null) {
+    void notifyItemStateChanged(final Item item)
+    {
+        if(item != null && item.getParent() == this)
+        {
+            if(itemStateListener != null)
+            {
                 ESWTUIThreadRunner.getInstance().getDisplay().asyncExec(
-                        new Runnable() {
-                            public void run() {
-                                itemStateListener.itemStateChanged(item);
-                            }
-                        });
+                    new Runnable()
+                {
+                    public void run()
+                    {
+                        itemStateListener.itemStateChanged(item);
+                    }
+                });
             }
         }
     }
@@ -367,18 +419,25 @@ public class Form extends Screen {
      * @param updateReason
      * @param param additional parameter
      */
-    void updateItemState(Item item, int updateReason, Object param) {
-        if (item != null && item.getParent() == this) {
-            if ((updateReason & Item.UPDATE_WIDTH_CHANGED) != 0) {
-                synchronized (layoutPolicy) {
+    void updateItemState(Item item, int updateReason, Object param)
+    {
+        if(item != null && item.getParent() == this)
+        {
+            if((updateReason & Item.UPDATE_WIDTH_CHANGED) != 0)
+            {
+                synchronized(layoutPolicy)
+                {
                     resetLayoutTimer(items.indexOf(item));
                 }
             }
-            else {
-                if (layoutPolicy instanceof DefaultFormInteraction) {
-                    if (layoutTimer != null) {
+            else
+            {
+                if(layoutPolicy instanceof DefaultFormInteraction)
+                {
+                    if(layoutTimer != null)
+                    {
                         ((DefaultFormInteraction) layoutPolicy)
-                                .updateItemState(item, updateReason, param);
+                        .updateItemState(item, updateReason, param);
                     }
                 }
             }
@@ -390,14 +449,16 @@ public class Form extends Screen {
      *
      * @return Vector of items
      */
-    Vector getItems() {
+    Vector getItems()
+    {
         return items;
     }
 
     /**
      * @return ScrolledComposite which represents Form
      */
-    ScrolledComposite getFormComposite() {
+    ScrolledComposite getFormComposite()
+    {
         return formComposite;
     }
 
@@ -407,7 +468,8 @@ public class Form extends Screen {
      * @return Reference to layout policy.
      *
      */
-    FormLayoutPolicy getLayoutPolicy() {
+    FormLayoutPolicy getLayoutPolicy()
+    {
         return layoutPolicy;
     }
 
@@ -416,7 +478,8 @@ public class Form extends Screen {
 
     private boolean layoutLR = true;
 
-    public Form(boolean leftRightLanguage, String title) {
+    public Form(boolean leftRightLanguage, String title)
+    {
         super(title);
         construct();
         layoutLR = leftRightLanguage;
@@ -428,16 +491,20 @@ public class Form extends Screen {
     /**
      * Returns if the language Left-to-Right.
      */
-    boolean getLeftRightLanguage() {
+    boolean getLeftRightLanguage()
+    {
         return layoutLR;
     }
 
     /**
      * Reset timer for do layout with a given start index.
      */
-    private void resetLayoutTimer(int newStartIndex) {
-        if (layoutTimer != null) {
-            if (formTimerTask != null) {
+    private void resetLayoutTimer(int newStartIndex)
+    {
+        if(layoutTimer != null)
+        {
+            if(formTimerTask != null)
+            {
                 formTimerTask.cancel();
                 formTimerTask = null;
             }
@@ -452,15 +519,18 @@ public class Form extends Screen {
     /**
      * Form Timer task. Triggers the formComposite to Layout.
      */
-    class FormTimerTask extends TimerTask {
+    class FormTimerTask extends TimerTask
+    {
 
         private int index;
 
-        FormTimerTask(int newIndex) {
+        FormTimerTask(int newIndex)
+        {
             index = newIndex;
         }
 
-        public void run() {
+        public void run()
+        {
             Logger.method(Form.this, "layout");
             layoutPolicy.layoutForm(index);
             startIndex = items.size();
@@ -488,12 +558,15 @@ public class Form extends Screen {
     /**
      * Scrollbar selection listener.
      */
-    class FormScrollBarListener implements SelectionListener {
+    class FormScrollBarListener implements SelectionListener
+    {
 
-        public void widgetDefaultSelected(SelectionEvent se) {
+        public void widgetDefaultSelected(SelectionEvent se)
+        {
         }
 
-        public void widgetSelected(SelectionEvent se) {
+        public void widgetSelected(SelectionEvent se)
+        {
             ScrollBar sb = (ScrollBar) se.widget;
             layoutPolicy.updateScrolling(sb.getSelection(), false);
         }
@@ -502,7 +575,8 @@ public class Form extends Screen {
     /**
      * Dispose Form.
      */
-    void dispose() {
+    void dispose()
+    {
         super.dispose();
         layoutTimer.cancel();
         layoutTimer = null;
@@ -512,27 +586,34 @@ public class Form extends Screen {
     }
 
     /*
-     * Dispatcher thread calls. 
+     * Dispatcher thread calls.
      */
-    void doCallback(LCDUIEvent event) {
-    	if((event.type & LCDUIEvent.CUSTOMITEMBIT) != 0) {
-	    	// Synchronize with Form content modification operations. 
-	    	synchronized(layoutPolicy) {
-	    		// If the eSWT widget has been explicitly disposed while the event 
-	    		// was in the queue then ignore the event.  
-	    		if(event.widget != null && event.widget.isDisposed()) {
-	    			return;
-	    		}
-	    		// Find out if the Item is still in this Form. If not then 
-	    		// ignore the event.
-	    		if(!items.contains(event.item)) {
-	    			return;
-	    		}
-	    		// Perform the callback. Then allow Form modification again. 
-	    		event.item.doCallback(event);
-	    	}
-    	} else {
-    		super.doCallback(event);
-    	}
+    void doCallback(LCDUIEvent event)
+    {
+        if((event.type & LCDUIEvent.CUSTOMITEMBIT) != 0)
+        {
+            // Synchronize with Form content modification operations.
+            synchronized(layoutPolicy)
+            {
+                // If the eSWT widget has been explicitly disposed while the event
+                // was in the queue then ignore the event.
+                if(event.widget != null && event.widget.isDisposed())
+                {
+                    return;
+                }
+                // Find out if the Item is still in this Form. If not then
+                // ignore the event.
+                if(!items.contains(event.item))
+                {
+                    return;
+                }
+                // Perform the callback. Then allow Form modification again.
+                event.item.doCallback(event);
+            }
+        }
+        else
+        {
+            super.doCallback(event);
+        }
     }
 }

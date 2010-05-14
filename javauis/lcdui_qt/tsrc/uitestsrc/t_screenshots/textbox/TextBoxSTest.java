@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package t_screenshots.textbox;
@@ -31,23 +31,27 @@ import t_uirobot.UITestBase;
  * <br>
  * Created: 2008-05-06
  */
-public class TextBoxSTest extends UITestBase {
+public class TextBoxSTest extends UITestBase
+{
 
     private static final int LENGTH = 100;
     private static final int NEW_LENGTH = 200;
     private static final int CARET_SHIFT = 2;
 
     private TextBox textbox;
-    private int[] inputTextShort = new int[]{'7', '8', '8', '9',
-                                             '4', '5', '5', '5', '5', };
+    private int[] inputTextShort = new int[] {'7', '8', '8', '9',
+            '4', '5', '5', '5', '5',
+                                             };
     private int[] inputSentence = new int [] {'3', '3', '8', '8', '8',
-                                              '3', '3', '7', '7', '7', };
+            '3', '3', '7', '7', '7',
+                                             };
 
     /**
      * Empty constructor.
      */
-    public TextBoxSTest() {
-    	super();
+    public TextBoxSTest()
+    {
+        super();
     }
 
     /**
@@ -55,7 +59,8 @@ public class TextBoxSTest extends UITestBase {
      * @param sTestName name of the test
      * @param rTestMethod TestMethod used
      */
-    public TextBoxSTest(String sTestName, TestMethod rTestMethod) {
+    public TextBoxSTest(String sTestName, TestMethod rTestMethod)
+    {
         super(sTestName, rTestMethod);
     }
 
@@ -65,35 +70,42 @@ public class TextBoxSTest extends UITestBase {
     * any new test methods.
     * @return aSuite.
     */
-    public Test suite() {
+    public Test suite()
+    {
         TestSuite aSuite = new TestSuite();
         aSuite.addTest(new TextBoxSTest("textboxPasswordTest()",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((TextBoxSTest) tc).textboxPasswordTest();
-                    }
-                }
-        ));
+                                        new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((TextBoxSTest) tc).textboxPasswordTest();
+            }
+        }
+                                       ));
         aSuite.addTest(new TextBoxSTest("textboxComplexScreenshotTest()",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((TextBoxSTest) tc).textboxComplexScreenshotTest();
-                    }
-                }
-        ));
+                                        new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((TextBoxSTest) tc).textboxComplexScreenshotTest();
+            }
+        }
+                                       ));
         return aSuite;
     }
 
 
-   /**
-    * Tests password input.
-    */
-    public void textboxPasswordTest() {
+    /**
+     * Tests password input.
+     */
+    public void textboxPasswordTest()
+    {
         textbox = new TextBox("PASSWORD", null, LENGTH, TextField.PASSWORD);
         setCurrent(textbox);
 
         String img = "textboxPasswordIndicator.gif";
-        for (int i = 0; i < inputTextShort.length; i++) {
+        for(int i = 0; i < inputTextShort.length; i++)
+        {
             key(inputTextShort[i], 0);
         }
 
@@ -112,7 +124,8 @@ public class TextBoxSTest extends UITestBase {
      * Complex screenshot based test, designed to test as much
      * features as possible in one test.
      */
-    public void textboxComplexScreenshotTest () {
+    public void textboxComplexScreenshotTest()
+    {
         String getString = null;
         String setString = null;
         String insertString = "|insert()|";
@@ -121,8 +134,8 @@ public class TextBoxSTest extends UITestBase {
         int getSize = 0;
         String addContent = null;
 
-        textbox = new TextBox ("Complex test", "inital content", LENGTH,
-                TextField.ANY);
+        textbox = new TextBox("Complex test", "inital content", LENGTH,
+                              TextField.ANY);
         setCurrent(textbox);
 
         String img = "textboxComplexSTest.gif";
@@ -132,7 +145,8 @@ public class TextBoxSTest extends UITestBase {
         //double initial content with "and" between them
         textbox.setString(setString);
         //input "Ever"
-        for (int i = 0; i < inputSentence.length; i++) {
+        for(int i = 0; i < inputSentence.length; i++)
+        {
             key(inputSentence[i], 0);
         }
         //get caret position.

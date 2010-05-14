@@ -38,7 +38,8 @@ import org.eclipse.swt.internal.extension.CompositeExtension;
  * <b>Canvas</b> the abstract method <code>paint(Graphics g)</code> designed
  * to be implemented by the developer.
  */
-public abstract class Canvas extends Displayable {
+public abstract class Canvas extends Displayable
+{
 
     /**
      *  Constant for <code>UP</code> game action.
@@ -198,19 +199,20 @@ public abstract class Canvas extends Displayable {
     private int timeout;
     private boolean disableTapDetection;
 
-	private boolean repaintPending;
-	private int repaintX1;
-	private int repaintY1;
-	private int repaintX2;
-	private int repaintY2;
-	private Object repaintLock;
+    private boolean repaintPending;
+    private int repaintX1;
+    private int repaintY1;
+    private int repaintX2;
+    private int repaintY2;
+    private Object repaintLock;
 
-	private boolean selectionKeyCompatibility;
-	private boolean finalMode;
+    private boolean selectionKeyCompatibility;
+    private boolean finalMode;
     /**
      * Constructs <code>Canvas</code> object.
      */
-    public Canvas() {
+    public Canvas()
+    {
         super(null);
         repaintLock = new Object();
         cleanupLock = new Object();
@@ -223,79 +225,91 @@ public abstract class Canvas extends Displayable {
     /* (non-Javadoc)
      * @see Displayable#eswtConstructShell(int)
      */
-    Shell eswtConstructShell(int style) {
+    Shell eswtConstructShell(int style)
+    {
         return super.eswtConstructShell(style /*| SWT.RESIZE*/);
     }
 
     /* (non-Javadoc)
      * @see Displayable#eswtConstructContent(int)
      */
-    Composite eswtConstructContent(int style) {
+    Composite eswtConstructContent(int style)
+    {
         // Get JAD attribute
         noBackground = JadAttributeUtil.isValue(JadAttributeUtil.ATTRIB_NOKIA_UI_ENHANCEMENT,
-    			JadAttributeUtil.VALUE_CANVAS_HAS_BACKGROUND);
-        if (noBackground){
-        	 style |= SWT.NO_BACKGROUND;
+                                                JadAttributeUtil.VALUE_CANVAS_HAS_BACKGROUND);
+        if(noBackground)
+        {
+            style |= SWT.NO_BACKGROUND;
         }
 
         // Get JAD attribute for S60 Selection Key Compatibility
         selectionKeyCompatibility = JadAttributeUtil.isValue(JadAttributeUtil.ATTRIB_NOKIA_MIDLET_S60_SELECTION_KEY_COMPATIBILITY,
-    			JadAttributeUtil.VALUE_TRUE);
+                                    JadAttributeUtil.VALUE_TRUE);
 
         // Get JAD attribute for MIDlet Tap Detection
         String tapAttr = JadAttributeUtil.getValue(JadAttributeUtil.ATTRIB_NOKIA_MIDLET_TAP_DETECTION_OPTIONS);
-        if(tapAttr != null) {
-          if(tapAttr.indexOf(',') == -1) {
-						setDefaultTapValues();
-          }
-          else {
-              String twipString = tapAttr.substring(0, tapAttr.indexOf(',')).trim();
-              String timeoutString = tapAttr.substring(tapAttr.indexOf(',') + 1, tapAttr.length()).trim();
+        if(tapAttr != null)
+        {
+            if(tapAttr.indexOf(',') == -1)
+            {
+                setDefaultTapValues();
+            }
+            else
+            {
+                String twipString = tapAttr.substring(0, tapAttr.indexOf(',')).trim();
+                String timeoutString = tapAttr.substring(tapAttr.indexOf(',') + 1, tapAttr.length()).trim();
 
-              try {
-          	     twips = Integer.parseInt(twipString);
-          	     timeout = Integer.parseInt(timeoutString);
+                try
+                {
+                    twips = Integer.parseInt(twipString);
+                    timeout = Integer.parseInt(timeoutString);
 
-                 // Check for Negative Values
-          	     if( (twips < 0) && (timeout < 0) ) {
-          		       setDefaultTapValues();
-                 }
+                    // Check for Negative Values
+                    if((twips < 0) && (timeout < 0))
+                    {
+                        setDefaultTapValues();
+                    }
 
-                 if( (twips == 0)  && (timeout == 0) ) {
-                     disableTapDetection = true;
-                 }
+                    if((twips == 0)  && (timeout == 0))
+                    {
+                        disableTapDetection = true;
+                    }
 
-                 // if any one of the value is zero, set defaults
-                 if( !((twips != 0) && (timeout != 0)) ) {
-                     setDefaultTapValues();
-                 }
-              }
-              catch (NumberFormatException e) {
-              	 // Alpha Numeric Values of Timeouts and Timeout
-					       setDefaultTapValues();
-              }
-          }
+                    // if any one of the value is zero, set defaults
+                    if(!((twips != 0) && (timeout != 0)))
+                    {
+                        setDefaultTapValues();
+                    }
+                }
+                catch(NumberFormatException e)
+                {
+                    // Alpha Numeric Values of Timeouts and Timeout
+                    setDefaultTapValues();
+                }
+            }
         }
         else
         {
-        	 setDefaultTapValues();
+            setDefaultTapValues();
         }
 
         Composite canvasComp = super.eswtConstructContent(style);
 
-		// Read the on screen keypad settings from the jad attribute
-		String oskAttr = JadAttributeUtil
-				.getValue(JadAttributeUtil.ATTRIB_NOKIA_MIDLET_ON_SCREEN_KEYPAD);
-		if (oskAttr != null
-				&& (!oskAttr.equalsIgnoreCase(JadAttributeUtil.VALUE_NO))
-				&& ((oskAttr
-						.equalsIgnoreCase(JadAttributeUtil.VALUE_GAMEACTIONS)) || (oskAttr
-						.equalsIgnoreCase(JadAttributeUtil.VALUE_NAVIGATIONKEYS)))) {
+        // Read the on screen keypad settings from the jad attribute
+        String oskAttr = JadAttributeUtil
+                         .getValue(JadAttributeUtil.ATTRIB_NOKIA_MIDLET_ON_SCREEN_KEYPAD);
+        if(oskAttr != null
+                && (!oskAttr.equalsIgnoreCase(JadAttributeUtil.VALUE_NO))
+                && ((oskAttr
+                     .equalsIgnoreCase(JadAttributeUtil.VALUE_GAMEACTIONS)) || (oskAttr
+                             .equalsIgnoreCase(JadAttributeUtil.VALUE_NAVIGATIONKEYS))))
+        {
 
-			// On screen keypad is required, On devices without keyboard it can
-			// be either navigation keys or navigation and game keys
-			onScreenkeypad = new CanvasKeypad(this, canvasComp, oskAttr);
-		}
+            // On screen keypad is required, On devices without keyboard it can
+            // be either navigation keys or navigation and game keys
+            onScreenkeypad = new CanvasKeypad(this, canvasComp, oskAttr);
+        }
 
 
         return canvasComp;
@@ -304,7 +318,8 @@ public abstract class Canvas extends Displayable {
     /* (non-Javadoc)
      * @see Displayable#eswtHandleShowCurrentEvent()
      */
-    void eswtHandleShowCurrentEvent() {
+    void eswtHandleShowCurrentEvent()
+    {
         super.eswtHandleShowCurrentEvent();
         getContentComp().addPaintListener(paintListener);
         getContentComp().addMouseListener(mouseListener);
@@ -314,7 +329,8 @@ public abstract class Canvas extends Displayable {
     /* (non-Javadoc)
      * @see Displayable#eswtHandleHideCurrentEvent()
      */
-    void eswtHandleHideCurrentEvent() {
+    void eswtHandleHideCurrentEvent()
+    {
         super.eswtHandleHideCurrentEvent();
         getContentComp().removePaintListener(paintListener);
         getContentComp().removeMouseListener(mouseListener);
@@ -324,7 +340,8 @@ public abstract class Canvas extends Displayable {
     /**
      * Issues the request to repaint the whole Canvas.
      */
-    public void repaint() {
+    public void repaint()
+    {
         repaint(0, 0, getWidth(), getHeight());
     }
 
@@ -337,32 +354,36 @@ public abstract class Canvas extends Displayable {
      * @param width - width of the rectangle to redraw.
      * @param height - height of the rectangle to redraw.
      */
-    public void repaint(int x, int y, int width, int height) {
-    	// Paint callback event is posted without any invalid area info.
-		// Invalid area info is kept in the member variables. Only one event
-    	// per Canvas is added to the queue. If there are more repaint() calls
-    	// before the already posted event has been served those are merged
-		// to the invalid area in the member variables without posting a new
-    	// event.
-    	synchronized(repaintLock) {
-			if (invalidate(x, y, width, height)) {
-				// Note that repaintPending doesn't mean that there's a repaint
-				// event in the queue. It means that the invalid area is going
-				// to be repainted and there's no need to add a new event.
-				// It's possible that the repaint event has already been
-				// removed from the queue but repaintPending is still true. In
-				// that case it's currently being processed and we can still
-				// add to the invalid area.
-				if (!repaintPending) {
-					EventDispatcher eventDispatcher = EventDispatcher.instance();
-					LCDUIEvent event = eventDispatcher.newEvent(
-							LCDUIEvent.CANVAS_PAINT_MIDLET_REQUEST, this);
-					event.widget = getContentComp();
+    public void repaint(int x, int y, int width, int height)
+    {
+        // Paint callback event is posted without any invalid area info.
+        // Invalid area info is kept in the member variables. Only one event
+        // per Canvas is added to the queue. If there are more repaint() calls
+        // before the already posted event has been served those are merged
+        // to the invalid area in the member variables without posting a new
+        // event.
+        synchronized(repaintLock)
+        {
+            if(invalidate(x, y, width, height))
+            {
+                // Note that repaintPending doesn't mean that there's a repaint
+                // event in the queue. It means that the invalid area is going
+                // to be repainted and there's no need to add a new event.
+                // It's possible that the repaint event has already been
+                // removed from the queue but repaintPending is still true. In
+                // that case it's currently being processed and we can still
+                // add to the invalid area.
+                if(!repaintPending)
+                {
+                    EventDispatcher eventDispatcher = EventDispatcher.instance();
+                    LCDUIEvent event = eventDispatcher.newEvent(
+                                           LCDUIEvent.CANVAS_PAINT_MIDLET_REQUEST, this);
+                    event.widget = getContentComp();
                     eventDispatcher.postEvent(event);
-					repaintPending = true;
-				}
-			}
-    	}
+                    repaintPending = true;
+                }
+            }
+        }
     }
 
     /**
@@ -370,13 +391,17 @@ public abstract class Canvas extends Displayable {
      *
      * @param mode - true switches the Canvas to the full-screen mode.
      */
-    public void setFullScreenMode(boolean mode) {
+    public void setFullScreenMode(boolean mode)
+    {
         finalMode = mode;
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 ((MobileShell) getShell()).setFullScreenMode(finalMode);
                 //set the CanvasKeypad to the required mode
-                if(onScreenkeypad != null) {
+                if(onScreenkeypad != null)
+                {
                     onScreenkeypad.setFullScreenMode(finalMode);
                 }
             }
@@ -386,8 +411,9 @@ public abstract class Canvas extends Displayable {
     /**
      * Processes all the issued paint requests.
      */
-    public final void serviceRepaints() {
-    	EventDispatcher.instance().serviceRepaints(this);
+    public final void serviceRepaints()
+    {
+        EventDispatcher.instance().serviceRepaints(this);
     }
 
     /**
@@ -395,7 +421,8 @@ public abstract class Canvas extends Displayable {
      *
      * @return true if the Canvas supports pointer dragging, false otherwise.
      */
-    public boolean hasPointerMotionEvents() {
+    public boolean hasPointerMotionEvents()
+    {
         return true;
     }
 
@@ -404,7 +431,8 @@ public abstract class Canvas extends Displayable {
      *
      * @return true if the Canvas supports pointer events, false otherwise.
      */
-    public boolean hasPointerEvents() {
+    public boolean hasPointerEvents()
+    {
         return true;
     }
 
@@ -413,7 +441,8 @@ public abstract class Canvas extends Displayable {
      *
      * @return true if the Canvas is double buffered, false otherwise.
      */
-    public boolean isDoubleBuffered() {
+    public boolean isDoubleBuffered()
+    {
         return true;
     }
 
@@ -422,7 +451,8 @@ public abstract class Canvas extends Displayable {
      *
      * @return true if Canvas supports key repeat events, false otherwise.
      */
-    public boolean hasRepeatEvents() {
+    public boolean hasRepeatEvents()
+    {
         return true;
     }
 
@@ -433,7 +463,8 @@ public abstract class Canvas extends Displayable {
      * @return Game action for a a specified key code or
      *         IllegalArgumentException.
      */
-    public int getGameAction(int keyCode) {
+    public int getGameAction(int keyCode)
+    {
         return KeyTable.getGameAction(keyCode);
     }
 
@@ -443,7 +474,8 @@ public abstract class Canvas extends Displayable {
      * @param gameAction - game action to be mapped to the key code.
      * @return Key code that is mapped to the specified game action.
      */
-    public int getKeyCode(int gameAction) {
+    public int getKeyCode(int gameAction)
+    {
         return KeyTable.getKeyCode(gameAction);
     }
 
@@ -454,7 +486,8 @@ public abstract class Canvas extends Displayable {
      * @return String that contains textual name of the key specified by the key
      *         code.
      */
-    public String getKeyName(int keyCode) {
+    public String getKeyName(int keyCode)
+    {
         return KeyTable.getKeyName(keyCode);
     }
     /**
@@ -462,10 +495,14 @@ public abstract class Canvas extends Displayable {
      *
      * @return Height of the Displayable in pixels.
      */
-    public int getHeight() {
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
-                if( onScreenkeypad != null ) {
+    public int getHeight()
+    {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
+                if(onScreenkeypad != null)
+                {
                     oskHeight = onScreenkeypad.getHeight();
                 }
             }
@@ -500,7 +537,8 @@ public abstract class Canvas extends Displayable {
      *
      * @param keyCode - key code of the key pressed.
      */
-    protected void keyPressed(int keyCode) {
+    protected void keyPressed(int keyCode)
+    {
     }
 
     /**
@@ -508,7 +546,8 @@ public abstract class Canvas extends Displayable {
      *
      * @param keyCode - key code of the key released.
      */
-    protected void keyReleased(int keyCode) {
+    protected void keyReleased(int keyCode)
+    {
     }
 
     /**
@@ -517,7 +556,8 @@ public abstract class Canvas extends Displayable {
      *
      * @param keyCode - key code of the key repeated.
      */
-    protected void keyRepeated(int keyCode) {
+    protected void keyRepeated(int keyCode)
+    {
     }
 
     /**
@@ -526,7 +566,8 @@ public abstract class Canvas extends Displayable {
      * @param x - X-coordinate of the tap point.
      * @param y - Y-coordinate of the tap point.
      */
-    protected void pointerPressed(int x, int y) {
+    protected void pointerPressed(int x, int y)
+    {
     }
 
     /**
@@ -535,7 +576,8 @@ public abstract class Canvas extends Displayable {
      * @param x - X-coordinate of the pointer release point.
      * @param y - Y-coordinate of the pointer release point.
      */
-    protected void pointerReleased(int x, int y) {
+    protected void pointerReleased(int x, int y)
+    {
     }
 
     /**
@@ -544,7 +586,8 @@ public abstract class Canvas extends Displayable {
      * @param x - X-coordinate of the pointer drag point.
      * @param y - Y-coordinate of the pointer drag point.
      */
-    protected void pointerDragged(int x, int y) {
+    protected void pointerDragged(int x, int y)
+    {
     }
 
     /**
@@ -553,21 +596,24 @@ public abstract class Canvas extends Displayable {
      * is switching between full-screen mode by calling
      * <code>setFullScreenMode()</code>.
      */
-    protected void sizeChanged(int w, int h) {
+    protected void sizeChanged(int w, int h)
+    {
     }
 
     /**
      * showNotify() is the callback called before the Canvas is shown on the
      * screen.
      */
-    protected void showNotify() {
+    protected void showNotify()
+    {
     }
 
     /**
      * hideNotify() is the callback called after the Canvas is removed from the
      * screen.
      */
-    protected void hideNotify() {
+    protected void hideNotify()
+    {
     }
 
     /**
@@ -576,15 +622,18 @@ public abstract class Canvas extends Displayable {
      * @param supressKeys suppress game keys
      * @return frame buffer
      */
-    final void initGameCanvas(boolean suppressKeys) {
+    final void initGameCanvas(boolean suppressKeys)
+    {
         this.suppressGameKeys = suppressKeys;
     }
 
     /**
      * Update game buffer graphics.
      */
-    final void eswtUpdateGameBufferGraphics() {
-        if (gameBufferGraphics == null) {
+    final void eswtUpdateGameBufferGraphics()
+    {
+        if(gameBufferGraphics == null)
+        {
             gameBufferGraphics = new Graphics();
             gameBufferGraphics.initBuffered(this, 0, 0, getWidth(), getHeight());
             flushLock = gameBufferGraphics.getLock();
@@ -594,23 +643,26 @@ public abstract class Canvas extends Displayable {
     /**
      * Get game canvas frame buffer graphics.
      */
-    final Graphics getGameBufferGraphics() {
-        ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-            public void run() {
+    final Graphics getGameBufferGraphics()
+    {
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        {
+            public void run()
+            {
                 eswtUpdateGameBufferGraphics();
             }
         });
         return gameBufferGraphics;
     }
-    
+
     CanvasKeypad getCanvasKeypad()
     {
-    	return onScreenkeypad;
+        return onScreenkeypad;
     }
 
     boolean IsFullScreenMode()
     {
-    	return finalMode;
+        return finalMode;
     }
 
     /**
@@ -618,17 +670,19 @@ public abstract class Canvas extends Displayable {
      *
      * @return game key states.
      */
-    final int getGameKeyStates() {
+    final int getGameKeyStates()
+    {
         int ret = gameKeyState;
         gameKeyState = 0;
         return ret;
     }
 
-    void renderGraphics(final Graphics g) {
-		// Implementation missing. GameCanvas.paint() should by default render
-		// the the off-screen buffer at (0,0). Rendering of the buffer must be
-		// subject to the clip region and origin translation of the Graphics
-		// object.
+    void renderGraphics(final Graphics g)
+    {
+        // Implementation missing. GameCanvas.paint() should by default render
+        // the the off-screen buffer at (0,0). Rendering of the buffer must be
+        // subject to the clip region and origin translation of the Graphics
+        // object.
     }
 
     /**
@@ -640,31 +694,37 @@ public abstract class Canvas extends Displayable {
      * @param height
      */
     void flushGameBuffer(final int x, final int y, final int width,
-            final int height) {
-    	synchronized( flushLock ) {
-    		ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-    			public void run() {
-    				canvasMode = MODE_GAME_BUFFER_FLUSH;
-    				((CompositeExtension)getContentComp()).redrawNow(x, y, width, height);
-    		    	gameBufferGraphics.resetCommandBuffer();
-    		    	canvasMode = MODE_NORMAL;
-    			}
-    		});
-    	}
+                         final int height)
+    {
+        synchronized(flushLock)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
+                    canvasMode = MODE_GAME_BUFFER_FLUSH;
+                    ((CompositeExtension)getContentComp()).redrawNow(x, y, width, height);
+                    gameBufferGraphics.resetCommandBuffer();
+                    canvasMode = MODE_NORMAL;
+                }
+            });
+        }
     }
 
     /**
      * Called by ShellListener when shell gets activated.
      */
-    void handleShellActivatedEvent() {
+    void handleShellActivatedEvent()
+    {
         super.handleShellActivatedEvent();
 
         // reset the game key state
         gameKeyState = 0;
         canvasMode = MODE_NORMAL;
-		synchronized(cleanupLock) {
-			cleanupNeeded = true;
-		}
+        synchronized(cleanupLock)
+        {
+            cleanupNeeded = true;
+        }
 
         LCDUIEvent event = EventDispatcher.instance().newEvent(LCDUIEvent.CANVAS_SHOWNOTIFY, this);
         EventDispatcher.instance().postEvent(event);
@@ -673,7 +733,8 @@ public abstract class Canvas extends Displayable {
     /**
      * Called by ShellListener when shell gets de-activated.
      */
-    void handleShellDeActivatedEvent() {
+    void handleShellDeActivatedEvent()
+    {
         super.handleShellDeActivatedEvent();
         LCDUIEvent event = EventDispatcher.instance().newEvent(LCDUIEvent.CANVAS_HIDENOTIFY, this);
         EventDispatcher.instance().postEvent(event);
@@ -682,25 +743,30 @@ public abstract class Canvas extends Displayable {
     /*
      * UI thread calls
      */
-    void eswtHandleResizeEvent(int width, int height) {
+    void eswtHandleResizeEvent(int width, int height)
+    {
         super.eswtHandleResizeEvent(width, height);
-		canvasMode = MODE_NORMAL;
-		synchronized(cleanupLock) {
-			cleanupNeeded = true;
-		}
+        canvasMode = MODE_NORMAL;
+        synchronized(cleanupLock)
+        {
+            cleanupNeeded = true;
+        }
     }
 
     /*
      * UI thread calls
      */
-    void eswtHandleEvent(Event e) {
+    void eswtHandleEvent(Event e)
+    {
         super.eswtHandleEvent(e);
 
-        if (e.type == SWT.KeyDown) {
-             doKeyPressed(e.keyCode);
+        if(e.type == SWT.KeyDown)
+        {
+            doKeyPressed(e.keyCode);
         }
-        else if (e.type == SWT.KeyUp) {
-             doKeyReleased(e.keyCode);
+        else if(e.type == SWT.KeyUp)
+        {
+            doKeyReleased(e.keyCode);
         }
 
     }
@@ -708,210 +774,241 @@ public abstract class Canvas extends Displayable {
     /*
      * UI thread calls. Paint listener of the eSWT widget.
      */
-	class CanvasShellPaintListener implements PaintListener {
+    class CanvasShellPaintListener implements PaintListener
+    {
 
-		public void paintControl(PaintEvent pe) {
-			switch (canvasMode) {
-			case MODE_BUFFER_FLUSH:
-				// Paint event initiated by us to paint the Canvas.
-				doBufferFlush(pe, canvasGraphics);
-				break;
-			case MODE_GAME_BUFFER_FLUSH:
-				// Paint event initiated by us to paint the GameCanvas.
-				doBufferFlush(pe, gameBufferGraphics);
-				break;
-			case MODE_NORMAL:
-				// Native toolkit is requesting an update of an area that has
-				// become invalid. Can't do anything here because the contents
-				// need to be queried from the MIDlet in another thread by
-				// a paint callback. For this a paint callback event is posted.
-				// For a moment the native toolkit thinks that the area has
-				// been validated when in truth it will be painted later after
-				// the paint callback has been executed.
-				EventDispatcher eventDispatcher = EventDispatcher.instance();
-				LCDUIEvent event = eventDispatcher.newEvent(
-						LCDUIEvent.CANVAS_PAINT_NATIVE_REQUEST,
-						javax.microedition.lcdui.Canvas.this);
-				event.x = pe.x;
-				event.y = pe.y;
-				event.width = pe.width;
-				event.height = pe.height;
-				event.widget = pe.widget;
+        public void paintControl(PaintEvent pe)
+        {
+            switch(canvasMode)
+            {
+            case MODE_BUFFER_FLUSH:
+                // Paint event initiated by us to paint the Canvas.
+                doBufferFlush(pe, canvasGraphics);
+                break;
+            case MODE_GAME_BUFFER_FLUSH:
+                // Paint event initiated by us to paint the GameCanvas.
+                doBufferFlush(pe, gameBufferGraphics);
+                break;
+            case MODE_NORMAL:
+                // Native toolkit is requesting an update of an area that has
+                // become invalid. Can't do anything here because the contents
+                // need to be queried from the MIDlet in another thread by
+                // a paint callback. For this a paint callback event is posted.
+                // For a moment the native toolkit thinks that the area has
+                // been validated when in truth it will be painted later after
+                // the paint callback has been executed.
+                EventDispatcher eventDispatcher = EventDispatcher.instance();
+                LCDUIEvent event = eventDispatcher.newEvent(
+                                       LCDUIEvent.CANVAS_PAINT_NATIVE_REQUEST,
+                                       javax.microedition.lcdui.Canvas.this);
+                event.x = pe.x;
+                event.y = pe.y;
+                event.width = pe.width;
+                event.height = pe.height;
+                event.widget = pe.widget;
                 eventDispatcher.postEvent(event);
-				break;
-			}
-		}
-	}
-
-	/*
-	 * Dispatcher thread or the serviceRepaints()-thread calls.
-	 */
-	final void doCallback(LCDUIEvent event) {
-		switch(event.type) {
-		case LCDUIEvent.CANVAS_PAINT_MIDLET_REQUEST: // fall through
-		case LCDUIEvent.CANVAS_PAINT_NATIVE_REQUEST:
-			doPaintCallback(event);
-			break;
-		case LCDUIEvent.CANVAS_HIDENOTIFY:
-			hideNotify();
-			break;
-		case LCDUIEvent.CANVAS_KEYPRESSED:
-            keyPressed(event.keyCode);
-			break;
-		case LCDUIEvent.CANVAS_KEYREPEATED:
-			keyRepeated(event.keyCode);
-			break;
-		case LCDUIEvent.CANVAS_KEYRELEASED:
-			keyReleased(event.keyCode);
-			break;
-		case LCDUIEvent.CANVAS_POINTERDRAGGED:
-			pointerDragged(event.x, event.y);
-			break;
-		case LCDUIEvent.CANVAS_POINTERPRESSED:
-			pointerPressed(event.x, event.y);
-			break;
-		case LCDUIEvent.CANVAS_POINTERRELEASED:
-			pointerReleased(event.x, event.y);
-			break;
-		case LCDUIEvent.CANVAS_SHOWNOTIFY:
-			showNotify();
-			break;
-		default:
-			super.doCallback(event);
-			break;
-		}
-	}
+                break;
+            }
+        }
+    }
 
     /*
      * Dispatcher thread or the serviceRepaints()-thread calls.
      */
-	private final void doPaintCallback(final LCDUIEvent event) {
-		// Decide the area going to be painted by the callback.
-		final int redrawNowX;
-		final int redrawNowY;
-		final int redrawNowW;
-		final int redrawNowH;
-		// Before this thread obtains the repaintLock any repaint() calls
-		// will still be adding to the invalid area that is going to be
-		// painted by this callback.
-		synchronized(repaintLock) {
-			if(event.type == LCDUIEvent.CANVAS_PAINT_NATIVE_REQUEST) {
-				// Merge with possibly existing repaint() requests
+    final void doCallback(LCDUIEvent event)
+    {
+        switch(event.type)
+        {
+        case LCDUIEvent.CANVAS_PAINT_MIDLET_REQUEST: // fall through
+        case LCDUIEvent.CANVAS_PAINT_NATIVE_REQUEST:
+            doPaintCallback(event);
+            break;
+        case LCDUIEvent.CANVAS_HIDENOTIFY:
+            hideNotify();
+            break;
+        case LCDUIEvent.CANVAS_KEYPRESSED:
+            keyPressed(event.keyCode);
+            break;
+        case LCDUIEvent.CANVAS_KEYREPEATED:
+            keyRepeated(event.keyCode);
+            break;
+        case LCDUIEvent.CANVAS_KEYRELEASED:
+            keyReleased(event.keyCode);
+            break;
+        case LCDUIEvent.CANVAS_POINTERDRAGGED:
+            pointerDragged(event.x, event.y);
+            break;
+        case LCDUIEvent.CANVAS_POINTERPRESSED:
+            pointerPressed(event.x, event.y);
+            break;
+        case LCDUIEvent.CANVAS_POINTERRELEASED:
+            pointerReleased(event.x, event.y);
+            break;
+        case LCDUIEvent.CANVAS_SHOWNOTIFY:
+            showNotify();
+            break;
+        default:
+            super.doCallback(event);
+            break;
+        }
+    }
+
+    /*
+     * Dispatcher thread or the serviceRepaints()-thread calls.
+     */
+    private final void doPaintCallback(final LCDUIEvent event)
+    {
+        // Decide the area going to be painted by the callback.
+        final int redrawNowX;
+        final int redrawNowY;
+        final int redrawNowW;
+        final int redrawNowH;
+        // Before this thread obtains the repaintLock any repaint() calls
+        // will still be adding to the invalid area that is going to be
+        // painted by this callback.
+        synchronized(repaintLock)
+        {
+            if(event.type == LCDUIEvent.CANVAS_PAINT_NATIVE_REQUEST)
+            {
+                // Merge with possibly existing repaint() requests
                 invalidate(event.x, event.y, event.width, event.height);
-			} else {
-				// Need to add a new event to the queue in subsequent repaint()
-				// calls.
-				repaintPending = false;
-			}
+            }
+            else
+            {
+                // Need to add a new event to the queue in subsequent repaint()
+                // calls.
+                repaintPending = false;
+            }
 
-			// Store the current area to be painted
-			redrawNowX = repaintX1;
-			redrawNowY = repaintY1;
-			redrawNowW = repaintX2-repaintX1;
-			redrawNowH = repaintY2-repaintY1;
+            // Store the current area to be painted
+            redrawNowX = repaintX1;
+            redrawNowY = repaintY1;
+            redrawNowW = repaintX2-repaintX1;
+            redrawNowH = repaintY2-repaintY1;
 
 
-			// After releasing the lock the repaint() calls will start with
-			// new invalid area.
-			repaintX1 = repaintX2 = repaintY1 = repaintY2 = 0;
+            // After releasing the lock the repaint() calls will start with
+            // new invalid area.
+            repaintX1 = repaintX2 = repaintY1 = repaintY2 = 0;
 
-			// Don't do the callback if there's nothing to paint
-			if(!((redrawNowW > 0) && (redrawNowH > 0))) {
-				return;
-			}
-		}
+            // Don't do the callback if there's nothing to paint
+            if(!((redrawNowW > 0) && (redrawNowH > 0)))
+            {
+                return;
+            }
+        }
 
-		// Prepare the GC's buffer if not done yet
-		if (canvasGraphics.getCommandBuffer() == null) {
-			canvasGraphics.initBuffered(this, event.x, event.y, event.width, event.height);
-		}
+        // Prepare the GC's buffer if not done yet
+        if(canvasGraphics.getCommandBuffer() == null)
+        {
+            canvasGraphics.initBuffered(this, event.x, event.y, event.width, event.height);
+        }
 
-		// Clean the background if dirty, buffer the operations.
-		synchronized(cleanupLock) {
-			if (cleanupNeeded && noBackground) {
-				// UI thread can change the contentArea object reference at
-				// any time. Store the object reference locally to ensure it
-				// points to the same rectangle all the time.
-				Rectangle contentArea = getContentArea();
+        // Clean the background if dirty, buffer the operations.
+        synchronized(cleanupLock)
+        {
+            if(cleanupNeeded && noBackground)
+            {
+                // UI thread can change the contentArea object reference at
+                // any time. Store the object reference locally to ensure it
+                // points to the same rectangle all the time.
+                Rectangle contentArea = getContentArea();
 
-				canvasGraphics.setClip(contentArea.x, contentArea.y,
-						contentArea.width, contentArea.height);
-				canvasGraphics.cleanBackground(contentArea);
-				cleanupNeeded = false;
-			}
-		}
+                canvasGraphics.setClip(contentArea.x, contentArea.y,
+                                       contentArea.width, contentArea.height);
+                canvasGraphics.cleanBackground(contentArea);
+                cleanupNeeded = false;
+            }
+        }
 
-		// Clip must define the invalid area
-		canvasGraphics.setClip(redrawNowX, redrawNowY, redrawNowW, redrawNowH);
+        // Clip must define the invalid area
+        canvasGraphics.setClip(redrawNowX, redrawNowY, redrawNowW, redrawNowH);
 
-		// The callback
+        // The callback
         paint(canvasGraphics);
 
-		// Wait until the UI thread is available. Then in the UI thread
-		// synchronously send a paint event.
-		ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-			public void run() {
-				if(event.widget.isDisposed()) {
+        // Wait until the UI thread is available. Then in the UI thread
+        // synchronously send a paint event.
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        {
+            public void run()
+            {
+                if(event.widget.isDisposed())
+                {
                     return;
                 }
 
                 canvasMode = MODE_BUFFER_FLUSH;
 
                 ((CompositeExtension) event.widget)
-                        .redrawNow(redrawNowX, redrawNowY, redrawNowW, redrawNowH);
+                .redrawNow(redrawNowX, redrawNowY, redrawNowW, redrawNowH);
                 canvasGraphics.resetCommandBuffer();
                 canvasMode = MODE_NORMAL;
             }
 
-		});
-	}
+        });
+    }
 
     /*
      * UI thread calls to flush the command buffer of a graphics context.
      */
-    private final void doBufferFlush(PaintEvent event, Graphics graphics) {
-    	event.gc.getGCData().internalGc.render(graphics.getCommandBuffer());
+    private final void doBufferFlush(PaintEvent event, Graphics graphics)
+    {
+        event.gc.getGCData().internalGc.render(graphics.getCommandBuffer());
     }
 
     /*
      * UI thread calls.
      */
-    void doKeyPressed(int keyCode) {
+    void doKeyPressed(int keyCode)
+    {
         Logger.method(this, "doKeyPressed", String.valueOf(keyCode));
         boolean sendCallback = false;
 
-        if (!(updateGameKeyState(keyCode, true) && suppressGameKeys)) {
-            if( (selectionKeyCompatibility == true) && (keyCode == -5) ) {
-                if(finalMode == true) {
-                    if(!((getNumCommands() > 0) && hasCommandListener()) ) {
+        if(!(updateGameKeyState(keyCode, true) && suppressGameKeys))
+        {
+            if((selectionKeyCompatibility == true) && (keyCode == -5))
+            {
+                if(finalMode == true)
+                {
+                    if(!((getNumCommands() > 0) && hasCommandListener()))
+                    {
                         sendCallback = true;
                     }
-                    else {
+                    else
+                    {
                         sendCallback = false;
                     }
                 }
-                else {
+                else
+                {
                     sendCallback = true;
                 }
             }
-            else if( (selectionKeyCompatibility == false) && (keyCode == -5) ) {
+            else if((selectionKeyCompatibility == false) && (keyCode == -5))
+            {
                 sendCallback = false;
             }
-            else {
+            else
+            {
                 sendCallback = true;
             }
         }
-        else {
+        else
+        {
             sendCallback = false;
         }
 
-        if(sendCallback == true) {
+        if(sendCallback == true)
+        {
             LCDUIEvent event;
 
-            if (keysPressed.contains(new Integer(keyCode))) {
+            if(keysPressed.contains(new Integer(keyCode)))
+            {
                 event = EventDispatcher.instance().newEvent(LCDUIEvent.CANVAS_KEYREPEATED, this);
             }
-            else {
+            else
+            {
                 event = EventDispatcher.instance().newEvent(LCDUIEvent.CANVAS_KEYPRESSED, this);
             }
             event.keyCode = keyCode;
@@ -924,35 +1021,46 @@ public abstract class Canvas extends Displayable {
     /*
      * UI thread calls.
      */
-    void doKeyReleased(int keyCode) {
+    void doKeyReleased(int keyCode)
+    {
         Logger.method(this, "doKeyReleased", String.valueOf(keyCode));
         boolean sendCallback = false;
-        if (!(updateGameKeyState(keyCode, true) && suppressGameKeys)) {
-            if( (selectionKeyCompatibility == true) && (keyCode == -5) ) {
-                if(finalMode == true) {
-                    if(!((getNumCommands() > 0) && hasCommandListener()) ) {
+        if(!(updateGameKeyState(keyCode, true) && suppressGameKeys))
+        {
+            if((selectionKeyCompatibility == true) && (keyCode == -5))
+            {
+                if(finalMode == true)
+                {
+                    if(!((getNumCommands() > 0) && hasCommandListener()))
+                    {
                         sendCallback = true;
                     }
-                    else {
+                    else
+                    {
                         sendCallback = false;
                     }
                 }
-                else {
+                else
+                {
                     sendCallback = true;
                 }
             }
-            else if( (selectionKeyCompatibility == false) && (keyCode == -5) ) {
+            else if((selectionKeyCompatibility == false) && (keyCode == -5))
+            {
                 sendCallback = false;
             }
-            else {
+            else
+            {
                 sendCallback = true;
             }
         }
-        else {
+        else
+        {
             sendCallback = false;
         }
 
-        if(sendCallback == true) {
+        if(sendCallback == true)
+        {
 
             LCDUIEvent event = EventDispatcher.instance().newEvent(LCDUIEvent.CANVAS_KEYRELEASED, this);
             event.keyCode = keyCode;
@@ -964,46 +1072,56 @@ public abstract class Canvas extends Displayable {
     /**
      * Updates game key states and returns if the key was a game key.
      */
-    private boolean updateGameKeyState(int keyCode, boolean addKeyState) {
-    	// Ignore key repeat events
-    	if (ESWTUIThreadRunner.getKeyRepeatCount() > 1) {
+    private boolean updateGameKeyState(int keyCode, boolean addKeyState)
+    {
+        // Ignore key repeat events
+        if(ESWTUIThreadRunner.getKeyRepeatCount() > 1)
+        {
             return true;
-    	}
-        try {
+        }
+        try
+        {
             int gameAction = KeyTable.getGameAction(keyCode);
-            if (addKeyState) {
+            if(addKeyState)
+            {
                 // set bitfield
                 gameKeyState |= (1 << gameAction);
             }
             return true;
         }
-        catch (IllegalArgumentException iae) {
+        catch(IllegalArgumentException iae)
+        {
             return false;
         }
     }
 
-    private void setDefaultTapValues() {
-				twips = DEFAULT_TWIPS;
-				timeout = DEFAULT_TIMEOUT;
+    private void setDefaultTapValues()
+    {
+        twips = DEFAULT_TWIPS;
+        timeout = DEFAULT_TIMEOUT;
     }
 
     class CanvasShellMouseListener implements
-            org.eclipse.swt.events.MouseListener,
-            org.eclipse.swt.events.MouseMoveListener {
+        org.eclipse.swt.events.MouseListener,
+        org.eclipse.swt.events.MouseMoveListener
+    {
 
-        public void mouseDoubleClick(MouseEvent arg0) {
+        public void mouseDoubleClick(MouseEvent arg0)
+        {
         }
 
-        public void mouseDown(MouseEvent event) {
+        public void mouseDown(MouseEvent event)
+        {
             LCDUIEvent e = EventDispatcher.instance().newEvent(LCDUIEvent.CANVAS_POINTERPRESSED,
-            		javax.microedition.lcdui.Canvas.this);
+                           javax.microedition.lcdui.Canvas.this);
             e.x = event.x;
             e.y = event.y;
             EventDispatcher.instance().postEvent(e);
 
-           if(!disableTapDetection) {
+            if(!disableTapDetection)
+            {
                 // Supress Drag events
-           	    suppressDragEvent = true;
+                suppressDragEvent = true;
 
                 pointerDownX = event.x;
                 pointerDownY = event.y;
@@ -1011,49 +1129,56 @@ public abstract class Canvas extends Displayable {
                 // Create and Schedule Timer
                 timerTask = new CanvasTimerTask();
                 timer.schedule(timerTask, timeout);
-           }
+            }
         }
 
-        public void mouseUp(MouseEvent event) {
+        public void mouseUp(MouseEvent event)
+        {
             int pointerUpX = event.x;
             int pointerUpY = event.y;
 
-            if(!disableTapDetection) {
-                if (timerTask != null) {
+            if(!disableTapDetection)
+            {
+                if(timerTask != null)
+                {
                     timerTask.cancel();
                     timerTask = null;
                 }
 
                 // If Timer not expired and Mouseup is withing rectangle assign
                 // PointercDown to Pinter Up
-        	      if(suppressDragEvent && checkWithinRect(event.x, event.y)) {
-        	  	      pointerUpX = pointerDownX;
-        	  	      pointerUpY = pointerDownY;
-       	  	  	    suppressDragEvent = false;
-         	      }
-           }
+                if(suppressDragEvent && checkWithinRect(event.x, event.y))
+                {
+                    pointerUpX = pointerDownX;
+                    pointerUpY = pointerDownY;
+                    suppressDragEvent = false;
+                }
+            }
 
             LCDUIEvent e = EventDispatcher.instance().newEvent(LCDUIEvent.CANVAS_POINTERRELEASED,
-            		javax.microedition.lcdui.Canvas.this);
+                           javax.microedition.lcdui.Canvas.this);
             e.x = pointerUpX;
             e.y = pointerUpY;
             EventDispatcher.instance().postEvent(e);
         }
 
-        public void mouseMove(MouseEvent event) {
-        	  // Check for timeout expiration and if PointerUp falls outside the rectangle
-         	  if( disableTapDetection || (!suppressDragEvent) || !checkWithinRect(event.x, event.y)) {
+        public void mouseMove(MouseEvent event)
+        {
+            // Check for timeout expiration and if PointerUp falls outside the rectangle
+            if(disableTapDetection || (!suppressDragEvent) || !checkWithinRect(event.x, event.y))
+            {
                 LCDUIEvent e = EventDispatcher.instance().newEvent(LCDUIEvent.CANVAS_POINTERDRAGGED,
-                		javax.microedition.lcdui.Canvas.this);
+                               javax.microedition.lcdui.Canvas.this);
                 e.x = event.x;
                 e.y = event.y;
                 EventDispatcher.instance().postEvent(e);
             }
         }
 
-        boolean checkWithinRect(int x, int y) {
-        	  // Get pixel per inch
-        		Point P = Display.getCurrent().getDPI();
+        boolean checkWithinRect(int x, int y)
+        {
+            // Get pixel per inch
+            Point P = Display.getCurrent().getDPI();
 
             float xPxielwidth  = (twips * P.x) / 1440;
             float yPixelHeight = (twips * P.y) / 1440;
@@ -1061,81 +1186,90 @@ public abstract class Canvas extends Displayable {
             int RightX = pointerDownX + (int) xPxielwidth;
 
             // If the rectange width falls outside the canvas area
-            if(RightX > getWidth()) {
-               RightX = getWidth();
+            if(RightX > getWidth())
+            {
+                RightX = getWidth();
             }
 
             int LeftX = pointerDownX - (int) xPxielwidth;
 
             // If the rectange width falls outside the canvas area
             if(LeftX < 0)
-              LeftX = 0;
+                LeftX = 0;
 
             int TopY = pointerDownY - (int) yPixelHeight;
 
             // If the rectange height falls outside the canvas area
-            if( TopY < 0 )
-               TopY = 0;
+            if(TopY < 0)
+                TopY = 0;
 
             int DownY = pointerDownY + (int) yPixelHeight;
 
             // If the rectange heightfalls outside the canvas area.
-            if( DownY > getHeight() )
-              DownY = getHeight();
+            if(DownY > getHeight())
+                DownY = getHeight();
 
             // Find the PointerUp is within rectange
-            if( (x >= LeftX ) && (x <= RightX) ) {
-                if( (y >= TopY ) && (y <= DownY) ) {
-                	return true;
+            if((x >= LeftX) && (x <= RightX))
+            {
+                if((y >= TopY) && (y <= DownY))
+                {
+                    return true;
                 }
             }
 
-    	  return false;
+            return false;
         }
     }
 
-	private boolean invalidate(int x, int y, int width, int height) {
-		// Regularize bounds
-		final int x1 = x;
-		final int y1 = y;
-		final int x2 = x + width;
-		final int y2 = y + height;
+    private boolean invalidate(int x, int y, int width, int height)
+    {
+        // Regularize bounds
+        final int x1 = x;
+        final int y1 = y;
+        final int x2 = x + width;
+        final int y2 = y + height;
 
-		// Union the current and new damaged rects
-		final boolean valid = ((repaintX2 - repaintX1) <= 0) && ((repaintY2 - repaintY1) <= 0);
-		if (!valid) {
-			repaintX1 = Math.min(repaintX1, x1);
-			repaintY1 = Math.min(repaintY1, y1);
-			repaintX2 = Math.max(repaintX2, x2);
-			repaintY2 = Math.max(repaintY2, y2);
-		} else {
-			repaintX1 = x1;
-			repaintY1 = y1;
-			repaintX2 = x2;
-			repaintY2 = y2;
-		}
+        // Union the current and new damaged rects
+        final boolean valid = ((repaintX2 - repaintX1) <= 0) && ((repaintY2 - repaintY1) <= 0);
+        if(!valid)
+        {
+            repaintX1 = Math.min(repaintX1, x1);
+            repaintY1 = Math.min(repaintY1, y1);
+            repaintX2 = Math.max(repaintX2, x2);
+            repaintY2 = Math.max(repaintY2, y2);
+        }
+        else
+        {
+            repaintX1 = x1;
+            repaintY1 = y1;
+            repaintX2 = x2;
+            repaintY2 = y2;
+        }
 
-		// UI thread can change the the contentArea object reference at
-		// any time. Store the object reference locally to ensure it
-		// points to the same rectangle all the time.
-		Rectangle contentArea = getContentArea();
-		if(contentArea == null) return valid;
-		final int w = contentArea.width;
-		final int h = contentArea.height;
+        // UI thread can change the the contentArea object reference at
+        // any time. Store the object reference locally to ensure it
+        // points to the same rectangle all the time.
+        Rectangle contentArea = getContentArea();
+        if(contentArea == null) return valid;
+        final int w = contentArea.width;
+        final int h = contentArea.height;
 
-		// Clip to bounds
-		repaintX1 = repaintX1 > 0 ? repaintX1 : 0;
-		repaintY1 = repaintY1 > 0 ? repaintY1 : 0;
-		repaintX2 = repaintX2 < w ? repaintX2 : w;
-		repaintY2 = repaintY2 < h ? repaintY2 : h;
+        // Clip to bounds
+        repaintX1 = repaintX1 > 0 ? repaintX1 : 0;
+        repaintY1 = repaintY1 > 0 ? repaintY1 : 0;
+        repaintX2 = repaintX2 < w ? repaintX2 : w;
+        repaintY2 = repaintY2 < h ? repaintY2 : h;
 
-		return valid;
-	}
+        return valid;
+    }
 
-    class CanvasTimerTask extends TimerTask {
+    class CanvasTimerTask extends TimerTask
+    {
 
-        public void run() {
-        	   suppressDragEvent = false;
+        public void run()
+        {
+            suppressDragEvent = false;
         }
     }
 }

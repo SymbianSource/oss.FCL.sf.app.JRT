@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt_uirobot;
@@ -27,7 +27,8 @@ import com.nokia.mj.impl.uitestutils.Key;
 import com.nokia.mj.impl.uitestutils.UITestUtils;
 import com.nokia.openlcdui.mt.SWTTestCase;
 
-public class UITestBase extends SWTTestCase implements CommandListener {
+public class UITestBase extends SWTTestCase implements CommandListener
+{
 
     public final static int KEYEVENT_DELAY = 100;
     public final static int CHANGE_DISPLAYABLE_DELAY = 500;
@@ -38,38 +39,44 @@ public class UITestBase extends SWTTestCase implements CommandListener {
     protected UITestUtils uiTestUtils;
     protected Display display;
 
-    public UITestBase() {
-    	this("");
+    public UITestBase()
+    {
+        this("");
     }
-    
-    public UITestBase(String name) {
+
+    public UITestBase(String name)
+    {
         super(name);
         uiTestUtils = new UITestUtils();
     }
 
-    protected void setUp() throws Exception {
+    protected void setUp() throws Exception
+    {
         super.setUp();
         display = Display.getDisplay(getMIDlet());
         lastDisplayable = null;
         lastDispCommand = null;
     }
 
-    protected void setCurrent(Displayable disp) {
+    protected void setCurrent(Displayable disp)
+    {
         display.setCurrent(disp);
         block(CHANGE_DISPLAYABLE_DELAY);
     }
 
-    public void runTest() throws Throwable {
-    	super.runTest();
+    public void runTest() throws Throwable
+    {
+        super.runTest();
     }
-    
+
     /**
      * Emulates key event by sending key pressed and key released events. Events
      * are also dispatched if there is a Display available.
      *
      * @param aKeyCode Keycode as defined in com.nokia.mj.impl.uitestutils.Key
      */
-    public void key(int keycode) {
+    public void key(int keycode)
+    {
         key(keycode, KEYEVENT_DELAY);
     }
 
@@ -80,7 +87,8 @@ public class UITestBase extends SWTTestCase implements CommandListener {
      * @param keyCode Keycode as defined in com.nokia.mj.impl.uitestutils.Key
      * @param delay custom delay
      */
-    public void key(int keycode, int delay) {
+    public void key(int keycode, int delay)
+    {
         Key key = new Key(keycode);
         uiTestUtils.triggerKeyPressEvent(key);
         flush();
@@ -95,7 +103,8 @@ public class UITestBase extends SWTTestCase implements CommandListener {
      * @param modifiers Modifier as defined in
      *            com.nokia.mj.impl.uitestutils.Modifier
      */
-    public void keyMod(int keycode, int modifiers) {
+    public void keyMod(int keycode, int modifiers)
+    {
         Key key = new Key(keycode);
         key.modifiers = modifiers;
         uiTestUtils.triggerKeyPressEvent(key);
@@ -110,7 +119,8 @@ public class UITestBase extends SWTTestCase implements CommandListener {
      * @param x X-coordinate relative to the screen.
      * @param y Y-coordinate relative to the screen.
      */
-    public void pointerTap(Point p) {
+    public void pointerTap(Point p)
+    {
         uiTestUtils.triggerPointerDownEvent(p.x, p.y);
         uiTestUtils.triggerPointerUpEvent(p.x, p.y);
         flush();
@@ -123,7 +133,8 @@ public class UITestBase extends SWTTestCase implements CommandListener {
      * @param x X-coordinate relative to the screen.
      * @param y Y-coordinate relative to the screen.
      */
-    public void pointerDown(Point p) {
+    public void pointerDown(Point p)
+    {
         uiTestUtils.triggerPointerDownEvent(p.x, p.y);
         flush();
     }
@@ -135,7 +146,8 @@ public class UITestBase extends SWTTestCase implements CommandListener {
      * @param x X-coordinate relative to the screen.
      * @param y Y-coordinate relative to the screen.
      */
-    public void pointerUp(Point p) {
+    public void pointerUp(Point p)
+    {
         uiTestUtils.triggerPointerUpEvent(p.x, p.y);
         flush();
     }
@@ -147,39 +159,46 @@ public class UITestBase extends SWTTestCase implements CommandListener {
      * @param x X-coordinate relative to the screen.
      * @param y Y-coordinate relative to the screen.
      */
-    public void pointerMove(Point p) {
+    public void pointerMove(Point p)
+    {
         uiTestUtils.triggerPointerDragEvent(p.x, p.y);
         flush();
     }
 
-    public void switchResolution() {
-    	fail("switchResolution not implemented");
+    public void switchResolution()
+    {
+        fail("switchResolution not implemented");
     }
-    
-    public int getNumberOfResolutions() {
-    	fail("getNumberOfResolutions not implemented");
-    	return 0;
+
+    public int getNumberOfResolutions()
+    {
+        fail("getNumberOfResolutions not implemented");
+        return 0;
     }
-    
+
     /**
      * Assert the command listener values.
      *
      * @param expCmd expected Command
      * @param expDisp expected Displayable
      */
-    protected void assertCmdListener(String msg, Command expCmd, Displayable disp) {
+    protected void assertCmdListener(String msg, Command expCmd, Displayable disp)
+    {
         block(100);
         boolean expNull = (expCmd == null && disp == null);
         boolean lastNull = (lastDispCommand == null && lastDisplayable == null);
-        if (lastNull && !expNull) {
+        if(lastNull && !expNull)
+        {
             fail(msg + " - Listener should have been called with "
-                    + expCmd + " on " + disp);
+                 + expCmd + " on " + disp);
         }
-        else if (!lastNull && expNull) {
+        else if(!lastNull && expNull)
+        {
             fail(msg + " - Listener should not be called with "
-                    + lastDispCommand + " on " + lastDisplayable);
+                 + lastDispCommand + " on " + lastDisplayable);
         }
-        else {
+        else
+        {
             assertEquals(msg + " - Listener displayable mismatch ", disp, lastDisplayable);
             assertEquals(msg + " - Listener command mismatch ", expCmd, lastDispCommand);
         }
@@ -187,7 +206,8 @@ public class UITestBase extends SWTTestCase implements CommandListener {
         lastDispCommand = null;
     }
 
-    public void commandAction(Command cmd, Displayable disp) {
+    public void commandAction(Command cmd, Displayable disp)
+    {
         lastDisplayable = disp;
         lastDispCommand = cmd;
     }

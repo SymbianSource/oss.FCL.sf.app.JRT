@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui.game;
@@ -22,7 +22,8 @@ import javax.microedition.lcdui.Image;
 /**
  * LCDUI Sprite class.
  */
-public class Sprite extends Layer {
+public class Sprite extends Layer
+{
 
     /**
      * Transform constant.
@@ -103,7 +104,8 @@ public class Sprite extends Layer {
      * @param frameWidth Frame's width.
      * @param frameHeight Frame's height.
      */
-    public Sprite(Image image, int frameWidth, int frameHeight) {
+    public Sprite(Image image, int frameWidth, int frameHeight)
+    {
         super(image, frameWidth, frameHeight);
         this.collisionWidth = frameWidth;
         this.collisionHeight = frameHeight;
@@ -115,7 +117,8 @@ public class Sprite extends Layer {
      *
      * @param image Image.
      */
-    public Sprite(Image image) {
+    public Sprite(Image image)
+    {
         this(image, image.getWidth(), image.getHeight());
     }
 
@@ -124,7 +127,8 @@ public class Sprite extends Layer {
      *
      * @param from source Sprite
      */
-    public Sprite(Sprite from) {
+    public Sprite(Sprite from)
+    {
         super(from);
         this.frameIndex = from.frameIndex;
         this.frameCount = from.frameCount;
@@ -148,23 +152,27 @@ public class Sprite extends Layer {
      * @param frameWidth Frame's width.
      * @param frameHeight Frame's height.
      */
-    public void setImage(Image image, int frameWidth, int frameHeight) {
+    public void setImage(Image image, int frameWidth, int frameHeight)
+    {
         int oldTileCound = tileCount;
         int oldTileWidth = tileWidth;
         int oldTileHeight = tileHeight;
 
         setTileImage(image, frameWidth, frameHeight);
         this.transform &= TRANSFORM_MASK;
-        if (tileCount < oldTileCound) {
+        if(tileCount < oldTileCound)
+        {
             frameIndex = 0;
             frameArray = null;
         }
-        if (frameArray == null) {
+        if(frameArray == null)
+        {
             frameCount = tileCount;
         }
 
         // If image's dimension has changed:
-        if ((tileWidth != oldTileWidth) || (tileHeight != oldTileHeight)) {
+        if((tileWidth != oldTileWidth) || (tileHeight != oldTileHeight))
+        {
             updateTransRefPixel(true);
             defineCollisionRectangle(0, 0, tileWidth, tileHeight);
         }
@@ -175,23 +183,26 @@ public class Sprite extends Layer {
      *
      * @param transform Transform mask.
      */
-    public void setTransform(int transform) {
-        if ((this.transform & TRANSFORM_MASK) != transform) {
+    public void setTransform(int transform)
+    {
+        if((this.transform & TRANSFORM_MASK) != transform)
+        {
             // flags have changed
-            switch (transform) {
-                case TRANS_NONE:
-                case TRANS_ROT90:
-                case TRANS_ROT180:
-                case TRANS_ROT270:
-                case TRANS_MIRROR:
-                case TRANS_MIRROR_ROT90:
-                case TRANS_MIRROR_ROT180:
-                case TRANS_MIRROR_ROT270:
-                    // Ok
-                    break;
-                default:
-                    throw new IllegalArgumentException(
-                            MsgRepository.SPRITE_EXCEPTION_INVALID_TRANSFORM);
+            switch(transform)
+            {
+            case TRANS_NONE:
+            case TRANS_ROT90:
+            case TRANS_ROT180:
+            case TRANS_ROT270:
+            case TRANS_MIRROR:
+            case TRANS_MIRROR_ROT90:
+            case TRANS_MIRROR_ROT180:
+            case TRANS_MIRROR_ROT270:
+                // Ok
+                break;
+            default:
+                throw new IllegalArgumentException(
+                    MsgRepository.SPRITE_EXCEPTION_INVALID_TRANSFORM);
             }
 
             this.transform = transform;
@@ -205,10 +216,12 @@ public class Sprite extends Layer {
      *
      * @param frameIndex Index.
      */
-    public void setFrame(int frameIndex) {
-        if (frameIndex < 0 || frameIndex >= frameCount) {
+    public void setFrame(int frameIndex)
+    {
+        if(frameIndex < 0 || frameIndex >= frameCount)
+        {
             throw new IndexOutOfBoundsException(
-                    MsgRepository.SPRITE_EXCEPTION_INVALID_FRAME_INDEX);
+                MsgRepository.SPRITE_EXCEPTION_INVALID_FRAME_INDEX);
         }
         this.frameIndex = frameIndex;
     }
@@ -218,21 +231,24 @@ public class Sprite extends Layer {
      *
      * @return Index of current frame.
      */
-    public int getFrame() {
+    public int getFrame()
+    {
         return frameIndex;
     }
 
     /**
      * Switches to the next frame.
      */
-    public void nextFrame() {
+    public void nextFrame()
+    {
         frameIndex = (frameIndex + frameCount + 1) % frameCount;
     }
 
     /**
      * Switches to the previous frame.
      */
-    public void prevFrame() {
+    public void prevFrame()
+    {
         frameIndex = (frameIndex + frameCount - 1) % frameCount;
     }
 
@@ -241,7 +257,8 @@ public class Sprite extends Layer {
      *
      * @return Length of frame sequence.
      */
-    public int getFrameSequenceLength() {
+    public int getFrameSequenceLength()
+    {
         return frameCount;
     }
 
@@ -250,7 +267,8 @@ public class Sprite extends Layer {
      *
      * @return Number of raw frames.
      */
-    public int getRawFrameCount() {
+    public int getRawFrameCount()
+    {
         return tileCount;
     }
 
@@ -259,26 +277,32 @@ public class Sprite extends Layer {
      *
      * @param frameArray Array of frame indexes.
      */
-    public void setFrameSequence(int[] frameArray) {
+    public void setFrameSequence(int[] frameArray)
+    {
         int[] tempArray;
         int tempCount;
-        if (frameArray == null) {
+        if(frameArray == null)
+        {
             // no sequence
             tempCount = tileCount;
             tempArray = null;
         }
-        else {
+        else
+        {
             tempCount = frameArray.length;
-            if (tempCount == 0) {
+            if(tempCount == 0)
+            {
                 throw new IllegalArgumentException(
-                        MsgRepository.SPRITE_EXCEPTION_INVALID_SEQUENCE_LENGTH);
+                    MsgRepository.SPRITE_EXCEPTION_INVALID_SEQUENCE_LENGTH);
             }
             tempArray = new int[tempCount];
             // check and copy the sequence
-            for (int i = 0; i < tempCount; i++) {
-                if (frameArray[i] < 0 || frameArray[i] >= tileCount) {
+            for(int i = 0; i < tempCount; i++)
+            {
+                if(frameArray[i] < 0 || frameArray[i] >= tileCount)
+                {
                     throw new ArrayIndexOutOfBoundsException(
-                            MsgRepository.SPRITE_EXCEPTION_INVALID_FRAME + i);
+                        MsgRepository.SPRITE_EXCEPTION_INVALID_FRAME + i);
                 }
                 tempArray[i] = frameArray[i];
             }
@@ -294,7 +318,8 @@ public class Sprite extends Layer {
      * @param x X coordinate of reference pixel.
      * @param y Y coordinate of reference pixel.
      */
-    public void defineReferencePixel(int x, int y) {
+    public void defineReferencePixel(int x, int y)
+    {
         referenceX = x;
         referenceY = y;
         updateTransRefPixel(false);
@@ -305,7 +330,8 @@ public class Sprite extends Layer {
      *
      * @return X coordinate.
      */
-    public int getRefPixelX() {
+    public int getRefPixelX()
+    {
         return getX() + transReferenceX;
     }
 
@@ -314,7 +340,8 @@ public class Sprite extends Layer {
      *
      * @return Y coordinate.
      */
-    public int getRefPixelY() {
+    public int getRefPixelY()
+    {
         return getY() + transReferenceY;
     }
 
@@ -324,7 +351,8 @@ public class Sprite extends Layer {
      * @param x X-coordinate.
      * @param y Y-coordinate.
      */
-    public void setRefPixelPosition(int x, int y) {
+    public void setRefPixelPosition(int x, int y)
+    {
         setPosition(x - transReferenceX, y - transReferenceY);
     }
 
@@ -336,10 +364,12 @@ public class Sprite extends Layer {
      * @param width Width of the rectangle.
      * @param height Height of the rectangle.
      */
-    public void defineCollisionRectangle(int x, int y, int width, int height) {
-        if (width < 0 || height < 0) {
+    public void defineCollisionRectangle(int x, int y, int width, int height)
+    {
+        if(width < 0 || height < 0)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.SPRITE_EXCEPTION_INVALID_WIDTH_HEIGHT);
+                MsgRepository.SPRITE_EXCEPTION_INVALID_WIDTH_HEIGHT);
         }
 
         collisionX = x;
@@ -355,24 +385,29 @@ public class Sprite extends Layer {
      *
      * @param moveLayer if the layer movement is needed based on transRef pixel change
      */
-    private void updateTransRefPixel(boolean moveLayer) {
+    private void updateTransRefPixel(boolean moveLayer)
+    {
         int tempX = referenceX;
         int tempY = referenceY;
 
-        if ((transform & TRANSFORM_REFLECT_V) != 0) {
+        if((transform & TRANSFORM_REFLECT_V) != 0)
+        {
             tempY = tileHeight - 1 - tempY;
         }
-        if ((transform & TRANSFORM_REFLECT_H) != 0) {
+        if((transform & TRANSFORM_REFLECT_H) != 0)
+        {
             tempX = tileWidth - 1 - tempX;
         }
-        if ((transform & TRANSFORM_TRANSPOSE) != 0) {
+        if((transform & TRANSFORM_TRANSPOSE) != 0)
+        {
             // xor swap
             tempX ^= tempY;
             tempY ^= tempX;
             tempX ^= tempY;
         }
 
-        if (moveLayer) {
+        if(moveLayer)
+        {
             move(transReferenceX - tempX, transReferenceY - tempY);
         }
 
@@ -380,26 +415,34 @@ public class Sprite extends Layer {
         transReferenceY = tempY;
     }
 
-    int getLayerHeight() {
-        if ((transform & TRANSFORM_TRANSPOSE) == 0) {
+    int getLayerHeight()
+    {
+        if((transform & TRANSFORM_TRANSPOSE) == 0)
+        {
             return tileHeight;
         }
-        else {
+        else
+        {
             return tileWidth;
         }
     }
 
-    int getLayerWidth() {
-        if ((transform & TRANSFORM_TRANSPOSE) == 0) {
+    int getLayerWidth()
+    {
+        if((transform & TRANSFORM_TRANSPOSE) == 0)
+        {
             return tileWidth;
         }
-        else {
+        else
+        {
             return tileHeight;
         }
     }
 
-    int getTileIndex() {
-        if (this.frameArray != null) {
+    int getTileIndex()
+    {
+        if(this.frameArray != null)
+        {
             return frameArray[frameIndex];
         }
         return frameIndex;
@@ -410,19 +453,21 @@ public class Sprite extends Layer {
      *
      * @param graphics Graphics.
      */
-    public final void paint(Graphics graphics) {
-        if (visible) {
+    public final void paint(Graphics graphics)
+    {
+        if(visible)
+        {
             int index = getTileIndex();
             int row = index / tileColumns;
             int col = index % tileColumns;
             graphics.drawRegion(tileImage,
-                    col * tileWidth,
-                    row * tileHeight,
-                    tileWidth,
-                    tileHeight,
-                    transform & TRANSFORM_MASK,
-                    x, y,
-                    0);
+                                col * tileWidth,
+                                row * tileHeight,
+                                tileWidth,
+                                tileHeight,
+                                transform & TRANSFORM_MASK,
+                                x, y,
+                                0);
         }
     }
 
@@ -436,8 +481,10 @@ public class Sprite extends Layer {
      *
      * @return true if Image and this Sprite collides.
      */
-    public boolean collidesWith(Image image, int x, int y, boolean pixelLevel) {
-        if (!visible) {
+    public boolean collidesWith(Image image, int x, int y, boolean pixelLevel)
+    {
+        if(!visible)
+        {
             return false;
         }
 
@@ -457,12 +504,14 @@ public class Sprite extends Layer {
         int crY2 = this.y + collisionRect[1][1];
 
         // Check boundary collision first:
-        if (!(x1 < crX2 && x2 > crX1 && y1 < crY2 && y2 > crY1)) {
+        if(!(x1 < crX2 && x2 > crX1 && y1 < crY2 && y2 > crY1))
+        {
             return false;
         }
 
         // Rectangles intersect, can return a hit if not pixel level:
-        if (!pixelLevel) {
+        if(!pixelLevel)
+        {
             return true;
         }
 
@@ -473,7 +522,8 @@ public class Sprite extends Layer {
         crX2 = Math.min(crX2, this.x + getLayerWidth());
         crY2 = Math.min(crY2, this.y + getLayerHeight());
 
-        if (!(x1 < crX2 && x2 > crX1 && y1 < crY2 && y2 > crY1)) {
+        if(!(x1 < crX2 && x2 > crX1 && y1 < crY2 && y2 > crY1))
+        {
             // All overlapping pixels are outside the bounds of the Sprite
             // frame and only in the collision rect and are considered to
             // be transparent for pixel-level collision detection.
@@ -507,10 +557,10 @@ public class Sprite extends Layer {
         sy2 += tempY;
 
         return com.nokia.mj.impl.nokialcdui.LCDUIInvoker.detectCollision(
-                tileImage, transform & TRANSFORM_MASK, crX1, crY1,
-                sx1, sy1, sx2, sy2,
-                image, TRANS_NONE, x, y,
-                0, 0, image.getWidth(), image.getHeight());
+                   tileImage, transform & TRANSFORM_MASK, crX1, crY1,
+                   sx1, sy1, sx2, sy2,
+                   image, TRANS_NONE, x, y,
+                   0, 0, image.getWidth(), image.getHeight());
     }
 
     /**
@@ -520,9 +570,11 @@ public class Sprite extends Layer {
      * @param pixelLevel Is collision detected in pixel level.
      * @return True if sprites collide.
      */
-    public boolean collidesWith(Sprite otherSprite, boolean pixelLevel) {
+    public boolean collidesWith(Sprite otherSprite, boolean pixelLevel)
+    {
         // Both Sprites must be visible in order for a collision to be detected:
-        if (!(visible && otherSprite.visible)) {
+        if(!(visible && otherSprite.visible))
+        {
             return false;
         }
 
@@ -543,12 +595,14 @@ public class Sprite extends Layer {
         int cr2y2 = otherSprite.y + collisionRect2[1][1];
 
         // Check boundary collision first:
-        if (!(cr2x1 < cr1x2 && cr2x2 > cr1x1 && cr2y1 < cr1y2 && cr2y2 > cr1y1)) {
+        if(!(cr2x1 < cr1x2 && cr2x2 > cr1x1 && cr2y1 < cr1y2 && cr2y2 > cr1y1))
+        {
             return false;
         }
 
         // Bounding rectangles collide, can return hit if not pixel level.
-        if (!pixelLevel) {
+        if(!pixelLevel)
+        {
             return true;
         }
 
@@ -566,7 +620,8 @@ public class Sprite extends Layer {
         cr2x2 = Math.min(cr2x2, otherSprite.x + otherSprite.getLayerWidth());
         cr2y2 = Math.min(cr2y2, otherSprite.y + otherSprite.getLayerHeight());
 
-        if (!(cr1x1 < cr2x2 && cr1x2 > cr2x1 && cr1y1 < cr2y2 && cr1y2 > cr2y1)) {
+        if(!(cr1x1 < cr2x2 && cr1x2 > cr2x1 && cr1y1 < cr2y2 && cr1y2 > cr2y1))
+        {
             // All overlapping pixels are outside the bounds of the
             // Sprite frame and only in the collision rect and are
             // considered to be transparent for pixel-level collision detection.
@@ -624,15 +679,15 @@ public class Sprite extends Layer {
         s2y2 += y2;
 
         return com.nokia.mj.impl.nokialcdui.LCDUIInvoker.detectCollision(
-                tileImage, transform & TRANSFORM_MASK,
-                cr1x1, cr1y1,
-                s1x1, s1y1, s1x2, s1y2,
+                   tileImage, transform & TRANSFORM_MASK,
+                   cr1x1, cr1y1,
+                   s1x1, s1y1, s1x2, s1y2,
 
-                otherSprite.tileImage,
-                otherSprite.transform & TRANSFORM_MASK,
-                cr2x1, cr2y1,
-                s2x1, s2y1, s2x2, s2y2
-        );
+                   otherSprite.tileImage,
+                   otherSprite.transform & TRANSFORM_MASK,
+                   cr2x1, cr2y1,
+                   s2x1, s2y1, s2x2, s2y2
+               );
     }
 
     /**
@@ -642,10 +697,12 @@ public class Sprite extends Layer {
      * @param pixelLevel Is collision detected in pixel level.
      * @return True if collision occurs.
      */
-    public boolean collidesWith(TiledLayer tiledLayer, boolean pixelLevel) {
+    public boolean collidesWith(TiledLayer tiledLayer, boolean pixelLevel)
+    {
         // The Sprite and TiledLayer must both be visible
         // in order for a collision to be detected:
-        if (!visible || !tiledLayer.isVisible()) {
+        if(!visible || !tiledLayer.isVisible())
+        {
             return false;
         }
 
@@ -657,7 +714,8 @@ public class Sprite extends Layer {
         int crX2 = this.x + collisionRect[1][0];
         int crY2 = this.y + collisionRect[1][1];
 
-        if (!pixelLevel) {
+        if(!pixelLevel)
+        {
             return tiledLayer.collidesCell(crX1, crY1, crX2, crY2);
         }
 
@@ -707,18 +765,22 @@ public class Sprite extends Layer {
         crX2 = Math.min(crX2, this.x + getLayerWidth());
         crY2 = Math.min(crY2, this.y + getLayerHeight());
 
-        for (int row = startRow; row <= endRow; row++) {
-            for (int col = startCol; col <= endCol; col++) {
+        for(int row = startRow; row <= endRow; row++)
+        {
+            for(int col = startCol; col <= endCol; col++)
+            {
                 int tile = tiledLayer.getCell(col, row);
-                if (tile != 0) { //non clear cell
+                if(tile != 0)    //non clear cell
+                {
                     // cell rect in painter's coordinates
                     final int cellX1 = tiledLayer.getX() + col * cellWidth;
                     final int cellY1 = tiledLayer.getY() + row * cellHeight;
                     final int cellX2 = cellX1 + cellWidth;
                     final int cellY2 = cellY1 + cellHeight;
 
-                    if (!(cellX1 < crX2 && cellX2 > crX1
-                            && cellY1 < crY2 && cellY2 > crY1)) {
+                    if(!(cellX1 < crX2 && cellX2 > crX1
+                            && cellY1 < crY2 && cellY2 > crY1))
+                    {
                         // All overlapping pixels are outside the bounds of the
                         // Sprite frame and only in the collision rect and
                         // are considered to be transparent for pixel-level
@@ -726,7 +788,8 @@ public class Sprite extends Layer {
                         break; //no collision, move on to next cell
                     }
 
-                    if (tile < 0) {
+                    if(tile < 0)
+                    {
                         tile = tiledLayer.getAnimatedTile(tile);
                     }
 
@@ -740,16 +803,17 @@ public class Sprite extends Layer {
                     final int cx2   = cx1 + cellWidth;
                     final int cy2   = cy1 + cellHeight;
 
-                    if (com.nokia.mj.impl.nokialcdui.LCDUIInvoker.detectCollision(
-                            tileImage,
-                            transform & TRANSFORM_MASK,
-                            crX1, crY1,
-                            sx1, sy1, sx2, sy2,
+                    if(com.nokia.mj.impl.nokialcdui.LCDUIInvoker.detectCollision(
+                                tileImage,
+                                transform & TRANSFORM_MASK,
+                                crX1, crY1,
+                                sx1, sy1, sx2, sy2,
 
-                            tiledLayer.tileImage,
-                            TRANS_NONE,
-                            cellX1, cellY1,
-                            cx1, cy1, cx2, cy2)) {
+                                tiledLayer.tileImage,
+                                TRANS_NONE,
+                                cellX1, cellY1,
+                                cx1, cy1, cx2, cy2))
+                    {
                         return true;
                     }
                     // else no pixel collision, move on to next cell
@@ -763,9 +827,12 @@ public class Sprite extends Layer {
     /**
      * Calculate transformed collision rectange in sprite co-ordinates.
      */
-    private int[][] getTransCollisionRect() {
-        if ((transform & TRANSFORM_COLLISION) == 0) {
-            if (transCollision == null) {
+    private int[][] getTransCollisionRect()
+    {
+        if((transform & TRANSFORM_COLLISION) == 0)
+        {
+            if(transCollision == null)
+            {
                 transCollision = new int[2][2];
             }
 
@@ -774,48 +841,51 @@ public class Sprite extends Layer {
             int w = 0;
             int h = 0;
 
-            switch(transform & TRANSFORM_MASK) {
-                case TRANS_NONE:
-                    x = collisionX;
-                    y = collisionY;
-                    break;
-                case TRANS_ROT90:
-                    x = tileHeight - collisionY - collisionHeight;
-                    y = collisionX;
-                    break;
-                case TRANS_ROT180:
-                    x = tileWidth - collisionX - collisionWidth;
-                    y = tileHeight - collisionY - collisionHeight;
-                    break;
-                case TRANS_ROT270:
-                    x = collisionY;
-                    y = tileWidth - collisionX - collisionWidth;
-                    break;
-                case TRANS_MIRROR:
-                    x = tileWidth - collisionX - collisionWidth;
-                    y = collisionY;
-                    break;
-                case TRANS_MIRROR_ROT90:
-                    x = tileHeight - collisionY - collisionHeight;
-                    y = tileWidth - collisionX - collisionWidth;
-                    break;
-                case TRANS_MIRROR_ROT180:
-                    x = collisionX;
-                    y = tileHeight - collisionY - collisionHeight;
-                    break;
-                case TRANS_MIRROR_ROT270:
-                    x = collisionY;
-                    y = collisionX;
-                    break;
-                default:
-                    break;
+            switch(transform & TRANSFORM_MASK)
+            {
+            case TRANS_NONE:
+                x = collisionX;
+                y = collisionY;
+                break;
+            case TRANS_ROT90:
+                x = tileHeight - collisionY - collisionHeight;
+                y = collisionX;
+                break;
+            case TRANS_ROT180:
+                x = tileWidth - collisionX - collisionWidth;
+                y = tileHeight - collisionY - collisionHeight;
+                break;
+            case TRANS_ROT270:
+                x = collisionY;
+                y = tileWidth - collisionX - collisionWidth;
+                break;
+            case TRANS_MIRROR:
+                x = tileWidth - collisionX - collisionWidth;
+                y = collisionY;
+                break;
+            case TRANS_MIRROR_ROT90:
+                x = tileHeight - collisionY - collisionHeight;
+                y = tileWidth - collisionX - collisionWidth;
+                break;
+            case TRANS_MIRROR_ROT180:
+                x = collisionX;
+                y = tileHeight - collisionY - collisionHeight;
+                break;
+            case TRANS_MIRROR_ROT270:
+                x = collisionY;
+                y = collisionX;
+                break;
+            default:
+                break;
             }
 
-            if ((transform & TRANSFORM_TRANSPOSE) == 0) {
+            if((transform & TRANSFORM_TRANSPOSE) == 0)
+            {
                 w = collisionWidth;
                 h = collisionHeight;
             }
-            else {
+            else
+            {
                 w = collisionHeight;
                 h = collisionWidth;
             }

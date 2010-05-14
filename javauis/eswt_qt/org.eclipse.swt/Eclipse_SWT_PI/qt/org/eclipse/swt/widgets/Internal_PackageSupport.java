@@ -31,8 +31,15 @@ public final class Internal_PackageSupport {
 public static int handle(Widget w) {
     return w.handle;
 }
+
+public static boolean isInternalWidget(Widget w) {
+    return w.isInternalWidget_pp();
+}
 public static void setHandle(Widget w, int handle) {
     w.handle = handle;
+}
+public static void setWidgetInternalOnly(Widget w) {
+    w.setWidgetInternalOnly_pp();
 }
 public static int topHandle(Widget w) {
     return w.topHandle;

@@ -205,10 +205,18 @@ TInt CMIDSound::Play(TInt aLoop)
 TInt CMIDSound::DoPlay(TInt aLoop)
 {
     JELOG2(EJavaUI);
-    TInt state = iMIDSound->State();
-    if (state != CMIDSoundImpl::EReadyToPlay)
+    
+    if ( iMIDSound )
     {
-        return state;
+        TInt state = iMIDSound->State();
+        if (state != CMIDSoundImpl::EReadyToPlay)
+        {
+            return state;
+    	}
+    }
+    else
+    {
+        return CMIDSoundImpl::ENotSupported;
     }
     if (!IsAudioEnabled())
     {

@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt.game;
@@ -27,7 +27,8 @@ import com.nokia.openlcdui.mt.SWTTestCase;
  * Layer non-interactive tests.<br>
  * Tests Layer methods visible through Sprite.
  */
-public class LayerTest extends SWTTestCase {
+public class LayerTest extends SWTTestCase
+{
 
     Image iImage = null;
 
@@ -36,7 +37,8 @@ public class LayerTest extends SWTTestCase {
     /**
      * Constructor.
      */
-    public LayerTest() {
+    public LayerTest()
+    {
     }
 
     /**
@@ -45,17 +47,21 @@ public class LayerTest extends SWTTestCase {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public LayerTest(String sTestName) {
+    public LayerTest(String sTestName)
+    {
         super(sTestName);
     }
 
-    protected void setUp() throws Exception {
+    protected void setUp() throws Exception
+    {
         super.setUp();
-        int[] rgb = {
-                0xFFFFFFFF, 0xFF000000, 0xFF000000, 0xFFFFFFFF,
-                0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000,
-                0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000,
-                0xFFFFFFFF, 0xFF000000, 0xFF000000, 0xFFFFFFFF};
+        int[] rgb =
+        {
+            0xFFFFFFFF, 0xFF000000, 0xFF000000, 0xFFFFFFFF,
+            0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000,
+            0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF000000,
+            0xFFFFFFFF, 0xFF000000, 0xFF000000, 0xFFFFFFFF
+        };
         iImage = Image.createRGBImage(rgb, 4, 4, true);
         iSprite = new Sprite(iImage);
     }
@@ -66,37 +72,42 @@ public class LayerTest extends SWTTestCase {
      *
      * @return new testsuite.
      */
-    public static Test suite() {
-		TestSuite suite = new TestSuite();
+    public static Test suite()
+    {
+        TestSuite suite = new TestSuite();
 
-	    java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Vector methodNames;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = LayerTest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new LayerTest((String)e.nextElement()));
-	    }
+        // Add widget tests
+        methodNames = LayerTest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new LayerTest((String)e.nextElement()));
+        }
 
-		return suite;
-	}
+        return suite;
+    }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testSprites");
         methodNames.addElement("testVisible");
         return methodNames;
     }
-    
-    protected void runTest() throws Throwable {
-        if (getName().equals("testSprites")) testSprites();
-        else if (getName().equals("testVisible")) testVisible();
+
+    protected void runTest() throws Throwable
+    {
+        if(getName().equals("testSprites")) testSprites();
+        else if(getName().equals("testVisible")) testVisible();
         else super.runTest();
     }
-    
-    
-    public void testSprites() {
+
+
+    public void testSprites()
+    {
         // checking("Test 1.01 getWidth");
         assertEquals(4, iSprite.getWidth());
 
@@ -133,7 +144,8 @@ public class LayerTest extends SWTTestCase {
     /**
      * 4.0 visible test. This is in addition to
      */
-    public void testVisible() {
+    public void testVisible()
+    {
         // checking("Test 4.0 set/isVisible test");
         iSprite = new Sprite(iImage);
         assertTrue("Is the sprite visible by default?", iSprite.isVisible());

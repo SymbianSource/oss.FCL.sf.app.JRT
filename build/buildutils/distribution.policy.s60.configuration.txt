@@ -18,6 +18,7 @@
 /swt/mobile/internal               : 7
 /internal                          : 1
 /releng                            : 1
+ROOT/tools                         : 1
 ROOT/javacommons/jvms/j9/s60       : 810
 /midprms                           : 102
 /webservices/javasrc               : 102

@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt.ticker;
@@ -31,7 +31,8 @@ import com.nokia.openlcdui.mt.SWTTestCase;
  * <br>
  * Created: 2009-02-10
  */
-public class TickerTest extends SWTTestCase {
+public class TickerTest extends SWTTestCase
+{
 
     private static final String STRING_WITH_NEWLINE_CHARACTER =
         "string with\nnewline character.";
@@ -39,7 +40,8 @@ public class TickerTest extends SWTTestCase {
     /**
      * Empty constructor.
      */
-    public TickerTest() {
+    public TickerTest()
+    {
     }
 
     /**
@@ -47,7 +49,8 @@ public class TickerTest extends SWTTestCase {
      * @param sTestName name of the test.
      * @param rTestMethod TestMethod used.
      */
-    public TickerTest(String sTestName) {
+    public TickerTest(String sTestName)
+    {
         super(sTestName);
     }
 
@@ -57,62 +60,71 @@ public class TickerTest extends SWTTestCase {
      *
      * @return new testsuite.
      */
-    public static Test suite() {
-		TestSuite suite = new TestSuite();
+    public static Test suite()
+    {
+        TestSuite suite = new TestSuite();
 
-	    java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Vector methodNames;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = TickerTest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new TickerTest((String)e.nextElement()));
-	    }
+        // Add widget tests
+        methodNames = TickerTest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new TickerTest((String)e.nextElement()));
+        }
 
-		return suite;
-	}
+        return suite;
+    }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testAccessors");
         methodNames.addElement("testOneTickerInManyDisplayables");
         methodNames.addElement("testManyTickersInOneDisplayable");
         return methodNames;
     }
-    
-    protected void runTest() throws Throwable {
-        if (getName().equals("testAccessors")) testAccessors();
-        else if (getName().equals("testOneTickerInManyDisplayables")) testOneTickerInManyDisplayables();
-        else if (getName().equals("testManyTickersInOneDisplayable")) testManyTickersInOneDisplayable();
+
+    protected void runTest() throws Throwable
+    {
+        if(getName().equals("testAccessors")) testAccessors();
+        else if(getName().equals("testOneTickerInManyDisplayables")) testOneTickerInManyDisplayables();
+        else if(getName().equals("testManyTickersInOneDisplayable")) testManyTickersInOneDisplayable();
         else super.runTest();
     }
 
     /**
      * Tests basic functionality of Ticker's methods.
      */
-    public void testAccessors() {
+    public void testAccessors()
+    {
 
         // Instantiate a new Ticker with null-string and make sure an
         // exception is thrown:
-        try {
+        try
+        {
             new Ticker(null);
             fail("No nullpointerException when instantiating"
-                    + " a Ticker with null string.");
+                 + " a Ticker with null string.");
         }
-        catch (NullPointerException ex) {
+        catch(NullPointerException ex)
+        {
         }
 
         // Instantiate a new Ticker with empty string:
         Ticker ticker = new Ticker("");
 
         // Set null string and make sure an exception is thrown:
-        try {
+        try
+        {
             ticker.setString(null);
             fail("No nullpointerException when calling tic"
-                    + "ker.setString() with null parameter.");
+                 + "ker.setString() with null parameter.");
         }
-        catch (NullPointerException ex) {
+        catch(NullPointerException ex)
+        {
         }
 
         // Set string with newline characters and make sure the string
@@ -124,7 +136,8 @@ public class TickerTest extends SWTTestCase {
     /**
      * Tests to add one ticker to many displayables.
      */
-    public void testOneTickerInManyDisplayables() {
+    public void testOneTickerInManyDisplayables()
+    {
         Form form1 = new Form("ticker test");
         Form form2 = new Form("ticker test");
         Form form3 = new Form("ticker test");
@@ -143,7 +156,8 @@ public class TickerTest extends SWTTestCase {
     /**
      * Tests to add many tickers to one displayable.
      */
-    public void testManyTickersInOneDisplayable() {
+    public void testManyTickersInOneDisplayable()
+    {
         Ticker ticker1 = new Ticker("ticker");
         Ticker ticker2 = new Ticker("ticker");
         Ticker ticker3 = new Ticker("ticker");

@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt.command;
@@ -33,7 +33,8 @@ import com.nokia.openlcdui.mt.SWTTestCase;
  * Created:    2008-05-02
  *
  */
-public class CommandTest extends SWTTestCase {
+public class CommandTest extends SWTTestCase
+{
 
     private static final int MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX = 100;
     private static final int TEST_INVALID_TYPE = 43242;
@@ -44,14 +45,16 @@ public class CommandTest extends SWTTestCase {
     /**
      * Constructor.
      */
-    public CommandTest() {
+    public CommandTest()
+    {
     }
 
     /**
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public CommandTest(String sTestName) {
+    public CommandTest(String sTestName)
+    {
         super(sTestName);
     }
 
@@ -60,23 +63,26 @@ public class CommandTest extends SWTTestCase {
      * any new test methods, otherwise they won't be run.
      * @return New testsuite.
      */
-    public static Test suite() {
-    	TestSuite suite = new TestSuite();
+    public static Test suite()
+    {
+        TestSuite suite = new TestSuite();
 
-	    java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Vector methodNames;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = CommandTest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new CommandTest((String)e.nextElement()));
-	    }
+        // Add widget tests
+        methodNames = CommandTest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new CommandTest((String)e.nextElement()));
+        }
 
-		return suite;
+        return suite;
     }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testConstructors");
         methodNames.addElement("testAccessors");
@@ -84,46 +90,58 @@ public class CommandTest extends SWTTestCase {
         methodNames.addElement("testEmptyLabel");
         return methodNames;
     }
-    
-    protected void runTest() throws Throwable {
-        if (getName().equals("testConstructors")) testConstructors();
-        else if (getName().equals("testAccessors")) testAccessors();
-        else if (getName().equals("testNegativePriority")) testNegativePriority();
-        else if (getName().equals("testEmptyLabel")) testEmptyLabel();
+
+    protected void runTest() throws Throwable
+    {
+        if(getName().equals("testConstructors")) testConstructors();
+        else if(getName().equals("testAccessors")) testAccessors();
+        else if(getName().equals("testNegativePriority")) testNegativePriority();
+        else if(getName().equals("testEmptyLabel")) testEmptyLabel();
         else super.runTest();
     }
-    
-    
+
+
     /**
      * Tests the functionality of constructors.
      */
-    public void testConstructors() {
+    public void testConstructors()
+    {
         // Try to create Command with null label:
-        try {
+        try
+        {
             new Command(null, Command.OK, 0);
             fail("Command constructor didn't throw NullPointerException when label was null.");
-        } catch (NullPointerException ex) {
+        }
+        catch(NullPointerException ex)
+        {
         }
 
         // Try to create Command with null short label:
-        try {
+        try
+        {
             new Command(null, "long label", Command.OK, 0);
             fail("Command constructor didn't throw NullPointerException when short label was null.");
-        } catch (NullPointerException ex) {
+        }
+        catch(NullPointerException ex)
+        {
         }
 
         // Try to create Command with illegal type:
-        try {
+        try
+        {
             new Command("label", TEST_INVALID_TYPE, 0);
             fail("Command constructor didn't throw IllegalArgumentException when type was illegal.");
-        } catch (IllegalArgumentException ex) {
+        }
+        catch(IllegalArgumentException ex)
+        {
         }
     }
 
     /**
      * Tests the functionality of basic accessors methods.
      */
-    public void testAccessors() {
+    public void testAccessors()
+    {
         String label1 = "label1";
         String longLabel1 = "long label 1";
         int type1 = Command.BACK;
@@ -166,7 +184,8 @@ public class CommandTest extends SWTTestCase {
      * are handled without problems. This is important to test because OpenLCDUI
      * is built on top of eSWT which doesn't allow negative priority values.
      */
-    public void testNegativePriority() {
+    public void testNegativePriority()
+    {
         TextBox textBox = new TextBox(getName(), "content", MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX, 0);
         Command c1 = new Command("label1", null, Command.ITEM, -1);
         Command c2 = new Command("label2", null, Command.ITEM, Integer.MAX_VALUE);
@@ -193,7 +212,8 @@ public class CommandTest extends SWTTestCase {
      * instead of empty string. So this test creates a new Command with empty
      * label, and verifies the label is the default one.
      */
-    public void testEmptyLabel() {
+    public void testEmptyLabel()
+    {
         Command c = new Command("", "", Command.BACK, 0);
         TextBox textBox = new TextBox(getName(), "content", MAX_NUM_OF_CHARS_IN_TEST_TEXTBOX, 0);
         textBox.addCommand(c);

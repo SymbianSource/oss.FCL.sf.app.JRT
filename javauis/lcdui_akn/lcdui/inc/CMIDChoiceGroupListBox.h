@@ -70,6 +70,14 @@ public:  // from CCoeControl
     void HandlePointerEventL(const TPointerEvent& aPointerEvent);
 #endif
 
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    /**
+     * Returns index of ChoiceGroup element, which is the first
+     * visible element in ChoiceGroup from top of Form.
+     */
+    TInt TopVisibleItemIndex();
+#endif // RD_JAVA_S60_RELEASE_9_2
+
 #ifdef RD_TACTILE_FEEDBACK
 private:
     MTouchFeedback* iFeedback;
@@ -84,11 +92,21 @@ protected:
 private:
     void SetTextColors();
 
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    /**
+     * Fuction calculates index of element, which is the first
+     * visible element in ChoiceGroup from top of Form.
+     */
+    void UpdateTopVisibleItemIndex();
+#endif // RD_JAVA_S60_RELEASE_9_2
+
 private:
     CMIDChoiceGroupControl* iChoiceControl;
 
 #ifdef RD_JAVA_S60_RELEASE_9_2
     TBool iUpEventSent;
+    TBool iHighlight;
+    TInt iTopVisibleItemIndex;
 #endif // RD_JAVA_S60_RELEASE_9_2
 };
 

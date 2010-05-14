@@ -34,29 +34,32 @@ struct TPreferencesValues
     TUint                           iAssocVpn;
     TBool                           iAccessPointSelectionMode;
     TBool                           iAutoLoadImages;
-    TInt                            iFontSize;
+    TUint                           iFontSize;
     TBool                           iTextWrap;
-    TWmlSettingsCookies             iCookies;
+    TBool                           iCookies;
     TBool                           iPageOverview;
     TBool                           iBackList;
     TBool                           iAutoRefresh;
-    TWmlSettingsECMA                iEcma;
-    TWmlSettingsIMEI                iIMEINotification;
+    TBool                           iEcma;
+    TBool                           iIMEINotification;
     TUint32                         iEncoding;
-    TWmlSettingsFullScreen          iFullScreen;
+    TBool                           iFullScreen;
     TBool                           iQueryOnExit;
     TBool                           iSendReferrer;
-    TWmlSettingsHomePage            iHomePgType;
+    TUint                           iHomePgType;
     TBool                           iHTTPSecuritySupressed;
     TBool                           iConnDialogs;
     TBool                           iHttpSecurityWarnings;
-    TInt                            iMediaVolume;
+    TUint                           iMediaVolume;
     HBufC*                          iSearchPgURL;
     HBufC*                          iHomePgURL;
     TBool                           iPopupBlocking;
-    TWmlSettingsFormData            iFormDataSaving;
-    TWmlSettingsAutomaticUpdating   iAutomaticUpdating;
+    TUint                           iFormDataSaving;
+    TUint                           iAutomaticUpdating;
     TUint                           iAutomaticUpdatingAP;
+    TUint                           iZoomMin;
+    TUint                           iZoomMax;
+    TUint                           iZoomDef;
 };
 
 
@@ -106,7 +109,7 @@ public: // New functions
      * central repository values
      * @return Returns references of TPreferencesValues which contains all preferences
      */
-    virtual const TPreferencesValues& AllPreferencesL() = 0;
+    virtual const TPreferencesValues& AllPreferences() const = 0;
 
     /**
      * To access DefaultAccessPoint setting
@@ -216,20 +219,20 @@ public: // New functions
      * To access Cookies setting
      * @return TWmlSettingsCookies
      */
-    virtual TWmlSettingsCookies Cookies() const = 0;
+    virtual TBool Cookies() const = 0;
 
     /**
      * To access ECMA setting
      * @return TWmlSettingsECMA
      */
-    virtual TWmlSettingsECMA Ecma() const = 0;
+    virtual TBool Ecma() const = 0;
 
     /**
      * Get IMEI notification setting
      * @return EWmlSettingsIMEIEnable if notification is enabled,
      * otherwise EWmlSettingsIMEIDisable
      */
-    virtual TWmlSettingsIMEI IMEINotification() const = 0;
+    virtual TBool IMEINotification() const = 0;
 
     /**
      * Sends/Don not send the referrer header
@@ -249,7 +252,7 @@ public: // New functions
      * To access Form Data Saving setting.
      * @return value of setting
      */
-    virtual TWmlSettingsFormData FormDataSaving() const = 0;
+    virtual TUint FormDataSaving() const = 0;
 
     /**
      * Adds an observer to be notified about changes. Derived classes MUST

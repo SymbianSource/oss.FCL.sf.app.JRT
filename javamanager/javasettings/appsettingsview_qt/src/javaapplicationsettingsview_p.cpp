@@ -446,7 +446,8 @@ void JavaApplicationSettingsViewPrivate::_q_dataItemDisplayed(const QModelIndex 
             == HbDataFormModelItem::ComboBoxItem)
     {
         HbComboBox * comboBox = static_cast<HbComboBox*>(
-                                    mainForm->dataFormViewItem(dataItemIndex)->dataItemContentWidget());
+            (qobject_cast<HbDataFormViewItem *> 
+            (mainForm->itemByIndex(dataItemIndex)))->dataItemContentWidget());
         // add the extra settings values
         for (int i=0; i<extraSettings.size(); i++)
         {
@@ -494,8 +495,9 @@ JavaApplicationSettings* JavaApplicationSettingsViewPrivate::findSettings(HbComb
 
 HbComboBox * JavaApplicationSettingsViewPrivate::itemToComboBox(const HbDataFormModelItem * item)
 {
-    HbDataFormViewItem * viewItem = mainForm->dataFormViewItem(
-                                        model->indexFromItem(item));
+
+    HbDataFormViewItem * viewItem = qobject_cast<HbDataFormViewItem *> (mainForm->itemByIndex(
+                                        model->indexFromItem(item)));
     if (viewItem)
     {
         return static_cast<HbComboBox*>(viewItem->dataItemContentWidget());

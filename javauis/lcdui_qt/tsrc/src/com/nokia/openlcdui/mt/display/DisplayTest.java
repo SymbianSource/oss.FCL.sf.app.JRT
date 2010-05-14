@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt.display;
@@ -32,7 +32,8 @@ import com.nokia.openlcdui.mt.SWTTestCase;
  * <br>
  * Created: 2008-04-15
  */
-public class DisplayTest extends SWTTestCase {
+public class DisplayTest extends SWTTestCase
+{
 
     private Display display;
 
@@ -45,7 +46,8 @@ public class DisplayTest extends SWTTestCase {
     /**
      * Constructor..
      */
-    public DisplayTest() {
+    public DisplayTest()
+    {
     }
 
     /**
@@ -54,14 +56,16 @@ public class DisplayTest extends SWTTestCase {
      * @param sTestName name of the test
      * @param rTestMethod TestMethod used
      */
-    public DisplayTest(String sTestName) {
+    public DisplayTest(String sTestName)
+    {
         super(sTestName);
     }
 
     /**
      * Any pre-test setup can be done here.
      */
-    protected void setUp() throws Exception {
+    protected void setUp() throws Exception
+    {
         display = Display.getDisplay(getMIDlet());
     }
 
@@ -71,23 +75,26 @@ public class DisplayTest extends SWTTestCase {
      *
      * @return suite
      */
-    public static Test suite() {
-		TestSuite suite = new TestSuite();
+    public static Test suite()
+    {
+        TestSuite suite = new TestSuite();
 
-	    java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Vector methodNames;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = DisplayTest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new DisplayTest((String)e.nextElement()));
-	    }
+        // Add widget tests
+        methodNames = DisplayTest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new DisplayTest((String)e.nextElement()));
+        }
 
-		return suite;
+        return suite;
     }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testGetDisplayException");
         methodNames.addElement("testGetDisplay");
@@ -102,26 +109,28 @@ public class DisplayTest extends SWTTestCase {
         methodNames.addElement("testNumAlphaLevels");
         return methodNames;
     }
-    
-    protected void runTest() throws Throwable {
-        if (getName().equals("testGetDisplayException")) testGetDisplayException();
-        else if (getName().equals("testGetDisplay")) testGetDisplay();
-        else if (getName().equals("testGetCurrentSetCurrent")) testGetCurrentSetCurrent();
-        else if (getName().equals("testSetCurrentNull")) testSetCurrentNull();
-        else if (getName().equals("testCallSeriallyWithCanvas")) testCallSeriallyWithCanvas();
-        else if (getName().equals("testVibrateAndFlashBacklights")) testVibrateAndFlashBacklights();
-        else if (getName().equals("testNumColors")) testNumColors();
-        else if (getName().equals("testIsColor")) testIsColor();
-        else if (getName().equals("testGetColorException")) testGetColorException();
-        else if (getName().equals("testGetColor")) testGetColor();
-        else if (getName().equals("testNumAlphaLevels")) testNumAlphaLevels();
+
+    protected void runTest() throws Throwable
+    {
+        if(getName().equals("testGetDisplayException")) testGetDisplayException();
+        else if(getName().equals("testGetDisplay")) testGetDisplay();
+        else if(getName().equals("testGetCurrentSetCurrent")) testGetCurrentSetCurrent();
+        else if(getName().equals("testSetCurrentNull")) testSetCurrentNull();
+        else if(getName().equals("testCallSeriallyWithCanvas")) testCallSeriallyWithCanvas();
+        else if(getName().equals("testVibrateAndFlashBacklights")) testVibrateAndFlashBacklights();
+        else if(getName().equals("testNumColors")) testNumColors();
+        else if(getName().equals("testIsColor")) testIsColor();
+        else if(getName().equals("testGetColorException")) testGetColorException();
+        else if(getName().equals("testGetColor")) testGetColor();
+        else if(getName().equals("testNumAlphaLevels")) testNumAlphaLevels();
         else super.runTest();
     }
 
     /**
      * This method tests that Display.getDisplay(MIDlet m) returns not null.
      */
-    public void testGetDisplay() {
+    public void testGetDisplay()
+    {
         Display getDisplay = Display.getDisplay(getMIDlet());
         assertNotNull("Display.getDisplay(midlet) is null", getDisplay);
     }
@@ -130,12 +139,15 @@ public class DisplayTest extends SWTTestCase {
      * This method tests that getDisplay(MIDlet midlet) method throws
      * NullPointerException if midlet is null.
      */
-    public void testGetDisplayException() {
-        try {
+    public void testGetDisplayException()
+    {
+        try
+        {
             Display.getDisplay(null);
             fail("Display.getDisplay(null) NullPointerException expected.");
         }
-        catch (NullPointerException npe) {
+        catch(NullPointerException npe)
+        {
             // Ok
         }
     }
@@ -144,12 +156,15 @@ public class DisplayTest extends SWTTestCase {
      * This method tests that getColor(int specifier) method throws
      * IllegalArgumentException specifier is not valid.
      */
-    public void testGetColorException() {
-        try {
+    public void testGetColorException()
+    {
+        try
+        {
             display.getColor(INVALID_SPECIFIER);
             fail("getColor(invSpecifier) IllegalArgumentException expected.");
         }
-        catch (IllegalArgumentException iae) {
+        catch(IllegalArgumentException iae)
+        {
             // Ok
         }
     }
@@ -158,15 +173,18 @@ public class DisplayTest extends SWTTestCase {
      * This method test that setCurrent(Alert alert, Displayable displayable)
      * method throws NullPointerException if alert is null.
      */
-    public void testSetCurrentException1() {
+    public void testSetCurrentException1()
+    {
         Alert alert = null;
         TextBox nextDisplayable = new TextBox(getName(), "", LENGTH, TextField.ANY);
-        try {
+        try
+        {
             display.setCurrent(alert, nextDisplayable);
             fail("Display.setCurrent(null, nextDisplayable). " +
-                    "NullPointerException expected.");
+                 "NullPointerException expected.");
         }
-        catch (NullPointerException npe) {
+        catch(NullPointerException npe)
+        {
             // Ok
         }
     }
@@ -175,15 +193,18 @@ public class DisplayTest extends SWTTestCase {
      * This method test that setCurrent(Alert alert, Displayable displayable)
      * method throws NullPointerException if displayable is null.
      */
-    public void testSetCurrentException2() {
+    public void testSetCurrentException2()
+    {
         Alert alert = new Alert(getName());
         TextBox nextDisplayable = null;
-        try {
+        try
+        {
             display.setCurrent(alert, nextDisplayable);
             fail("Display.setCurrent(alert, null). " +
-                    "NullPointerException expected.");
+                 "NullPointerException expected.");
         }
-        catch (NullPointerException npe) {
+        catch(NullPointerException npe)
+        {
             // Ok
         }
     }
@@ -192,15 +213,18 @@ public class DisplayTest extends SWTTestCase {
      * This method test that setCurrent(Alert alert, Displayable displayable)
      * method throws NullPointerException if next displayable is Alert.
      */
-    public void testSetCurrentException3() {
+    public void testSetCurrentException3()
+    {
         Alert alert = new Alert("alert1");
         Alert nextAlert = new Alert("alert2");
-        try {
+        try
+        {
             display.setCurrent(alert, nextAlert);
             fail("Display.setCurrent(alert, null). " +
-                    "IllegalArgumentException expected.");
+                 "IllegalArgumentException expected.");
         }
-        catch (IllegalArgumentException iae) {
+        catch(IllegalArgumentException iae)
+        {
             // Ok
         }
     }
@@ -209,7 +233,8 @@ public class DisplayTest extends SWTTestCase {
      * This method tests that Display.getCurrent() returns current Displayable.
      * And Display.setCurrent(Displayable d)
      */
-    public void testGetCurrentSetCurrent() {
+    public void testGetCurrentSetCurrent()
+    {
         TextBox currentDisplayable = new TextBox(getName(), "", LENGTH, TextField.ANY);
         Displayable getDisplayable;
 
@@ -222,7 +247,8 @@ public class DisplayTest extends SWTTestCase {
     /**
      * This method tests that Display.setCurrent(null) behaves correctly.
      */
-    public void testSetCurrentNull() {
+    public void testSetCurrentNull()
+    {
         TextBox currentDisplayable = new TextBox(getName(), "", LENGTH, TextField.ANY);
         Displayable getDisplayable;
 
@@ -235,7 +261,8 @@ public class DisplayTest extends SWTTestCase {
     /**
      * Test CallSerially method.
      */
-    public void testCallSeriallyWithCanvas() {
+    public void testCallSeriallyWithCanvas()
+    {
         long paintTime = 0;
         long threadTime = 0;
         boolean passed = true;
@@ -245,15 +272,17 @@ public class DisplayTest extends SWTTestCase {
         // screen.setTitle("Canvas"); // canvas's title cannot be set
         MyThreadClass runnable = new MyThreadClass();
 
-        for (int i = 1; i <= LENGTH; i++) {
+        for(int i = 1; i <= LENGTH; i++)
+        {
             screen.setWH(i, i);
             screen.repaint();
             display.callSerially(runnable);
             // runnable.run();
             paintTime = screen.getTimestamp();
             threadTime = runnable.getRunTimeStamp();
-            if ((paintTime > threadTime)
-                    && (screen.getCounter() <= runnable.getCounter())) {
+            if((paintTime > threadTime)
+                    && (screen.getCounter() <= runnable.getCounter()))
+            {
                 passed = false;
                 message = "CallSerially fails on iteration: " + i;
             }
@@ -265,26 +294,31 @@ public class DisplayTest extends SWTTestCase {
     /**
      * Dummy Runnable to check Call serially
      */
-    class MyThreadClass implements Runnable {
+    class MyThreadClass implements Runnable
+    {
 
         private long runTimestamp;
         private int counter;
 
-        public void run() {
+        public void run()
+        {
             runTimestamp = new Date().getTime();
             counter++;
         }
 
-        public int getCounter() {
+        public int getCounter()
+        {
             return counter;
         }
 
-        public long getRunTimeStamp() {
+        public long getRunTimeStamp()
+        {
             return runTimestamp;
         }
     }
 
-    class MoveShapeTCanvas extends Canvas {
+    class MoveShapeTCanvas extends Canvas
+    {
         private Display display;
         private long paintTimestamp;
         private int w;
@@ -296,7 +330,8 @@ public class DisplayTest extends SWTTestCase {
          *
          * @param aDisplay display to be set for the Canvas
          */
-        public MoveShapeTCanvas(Display aDisplay) {
+        public MoveShapeTCanvas(Display aDisplay)
+        {
             display = aDisplay;
             display.setCurrent(this);
         }
@@ -307,18 +342,21 @@ public class DisplayTest extends SWTTestCase {
          * @param aW
          * @param aH
          */
-        public void setWH(int aW, int aH) {
+        public void setWH(int aW, int aH)
+        {
             w = aW;
             h = aH;
         }
 
-        public void paint(Graphics g) {
+        public void paint(Graphics g)
+        {
             g.fillRect(0, 0, w, h);
             paintTimestamp = new Date().getTime();
             counter++;
         }
 
-        public int getCounter() {
+        public int getCounter()
+        {
             return counter;
         }
 
@@ -327,7 +365,8 @@ public class DisplayTest extends SWTTestCase {
          *
          * @return timestamp
          */
-        public long getTimestamp() {
+        public long getTimestamp()
+        {
             return paintTimestamp;
         }
     }
@@ -336,20 +375,25 @@ public class DisplayTest extends SWTTestCase {
      * Tests to call vibrate and flashbacklights methods with illegal parameter
      * values and verify an exception is thrown.
      */
-    public void testVibrateAndFlashBacklights() {
-        try {
+    public void testVibrateAndFlashBacklights()
+    {
+        try
+        {
             display.vibrate(-1);
             fail("display.vibrate(-1). IllegalArgumentException expected");
         }
-        catch (IllegalArgumentException ex) {
+        catch(IllegalArgumentException ex)
+        {
             // Ok
         }
 
-        try {
+        try
+        {
             display.flashBacklight(-1);
             fail("display.flashBacklight(-1);. IllegalArgumentException expected");
         }
-        catch (IllegalArgumentException ex) {
+        catch(IllegalArgumentException ex)
+        {
             // Ok
         }
     }
@@ -357,41 +401,45 @@ public class DisplayTest extends SWTTestCase {
     /**
      * Test Display.numColors().
      */
-    public void testNumColors() {
+    public void testNumColors()
+    {
         int numColors = 0;
         numColors = display.numColors();
         assertTrue("Display.numColors(). " +
-        		"Expected return not 0, but returned " + numColors, numColors != 0);
+                   "Expected return not 0, but returned " + numColors, numColors != 0);
     }
 
     /**
      * Test Display.isColor(). note: to pass this test you need to have non
      * black and white screen device
      */
-    public void testIsColor() {
+    public void testIsColor()
+    {
         boolean passed = false;
         passed = display.isColor();
         assertTrue("Display.isColor(). Expected return true, but returned "
-                + passed, passed);
+                   + passed, passed);
     }
 
     /**
      * Display.getColor(int specifier) test.
      */
-    public void testGetColor() {
+    public void testGetColor()
+    {
         int color = 0;
         color = display.getColor(Display.COLOR_BACKGROUND);
         assertTrue("Display.getColor(COLOR_BACKGROUND). " +
-        		"Expected returns not 0 but returned " + color, color != 0);
+                   "Expected returns not 0 but returned " + color, color != 0);
     }
 
     /**
      * Display.numAlphaLevels() test.
      */
-    public void testNumAlphaLevels() {
+    public void testNumAlphaLevels()
+    {
         int numAlpha = display.numAlphaLevels();
         assertTrue("Display.numAlphaLevels(). " +
-                "Expected returns not 0 but returned "+ numAlpha, numAlpha != 0);
+                   "Expected returns not 0 but returned "+ numAlpha, numAlpha != 0);
     }
 
 }

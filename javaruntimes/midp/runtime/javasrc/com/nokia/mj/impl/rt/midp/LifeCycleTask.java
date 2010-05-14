@@ -23,9 +23,6 @@ import com.nokia.mj.impl.utils.Task;
 /**
  * A class to be used to state change request to the state machine of the
  * MIDP runtime life cycle.
- *
- * @author Nokia Corporation
- * @version $Rev$
  */
 
 class LifeCycleTask extends Task

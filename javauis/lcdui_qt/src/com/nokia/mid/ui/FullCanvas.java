@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.mid.ui;
@@ -36,7 +36,8 @@ import javax.microedition.lcdui.Canvas;
  * normal key codes reported in Canvas are also reported. The keys tied with
  * Command area do not report any key events if the are is visible.
  */
-public abstract class FullCanvas extends Canvas {
+public abstract class FullCanvas extends Canvas
+{
 
     private static final String FULLCANVAS_COMMAND_EXCEPTION =
         "Commands are not possible in FullCanvas.";
@@ -96,7 +97,8 @@ public abstract class FullCanvas extends Canvas {
      *             or higher, replaced by
      *             javax.microedition.lcdui.Canvas.setFullScreenMode(boolean).
      */
-    public FullCanvas() {
+    public FullCanvas()
+    {
         super();
         super.setFullScreenMode(true);
     }
@@ -104,7 +106,8 @@ public abstract class FullCanvas extends Canvas {
     /* (non-Javadoc)
      * @see javax.microedition.lcdui.Canvas#setFullScreenMode(boolean)
      */
-    public void setFullScreenMode(boolean fullScreen) {
+    public void setFullScreenMode(boolean fullScreen)
+    {
         // ignore
     }
 
@@ -116,7 +119,8 @@ public abstract class FullCanvas extends Canvas {
      *             javax.microedition.lcdui.Canvas.addCommand(Command).
      * @throws IllegalStateException
      */
-    public void addCommand(javax.microedition.lcdui.Command cmd) {
+    public void addCommand(javax.microedition.lcdui.Command cmd)
+    {
         throw new IllegalStateException(FULLCANVAS_COMMAND_EXCEPTION);
     }
 
@@ -129,7 +133,8 @@ public abstract class FullCanvas extends Canvas {
      * @throws IllegalStateException
      */
     public void setCommandListener(
-            javax.microedition.lcdui.CommandListener listener) {
+        javax.microedition.lcdui.CommandListener listener)
+    {
         throw new IllegalStateException(FULLCANVAS_COMMAND_EXCEPTION);
     }
 

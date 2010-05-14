@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package t_uirobot.displayable;
@@ -30,7 +30,8 @@ import t_uirobot.UITestBase;
  * <br>
  * Created: 2008-05-19
  */
-public class SizeChangedTest extends UITestBase {
+public class SizeChangedTest extends UITestBase
+{
 
     private static final int MAX_CHARS = 100;
     private static final int DELAY_AFTER_RESOLUTION_CHANGE = 300;
@@ -43,8 +44,9 @@ public class SizeChangedTest extends UITestBase {
     /**
      * Constructor.
      */
-    public SizeChangedTest() {
-    	super();
+    public SizeChangedTest()
+    {
+        super();
     }
 
     /**
@@ -53,7 +55,8 @@ public class SizeChangedTest extends UITestBase {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public SizeChangedTest(String sTestName, TestMethod rTestMethod) {
+    public SizeChangedTest(String sTestName, TestMethod rTestMethod)
+    {
         super(sTestName, rTestMethod);
     }
 
@@ -63,11 +66,14 @@ public class SizeChangedTest extends UITestBase {
      *
      * @return New testsuite.
      */
-    public Test suite() {
+    public Test suite()
+    {
         TestSuite aSuite = new TestSuite();
 
-        aSuite.addTest(new SizeChangedTest("testSizeChange", new TestMethod() {
-            public void run(TestCase tc) {
+        aSuite.addTest(new SizeChangedTest("testSizeChange", new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
                 ((SizeChangedTest) tc).testSizeChange();
             }
         }));
@@ -80,7 +86,8 @@ public class SizeChangedTest extends UITestBase {
      * sizeChanged()-method. Then verifies the method is called as described in
      * API spesification.
      */
-    public void testSizeChange() {
+    public void testSizeChange()
+    {
         boolean testPassed = true;
         String testMsg = "";
         int width;
@@ -93,10 +100,11 @@ public class SizeChangedTest extends UITestBase {
         // Displayable is set to visible:
         setCurrent(scl);
 
-        if (firstCallFailure) {
+        if(firstCallFailure)
+        {
             testPassed = false;
             testMsg = "sizeChanged not called before"
-                    + " displayable set to visible.";
+                      + " displayable set to visible.";
         }
         sizeChangedFlag = false;
         width = newWidth;
@@ -109,17 +117,20 @@ public class SizeChangedTest extends UITestBase {
 
         // Verify that sizeChanged() is called and the
         // width and height values are not the same as before:
-        if (!sizeChangedFlag) {
+        if(!sizeChangedFlag)
+        {
             testPassed = false;
             testMsg = "sizeChanged not called when"
-                    + " screen dimension changed.";
+                      + " screen dimension changed.";
         }
 
-        else if (width == newWidth) {
+        else if(width == newWidth)
+        {
             testPassed = false;
             testMsg = "width not updated when" + " screen dimension changed.";
         }
-        else if (height == newHeight) {
+        else if(height == newHeight)
+        {
             testPassed = false;
             testMsg = "height not updated when" + " screen dimension changed.";
         }
@@ -134,7 +145,8 @@ public class SizeChangedTest extends UITestBase {
 
         // Change the size of the invisible displayable by
         // changing the screen resolution back to original:
-        for (int i = 0; i < spede().getNumberofResolutions() - 1; i++) {
+        for(int i = 0; i < spede().getNumberofResolutions() - 1; i++)
+        {
             spede().switchResolution();
         }
         block(DELAY_AFTER_RESOLUTION_CHANGE);
@@ -144,21 +156,24 @@ public class SizeChangedTest extends UITestBase {
         // Also make sure the width and height are updated.
         setCurrent(scl);
 
-        if (!sizeChangedFlag) {
+        if(!sizeChangedFlag)
+        {
             testPassed = false;
             testMsg = "sizeChanged not called when screen"
-                    + " dimension changed and displayable in background.";
+                      + " dimension changed and displayable in background.";
         }
 
-        else if (width == newWidth) {
+        else if(width == newWidth)
+        {
             testPassed = false;
             testMsg = "width not updated when screen"
-                    + " dimension changed and displayable in background.";
+                      + " dimension changed and displayable in background.";
         }
-        else if (height == newHeight) {
+        else if(height == newHeight)
+        {
             testPassed = false;
             testMsg = "height not updated when screen"
-                    + " dimension changed and displayable in background.";
+                      + " dimension changed and displayable in background.";
         }
 
         assertTrue(getName() + " failed, " + testMsg, testPassed);
@@ -169,19 +184,23 @@ public class SizeChangedTest extends UITestBase {
      * extend Displayable directly. That's why Canvas is extended here. Another
      * possible class would be Form.
      */
-    class SizeChangeListener extends Canvas {
+    class SizeChangeListener extends Canvas
+    {
 
         private boolean firstCall = true;
 
         /* (non-Javadoc)
          * @see javax.microedition.lcdui.Canvas#sizeChanged(int, int)
          */
-        protected void sizeChanged(int w, int h) {
-            if (firstCall) {
+        protected void sizeChanged(int w, int h)
+        {
+            if(firstCall)
+            {
                 // sizeChanged must be called at least once
                 // before displayable is set to visible.
                 // Make sure the displayable is not visible yet:
-                if (isShown()) {
+                if(isShown())
+                {
                     firstCallFailure = true;
                 }
                 firstCall = false;
@@ -192,7 +211,8 @@ public class SizeChangedTest extends UITestBase {
             newHeight = h;
         }
 
-        protected void paint(Graphics g) {
+        protected void paint(Graphics g)
+        {
         }
     }
 }

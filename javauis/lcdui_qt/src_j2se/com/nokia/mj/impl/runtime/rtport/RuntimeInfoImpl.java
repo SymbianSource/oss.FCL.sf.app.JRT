@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 
@@ -24,7 +24,7 @@ import com.nokia.mj.impl.utils.Uid;
 
 public class RuntimeInfoImpl implements RuntimeInfo
 {
-    
+
     UiToolkitRegisterImpl tk = new UiToolkitRegisterImpl();
 
     public UiToolkitRegister getUiToolkitRegister()
@@ -40,12 +40,12 @@ public class RuntimeInfoImpl implements RuntimeInfo
 
     public int getApplicationUid()
     {
-        try 
+        try
         {
             String u = ApplicationInfo.getInstance().getUid().getStringValue();
             return Integer.parseInt(u.substring(1,u.length()-1), 16);
         }
-        catch (Throwable t)
+        catch(Throwable t)
         {
         }
         System.out.println("RuntimeInfoImpl.getApplicationUid(): USING DEFAULT");
@@ -54,7 +54,7 @@ public class RuntimeInfoImpl implements RuntimeInfo
 
     public String getApplicationDomain()
     {
-        /*try 
+        /*try
         {
             return ApplicationInfo.getInstance().getProtectionDomain();
         }
@@ -64,16 +64,16 @@ public class RuntimeInfoImpl implements RuntimeInfo
         System.out.println("RuntimeInfoImpl.getApplicationDomain(): USING DEFAULT");
         return RuntimeInfo.MANUFACTURER_DOMAIN;
     }
-    
+
     public void notifyExitCmd(int aUid)
     {
-        try 
+        try
         {
-           ApplicationUtils.getInstance().notifyExitCmd();
+            ApplicationUtils.getInstance().notifyExitCmd();
         }
-        catch (Throwable t)
+        catch(Throwable t)
         {
-           System.out.println("RuntimeInfoImpl.notifyExitCmd(): Failed");
+            System.out.println("RuntimeInfoImpl.notifyExitCmd(): Failed");
         }
     }
 }

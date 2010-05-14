@@ -50,6 +50,7 @@
   <property name="ext2.policies.dir" location="/epoc32/winscw/c/resource/java/security/extensions/ext2/policies/"/>
   <property name="jvmargsmodifier.default.dll" location="/epoc32/release/winscw/udeb/javajvmargsmodifier.dll"/>
   <property name="jvmargsmodifier.filebased.dll" location="/epoc32/release/winscw/udeb/javajvmargsmodifierfile.dll"/>
+  <property name="external.policy.editor.tool.lib" location="../tmp/engine.jar"/>
   <property name="javac.source" value="1.3"/>
   <property name="javac.target" value="1.3"/>
 
@@ -100,7 +101,7 @@
       <delete dir="${ext2.policies.dir}"/>
       <delete dir="${security.test.data.dir}"/>
   </target>
-
+  
   <target name="clean" depends="init.my.properties,close.ext.dir">
     <delete dir="${classes.dir}"/>
     <delete file="${dist}/${omjsecuritytests.jar.filename}"/>
@@ -135,6 +136,7 @@
   </target>
   
   <target name="init" depends="init.my.properties">
+    <mkdir dir="${test.tmp.dir}"/>
     <property name="dist" location="${vm.extension.directory}"/>
     <mkdir dir="${security.test.data.dir}/security_tmp"/>
     <mkdir dir="${security.test.data.dir}/securitypolicies/testinputdata/validpolicies"/>
@@ -204,6 +206,18 @@
            </classpath>
       <src path="${src.dir}"/>
     </javac>
+    <jar jarfile="${external.policy.editor.tool.lib}" update="true">
+        <fileset dir="${compile.result.root}/javasecurity/classes/collection" 
+            includes="com/nokia/mj/impl/security/midp/authorization/SecurityPolicy.class,
+                      com/nokia/mj/impl/security/midp/authorization/SecurityPolicyPermission.class,
+                      com/nokia/mj/impl/security/midp/authorization/SecurityPolicyPermissionSettings.class,
+                      com/nokia/mj/impl/security/midp/common/PolicyBasedPermission.class,
+                      com/nokia/mj/impl/security/midp/common/MIDPPermission.class,
+                      com/nokia/mj/impl/security/midp/common/UserSecuritySettings.class"/>
+        <fileset dir="./javabuild" 
+            includes="com/nokia/mj/impl/security/midp/common/PermissionMappingTable.class,
+                      com/nokia/mj/impl/security/midp/authorization/TestPermissionMappingTable.class"/>
+    </jar>
     <java classname="com.nokia.mj.tools.security.midp.PolicyEditor"
          failonerror="true">
          <sysproperty key="emma.properties" value="${emma.properties}"/>
@@ -211,10 +225,8 @@
          <arg value="${security.test.data.dir}/security/policies/"/>
          <classpath>
              <!--javabuild as classpath is for the NewPermissionMapping-->
-             <pathelement location="./javabuild"/>
+             <pathelement location="${external.policy.editor.tool.lib}"/>
              <pathelement location="${policyeditor.jar}"/>
-             <pathelement location="${impl.cldc.jar}"/>
-             <pathelement location="${impl.cdc.jar}"/>
              <pathelement path="${emma.dir}/emma.jar"/>
          </classpath>
     </java>
@@ -225,10 +237,8 @@
          <arg value="${ext1.policies.dir}"/>
          <classpath>
              <!--javabuild as classpath is for the NewPermissionMapping-->
-             <pathelement location="./javabuild"/>
+             <pathelement location="${external.policy.editor.tool.lib}"/>
              <pathelement location="${policyeditor.jar}"/>
-             <pathelement location="${impl.cldc.jar}"/>
-             <pathelement location="${impl.cdc.jar}"/>
              <pathelement path="${emma.dir}/emma.jar"/>
          </classpath>
     </java>
@@ -250,7 +260,7 @@
 
   <target name="deploy" depends="compile, prepare_test_data2, open.ext.dir">
       <mkdir dir="${dist}"/>
-      <jar destfile="${dist}/${omjsecuritytests.jar.filename}" basedir="${classes.dir}" excludes="com/nokia/mj/impl/security/midp/authentication/OcspUserPreferences.class"/>
+      <jar destfile="${dist}/${omjsecuritytests.jar.filename}" basedir="${classes.dir}" excludes="com/nokia/mj/impl/security/midp/authentication/OcspUserPreferences.class com/nokia/mj/impl/security/midp/common/PermissionMappingTable.class"/>
       <jar destfile="${dist}/${omjsecuritystubs.jar.filename}" basedir="${classes.dir}" includes="com/nokia/mj/impl/security/midp/authentication/OcspUserPreferences.class"/>
       <copy file="${junit.jar.dir}/${junit.jar.filename}"
             tofile="${dist}/${junit.jar.filename}"/>

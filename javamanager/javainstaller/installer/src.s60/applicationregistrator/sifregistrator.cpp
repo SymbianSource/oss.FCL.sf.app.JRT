@@ -628,22 +628,23 @@ void RegisterApplicationL(
     RDesWriteStream writeStream(opaqueDataBuf);
     writeStream.WriteInt32L(aAppUid);
     writeStream.CommitL();
-    COpaqueData *opaqueData =
-        COpaqueData::NewLC(opaqueDataBuf, KUnspecifiedLocale);
+    COpaqueData *opaqueData = COpaqueData::NewLC(opaqueDataBuf, KNonLocalized);
     opaqueDataArray.AppendL(opaqueData);
     CleanupStack::Pop(opaqueData);
 
     RPointerArray<Usif::CLocalizableAppInfo> localizableAppInfoList;
     CleanupResetAndDestroyPushL(localizableAppInfoList);
     // Add non-localized application name (caption) and icon.
-    CCaptionAndIconInfo *captionAndIconInfo = CCaptionAndIconInfo::NewLC(
-                /*aCaption=*/ *caption,
-                /*aIconFileName=*/ *iconFilename,
-                /*aNumOfAppIcons=*/ numberOfAppIcons);
-    CLocalizableAppInfo *locAppInfo = CLocalizableAppInfo::NewLC(
-                                          /*aShortCaption=*/ KNullDesC, /*aApplicationLanguage=*/ KNonLocalized,
-                                          /*aGroupName=*/ KNullDesC, /*aCaptionAndIconInfo=*/ captionAndIconInfo,
-                                          /*aViewDataList=*/ viewDataList);
+    CCaptionAndIconInfo *captionAndIconInfo =
+        CCaptionAndIconInfo::NewLC(
+            /*aCaption=*/ *caption,
+            /*aIconFileName=*/ (NULL != aIconFilename? *iconFilename: KNullDesC()),
+            /*aNumOfAppIcons=*/ numberOfAppIcons);
+    CLocalizableAppInfo *locAppInfo = 
+        CLocalizableAppInfo::NewLC(
+            /*aShortCaption=*/ KNullDesC, /*aApplicationLanguage=*/ KNonLocalized,
+            /*aGroupName=*/ KNullDesC, /*aCaptionAndIconInfo=*/ captionAndIconInfo,
+            /*aViewDataList=*/ viewDataList);
     localizableAppInfoList.AppendL(locAppInfo);
     CleanupStack::Pop(locAppInfo);
     CleanupStack::Pop(captionAndIconInfo);
@@ -659,8 +660,9 @@ void RegisterApplicationL(
         for (TInt i = 0; i < langCount; i++)
         {
             TLanguage tmpLanguage = (TLanguage)languages[i];
-            HBufC *tmpCaption = CreateHBufCFromJavaStringLC(
-                                    aEnv, (jstring)aEnv->GetObjectArrayElement(aAppNames, i));
+            HBufC *tmpCaption = 
+                CreateHBufCFromJavaStringLC(
+                    aEnv, (jstring)aEnv->GetObjectArrayElement(aAppNames, i));
             captionsArray.AppendL(tmpCaption);
             CleanupStack::Pop(tmpCaption);
             //LOG1(EJavaInstaller, EInfo,

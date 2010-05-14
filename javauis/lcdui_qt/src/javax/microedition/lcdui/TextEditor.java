@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 /*
@@ -110,7 +110,8 @@ import org.eclipse.swt.events.*;
  * @since 3.0
  */
 
-public class TextEditor {
+public class TextEditor
+{
 
     private static final int BITSPERPIXEL8 = 255;
 
@@ -152,7 +153,8 @@ public class TextEditor {
      * @throws IllegalArgumentException if the width or height is less than zero
      */
     public TextEditor(String text, int maxSize, int constraints, int width,
-            int height) {
+                      int height)
+    {
         textWrapper = new TextWrapper(text, maxSize, constraints);
         textWrapper.setFocused(false);
         textWrapper.setModifyListener(modListener);
@@ -166,16 +168,20 @@ public class TextEditor {
      *
      * @param newParent parent
      */
-    public void setParent(Object newParent) {
-        if (newParent != null) {
-            if (newParent instanceof Canvas) {
+    public void setParent(Object newParent)
+    {
+        if(newParent != null)
+        {
+            if(newParent instanceof Canvas)
+            {
                 // constructing on another composite disposes the old one
                 textWrapper.construct(((Canvas) newParent).getContentComp(),
-                        SWT.NONE);
+                                      SWT.NONE);
                 parent = newParent;
             }
         }
-        else {
+        else
+        {
             textWrapper.dispose();
             parent = newParent;
         }
@@ -198,7 +204,8 @@ public class TextEditor {
      *             <code>length</code> do not specify a valid range within the
      *             content of the <code>TextEditor</code>
      */
-    public void delete(int offset, int length) {
+    public void delete(int offset, int length)
+    {
         textWrapper.delete(offset, length);
     }
 
@@ -211,7 +218,8 @@ public class TextEditor {
      *
      * @return the x and y coordinates of the current caret position
      */
-    public int[] getCaretPixelPosition() {
+    public int[] getCaretPixelPosition()
+    {
         // TODO: implement this
         return null;
     }
@@ -221,7 +229,8 @@ public class TextEditor {
      *
      * @return the current caret position, <code>0</code> if at the beginning
      */
-    public int getCaretPosition() {
+    public int getCaretPosition()
+    {
         return textWrapper.getCaretPosition();
     }
 
@@ -231,7 +240,8 @@ public class TextEditor {
      * @return the current constraints value (see <a
      *         href="TextField.html#constraints">input constraints</a>)
      */
-    public int getConstraints() {
+    public int getConstraints()
+    {
         return textWrapper.getConstraints();
     }
 
@@ -243,10 +253,11 @@ public class TextEditor {
      * @param length the number of the characters to be returned
      * @return the editor current content
      */
-    public String getContent(int index, int length) {
+    public String getContent(int index, int length)
+    {
         String content = textWrapper.getContent();
         return content.substring(Math.max(0, index),
-                Math.min(index + length, content.length()));
+                                 Math.min(index + length, content.length()));
     }
 
     /**
@@ -256,7 +267,8 @@ public class TextEditor {
      *
      * @return the height of the whole content in the editor in pixels
      */
-    public int getContentHeight() {
+    public int getContentHeight()
+    {
         return textWrapper.getLineCount() * textWrapper.getLineHeight();
     }
 
@@ -265,7 +277,8 @@ public class TextEditor {
      *
      * @return height in pixels
      */
-    public int getHeight() {
+    public int getHeight()
+    {
         return textWrapper.getHeight();
     }
 
@@ -278,7 +291,8 @@ public class TextEditor {
      *
      * @return the width and height of area needed for drawing input indicators
      */
-    public int[] getIndicatorSize() {
+    public int[] getIndicatorSize()
+    {
         // TODO: implement this
         return null;
     }
@@ -288,7 +302,8 @@ public class TextEditor {
      *
      * @return the line height in pixels
      */
-    public int getLineHeight() {
+    public int getLineHeight()
+    {
         return textWrapper.getLineHeight();
     }
 
@@ -298,7 +313,8 @@ public class TextEditor {
      *
      * @return the maximum size in characters
      */
-    public int getMaxSize() {
+    public int getMaxSize()
+    {
         return textWrapper.getMaxSize();
     }
 
@@ -307,7 +323,8 @@ public class TextEditor {
      *
      * @return the number of visible rows in the editor
      */
-    public int getRows() {
+    public int getRows()
+    {
         return textWrapper.getHeight() / textWrapper.getLineHeight();
     }
 
@@ -317,7 +334,8 @@ public class TextEditor {
      *
      * @return the currently selected content
      */
-    public String getSelection() {
+    public String getSelection()
+    {
         return textWrapper.getSelectedContent();
     }
 
@@ -326,7 +344,8 @@ public class TextEditor {
      *
      * @return width in pixels
      */
-    public int getWidth() {
+    public int getWidth()
+    {
         return textWrapper.getWidth();
     }
 
@@ -340,7 +359,8 @@ public class TextEditor {
      *
      * @return the topmost pixel position of the visible content
      */
-    public int getVisibleContentPosition() {
+    public int getVisibleContentPosition()
+    {
         return textWrapper.getTopPixelPosition();
     }
 
@@ -355,7 +375,8 @@ public class TextEditor {
      *             CustomItem
      * @see #show() </AU>
      */
-    public void hide() {
+    public void hide()
+    {
         textWrapper.setVisible(false);
     }
 
@@ -379,7 +400,8 @@ public class TextEditor {
      *             current maximum capacity
      * @throws NullPointerException if <code>text</code> is <code>null</code>
      */
-    public void insert(String text, int position) {
+    public void insert(String text, int position)
+    {
         textWrapper.insert(text, position);
     }
 
@@ -397,7 +419,8 @@ public class TextEditor {
      *
      * @see #setFocus()
      */
-    public void removeFocus() {
+    public void removeFocus()
+    {
         textWrapper.setFocused(false);
     }
 
@@ -418,11 +441,13 @@ public class TextEditor {
      * @throws IllegalArgumentException if any parameter is outside of the range
      *             <code>0-255</code>
      */
-    public void setBackgroundColor(int alpha, int red, int green, int blue) {
-        if ((alpha < 0 || alpha > BITSPERPIXEL8)
+    public void setBackgroundColor(int alpha, int red, int green, int blue)
+    {
+        if((alpha < 0 || alpha > BITSPERPIXEL8)
                 || (red < 0 || red > BITSPERPIXEL8)
                 || (green < 0 || green > BITSPERPIXEL8)
-                || (blue < 0 || blue > BITSPERPIXEL8)) {
+                || (blue < 0 || blue > BITSPERPIXEL8))
+        {
             throw new IllegalArgumentException();
         }
         textWrapper.setBackgroundColor(alpha, red, green, blue);
@@ -434,7 +459,8 @@ public class TextEditor {
      *
      * @param index the character index before which to place the caret
      */
-    public void setCaret(int index) {
+    public void setCaret(int index)
+    {
         textWrapper.setCaretposition(index);
     }
 
@@ -448,7 +474,8 @@ public class TextEditor {
      * @throws IllegalArgumentException if the value of the constraints
      *             parameter is invalid
      */
-    public void setConstraints(int constraints) {
+    public void setConstraints(int constraints)
+    {
         textWrapper.setConstraints(constraints);
     }
 
@@ -463,7 +490,8 @@ public class TextEditor {
      * @throws IllegalArgumentException if the given text would exceed the
      *             current maximum capacity of the editor
      */
-    public void setContent(String text) {
+    public void setContent(String text)
+    {
         textWrapper.setContent(text);
     }
 
@@ -516,8 +544,10 @@ public class TextEditor {
      *             CustomItem
      * @see #removeFocus() </AU>
      */
-    public void setFocus() {
-        if (parent == null) {
+    public void setFocus()
+    {
+        if(parent == null)
+        {
             throw new IllegalStateException();
         }
         textWrapper.setFocused(true);
@@ -534,7 +564,8 @@ public class TextEditor {
      *
      * @param font the application preferred font to be used in this TextEditor
      */
-    public void setFont(Font font) {
+    public void setFont(Font font)
+    {
         textWrapper.setFont(font);
     }
 
@@ -554,11 +585,13 @@ public class TextEditor {
      * @throws IllegalArgumentException if any parameter is outside of the range
      *             <code>0-255</code>
      */
-    public void setForegroundColor(int alpha, int red, int green, int blue) {
-        if ((alpha < 0 || alpha > BITSPERPIXEL8)
+    public void setForegroundColor(int alpha, int red, int green, int blue)
+    {
+        if((alpha < 0 || alpha > BITSPERPIXEL8)
                 || (red < 0 || red > BITSPERPIXEL8)
                 || (green < 0 || green > BITSPERPIXEL8)
-                || (blue < 0 || blue > BITSPERPIXEL8)) {
+                || (blue < 0 || blue > BITSPERPIXEL8))
+        {
             throw new IllegalArgumentException();
         }
         textWrapper.setForegroundColor(alpha, red, green, blue);
@@ -578,7 +611,8 @@ public class TextEditor {
      * @param x the x coordinate of the anchor point, in pixels.
      * @param y the y coordinate of the anchor point, in pixels.
      */
-    public void setIndicatorLocation(int x, int y) {
+    public void setIndicatorLocation(int x, int y)
+    {
         // TODO: implement this
     }
 
@@ -594,7 +628,8 @@ public class TextEditor {
      * @param inputMode a string naming a Unicode character subset, or
      *            <code>null</code>
      */
-    public void setInitialInputMode(String inputMode) {
+    public void setInitialInputMode(String inputMode)
+    {
         textWrapper.setInputMode(inputMode);
     }
 
@@ -611,7 +646,8 @@ public class TextEditor {
      * @throws IllegalArgumentException if the contents after truncation would
      *             be illegal for the current input constraints
      */
-    public int setMaxSize(int maxSize) {
+    public int setMaxSize(int maxSize)
+    {
         textWrapper.setMaxSize(maxSize);
         return textWrapper.getMaxSize();
     }
@@ -623,7 +659,8 @@ public class TextEditor {
      * @param x the x coordinate of the anchor point, in pixels.
      * @param y the y coordinate of the anchor point, in pixels.
      */
-    public void setPosition(int x, int y) {
+    public void setPosition(int x, int y)
+    {
         textWrapper.setPosition(x, y);
     }
 
@@ -634,12 +671,14 @@ public class TextEditor {
      * @param rows the number of visible rows in the editor
      * @throws IllegalArgumentException if rows is zero or less
      */
-    public void setRows(int rows) {
-        if (rows <= 0) {
+    public void setRows(int rows)
+    {
+        if(rows <= 0)
+        {
             throw new IllegalArgumentException();
         }
         textWrapper.setSize(textWrapper.getWidth(),
-                textWrapper.getLineHeight() * rows);
+                            textWrapper.getLineHeight() * rows);
     }
 
     /**
@@ -651,7 +690,8 @@ public class TextEditor {
      * @param index the index of the first character to be selected.
      * @param length the length of the selection in characters.
      */
-    public void setSelection(int index, int length) {
+    public void setSelection(int index, int length)
+    {
         textWrapper.setSelection(index, index + length);
     }
 
@@ -662,7 +702,8 @@ public class TextEditor {
      * @param height height in pixels
      * @throws IllegalArgumentException if the width or height is less than zero
      */
-    public void setSize(int width, int height) {
+    public void setSize(int width, int height)
+    {
         textWrapper.setSize(width, height);
     }
 
@@ -676,7 +717,8 @@ public class TextEditor {
      * @param aChangelistener the new listener, or <code>null</code>
      */
     public void setTextEditorChangeListener(
-            TextEditorChangeListener aChangelistener) {
+        TextEditorChangeListener aChangelistener)
+    {
         changelistener = aChangelistener;
     }
 
@@ -693,8 +735,10 @@ public class TextEditor {
      *             CustomItem
      * @see #hide() </AU>
      */
-    public void show() {
-        if (parent == null) {
+    public void show()
+    {
+        if(parent == null)
+        {
             throw new IllegalStateException();
         }
         textWrapper.setVisible(true);
@@ -706,17 +750,21 @@ public class TextEditor {
      *
      * @return the number of characters
      */
-    public int size() {
+    public int size()
+    {
         return textWrapper.getSize();
     }
 
     /**
      * Text modify listener.
      */
-    class TextModifyListener implements ModifyListener {
+    class TextModifyListener implements ModifyListener
+    {
 
-        public void modifyText(ModifyEvent me) {
-            if (changelistener != null) {
+        public void modifyText(ModifyEvent me)
+        {
+            if(changelistener != null)
+            {
                 changelistener.textChanged(0, textWrapper.getSize());
             }
         }
@@ -726,13 +774,16 @@ public class TextEditor {
     /**
      * Text selection listener.
      */
-    class TextSelectionListener implements SelectionListener {
+    class TextSelectionListener implements SelectionListener
+    {
 
-        public void widgetDefaultSelected(SelectionEvent se) {
+        public void widgetDefaultSelected(SelectionEvent se)
+        {
             Logger.verbose("TE - DefSel: " + se);
         }
 
-        public void widgetSelected(SelectionEvent se) {
+        public void widgetSelected(SelectionEvent se)
+        {
             Logger.verbose("TE - Sel: " + se);
         }
 

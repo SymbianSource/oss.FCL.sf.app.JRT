@@ -222,6 +222,10 @@ public class CopyAppFiles extends ExeStep
         for (int i = 0; i < apps.size(); i++)
         {
             appInfo = (ApplicationInfo)apps.elementAt(i);
+            if (appInfo.getUseDefaultIcon())
+            {
+                continue;
+            }
             iconFilename = aBall.iSuite.getRegisteredIconPath(i);
             iconDir = FileUtils.getParent(iconFilename);
             if (!FileUtils.exists(iconDir))

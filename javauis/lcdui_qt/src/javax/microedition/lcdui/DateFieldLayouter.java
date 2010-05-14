@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -30,7 +30,8 @@ import org.eclipse.swt.widgets.Control;
  * Super class for all DateField Layouters. Contains their common
  * functionality.
  */
-class DateFieldLayouter extends ItemLayouter {
+class DateFieldLayouter extends ItemLayouter
+{
 
     /**
      * Key name for modify listener.
@@ -44,17 +45,20 @@ class DateFieldLayouter extends ItemLayouter {
      *
      * @param dflp DefaultFormLayoutPolicy used for layouting.
      */
-    DateFieldLayouter(DefaultFormLayoutPolicy dflp) {
+    DateFieldLayouter(DefaultFormLayoutPolicy dflp)
+    {
         super(dflp);
     }
 
     /**
      * Get static eSWT DateEditor widget for size calculations.
      */
-    static DateEditor eswtGetStaticDate() {
-        if (staticDate == null) {
+    static DateEditor eswtGetStaticDate()
+    {
+        if(staticDate == null)
+        {
             staticDate = new DateEditor(eswtGetStaticShell(), SWT.NONE,
-                    DateEditor.DATE_TIME | DateEditor.COMPACT);
+                                        DateEditor.DATE_TIME | DateEditor.COMPACT);
         }
         return staticDate;
     }
@@ -66,31 +70,35 @@ class DateFieldLayouter extends ItemLayouter {
      * @param item on which it is based. Must be DateField.
      * @return Control.
      */
-    Control eswtGetControl(Composite parent, Item item) {
+    Control eswtGetControl(Composite parent, Item item)
+    {
         DateField dateField = (DateField) item;
         DateEditor dateEditor = null;
 
-        switch (dateField.getInputMode()) {
-            case DateField.TIME:
-                dateEditor = new DateEditor(parent, SWT.NONE,
-                        DateEditor.TIME | DateEditor.COMPACT);
-                break;
-            case DateField.DATE:
-                dateEditor = new DateEditor(parent, SWT.NONE,
-                        DateEditor.DATE | DateEditor.COMPACT);
-                break;
-            case DateField.DATE_TIME:
-                dateEditor = new DateEditor(parent, SWT.NONE,
-                        DateEditor.DATE_TIME | DateEditor.COMPACT);
-                break;
-            default:
-                break;
+        switch(dateField.getInputMode())
+        {
+        case DateField.TIME:
+            dateEditor = new DateEditor(parent, SWT.NONE,
+                                        DateEditor.TIME | DateEditor.COMPACT);
+            break;
+        case DateField.DATE:
+            dateEditor = new DateEditor(parent, SWT.NONE,
+                                        DateEditor.DATE | DateEditor.COMPACT);
+            break;
+        case DateField.DATE_TIME:
+            dateEditor = new DateEditor(parent, SWT.NONE,
+                                        DateEditor.DATE_TIME | DateEditor.COMPACT);
+            break;
+        default:
+            break;
         }
 
-        if (dateField.getTimeZone() != null) {
+        if(dateField.getTimeZone() != null)
+        {
             dateEditor.setTimeZone(dateField.getTimeZone());
         }
-        if (dateField.getDate() != null) {
+        if(dateField.getDate() != null)
+        {
             dateEditor.setDate(dateField.getDate());
         }
         return dateEditor;
@@ -99,7 +107,8 @@ class DateFieldLayouter extends ItemLayouter {
     /**
      * Add listeners to Layouter specific control.
      */
-    void eswtAddSpecificListeners(Item item, Control control) {
+    void eswtAddSpecificListeners(Item item, Control control)
+    {
         super.eswtAddSpecificListeners(item, control);
         DateField dateField = (DateField) item;
         DateEditor de = (DateEditor) control;
@@ -111,11 +120,13 @@ class DateFieldLayouter extends ItemLayouter {
     /**
      * Remove listeners from Layouter specific control.
      */
-    void eswtRemoveSpecificListeners(Item item, Control control) {
+    void eswtRemoveSpecificListeners(Item item, Control control)
+    {
         super.eswtRemoveSpecificListeners(item, control);
         DateEditor de = (DateEditor) control;
         ModifyListener listener = (ModifyListener) de.getData(MODIFY_LISTENER);
-        if (listener != null) {
+        if(listener != null)
+        {
             de.removeModifyListener(listener);
             de.setData(MODIFY_LISTENER, null);
         }
@@ -124,22 +135,26 @@ class DateFieldLayouter extends ItemLayouter {
     /**
      * Returns if this eSWT control is Layouter specific.
      */
-    boolean eswtIsSpecificControl(Item item, Control control) {
+    boolean eswtIsSpecificControl(Item item, Control control)
+    {
         return (control instanceof DateEditor);
     }
 
     /**
      * Updates the values of DateField.
      */
-    void eswtUpdateItem(Item item, Control control, int reason, Object param) {
+    void eswtUpdateItem(Item item, Control control, int reason, Object param)
+    {
         DateField dateField = (DateField) item;
         DateEditor dateEditor = (DateEditor) control;
 
-        if (dateField.getDate() != null) {
+        if(dateField.getDate() != null)
+        {
             dateEditor.setDate(dateField.getDate());
         }
 
-        if (dateField.getTimeZone() != null) {
+        if(dateField.getTimeZone() != null)
+        {
             dateEditor.setTimeZone(dateField.getTimeZone());
         }
     }
@@ -150,8 +165,10 @@ class DateFieldLayouter extends ItemLayouter {
      * is changed. Otherwise method returns false and allows form to transfer
      * focus.
      */
-    boolean eswtOfferKeyPressed(Item item, int key) {
-        if (key == SWT.ARROW_LEFT || key == SWT.ARROW_RIGHT) {
+    boolean eswtOfferKeyPressed(Item item, int key)
+    {
+        if(key == SWT.ARROW_LEFT || key == SWT.ARROW_RIGHT)
+        {
             return true;
         }
         return false;
@@ -163,10 +180,13 @@ class DateFieldLayouter extends ItemLayouter {
      * @param datefield DateField object.
      * @return Minimum area needed to display DateField.
      */
-    static Point calculateMinimumBounds(final DateField datefield) {
+    static Point calculateMinimumBounds(final DateField datefield)
+    {
         final Point minSize = new Point(0, 0);
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 DateEditor tempEditor = eswtGetStaticDate();
                 minSize.x = getMaximumItemWidth(datefield);
                 minSize.y = tempEditor.computeSize(minSize.x, SWT.DEFAULT).y;
@@ -183,11 +203,14 @@ class DateFieldLayouter extends ItemLayouter {
      * @return Preferred area needed to display Item. x is width and y is
      *         height.
      */
-    static Point calculatePreferredBounds(Item item) {
+    static Point calculatePreferredBounds(Item item)
+    {
         final Point prefSize = new Point(0, 0);
         final DateField datefield = (DateField) item;
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 DateEditor tempEditor = eswtGetStaticDate();
                 prefSize.x = getMaximumItemWidth(datefield);
                 prefSize.y = tempEditor.computeSize(prefSize.x, SWT.DEFAULT).y;
@@ -195,13 +218,14 @@ class DateFieldLayouter extends ItemLayouter {
             }
         });
         return prefSize;
-       // return calculateMinimumBounds((DateField) item);
+        // return calculateMinimumBounds((DateField) item);
     }
 
     /**
      * Class that receives events from DateEditor and updates DateField's value.
      */
-    class DateEditorModifyListener implements ModifyListener {
+    class DateEditorModifyListener implements ModifyListener
+    {
 
         private DateField dateField;
 
@@ -209,7 +233,8 @@ class DateFieldLayouter extends ItemLayouter {
          * Constructor.
          * @param dateField DateField to be updated.
          */
-        public DateEditorModifyListener(DateField dateField) {
+        public DateEditorModifyListener(DateField dateField)
+        {
             this.dateField = dateField;
         }
 
@@ -218,10 +243,12 @@ class DateFieldLayouter extends ItemLayouter {
          *
          * @param e Event.
          */
-        public void modifyText(ModifyEvent e) {
+        public void modifyText(ModifyEvent e)
+        {
             // Actions needed only if value is adjusted. Compare values
             // depending of dateField's type and exit if values are same.
-            if (!isEqualDate(dateField, (DateEditor) e.getSource())) {
+            if(!isEqualDate(dateField, (DateEditor) e.getSource()))
+            {
                 Logger.method(dateField, "modify", e);
                 dateField.internalSetDate(((DateEditor) e.getSource()).getDate());
                 // notify item state listener
@@ -240,40 +267,46 @@ class DateFieldLayouter extends ItemLayouter {
      *
      * @return true if values are equal.
      */
-    private boolean isEqualDate(DateField dateField, DateEditor dateEditor) {
+    private boolean isEqualDate(DateField dateField, DateEditor dateEditor)
+    {
         Calendar c1 = Calendar.getInstance();
         Calendar c2 = Calendar.getInstance();
 
-        if (dateField.getDate() != null && dateEditor.getDate() != null) {
+        if(dateField.getDate() != null && dateEditor.getDate() != null)
+        {
             // set dates of calendars
             c1.setTime(dateField.getDate());
             c2.setTime(dateEditor.getDate());
 
-            switch (dateField.getInputMode()) {
-                case DateField.DATE:
-                    if ((c1.get(Calendar.DAY_OF_MONTH) == c2.get(Calendar.DAY_OF_MONTH))
-                     && (c1.get(Calendar.MONTH) == c2.get(Calendar.MONTH))
-                     && (c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR))) {
-                        return true;
-                    }
-                    break;
-                case DateField.TIME:
-                    if ((c1.get(Calendar.MINUTE) == c2.get(Calendar.MINUTE))
-                     && (c1.get(Calendar.HOUR_OF_DAY) == c2.get(Calendar.HOUR_OF_DAY))) {
-                        return true;
-                    }
-                    break;
-                case DateField.DATE_TIME:
-                    if ((c1.get(Calendar.DAY_OF_MONTH) == c2.get(Calendar.DAY_OF_MONTH))
-                     && (c1.get(Calendar.MONTH) == c2.get(Calendar.MONTH))
-                     && (c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR))
-                     && (c1.get(Calendar.MINUTE) == c2.get(Calendar.MINUTE))
-                     && (c1.get(Calendar.HOUR_OF_DAY) == c2.get(Calendar.HOUR_OF_DAY))) {
-                        return true;
-                    }
-                    break;
-                default:
-                    break;
+            switch(dateField.getInputMode())
+            {
+            case DateField.DATE:
+                if((c1.get(Calendar.DAY_OF_MONTH) == c2.get(Calendar.DAY_OF_MONTH))
+                        && (c1.get(Calendar.MONTH) == c2.get(Calendar.MONTH))
+                        && (c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR)))
+                {
+                    return true;
+                }
+                break;
+            case DateField.TIME:
+                if((c1.get(Calendar.MINUTE) == c2.get(Calendar.MINUTE))
+                        && (c1.get(Calendar.HOUR_OF_DAY) == c2.get(Calendar.HOUR_OF_DAY)))
+                {
+                    return true;
+                }
+                break;
+            case DateField.DATE_TIME:
+                if((c1.get(Calendar.DAY_OF_MONTH) == c2.get(Calendar.DAY_OF_MONTH))
+                        && (c1.get(Calendar.MONTH) == c2.get(Calendar.MONTH))
+                        && (c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR))
+                        && (c1.get(Calendar.MINUTE) == c2.get(Calendar.MINUTE))
+                        && (c1.get(Calendar.HOUR_OF_DAY) == c2.get(Calendar.HOUR_OF_DAY)))
+                {
+                    return true;
+                }
+                break;
+            default:
+                break;
             }
         }
         return false;

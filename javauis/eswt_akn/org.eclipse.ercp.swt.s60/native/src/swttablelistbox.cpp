@@ -356,7 +356,7 @@ void CSwtTableListBox::DrawGrid(CWindowGc& aGc, const TRect& aClippingRect) cons
 #else
                                            EAknsCIQsnLineColorsCG6
 #endif
-                                           );
+                                          );
     aGc.SetPenColor(gridLineColor);
     aGc.SetPenSize(TSize(lineWidth, lineWidth));
     aGc.SetPenStyle(CGraphicsContext::ESolidPen);
@@ -377,13 +377,13 @@ void CSwtTableListBox::DrawGrid(CWindowGc& aGc, const TRect& aClippingRect) cons
         drawRect.iBr.iX = iView->ViewRect().iBr.iX;
     }
 
-    // Last index means also last index partially visible, 
-    // therefore intentionally we do not substract 1 here. 
-    TInt lastIndex = iView->TopItemIndex() 
-        + iView->NumberOfItemsThatFitInRect(iView->ViewRect());
+    // Last index means also last index partially visible,
+    // therefore intentionally we do not substract 1 here.
+    TInt lastIndex = iView->TopItemIndex()
+                     + iView->NumberOfItemsThatFitInRect(iView->ViewRect());
     TInt lastPotentialItemIndex = Min(iModel->NumberOfItems() - 1, lastIndex);
-    drawRect.iBr.iY = iView->ItemPos(lastPotentialItemIndex).iY 
-        + iView->ItemSize(lastPotentialItemIndex).iHeight;
+    drawRect.iBr.iY = iView->ItemPos(lastPotentialItemIndex).iY
+                      + iView->ItemSize(lastPotentialItemIndex).iHeight;
 
     if (drawRect.iBr.iY > viewRect.iBr.iY) drawRect.iBr.iY = viewRect.iBr.iY;
 
@@ -403,7 +403,7 @@ void CSwtTableListBox::DrawGrid(CWindowGc& aGc, const TRect& aClippingRect) cons
         p1.iY += itemHeight;
         p2.iY += itemHeight;
     }
-    
+
     // Then draw the vertical lines
 
     // Compute the first column edge location
@@ -696,14 +696,14 @@ void CSwtTableListBox::HandlePointerEventL(const TPointerEvent& aPointerEvent)
             if (deltaX != 0)
                 iView->HScroll(deltaX);
         }
-        
+
         iDragPos = aPointerEvent.iPosition;
         CEikTextListBox::HandlePointerEventL(aPointerEvent);
 
         if (aPointerEvent.iType == TPointerEvent::EButton1Up)
         {
             TInt focusIndex = CurrentItemIndex();
-            
+
             if (iListBoxFlags & EMultipleSelection)
             {
                 // Multi lists
@@ -718,12 +718,12 @@ void CSwtTableListBox::HandlePointerEventL(const TPointerEvent& aPointerEvent)
                         }
                         else
                         {
-                            View()->SelectItemL(focusIndex);   
+                            View()->SelectItemL(focusIndex);
                         }
                     }
                     else
                     {
-                        iTable.PostSelectionEventL(KSwtStyleCheck, focusIndex);                        
+                        iTable.PostSelectionEventL(KSwtStyleCheck, focusIndex);
                     }
                 }
             }
@@ -1003,18 +1003,18 @@ void CSwtTableListBox::Draw(const TRect& aRect) const
         heightOfItemArea = viewRect.Height();
     }
 
-    // Last index means also last index partially visible, 
+    // Last index means also last index partially visible,
     // therefore intentionally we do not substract 1 here.
-    TInt lastIndex = iView->TopItemIndex() 
-        + iView->NumberOfItemsThatFitInRect(iView->ViewRect());
+    TInt lastIndex = iView->TopItemIndex()
+                     + iView->NumberOfItemsThatFitInRect(iView->ViewRect());
     TInt lastPotentialItemIndex = Min(iModel->NumberOfItems() - 1, lastIndex);
 
     // Clear the unused portion of the viewing area
     TRect usedPortionOfViewRect(viewRect.iTl.iX, iView->ItemPos(iView->TopItemIndex()).iY,
                                 viewRect.iBr.iX, iView->ItemPos(lastPotentialItemIndex).iY
                                 + iView->ItemSize(lastPotentialItemIndex).iHeight);
-    
-    // This is needed as the horizontal scrollbar is transparent. 
+
+    // This is needed as the horizontal scrollbar is transparent.
     if (usedPortionOfViewRect.iBr.iY > viewRect.iBr.iY)
         usedPortionOfViewRect.iBr.iY = viewRect.iBr.iY;
 

@@ -48,12 +48,20 @@ public final class SifNotifier
     private String iGlobalComponentId = null;
     /** Component name (i.e. suite name). */
     private String iComponentName = null;
-    /** Array of pplication names. */
+    /** Application names. */
     private String[] iApplicationNames = null;
+    /** Applications icons. */
+    private String[] iApplicationIcons = null;
     /** Component initial size. */
     private int iComponentSize = 0;
-    /** Component icon path. */
-    private String iComponentIconPath = null;
+    /** Icon dir. */
+    private String iIconDir = null;
+    /** Component icon. */
+    private String iComponentIcon = null;
+
+    /** Sending progress notifications is only allowed between start
+     *  and end notifications. */
+    private boolean iNotifyProgressAllowed = false;
 
     /** Native object handle. */
     private int iHandle = 0;
@@ -83,15 +91,17 @@ public final class SifNotifier
      */
     public void notifyStart(
         int aOperation, String aGlobalComponentId, String aComponentName,
-        String[] aApplicationNames, int aComponentSize,
-        String aComponentIconPath)
+        String[] aApplicationNames, String[] aApplicationIcons,
+        int aComponentSize, String aIconDir, String aComponentIcon)
     {
         iOperation = aOperation;
         iGlobalComponentId = aGlobalComponentId;
         iComponentName = aComponentName;
         iApplicationNames = aApplicationNames;
+        iApplicationIcons = aApplicationIcons;
         iComponentSize = aComponentSize;
-        iComponentIconPath = aComponentIconPath;
+        iIconDir = aIconDir;
+        iComponentIcon = aComponentIcon;
 
         if (iHandle == 0)
         {
@@ -99,8 +109,9 @@ public final class SifNotifier
                 "SifNotifier.notifyStart: notifier has not been initialized");
         }
         int ret = _notifyStart(
-                      iHandle, aGlobalComponentId, aComponentName, aApplicationNames,
-                      aComponentSize, aComponentIconPath);
+                      iHandle, aGlobalComponentId, aComponentName,
+                      aApplicationNames, aApplicationIcons,
+                      aComponentSize, aIconDir, aComponentIcon);
         if (ret < 0)
         {
             Log.logError("Notifying SIF start failed with code " + ret +
@@ -108,6 +119,7 @@ public final class SifNotifier
             InstallerException.internalError(
                 "Notifying SIF start failed with code " + ret);
         }
+        iNotifyProgressAllowed = true;
     }
 
     /**
@@ -123,6 +135,7 @@ public final class SifNotifier
             InstallerException.internalError(
                 "SifNotifier.notifyEnd: notifier has not been initialized");
         }
+        iNotifyProgressAllowed = false;
         int ret = _notifyEnd(
                       iHandle, iGlobalComponentId, aErrCategory, aErrCode,
                       aErrMsg, aErrMsgDetails);
@@ -146,6 +159,10 @@ public final class SifNotifier
      */
     public void notifyProgress(int aSubOperation, int aCurrent, int aTotal)
     {
+        if (!iNotifyProgressAllowed)
+        {
+            return;
+        }
         if (iHandle == 0)
         {
             InstallerException.internalError(
@@ -240,15 +257,17 @@ public final class SifNotifier
      * @param aGlobalComponentId
      * @param aComponentName
      * @param aApplicationNames
+     * @param aApplicationIcons
      * @param aComponentSize
-     * @param aComponentIconPath
+     * @param aIconDir
+     * @param aComponentIcon
      * @return Symbian error code (negative number) if operation fails,
      * otherwise 0
      */
     private static native int _notifyStart(
         int aHandle, String aGlobalComponentId, String aComponentName,
-        String[] aApplicationNames, int aComponentSize,
-        String aComponentIconPath);
+        String[] aApplicationNames, String[] aApplicationIcons,
+        int aComponentSize, String aIconDir, String aComponentIcon);
 
     /**
      * Notifies SIF about installation/uinstallation completion.

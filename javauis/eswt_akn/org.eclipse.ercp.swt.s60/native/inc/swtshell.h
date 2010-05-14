@@ -148,6 +148,8 @@ public:
     void SetAsyncPainting(TBool aStatus);
     void InstallCba();
     TBool HasCba() const;
+    void SetTaskTip();
+    TBool IsTaskTip() const;
 
 // From MEikStatusPaneObserver
 public:
@@ -155,7 +157,7 @@ public:
 
 private:
     void FinishRedraw() const;
-    
+
 // Data
 private:
     /**
@@ -248,11 +250,16 @@ private:
      * this goes ETrue.
      */
     TBool iAsyncPainting;
-    
+
     /**
      * Once turned on can never be turned off.
      */
     TBool iHasCba;
+
+    /**
+     * Task tip style.
+     */
+    TBool iIsTaskTip;
 };
 
 #endif // SWTSHELL_H

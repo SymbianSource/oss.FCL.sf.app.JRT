@@ -29,11 +29,8 @@ import com.nokia.mj.impl.rt.midp.Log;
 
 
 /**
- * A Main runtime specific implemetation of ApplicationUtils class of the
+ * A Main runtime specific implementation of ApplicationUtils class of the
  * runtime support API.
- *
- * @author Nokia Corporation
- * @version $Rev$
  */
 
 public class ApplicationUtilsImpl extends ApplicationUtils

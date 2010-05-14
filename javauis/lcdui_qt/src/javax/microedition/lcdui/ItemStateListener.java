@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -19,11 +19,12 @@ package javax.microedition.lcdui;
 /**
  * Listener that receives events when item's state is changed.
  */
-public interface ItemStateListener {
+public interface ItemStateListener
+{
 
     /**
      * Called when item state is changed.
-     * 
+     *
      * @param item The item which state is changed.
      */
     void itemStateChanged(Item item);

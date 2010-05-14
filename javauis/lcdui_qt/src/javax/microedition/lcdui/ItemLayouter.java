@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -25,10 +25,13 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.*;
 
+import com.nokia.mj.impl.nokialcdui.ItemControlStateChangeListener;
+
 /**
  * Abstract base class for Item layouters.
  */
-abstract class ItemLayouter {
+abstract class ItemLayouter
+{
 
     /**
      * Key name for paint listener.
@@ -56,10 +59,12 @@ abstract class ItemLayouter {
      *
      * @return Static Shell. Never null.
      */
-    static MobileShell eswtGetStaticShell() {
-        if (staticShell == null) {
+    static MobileShell eswtGetStaticShell()
+    {
+        if(staticShell == null)
+        {
             staticShell = new MobileShell(ESWTUIThreadRunner.getInstance()
-                    .getDisplay(), SWT.SYSTEM_MODAL | SWT.VERTICAL);
+                                          .getDisplay(), SWT.SYSTEM_MODAL | SWT.VERTICAL);
             staticShell.getVerticalBar().setVisible(true);
             formWidth = staticShell.getClientArea().width;
             formHeigh = staticShell.getClientArea().height;
@@ -70,8 +75,10 @@ abstract class ItemLayouter {
     /**
      * Gets static singleton off-screen Label control.
      */
-    private static Label eswtGetStaticLabel() {
-        if (staticLabel == null) {
+    private static Label eswtGetStaticLabel()
+    {
+        if(staticLabel == null)
+        {
             staticLabel = new Label(eswtGetStaticShell(), SWT.NONE);
         }
         return staticLabel;
@@ -80,8 +87,10 @@ abstract class ItemLayouter {
     /**
      * Gets static singleton off-screen Captioned control.
      */
-    private static CaptionedControl eswtGetStaticCC() {
-        if (staticCC == null) {
+    private static CaptionedControl eswtGetStaticCC()
+    {
+        if(staticCC == null)
+        {
             staticCC = new CaptionedControl(eswtGetStaticShell(), SWT.VERTICAL);
         }
         return staticCC;
@@ -90,8 +99,10 @@ abstract class ItemLayouter {
     /**
      * The static "layouting" shell's size is updated.
      */
-    static void eswtUpdateStaticShellSize(int width, int height) {
-        if (staticShell != null) {
+    static void eswtUpdateStaticShellSize(int width, int height)
+    {
+        if(staticShell != null)
+        {
             staticShell.setBounds(staticShell.computeTrim(0, 0, width, height));
             formWidth = width;
             formHeigh = height;
@@ -103,11 +114,14 @@ abstract class ItemLayouter {
      *
      * @param dflp - DefaultFormLayoutPolicy used for layouting.
      */
-    ItemLayouter(DefaultFormLayoutPolicy dflp) {
+    ItemLayouter(DefaultFormLayoutPolicy dflp)
+    {
         this.dfi = (DefaultFormInteraction) dflp;
         formComposite = dflp.getForm().getFormComposite();
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 ItemLayouter.eswtGetStaticShell();
             }
         });
@@ -116,7 +130,8 @@ abstract class ItemLayouter {
     /**
      * Label alignment directive.
      */
-    int eswtGetLabelAlignmentDirective() {
+    int eswtGetLabelAlignmentDirective()
+    {
         return dfi.getLanguageSpecificLayoutDirective();
     }
 
@@ -126,9 +141,19 @@ abstract class ItemLayouter {
      * @param row current Row
      * @param item Item to layout
      */
-    void eswtLayoutItem(Row row, Item item) {
+    void eswtLayoutItem(Row row, Item item)
+    {
         LayoutObject lo = new LayoutObject(item, eswtGetCaptionedControl(item));
         dfi.eswtAddNewLayoutObject(lo);
+        if(item instanceof CustomItem)
+        {
+            ItemControlStateChangeListener listener = item.getItemControlStateChangeListener();
+            if(null != listener)
+            {
+                listener.notifyControlAvailable(lo.getControl(),item);
+                lo.getControl().addListener(SWT.Dispose, new EventListener(item));
+            }
+        }
     }
 
     /**
@@ -142,15 +167,18 @@ abstract class ItemLayouter {
      *
      * @param item Item to be layouted
      */
-    final Control eswtGetCaptionedControl(Item item) {
-        if (item.hasLabel()) {
+    final Control eswtGetCaptionedControl(Item item)
+    {
+        if(item.hasLabel())
+        {
             CaptionedControl captioned = new CaptionedControl(formComposite, SWT.VERTICAL);
             captioned.setText(item.getLabel());
             eswtGetControl(captioned, item);
             eswtCaptionedResize(item, captioned, item.getLayoutWidth(), item.getLayoutHeight());
             return captioned;
         }
-        else {
+        else
+        {
             Control ret = eswtGetControl(formComposite, item);
             eswtCaptionedResize(item, ret, item.getLayoutWidth(), item.getLayoutHeight());
             return ret;
@@ -169,7 +197,8 @@ abstract class ItemLayouter {
     /**
      * Update size of an LayoutObject.
      */
-    final void eswtResizeObject(LayoutObject lo) {
+    final void eswtResizeObject(LayoutObject lo)
+    {
         Item item = lo.getOwningItem();
         eswtCaptionedResize(item, lo.getControl(), item.getLayoutWidth(), item.getLayoutHeight());
         lo.eswtUpdateSize();
@@ -182,22 +211,26 @@ abstract class ItemLayouter {
      * @param width
      * @param height
      */
-    final void eswtResizeObject(LayoutObject lo, int width, int height) {
+    final void eswtResizeObject(LayoutObject lo, int width, int height)
+    {
         eswtCaptionedResize(lo.getOwningItem(), lo.getControl(), width, height);
         lo.eswtUpdateSize();
     }
 
-    final void eswtCaptionedResize(Item item, Control control, int width, int height) {
-        if (control instanceof CaptionedControl) {
+    final void eswtCaptionedResize(Item item, Control control, int width, int height)
+    {
+        if(control instanceof CaptionedControl)
+        {
             CaptionedControl cc = (CaptionedControl) control;
             cc.setSize(width, height);
             Rectangle ccArea = cc.getClientArea();
             eswtResizeControl(item, eswtFindSpecificControl(item, control),
-                    ccArea.width, ccArea.height);
+                              ccArea.width, ccArea.height);
         }
-        else {
+        else
+        {
             eswtResizeControl(item, eswtFindSpecificControl(item, control),
-                    width, height);
+                              width, height);
         }
     }
 
@@ -209,7 +242,8 @@ abstract class ItemLayouter {
      * @param width item width.
      * @param height item height
      */
-    void eswtResizeControl(Item item, Control control, int width, int height) {
+    void eswtResizeControl(Item item, Control control, int width, int height)
+    {
         control.setSize(width, height);
     }
 
@@ -219,13 +253,16 @@ abstract class ItemLayouter {
      * @param item Item
      * @param lo LayoutObject
      */
-    void eswtAddListeners(Item item, LayoutObject lo) {
+    void eswtAddListeners(Item item, LayoutObject lo)
+    {
         lo.eswtAddSelectionListenerForCommands();
         Control specific = eswtFindSpecificControl(item, lo.getControl());
-        if (specific != null) {
+        if(specific != null)
+        {
             eswtAddSpecificListeners(item, specific);
         }
-        else {
+        else
+        {
             Logger.warning(this + "::eswtAddListeners didnt find control for " + item);
         }
     }
@@ -236,8 +273,10 @@ abstract class ItemLayouter {
      * @param item Item
      * @param control specific Control
      */
-    void eswtAddSpecificListeners(Item item, Control control) {
-        if (item.isFocusable()) {
+    void eswtAddSpecificListeners(Item item, Control control)
+    {
+        if(item.isFocusable())
+        {
             ItemFocusListener ifl = new ItemFocusListener(item);
             control.addFocusListener(ifl);
             control.setData(FOCUS_LISTENER, ifl);
@@ -250,13 +289,16 @@ abstract class ItemLayouter {
      * @param item Item
      * @param lo LayoutObject
      */
-    void eswtRemoveListeners(Item item, LayoutObject lo) {
+    void eswtRemoveListeners(Item item, LayoutObject lo)
+    {
         lo.eswtRemoveSelectionListenerForCommands();
         Control specific = eswtFindSpecificControl(item, lo.getControl());
-        if (specific != null) {
+        if(specific != null)
+        {
             eswtRemoveSpecificListeners(item, specific);
         }
-        else {
+        else
+        {
             Logger.warning(this + "::eswtRemoveListeners didnt find control for " + item);
         }
     }
@@ -267,11 +309,14 @@ abstract class ItemLayouter {
      * @param item Item
      * @param control specific Control
      */
-    void eswtRemoveSpecificListeners(Item item, Control control) {
-        if (item.isFocusable()) {
+    void eswtRemoveSpecificListeners(Item item, Control control)
+    {
+        if(item.isFocusable())
+        {
             ItemFocusListener ifl = (ItemFocusListener) control
-                    .getData(FOCUS_LISTENER);
-            if (ifl != null) {
+                                    .getData(FOCUS_LISTENER);
+            if(ifl != null)
+            {
                 control.removeFocusListener(ifl);
                 control.setData(FOCUS_LISTENER, null);
             }
@@ -286,22 +331,29 @@ abstract class ItemLayouter {
      * @param param optional parameter
      */
     final void updateItem(final Item item, final Control control,
-            final int reason, final Object param) {
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+                          final int reason, final Object param)
+    {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 Control specific = eswtFindSpecificControl(item, control);
-                if (specific != null) {
-                    if (!specific.isDisposed()) {
+                if(specific != null)
+                {
+                    if(!specific.isDisposed())
+                    {
                         eswtUpdateItem(item, specific, reason, param);
                     }
-                    else {
+                    else
+                    {
                         Logger.warning(ItemLayouter.this
-                                + "::updateItem found a disposed widget for " + item);
+                                       + "::updateItem found a disposed widget for " + item);
                     }
                 }
-                else {
+                else
+                {
                     Logger.warning(ItemLayouter.this
-                            + "::updateItem didnt find control for " + item);
+                                   + "::updateItem didnt find control for " + item);
                 }
             }
         });
@@ -316,7 +368,7 @@ abstract class ItemLayouter {
      * @param param optional parameter
      */
     abstract void eswtUpdateItem(Item item, Control control, int reason,
-            Object param);
+                                 Object param);
 
     /**
      * Finds the Layouter specific eSWT control in the eSWT Composite tree.
@@ -325,16 +377,21 @@ abstract class ItemLayouter {
      * @param control eSWT control
      * @return a specific control or null if not found
      */
-    final Control eswtFindSpecificControl(Item item, Control control) {
+    final Control eswtFindSpecificControl(Item item, Control control)
+    {
         Control ret = null;
-        if (eswtIsSpecificControl(item, control)) {
+        if(eswtIsSpecificControl(item, control))
+        {
             ret = control;
         }
-        else if (control != null && control instanceof Composite) {
+        else if(control != null && control instanceof Composite)
+        {
             Control[] children = ((Composite) control).getChildren();
-            for (int i = 0; i < children.length; i++) {
+            for(int i = 0; i < children.length; i++)
+            {
                 Control result = eswtFindSpecificControl(item, children[i]);
-                if (result != null) {
+                if(result != null)
+                {
                     ret = result;
                     break;
                 }
@@ -351,7 +408,8 @@ abstract class ItemLayouter {
      * @return Preferred area needed to display Item. x is width
      *      and y is height.
      */
-    static Point calculatePreferredBounds(Item item) {
+    static Point calculatePreferredBounds(Item item)
+    {
         return new Point(0, 0);
     }
 
@@ -370,9 +428,11 @@ abstract class ItemLayouter {
      * @param item Item
      * @return layouted Control
      */
-    Control eswtGetFirstControl(Item item) {
+    Control eswtGetFirstControl(Item item)
+    {
         LayoutObject lo = dfi.getFirstLayoutObjectOfItem(item);
-        if (lo != null) {
+        if(lo != null)
+        {
             return lo.getControl();
         }
         return null;
@@ -384,11 +444,14 @@ abstract class ItemLayouter {
      * @param item Item
      * @return layouted specific Control
      */
-    Control eswtGetFirstSpecificControl(Item item) {
+    Control eswtGetFirstSpecificControl(Item item)
+    {
         LayoutObject lo = dfi.getFirstLayoutObjectOfItem(item);
-        if (lo != null) {
+        if(lo != null)
+        {
             Control control = lo.getControl();
-            if (control != null) {
+            if(control != null)
+            {
                 return eswtFindSpecificControl(item, control);
             }
         }
@@ -404,29 +467,36 @@ abstract class ItemLayouter {
      * @param type eSWT key type
      * @return if the key was consumed or not
      */
-    boolean eswtOfferKeyEvent(Item item, int key, int type) {
-        if (type == SWT.KeyDown) {
+    boolean eswtOfferKeyEvent(Item item, int key, int type)
+    {
+        if(type == SWT.KeyDown)
+        {
             return eswtOfferKeyPressed(item, key);
         }
-        else if (type == SWT.KeyUp) {
+        else if(type == SWT.KeyUp)
+        {
             return eswtOfferKeyReleased(item, key);
         }
-        else {
+        else
+        {
             return eswtOfferKeyRepeated(item, key);
         }
     }
 
-    boolean eswtOfferKeyPressed(Item item, int key) {
+    boolean eswtOfferKeyPressed(Item item, int key)
+    {
         // Do not consume these by default
         return false;
     }
 
-    boolean eswtOfferKeyRepeated(Item item, int key) {
+    boolean eswtOfferKeyRepeated(Item item, int key)
+    {
         // Do not consume these by default
         return false;
     }
 
-    boolean eswtOfferKeyReleased(Item item, int key) {
+    boolean eswtOfferKeyReleased(Item item, int key)
+    {
         // Do not consume these by default
         return false;
     }
@@ -437,7 +507,8 @@ abstract class ItemLayouter {
      * @param item
      * @param dir
      */
-    void eswtFocusGained(Item item, int dir) {
+    void eswtFocusGained(Item item, int dir)
+    {
         Logger.method(item, "focusGained", String.valueOf(dir));
         item.internalSetFocused(true);
     }
@@ -447,18 +518,23 @@ abstract class ItemLayouter {
      *
      * @param item item which looses focus.
      */
-    void eswtFocusLost(Item item) {
+    void eswtFocusLost(Item item)
+    {
         Logger.method(item, "focusLost");
         item.internalSetFocused(false);
     }
 
-    final void eswtHandleVisibilityChange(Item item, boolean visible) {
-        if (item.isVisible() != visible) {
+    final void eswtHandleVisibilityChange(Item item, boolean visible)
+    {
+        if(item.isVisible() != visible)
+        {
             item.internalSetVisible(visible);
-            if (visible) {
+            if(visible)
+            {
                 eswtHandleShow(item);
             }
-            else {
+            else
+            {
                 eswtHandleHide(item);
             }
         }
@@ -469,7 +545,8 @@ abstract class ItemLayouter {
      *
      * @param item which becomes visible.
      */
-    void eswtHandleShow(Item item) {
+    void eswtHandleShow(Item item)
+    {
         // Implementation not needed. Subclasses may override.
     }
 
@@ -478,29 +555,37 @@ abstract class ItemLayouter {
      *
      * @param item which becomes hidden.
      */
-    void eswtHandleHide(Item item) {
+    void eswtHandleHide(Item item)
+    {
         // Implementation not needed. Subclasses may override.
     }
 
-    static void applyMinMargins(Item item, Point size) {
-        if (item.hasLabel()) {
+    static void applyMinMargins(Item item, Point size)
+    {
+        if(item.hasLabel())
+        {
             applyCaptionedTrim(MIN_TEXT, size);
         }
         size.x = Math.min(size.x, formWidth);
     }
 
-    static void applyPrefMargins(Item item, Point size) {
-        if (item.hasLabel()) {
+    static void applyPrefMargins(Item item, Point size)
+    {
+        if(item.hasLabel())
+        {
             applyCaptionedTrim(item.getLabel(), size);
         }
         size.x = Math.min(size.x, formWidth);
     }
 
 
-    static final void applyCaptionedTrim(final String text, Point size) {
+    static final void applyCaptionedTrim(final String text, Point size)
+    {
         final Point localSize = size;
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 CaptionedControl cc = eswtGetStaticCC();
                 cc.setText(text);
                 Rectangle rect = cc.computeTrim(0, 0, localSize.x, localSize.y);
@@ -520,10 +605,13 @@ abstract class ItemLayouter {
      * @param item
      *            Item containing the label.
      */
-    static Point getLabelSize(final String labelStr) {
+    static Point getLabelSize(final String labelStr)
+    {
         final Point size = new Point(0, 0);
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 Label label = eswtGetStaticLabel();
                 label.setText(labelStr);
                 Point temp = label.computeSize(SWT.DEFAULT, SWT.DEFAULT);
@@ -543,15 +631,17 @@ abstract class ItemLayouter {
      * @return x-position of object
      */
     static final int getXLocation(int owningWidth, int objectWidth,
-            int horizontalLayout) {
-        switch (horizontalLayout) {
-            case Item.LAYOUT_RIGHT:
-                return owningWidth - objectWidth;
-            case Item.LAYOUT_CENTER:
-                return (owningWidth - objectWidth) / 2;
-            case Item.LAYOUT_LEFT:
-            default:
-                return 0;
+                                  int horizontalLayout)
+    {
+        switch(horizontalLayout)
+        {
+        case Item.LAYOUT_RIGHT:
+            return owningWidth - objectWidth;
+        case Item.LAYOUT_CENTER:
+            return (owningWidth - objectWidth) / 2;
+        case Item.LAYOUT_LEFT:
+        default:
+            return 0;
         }
     }
 
@@ -564,16 +654,18 @@ abstract class ItemLayouter {
      * @return y-position of object
      */
     static final int getYLocation(int owningHeight, int objectHeight,
-            int verticalLayout) {
-        switch (verticalLayout) {
-            case Item.LAYOUT_VCENTER:
-                return (owningHeight - objectHeight) / 2;
-            case Item.LAYOUT_TOP:
-                return 0;
-            case Item.LAYOUT_BOTTOM:
-                return owningHeight - objectHeight;
-            default:
-                return owningHeight - objectHeight;
+                                  int verticalLayout)
+    {
+        switch(verticalLayout)
+        {
+        case Item.LAYOUT_VCENTER:
+            return (owningHeight - objectHeight) / 2;
+        case Item.LAYOUT_TOP:
+            return 0;
+        case Item.LAYOUT_BOTTOM:
+            return owningHeight - objectHeight;
+        default:
+            return owningHeight - objectHeight;
         }
     }
 
@@ -586,8 +678,10 @@ abstract class ItemLayouter {
      *            use item's parent to calculate the width.
      * @return Maximum width of an item.
      */
-    static int getMaximumItemWidth(final Item item) {
-        if (item != null && item.hasLabel()) {
+    static int getMaximumItemWidth(final Item item)
+    {
+        if(item != null && item.hasLabel())
+        {
             Point temp = new Point(0, 0);
             applyCaptionedTrim("", temp);
             return formWidth - temp.x;
@@ -598,24 +692,41 @@ abstract class ItemLayouter {
     /**
      * Item focus Listener reacts on eSWT focusGained event.
      */
-    class ItemFocusListener implements FocusListener {
+    class ItemFocusListener implements FocusListener
+    {
 
         private Item item;
 
-        ItemFocusListener(Item item) {
+        ItemFocusListener(Item item)
+        {
             this.item = item;
         }
 
-        public void focusGained(FocusEvent focusEvent) {
-            if (!item.isFocused()) {
+        public void focusGained(FocusEvent focusEvent)
+        {
+            if(!item.isFocused())
+            {
                 // Logger.method(item, "focusGained");
                 dfi.eswtSetCurrentSelectedItem(item);
             }
         }
 
-        public void focusLost(FocusEvent fe) {
+        public void focusLost(FocusEvent fe)
+        {
             // Logger.method(item, "focusLost");
         }
     }
 
+    class EventListener implements Listener
+    {
+        Item itm;
+        EventListener(Item item)
+        {
+            itm = item;
+        }
+        public void handleEvent(Event e)
+        {
+            (itm.getItemControlStateChangeListener()).notifyControlDisposed(itm);
+        }
+    }
 }

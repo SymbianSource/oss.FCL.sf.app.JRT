@@ -71,7 +71,7 @@ public:
      * its parent. Other controls in the same parent are not taken
      * into account.
      * @param aRect Rectangle to be clipped
-     * @return Clipped rectangle  
+     * @return Clipped rectangle
      */
     TRect ClipToVisibleRect(const TRect& aRect) const;
 
@@ -148,6 +148,9 @@ protected:
      */
     void RedrawFocusBackground();
 
+    /**
+     * Checks if this controls should display a border / frame in case of Shells.
+     */
     TBool HasBorderStyle() const;
 
     /**
@@ -236,14 +239,14 @@ protected:
      * Needs to be called by all inheritors from their PositionChanged().
      */
     IMPORT_C void HandlePositionChanged();
-    
+
     /**
      * Draws the non-window-owning component controls of the specified control
      * The GC must have already been activated.
      */
     static void DrawComponentControls(const CCoeControl& aControl,
                                       const TRect& aRect, CWindowGc& aGc, TBool aCanDrawOutsideRect);
-    
+
     static TBool RectContainsRect(const TRect& aContainer, const TRect& aContainee);
 
     /**
@@ -260,17 +263,17 @@ protected:
      * Check if one of the children is focused.
      */
     TBool ChildIsFocused() const;
-    
+
     /**
      * Same as SetFontL but without redraw.
      */
     void DoSetFontL(const MSwtFont* aFont);
-    
+
     /**
      * Same as SetBackgroundL but without redraw.
      */
     void DoSetBackgroundL(const MSwtColor* aColor);
-    
+
     /**
      * Same as SetForegroundL but without redraw.
      */
@@ -417,7 +420,7 @@ protected:
     // True if control changed its focus.
     // Currently used for advanced tactile feedback.
     TBool iFocusChanged;
-    
+
     /**
      * Used to implement visual pressed down feedback for some controls.
      */

@@ -33,7 +33,7 @@ class WarningHandler:
 
     # Constants for matching warnings related to deprecation
     deprecatedStart = "warning: preprocessor #warning directive"
-    deprecatedSecondLine = "warning: #warning This header file has been deprecated. Will be removed in one of the next SDK releases."
+    deprecatedSecondLine = "warning: #warning This header file"
     deprecatedOptionalThirdLine = "warning: (included from:"
     deprecatedOptionalRest = "warning:  "
 

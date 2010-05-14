@@ -14,4 +14,6 @@
 # Description: Makefile for Qt based components and subsystems
 #
 
-COMPONENTS   += eswt_qt/build lcdui_qt/build runtimeui_qt/build nokiauiapi_qt/build 
+COMPONENTS   += eswt_qt/build lcdui_qt/build runtimeui_qt/build nokiauiapi_qt/build mmapi_qt/build
+
+SYMBIAN_ONLY += mmapi_qt/build

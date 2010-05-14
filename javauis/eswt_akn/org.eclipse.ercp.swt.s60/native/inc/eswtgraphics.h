@@ -599,7 +599,7 @@ public:
      * Copies a rectangular area to a given position.
      */
     virtual void CopyArea(const TRect& aSource, const TPoint& aDestination) =0;
-    
+
 #ifdef RD_JAVA_NGA_ENABLED
     /**
      * Ensure that all drawing commands have been issued and

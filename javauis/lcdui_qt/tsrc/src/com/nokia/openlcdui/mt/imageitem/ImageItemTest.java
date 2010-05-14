@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt.imageitem;
@@ -32,7 +32,8 @@ import com.nokia.openlcdui.mt.SWTTestCase;
  * <br><br>
  * Created:    2008-06-09
  */
-public class ImageItemTest extends SWTTestCase {
+public class ImageItemTest extends SWTTestCase
+{
 
     private static final int INVALID_APPEARANCE_MODE = 3;
     private static final int INVALID_LAYOUT = 4;
@@ -40,21 +41,24 @@ public class ImageItemTest extends SWTTestCase {
     /**
      * Constructor.
      */
-    public ImageItemTest() {
+    public ImageItemTest()
+    {
     }
 
     /**
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public ImageItemTest(String sTestName) {
+    public ImageItemTest(String sTestName)
+    {
         super(sTestName);
     }
 
     /**
      * Any pre-test setup can be done here
      */
-    protected void setUp() throws Exception {
+    protected void setUp() throws Exception
+    {
     }
 
     /**
@@ -63,109 +67,125 @@ public class ImageItemTest extends SWTTestCase {
      *
      * @return New testsuite.
      */
-    public static Test suite() {
-		TestSuite suite = new TestSuite();
+    public static Test suite()
+    {
+        TestSuite suite = new TestSuite();
 
-	    java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Vector methodNames;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = ImageItemTest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new ImageItemTest((String)e.nextElement()));
-	    }
+        // Add widget tests
+        methodNames = ImageItemTest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new ImageItemTest((String)e.nextElement()));
+        }
 
-		return suite;
-	}
+        return suite;
+    }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testAccessors");
         return methodNames;
     }
-    
-    protected void runTest() throws Throwable {
-        if (getName().equals("testAccessors")) testAccessors();
+
+    protected void runTest() throws Throwable
+    {
+        if(getName().equals("testAccessors")) testAccessors();
         else super.runTest();
     }
-    
+
     /**
      * Tests the basic functionality of the accessor methods.
      */
-    public void testAccessors() {
+    public void testAccessors()
+    {
         boolean testPassed = true;
         String testMsg = "";
         boolean exceptionThrown = false;
 
         //Create new ImageItem with illegal layout directive:
-        try {
+        try
+        {
             ImageItem item = new ImageItem(
-                    "", null, INVALID_LAYOUT, "", Item.PLAIN);
+                "", null, INVALID_LAYOUT, "", Item.PLAIN);
         }
-        catch  (IllegalArgumentException ex) {
+        catch(IllegalArgumentException ex)
+        {
             exceptionThrown = true;
         }
 
-        if (!exceptionThrown) {
+        if(!exceptionThrown)
+        {
             testPassed = false;
             testMsg = " No exception when creating ImageItem with"
-                    + " illegal layout directive.";
+                      + " illegal layout directive.";
         }
 
         //Create new ImageItem with invalid appearance mode:
         exceptionThrown = false;
-        try {
+        try
+        {
             ImageItem item = new ImageItem(
-                    "", null, Item.LAYOUT_DEFAULT, "", INVALID_APPEARANCE_MODE);
+                "", null, Item.LAYOUT_DEFAULT, "", INVALID_APPEARANCE_MODE);
         }
-        catch  (IllegalArgumentException ex) {
+        catch(IllegalArgumentException ex)
+        {
             exceptionThrown = true;
         }
 
-        if (!exceptionThrown) {
+        if(!exceptionThrown)
+        {
             testPassed = false;
             testMsg = " No exception when creating ImageItem with"
-                    + " invalid appearance mode.";
+                      + " invalid appearance mode.";
         }
 
         //Create some new ImageItems with varied parameters:
         ImageItem item2 = new ImageItem(
-                null, null, Item.LAYOUT_DEFAULT, "altText", Item.PLAIN);
+            null, null, Item.LAYOUT_DEFAULT, "altText", Item.PLAIN);
         ImageItem item3 = new ImageItem(
-                "label", null, Item.LAYOUT_EXPAND, null, Item.BUTTON);
+            "label", null, Item.LAYOUT_EXPAND, null, Item.BUTTON);
         ImageItem item4 = new ImageItem(
-                "label", null, Item.LAYOUT_CENTER | Item.LAYOUT_NEWLINE_AFTER,
-                "altText", Item.HYPERLINK);
+            "label", null, Item.LAYOUT_CENTER | Item.LAYOUT_NEWLINE_AFTER,
+            "altText", Item.HYPERLINK);
 
         //Try to get alt text and change it and get it again:
-        if (item3.getAltText() != null) {
+        if(item3.getAltText() != null)
+        {
             testPassed = false;
             testMsg = " Alternate text not null when expected.";
         }
         item3.setAltText("altTestText");
-        if (!item3.getAltText().equals("altTestText")) {
+        if(!item3.getAltText().equals("altTestText"))
+        {
             testPassed = false;
             testMsg = " Invalid alternate text returned.";
         }
 
         //Try to get appearance mode:
-        if (item3.getAppearanceMode() != Item.BUTTON) {
+        if(item3.getAppearanceMode() != Item.BUTTON)
+        {
             testPassed = false;
             testMsg = " Invalid appearance mode returned.";
         }
 
         //Try to get layout directive:
-        if (item4.getLayout()
-            != (Item.LAYOUT_CENTER | Item.LAYOUT_NEWLINE_AFTER)) {
+        if(item4.getLayout()
+                != (Item.LAYOUT_CENTER | Item.LAYOUT_NEWLINE_AFTER))
+        {
             testPassed = false;
             testMsg = " Invalid layout returned.";
         }
 
         //Try to set layout and verify it is set correctly:
         item4.setLayout(Item.LAYOUT_RIGHT | Item.LAYOUT_SHRINK);
-        if (item4.getLayout()
-            != (Item.LAYOUT_RIGHT | Item.LAYOUT_SHRINK)) {
+        if(item4.getLayout()
+                != (Item.LAYOUT_RIGHT | Item.LAYOUT_SHRINK))
+        {
             testPassed = false;
             testMsg = " Invalid layout returned after setting new layout.";
         }

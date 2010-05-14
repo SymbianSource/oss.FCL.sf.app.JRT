@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package t_uirobot.command;
@@ -35,7 +35,8 @@ import com.nokia.mj.impl.uitestutils.Key;
  * <br>
  * Created: 2008-08-04
  */
-public class ItemCommandUIRobotTest extends ItemUITestBase {
+public class ItemCommandUIRobotTest extends ItemUITestBase
+{
 
     private Command latestCommand;
     private Item latestItem;
@@ -46,7 +47,8 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
     /**
      * Constructor.
      */
-    public ItemCommandUIRobotTest() {
+    public ItemCommandUIRobotTest()
+    {
     }
 
     /**
@@ -55,7 +57,8 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public ItemCommandUIRobotTest(String sTestName, TestMethod rTestMethod) {
+    public ItemCommandUIRobotTest(String sTestName, TestMethod rTestMethod)
+    {
         super(sTestName, rTestMethod);
     }
 
@@ -65,84 +68,105 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
      *
      * @return New testsuite.
      */
-    public Test suite() {
+    public Test suite()
+    {
         TestSuite aSuite = new TestSuite();
 
         aSuite.addTest(new ItemCommandUIRobotTest("testListener",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((ItemCommandUIRobotTest) tc).testListener();
-                    }
-                }));
+                       new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((ItemCommandUIRobotTest) tc).testListener();
+            }
+        }));
 
         aSuite.addTest(new ItemCommandUIRobotTest("testMultipleItems",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((ItemCommandUIRobotTest) tc).testMultipleItems();
-                    }
-                }));
+                       new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((ItemCommandUIRobotTest) tc).testMultipleItems();
+            }
+        }));
 
         aSuite.addTest(new ItemCommandUIRobotTest("testInitializationOrders",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((ItemCommandUIRobotTest) tc).
-                            testInitializationOrders();
-                    }
-                }));
+                       new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((ItemCommandUIRobotTest) tc).
+                testInitializationOrders();
+            }
+        }));
 
         aSuite.addTest(
             new ItemCommandUIRobotTest("testCommandInItemAndInDisplayable",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((ItemCommandUIRobotTest) tc).
-                            testCommandInItemAndInDisplayable();
-                    }
-                }));
+                                       new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((ItemCommandUIRobotTest) tc).
+                testCommandInItemAndInDisplayable();
+            }
+        }));
 
         aSuite.addTest(new ItemCommandUIRobotTest("testMultipleCommands",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((ItemCommandUIRobotTest) tc).testMultipleCommands();
-                    }
-                }));
+                       new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((ItemCommandUIRobotTest) tc).testMultipleCommands();
+            }
+        }));
 
         aSuite.addTest(
             new ItemCommandUIRobotTest("testOneCommandInMultipleItems",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((ItemCommandUIRobotTest) tc).
-                            testOneCommandInMultipleItems();
-                    }
-                }));
+                                       new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((ItemCommandUIRobotTest) tc).
+                testOneCommandInMultipleItems();
+            }
+        }));
 
         aSuite.addTest(new ItemCommandUIRobotTest("testDefaultCommand",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((ItemCommandUIRobotTest) tc).testDefaultCommand();
-                    }
-                }));
+                       new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((ItemCommandUIRobotTest) tc).testDefaultCommand();
+            }
+        }));
 
         aSuite.addTest(new ItemCommandUIRobotTest("testDynamicUpdate",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((ItemCommandUIRobotTest) tc).testDynamicUpdate();
-                    }
-                }));
+                       new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((ItemCommandUIRobotTest) tc).testDynamicUpdate();
+            }
+        }));
 
         aSuite.addTest(new ItemCommandUIRobotTest("testItemWithLabel",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((ItemCommandUIRobotTest) tc).testItemWithLabel();
-                    }
-                }));
+                       new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((ItemCommandUIRobotTest) tc).testItemWithLabel();
+            }
+        }));
 
         aSuite.addTest(new ItemCommandUIRobotTest("testAddCommandToFocusedItem",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((ItemCommandUIRobotTest) tc).
-                        testAddCommandToFocusedItem();
-                    }
-                }));
+                       new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((ItemCommandUIRobotTest) tc).
+                testAddCommandToFocusedItem();
+            }
+        }));
 
         return aSuite;
     }
@@ -150,7 +174,8 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
     /**
      * Tests the basic functionality of itemCommandListener.
      */
-    public void testListener() {
+    public void testListener()
+    {
         Form form = new Form("form");
 
         StringItem button1 = new StringItem("", "click!", Item.BUTTON);
@@ -166,22 +191,22 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
         key(Key.Select);
 
         assertEquals("Command not activated or not correct command"
-                + " when pressing MSK.",
-                ok, latestCommand);
+                     + " when pressing MSK.",
+                     ok, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when pressing MSK.",
-                button1, latestItem);
+                     + " when pressing MSK.",
+                     button1, latestItem);
         latestCommand = null;
         latestItem = null;
 
         //Click left soft key, this should activate item's command too:
         key(Key.CBA1);
         assertEquals("Command not activated or not correct command"
-                + " when pressing LSK.",
-                ok, latestCommand);
+                     + " when pressing LSK.",
+                     ok, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when pressing LSK.",
-                button1, latestItem);
+                     + " when pressing LSK.",
+                     button1, latestItem);
 
     }
 
@@ -189,7 +214,8 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
      * Tests that item commands works when there are multiple items
      * in a form and focus moves between items.
      */
-    public void testMultipleItems() {
+    public void testMultipleItems()
+    {
         latestCommand = null;
         latestItem = null;
 
@@ -219,11 +245,11 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
         //Click first button:
         key(Key.CBA1);
         assertEquals("Command not activated or not correct command"
-                + " when pressing LSK. (case 1)",
-                ok1, latestCommand);
+                     + " when pressing LSK. (case 1)",
+                     ok1, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when pressing LSK. (case 1)",
-                button1, latestItem);
+                     + " when pressing LSK. (case 1)",
+                     button1, latestItem);
         latestCommand = null;
         latestItem = null;
 
@@ -232,11 +258,11 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
         key(Key.RightArrow);
         key(Key.CBA1);
         assertEquals("Command not activated or not correct command"
-                + " when pressing LSK. (case 2)",
-                ok2, latestCommand);
+                     + " when pressing LSK. (case 2)",
+                     ok2, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when pressing LSK. (case 2)",
-                button2, latestItem);
+                     + " when pressing LSK. (case 2)",
+                     button2, latestItem);
         latestCommand = null;
         latestItem = null;
 
@@ -244,11 +270,11 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
         key(Key.RightArrow);
         key(Key.CBA1);
         assertEquals("Command not activated or not correct command"
-                + " when pressing LSK. (case 3)",
-                ok3, latestCommand);
+                     + " when pressing LSK. (case 3)",
+                     ok3, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when pressing LSK. (case 3)",
-                button3, latestItem);
+                     + " when pressing LSK. (case 3)",
+                     button3, latestItem);
         latestCommand = null;
         latestItem = null;
     }
@@ -256,7 +282,8 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
     /**
      * Tests different orders to add command, set listener etc.
      */
-    public void testInitializationOrders() {
+    public void testInitializationOrders()
+    {
         latestCommand = null;
         latestItem = null;
 
@@ -275,11 +302,11 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
 
         key(Key.CBA1);
         assertEquals("Command not activated or not correct command"
-                + " when pressing LSK. (case 1)",
-                ok, latestCommand);
+                     + " when pressing LSK. (case 1)",
+                     ok, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when pressing LSK. (case 1)",
-                button1, latestItem);
+                     + " when pressing LSK. (case 1)",
+                     button1, latestItem);
         latestCommand = null;
         latestItem = null;
 
@@ -298,11 +325,11 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
 
         key(Key.CBA1);
         assertEquals("Command not activated or not correct command"
-                + " when pressing LSK. (case 2)",
-                ok, latestCommand);
+                     + " when pressing LSK. (case 2)",
+                     ok, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when pressing LSK. (case 2)",
-                button1, latestItem);
+                     + " when pressing LSK. (case 2)",
+                     button1, latestItem);
         latestCommand = null;
         latestItem = null;
 
@@ -320,11 +347,11 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
 
         key(Key.CBA1);
         assertEquals("Command not activated or not correct command"
-                + " when pressing LSK. (case 3)",
-                ok, latestCommand);
+                     + " when pressing LSK. (case 3)",
+                     ok, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when pressing LSK. (case 3)",
-                button1, latestItem);
+                     + " when pressing LSK. (case 3)",
+                     button1, latestItem);
         latestCommand = null;
         latestItem = null;
 
@@ -342,11 +369,11 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
 
         key(Key.CBA1);
         assertEquals("Command not activated or not correct command"
-                + " when pressing LSK. (case 4)",
-                ok, latestCommand);
+                     + " when pressing LSK. (case 4)",
+                     ok, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when pressing LSK. (case 4)",
-                button1, latestItem);
+                     + " when pressing LSK. (case 4)",
+                     button1, latestItem);
         latestCommand = null;
         latestItem = null;
     }
@@ -355,7 +382,8 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
      * Makes sure that command works when it is added to item and
      * to displayable at the same time.
      */
-    public void testCommandInItemAndInDisplayable() {
+    public void testCommandInItemAndInDisplayable()
+    {
         latestCommand = null;
         latestItem = null;
 
@@ -380,11 +408,11 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
         key(Key.CBA1);
         key(Key.CBA1);
         assertEquals("Command not activated or not correct command"
-                + " when selecting first occurence.",
-                ok, latestCommand);
+                     + " when selecting first occurence.",
+                     ok, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when selecting first occurence.",
-                button1, latestItem);
+                     + " when selecting first occurence.",
+                     button1, latestItem);
         latestCommand = null;
         latestItem = null;
 
@@ -394,11 +422,11 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
         key(Key.DownArrow);
         key(Key.CBA1);
         assertEquals("Command not activated or not correct command"
-                + " when selecting second occurence.",
-                ok, latestDisplayableCommand);
+                     + " when selecting second occurence.",
+                     ok, latestDisplayableCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when selecting second occurence.",
-                form, latestDisplayable);
+                     + " when selecting second occurence.",
+                     form, latestDisplayable);
         latestDisplayableCommand = null;
         latestDisplayable = null;
     }
@@ -407,7 +435,8 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
      * Test to add multiple commands to one item and verify the commands
      * work as expected.
      */
-    public void testMultipleCommands() {
+    public void testMultipleCommands()
+    {
         latestCommand = null;
         latestItem = null;
 
@@ -431,11 +460,11 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
         key(Key.DownArrow);
         key(Key.CBA1);
         assertEquals("Command not activated or not correct command"
-                + " when selecting item's first command.",
-                ok1, latestCommand);
+                     + " when selecting item's first command.",
+                     ok1, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when selecting item's first command.",
-                button1, latestItem);
+                     + " when selecting item's first command.",
+                     button1, latestItem);
         latestCommand = null;
         latestItem = null;
 
@@ -443,11 +472,11 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
         key(Key.CBA1);
         key(Key.CBA1);
         assertEquals("Command not activated or not correct command"
-                + " when selecting item's second command.",
-                ok2, latestCommand);
+                     + " when selecting item's second command.",
+                     ok2, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when selecting item's second command.",
-                button1, latestItem);
+                     + " when selecting item's second command.",
+                     button1, latestItem);
         latestCommand = null;
         latestItem = null;
     }
@@ -456,7 +485,8 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
      * Test to add one command to multiple items and verify the command
      * work as expected.
      */
-    public void testOneCommandInMultipleItems() {
+    public void testOneCommandInMultipleItems()
+    {
         latestCommand = null;
         latestItem = null;
 
@@ -478,11 +508,11 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
         //Click first button:
         key(Key.CBA1);
         assertEquals("Command not activated or not correct command"
-                + " when clicking first button.",
-                ok1, latestCommand);
+                     + " when clicking first button.",
+                     ok1, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when clicking first button.",
-                button1, latestItem);
+                     + " when clicking first button.",
+                     button1, latestItem);
         latestCommand = null;
         latestItem = null;
 
@@ -490,11 +520,11 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
         key(Key.RightArrow);
         key(Key.CBA1);
         assertEquals("Command not activated or not correct command"
-                + " when clicking second button.",
-                ok1, latestCommand);
+                     + " when clicking second button.",
+                     ok1, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when clicking second button.",
-                button2, latestItem);
+                     + " when clicking second button.",
+                     button2, latestItem);
         latestCommand = null;
         latestItem = null;
     }
@@ -503,7 +533,8 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
     /**
      * Tests the functionality of default command.
      */
-    public void testDefaultCommand() {
+    public void testDefaultCommand()
+    {
         latestCommand = null;
         latestItem = null;
 
@@ -529,11 +560,11 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
         key(Key.CBA1);
         key(Key.CBA1);
         assertEquals("Command not activated or not correct command"
-                + " when selecting item's first command.",
-                ok1, latestCommand);
+                     + " when selecting item's first command.",
+                     ok1, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when selecting item's first command.",
-                button1, latestItem);
+                     + " when selecting item's first command.",
+                     button1, latestItem);
         latestCommand = null;
         latestItem = null;
 
@@ -549,11 +580,11 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
         key(Key.CBA1);
 
         assertEquals("Command not activated or not correct command"
-                + " when selecting item's second command.",
-                ok2, latestCommand);
+                     + " when selecting item's second command.",
+                     ok2, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when selecting item's second command.",
-                button1, latestItem);
+                     + " when selecting item's second command.",
+                     button1, latestItem);
         latestCommand = null;
         latestItem = null;
 
@@ -561,11 +592,11 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
         key(Key.Select);
 
         assertEquals("Command not activated or not correct command"
-                + " when selecting item's default command from MSK.",
-                ok2, latestCommand);
+                     + " when selecting item's default command from MSK.",
+                     ok2, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when selecting item's default command from MSK.",
-                button1, latestItem);
+                     + " when selecting item's default command from MSK.",
+                     button1, latestItem);
         latestCommand = null;
         latestItem = null;
     }
@@ -575,7 +606,8 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
      * For example makes sure that focus is where it should be.
      *
      */
-    public void testDynamicUpdate() {
+    public void testDynamicUpdate()
+    {
         latestCommand = null;
         latestItem = null;
 
@@ -601,11 +633,11 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
         key(Key.RightArrow);
         key(Key.CBA1);
         assertEquals("Command not activated or not correct command"
-                + " when pressing second button.",
-                ok2, latestCommand);
+                     + " when pressing second button.",
+                     ok2, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when pressing second button.",
-                button2, latestItem);
+                     + " when pressing second button.",
+                     button2, latestItem);
         latestCommand = null;
         latestItem = null;
 
@@ -616,11 +648,11 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
 
         key(Key.CBA1);
         assertEquals("Command not activated or not correct command"
-                + " when pressing second button after update.",
-                ok2, latestCommand);
+                     + " when pressing second button after update.",
+                     ok2, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when pressing second after update.",
-                button2, latestItem);
+                     + " when pressing second after update.",
+                     button2, latestItem);
         latestCommand = null;
         latestItem = null;
 
@@ -628,11 +660,11 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
         key(Key.LeftArrow);
         key(Key.CBA1);
         assertEquals("Command not activated or not correct command"
-                + " when pressing first button.",
-                ok1, latestCommand);
+                     + " when pressing first button.",
+                     ok1, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when pressing first button.",
-                button1, latestItem);
+                     + " when pressing first button.",
+                     button1, latestItem);
         latestCommand = null;
         latestItem = null;
     }
@@ -640,7 +672,8 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
     /**
      * Tests commands when there's label in item.
      */
-    public void testItemWithLabel() {
+    public void testItemWithLabel()
+    {
         latestCommand = null;
         latestItem = null;
 
@@ -658,35 +691,37 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
         //Click middle soft key, this should activate item's command:
         key(Key.Select);
         assertEquals("Command not activated or not correct command"
-                + " when pressing MSK (StringItem).",
-                ok, latestCommand);
+                     + " when pressing MSK (StringItem).",
+                     ok, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when pressing MSK (StringItem).",
-                button1, latestItem);
+                     + " when pressing MSK (StringItem).",
+                     button1, latestItem);
         latestCommand = null;
         latestItem = null;
 
         //Click left soft key, this should activate item's command too:
         key(Key.CBA1);
         assertEquals("Command not activated or not correct command"
-                + " when pressing LSK (StringItem).",
-                ok, latestCommand);
+                     + " when pressing LSK (StringItem).",
+                     ok, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when pressing LSK (StringItem).",
-                button1, latestItem);
+                     + " when pressing LSK (StringItem).",
+                     button1, latestItem);
         latestCommand = null;
         latestItem = null;
 
         //Test ImageItem next:
         Image image = null;
-        try {
+        try
+        {
             image = Image.createImage("100x100.png");
         }
-        catch (IOException e) {
+        catch(IOException e)
+        {
             fail("Cannot load image 100x100.png");
         }
         ImageItem image1 = new ImageItem(
-                "label", image, Item.BUTTON, "altText", ImageItem.BUTTON);
+            "label", image, Item.BUTTON, "altText", ImageItem.BUTTON);
 
         image1.addCommand(ok);
         image1.setItemCommandListener(this);
@@ -700,22 +735,22 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
         //Click middle soft key, this should activate item's command:
         key(Key.Select);
         assertEquals("Command not activated or not correct command"
-                + " when pressing MSK (ImageItem).",
-                ok, latestCommand);
+                     + " when pressing MSK (ImageItem).",
+                     ok, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when pressing MSK (ImageItem).",
-                image1, latestItem);
+                     + " when pressing MSK (ImageItem).",
+                     image1, latestItem);
         latestCommand = null;
         latestItem = null;
 
         //Click left soft key, this should activate item's command too:
         key(Key.CBA1);
         assertEquals("Command not activated or not correct command"
-                + " when pressing LSK (ImageItem).",
-                ok, latestCommand);
+                     + " when pressing LSK (ImageItem).",
+                     ok, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when pressing LSK (ImageItem).",
-                image1, latestItem);
+                     + " when pressing LSK (ImageItem).",
+                     image1, latestItem);
         latestCommand = null;
         latestItem = null;
     }
@@ -723,7 +758,8 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
     /**
      * Tests to add command to item that's focused.
      */
-    public void testAddCommandToFocusedItem() {
+    public void testAddCommandToFocusedItem()
+    {
         latestCommand = null;
         latestItem = null;
 
@@ -751,22 +787,22 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
         key(Key.Select);
 
         assertEquals("Command not activated or not correct command"
-                + " when pressing MSK.",
-                ok, latestCommand);
+                     + " when pressing MSK.",
+                     ok, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when pressing MSK.",
-                button1, latestItem);
+                     + " when pressing MSK.",
+                     button1, latestItem);
         latestCommand = null;
         latestItem = null;
 
         //Click left soft key, this should activate item's command too:
         key(Key.CBA1);
         assertEquals("Command not activated or not correct command"
-                + " when pressing LSK.",
-                ok, latestCommand);
+                     + " when pressing LSK.",
+                     ok, latestCommand);
         assertEquals("Wrong item delivered to commandAction-method"
-                + " when pressing LSK.",
-                button1, latestItem);
+                     + " when pressing LSK.",
+                     button1, latestItem);
         latestCommand = null;
         latestItem = null;
     }
@@ -777,7 +813,8 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
      * @param c Command
      * @param item item
      */
-    public void commandAction(Command c, Item item) {
+    public void commandAction(Command c, Item item)
+    {
         latestCommand = c;
         latestItem = item;
     }
@@ -788,7 +825,8 @@ public class ItemCommandUIRobotTest extends ItemUITestBase {
      * @param c Command
      * @param d Displayable
      */
-    public void commandAction(Command c, Displayable d) {
+    public void commandAction(Command c, Displayable d)
+    {
         latestDisplayableCommand = c;
         latestDisplayable = d;
     }

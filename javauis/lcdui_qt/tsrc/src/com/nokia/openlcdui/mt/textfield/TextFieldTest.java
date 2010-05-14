@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt.textfield;
@@ -30,12 +30,14 @@ import com.nokia.openlcdui.mt.SWTTestCase;
  *
  * @created  2008-09-23
  */
-public class TextFieldTest extends SWTTestCase {
+public class TextFieldTest extends SWTTestCase
+{
 
     /**
      * Constructor.
      */
-    public TextFieldTest() {
+    public TextFieldTest()
+    {
     }
 
     /**
@@ -44,14 +46,16 @@ public class TextFieldTest extends SWTTestCase {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public TextFieldTest(String sTestName) {
+    public TextFieldTest(String sTestName)
+    {
         super(sTestName);
     }
 
     /**
      * Any pre-test setup can be done here.
      */
-    protected void setUp() throws Exception {
+    protected void setUp() throws Exception
+    {
     }
 
     /**
@@ -60,23 +64,26 @@ public class TextFieldTest extends SWTTestCase {
      *
      * @return new testsuite.
      */
-    public static Test suite() {
-		TestSuite suite = new TestSuite();
+    public static Test suite()
+    {
+        TestSuite suite = new TestSuite();
 
-	    java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Vector methodNames;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = TextFieldTest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new TextFieldTest((String)e.nextElement()));
-	    }
+        // Add widget tests
+        methodNames = TextFieldTest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new TextFieldTest((String)e.nextElement()));
+        }
 
-		return suite;
-	}
+        return suite;
+    }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testConstructor");
         methodNames.addElement("testAccessors");
@@ -84,40 +91,46 @@ public class TextFieldTest extends SWTTestCase {
         methodNames.addElement("testSetNullString");
         return methodNames;
     }
-    
-    protected void runTest() throws Throwable {
-        if (getName().equals("testConstructor")) testConstructor();
-        else if (getName().equals("testAccessors")) testAccessors();
-        else if (getName().equals("testNullBodyHeader")) testNullBodyHeader();
-        else if (getName().equals("testSetNullString")) testSetNullString();
+
+    protected void runTest() throws Throwable
+    {
+        if(getName().equals("testConstructor")) testConstructor();
+        else if(getName().equals("testAccessors")) testAccessors();
+        else if(getName().equals("testNullBodyHeader")) testNullBodyHeader();
+        else if(getName().equals("testSetNullString")) testSetNullString();
         else super.runTest();
     }
 
-    
-    
+
+
     /**
-	 * Test the TextField accessor methods.
-	 */
-    public void testConstructor () {
+     * Test the TextField accessor methods.
+     */
+    public void testConstructor()
+    {
         TextField tf;
         final int illegalConstraint = -10;
         final int smallSize = 5;
 
         // Constructor tests
-        try {
-            tf = new TextField ("label", "text", 0, TextField.ANY);
+        try
+        {
+            tf = new TextField("label", "text", 0, TextField.ANY);
             fail("No IllegalArgumentExceptin thrown in constructor,"
-                    + " if maxSize is incorrect");
+                 + " if maxSize is incorrect");
         }
-        catch (IllegalArgumentException iae) {
+        catch(IllegalArgumentException iae)
+        {
             //OK.
         }
-        try {
+        try
+        {
             tf = new TextField("label", "text", 1, illegalConstraint);
             fail("No IllegalArgumentExceptin thrown in constructor,"
-                    + " if constraints are incorrect");
+                 + " if constraints are incorrect");
         }
-        catch (IllegalArgumentException iae) {
+        catch(IllegalArgumentException iae)
+        {
             //OK.
         }
         /*try {
@@ -129,18 +142,21 @@ public class TextFieldTest extends SWTTestCase {
             //OK.
         }*/
 
-        try {
-            tf = new TextField ("label", "long text", smallSize, TextField.ANY);
+        try
+        {
+            tf = new TextField("label", "long text", smallSize, TextField.ANY);
             fail("No IllegalArgumentExceptin thrown in constructor,"
-                    + " if text is too long for specified maxSize");
+                 + " if text is too long for specified maxSize");
         }
-        catch (IllegalArgumentException iae) {
+        catch(IllegalArgumentException iae)
+        {
             //OK.
         }
 
     }
 
-    public void testAccessors () {
+    public void testAccessors()
+    {
         TextField tf;
         final int normalSize = 100;
         final int smallSize = 5;
@@ -151,14 +167,16 @@ public class TextFieldTest extends SWTTestCase {
         final int copyCount = 7;
         final int invalidConstraints = -1345;
         final int expectedSize = 12;
-        try {
+        try
+        {
             //setText()
             tf = new TextField("label", "1234", smallSize, TextField.DECIMAL);
             tf.setString("12345678");
             fail("No IllegalArgumentExceptin thrown in setString(),"
-                    + " if maxSize was exceeded");
+                 + " if maxSize was exceeded");
         }
-        catch (IllegalArgumentException iae) {
+        catch(IllegalArgumentException iae)
+        {
             //OK
         }
         /*
@@ -174,46 +192,55 @@ public class TextFieldTest extends SWTTestCase {
         //getChars
         char []ch = null;
 
-        try {
+        try
+        {
             tf = new TextField("label" , "text", normalSize, TextField.ANY);
             ch = new char [2];
             tf.getChars(ch);
             fail("No ArrayIndexOutOfBoundsException is thrown in getChars()"
-                    + " if char[] is too short for the content");
+                 + " if char[] is too short for the content");
         }
-        catch (ArrayIndexOutOfBoundsException aioobe) {
+        catch(ArrayIndexOutOfBoundsException aioobe)
+        {
             //OK
         }
-        try {
+        try
+        {
             ch = null;
             tf = new TextField("label" , "text", normalSize, TextField.ANY);
             tf.getChars(ch);
             fail("No NullPointerException is thrown in getChars()"
-                    + " if char[] is null");
+                 + " if char[] is null");
         }
-        catch (NullPointerException npe) {
+        catch(NullPointerException npe)
+        {
             //OK
         }
         //setChars()
 
         char []charData = {'s', 'o', 'm', 'e', ' ',
-                           'c', 'o', 'n', 't', 'e', 'n', 't', };
-        try {
+                           'c', 'o', 'n', 't', 'e', 'n', 't',
+                          };
+        try
+        {
             tf = new TextField("label" , "text", normalSize, TextField.ANY);
             tf.setChars(charData, offset, incorrectLength);
-            fail ("No ArrayIndexOutOfBoundsException is thrown in setChars()"
-                    + " if offset and length do not specify valid range");
+            fail("No ArrayIndexOutOfBoundsException is thrown in setChars()"
+                 + " if offset and length do not specify valid range");
         }
-        catch (ArrayIndexOutOfBoundsException aioobe) {
+        catch(ArrayIndexOutOfBoundsException aioobe)
+        {
             //OK
         }
-        try {
+        try
+        {
             tf = new TextField("label" , "text", normalSize, TextField.ANY);
             tf.setChars(charData, negativeOffset, normalLength);
-            fail ("No ArrayIndexOutOfBoundsException is thrown in setChars()"
-                    + " if offset and length do not specify valid range");
+            fail("No ArrayIndexOutOfBoundsException is thrown in setChars()"
+                 + " if offset and length do not specify valid range");
         }
-        catch (ArrayIndexOutOfBoundsException aioobe) {
+        catch(ArrayIndexOutOfBoundsException aioobe)
+        {
             //OK
         }
         /*try {
@@ -226,13 +253,15 @@ public class TextFieldTest extends SWTTestCase {
         catch (IllegalArgumentException iae) {
             //OK
         }*/
-        try {
+        try
+        {
             tf = new TextField("label" , "text", smallSize, TextField.ANY);
             tf.setChars(charData, offset, copyCount);
-            fail ("No IllegalArgumentException is thrown in setChars()"
-                    + " if text exceeds current TextField's maxSize");
+            fail("No IllegalArgumentException is thrown in setChars()"
+                 + " if text exceeds current TextField's maxSize");
         }
-        catch (IllegalArgumentException iae) {
+        catch(IllegalArgumentException iae)
+        {
             //OK
         }
         //insert(String, position)
@@ -245,53 +274,63 @@ public class TextFieldTest extends SWTTestCase {
         catch (IllegalArgumentException iae) {
             //OK
         }*/
-        try {
+        try
+        {
             tf = new TextField("label" , "text", smallSize, TextField.ANY);
             tf.insert("more text", 1);
-            fail ("No IllegalArgumentException is thrown in insert()"
-                    + " if text exceeds current TextField's maxSize");
+            fail("No IllegalArgumentException is thrown in insert()"
+                 + " if text exceeds current TextField's maxSize");
 
         }
-        catch (IllegalArgumentException iae) {
+        catch(IllegalArgumentException iae)
+        {
             //OK
         }
-        try {
+        try
+        {
             tf = new TextField("label" , "text", smallSize, TextField.ANY);
             tf.insert(null, 1);
-            fail ("No NullPointerException is thrown in insert()"
-                    + " if text is null");
+            fail("No NullPointerException is thrown in insert()"
+                 + " if text is null");
 
         }
-        catch (NullPointerException npe) {
+        catch(NullPointerException npe)
+        {
             //OK
         }
         // insert([])
-        try {
+        try
+        {
             tf = new TextField("label" , "text", normalSize, TextField.ANY);
             tf.insert(charData, negativeOffset, normalLength, offset);
-            fail ("No ArrayIndexOutOfBoundsException is thrown in insert([])"
-                    + " if offset and length do not specify valid range");
+            fail("No ArrayIndexOutOfBoundsException is thrown in insert([])"
+                 + " if offset and length do not specify valid range");
         }
-        catch (ArrayIndexOutOfBoundsException aioobe) {
+        catch(ArrayIndexOutOfBoundsException aioobe)
+        {
             //OK
         }
-        try {
+        try
+        {
             tf = new TextField("label", "text", smallSize, TextField.ANY);
             tf.insert(charData, offset, normalLength, offset);
             //2nd offset means position
-            fail ("No IllegalArgumentException is thrown in insert([])"
-                    + " if text exceeds current TextField's maxSize");
+            fail("No IllegalArgumentException is thrown in insert([])"
+                 + " if text exceeds current TextField's maxSize");
         }
-        catch (IllegalArgumentException iae) {
+        catch(IllegalArgumentException iae)
+        {
             //OK
         }
-        try {
+        try
+        {
             tf = new TextField("label", "text", smallSize, TextField.ANY);
             tf.insert(null, offset, 1, offset);
-            fail ("No NullPointerException is thrown in insert()"
-                    + " if charData is null");
+            fail("No NullPointerException is thrown in insert()"
+                 + " if charData is null");
         }
-        catch (NullPointerException npe) {
+        catch(NullPointerException npe)
+        {
             //OK
         }
         /*try {
@@ -305,74 +344,82 @@ public class TextFieldTest extends SWTTestCase {
             //OK
         } */
         //delete()
-        try {
+        try
+        {
             tf = new TextField("label", "some text", normalSize, TextField.ANY);
             tf.delete(offset, smallSize); //smallSize = number of chars
             fail("No StringIndexOutOfBoundsException is thrown in delete()"
-                    + " if offset and length do not specify valid range");
+                 + " if offset and length do not specify valid range");
         }
-        catch (StringIndexOutOfBoundsException sioobe) {
+        catch(StringIndexOutOfBoundsException sioobe)
+        {
             //OK
         }
         //setMaxSize()
-        try {
+        try
+        {
             tf = new TextField("label", "some text", normalSize, TextField.ANY);
             tf.setMaxSize(0);
-            fail ("No IllegalArgumentException is thrown in setMaxSize()"
-                    + " if newMaxSize is invalid");
+            fail("No IllegalArgumentException is thrown in setMaxSize()"
+                 + " if newMaxSize is invalid");
         }
-        catch (IllegalArgumentException iae) {
+        catch(IllegalArgumentException iae)
+        {
             //OK
         }
         //setConstraints()
-        try {
+        try
+        {
             tf = new TextField("label", "some text", normalSize, TextField.ANY);
             tf.setConstraints(invalidConstraints);
-            fail ("No IllegalArgumentException is thrown in setConstraints()"
-                    + " if newConstriants is invalid");
+            fail("No IllegalArgumentException is thrown in setConstraints()"
+                 + " if newConstriants is invalid");
         }
-        catch (IllegalArgumentException iae) {
+        catch(IllegalArgumentException iae)
+        {
             //OK
         }
         tf = new TextField("",
-                "content", normalSize, TextField.ANY);
+                           "content", normalSize, TextField.ANY);
         String setString = "TestGetString";
         tf.setString(setString);
         assertTrue("TextField setString() getString() not working correct",
-                setString.equals(tf.getString()));
+                   setString.equals(tf.getString()));
         tf = null;
 
         tf = new TextField("header", "tb content",
-                normalSize, TextField.ANY);
+                           normalSize, TextField.ANY);
         String mergedString  = null;
         // charData contains "some other content"
         char[] newCharData = {'s', 'o', 'm', 'e', ' ', 'o', 't', 'h', 'e',
-            'r', ' ', 'c', 'o', 'n', 't', 'e', 'n', 't', };
+                              'r', ' ', 'c', 'o', 'n', 't', 'e', 'n', 't',
+                             };
         tf.getChars(newCharData);
-        mergedString = new String (newCharData);
+        mergedString = new String(newCharData);
         assertTrue("TextField getChars([]) not working properly",
-                    mergedString.equals("tb content content"));
+                   mergedString.equals("tb content content"));
         tf = null;
         tf = new TextField("getChar", "five5", normalSize, TextField.ANY);
         int numberOfCopied;
         charData = new char [normalSize];
         numberOfCopied = tf.getChars(charData);
         assertTrue("TextField.getChars(dataChars). Expected "
-                + "returns 5, but returned " + numberOfCopied,
-                numberOfCopied == smallSize);
+                   + "returns 5, but returned " + numberOfCopied,
+                   numberOfCopied == smallSize);
         tf = null;
 
-        tf = new TextField ("", "text", normalSize, TextField.ANY);
+        tf = new TextField("", "text", normalSize, TextField.ANY);
 
         String getString = null;
         charData = null;
         char []charData2 = {'s', 'o', 'm', 'e', ' ',
-                            'c', 'o', 'n', 't', 'e', 'n', 't', };
+                            'c', 'o', 'n', 't', 'e', 'n', 't',
+                           };
         tf.setChars(charData2, offset , copyCount);
         getString = tf.getString();
         assertTrue("TextField.setChars(). Expected "
-                + "getString() returns \"content\" but got"
-                + getString, getString.equals("content"));
+                   + "getString() returns \"content\" but got"
+                   + getString, getString.equals("content"));
         tf = null;
 
         String initialContent = "some content";
@@ -385,7 +432,7 @@ public class TextFieldTest extends SWTTestCase {
         String getStringInsideExpected = "some insertcontent";
 
         tf = new TextField("", initialContent,
-                normalSize, TextField.ANY);
+                           normalSize, TextField.ANY);
         //Testing insertion inside of content of TextField
         tf.insert(insertContent, offset);
         getStringInside = tf.getString();
@@ -398,29 +445,30 @@ public class TextFieldTest extends SWTTestCase {
         tf.insert(insertContent, normalSize);
         getStringAfter = tf.getString();
         assertTrue("TextField.insert(). Expected: "
-                + getStringBeforeExpected + " but got "
-                + getStringBefore + "__________________"
-                + "TextField.insert(). Expected: "
-                + getStringAfterExpected + " but got "
-                + getStringAfter + "__________________"
-                + "TextField.insert(). Expected: "
-                + getStringInsideExpected + " but got "
-                + getStringInside,
-                (getStringBefore.equals(getStringBeforeExpected))
-                && (getStringAfter.equals(getStringAfterExpected))
-                && (getStringInside.equals(getStringInsideExpected)));
+                   + getStringBeforeExpected + " but got "
+                   + getStringBefore + "__________________"
+                   + "TextField.insert(). Expected: "
+                   + getStringAfterExpected + " but got "
+                   + getStringAfter + "__________________"
+                   + "TextField.insert(). Expected: "
+                   + getStringInsideExpected + " but got "
+                   + getStringInside,
+                   (getStringBefore.equals(getStringBeforeExpected))
+                   && (getStringAfter.equals(getStringAfterExpected))
+                   && (getStringInside.equals(getStringInsideExpected)));
         tf = null;
 
         String getStringExpected = "some contentcontent";
         String getStringActual = null;
         tf = new TextField("", "some content", normalSize, TextField.ANY);
         char[] charData3 = {'s', 'o', 'm', 'e', ' ',
-                            'c', 'o', 'n', 't', 'e', 'n', 't', };
+                            'c', 'o', 'n', 't', 'e', 'n', 't',
+                           };
         tf.insert(charData3, offset , copyCount, offset);
         getStringActual = tf.getString();
         assertTrue("TextField.insert(char[],int,int,int). Expected: "
-                + getStringExpected + " but got " + getStringActual,
-                getStringActual.equals(getStringExpected));
+                   + getStringExpected + " but got " + getStringActual,
+                   getStringActual.equals(getStringExpected));
         tf = null;
 
         getString = null;
@@ -429,15 +477,15 @@ public class TextFieldTest extends SWTTestCase {
         tf.delete(offset, smallSize);
         getString = tf.getString();
         assertTrue("TextField.delete(int offset, int length). Expected: "
-                + getStringExpected + " but got: " + getString,
-                getString.equals(getStringExpected));
+                   + getStringExpected + " but got: " + getString,
+                   getString.equals(getStringExpected));
         tf = null;
 
         int getMaxSize;
         tf = new TextField("Header", "content", normalSize, TextField.ANY);
         getMaxSize = tf.getMaxSize();
         assertTrue("TextBox.getMaxSize(). Expected: " + normalSize
-                + " but got: " + getMaxSize, getMaxSize == normalSize);
+                   + " but got: " + getMaxSize, getMaxSize == normalSize);
         tf = null;
 
         int maxSize = 0;
@@ -448,17 +496,17 @@ public class TextFieldTest extends SWTTestCase {
         //test that content is truncated
         getText = tf.getString();
         assertTrue("TextField.setMaxSize(int maxSize). Expected "
-                + "return: " + smallSize + " but got: " + maxSize
-                + " TextField.getText() returns: " + getTextExpected
-                + " but got: " + getText, (maxSize == smallSize)
-                && getText.equals(getTextExpected));
+                   + "return: " + smallSize + " but got: " + maxSize
+                   + " TextField.getText() returns: " + getTextExpected
+                   + " but got: " + getText, (maxSize == smallSize)
+                   && getText.equals(getTextExpected));
         tf = null;
 
         int currentSize = 0;
         tf = new TextField("header", "some content", normalSize, TextField.ANY);
         currentSize = tf.size();
         assertTrue("TextField.size(). Expected returns " + expectedSize
-                + " but got " + currentSize, currentSize == expectedSize);
+                   + " but got " + currentSize, currentSize == expectedSize);
         tf = null;
 
         int actualConstraints = -1;
@@ -466,14 +514,15 @@ public class TextFieldTest extends SWTTestCase {
         tf.setConstraints(TextField.EMAILADDR);
         actualConstraints = tf.getConstraints();
         assertTrue("TextField.getConstraints(). Expected: returns "
-                + TextField.EMAILADDR + " but got " + actualConstraints,
-                actualConstraints == TextField.EMAILADDR);
+                   + TextField.EMAILADDR + " but got " + actualConstraints,
+                   actualConstraints == TextField.EMAILADDR);
     }
 
     /**
      * Test that null body and header are processed properly.
      */
-    public void testNullBodyHeader() {
+    public void testNullBodyHeader()
+    {
         final int maxsize = 1000;
         String header = null;
         String body = null;
@@ -490,7 +539,8 @@ public class TextFieldTest extends SWTTestCase {
     /**
      * Test that setString(null) working properly.
      */
-    public void testSetNullString() {
+    public void testSetNullString()
+    {
         final int maxsize = 1000;
         String header = "header";
         String body = "body";

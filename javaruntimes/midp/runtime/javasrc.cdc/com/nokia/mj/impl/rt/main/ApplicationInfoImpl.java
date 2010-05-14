@@ -23,11 +23,8 @@ import com.nokia.mj.impl.utils.Uid;
 import com.nokia.mj.impl.rt.support.ApplicationInfo;
 
 /**
- * A Main runtime specific implemetation of ApplicationInfo class of the
+ * A Main runtime specific implementation of ApplicationInfo class of the
  * runtime support API.
- *
- * @author Nokia Corporation
- * @version $Rev$
  */
 
 public class ApplicationInfoImpl extends ApplicationInfo

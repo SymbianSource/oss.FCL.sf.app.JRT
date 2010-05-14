@@ -287,11 +287,12 @@ int CbsServerConnection::retrieveMessage(TJavaMessageParametersBuf& aCbsBuf)
     JELOG2(EWMA);
     TCBSParametersBuf cbsParametersBuf;
     std::wstring path;
+    char* messagePath =0;
     path += mMessageStoreDirName;
     try
     {
         path += JavaCommonUtils::intToWstring(mFirstMessageInStore);
-        char* messagePath = JavaCommonUtils::wstringToUtf8(path);
+        messagePath = JavaCommonUtils::wstringToUtf8(path);
         // Read the CBS file contents
         readStream.exceptions(std::ifstream::failbit|std::ifstream::badbit);
 
@@ -313,12 +314,14 @@ int CbsServerConnection::retrieveMessage(TJavaMessageParametersBuf& aCbsBuf)
     catch (std::ifstream::failure e)
     {
         ELOG(EWMA,"CBS : Exception while opening/reading file");
+        delete[] messagePath;
         readStream.exceptions(std::ofstream::goodbit);
         readStream.close();
         return KErrGeneral;
     }
     catch (ExceptionBase ex)
     {
+        delete[] messagePath;
         return KErrGeneral;
     }
     return KErrNone;
@@ -689,6 +692,7 @@ void CbsServerConnection::saveCbsMessageL(TSmsDataCodingScheme::TSmsAlphabet
     catch (std::ofstream::failure e)
     {
         ELOG(EWMA,"CBS : Exception while creating/writing file");
+        delete[] messagePath;
         writeStream.exceptions(std::ofstream::goodbit);
         writeStream.close();
         User::Leave(KErrGeneral);

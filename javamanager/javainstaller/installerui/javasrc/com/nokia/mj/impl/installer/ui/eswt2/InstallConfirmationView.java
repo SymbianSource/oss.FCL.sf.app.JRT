@@ -55,9 +55,10 @@ public class InstallConfirmationView extends ConfirmationViewBase
     }
 
     /** Constructor */
-    protected InstallConfirmationView(InstallerUiEswt aInstaller, Composite aParent)
+    protected InstallConfirmationView(
+        InstallerUiEswt aInstallerUi, Composite aParent)
     {
-        super(aInstaller, aParent, 8);
+        super(aInstallerUi, aParent, 8);
         setTitle(InstallerUiTexts.get(InstallerUiTexts.INSTALL));
         setCommands(InstallerUiTexts.get(InstallerUiTexts.OK),
                     InstallerUiTexts.get(InstallerUiTexts.CANCEL));

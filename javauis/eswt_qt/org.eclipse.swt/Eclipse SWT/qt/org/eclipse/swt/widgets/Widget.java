@@ -56,7 +56,6 @@ public abstract class Widget {
     Display display;
     EventTable eventTable;
     Object data;
-
     PackageProxy packageProxy;
     
 static final int checkBits (int style, int int0, int int1, int int2, int int3, int int4, int int5) {
@@ -537,6 +536,11 @@ void hookEvents_pp () {
 final boolean hooks (int eventType) {
     if (eventTable == null) return false;
     return eventTable.hooks (eventType);
+}
+
+
+boolean isInternalWidget_pp() {
+    return (state & WidgetState.INTERNAL) != 0;
 }
 
 /**
@@ -1218,6 +1222,10 @@ public void setData (String key, Object value) {
             }
         }
     }
+}
+
+void setWidgetInternalOnly_pp(){
+    state|=WidgetState.INTERNAL;
 }
 
 final void setPackageProxy(Object packageProxy) {

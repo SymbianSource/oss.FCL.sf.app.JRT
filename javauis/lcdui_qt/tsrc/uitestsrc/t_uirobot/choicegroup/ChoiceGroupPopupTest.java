@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package t_uirobot.choicegroup;
@@ -32,12 +32,14 @@ import com.nokia.mj.impl.uitestutils.Key;
  * <br>
  * Created: 2008-11-04
  */
-public class ChoiceGroupPopupTest extends ItemUITestBase {
+public class ChoiceGroupPopupTest extends ItemUITestBase
+{
 
     /**
      * Constructor.
      */
-    public ChoiceGroupPopupTest() {
+    public ChoiceGroupPopupTest()
+    {
     }
 
     /**
@@ -46,7 +48,8 @@ public class ChoiceGroupPopupTest extends ItemUITestBase {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public ChoiceGroupPopupTest(String sTestName, TestMethod rTestMethod) {
+    public ChoiceGroupPopupTest(String sTestName, TestMethod rTestMethod)
+    {
         super(sTestName, rTestMethod);
     }
 
@@ -57,14 +60,17 @@ public class ChoiceGroupPopupTest extends ItemUITestBase {
      *
      * @return New testsuite.
      */
-    public Test suite() {
+    public Test suite()
+    {
         TestSuite aSuite = new TestSuite();
         aSuite.addTest(new ChoiceGroupPopupTest("testOpenPopup",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((ChoiceGroupPopupTest) tc).testOpenPopup();
-                    }
-                }));
+                                                new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((ChoiceGroupPopupTest) tc).testOpenPopup();
+            }
+        }));
 
         return aSuite;
     }
@@ -72,7 +78,8 @@ public class ChoiceGroupPopupTest extends ItemUITestBase {
     /**
      * Test command on Items.
      */
-    public void testOpenPopup() {
+    public void testOpenPopup()
+    {
         Command cmd = new Command("Cmd", Command.ITEM, 0);
         ChoiceGroup choiceGroup = new ChoiceGroup("Popup", Choice.POPUP);
         choiceGroup.append("item1", null);
@@ -98,7 +105,7 @@ public class ChoiceGroupPopupTest extends ItemUITestBase {
 
         assertTrue("No item selected", choiceGroup.getSelectedIndex() != -1);
         assertTrue("Could not change selection",
-                choiceGroup.getSelectedIndex() != sel);
+                   choiceGroup.getSelectedIndex() != sel);
 
         assertItemStateChanged("case1", choiceGroup);
     }

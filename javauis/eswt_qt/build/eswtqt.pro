@@ -22,6 +22,8 @@ QT += core \
       gui \
       webkit
 
+symbian: LIBS += -lhal -lws32 -lgdi
+
 include(../org.eclipse.swt/Eclipse_SWT_PI/qt/library/eswt_widgets.pri)
 include(../org.eclipse.swt/Eclipse_SWT_PI/qt/library/graphics/graphics.pri)
           

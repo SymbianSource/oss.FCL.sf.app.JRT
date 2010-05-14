@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -28,7 +28,8 @@ import com.nokia.mid.ui.DirectGraphics;
 /**
  * Implementation of LCDUI <code>Graphics</code> class.
  */
-public class Graphics {
+public class Graphics
+{
 
     /**
      * Constant for horizontal center alignment of the text.
@@ -111,96 +112,119 @@ public class Graphics {
     private final Object flushLock = new Object();
     private Canvas canvasParent;
     private CustomItem customItemParent;
-    
+
     //Constructor
-    Graphics() {
-       finalizer = ((finalizer != null) ? finalizer
-                : new com.nokia.mj.impl.rt.support.Finalizer() {
-                    public void finalizeImpl() {
-                        if (finalizer != null) {
-                            finalizer = null;
-                            if (!ESWTUIThreadRunner.isDisposed()) {
-                                ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                                   public void run() {
-                                      dispose();
-                                   }
-                                });
-                               
+    Graphics()
+    {
+        finalizer = ((finalizer != null) ? finalizer
+                     : new com.nokia.mj.impl.rt.support.Finalizer()
+        {
+            public void finalizeImpl()
+            {
+                if(finalizer != null)
+                {
+                    finalizer = null;
+                    if(!ESWTUIThreadRunner.isDisposed())
+                    {
+                        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                        {
+                            public void run()
+                            {
+                                dispose();
                             }
-                        }
+                        });
+
                     }
-                });
+                }
+            }
+        });
     }
     /**
      * Set the parent image of this Graphics.
      *
      * @param image an image
      */
-    void eswtSetParentImage(final Image image) {
-        if(buffered) {
+    void eswtSetParentImage(final Image image)
+    {
+        if(buffered)
+        {
             return;
         }
-        if (parentImage != image) {
+        if(parentImage != image)
+        {
             parentImage = image;
 
-            if (gc == null) {
+            if(gc == null)
+            {
                 gc = new GraphicsContext();
             }
-            else {
+            else
+            {
                 gc.releaseTarget();
             }
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     org.eclipse.swt.graphics.Image eswtImage = Image.getESWTImage(image);
-                        
-                    if (eswtImage != null) {
+
+                    if(eswtImage != null)
+                    {
                         gc.bindTarget(Internal_GfxPackageSupport.getImage(eswtImage));
                         Rectangle clipRect = eswtImage.getBounds();
                         setClip(0, 0, clipRect.width, clipRect.height);
                     }
                     reset();
-                }});
+                }
+            });
         }
     }
 
     /**
      * Initializes this instance of Graphics to use command buffer.
-     * 
-     * Can be called in a non-UI thread. Not thread-safe. 
-     * 
+     *
+     * Can be called in a non-UI thread. Not thread-safe.
+     *
      * @param x The x-coordinate of clip
      * @param y The y-coordinate of clip
      * @param width The width of clip
      * @param height The height of clip
      */
-    void initBuffered(final Canvas parent, final int x, final int y, final int width, final int height) {
-      ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-          public void run() {
-              cmdBuffer = new JavaCommandBuffer();
-              if (gc == null) {
-                  gc = new GraphicsContext();
-              }
-              gc.bindTarget(cmdBuffer);
-              setClip(x, y, width, height);
-              reset();
-              buffered = true;
-              javax.microedition.lcdui.Graphics.this.canvasParent = parent;
-          }});
+    void initBuffered(final Canvas parent, final int x, final int y, final int width, final int height)
+    {
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        {
+            public void run()
+            {
+                cmdBuffer = new JavaCommandBuffer();
+                if(gc == null)
+                {
+                    gc = new GraphicsContext();
+                }
+                gc.bindTarget(cmdBuffer);
+                setClip(x, y, width, height);
+                reset();
+                buffered = true;
+                javax.microedition.lcdui.Graphics.this.canvasParent = parent;
+            }
+        });
     }
-    
+
     /**
      * Initializes this instance of Graphics to use command buffer.
-     * 
-     * Can be called in a non-UI thread. Not thread-safe. 
-     * 
+     *
+     * Can be called in a non-UI thread. Not thread-safe.
+     *
      * @param x The x-coordinate of clip
      * @param y The y-coordinate of clip
      * @param width The width of clip
      * @param height The height of clip
      */
-    void initBuffered(CustomItem parent, int x, int y, int width, int height) {
+    void initBuffered(CustomItem parent, int x, int y, int width, int height)
+    {
         cmdBuffer = new JavaCommandBuffer();
-        if (gc == null) {
+        if(gc == null)
+        {
             gc = new GraphicsContext();
         }
         gc.bindTarget(cmdBuffer);
@@ -210,60 +234,69 @@ public class Graphics {
         this.customItemParent = parent;
     }
 
-	/**
-	 * Resets the command buffer contents.
-	 * 
-	 * This is safe to call only in the UI thread. 
-	 */
-    void resetCommandBuffer() {
+    /**
+     * Resets the command buffer contents.
+     *
+     * This is safe to call only in the UI thread.
+     */
+    void resetCommandBuffer()
+    {
         gc.releaseTarget();
         cmdBuffer.reset();
         gc.bindTarget(cmdBuffer);
-        // write settings which were active before flush 
+        // write settings which were active before flush
         // if they are not the same as defaults
         gc.setFont(Font.getESWTFont(currentFont).handle);
         gc.setBackgroundColor(currentColor, false);
         gc.setForegroundColor(currentColor, false);
-        if ((translateX != 0) || (translateY != 0)) { 
+        if((translateX != 0) || (translateY != 0))
+        {
             gc.translate(translateX, translateY);
         }
-        
+
         // Note that if called in a non-UI thread then the size of the
         // Canvas or CustomItem can change between getting the height and
         // getting the width. Those are modified by the UI thread and there
-        // is no synchronization. 
+        // is no synchronization.
         int w = 0;
         int h = 0;
-        if(canvasParent != null) {
+        if(canvasParent != null)
+        {
             w = canvasParent.getWidth();
             h = canvasParent.getHeight();
-        } else {
+        }
+        else
+        {
             w = customItemParent.getContentWidth();
             h = customItemParent.getContentHeight();
         }
-        
-        if((currentClip[0] != 0) && (currentClip[1] != 0) && 
-           (currentClip[2] != w) && (currentClip[2] != h)) {
+
+        if((currentClip[0] != 0) && (currentClip[1] != 0) &&
+                (currentClip[2] != w) && (currentClip[2] != h))
+        {
             gc.setClip(currentClip[0], currentClip[1], currentClip[2], currentClip[3], false);
         }
-        if (currentStrokeSyle != SOLID) {
+        if(currentStrokeSyle != SOLID)
+        {
             gc.setStrokeStyle(GraphicsContext.STROKE_DOT);
         }
     }
-    
+
     /**
-     * Returns the current command buffer or null. 
-     * 
-     * This method is thread-safe. 
+     * Returns the current command buffer or null.
+     *
+     * This method is thread-safe.
      */
-    JavaCommandBuffer getCommandBuffer() {
+    JavaCommandBuffer getCommandBuffer()
+    {
         return cmdBuffer;
     }
-    
+
     /**
      * Get the parent image of this Graphics.
      */
-    Image getParentImage() {
+    Image getParentImage()
+    {
         return parentImage;
     }
 
@@ -272,42 +305,55 @@ public class Graphics {
      *
      * @param eswtGC
      */
-    void eswtSetGC(final GC eswtGC) {
-       if(buffered) {
+    void eswtSetGC(final GC eswtGC)
+    {
+        if(buffered)
+        {
             return;
         }
         gc = eswtGC.getGCData().internalGc;
-        ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        {
+            public void run()
+            {
                 Rectangle clipRect = eswtGC.getClipping();
                 setClip(clipRect.x, clipRect.y, clipRect.width, clipRect.height);
                 reset();
-            }});
+            }
+        });
     }
 
     /**
      * Disposes Graphics context resources.
      */
-    void dispose() {
-        if (parentImage != null) {
+    void dispose()
+    {
+        if(parentImage != null)
+        {
             parentImage = null;
         }
-        if(gc != null) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+        if(gc != null)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     gc.dispose();
-                }});
-          gc = null;
+                }
+            });
+            gc = null;
         }
-        if (cmdBuffer != null) {
-          cmdBuffer = null;
+        if(cmdBuffer != null)
+        {
+            cmdBuffer = null;
         }
     }
 
     /**
      * Resets Graphics state to initial.
      */
-    void reset() {
+    void reset()
+    {
         setColor(0, 0, 0);
         setFont(Font.getDefaultFont());
         setStrokeStyle(Graphics.SOLID);
@@ -318,7 +364,8 @@ public class Graphics {
     /**
      * Cleans the Canvas background.
      */
-    void cleanBackground(Rectangle area) {
+    void cleanBackground(Rectangle area)
+    {
         int savedColor = currentColor;
         setColor(255, 255, 255);
         fillRect(area.x, area.y, area.width, area.height);
@@ -328,7 +375,8 @@ public class Graphics {
     /**
      * Cleans the Canvas background.
      */
-    void cleanBackground(int x, int y, int w, int h) {
+    void cleanBackground(int x, int y, int w, int h)
+    {
         int savedColor = currentColor;
         setColor(255, 255, 255);
         fillRect(x, y, w, h);
@@ -338,14 +386,16 @@ public class Graphics {
     /**
      * Sets flag indicating that we are in Canvas.paint() callback
      */
-    void beginPaint() {
+    void beginPaint()
+    {
         paintCallBack = true;
     }
 
     /**
      * Sets flag indicating that we are exiting Canvas.paint() callback
      */
-    void endPaint() {
+    void endPaint()
+    {
         paintCallBack = false;
     }
 
@@ -353,26 +403,35 @@ public class Graphics {
      * Provides the serialization lock for buffer writing and flushing
      * @return lock used for synchronizing command buffer access
      */
-    Object getLock() {
+    Object getLock()
+    {
         return flushLock;
     }
-    
+
     /**
      * Sets coordinate translation. Translations are cumulative.
      *
      * @param xDelta x-shift for coordinates.
      * @param yDelta y-shift for coordinates.
      */
-    public void translate(int xDelta, int yDelta) {
-        synchronized(flushLock) {
-            if(!buffered) { 
+    public void translate(int xDelta, int yDelta)
+    {
+        synchronized(flushLock)
+        {
+            if(!buffered)
+            {
                 final int xDelta_ = xDelta;
                 final int yDelta_ = yDelta;
-                ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                    public void run() {
+                ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                    public void run()
+                    {
                         gc.translate(xDelta_, yDelta_);
-                    }});
-            } else {
+                    }
+                });
+            }
+            else
+            {
                 gc.translate(xDelta, yDelta);
             }
         }
@@ -385,7 +444,8 @@ public class Graphics {
      *
      * @return Current X-shift of coordinate translation.
      */
-    public int getTranslateX() {
+    public int getTranslateX()
+    {
         return translateX;
     }
 
@@ -394,7 +454,8 @@ public class Graphics {
      *
      * @return current Y-shift of coordinate translation.
      */
-    public int getTranslateY() {
+    public int getTranslateY()
+    {
         return translateY;
     }
 
@@ -403,7 +464,8 @@ public class Graphics {
      *
      * @return Current color in 0x00RRGGBB format.
      */
-    public int getColor() {
+    public int getColor()
+    {
         return currentColor;
     }
 
@@ -412,7 +474,8 @@ public class Graphics {
      *
      * @return Red component of current color in the range of 0-255.
      */
-    public int getRedComponent() {
+    public int getRedComponent()
+    {
         return currentColor >> 16;
     }
 
@@ -421,7 +484,8 @@ public class Graphics {
      *
      * @return Green component of current color in the range of 0-255.
      */
-    public int getGreenComponent() {
+    public int getGreenComponent()
+    {
         return (currentColor >> 8) & COMPONENT_MASK;
     }
 
@@ -430,7 +494,8 @@ public class Graphics {
      *
      * @return Blue component of current color in the range of 0-255.
      */
-    public int getBlueComponent() {
+    public int getBlueComponent()
+    {
         return currentColor & COMPONENT_MASK;
     }
 
@@ -439,7 +504,8 @@ public class Graphics {
      *
      * @return Returns current grayscale color in the range 0-255.
      */
-    public int getGrayScale() {
+    public int getGrayScale()
+    {
         return (getRedComponent() + getGreenComponent() + getBlueComponent()) / 3;
     }
 
@@ -450,23 +516,32 @@ public class Graphics {
      * @param g - green component of the color to be set.
      * @param b - blue component of the color to be set.
      */
-    public void setColor(int r, int g, int b) {
-        if (r < 0 || r > 255 ||
-            g < 0 || g > 255 ||
-            b < 0 || b > 255 ) {
-                throw new IllegalArgumentException();
+    public void setColor(int r, int g, int b)
+    {
+        if(r < 0 || r > 255 ||
+                g < 0 || g > 255 ||
+                b < 0 || b > 255)
+        {
+            throw new IllegalArgumentException();
         }
-        synchronized(flushLock) {
-            if(!buffered) { 
+        synchronized(flushLock)
+        {
+            if(!buffered)
+            {
                 final int r_ = r;
                 final int g_ = g;
                 final int b_ = b;
-                ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                    public void run() {
+                ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                    public void run()
+                    {
                         gc.setForegroundColor(r_, g_, b_);
                         gc.setBackgroundColor(r_, g_, b_);
-                    }});
-            } else {
+                    }
+                });
+            }
+            else
+            {
                 gc.setForegroundColor(r, g, b);
                 gc.setBackgroundColor(r, g, b);
             }
@@ -479,19 +554,27 @@ public class Graphics {
      *
      * @param RGB - color to be set in the form of 0x00RRGGBB.
      */
-    public void setColor(int RGB) {
+    public void setColor(int RGB)
+    {
         int maskedRGB = RGB & RGB_MASK;
         final int r = maskedRGB >> 16;
         final int g = (maskedRGB >> 8) & COMPONENT_MASK;
         final int b = maskedRGB & COMPONENT_MASK;
-        synchronized(flushLock) {
-            if(!buffered) { 
-                ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                    public void run() {
+        synchronized(flushLock)
+        {
+            if(!buffered)
+            {
+                ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                    public void run()
+                    {
                         gc.setForegroundColor(r, g, b);
                         gc.setBackgroundColor(r, g, b);
-                    }});
-            } else {
+                    }
+                });
+            }
+            else
+            {
                 gc.setForegroundColor(r, g, b);
                 gc.setBackgroundColor(r, g, b);
             }
@@ -504,19 +587,28 @@ public class Graphics {
      *
      * @param val - gray-scale value to be set in the range of 0-255.
      */
-    public void setGrayScale(int val) {
-        if ( (val < 0) || (val > 255)) {
-        throw new IllegalArgumentException();
+    public void setGrayScale(int val)
+    {
+        if((val < 0) || (val > 255))
+        {
+            throw new IllegalArgumentException();
         }
         final int col = val & COMPONENT_MASK;
-        synchronized(flushLock) {
-            if(!buffered) { 
-                ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                    public void run() {
+        synchronized(flushLock)
+        {
+            if(!buffered)
+            {
+                ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                    public void run()
+                    {
                         gc.setForegroundColor(col, col, col);
                         gc.setBackgroundColor(col, col, col);
-                    }});
-            } else {
+                    }
+                });
+            }
+            else
+            {
                 gc.setForegroundColor(col, col, col);
                 gc.setBackgroundColor(col, col, col);
             }
@@ -529,7 +621,8 @@ public class Graphics {
      *
      * @return Current font.
      */
-    public Font getFont() {
+    public Font getFont()
+    {
         return currentFont;
     }
 
@@ -538,15 +631,23 @@ public class Graphics {
      *
      * @param newFont - the font to be used for string rendering.
      */
-    public void setFont(Font newFont) {
-        synchronized(flushLock) {
-            if(!buffered) { 
+    public void setFont(Font newFont)
+    {
+        synchronized(flushLock)
+        {
+            if(!buffered)
+            {
                 final Font newFont_ = newFont;
-                ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                    public void run() {
+                ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                    public void run()
+                    {
                         gc.setFont(Font.getESWTFont(newFont_).handle);
-                    }});
-            } else {
+                    }
+                });
+            }
+            else
+            {
                 gc.setFont(Font.getESWTFont(newFont).handle);
             }
         }
@@ -558,7 +659,8 @@ public class Graphics {
      *
      * @return Left bound of clip rectangle.
      */
-    public int getClipX() {
+    public int getClipX()
+    {
         return currentClip[0];
     }
 
@@ -567,7 +669,8 @@ public class Graphics {
      *
      * @return Top bound of clip rectangle.
      */
-    public int getClipY() {
+    public int getClipY()
+    {
         return currentClip[1];
     }
 
@@ -576,7 +679,8 @@ public class Graphics {
      *
      * @return Width of clip rectangle.
      */
-    public int getClipWidth() {
+    public int getClipWidth()
+    {
         return currentClip[2];
     }
 
@@ -585,7 +689,8 @@ public class Graphics {
      *
      * @return Height of clip rectangle.
      */
-    public int getClipHeight() {
+    public int getClipHeight()
+    {
         return currentClip[3];
     }
 
@@ -600,21 +705,29 @@ public class Graphics {
      * @param h - height of the clip rectangle to intersect with the current
      *            one.
      */
-    public void clipRect(int x, int y, int w, int h) {
-        final int cx2 = Math.min( currentClip[0] + currentClip[2], x + w );
-        final int cy2 = Math.min( currentClip[1] + currentClip[3], y + h );
+    public void clipRect(int x, int y, int w, int h)
+    {
+        final int cx2 = Math.min(currentClip[0] + currentClip[2], x + w);
+        final int cy2 = Math.min(currentClip[1] + currentClip[3], y + h);
         // setting of clip to Java Graphics
-        currentClip[0] = Math.max( x, currentClip[0]);
-        currentClip[1] = Math.max( y, currentClip[1]);
+        currentClip[0] = Math.max(x, currentClip[0]);
+        currentClip[1] = Math.max(y, currentClip[1]);
         currentClip[2] = cx2 - currentClip[0];
         currentClip[3] = cy2 - currentClip[1];
-        synchronized(flushLock) {
-            if(!buffered) { 
-                ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                    public void run() {
+        synchronized(flushLock)
+        {
+            if(!buffered)
+            {
+                ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                    public void run()
+                    {
                         gc.setClip(currentClip[0], currentClip[1], currentClip[2], currentClip[3], false);
-                    }});
-            } else {
+                    }
+                });
+            }
+            else
+            {
                 gc.setClip(currentClip[0], currentClip[1], currentClip[2], currentClip[3], false);
             }
         }
@@ -628,19 +741,27 @@ public class Graphics {
      * @param w - width of the new clip rectangle.
      * @param h - height of the new clip rectangle.
      */
-    public void setClip(int x, int y, int w, int h) {
-        synchronized(flushLock) {
-            if(!buffered) { 
+    public void setClip(int x, int y, int w, int h)
+    {
+        synchronized(flushLock)
+        {
+            if(!buffered)
+            {
                 final int x_ = x;
                 final int y_ = y;
                 final int w_ = w;
                 final int h_ = h;
-        
-                ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                    public void run() {
+
+                ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                    public void run()
+                    {
                         gc.setClip(x_, y_, w_, h_, false);
-                    }});
-            } else {
+                    }
+                });
+            }
+            else
+            {
                 gc.setClip(x, y, w, h, false);
             }
         }
@@ -658,19 +779,27 @@ public class Graphics {
      * @param xEnd - X-coordinate of line end point.
      * @param yEnd - Y-coordinate of line end point.
      */
-    public void drawLine(int xStart, int yStart, int xEnd, int yEnd) {
-        synchronized(flushLock) {
-            if(!buffered) { 
+    public void drawLine(int xStart, int yStart, int xEnd, int yEnd)
+    {
+        synchronized(flushLock)
+        {
+            if(!buffered)
+            {
                 final int xs_ = xStart;
                 final int ys_ = yStart;
                 final int xe_ = xEnd;
                 final int ye_ = yEnd;
-        
-                ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                    public void run() {
+
+                ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                    public void run()
+                    {
                         gc.drawLine(xs_, ys_, xe_, ye_);
-                    }});
-            } else {
+                    }
+                });
+            }
+            else
+            {
                 gc.drawLine(xStart, yStart, xEnd, yEnd);
             }
         }
@@ -684,22 +813,31 @@ public class Graphics {
      * @param w - width of the rectangle
      * @param h - height of the rectangle
      */
-    public void fillRect(int x, int y, int w, int h) {
-        if ((w < 0) || (h < 0)) {
+    public void fillRect(int x, int y, int w, int h)
+    {
+        if((w < 0) || (h < 0))
+        {
             return;
         }
-        synchronized(flushLock) {
-            if(!buffered) { 
+        synchronized(flushLock)
+        {
+            if(!buffered)
+            {
                 final int x_ = x;
                 final int y_ = y;
                 final int w_ = w;
                 final int h_ = h;
-        
-                ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                    public void run() {
+
+                ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                    public void run()
+                    {
                         gc.fillRect(x_, y_, w_, h_);
-                    }});
-            } else {
+                    }
+                });
+            }
+            else
+            {
                 gc.fillRect(x, y, w, h);
             }
         }
@@ -713,21 +851,30 @@ public class Graphics {
      * @param w - width of the rectangle
      * @param h - height of the rectangle
      */
-    public void drawRect(int x, int y, int w, int h) {
-        if ((w < 0) || (h < 0)) {
+    public void drawRect(int x, int y, int w, int h)
+    {
+        if((w < 0) || (h < 0))
+        {
             return;
         }
-        synchronized(flushLock) {
-            if(!buffered) {
+        synchronized(flushLock)
+        {
+            if(!buffered)
+            {
                 final int x_ = x;
                 final int y_ = y;
                 final int w_ = w;
                 final int h_ = h;
-                ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                    public void run() {
+                ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                    public void run()
+                    {
                         gc.drawRect(x_, y_, w_, h_);
-                    }});
-            } else {
+                    }
+                });
+            }
+            else
+            {
                 gc.drawRect(x, y, w, h);
             }
         }
@@ -743,24 +890,33 @@ public class Graphics {
      * @param arcW - arc width for corner rounding.
      * @param arcH - arc height for corner rounding.
      */
-    public void drawRoundRect(int x, int y, int w, int h, int arcW, int arcH) {
-        if ((w < 0) || (h < 0) || (arcW < 0) || (arcH < 0)) {
+    public void drawRoundRect(int x, int y, int w, int h, int arcW, int arcH)
+    {
+        if((w < 0) || (h < 0) || (arcW < 0) || (arcH < 0))
+        {
             return;
         }
-        synchronized(flushLock) {
-            if(!buffered) {
+        synchronized(flushLock)
+        {
+            if(!buffered)
+            {
                 final int x_ = x;
                 final int y_ = y;
                 final int w_ = w;
                 final int h_ = h;
                 final int arcW_ = arcW;
                 final int arcH_ = arcH;
-                
-                ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                    public void run() {
+
+                ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                    public void run()
+                    {
                         gc.drawRoundRect(x_, y_, w_, h_, arcW_, arcH_);
-                    }});
-            } else {
+                    }
+                });
+            }
+            else
+            {
                 gc.drawRoundRect(x, y, w, h, arcW, arcH);
             }
         }
@@ -776,24 +932,33 @@ public class Graphics {
      * @param arcW - arc width for corner rounding.
      * @param arcH - arc height for corner rounding.
      */
-    public void fillRoundRect(int x, int y, int w, int h, int arcW, int arcH) {
-        if ((w < 0) || (h < 0) || (arcW < 0) || (arcH < 0)) {
+    public void fillRoundRect(int x, int y, int w, int h, int arcW, int arcH)
+    {
+        if((w < 0) || (h < 0) || (arcW < 0) || (arcH < 0))
+        {
             return;
         }
-        synchronized(flushLock) {
-            if(!buffered) {
+        synchronized(flushLock)
+        {
+            if(!buffered)
+            {
                 final int x_ = x;
                 final int y_ = y;
                 final int w_ = w;
                 final int h_ = h;
                 final int arcW_ = arcW;
                 final int arcH_ = arcH;
-                
-                ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                    public void run() {
+
+                ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                    public void run()
+                    {
                         gc.fillRoundRect(x_, y_, w_, h_, arcW_, arcH_);
-                    }});
-            } else {
+                    }
+                });
+            }
+            else
+            {
                 gc.fillRoundRect(x, y, w, h, arcW, arcH);
             }
         }
@@ -811,24 +976,33 @@ public class Graphics {
      * @param startAngle - starting angle of the arc in degrees.
      * @param arcAngle - angle to spread the arc in degrees.
      */
-    public void fillArc(int x, int y, int w, int h, int startAngle, int arcAngle) {
-        if ((w < 0) || (h < 0)) {
+    public void fillArc(int x, int y, int w, int h, int startAngle, int arcAngle)
+    {
+        if((w < 0) || (h < 0))
+        {
             return;
         }
-        synchronized(flushLock) {
-            if(!buffered) {
+        synchronized(flushLock)
+        {
+            if(!buffered)
+            {
                 final int x_ = x;
                 final int y_ = y;
                 final int w_ = w;
                 final int h_ = h;
                 final int startAngle_ = startAngle;
                 final int arcAngle_ = arcAngle;
-                
-                ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                    public void run() {
+
+                ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                    public void run()
+                    {
                         gc.fillArc(x_, y_, w_, h_, startAngle_, arcAngle_);
-                    }});
-            } else {
+                    }
+                });
+            }
+            else
+            {
                 gc.fillArc(x, y, w, h, startAngle, arcAngle);
             }
         }
@@ -846,24 +1020,33 @@ public class Graphics {
      * @param startAngle - starting angle of the arc in degrees.
      * @param arcAngle - angle to spread the arc in degrees.
      */
-    public void drawArc(int x, int y, int w, int h, int startAngle, int arcAngle) {
-        if ((w < 0) || (h < 0)) {
+    public void drawArc(int x, int y, int w, int h, int startAngle, int arcAngle)
+    {
+        if((w < 0) || (h < 0))
+        {
             return;
         }
-        synchronized(flushLock) {
-            if(!buffered) {
+        synchronized(flushLock)
+        {
+            if(!buffered)
+            {
                 final int x_ = x;
                 final int y_ = y;
                 final int w_ = w;
                 final int h_ = h;
                 final int startAngle_ = startAngle;
                 final int arcAngle_ = arcAngle;
-                
-                ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                    public void run() {
+
+                ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                    public void run()
+                    {
                         gc.drawArc(x_, y_, w_, h_, startAngle_, arcAngle_);
-                    }});
-            } else {
+                    }
+                });
+            }
+            else
+            {
                 gc.drawArc(x, y, w, h, startAngle, arcAngle);
             }
         }
@@ -880,27 +1063,34 @@ public class Graphics {
      *            Graphics.BOTTOM, Graphics.BASELINE, Graphics.LEFT,
      *            Graphics.RIGHT, Graphics.HCENTER.
      */
-    public void drawString(String string, int xPos, int yPos, int anch) {
-        if (string == null) {
+    public void drawString(String string, int xPos, int yPos, int anch)
+    {
+        if(string == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.GRAPHICS_EXCEPTION_STRING_IS_NULL);
+                MsgRepository.GRAPHICS_EXCEPTION_STRING_IS_NULL);
         }
 
-        if (!checkTextAnchors(anch)) {
+        if(!checkTextAnchors(anch))
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.GRAPHICS_EXCEPTION_INVALID_ANCHOR);
+                MsgRepository.GRAPHICS_EXCEPTION_INVALID_ANCHOR);
         }
 
         final int alignments = GraphicsContext.ALIGNMENT_TOP | GraphicsContext.ALIGNMENT_LEFT;
         final int[] boundingBox = new int[4];
         final String localStr = string;
-        
-        if (paintCallBack) {
+
+        if(paintCallBack)
+        {
             gc.getTextBoundingBox(boundingBox, string, alignments, 0);
         }
-        else {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+        else
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     FontUtils fu = new FontUtils(Font.getESWTFont(currentFont).handle);
                     fu.getBoundingRect(boundingBox, localStr);
                 }
@@ -914,36 +1104,48 @@ public class Graphics {
 
         // Arrange vertical alignments
         int y = yPos;
-        if (isFlag(anch, Graphics.BOTTOM)) {
+        if(isFlag(anch, Graphics.BOTTOM))
+        {
             y = yPos - boundingBox[GraphicsContext.RECT_HEIGHT];
         }
-        if (isFlag(anch, Graphics.BASELINE)) {
+        if(isFlag(anch, Graphics.BASELINE))
+        {
             y = yPos - currentFont.getBaselinePosition();
         }
 
         // Arrange horizontal alignments
         int x = xPos;
-        if (isFlag(anch, Graphics.RIGHT)) {
+        if(isFlag(anch, Graphics.RIGHT))
+        {
             x = xPos - boundingBox[GraphicsContext.RECT_WIDTH];
         }
-        if (isFlag(anch, Graphics.HCENTER)) {
+        if(isFlag(anch, Graphics.HCENTER))
+        {
             x = xPos - boundingBox[GraphicsContext.RECT_WIDTH] / 2;
         }
-        synchronized(flushLock) {
-            if(!buffered) {
+        synchronized(flushLock)
+        {
+            if(!buffered)
+            {
                 final int x_ = x;
                 final int y_ = y;
-                ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                    public void run() {
+                ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                    public void run()
+                    {
                         gc.drawString(localStr, x_, y_, true);
-                    }});
-            } else {
+                    }
+                });
+            }
+            else
+            {
                 gc.drawString(localStr, x, y, true);
             }
         }
     }
 
-    private static boolean isFlag(int anchor, int flag) {
+    private static boolean isFlag(int anchor, int flag)
+    {
         return (anchor & flag) != 0;
     }
 
@@ -961,7 +1163,8 @@ public class Graphics {
      *            Graphics.RIGHT, Graphics.HCENTER.
      */
     public void drawSubstring(java.lang.String string, int offset, int length,
-            int xPos, int yPos, int anch) {
+                              int xPos, int yPos, int anch)
+    {
         drawString(string.substring(offset, length), xPos, yPos, anch);
     }
 
@@ -976,7 +1179,8 @@ public class Graphics {
      *            Graphics.BOTTOM, Graphics.BASELINE, Graphics.LEFT,
      *            Graphics.RIGHT, Graphics.HCENTER.
      */
-    public void drawChar(char c, int xPos, int yPos, int anch) {
+    public void drawChar(char c, int xPos, int yPos, int anch)
+    {
         drawString(String.valueOf(c), xPos, yPos, anch);
     }
 
@@ -994,18 +1198,22 @@ public class Graphics {
      *            Graphics.RIGHT, Graphics.HCENTER.
      */
     public void drawChars(char[] ch, int offset, int length,
-                          int xPos, int yPos, int anch) {
-        if (ch == null) {
+                          int xPos, int yPos, int anch)
+    {
+        if(ch == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.GRAPHICS_EXCEPTION_ARRAY_IS_NULL);
+                MsgRepository.GRAPHICS_EXCEPTION_ARRAY_IS_NULL);
         }
         String str = null;
-        try {
+        try
+        {
             str = String.valueOf(ch, offset, length);
         }
-        catch (Exception e) {
+        catch(Exception e)
+        {
             throw new ArrayIndexOutOfBoundsException(
-                    MsgRepository.GRAPHICS_EXCEPTION_ARRAY_OUT_OF_BOUNDS);
+                MsgRepository.GRAPHICS_EXCEPTION_ARRAY_OUT_OF_BOUNDS);
         }
 
         drawString(str, xPos, yPos, anch);
@@ -1014,32 +1222,37 @@ public class Graphics {
     /**
      * Checks if anchors combination is valid.
      */
-    private boolean checkTextAnchors(int anch) {
+    private boolean checkTextAnchors(int anch)
+    {
         boolean retVal = false;
 
         int vertMask = Graphics.TOP | Graphics.BASELINE | Graphics.BOTTOM;
         int horMask = Graphics.LEFT | Graphics.RIGHT | Graphics.HCENTER;
 
-        if (anch == 0) {
+        if(anch == 0)
+        {
             return true;
         }
 
-        if ((anch & ~(vertMask | horMask)) != 0) {
+        if((anch & ~(vertMask | horMask)) != 0)
+        {
             return false;
         }
 
         int vertAchor = anch & vertMask;
         int horAchor = anch & horMask;
 
-        if ((vertAchor == Graphics.TOP)
-            || (vertAchor == Graphics.BASELINE)
-            || (vertAchor == Graphics.BOTTOM)) {
+        if((vertAchor == Graphics.TOP)
+                || (vertAchor == Graphics.BASELINE)
+                || (vertAchor == Graphics.BOTTOM))
+        {
             retVal = true;
         }
 
-        if ((horAchor == Graphics.LEFT)
+        if((horAchor == Graphics.LEFT)
                 || (vertAchor == Graphics.RIGHT)
-                || (vertAchor == Graphics.HCENTER)) {
+                || (vertAchor == Graphics.HCENTER))
+        {
             retVal = true;
         }
 
@@ -1055,44 +1268,58 @@ public class Graphics {
      * @param anch - anchor value.
      */
     public void drawImage(javax.microedition.lcdui.Image image, int xPos,
-            int yPos, int anch) {
+                          int yPos, int anch)
+    {
 
-        if (image == null) {
+        if(image == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.IMAGE_EXCEPTION_IS_NULL);
+                MsgRepository.IMAGE_EXCEPTION_IS_NULL);
         }
-        if (!checkImageAnchors(anch)) {
+        if(!checkImageAnchors(anch))
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.GRAPHICS_EXCEPTION_INVALID_ANCHOR);
+                MsgRepository.GRAPHICS_EXCEPTION_INVALID_ANCHOR);
         }
 
         int y = yPos;
-        if (isFlag(anch, Graphics.VCENTER)) {
+        if(isFlag(anch, Graphics.VCENTER))
+        {
             y = yPos - image.getHeight() / 2;
         }
-        if (isFlag(anch, Graphics.BOTTOM)) {
+        if(isFlag(anch, Graphics.BOTTOM))
+        {
             y = yPos - image.getHeight();
         }
 
         int x = xPos;
-        if (isFlag(anch, Graphics.HCENTER)) {
+        if(isFlag(anch, Graphics.HCENTER))
+        {
             x = xPos - image.getWidth() / 2;
         }
-        if (isFlag(anch, Graphics.RIGHT)) {
+        if(isFlag(anch, Graphics.RIGHT))
+        {
             x = xPos - image.getWidth();
         }
 
-        synchronized(flushLock) {
-            if(!buffered) {
+        synchronized(flushLock)
+        {
+            if(!buffered)
+            {
                 final int x_ = x;
                 final int y_ = y;
-                final org.eclipse.swt.internal.qt.graphics.Image image_ = 
+                final org.eclipse.swt.internal.qt.graphics.Image image_ =
                     Internal_GfxPackageSupport.getImage(Image.getESWTImage(image));
-                ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                    public void run() {
+                ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                    public void run()
+                    {
                         gc.drawImage(image_, x_, y_);
-                    }});
-            } else {
+                    }
+                });
+            }
+            else
+            {
                 gc.drawImage(Internal_GfxPackageSupport.getImage(Image.getESWTImage(image)), x, y);
             }
         }
@@ -1101,32 +1328,37 @@ public class Graphics {
     /**
      * Checks if anchors combination is valid.
      */
-    private boolean checkImageAnchors(int anch) {
+    private boolean checkImageAnchors(int anch)
+    {
         boolean retVal = false;
 
         int vertMask = Graphics.TOP | Graphics.VCENTER | Graphics.BOTTOM;
         int horMask = Graphics.LEFT | Graphics.RIGHT | Graphics.HCENTER;
 
-        if (anch == 0) {
+        if(anch == 0)
+        {
             return true;
         }
 
-        if ((anch & ~(vertMask | horMask)) != 0) {
+        if((anch & ~(vertMask | horMask)) != 0)
+        {
             return false;
         }
 
         int vertAchor = anch & vertMask;
         int horAchor = anch & horMask;
 
-        if ((vertAchor == Graphics.TOP)
-            || (vertAchor == Graphics.VCENTER)
-            || (vertAchor == Graphics.BOTTOM)) {
+        if((vertAchor == Graphics.TOP)
+                || (vertAchor == Graphics.VCENTER)
+                || (vertAchor == Graphics.BOTTOM))
+        {
             retVal = true;
         }
 
-        if ((horAchor == Graphics.LEFT)
+        if((horAchor == Graphics.LEFT)
                 || (vertAchor == Graphics.RIGHT)
-                || (vertAchor == Graphics.HCENTER)) {
+                || (vertAchor == Graphics.HCENTER))
+        {
             retVal = true;
         }
 
@@ -1140,34 +1372,56 @@ public class Graphics {
      *            Graphics.DOTTED.
      * @throws IllegalArgumentException if the new style value is invalid.
      */
-    public void setStrokeStyle(int newStyle) {
-        if (newStyle == currentStrokeSyle) {
+    public void setStrokeStyle(int newStyle)
+    {
+        if(newStyle == currentStrokeSyle)
+        {
             return;
         }
-        if (newStyle == SOLID) {
-            synchronized(flushLock) {
-                if(!buffered) {
-                    ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                        public void run() {
+        if(newStyle == SOLID)
+        {
+            synchronized(flushLock)
+            {
+                if(!buffered)
+                {
+                    ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                    {
+                        public void run()
+                        {
                             gc.setStrokeStyle(GraphicsContext.STROKE_SOLID);
-                        }});
-                } else {
+                        }
+                    });
+                }
+                else
+                {
                     gc.setStrokeStyle(GraphicsContext.STROKE_SOLID);
                 }
             }
-        } else {
-            if (newStyle == DOTTED) {
-                synchronized(flushLock) {
-                    if(!buffered) {
-                        ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                            public void run() {
+        }
+        else
+        {
+            if(newStyle == DOTTED)
+            {
+                synchronized(flushLock)
+                {
+                    if(!buffered)
+                    {
+                        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                        {
+                            public void run()
+                            {
                                 gc.setStrokeStyle(GraphicsContext.STROKE_DOT);
-                            }});
-                    } else {
+                            }
+                        });
+                    }
+                    else
+                    {
                         gc.setStrokeStyle(GraphicsContext.STROKE_DOT);
                     }
                 }
-            } else {
+            }
+            else
+            {
                 throw new IllegalArgumentException(
                     MsgRepository.GRAPHICS_EXCEPTION_ILLEGAL_STROKE_STYLE);
             }
@@ -1180,7 +1434,8 @@ public class Graphics {
      *
      * @return Current stroke style.
      */
-    public int getStrokeStyle() {
+    public int getStrokeStyle()
+    {
         return currentStrokeSyle;
     }
 
@@ -1190,7 +1445,8 @@ public class Graphics {
      * @param color - color to use in 0x00RRGGBB form.
      * @return Color that will be actually used in 0x00RRGGBB form.
      */
-    public int getDisplayColor(int color) {
+    public int getDisplayColor(int color)
+    {
         return color & RGB_MASK;
     }
 
@@ -1216,14 +1472,18 @@ public class Graphics {
                         int y,
                         int w,
                         int h,
-                        boolean alpha) {
+                        boolean alpha)
+    {
 
-        if (rgb == null) {
+        if(rgb == null)
+        {
             throw new NullPointerException(
                 MsgRepository.IMAGE_EXCEPTION_DATA_IS_NULL);
         }
-        synchronized(flushLock) {
-            if(!buffered) {
+        synchronized(flushLock)
+        {
+            if(!buffered)
+            {
                 final int[] rgb_ = rgb;
                 final int offset_ = offset;
                 final int scanlength_ = scanlength;
@@ -1232,12 +1492,17 @@ public class Graphics {
                 final int w_ = w;
                 final int h_ = h;
                 final boolean alpha_ = alpha;
-                
-                ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                    public void run() {
+
+                ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                    public void run()
+                    {
                         gc.drawRGB(rgb_, offset_, scanlength_, x_, y_, w_, h_, alpha_);
-                    }});
-            } else {
+                    }
+                });
+            }
+            else
+            {
                 gc.drawRGB(rgb, offset, scanlength, x, y, w, h, alpha);
             }
         }
@@ -1258,15 +1523,23 @@ public class Graphics {
                              int xPos2,
                              int yPos2,
                              int xPos3,
-                             int yPos3) {
+                             int yPos3)
+    {
         final int[] points = {xPos1, yPos1, xPos2, yPos2, xPos3, yPos3};
-        synchronized(flushLock) {
-            if(!buffered) {
-                ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                    public void run() {
+        synchronized(flushLock)
+        {
+            if(!buffered)
+            {
+                ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                    public void run()
+                    {
                         gc.fillPolygon(points);
-                    }});
-            } else {
+                    }
+                });
+            }
+            else
+            {
                 gc.fillPolygon(points);
             }
         }
@@ -1289,40 +1562,49 @@ public class Graphics {
                          int h,
                          int xTo,
                          int yTo,
-                         int anch) {
+                         int anch)
+    {
 
-        if (this.parentImage == null) {
+        if(this.parentImage == null)
+        {
             // this Graphics belongs to a screen device.
             throw new IllegalStateException(
                 MsgRepository.GRAPHICS_EXCEPTION_DESTINATION_IS_SCREEN);
         }
 
-        if (!javax.microedition.lcdui.Image.validateRegion(parentImage
-                .getWidth(), parentImage.getHeight(), xFrom, yFrom, w, h)) {
+        if(!javax.microedition.lcdui.Image.validateRegion(parentImage
+                .getWidth(), parentImage.getHeight(), xFrom, yFrom, w, h))
+        {
             throw new IllegalArgumentException(
                 MsgRepository.IMAGE_EXCEPTION_INVALID_REGION);
         }
 
         // Arrange vertical alignments
         int destY = yTo;
-        if (isFlag(anch, Graphics.BOTTOM)) {
+        if(isFlag(anch, Graphics.BOTTOM))
+        {
             destY = yTo - h;
         }
-        if (isFlag(anch, Graphics.VCENTER)) {
+        if(isFlag(anch, Graphics.VCENTER))
+        {
             destY = yTo - h / 2;
         }
 
         // Arrange horizontal alignments
         int destX = xTo;
-        if (isFlag(anch, Graphics.RIGHT)) {
+        if(isFlag(anch, Graphics.RIGHT))
+        {
             destX = xTo - w;
         }
-        if (isFlag(anch, Graphics.HCENTER)) {
+        if(isFlag(anch, Graphics.HCENTER))
+        {
             destX = xTo - w / 2;
         }
 
-        synchronized(flushLock) {
-            if(!buffered) {
+        synchronized(flushLock)
+        {
+            if(!buffered)
+            {
                 final int x1 = xFrom;
                 final int y1 = yFrom;
                 final int width = w;
@@ -1330,11 +1612,16 @@ public class Graphics {
                 final int x2 = destX;
                 final int y2 = destY;
 
-                ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                    public void run() {
+                ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                    public void run()
+                    {
                         gc.copyArea(x1, y1, width, height, x2, y2);
-                    }});
-            } else {
+                    }
+                });
+            }
+            else
+            {
                 gc.copyArea(xFrom, yFrom, w, h, destX, destY);
             }
         }
@@ -1363,65 +1650,82 @@ public class Graphics {
                            int transform,
                            int xDst,
                            int yDst,
-                           int anch) {
-      
-        if (srcImage == null) {
+                           int anch)
+    {
+
+        if(srcImage == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.IMAGE_EXCEPTION_IS_NULL);
+                MsgRepository.IMAGE_EXCEPTION_IS_NULL);
         }
-        if (srcImage == parentImage) {
+        if(srcImage == parentImage)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.GRAPHICS_EXCEPTION_SAME_SOURCE_AND_DESTINATION);
+                MsgRepository.GRAPHICS_EXCEPTION_SAME_SOURCE_AND_DESTINATION);
         }
-        if (!javax.microedition.lcdui.Image.validateTransform(transform)) {
+        if(!javax.microedition.lcdui.Image.validateTransform(transform))
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.IMAGE_EXCEPTION_INVALID_TRANSFORM);
+                MsgRepository.IMAGE_EXCEPTION_INVALID_TRANSFORM);
         }
-        if (!checkImageAnchors(anch)) {
+        if(!checkImageAnchors(anch))
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.GRAPHICS_EXCEPTION_INVALID_ANCHOR);
+                MsgRepository.GRAPHICS_EXCEPTION_INVALID_ANCHOR);
         }
-        if (!javax.microedition.lcdui.Image.validateRegion(srcImage.getWidth(),
-                srcImage.getHeight(), xSrc, ySrc, width, height)) {
+        if(!javax.microedition.lcdui.Image.validateRegion(srcImage.getWidth(),
+                srcImage.getHeight(), xSrc, ySrc, width, height))
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.IMAGE_EXCEPTION_INVALID_REGION);
+                MsgRepository.IMAGE_EXCEPTION_INVALID_REGION);
         }
 
         // Arrange vertical alignments
         int y = yDst;
-        if (isFlag(anch, Graphics.VCENTER)) {
+        if(isFlag(anch, Graphics.VCENTER))
+        {
             y = yDst - srcImage.getHeight() / 2;
         }
-        if (isFlag(anch, Graphics.BOTTOM)) {
+        if(isFlag(anch, Graphics.BOTTOM))
+        {
             y = yDst - srcImage.getHeight();
         }
 
         // Arrange horizontal alignments
         int x = xDst;
-        if (isFlag(anch, Graphics.HCENTER)) {
+        if(isFlag(anch, Graphics.HCENTER))
+        {
             x = xDst - srcImage.getWidth() / 2;
         }
-        if (isFlag(anch, Graphics.RIGHT)) {
+        if(isFlag(anch, Graphics.RIGHT))
+        {
             x = xDst - srcImage.getWidth();
         }
-        
+
         final int gcTransform = Image.getCgTransformValue(transform);
-        synchronized(flushLock) {
-            if(!buffered) { 
+        synchronized(flushLock)
+        {
+            if(!buffered)
+            {
                 final int localXDst = x;
                 final int localYDst = y;
                 final int localW = width;
                 final int localH = height;
                 final int localXSrc = xSrc;
                 final int localYSrc = ySrc;
-                final org.eclipse.swt.internal.qt.graphics.Image localImage = 
+                final org.eclipse.swt.internal.qt.graphics.Image localImage =
                     Internal_GfxPackageSupport.getImage(Image.getESWTImage(srcImage));
-                ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                    public void run() {
+                ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                    public void run()
+                    {
                         gc.drawImage(localImage, localXDst, localYDst, localW, localH, localXSrc, localYSrc, localW, localH, gcTransform);
-                    }});
-            } else {
-                gc.drawImage(Internal_GfxPackageSupport.getImage(Image.getESWTImage(srcImage)), 
+                    }
+                });
+            }
+            else
+            {
+                gc.drawImage(Internal_GfxPackageSupport.getImage(Image.getESWTImage(srcImage)),
                              x, y, width, height, xSrc, ySrc, width, height, gcTransform);
             }
         }
@@ -1430,8 +1734,10 @@ public class Graphics {
     /**
      * Return DirectGraphics associated with this instance.
      */
-    DirectGraphics getDirectGraphics() {
-        if (directGraphics == null) {
+    DirectGraphics getDirectGraphics()
+    {
+        if(directGraphics == null)
+        {
             directGraphics = new DirectGraphicsImpl(this);
         }
         return directGraphics;
@@ -1440,7 +1746,8 @@ public class Graphics {
     /**
      * Return native graphic context.
      */
-    GraphicsContext getGc() {
+    GraphicsContext getGc()
+    {
         return gc;
     }
 

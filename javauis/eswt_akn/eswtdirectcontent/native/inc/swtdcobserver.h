@@ -99,7 +99,7 @@ public:
      * @param aCallbackId Id which is provided to the callback
      */
     void InvokeUICallback(MUiEventConsumer& aConsumer, TInt aCallbackId);
-    
+
 private:
     /** CSwtDcObserver event datatype */
     enum TDcEventType
@@ -148,7 +148,7 @@ private:
         MUiEventConsumer *aConsumer,
         TInt aCallbackId);
 
-    
+
 // from base class CActive
 
     /**

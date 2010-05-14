@@ -2328,7 +2328,11 @@ void CMIDForm::ConstructL()
 
 #ifdef RD_TACTILE_FEEDBACK
     iFeedback = MTouchFeedback::Instance();
-#endif
+#ifdef RD_JAVA_ADVANCED_TACTILE_FEEDBACK
+    UpdateTactileFeedbackDensity();
+#endif // RD_JAVA_ADVANCED_TACTILE_FEEDBACK
+#endif // RD_TACTILE_FEEDBACK
+
     //index of pointed control is set to not active
     iIndexPointedControl=-1;
 
@@ -3800,6 +3804,10 @@ void CMIDForm::HandleResourceChange(TInt aType)
     }
 
     UpdatePhysics();
+
+#ifdef RD_JAVA_ADVANCED_TACTILE_FEEDBACK
+    UpdateTactileFeedbackDensity();
+#endif // RD_JAVA_ADVANCED_TACTILE_FEEDBACK
 }
 
 TBool CMIDForm::TryDetectLongTapL(const TPointerEvent &aPointerEvent)
@@ -4088,6 +4096,10 @@ void CMIDForm::UpdateHighlightBackgroundPosition()
 
 void CMIDForm::HandlePhysicsPointerEventL(const TPointerEvent& aPointerEvent)
 {
+#ifdef RD_JAVA_ADVANCED_TACTILE_FEEDBACK
+    iLastPointerEventType = aPointerEvent.iType;
+#endif
+
     if (iPhysics && iPhysics->CanBeStopped())
     {
         switch (aPointerEvent.iType)
@@ -4161,7 +4173,10 @@ void CMIDForm::HandlePhysicsPointerEventL(const TPointerEvent& aPointerEvent)
             if (!iPreventPhysicsScrolling && iPointedControl && iPointedControl->iMMidItem &&
                     iPointedControl->iMMidItem->Type() == MMIDComponent::ETextField)
             {
-                if ((Abs(dragX) > iPhysics->DragThreshold()) && (Abs(dragY) < iPhysics->DragThreshold()))
+                // If physics scrolling is not ongoing (abs(dragY) < DragTreshold)
+                // then stop flicking and forward event to the item (iPreventPhysicsScrolling = ETrue).
+                if ((Abs(dragX) > iPhysics->DragThreshold()) && (Abs(dragY) < iPhysics->DragThreshold()
+                        && !iPanningOngoing))
                 {
                     iPreventPhysicsScrolling = ETrue;
                 }
@@ -4172,8 +4187,9 @@ void CMIDForm::HandlePhysicsPointerEventL(const TPointerEvent& aPointerEvent)
             {
                 iPanningOngoing = ETrue;
                 iHighlightTimer->Cancel();
-                iPhysics->SetPanningPosition(iLastDragPosition - aPointerEvent.iPosition);
+                // Start panning from aPointerEvent.iPosition with iPhysics->DragThreshold() margin
                 iLastDragPosition = aPointerEvent.iPosition;
+                iPhysics->SetPanningPosition(iLastDragPosition - aPointerEvent.iPosition);
                 //Forward one drag event to the focused textField or Gauge when panning is triggered
                 if ((iFocused != KErrNotFound)
                         && IsTextFieldItem(ControlItem(iFocused)))
@@ -4218,6 +4234,7 @@ void CMIDForm::HandlePhysicsPointerEventL(const TPointerEvent& aPointerEvent)
             {
                 ForwardPointerEventToItemL(aPointerEvent);
             }
+
 #endif // RD_JAVA_S60_RELEASE_9_2             
             break;
         }
@@ -4225,24 +4242,22 @@ void CMIDForm::HandlePhysicsPointerEventL(const TPointerEvent& aPointerEvent)
         // EButton1Up
         case TPointerEvent::EButton1Up:
         {
-            TPoint distance = iStartPosition - aPointerEvent.iPosition;
-            if (Abs(distance.iY) > iPhysics->DragThreshold() && !iPreventPhysicsScrolling)
+            // If physics scrolling is ongoing then start flicking
+            // and forward event to the item.
+            if (iPanningOngoing && !iPreventPhysicsScrolling)
             {
+                TPoint distance = iStartPosition - aPointerEvent.iPosition;
                 iFlickOngoing = iPhysics->StartFlick(distance, iStartTime);
-                if (!iUpEventSent)
-                {
-                    ForwardPointerEventToItemL(aPointerEvent);
-                    iUpEventSent = ETrue;
-                }
             }
-            else
+
+            // If physics scrolling is not ongoing then only
+            // forward event to the item.
+            if (!iUpEventSent)
             {
-                if (!iUpEventSent)
-                {
-                    ForwardPointerEventToItemL(aPointerEvent);
-                    iUpEventSent = ETrue;
-                }
+                ForwardPointerEventToItemL(aPointerEvent);
+                iUpEventSent = ETrue;
             }
+
             iPanningOngoing = EFalse;
             iCanDragFocus = EFalse;
             break;
@@ -4290,21 +4305,6 @@ void CMIDForm::ForwardPointerEventToItemL(const TPointerEvent& aPointerEvent)
 
 void CMIDForm::HandlePhysicsScroll(TInt aScroll, TBool aDrawNow, TUint /*aFlags*/)
 {
-#ifdef RD_JAVA_ADVANCED_TACTILE_FEEDBACK
-    //Dragging/flicking of Form content should give tactile feedback.
-    //This implementation is similar to native List: during dragging/flicking
-    //feedback is given when new item appears ont top/bottom of Form
-    //visible area.
-    //
-    //First we have to reset current visibility for all items in Form.
-    TInt count = iItems.Count();
-    for (TInt i=0; i<count; i++)
-    {
-        CMIDControlItem& ci = ControlItem(i);
-        ci.SetVisibilityInForm(RectPartiallyVisible(ci.Rect()));
-    }
-#endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
-
     iScroll = iScroll + aScroll;
     if (aScroll)
     {
@@ -4325,16 +4325,7 @@ void CMIDForm::HandlePhysicsScroll(TInt aScroll, TBool aDrawNow, TUint /*aFlags*
 
 #ifdef RD_JAVA_ADVANCED_TACTILE_FEEDBACK
     //Tactile feedback on dragging/flicking.
-    if (aScroll > 0)
-    {
-        //scrolling up (pointer dragged down)
-        DoFeedbackOnDraggingUp();
-    }
-    if (aScroll < 0)
-    {
-        //scrolling down (pointer dragged up)
-        DoFeedbackOnDraggingDown();
-    }
+    DoScrollingFeedback();
 #endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
 }
 
@@ -4403,75 +4394,59 @@ void CMIDForm::DoFeedbackOnFocusChange(CMIDControlItem& aControlItem)
 }
 
 #ifdef RD_JAVA_ADVANCED_TACTILE_FEEDBACK
-void CMIDForm::DoFeedbackOnDraggingUp()
+void CMIDForm::UpdateTactileFeedbackDensity()
 {
-    TInt count = iItems.Count();
-    //If dragging/flicking reaches the first/last item in Form,
-    //tactile feedback shouldn't be given. There should be only
-    //'bounce' effect, when first/last item goes back to to/bottom
-    //of screen. Flag firstOrLastItemReached determines this case.
-    //NOTE: feedback for 'bounce' is implemented in CAknPhysics.
-    TBool firstOrLastItemReached = EFalse;
-    for (TInt i = 0; i < count; i++)
-    {
-        //Try find first item from top, which changed its visibility
-        CMIDControlItem& ci = ControlItem(i);
-        CMIDControlItem& last = ControlItem(count-1);
-        TBool visibility = RectPartiallyVisible(ci.Rect());
-        //In case of 'bounce' effect, there shouldn't be any feedback
-        //on dragging/flicking (as in native side):
-        if (RectFullyVisible(last.Rect()))
-        {
-            firstOrLastItemReached = ETrue;
-        }
-        if (i == 0 && RectFullyVisible(ci.Rect()))
-        {
-            firstOrLastItemReached = ETrue;
-        }
-        if (ci.GetVisibilityInForm() != visibility)
-        {
-            //item changed its visibility form invisible to visible
-            if (visibility && !firstOrLastItemReached)
-            {
-                //if there isn't 'bounce' effect, do feedback
-                iFeedback->InstantFeedback(ETouchFeedbackSensitiveList);
-                break;
-            }
-        }
-    }
+    TAknLayoutRect layoutRect;
+    layoutRect.LayoutRect(TRect(), AknLayoutScalable_Avkon::
+                          list_single_heading_pane(0).LayoutLine());
+    iTactileFeedbackDensity = layoutRect.Rect().Height();
 }
 
-void CMIDForm::DoFeedbackOnDraggingDown()
+void CMIDForm::DoScrollingFeedback()
 {
-    TInt count = iItems.Count();
-    //If dragging/flicking reaches the first/last item in Form,
-    //tactile feedback shouldn't be given. There should be only
-    //'bounce' effect, when first/last item goes back to to/bottom
-    //of screen. Flag firstOrLastItemReached determines this case.
-    //NOTE: feedback for 'bounce' is implemented in CAknPhysics.
-    TBool firstOrLastItemReached = EFalse;
-    for (TInt i = count-1; i >= 0; i--)
+    TRect formRect(Rect());
+    TInt topEdgePos = iScroll;
+    TInt bottomEdgePos = iScroll + HeightOfAllItems();
+    // Calculate distance between current Form content position
+    // and previous position, where last feedback happened.
+    TInt lastFeedbackDistanceY = Abs(iLastTactileFeedbackPos - iScroll);
+    TTouchLogicalFeedback feedbackType(ETouchFeedbackNone);
+    if (lastFeedbackDistanceY >= iTactileFeedbackDensity)
     {
-        CMIDControlItem& ci = ControlItem(i);
-        CMIDControlItem& first = ControlItem(0);
-        TBool visibility = RectPartiallyVisible(ci.Rect());
-        if (RectFullyVisible(first.Rect()))
+        if ((topEdgePos < formRect.iTl.iY)
+                && (bottomEdgePos > formRect.iBr.iY))
         {
-            firstOrLastItemReached = ETrue;
+            // If top (or bottom) edge of the content is outside
+            // of visible area of Form, do feedback every time.
+            feedbackType = ETouchFeedbackSensitiveList;
         }
-        if (i == count-1 && RectFullyVisible(ci.Rect()))
+        else if (iLastPointerEventType != TPointerEvent::EButton1Up)
         {
-            firstOrLastItemReached = ETrue;
+            // Begining or end of the content reached (i.e. top or bottom
+            // egde of the contont is now visible): feedback is given
+            // only if user do panning. No feedback, if touch release
+            // happened.
+            feedbackType = ETouchFeedbackSensitiveList;
         }
-        if (ci.GetVisibilityInForm() != visibility)
+        // Store the position of the content.
+        iLastTactileFeedbackPos = iScroll;
+    }
+
+    if (iFeedback && feedbackType != ETouchFeedbackNone)
+    {
+        if (iLastPointerEventType != TPointerEvent::EButton1Up)
         {
-            //item changed its visibility form invisible to visible
-            if (visibility && !firstOrLastItemReached)
-            {
-                iFeedback->InstantFeedback(ETouchFeedbackSensitiveList);
-                break;
-            }
+            iFeedback->EnableFeedbackForControl(this, ETrue, ETrue);
         }
+        else
+        {
+            // Disable audion feedback on flicking (i.e. user don't pan by
+            // touch input).
+            iFeedback->EnableFeedbackForControl(this, ETrue, EFalse);
+        }
+        // Do the feedback if needed.
+        iFeedback->InstantFeedback(this, feedbackType);
     }
 }
 #endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
+

@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt_uirobot.choicegroup;
@@ -31,12 +31,14 @@ import com.nokia.openlcdui.mt_uirobot.ItemUITestBase;
  * <br>
  * Created: 2008-11-04
  */
-public class ChoiceGroupCommandTest extends ItemUITestBase {
+public class ChoiceGroupCommandTest extends ItemUITestBase
+{
 
-	/**
+    /**
      * Constructor.
      */
-    public ChoiceGroupCommandTest() {
+    public ChoiceGroupCommandTest()
+    {
     }
 
     /**
@@ -45,40 +47,46 @@ public class ChoiceGroupCommandTest extends ItemUITestBase {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public ChoiceGroupCommandTest(String sTestName) {
+    public ChoiceGroupCommandTest(String sTestName)
+    {
         super(sTestName);
     }
 
-    public static Test suite() {
+    public static Test suite()
+    {
         TestSuite suite = new TestSuite();
 
         java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = ChoiceGroupCommandTest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new ChoiceGroupCommandTest((String)e.nextElement()));
-	    }
-        
+        // Add widget tests
+        methodNames = ChoiceGroupCommandTest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new ChoiceGroupCommandTest((String)e.nextElement()));
+        }
+
         return suite;
     }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testCommandsExclusive");
         methodNames.addElement("testCommandsMultiple");
         return methodNames;
     }
-    
-    public void runTest() throws Throwable {
-        if (getName().equals("testCommandsExclusive")) testChoiceGroupExclusiveCmds();
-        else if (getName().equals("testCommandsMultiple")) testChoiceGroupMultipleCmds();
+
+    public void runTest() throws Throwable
+    {
+        if(getName().equals("testCommandsExclusive")) testChoiceGroupExclusiveCmds();
+        else if(getName().equals("testCommandsMultiple")) testChoiceGroupMultipleCmds();
         else super.runTest();
     }
 
-    public void testChoiceGroupExclusiveCmds() {
+    public void testChoiceGroupExclusiveCmds()
+    {
         ChoiceGroup choiceGroup = new ChoiceGroup("Exclusive", Choice.EXCLUSIVE);
         choiceGroup.append("item1", null);
         choiceGroup.append("item2", null);
@@ -87,7 +95,8 @@ public class ChoiceGroupCommandTest extends ItemUITestBase {
         testCommand(choiceGroup);
     }
 
-    public void testChoiceGroupMultipleCmds() {
+    public void testChoiceGroupMultipleCmds()
+    {
         ChoiceGroup choiceGroup = new ChoiceGroup("Multiple", Choice.MULTIPLE);
         choiceGroup.append("item1", null);
         choiceGroup.append("item2", null);

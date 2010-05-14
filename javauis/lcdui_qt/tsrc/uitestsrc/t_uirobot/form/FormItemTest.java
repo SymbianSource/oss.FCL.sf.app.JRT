@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package t_uirobot.form;
@@ -33,13 +33,15 @@ import com.nokia.mj.impl.uitestutils.Key;
  * <br>
  * Created: 2008-11-12
  */
-public class FormItemTest extends ItemUITestBase {
+public class FormItemTest extends ItemUITestBase
+{
 
     /**
      * Constructor.
      */
-    public FormItemTest() {
-    	super();
+    public FormItemTest()
+    {
+        super();
     }
 
     /**
@@ -48,7 +50,8 @@ public class FormItemTest extends ItemUITestBase {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public FormItemTest(String sTestName, TestMethod rTestMethod) {
+    public FormItemTest(String sTestName, TestMethod rTestMethod)
+    {
         super(sTestName, rTestMethod);
     }
 
@@ -58,32 +61,39 @@ public class FormItemTest extends ItemUITestBase {
      *
      * @return New testsuite.
      */
-    public Test suite() {
+    public Test suite()
+    {
         TestSuite aSuite = new TestSuite();
 
         aSuite.addTest(new FormItemTest("testAppendItemAfterSetCurrent",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((FormItemTest) tc).testAppendItemAfterSetCurrent();
-                    }
-                }));
+                                        new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((FormItemTest) tc).testAppendItemAfterSetCurrent();
+            }
+        }));
 
         aSuite.addTest(new FormItemTest(
-                "testRemoveCommandFromLabeledFocusedItem",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((FormItemTest) tc).
-                        testRemoveCommandFromLabeledFocusedItem();
-                    }
-                }));
+                           "testRemoveCommandFromLabeledFocusedItem",
+                           new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((FormItemTest) tc).
+                testRemoveCommandFromLabeledFocusedItem();
+            }
+        }));
 
         aSuite.addTest(new FormItemTest(
-                "testAddRemoveItems",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((FormItemTest) tc).testAddRemoveItems();
-                    }
-                }));
+                           "testAddRemoveItems",
+                           new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((FormItemTest) tc).testAddRemoveItems();
+            }
+        }));
 
         /*
         aSuite.addTest(new FormItemTest("testRemoveItemsWhenBackground",
@@ -92,7 +102,7 @@ public class FormItemTest extends ItemUITestBase {
                         ((FormItemTest) tc).testRemoveItemsWhenBackground();
                     }
                 }));
-     */
+             */
 
         return aSuite;
     }
@@ -101,7 +111,8 @@ public class FormItemTest extends ItemUITestBase {
      * Tests to remove command from focused item which has label and
      * verifies that focus is moved to next/previous focusable item.
      */
-    public void testRemoveCommandFromLabeledFocusedItem() {
+    public void testRemoveCommandFromLabeledFocusedItem()
+    {
         StringItem button1 = new StringItem("label", "click!", Item.BUTTON);
         StringItem button2 = new StringItem("label", "click2!", Item.BUTTON);
 
@@ -140,7 +151,8 @@ public class FormItemTest extends ItemUITestBase {
     /**
      * Tests to add and remove items to/from form.
      */
-    public void testAddRemoveItems() {
+    public void testAddRemoveItems()
+    {
         Command ok1 = new Command("Ok1", "", Command.ITEM, 0);
         Command ok2 = new Command("Ok2", "", Command.ITEM, 0);
 
@@ -182,11 +194,12 @@ public class FormItemTest extends ItemUITestBase {
      * Tests to append item to form after form is set current. Then
      * verifies the focus transfer works.
      */
-    public void testAppendItemAfterSetCurrent() {
+    public void testAppendItemAfterSetCurrent()
+    {
         StringItem hyperlink = new StringItem("label", "url",
-                StringItem.HYPERLINK);
+                                              StringItem.HYPERLINK);
         StringItem button1 = new StringItem(null, "button1",
-                StringItem.BUTTON);
+                                            StringItem.BUTTON);
 
         Command dummyCommand = new Command("dummy", "", Command.ITEM, 0);
         button1.addCommand(dummyCommand);
@@ -218,9 +231,10 @@ public class FormItemTest extends ItemUITestBase {
     /**
      * Test that command are working properly in case of
      */
-    public void testRemoveItemsWhenBackground() {
-        Form forma = new Form ("Form A");
-        Form formb = new Form ("Form B");
+    public void testRemoveItemsWhenBackground()
+    {
+        Form forma = new Form("Form A");
+        Form formb = new Form("Form B");
         Command dummyCommand1 = new Command("dummy1", "", Command.ITEM, 0);
         Command dummyCommand2 = new Command("dummy2", "", Command.ITEM, 0);
         Command dummyCommand3 = new Command("dummy3", "", Command.ITEM, 0);

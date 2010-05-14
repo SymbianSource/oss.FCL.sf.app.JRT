@@ -42,6 +42,8 @@ using namespace Usif;
 
 IMPORT_C HBufC* CreateHBufCFromJavaStringLC(JNIEnv* aEnv, jstring aString);
 
+// String to be used for icon filenames when icon is not present.
+_LIT(KNoIconFilename, "");
 
 /*
  * Class:     com_nokia_mj_impl_installer_applicationregistrator_SifNotifier
@@ -61,13 +63,17 @@ JNIEXPORT jboolean JNICALL Java_com_nokia_mj_impl_installer_applicationregistrat
 void NotifyStartL(
     JNIEnv *aEnv, CPublishSifOperationInfo *aNotifier,
     jstring aGlobalComponentId, jstring aComponentName,
-    jobjectArray aApplicationNames, jint aComponentSize,
-    jstring aComponentIconPath)
+    jobjectArray aApplicationNames, jobjectArray aApplicationIcons,
+    jint aComponentSize, jstring aIconDir, jstring /*aComponentIcon*/)
 {
     __UHEAP_MARK;
     HBufC *globalComponentId = CreateHBufCFromJavaStringLC(aEnv, aGlobalComponentId);
     HBufC *componentName = CreateHBufCFromJavaStringLC(aEnv, aComponentName);
-    HBufC *componentIconPath = CreateHBufCFromJavaStringLC(aEnv, aComponentIconPath);
+    HBufC *iconDir = NULL;
+    if (NULL != aIconDir)
+    {
+        iconDir = CreateHBufCFromJavaStringLC(aEnv, aIconDir);
+    }
 
     RPointerArray<HBufC> applicationNames;
     CleanupResetAndDestroyPushL(applicationNames);
@@ -77,16 +83,39 @@ void NotifyStartL(
     TInt appsCount = aEnv->GetArrayLength(aApplicationNames);
     for (TInt i = 0; i < appsCount; i++)
     {
-        HBufC *appName = CreateHBufCFromJavaStringLC(
-                             aEnv, (jstring)aEnv->GetObjectArrayElement(aApplicationNames, i));
+        HBufC *appName =
+            CreateHBufCFromJavaStringLC(
+                aEnv, (jstring)aEnv->GetObjectArrayElement(aApplicationNames, i));
         applicationNames.AppendL(appName);
         CleanupStack::Pop(appName);
     }
+    if (NULL != aApplicationIcons)
+    {
+        appsCount = aEnv->GetArrayLength(aApplicationIcons);
+        for (TInt i = 0; i < appsCount; i++)
+        {
+            jstring tmpAppIcon =
+                (jstring)aEnv->GetObjectArrayElement(aApplicationIcons, i);
+            if (NULL != tmpAppIcon)
+            {
+                HBufC *appIcon = CreateHBufCFromJavaStringLC(aEnv, tmpAppIcon);
+                applicationIcons.AppendL(appIcon);
+                CleanupStack::Pop(appIcon);
+            }
+            else
+            {
+                // Add a string indicating that icon is not available
+                // for this application.
+                applicationIcons.AppendL(KNoIconFilename().AllocL());
+            }
+        }
+    }
 
-    CSifOperationStartData *startData = CSifOperationStartData::NewLC(
-                                            *globalComponentId, *componentName, applicationNames, applicationIcons,
-                                            aComponentSize, /*aIconPath=*/ *componentIconPath,
-                                            /*aComponentIcon=*/ KNullDesC(), Usif::KSoftwareTypeJava);
+    CSifOperationStartData *startData =
+        CSifOperationStartData::NewLC(
+            *globalComponentId, *componentName, applicationNames, applicationIcons,
+            aComponentSize, /*aIconPath=*/ (NULL != aIconDir? *iconDir: KNullDesC()),
+            /*aComponentIcon=*/ KNullDesC(), Usif::KSoftwareTypeJava);
 
     User::LeaveIfError(aNotifier->PublishStart(*startData));
 
@@ -95,7 +124,10 @@ void NotifyStartL(
     CleanupStack::PopAndDestroy(&applicationIcons);
     CleanupStack::PopAndDestroy(&applicationNames);
 
-    CleanupStack::PopAndDestroy(componentIconPath);
+    if (NULL != aIconDir)
+    {
+        CleanupStack::PopAndDestroy(iconDir);
+    }
     CleanupStack::PopAndDestroy(componentName);
     CleanupStack::PopAndDestroy(globalComponentId);
     __UHEAP_MARKEND;
@@ -108,14 +140,15 @@ void NotifyStartL(
  */
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifNotifier__1notifyStart
 (JNIEnv *aEnv, jclass, jint aHandle, jstring aGlobalComponentId,
- jstring aComponentName, jobjectArray aApplicationNames, jint aComponentSize,
- jstring aComponentIconPath)
+ jstring aComponentName, jobjectArray aApplicationNames,
+ jobjectArray aApplicationIcons, jint aComponentSize,
+ jstring aIconDir, jstring aComponentIcon)
 {
     CPublishSifOperationInfo *pNotifier =
         reinterpret_cast<CPublishSifOperationInfo*>(aHandle<<2);
     TRAPD(err, NotifyStartL(aEnv, pNotifier, aGlobalComponentId, aComponentName,
-                            aApplicationNames, aComponentSize,
-                            aComponentIconPath));
+                            aApplicationNames, aApplicationIcons,
+                            aComponentSize, aIconDir, aComponentIcon));
     return err;
 }
 
@@ -272,7 +305,7 @@ JNIEXPORT jboolean JNICALL Java_com_nokia_mj_impl_installer_applicationregistrat
  * Signature: (IILjava/lang/String;Ljava/lang/String;[Ljava/lang/String;I)I
  */
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifNotifier__1notifyStart
-(JNIEnv *, jclass, jint, jstring, jstring, jobjectArray, jint, jstring)
+(JNIEnv *, jclass, jint, jstring, jstring, jobjectArray, jobjectArray, jint, jstring, jstring)
 {
     LOG(EJavaInstaller, EInfo, "SifNotifier.notifyStart");
     return KErrNone;
@@ -286,6 +319,8 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifNotifier__1notifyEnd
 (JNIEnv *, jclass, jint, jstring, jint aErrCategory, jint aErrCode, jstring, jstring)
 {
+    (void)aErrCategory; // suppress compilation warning about unused argument
+    (void)aErrCode; // suppress compilation warning about unused argument
     LOG2(EJavaInstaller, EInfo,
          "SifNotifier.notifyEnd: errCategory=%d, errCode=%d",
          aErrCategory, aErrCode);
@@ -301,6 +336,10 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
 (JNIEnv *, jclass, jint, jstring,
  jint aOperation, jint aSubOperation, jint aCurrent, jint aTotal)
 {
+    (void)aOperation; // suppress compilation warning about unused argument
+    (void)aSubOperation; // suppress compilation warning about unused argument
+    (void)aCurrent; // suppress compilation warning about unused argument
+    (void)aTotal; // suppress compilation warning about unused argument
     LOG4(EJavaInstaller, EInfo,
          "SifNotifier.notifyProgress: op=%d, subop=%d, current=%d, total=%d",
          aOperation, aSubOperation, aCurrent, aTotal);

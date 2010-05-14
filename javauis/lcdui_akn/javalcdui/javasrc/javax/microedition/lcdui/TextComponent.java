@@ -84,11 +84,12 @@ final class TextComponent
             final int modifier = (aConstraints & ~TextField.CONSTRAINT_MASK);
             if (modifier == 0 || (modifier >= 0x10000 && modifier <= 0x3F0000))
                 return;
+            else
+                throw new IllegalArgumentException();
         }
         default:
-            break;
+            throw new IllegalArgumentException();
         }
-        throw new IllegalArgumentException();
     }
 
 } // class TextComponent

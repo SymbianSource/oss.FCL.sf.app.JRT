@@ -42,6 +42,13 @@ void CSwtBrowserContainer::ConstructL(CCoeControl* aParent)
     // Required by the Browser control. WSERV:43 raised if not provided.
     Window().AllocPointerMoveBuffer(256, 0);
     Window().DisablePointerMoveBuffer();
+    EnableDragEvents();
+#ifdef RD_JAVA_S60_RELEASE_9_2
+#ifndef __WINSCW__
+    Window().EnableAdvancedPointers();
+#endif
+#endif // RD_JAVA_S60_RELEASE_9_2
+    ActivateL();
 }
 
 void CSwtBrowserContainer::FocusChanged(TDrawNow aDrawNow)
@@ -53,14 +60,31 @@ void CSwtBrowserContainer::FocusChanged(TDrawNow aDrawNow)
 #ifdef RD_SCALABLE_UI_V2
 void CSwtBrowserContainer::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 {
-    // From CSwtBrowserContainer coordinates to parent Shell coordinates
-    TPointerEvent event(aPointerEvent);
-    event.iPosition += iApiProvider.Rect().iTl;
+    // Capturing the pointer improves considerably the frequency of drag events
+    // and the usability of the pinch zooming. It also shortens the route of
+    // the event back to the browser.
+    MSwtUiUtils& utils = iApiProvider.Display().UiUtils();
+    MSwtControl* prevCapturingCtrl = utils.PointerCaptureControl();
+    utils.SetPointerCaptureControl(&iApiProvider);
 
-    // Forward to Shell which will forward to CSwtBrowser. If not done this way,
-    // CSwtBrowser will not get focused meaning users being unable to use the websites!
-    MSwtShell& shell = iApiProvider.GetShell();
-    shell.Control()->CoeControl().HandlePointerEventL(event);
+    MSwtControl* shell = iApiProvider.GetShell().Control();
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    if (aPointerEvent.AdvancedPointerEvent())
+    {
+        TAdvancedPointerEvent event = *(static_cast<const TAdvancedPointerEvent *>(&aPointerEvent));
+        event.iPosition += iApiProvider.Rect().iTl;
+        shell->HandlePointerEventL(event);
+    }
+    else
+#endif
+    {
+        TPointerEvent event = *(static_cast<const TPointerEvent *>(&aPointerEvent));
+        event.iPosition += iApiProvider.Rect().iTl;
+        shell->HandlePointerEventL(event);
+    }
+
+    utils.SetPointerCaptureControl(prevCapturingCtrl);
 }
 #endif
 

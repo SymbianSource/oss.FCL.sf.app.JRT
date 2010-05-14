@@ -27,9 +27,6 @@ import java.util.Date;
 /**
  * OtaStatusNotification contains information of one Ota status
  * notification that needs to be sent.
- *
- * @author Nokia Corporation
- * @version $Rev: 9041 $ $Date: 2009-12-07 18:36:08 +0200 (Mon, 07 Dec 2009) $
  */
 public class OtaStatusNotification
 {

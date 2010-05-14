@@ -19,9 +19,9 @@
 #include <data_caging_path_literals.hrh>
 #include <AknsDrawUtils.h>
 #include <AknUtils.h>
-#ifdef RD_JAVA_UI_ALFDRAWER_ENABLED
+#ifdef RD_JAVA_S60_RELEASE_9_2
 #include <alf/alfdrawer.h>
-#endif // RD_JAVA_UI_ALFDRAWER_ENABLED
+#endif // RD_JAVA_S60_RELEASE_9_2
 
 #include "startscreencontainer.h"
 #include "startscreen.h"
@@ -49,8 +49,13 @@ CStartScreenContainer::~CStartScreenContainer()
 {
     JELOG2(EJavaUI);
 
-    if (HidesIndicators())
-        ShowIndicators(ETrue);
+    if (!mAppUi.destroying()) 
+    {
+        if (HidesIndicators())
+        {
+            ShowIndicators(ETrue);
+        }
+    }
 
     mFader.FadeBehindPopup(this, this, EFalse);
     mAppUi.RemoveFromStack(this);
@@ -231,7 +236,11 @@ void CStartScreenContainer::HideL()
 
 TBool CStartScreenContainer::HidesIndicators() const
 {
+#ifdef RD_JAVA_S60_RELEASE_9_2
     return (mStartScreen && mStartScreen->Type() == CStartScreen::EStartScreenAutomatic);
+#else
+    return EFalse;
+#endif
 }
 
 void CStartScreenContainer::Draw(const TRect& aRect) const
@@ -309,6 +318,7 @@ void CStartScreenContainer::ConstructL()
     JELOG2(EJavaUI);
 
     mStartScreenTimer = CStartScreenTimer::NewL(*this);
+    mStartScreenTimer->Start();
 
     CreateWindowL();
     SetMopParent(&mAppUi);

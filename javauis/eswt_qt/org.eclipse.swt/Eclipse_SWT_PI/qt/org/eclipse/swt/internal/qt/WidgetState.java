@@ -56,4 +56,7 @@ public static final int FOLLOWS_SYSLANG_DIRECTION = 1<<28;
 
 // If extension functionality is enabled
 public static final int IS_EXTENDED = 1<<29;
+
+// The widget is internal widget.
+public static final int INTERNAL = 1<<30;
 }

@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -19,7 +19,8 @@ package javax.microedition.lcdui;
 /**
  * Class containing static constants for OpenLCDUI.
  */
-final class Config {
+final class Config
+{
 
     static final int DISPLAYABLE_DIALOGSHELL_HEIGHT_DISPLACEMENT = 10;
 
@@ -99,7 +100,8 @@ final class Config {
     static final int TICKER_DISPLAY_TIME = 7000;
 
 
-    private Config() {
+    private Config()
+    {
         super();
     }
 

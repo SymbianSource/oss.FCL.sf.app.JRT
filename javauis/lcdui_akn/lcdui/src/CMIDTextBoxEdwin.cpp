@@ -179,12 +179,9 @@ void CMIDTextBoxEdwin::GetCaptionForFep(TDes& aCaption) const
 }
 
 
-void CMIDTextBoxEdwin::AddCommandsToEdwinL(RPointerArray<MMIDCommand>& aArray)
+void CMIDTextBoxEdwin::AddCommandToEdwinL(MMIDCommand& aCommand)
 {
-    for (TInt i = 0; i < aArray.Count(); i++)
-    {
-        STATIC_CAST(CMIDDisplayable*, iDisplayable)->AddCommandL(aArray[i]);
-    }
+    STATIC_CAST(CMIDDisplayable*, iDisplayable)->AddCommandL(&aCommand);
 }
 
 // ---------------------------------------------------------

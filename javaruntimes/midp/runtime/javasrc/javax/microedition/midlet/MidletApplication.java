@@ -24,8 +24,6 @@ import com.nokia.mj.impl.rt.midp.MidletApplicationBase;
  * A package private class in javax.microedition.midlet package for
  * accessing protected abstract methods of MIDlet class.
  * @see com.nokia.mj.impl.rt.midp.MidletApplicationBase.
- * @author Nokia Corporation
- * @version $Rev$
  */
 final class MidletApplication extends MidletApplicationBase
 {

@@ -1205,7 +1205,7 @@ void CSwtLabel::SetFontL(const MSwtFont* aFont)
         const CFont& font = (swtFont->Font());
         DoSetFontL(&font);
     }
-    
+
     Redraw();
 }
 

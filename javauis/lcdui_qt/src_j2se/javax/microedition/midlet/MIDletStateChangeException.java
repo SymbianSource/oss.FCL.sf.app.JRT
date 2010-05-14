@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 
@@ -19,12 +19,15 @@ package javax.microedition.midlet;
 
 import java.lang.Exception;
 
-public class MIDletStateChangeException extends Exception {
-    public MIDletStateChangeException() {
+public class MIDletStateChangeException extends Exception
+{
+    public MIDletStateChangeException()
+    {
         super();
     }
-    
-    public MIDletStateChangeException(String s) {
+
+    public MIDletStateChangeException(String s)
+    {
         super(s);
     }
 }

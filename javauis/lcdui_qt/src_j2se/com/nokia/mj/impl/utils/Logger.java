@@ -61,7 +61,7 @@ public final class Logger
     public static final int EJavaContactless    = 28;
     public static final int EJavaConverters     = 29;
     public static final int EMidp2CenrepWrapper = 30;
-    public static final int EJavawebservices    = 31;    
+    public static final int EJavawebservices    = 31;
     // add name of new components here
 
 
@@ -69,7 +69,8 @@ public final class Logger
     //    list of component's logger enablers
     // -----------------------------------------------------
 
-    public static final boolean Activated[] = {
+    public static final boolean Activated[] =
+    {
 
         false,  //undefined
         false,  //EJavaCaptain       = 1;
@@ -142,9 +143,10 @@ public final class Logger
      * @param level id level of tracing information (EInfo, EInfoHEavyLoad, EError, EWarning)
      * @param str emiting information
      */
-    public static void LOG(int component, int level, String str) {
+    public static void LOG(int component, int level, String str)
+    {
 
-        if (Activated[component])
+        if(Activated[component])
             _logging(component, level, str);
     }
 
@@ -156,9 +158,11 @@ public final class Logger
      * @param str emiting information
      * @param thrown exception object
      */
-    public static void LOG(int component, int level, String str, Throwable thrown) {
+    public static void LOG(int component, int level, String str, Throwable thrown)
+    {
 
-        if (Activated[component]) {
+        if(Activated[component])
+        {
 
             ByteArrayOutputStream byte_stream = new ByteArrayOutputStream();
             PrintStream print_stream = new PrintStream(byte_stream);
@@ -172,7 +176,8 @@ public final class Logger
      * @param component a unique id of component
      * @param str emiting information
      */
-    public static void ELOG(int component, String str) {
+    public static void ELOG(int component, String str)
+    {
 
         _logging(component, EError, str);
     }
@@ -183,7 +188,8 @@ public final class Logger
      * @param str emiting information
      * @param thrown exception object
      */
-    public static void ELOG(int component, String str, Throwable thrown) {
+    public static void ELOG(int component, String str, Throwable thrown)
+    {
 
         ByteArrayOutputStream byte_stream = new ByteArrayOutputStream();
         PrintStream print_stream = new PrintStream(byte_stream);
@@ -197,7 +203,8 @@ public final class Logger
      * @param component a unique id of component
      * @param str emiting information
      */
-    public static void WLOG(int component, String str) {
+    public static void WLOG(int component, String str)
+    {
         _logging(component, EWarning, str);
     }
 
@@ -207,7 +214,8 @@ public final class Logger
      * @param str emiting information
      * @param thrown exception object
      */
-    public static void WLOG(int component, String str, Throwable thrown) {
+    public static void WLOG(int component, String str, Throwable thrown)
+    {
 
         ByteArrayOutputStream byte_stream = new ByteArrayOutputStream();
         PrintStream print_stream = new PrintStream(byte_stream);
@@ -216,12 +224,14 @@ public final class Logger
     }
 
 
-    private static void _logging(int component, int level, String str) {
+    private static void _logging(int component, int level, String str)
+    {
         System.out.println(str);
     }
 
     private static void _loggingException(int component, int level, String str, Throwable thrown,
-                                                 ByteArrayOutputStream byte_stream, PrintStream print_stream) {
+                                          ByteArrayOutputStream byte_stream, PrintStream print_stream)
+    {
         System.out.println(str+" "+thrown.toString());
     }
 

@@ -45,7 +45,6 @@ class CCTKeyInfo;
 class CX500DistinguishedName;
 class CX520AttributeTypeAndValue;
 class CPKCS10Request;
-class MPKIDialog;
 class CCMSIssuerAndSerialNumber;
 using namespace java::util;
 

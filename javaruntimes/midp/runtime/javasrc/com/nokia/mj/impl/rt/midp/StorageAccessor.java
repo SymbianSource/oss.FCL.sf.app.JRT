@@ -34,9 +34,6 @@ import com.nokia.mj.impl.utils.Uid;
  * created in setMidletStartArguments() is reused in setMidletAttributes()
  * method and then closed. If this scenario changes, then the close must
  * be done also in setMidletStartArguments() method.
- *
- * @author Nokia Corporation
- * @version $Rev$
  */
 final class StorageAccessor
 {

@@ -94,10 +94,7 @@ final class Toolkit
 
     // NGA specific change
     private int iFlags = FLAG_NONE;
-
-    // Splash screen specific
-    private boolean iFirstPaint = true;
-
+    
     //
     // Event source : must keep in sync with TSourceType in lcdui.h
     //
@@ -148,10 +145,7 @@ final class Toolkit
     // NGA specific change.
     // Op code indicating M3G content start
     private static final int M3G_CONTENT_START = 2;
-
-    // Splash screen specific.
-    private static final int SYNC_FIRST_PAINT = 3;
-
+    
     Toolkit(ToolkitInvoker aInvoker)
     {
         iInvoker     = aInvoker;
@@ -666,13 +660,6 @@ final class Toolkit
             final int y2=aY+aH;
             iBuffer.write(aDrawable, SYNC_RECT, aX, aY, x2, y2);
             iBuffer.sync();
-
-            if (iFirstPaint)
-            {
-                iFirstPaint = false;
-                iBuffer.write(aDrawable, SYNC_FIRST_PAINT);
-                iBuffer.sync();
-            }
         }
     }
 

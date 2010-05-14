@@ -21,6 +21,7 @@
 #include <appversion.h>
 #include "javaregconverter.h"
 #include "javaregproperty.h"
+#include "javasymbianoslayer.h"
 #include "logger.h"
 
 using namespace Java::Manager::Registry;
@@ -262,6 +263,7 @@ void JavaRegConverter::GetUnicodeDescriptorsL(
     const TDesC& aValue,
     RPointerArray<HBufC>& aDescriptors)
 {
+    CleanupResetAndDestroyPushL(aDescriptors); // If method leaves this will clean leaked memory
     TInt32 count;
 
     HBufC8* buf = HBufC8::NewLC(aValue.Length());
@@ -283,6 +285,7 @@ void JavaRegConverter::GetUnicodeDescriptorsL(
 
     CleanupStack::PopAndDestroy(&stream);
     CleanupStack::PopAndDestroy(buf);
+    CleanupStack::Pop(&aDescriptors);
 }
 
 // ---------------------------------------------------------------------------

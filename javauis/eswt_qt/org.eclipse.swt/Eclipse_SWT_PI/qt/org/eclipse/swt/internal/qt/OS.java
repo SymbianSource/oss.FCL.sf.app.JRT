@@ -1638,12 +1638,9 @@ public final class OS {
     //
     public static final native int QChar_direction(char c);
 
-
     //
     // SwtFontCache
     //
-
-
 
     /**
      * Ensures the font or another equal font is in the font cache and returns a
@@ -1667,16 +1664,14 @@ public final class OS {
      */
     public static final native boolean SwtFontCache_isCached(int handle);
 
-
     //
     // QInputContextFactory
     //
     public static final native int QInputContextFactory_create(String key, int parent);
     public static final native String QInputContextFactory_swt_key(String language );
 
-    
     //
-    //MobileDevice, Screen, Input
+    // MobileDevice, Screen, Input
     //
     public static final native int MobileDevice_new();
     public static final native void MobileDevice_createFlipWatch(int handle);
@@ -1689,7 +1684,6 @@ public final class OS {
     public static final native int getScreenDeviceNumber();
     public static final native int getColorDepth();
     public static final native int getHwInputs();
-   
     
     //
     // SwtApplication
@@ -1728,7 +1722,6 @@ public final class OS {
     // CntServicesContactList
     //
     public static final native String[] CntServicesContactList_swt_contacts(int handle);
-    
 
     //
     // Other

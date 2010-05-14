@@ -170,13 +170,16 @@ EXPORT_C void ASwtControlBase::Draw(CWindowGc& aGc, const CCoeControl& aControl,
         clippingRegion = SetupChildClippingRegion(composite, aGc, aRect);
     }
 
+    TBool isDialogShell = IsShell() && iParent;
+    TBool isTaskTip = isDialogShell && ShellInterface()->IsTaskTip();
+
     // Draw the background.
     if (!IsDefaultBackgroundUse()
 #ifdef RD_JAVA_S60_RELEASE_9_2
-        // Fill the round corners
-        || (IsShell() && iParent)
+            // Fill the round corners
+            || (isDialogShell && !isTaskTip)
 #endif // RD_JAVA_S60_RELEASE_9_2
-        )
+       )
     {
         aGc.SetBrushColor(GetBackground());
         aGc.Clear(aRect);
@@ -227,9 +230,11 @@ EXPORT_C TRect ASwtControlBase::ClientRect() const
 TBool ASwtControlBase::HasBorderStyle() const
 {
     TBool res = (iStyle & KSwtStyleBorder);
-    if (IsShell())
+    const MSwtShell* shell = ShellInterface();
+    if (shell)
     {
-        res = res && (!(iStyle & KSwtStyleNoTrim) && iParent);
+        // TaskTip shells have the border.
+        res = shell->IsTaskTip() || (res && !(iStyle & KSwtStyleNoTrim) && iParent);
     }
     return res;
 }

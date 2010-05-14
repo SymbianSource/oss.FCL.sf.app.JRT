@@ -29,3 +29,4 @@ RESOURCE RSS_SIGNATURE { }
 // ------------------------------------------------------
 
 RESOURCE TBUF r_java_secur_cert_disabling { buf=qtn_java_secur_cert_disabling; }
+RESOURCE TBUF r_java_secur_cert_deleting { buf=qtn_java_secur_cert_deleting; }

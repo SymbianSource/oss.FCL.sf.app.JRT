@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt.spacer;
@@ -31,7 +31,8 @@ import com.nokia.openlcdui.mt.SWTTestCase;
  *
  * @created 1.8.2008
  */
-public class SpacerTest extends SWTTestCase {
+public class SpacerTest extends SWTTestCase
+{
 
     private static final int WIDTH = 100;
     private static final int HEIGHT = 100;
@@ -39,7 +40,8 @@ public class SpacerTest extends SWTTestCase {
     /**
      * Constructor.
      */
-    public SpacerTest() {
+    public SpacerTest()
+    {
     }
 
     /**
@@ -48,14 +50,16 @@ public class SpacerTest extends SWTTestCase {
      * @param sTestName name of the test
      * @param rTestMethod TestMethod used
      */
-    public SpacerTest(String sTestName) {
+    public SpacerTest(String sTestName)
+    {
         super(sTestName);
     }
 
     /**
      * Any pre-test setup can be done here
      */
-    protected void setUp() throws Exception {
+    protected void setUp() throws Exception
+    {
     }
 
     /**
@@ -64,77 +68,92 @@ public class SpacerTest extends SWTTestCase {
      *
      * @return New TestSuite.
      */
-    public static Test suite() {
-		TestSuite suite = new TestSuite();
+    public static Test suite()
+    {
+        TestSuite suite = new TestSuite();
 
-	    java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Vector methodNames;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = SpacerTest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new SpacerTest((String)e.nextElement()));
-	    }
+        // Add widget tests
+        methodNames = SpacerTest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new SpacerTest((String)e.nextElement()));
+        }
 
-		return suite;
-	}
+        return suite;
+    }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testAccessors");
         return methodNames;
     }
-    
-    protected void runTest() throws Throwable {
-        if (getName().equals("testAccessors")) testAccessors();
+
+    protected void runTest() throws Throwable
+    {
+        if(getName().equals("testAccessors")) testAccessors();
         else super.runTest();
     }
 
     /**
      * Test method.
      */
-    public void testAccessors() {
+    public void testAccessors()
+    {
         Spacer spacer;
 
-        try {
+        try
+        {
             spacer = new Spacer(-1, -1);
             fail("no IllegalArgumentException is thrown when parameters are"
-                    + " incorrect in constructor");
+                 + " incorrect in constructor");
         }
-        catch (IllegalArgumentException e) {
+        catch(IllegalArgumentException e)
+        {
             //OK
         }
         spacer = new Spacer(WIDTH, HEIGHT);
         Command ok = new Command("Ok", "", Command.ITEM, 0);
-        try {
+        try
+        {
             spacer.addCommand(ok);
             fail("no IllegalStateException is thrown when adding command");
         }
-        catch (IllegalStateException e) {
+        catch(IllegalStateException e)
+        {
             //OK
         }
-        try {
+        try
+        {
             spacer.setDefaultCommand(ok);
             fail("no IllegalStateException is thrown when setting default "
-                    + " command");
+                 + " command");
         }
-        catch (IllegalStateException e) {
+        catch(IllegalStateException e)
+        {
             //OK
         }
-        try {
+        try
+        {
             spacer.setLabel("some label");
             fail("no IllegalStateException is thrown when setting label");
         }
-        catch (IllegalStateException e) {
+        catch(IllegalStateException e)
+        {
             //OK
         }
-        try {
+        try
+        {
             spacer.setMinimumSize(-1, -1);
             fail("no IllegalArgumentException is thrown when setting minimum "
-                    + "size less then 0");
+                 + "size less then 0");
         }
-        catch (IllegalArgumentException e) {
+        catch(IllegalArgumentException e)
+        {
             //OK
         }
     }

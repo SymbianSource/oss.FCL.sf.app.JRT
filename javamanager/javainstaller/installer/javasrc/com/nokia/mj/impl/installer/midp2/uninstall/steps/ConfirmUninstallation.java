@@ -38,9 +38,6 @@ import java.util.jar.JarEntry;
 
 /**
  * ConfirmUninstallation shows uninstallation confirmation dialog to user.
- *
- * @author Nokia Corporation
- * @version $Rev:  $ $Date:  $
  */
 public class ConfirmUninstallation extends ExeStep
 {

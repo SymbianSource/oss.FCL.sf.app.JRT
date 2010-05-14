@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -29,7 +29,8 @@ import org.eclipse.swt.widgets.*;
  * Dynamic Text component implementation over the TextExtension/ConstrainedText
  * widgets as a wrapper.
  */
-class TextWrapper {
+class TextWrapper
+{
 
     private String text;
     private String inputMode;
@@ -65,7 +66,8 @@ class TextWrapper {
      * @param aMaxSize
      * @param aConstraints
      */
-    TextWrapper(String aText, int aMaxSize, int aConstraints) {
+    TextWrapper(String aText, int aMaxSize, int aConstraints)
+    {
         setMaxSize(aMaxSize);
         setConstraints(aConstraints);
         setContent(aText);
@@ -77,9 +79,12 @@ class TextWrapper {
      * @param parent composite to create on
      * @param addStyle additional style
      */
-    void construct(final Composite parent, final int addStyle) {
-        ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-            public void run() {
+    void construct(final Composite parent, final int addStyle)
+    {
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        {
+            public void run()
+            {
                 eswtConstruct(parent, addStyle);
             }
         });
@@ -91,13 +96,16 @@ class TextWrapper {
      * @param parent composite to create on
      * @param addStyle additional style
      */
-    void eswtConstruct(Composite parent, int addStyle) {
+    void eswtConstruct(Composite parent, int addStyle)
+    {
         style = addStyle | SWT.MULTI | SWT.WRAP;
-        if (parent != null) {
+        if(parent != null)
+        {
             eswtStoreStateAndDispose();
             eswtRestoreStateAndCreate(parent);
         }
-        else {
+        else
+        {
             Logger.warning("Trying to construct TextWrapper with null parent");
         }
     }
@@ -108,10 +116,12 @@ class TextWrapper {
      * @param offset
      * @param length
      */
-    void delete(int offset, int length) {
-        if ((offset + length) > getSize()) {
+    void delete(int offset, int length)
+    {
+        if((offset + length) > getSize())
+        {
             throw new StringIndexOutOfBoundsException(
-                    MsgRepository.TEXT_EXCEPTION_ARRAY_INDEX_OUT_OF_BOUNDS);
+                MsgRepository.TEXT_EXCEPTION_ARRAY_INDEX_OUT_OF_BOUNDS);
         }
         StringBuffer sb = new StringBuffer(getContent());
         sb.delete(offset, offset + length);
@@ -121,10 +131,14 @@ class TextWrapper {
     /**
      * Dispose eSWT control.
      */
-    void dispose() {
-        if (control != null) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+    void dispose()
+    {
+        if(control != null)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     eswtStoreStateAndDispose();
                 }
             });
@@ -134,10 +148,14 @@ class TextWrapper {
     /**
      * Get caret position.
      */
-    int getCaretPosition() {
-        if (control != null) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+    int getCaretPosition()
+    {
+        if(control != null)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     caret = eswtGetCaretPosition(control);
                 }
             });
@@ -148,17 +166,22 @@ class TextWrapper {
     /**
      * Get constraints.
      */
-    int getConstraints() {
+    int getConstraints()
+    {
         return constraints;
     }
 
     /**
      * Get text content.
      */
-    String getContent() {
-        if (control != null) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+    String getContent()
+    {
+        if(control != null)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     text = eswtGetContent(control);
                 }
             });
@@ -169,25 +192,31 @@ class TextWrapper {
     /**
      * Gets the height of this Text control in pixels.
      */
-    int getHeight() {
+    int getHeight()
+    {
         return height;
     }
 
     /**
      * Get input mode.
      */
-    String getInputMode() {
+    String getInputMode()
+    {
         return inputMode;
     }
 
     /**
      * Get line count.
      */
-    int getLineCount() {
+    int getLineCount()
+    {
         retLineCount = 1;
-        if (control != null) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+        if(control != null)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     retLineCount = eswtGetLineCount(control);
                 }
             });
@@ -198,11 +227,15 @@ class TextWrapper {
     /**
      * Get line height (in pixels).
      */
-    int getLineHeight() {
+    int getLineHeight()
+    {
         retLineHeight = 1;
-        if (control != null) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+        if(control != null)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     retLineHeight = eswtGetLineHeight(control);
                 }
             });
@@ -213,10 +246,14 @@ class TextWrapper {
     /**
      * Get maximum size (in characters).
      */
-    int getMaxSize() {
-        if (control != null) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+    int getMaxSize()
+    {
+        if(control != null)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     maxSize = eswtGetMaxSize(control);
                 }
             });
@@ -229,20 +266,25 @@ class TextWrapper {
      *
      * @param maxVisibleLines maximum visible lines
      */
-    int getPreferredHeight(int maxVisibleLines) {
+    int getPreferredHeight(int maxVisibleLines)
+    {
         // lineCount (1 .. max) * lineHeight
         return Math.min(Math.max(1, getLineCount()), maxVisibleLines)
-                * getLineHeight();
+               * getLineHeight();
     }
 
     /**
      * Get selected text content.
      */
-    String getSelectedContent() {
+    String getSelectedContent()
+    {
         retSelectedStr = "";
-        if (control != null) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+        if(control != null)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     retSelectedStr = eswtGetSelectedContent(control);
                 }
             });
@@ -253,10 +295,14 @@ class TextWrapper {
     /**
      * Get content's length.
      */
-    int getSize() {
-        if (control != null) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+    int getSize()
+    {
+        if(control != null)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     size = eswtGetSize(control);
                 }
             });
@@ -267,12 +313,17 @@ class TextWrapper {
     /**
      * Get visible top pixel position relative to whole content.
      */
-    int getTopPixelPosition() {
+    int getTopPixelPosition()
+    {
         retTopPixel = 0;
-        if (control != null) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
-                    if (control instanceof TextExtension) {
+        if(control != null)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
+                    if(control instanceof TextExtension)
+                    {
                         retTopPixel = ((TextExtension) control).getTopPixel();
                     }
                     // ConstrainedText does not scroll -> value is 0
@@ -285,7 +336,8 @@ class TextWrapper {
     /**
      * Gets the width of this Text control (in pixels).
      */
-    int getWidth() {
+    int getWidth()
+    {
         return width;
     }
 
@@ -295,19 +347,24 @@ class TextWrapper {
      * @param aText text
      * @param aPosition position where to instert
      */
-    void insert(String aText, int aPosition) {
-        if (aText == null) {
+    void insert(String aText, int aPosition)
+    {
+        if(aText == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.TEXT_EXCEPTION_TXT_IS_NULL);
+                MsgRepository.TEXT_EXCEPTION_TXT_IS_NULL);
         }
         StringBuffer sb = new StringBuffer(getContent());
-        if (aPosition < 0) {
+        if(aPosition < 0)
+        {
             sb.insert(0, aText);
         }
-        else if (aPosition > sb.length()) {
+        else if(aPosition > sb.length())
+        {
             sb.append(aText);
         }
-        else {
+        else
+        {
             sb.insert(aPosition, aText);
         }
         setContent(sb.toString());
@@ -321,15 +378,19 @@ class TextWrapper {
      * @param green color component
      * @param blue color component
      */
-    void setBackgroundColor(final int alpha, final int red, final int green, final int blue) {
-        ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-            public void run() {
-                if (bgCol != null) {
+    void setBackgroundColor(final int alpha, final int red, final int green, final int blue)
+    {
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        {
+            public void run()
+            {
+                if(bgCol != null)
+                {
                     bgCol.dispose();
                     bgCol = null;
                 }
                 bgCol = new Color(ESWTUIThreadRunner.getInstance().getDisplay(),
-                        red, green, blue);
+                                  red, green, blue);
             }
         });
     }
@@ -339,18 +400,23 @@ class TextWrapper {
      *
      * @param aBounds bounding rectangle
      */
-    void setBounds(Rectangle aBounds) {
-        if (aBounds.width < 0 || aBounds.height < 0) {
+    void setBounds(Rectangle aBounds)
+    {
+        if(aBounds.width < 0 || aBounds.height < 0)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.TEXT_EXCEPTION_INVALID_SIZE);
+                MsgRepository.TEXT_EXCEPTION_INVALID_SIZE);
         }
         x = aBounds.x;
         y = aBounds.y;
         width = aBounds.width;
         height = aBounds.height;
-        if (control != null && width >= 0 && height >= 0) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+        if(control != null && width >= 0 && height >= 0)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     control.setBounds(x, y, width, height);
                 }
             });
@@ -362,11 +428,15 @@ class TextWrapper {
      *
      * @param aPosition position
      */
-    void setCaretposition(int aPosition) {
+    void setCaretposition(int aPosition)
+    {
         caret = aPosition;
-        if (control != null) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+        if(control != null)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     eswtSetSelection(control, caret, caret);
                 }
             });
@@ -378,15 +448,20 @@ class TextWrapper {
      *
      * @param aConstraints text input constraints
      */
-    void setConstraints(int aConstraints) {
-        if (!isValidConstraints(aConstraints)) {
+    void setConstraints(int aConstraints)
+    {
+        if(!isValidConstraints(aConstraints))
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.TEXT_EXCEPTION_INVALID_CONSTRAINTS);
+                MsgRepository.TEXT_EXCEPTION_INVALID_CONSTRAINTS);
         }
         constraints = aConstraints;
-        if (control != null) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+        if(control != null)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     eswtRestoreStateAndCreate(eswtStoreStateAndDispose());
                 }
             });
@@ -398,26 +473,34 @@ class TextWrapper {
      *
      * @param aText new content
      */
-    void setContent(String aText) {
-        if (aText == null) {
+    void setContent(String aText)
+    {
+        if(aText == null)
+        {
             text = "";
         }
-        else {
-            if (aText.length() > maxSize) {
+        else
+        {
+            if(aText.length() > maxSize)
+            {
                 throw new IllegalArgumentException(
-                        MsgRepository.TEXT_EXCEPTION_MAX_SIZE_EXCEEDED);
+                    MsgRepository.TEXT_EXCEPTION_MAX_SIZE_EXCEEDED);
             }
-            if (!isValidText(aText, constraints)) {
+            if(!isValidText(aText, constraints))
+            {
                 throw new IllegalArgumentException(
-                        MsgRepository.TEXT_EXCEPTION_WRONG_TEXT);
+                    MsgRepository.TEXT_EXCEPTION_WRONG_TEXT);
             }
             text = aText;
         }
         size = text.length();
         caret = text.length();
-        if (control != null) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+        if(control != null)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     eswtSetContent(control, text);
                     eswtSetSelection(control, caret, caret);
                 }
@@ -430,19 +513,25 @@ class TextWrapper {
      *
      * @param aFont new font
      */
-    void setFont(Font aFont) {
+    void setFont(Font aFont)
+    {
         font = aFont;
-        if (control != null) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
-                    if (font != null) {
+        if(control != null)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
+                    if(font != null)
+                    {
                         // set custom font
                         control.setFont(Font.getESWTFont(font));
                     }
-                    else {
+                    else
+                    {
                         // set default font
                         control.setFont(
-                                Font.getESWTFont(Font.getDefaultFont()));
+                            Font.getESWTFont(Font.getDefaultFont()));
                     }
                 }
             });
@@ -454,11 +543,15 @@ class TextWrapper {
      *
      * @param aFocused
      */
-    void setFocused(boolean aFocused) {
+    void setFocused(boolean aFocused)
+    {
         focused = aFocused;
-        if (control != null) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+        if(control != null)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     eswtSetFocused(control, focused);
                 }
             });
@@ -473,15 +566,19 @@ class TextWrapper {
      * @param green color component
      * @param blue color component
      */
-    void setForegroundColor(final int alpha, final int red, final int green, final int blue) {
-        ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-            public void run() {
-                if (fgCol != null) {
+    void setForegroundColor(final int alpha, final int red, final int green, final int blue)
+    {
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        {
+            public void run()
+            {
+                if(fgCol != null)
+                {
                     fgCol.dispose();
                     fgCol = null;
                 }
                 fgCol = new Color(ESWTUIThreadRunner.getInstance().getDisplay(),
-                        red, green, blue);
+                                  red, green, blue);
             }
         });
     }
@@ -491,11 +588,15 @@ class TextWrapper {
      *
      * @param inputMode
      */
-    void setInputMode(String aInputMode) {
+    void setInputMode(String aInputMode)
+    {
         inputMode = aInputMode;
-        if (control != null && control instanceof TextExtension) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+        if(control != null && control instanceof TextExtension)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     eswtSetInputMode(control, inputMode, constraints);
                 }
             });
@@ -507,22 +608,28 @@ class TextWrapper {
      *
      * @param aMaxSize
      */
-    void setMaxSize(int aMaxSize) {
-        if (aMaxSize < 1) {
+    void setMaxSize(int aMaxSize)
+    {
+        if(aMaxSize < 1)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.TEXT_EXCEPTION_INVALID_MAX_SIZE);
+                MsgRepository.TEXT_EXCEPTION_INVALID_MAX_SIZE);
         }
 
         String content = getContent();
-        if (content != null && aMaxSize < content.length()) {
+        if(content != null && aMaxSize < content.length())
+        {
             // we have to truncate content - validates the new text
             setContent(content.substring(0, aMaxSize));
         }
 
         maxSize = aMaxSize;
-        if (control != null) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+        if(control != null)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     eswtSetMaxSize(control, maxSize);
                 }
             });
@@ -534,10 +641,14 @@ class TextWrapper {
      *
      * @param aListener modify listener
      */
-    void setModifyListener(final ModifyListener aListener) {
-        if (control != null) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+    void setModifyListener(final ModifyListener aListener)
+    {
+        if(control != null)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     eswtRemoveModListener(control, modifyListener);
                     eswtAddModListener(control, aListener);
                 }
@@ -551,10 +662,14 @@ class TextWrapper {
      *
      * @param aListener selection listener
      */
-    void setSelectionListener(final SelectionListener aListener) {
-        if (control != null) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+    void setSelectionListener(final SelectionListener aListener)
+    {
+        if(control != null)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     eswtRemoveSelListener(control, selectionListener);
                     eswtAddSelListener(control, aListener);
                 }
@@ -569,12 +684,16 @@ class TextWrapper {
      * @param aX
      * @param aY
      */
-    void setPosition(int aX, int aY) {
+    void setPosition(int aX, int aY)
+    {
         x = aX;
         y = aY;
-        if (control != null) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+        if(control != null)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     control.setLocation(x, y);
                 }
             });
@@ -587,10 +706,14 @@ class TextWrapper {
      * @param sta selection start
      * @param end selection end
      */
-    void setSelection(final int sta, final int end) {
-        if (control != null) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+    void setSelection(final int sta, final int end)
+    {
+        if(control != null)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     eswtSetSelection(control, sta, end);
                 }
             });
@@ -603,16 +726,21 @@ class TextWrapper {
      * @param width
      * @param height
      */
-    void setSize(int aWidth, int aHeight) {
-        if (aWidth < 0 || aHeight < 0) {
+    void setSize(int aWidth, int aHeight)
+    {
+        if(aWidth < 0 || aHeight < 0)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.TEXT_EXCEPTION_INVALID_SIZE);
+                MsgRepository.TEXT_EXCEPTION_INVALID_SIZE);
         }
         width = aWidth;
         height = aHeight;
-        if (control != null && width >= 0 && height >= 0) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+        if(control != null && width >= 0 && height >= 0)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     control.setSize(width, height);
                 }
             });
@@ -622,11 +750,15 @@ class TextWrapper {
     /**
      * Set the visibility of the eSWT control.
      */
-    void setVisible(boolean aVisible) {
+    void setVisible(boolean aVisible)
+    {
         visible = aVisible;
-        if (control != null) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+        if(control != null)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     control.setVisible(visible);
                 }
             });
@@ -638,23 +770,29 @@ class TextWrapper {
      *
      * @param parent parent composite
      */
-    private void eswtRestoreStateAndCreate(Composite parent) {
-        if (control == null) {
+    private void eswtRestoreStateAndCreate(Composite parent)
+    {
+        if(control == null)
+        {
             control = eswtConstructText(parent, style, constraints);
             eswtSetInputMode(control, inputMode, constraints);
             eswtSetMaxSize(control, maxSize);
             eswtSetContent(control, text);
             eswtSetSelection(control, caret, caret);
-            if (width >= 0 && height >= 0) {
+            if(width >= 0 && height >= 0)
+            {
                 control.setBounds(x, y, width, height);
             }
-            if (fgCol != null) {
+            if(fgCol != null)
+            {
                 control.setForeground(fgCol);
             }
-            if (bgCol != null) {
+            if(bgCol != null)
+            {
                 control.setBackground(bgCol);
             }
-            if (font != null) {
+            if(font != null)
+            {
                 control.setFont(Font.getESWTFont(font));
             }
             control.setVisible(visible);
@@ -669,9 +807,11 @@ class TextWrapper {
      *
      * @return the control's parent composite.
      */
-    private Composite eswtStoreStateAndDispose() {
+    private Composite eswtStoreStateAndDispose()
+    {
         Composite parent = null;
-        if (control != null) {
+        if(control != null)
+        {
             parent = control.getParent();
             text = eswtGetContent(control);
             caret = eswtGetCaretPosition(control);
@@ -689,12 +829,16 @@ class TextWrapper {
      * @param control text control
      * @param ltnr listener
      */
-    static void eswtAddModListener(Control control, ModifyListener ltnr) {
-        if (control != null && ltnr != null) {
-            if (control instanceof TextExtension) {
+    static void eswtAddModListener(Control control, ModifyListener ltnr)
+    {
+        if(control != null && ltnr != null)
+        {
+            if(control instanceof TextExtension)
+            {
                 ((TextExtension) control).addModifyListener(ltnr);
             }
-            else {
+            else
+            {
                 ((ConstrainedText) control).addModifyListener(ltnr);
             }
         }
@@ -706,12 +850,16 @@ class TextWrapper {
      * @param control text control
      * @param ltnr listener
      */
-    static void eswtAddSelListener(Control control, SelectionListener ltnr) {
-        if (control != null && ltnr != null) {
-            if (control instanceof TextExtension) {
+    static void eswtAddSelListener(Control control, SelectionListener ltnr)
+    {
+        if(control != null && ltnr != null)
+        {
+            if(control instanceof TextExtension)
+            {
                 ((TextExtension) control).addSelectionListener(ltnr);
             }
-            else {
+            else
+            {
                 ((ConstrainedText) control).addSelectionListener(ltnr);
             }
         }
@@ -725,31 +873,44 @@ class TextWrapper {
      * @param aConstraints
      * @return
      */
-    static Control eswtConstructText(Composite parent, int aStyle, int aConstraints) {
+    static Control eswtConstructText(Composite parent, int aStyle, int aConstraints)
+    {
         Control ret = null;
 
         int style = aStyle;
         int extractedFlag = aConstraints & ~TextField.CONSTRAINT_MASK;
         int extractedConstraint = aConstraints & TextField.CONSTRAINT_MASK;
 
-        if ((extractedFlag & TextField.PASSWORD) == TextField.PASSWORD) {
+        if((extractedFlag & TextField.PASSWORD) == TextField.PASSWORD)
+        {
             // Text class will remove incompatible flags for SINGLE
             style |= SWT.SINGLE | SWT.PASSWORD;
         }
-        if ((extractedFlag & TextField.UNEDITABLE) == TextField.UNEDITABLE) {
+        if((extractedFlag & TextField.UNEDITABLE) == TextField.UNEDITABLE)
+        {
             style |= SWT.READ_ONLY;
         }
 
-        if (extractedConstraint == TextField.NUMERIC) {
+        if(extractedConstraint == TextField.NUMERIC)
+        {
             ret = new ConstrainedText(parent, style, ConstrainedText.NUMERIC);
         }
-        else if (extractedConstraint == TextField.DECIMAL) {
+        else if(extractedConstraint == TextField.DECIMAL)
+        {
             ret = new ConstrainedText(parent, style, ConstrainedText.DECIMAL);
         }
-        else if (extractedConstraint == TextField.PHONENUMBER) {
+        else if(extractedConstraint == TextField.PHONENUMBER)
+        {
             ret = new ConstrainedText(parent, style, ConstrainedText.PHONENUMBER);
         }
-        else {
+        else if(extractedConstraint == TextField.NON_PREDICTIVE
+                || extractedConstraint == TextField.SENSITIVE)
+        {
+            // We treat non-predictive and sensitive to be equal
+            ret = new TextExtension(parent, style, TextExtension.NON_PREDICTIVE);
+        }
+        else
+        {
             ret = new TextExtension(parent, style);
         }
         return ret;
@@ -760,13 +921,17 @@ class TextWrapper {
      *
      * @param control text control
      */
-    static int eswtGetCaretPosition(Control control) {
+    static int eswtGetCaretPosition(Control control)
+    {
         int ret = 0;
-        if (control != null) {
-            if (control instanceof TextExtension) {
+        if(control != null)
+        {
+            if(control instanceof TextExtension)
+            {
                 ret = ((TextExtension) control).getCaretPosition();
             }
-            else {
+            else
+            {
                 ret = ((ConstrainedText) control).getCaretPosition();
             }
         }
@@ -778,10 +943,13 @@ class TextWrapper {
      *
      * @param control text control
      */
-    static int eswtGetCaretLine(Control control) {
+    static int eswtGetCaretLine(Control control)
+    {
         int ret = 0;
-        if (control != null) {
-            if (control instanceof TextExtension) {
+        if(control != null)
+        {
+            if(control instanceof TextExtension)
+            {
                 ret = ((TextExtension) control).getCaretLineNumber();
             }
         }
@@ -793,13 +961,17 @@ class TextWrapper {
      *
      * @param control text control
      */
-    static String eswtGetContent(Control control) {
+    static String eswtGetContent(Control control)
+    {
         String ret = "";
-        if (control != null) {
-            if (control instanceof TextExtension) {
+        if(control != null)
+        {
+            if(control instanceof TextExtension)
+            {
                 ret = ((TextExtension) control).getText();
             }
-            else {
+            else
+            {
                 ret = ((ConstrainedText) control).getText();
             }
         }
@@ -811,10 +983,13 @@ class TextWrapper {
      *
      * @param control text control
      */
-    static int eswtGetLineCount(Control control) {
+    static int eswtGetLineCount(Control control)
+    {
         int ret = 1;
-        if (control != null) {
-            if (control instanceof TextExtension) {
+        if(control != null)
+        {
+            if(control instanceof TextExtension)
+            {
                 ret = ((TextExtension) control).getLineCount();
             }
         }
@@ -826,13 +1001,17 @@ class TextWrapper {
      *
      * @param control text control
      */
-    static int eswtGetLineHeight(Control control) {
+    static int eswtGetLineHeight(Control control)
+    {
         int ret = 0;
-        if (control != null) {
-            if (control instanceof TextExtension) {
+        if(control != null)
+        {
+            if(control instanceof TextExtension)
+            {
                 ret = ((TextExtension) control).getLineHeight();
             }
-            else {
+            else
+            {
                 ret = ((ConstrainedText) control).getSize().y;
             }
         }
@@ -844,13 +1023,17 @@ class TextWrapper {
      *
      * @param control text control
      */
-    static int eswtGetMaxSize(Control control) {
+    static int eswtGetMaxSize(Control control)
+    {
         int ret = 0;
-        if (control != null) {
-            if (control instanceof TextExtension) {
+        if(control != null)
+        {
+            if(control instanceof TextExtension)
+            {
                 ret = ((TextExtension) control).getTextLimit();
             }
-            else {
+            else
+            {
                 ret = ((ConstrainedText) control).getTextLimit();
             }
         }
@@ -862,13 +1045,17 @@ class TextWrapper {
      *
      * @param control text control
      */
-    static String eswtGetSelectedContent(Control control) {
+    static String eswtGetSelectedContent(Control control)
+    {
         String ret = "";
-        if (control != null) {
-            if (control instanceof TextExtension) {
+        if(control != null)
+        {
+            if(control instanceof TextExtension)
+            {
                 ret = ((TextExtension) control).getSelectionText();
             }
-            else {
+            else
+            {
                 // TODO: eSWT support required - get selection in ConstrainedText
                 ret = ((ConstrainedText) control).getText();
             }
@@ -881,13 +1068,17 @@ class TextWrapper {
      *
      * @param control text control
      */
-    static int eswtGetSize(Control control) {
+    static int eswtGetSize(Control control)
+    {
         int ret = 0;
-        if (control != null) {
-            if (control instanceof TextExtension) {
+        if(control != null)
+        {
+            if(control instanceof TextExtension)
+            {
                 ret = ((TextExtension) control).getCharCount();
             }
-            else {
+            else
+            {
                 ret = ((ConstrainedText) control).getCharCount();
             }
         }
@@ -900,12 +1091,16 @@ class TextWrapper {
      * @param control text control
      * @param ltnr listener
      */
-    static void eswtRemoveModListener(Control control, ModifyListener ltnr) {
-        if (control != null && ltnr != null) {
-            if (control instanceof TextExtension) {
+    static void eswtRemoveModListener(Control control, ModifyListener ltnr)
+    {
+        if(control != null && ltnr != null)
+        {
+            if(control instanceof TextExtension)
+            {
                 ((TextExtension) control).removeModifyListener(ltnr);
             }
-            else {
+            else
+            {
                 ((ConstrainedText) control).removeModifyListener(ltnr);
             }
         }
@@ -917,12 +1112,16 @@ class TextWrapper {
      * @param control text control
      * @param ltnr listener
      */
-    static void eswtRemoveSelListener(Control control, SelectionListener ltnr) {
-        if (control != null && ltnr != null) {
-            if (control instanceof TextExtension) {
+    static void eswtRemoveSelListener(Control control, SelectionListener ltnr)
+    {
+        if(control != null && ltnr != null)
+        {
+            if(control instanceof TextExtension)
+            {
                 ((TextExtension) control).removeSelectionListener(ltnr);
             }
-            else {
+            else
+            {
                 ((ConstrainedText) control).removeSelectionListener(ltnr);
             }
         }
@@ -934,12 +1133,16 @@ class TextWrapper {
      * @param control text control
      * @param text content
      */
-    static void eswtSetContent(Control control, String text) {
-        if (control != null) {
-            if (control instanceof TextExtension) {
+    static void eswtSetContent(Control control, String text)
+    {
+        if(control != null)
+        {
+            if(control instanceof TextExtension)
+            {
                 ((TextExtension) control).setText(text);
             }
-            else {
+            else
+            {
                 ((ConstrainedText) control).setText(text);
             }
         }
@@ -951,12 +1154,16 @@ class TextWrapper {
      * @param control text control
      * @param focus
      */
-    static void eswtSetFocused(Control control, boolean focus) {
-        if (control != null) {
-            if (focus) {
+    static void eswtSetFocused(Control control, boolean focus)
+    {
+        if(control != null)
+        {
+            if(focus)
+            {
                 control.setFocus();
             }
-            else {
+            else
+            {
                 control.getParent().forceFocus();
             }
         }
@@ -970,33 +1177,43 @@ class TextWrapper {
      * @param aConstraints constraints
      */
     static void eswtSetInputMode(Control control, String inputMode,
-            int aConstraints) {
-        if (control != null && control instanceof TextExtension) {
+                                 int aConstraints)
+    {
+        if(control != null && control instanceof TextExtension)
+        {
             TextExtension te = (TextExtension) control;
             int capitalize = getCapitalize(aConstraints);
-            if (inputMode == null) {
+            if(inputMode == null)
+            {
                 te.setInitialInputMode(TextExtension.TEXTCASE,
-                        "UCB_BASIC_LATIN");
+                                       "UCB_BASIC_LATIN");
             }
-            else if (inputMode.equals("MIDP_UPPERCASE_LATIN")) {
-                if (capitalize > 0 && !isUrlEmailSet(aConstraints)) {
+            else if(inputMode.equals("MIDP_UPPERCASE_LATIN"))
+            {
+                if(capitalize > 0 && !isUrlEmailSet(aConstraints))
+                {
                     te.setInitialInputMode(capitalize, "UCB_BASIC_LATIN");
                 }
-                else {
+                else
+                {
                     te.setInitialInputMode(TextExtension.UPPERCASE,
-                            "UCB_BASIC_LATIN");
+                                           "UCB_BASIC_LATIN");
                 }
             }
-            else if (inputMode.equals("MIDP_LOWERCASE_LATIN")) {
-                if (capitalize > 0 && !isUrlEmailSet(aConstraints)) {
+            else if(inputMode.equals("MIDP_LOWERCASE_LATIN"))
+            {
+                if(capitalize > 0 && !isUrlEmailSet(aConstraints))
+                {
                     te.setInitialInputMode(capitalize, "UCB_BASIC_LATIN");
                 }
-                else {
+                else
+                {
                     te.setInitialInputMode(TextExtension.LOWERCASE,
-                            "UCB_BASIC_LATIN");
+                                           "UCB_BASIC_LATIN");
                 }
             }
-            else {
+            else
+            {
                 te.setInitialInputMode(TextExtension.TEXTCASE, inputMode);
             }
         }
@@ -1008,12 +1225,16 @@ class TextWrapper {
      * @param control text control
      * @param maxSize maximum size
      */
-    static void eswtSetMaxSize(Control control, int maxSize) {
-        if (control != null) {
-            if (control instanceof TextExtension) {
+    static void eswtSetMaxSize(Control control, int maxSize)
+    {
+        if(control != null)
+        {
+            if(control instanceof TextExtension)
+            {
                 ((TextExtension) control).setTextLimit(maxSize);
             }
-            else {
+            else
+            {
                 ((ConstrainedText) control).setTextLimit(maxSize);
             }
         }
@@ -1026,12 +1247,16 @@ class TextWrapper {
      * @param sta start index
      * @param end end index
      */
-    static void eswtSetSelection(Control control, int sta, int end) {
-        if (control != null) {
-            if (control instanceof TextExtension) {
+    static void eswtSetSelection(Control control, int sta, int end)
+    {
+        if(control != null)
+        {
+            if(control instanceof TextExtension)
+            {
                 ((TextExtension) control).setSelection(sta, end);
             }
-            else {
+            else
+            {
                 ((ConstrainedText) control).setSelection(sta, end);
             }
         }
@@ -1042,13 +1267,18 @@ class TextWrapper {
      *
      * @param control text control
      */
-    static void eswtUpdateVScrollbar(Control control) {
-        if (control != null) {
-            if ((control.getStyle() & SWT.V_SCROLL) == SWT.V_SCROLL) {
-                if (control instanceof TextExtension) {
+    static void eswtUpdateVScrollbar(Control control)
+    {
+        if(control != null)
+        {
+            if((control.getStyle() & SWT.V_SCROLL) == SWT.V_SCROLL)
+            {
+                if(control instanceof TextExtension)
+                {
                     TextExtension te = (TextExtension) control;
                     ScrollBar sb = te.getVerticalBar();
-                    if (sb != null) {
+                    if(sb != null)
+                    {
                         int height = te.getLineCount() * te.getLineHeight();
                         sb.setVisible(te.getSize().y < height);
                     }
@@ -1062,15 +1292,18 @@ class TextWrapper {
      *
      * @param aConstraints constraints
      */
-    static int getCapitalize(int aConstraints) {
+    static int getCapitalize(int aConstraints)
+    {
         int ret = 0;
         int extractedFlag = aConstraints & ~TextField.CONSTRAINT_MASK;
-        if ((extractedFlag & TextField.INITIAL_CAPS_WORD)
-                == TextField.INITIAL_CAPS_WORD) {
+        if((extractedFlag & TextField.INITIAL_CAPS_WORD)
+                == TextField.INITIAL_CAPS_WORD)
+        {
             ret = TextExtension.TITLECASE;
         }
-        if ((extractedFlag & TextField.INITIAL_CAPS_SENTENCE)
-                == TextField.INITIAL_CAPS_SENTENCE) {
+        if((extractedFlag & TextField.INITIAL_CAPS_SENTENCE)
+                == TextField.INITIAL_CAPS_SENTENCE)
+        {
             ret = TextExtension.TEXTCASE;
         }
         return ret;
@@ -1081,7 +1314,8 @@ class TextWrapper {
      *
      * @param aConstraints constraints
      */
-    static boolean isUrlEmailSet(int aConstraints) {
+    static boolean isUrlEmailSet(int aConstraints)
+    {
         int extractedConstraint = aConstraints & TextField.CONSTRAINT_MASK;
         return (extractedConstraint == TextField.EMAILADDR
                 || extractedConstraint == TextField.URL);
@@ -1093,26 +1327,29 @@ class TextWrapper {
      * @param aConstraints constraints to check.
      * @return true if constraints are OK, false otherwise.
      */
-    static boolean isValidConstraints(int aConstraints) {
+    static boolean isValidConstraints(int aConstraints)
+    {
         int smallestFlag;
         int highestFlag;
         smallestFlag = TextField.PASSWORD - 1;
         highestFlag = TextField.PASSWORD + TextField.UNEDITABLE
-                + TextField.SENSITIVE + TextField.NON_PREDICTIVE
-                + TextField.INITIAL_CAPS_WORD + TextField.INITIAL_CAPS_SENTENCE
-                + 1;
+                      + TextField.SENSITIVE + TextField.NON_PREDICTIVE
+                      + TextField.INITIAL_CAPS_WORD + TextField.INITIAL_CAPS_SENTENCE
+                      + 1;
 
         int typeConstraint = getTypeConstraint(aConstraints);
-        if (typeConstraint == TextField.ANY
+        if(typeConstraint == TextField.ANY
                 || typeConstraint == TextField.EMAILADDR
                 || typeConstraint == TextField.NUMERIC
                 || typeConstraint == TextField.PHONENUMBER
                 || typeConstraint == TextField.DECIMAL
-                || typeConstraint == TextField.URL) {
+                || typeConstraint == TextField.URL)
+        {
             int extractedFlag = aConstraints & ~TextField.CONSTRAINT_MASK;
-            if (extractedFlag == 0
+            if(extractedFlag == 0
                     || ((extractedFlag > smallestFlag)
-                         && (extractedFlag < highestFlag))) {
+                        && (extractedFlag < highestFlag)))
+            {
                 return true;
             }
         }
@@ -1124,7 +1361,8 @@ class TextWrapper {
      *
      * @param aConstraints constraints
      */
-    static int getTypeConstraint(int aConstraints) {
+    static int getTypeConstraint(int aConstraints)
+    {
         return aConstraints & TextField.CONSTRAINT_MASK;
     }
 
@@ -1134,7 +1372,8 @@ class TextWrapper {
      * @param aText
      * @return
      */
-    static boolean isValidText(String aText, int aConstraints) {
+    static boolean isValidText(String aText, int aConstraints)
+    {
         return TextFieldLayouter.checkText(aConstraints, aText);
     }
 

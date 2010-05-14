@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2004, 2008 Nokia Corporation and/or its subsidiary(-ies).
- * All rights reserved. This program and the accompanying materials 
+ * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Yu You (Nokia Corp.) - initial API specification
  *     Nokia Corporation - S60 implementation
@@ -37,20 +37,20 @@ import java.util.Calendar;
 
 /**
  * A modal window used to prompt the end-user for data input.
- * 
+ *
  * <p>
  * A QueryDialog contains a prompt text and an entry field. The QueryDialog
  * supports five types of entry fields: STANDARD, NUMERIC, PASSWORD, TIME and
  * DATE. The position and size of the dialog is implementation-dependent.
  * </p>
- * 
+ *
  * <dl>
  * <dt><b>Styles: </b></dt>
  * <dd>APPLICATION_MODAL, PRIMARY_MODAL</dd>
  * <dt><b>Query types: </b></dt>
  * <dd>STANDARD: alphanumeric data input</dd>
  * <dd>NUMERIC: numerical only data input</dd>
- * <dd>PASSWORD: a platform-dependent way for sensitive information input. 
+ * <dd>PASSWORD: a platform-dependent way for sensitive information input.
  * The initial input mode is set to allow entry of digit characters</dd>
  * <dd>TIME: time input. The string format must be the international standard
  * notation (ISO 8601), hh:mm:ss, where hh is the number of complete hours that
@@ -74,7 +74,7 @@ import java.util.Calendar;
  * </p>
  * <p>
  * Example:
- * 
+ *
  * <code><pre>
  * QueryDialog dialog = new QueryDialog(shell, SWT.NONE, QueryDialog.STANDARD);
  * dialog.setPromptText(&quot;Enter name:&quot;, &quot;game1&quot;);
@@ -98,18 +98,18 @@ public class QueryDialog extends Dialog {
     private String  promptText;
     private String  defaultValue;
     private boolean isMidnight;
-    
+
     private static final String     midnightHour = "24:00:00";
     private static final String     platformMidnightHour = "00:00:00";
 
     private String dialogID;
     static int dialogCount;
-    
+
     /**
      * The maximum number of digits that can be entered after the decimals point.
      */
-    private static final int MAX_DECIMALS = 10;  
-    
+    private static final int MAX_DECIMALS = 10;
+
     /**
      * Alphanumeric data entry type
      */
@@ -140,14 +140,14 @@ public class QueryDialog extends Dialog {
 
     /**
      * Constructs a new instance of this class given its parent.
-     * 
+     *
      * <p>
      * By default, APPLICATION_MODAL style and STANDARD query type is used.
      * </p>
-     * 
+     *
      * @param parent
      *            a shell which will be the parent of the new instance
-     * 
+     *
      * @exception IllegalArgumentException
      *                <ul>
      *                <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
@@ -167,17 +167,17 @@ public class QueryDialog extends Dialog {
 
     /**
      * Constructs a new instance of this class given its parent and style .
-     * 
+     *
      * <p>
      * The style value is either one of the style constants defined in class
      * <code>Dialog</code>. By default STANDARD query type is used.
      * </p>
-     * 
+     *
      * @param parent
      *            a shell which will be the parent of the new instance
      * @param style
      *            the style of control to construct
-     * 
+     *
      * @exception IllegalArgumentException
      *                <ul>
      *                <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
@@ -198,19 +198,19 @@ public class QueryDialog extends Dialog {
     /**
      * Constructs a new instance of this class given its parent, style and query
      * type.
-     * 
+     *
      * <p>
      * The style value is either one of the style constants defined in class
      * <code>Dialog</code>.
      * </p>
-     * 
+     *
      * @param parent
      *            a shell which will be the parent of the new instance
      * @param style
      *            the style of control to construct
      * @param queryType
      *            one of STANDARD, NUMERIC, PASSWORD, TIME, or DATE.
-     * 
+     *
      * @exception IllegalArgumentException
      *                <ul>
      *                <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
@@ -236,23 +236,23 @@ public class QueryDialog extends Dialog {
         super(parent, checkStyle(parent, style));
         checkSubclass();
         checkDialog();
-        
+
         if (!internal_checkQueryType(queryType)) {
             SWT.error(SWT.ERROR_INVALID_ARGUMENT);
         }
-        
+
         dialogCount++;
         dialogID = toString() + String.valueOf(dialogCount);
-        
+
         this.queryType = queryType;
         this.defaultValue = null;
         isMidnight = false;
     }
-    
+
 
     static protected int checkStyle(Shell parent, int style) {
         style = Internal_PackageSupport.checkStyle(parent, style);
-        
+
         int mask = SWT.APPLICATION_MODAL | SWT.PRIMARY_MODAL;
         if ((style & mask) == 0) style |= SWT.APPLICATION_MODAL;
         if ((style & SWT.APPLICATION_MODAL) != 0) style = (style & ~mask) | SWT.APPLICATION_MODAL;
@@ -261,7 +261,7 @@ public class QueryDialog extends Dialog {
     }
 
     static boolean internal_checkQueryType(int queryType) {
-        if (queryType != STANDARD && 
+        if (queryType != STANDARD &&
             queryType != NUMERIC &&
             queryType != PASSWORD &&
             queryType != TIME &&
@@ -274,19 +274,19 @@ public class QueryDialog extends Dialog {
     private void checkDialog() {
         Display currentDisplay = getParent().getDisplay();
         if (currentDisplay.getThread() != Thread.currentThread ()) SWT.error(SWT.ERROR_THREAD_INVALID_ACCESS);
-    }   
+    }
 
     /**
      * Creates the prompt dialog in front of its parent shell and waits for input.
      * This method will return when the input is finished or cancelled.
-     * 
+     *
      * @return String the value entered. Null means that input was cancelled,
      *         regardless of whether a default value was specified. For STANDARD,
      *         NUMERIC, and PASSWORD types, the string contains precisely
      *         the characters entered without any formatting, up to the maximum
      *         number of characters. For DATE and TIME
-     *         types, the string contains an ISO 8601 formatted value.  
-     * 
+     *         types, the string contains an ISO 8601 formatted value.
+     *
      * @exception SWTException
      *                <ul>
      *                <li>ERROR_THREAD_INVALID_ACCESS - if not called from the
@@ -304,9 +304,9 @@ public class QueryDialog extends Dialog {
             if (isMidnight && result.equals(platformMidnightHour)) {
                 result = midnightHour;
             }
-            
+
         } else {
-            
+
             DisposeListener listener = new DisposeListener() {
                 public void widgetDisposed(DisposeEvent e) {
                     if (e.widget == getParent()) {
@@ -316,19 +316,19 @@ public class QueryDialog extends Dialog {
                 }
             };
             getParent().addDisposeListener(listener);
-            
+
             int qtLayoutDirection = (Internal_PackageSupport.style(this) & SWT.RIGHT_TO_LEFT) != 0 ? OS.QT_RIGHTTOLEFT
                     : OS.QT_LEFTTORIGHT;
             if (queryType == STANDARD || queryType == PASSWORD) {
 
-                int echoMode = (queryType == PASSWORD) ? OS.QLINEEDIT_ECHOMODE_PASSWORD : OS.QLINEEDIT_ECHOMODE_NORMAL; 
+                int echoMode = (queryType == PASSWORD) ? OS.QLINEEDIT_ECHOMODE_PASSWORD : OS.QLINEEDIT_ECHOMODE_NORMAL;
                 result = OS.QInputDialog_swt_getText(handle(getParent()), getText(), promptText, echoMode, defaultValue, dialogID, qtLayoutDirection);
-                
+
             } else { // NUMERIC
-                
+
                 double max = Double.MAX_VALUE;
                 double defaultInput = (defaultValue == null) ? 0 : Double.parseDouble(defaultValue);
-                
+
                 if (maximum > 0) {
                     // Calculate the max double value that can be entered
                     // with the current maximum
@@ -338,34 +338,34 @@ public class QueryDialog extends Dialog {
                     }
                     max = Double.parseDouble(str);
                 }
-                
-                result = OS.QInputDialog_swt_getDouble(handle(getParent()), getText(), promptText, -max, max, 
+
+                result = OS.QInputDialog_swt_getDouble(handle(getParent()), getText(), promptText, -max, max,
                                                     defaultInput, MAX_DECIMALS, dialogID, qtLayoutDirection);
-            } 
-            
+            }
+
             if (getParent() != null && !getParent().isDisposed()) {
                 getParent().removeDisposeListener(listener);
             }
         }
-      
+
         return result;
     }
-    
+
 
     /**
      * Defines the maximum number of characters that can be entered.
-     * If the input string already exceeds the maximum, the excessive part of 
+     * If the input string already exceeds the maximum, the excessive part of
      * the value is not displayed.
-     * 
+     *
      * Usually the maximum length is system-dependent, and applications should
      * not specify it.
-     * 
+     *
      * Note: This method has no effect for DATE and TIME types.
-     * 
+     *
      * @param maximum
      *            the maximum character length. Must be equal or greater than
      *            zero. Zero means no limit.
-     * 
+     *
      * @exception IllegalArgumentException
      *                <ul>
      *                <li>ERROR_NULL_ARGUMENT - if maximum is negative, or less
@@ -384,7 +384,7 @@ public class QueryDialog extends Dialog {
      *                <li>ERROR_WIDGET_DISPOSED - if the dialog has been
      *                disposed</li>
      *                </ul>
-     * 
+     *
      * @see #setMinimum(int)
      */
     public void setMaximum(int maximum) {
@@ -392,24 +392,24 @@ public class QueryDialog extends Dialog {
         if (maximum < 0 || maximum < minimum) {
             SWT.error(SWT.ERROR_NULL_ARGUMENT);
         }
-        
+
         // 0x7fff is the default max length for QLineEdit
         if (maximum > 0x7fff) {
             SWT.error(SWT.ERROR_INVALID_ARGUMENT);
         }
         this.maximum = maximum;
     }
-    
+
     /**
      * Defines the minimum number of characters that must be entered before
      * the dialog can be completed (not cancelled).
-     * 
+     *
      * Note: This method has no effect for DATE and TIME types.
-     * 
+     *
      * @param minimum
      *            the minimum number of characters. Must be equal or greater than
      *            zero. Zero means no limit.
-     * 
+     *
      * @exception IllegalArgumentException
      *                <ul>
      *                <li>ERROR_NULL_ARGUMENT - if minimum is negative, or
@@ -424,7 +424,7 @@ public class QueryDialog extends Dialog {
      *                <li>ERROR_WIDGET_DISPOSED - if the dialog has been
      *                disposed</li>
      *                </ul>
-     * 
+     *
      * @see #setMaximum(int)
      */
     public void setMinimum(int minimum) {
@@ -437,16 +437,16 @@ public class QueryDialog extends Dialog {
 
     /**
      * Sets the prompt text and default input value.
-     * 
+     *
      * @param promptText
      *            the prompt text. Can be null.
      * @param defaultValue
      *            the initial value. Cannot be null. The {@link #open() open()}
      *            method may return the same value even when no input is
-     *            received from the end-user. If the value length is greater than 
-     *            the maximum number of characters, only the maximum will be 
+     *            received from the end-user. If the value length is greater than
+     *            the maximum number of characters, only the maximum will be
      *            displayed.
-     * 
+     *
      * @exception IllegalArgumentException
      *                <ul>
      *                <li>ERROR_NULL_ARGUMENT - if defaultValue is null</li>
@@ -464,11 +464,11 @@ public class QueryDialog extends Dialog {
      */
     public void setPromptText(String promptText, String defaultValue) {
         checkDialog();
-        
+
         if (defaultValue == null) {
             SWT.error(SWT.ERROR_NULL_ARGUMENT);
         }
-        
+
         if (checkFormat(defaultValue)) {
             if (queryType != DATE && queryType != TIME &&
                 maximum > 0 && defaultValue.length() > maximum) {
@@ -549,24 +549,24 @@ public class QueryDialog extends Dialog {
         }
         return true;
     }
-    
+
     /**
      * Custom dialog implementation for DATE and TIME mode QueryDialog. Dialog shell
      * includes a Label for prompt text, DateEditor for time/date input and OK and Cancel buttons.
-     * Controls of the dialog are layouted into a GridLayout. 
+     * Controls of the dialog are layouted into a GridLayout.
      */
     private class internal_DateTimeDialog implements SelectionListener {
-        
+
         private Shell shell;
         private DateEditor editor;
         private Button okButton;
         private Button cancelButton;
         private Date retValue;
-            
+
         public internal_DateTimeDialog() {
             retValue = null;
         }
-        
+
         public String open() {
             createShell();
             shell.open();
@@ -574,11 +574,11 @@ public class QueryDialog extends Dialog {
             while (!shell.isDisposed()) {
                 if (!display.readAndDispatch()) display.sleep();
             }
-            
+
             if (retValue == null) {
                 return null;
             }
-            
+
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(retValue);
 
@@ -592,7 +592,7 @@ public class QueryDialog extends Dialog {
                        getIntValue(calendar.get(Calendar.DAY_OF_MONTH));
             }
         }
-        
+
         private void createShell() {
             shell = new Shell(getParent(), SWT.DIALOG_TRIM | getStyle());
             shell.setText(getText());
@@ -601,18 +601,18 @@ public class QueryDialog extends Dialog {
             if (promptText != null) {
                 label.setText(promptText);
             }
-            
+
             int orientationBits = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
             int editorStyle = (queryType == QueryDialog.DATE) ? DateEditor.DATE : DateEditor.TIME;
             editor = new DateEditor(shell, getStyle() & orientationBits, editorStyle);
-            
+
             if(queryType == QueryDialog.DATE)
                 editor.setDate(new Date());
             else
                 editor.setTime(0);
-            
-            // Do always return traverse from the editor, so that default button of the dialog 
-            // gets the enter key press  
+
+            // Do always return traverse from the editor, so that default button of the dialog
+            // gets the enter key press
             editor.addTraverseListener(new TraverseListener() {
                 public void keyTraversed(TraverseEvent e) {
                     if (e.detail == SWT.TRAVERSE_RETURN) {
@@ -620,7 +620,7 @@ public class QueryDialog extends Dialog {
                     }
                 }
             });
-            
+
             if (defaultValue != null) {
                 Calendar calendar = Calendar.getInstance();
                 if (queryType == DATE) {
@@ -634,11 +634,11 @@ public class QueryDialog extends Dialog {
                 }
                 editor.setDate(calendar.getTime());
             }
-            
+
             cancelButton = new Button(shell, SWT.PUSH);
             okButton = new Button(shell, SWT.PUSH);
             shell.setDefaultButton(okButton);
-            
+
             okButton.setText(SWT.getMessage("ok"));
             cancelButton.setText(SWT.getMessage("cancel"));
             okButton.addSelectionListener(this);
@@ -647,41 +647,41 @@ public class QueryDialog extends Dialog {
             // Layout content
             GridLayout gridLayout = new GridLayout(2, false);
             shell.setLayout(gridLayout);
-            
+
             GridData labelData = new GridData(SWT.FILL, SWT.END, false, true, 2, 1);
             GridData editorData = new GridData(SWT.FILL, SWT.CENTER, false, true, 2, 1);
             label.setLayoutData(labelData);
             editor.setLayoutData(editorData);
-            
+
             GridData cancelButtonData = new GridData(SWT.END, SWT.TOP, true, true, 1, 1);
             GridData okButtonData = new GridData(SWT.END, SWT.TOP, false, true, 1, 1);
             cancelButton.setLayoutData(cancelButtonData);
             okButton.setLayoutData(okButtonData);
-            
+
             shell.pack();
             shell.layout(true);
         }
-        
+
         private String getIntValue(int value) {
-            String string = ""; 
+            String string = "";
             if (value < 10) {
                 string += Integer.toString(0);
             }
             return string + Integer.toString(value);
         }
-        
+
         public void widgetDefaultSelected(SelectionEvent e) {
         }
-        
+
         public void widgetSelected(SelectionEvent e) {
-            if (e.widget.equals(okButton)) {
+            if (e.widget == okButton) {
                 retValue = editor.getDate();
-            } 
+            }
             shell.dispose();
         }
     }
-    
+
     private final int handle(Widget w) {
-        return Internal_PackageSupport.handle(w); 
+        return Internal_PackageSupport.handle(w);
     }
 }

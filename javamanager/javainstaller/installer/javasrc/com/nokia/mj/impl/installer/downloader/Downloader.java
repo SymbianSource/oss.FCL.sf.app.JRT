@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -40,9 +40,6 @@ import java.io.UnsupportedEncodingException;
  * Each Downloader instance downloads one file at a time in
  * a separate thread. Parallel downloads are possible with
  * multiple Downloader instances.
- *
- * @author Nokia Corporation
- * @version $Rev: 0 $ $Date$
  */
 abstract public class Downloader implements Runnable
 {

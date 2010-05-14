@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 
@@ -22,6 +22,7 @@ package com.nokia.mj.impl.installer.utils;
  * Interface with main() method. Any object that is executed
  * with installer "test" command must implement this interface.
  */
-public interface InstallerMain {
+public interface InstallerMain
+{
     public void installerMain(String[] aArgs);
 }

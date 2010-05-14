@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -89,7 +89,8 @@ public class InstallationNotifier implements ExeProgressListener
             }
             catch (Throwable t)
             {
-                Log.logError("InstallerUi.started threw exception", t);
+                Log.logError(
+                    "InstallationNotifier: InstallerUi.started threw exception", t);
             }
         }
     }
@@ -132,7 +133,8 @@ public class InstallationNotifier implements ExeProgressListener
             }
             catch (Throwable t)
             {
-                Log.logError("InstallerUi.ended threw exception", t);
+                Log.logError(
+                    "InstallationNotifier: InstallerUi.ended threw exception", t);
             }
         }
         if (iSifNotifier != null)
@@ -180,7 +182,8 @@ public class InstallationNotifier implements ExeProgressListener
             }
             catch (Throwable t)
             {
-                Log.logError("InstallerUi.error threw exception", t);
+                Log.logError(
+                    "InstallationNotifier: InstallerUi.error threw exception", t);
             }
         }
     }
@@ -269,7 +272,8 @@ public class InstallationNotifier implements ExeProgressListener
                 }
                 catch (Throwable t)
                 {
-                    Log.logError("InstallerUi.updateProgress threw exception", t);
+                    Log.logError(
+                        "InstallationNotifier: InstallerUi.updateProgress threw exception", t);
                 }
             }
             if (iSifNotifier != null)
@@ -283,7 +287,8 @@ public class InstallationNotifier implements ExeProgressListener
                 }
                 catch (Throwable t)
                 {
-                    Log.logError("SifNotifier.notifyProgress threw exception", t);
+                    Log.logError(
+                        "InstallationNotifier: SifNotifier.notifyProgress threw exception", t);
                 }
             }
         }
@@ -373,7 +378,8 @@ public class InstallationNotifier implements ExeProgressListener
         }
         catch (Exception ex)
         {
-            Log.logError("Deleting property failed", ex);
+            Log.logError(
+                "InstallationNotifier: Deleting property failed", ex);
         }
     }
 }

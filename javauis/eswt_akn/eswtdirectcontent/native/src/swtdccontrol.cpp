@@ -422,7 +422,7 @@ void CSwtDCControl::HandleAppFocusChangeL(TBool aFocused)
         }
     }
 #else
-   (void)aFocused; //Supresses compilation warning
+    (void)aFocused; //Supresses compilation warning
 #endif
 }
 

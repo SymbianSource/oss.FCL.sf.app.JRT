@@ -192,7 +192,6 @@ void J9StarterS60::overrideJavaStackSize(int stackSize)
     mJvmArgs.push_back(stackSizeStr);
 }
 
-// #define RD_JAVA_VM_EXT_ODC_FEATURE_IN_USE
 void J9StarterS60::setInternalOdcFiles()
 {
     JELOG2(EJavaRuntime);

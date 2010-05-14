@@ -17,7 +17,7 @@
 
 
 #include <s32file.h>
-
+#include <memory>
 #include "driveutilities.h"
 #include "javaattributes.h"
 #include "javacommonutils.h"

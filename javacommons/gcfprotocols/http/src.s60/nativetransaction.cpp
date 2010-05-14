@@ -18,7 +18,13 @@
 
 #include <e32def.h>
 #include <centralrepository.h>
+
+#ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS
+#include <CUserAgent.h>
+#else
 #include <cuseragent.h>
+#endif
+
 #include "com_nokia_mj_impl_http_HttpConnectionNative.h"
 #include "nativehttptransaction.h"
 #include "nativehttpsession.h"
@@ -54,16 +60,6 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_http_HttpConnectionNative__1create
     return handle;
 }
 
-JNIEXPORT void JNICALL Java_com_nokia_mj_impl_http_HttpConnectionNative__1dispose(
-    JNIEnv*,
-    jobject,
-    jint aNativeHttpSessionHandle)
-{
-    LOG(ESOCKET,EInfo,"http jni _dispose()");
-    NativeHttpSession* session = reinterpret_cast<NativeHttpSession*>(aNativeHttpSessionHandle);
-    delete session;
-}
-
 JNIEXPORT void JNICALL Java_com_nokia_mj_impl_http_HttpConnectionNative__1closeTransaction(
     JNIEnv* aJni,
     jobject aPeer,
@@ -72,8 +68,16 @@ JNIEXPORT void JNICALL Java_com_nokia_mj_impl_http_HttpConnectionNative__1closeT
 
     NativeHttpTransaction* tran = reinterpret_cast<NativeHttpTransaction*>(aNativeHttpTransaction);
     tran->iJniPeer = aJni->NewWeakGlobalRef(aPeer);
-
-    tran->Dispose();
+    try
+		{
+        tran->Dispose();
+   	}
+   	catch(...)
+   	{
+   		  // function server usage may throw an exception.   		
+   		  // ignore, called when transcation is closed
+   	    ELOG(ESOCKET,"Http JNI Error, exception caught!: _closeTransaction");    	
+   	}
     delete tran;
 }
 
@@ -84,10 +88,21 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_http_HttpConnectionNative__1create
     jstring aUri,
     jstring aRequestMethod)
 {
+		LOG(ESOCKET,EInfo,"http jni _createNativeTransaction()");
     NativeHttpSession* session = reinterpret_cast<NativeHttpSession*>(aNativeHttpSession);
     //tran->iJniPeer = aJni->NewGlobalRef(aPeer);
-    TRAPD(handle,   handle = session->CreateTransactionL(aJni, aPeer , aUri, aRequestMethod););
-    return handle;
+    try
+    {
+        TRAPD(handle,   handle = session->CreateTransactionL(aJni, aPeer , aUri, aRequestMethod););
+        return handle;
+    }
+    catch(...)
+    {
+        // function server usage may throw an exception.   	
+        ELOG(ESOCKET,"Http JNI Error, exception caught!: _createTransaction");    	
+        return -1;    	
+    }
+    
 }
 
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_http_HttpConnectionNative__1submitTransaction(
@@ -99,11 +114,20 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_http_HttpConnectionNative__1submit
     jint aPostDataLength,
     jint aResponseTimeout)
 {
+		LOG(ESOCKET,EInfo,"http jni _submitTransaction");
     NativeHttpTransaction* tran = reinterpret_cast<NativeHttpTransaction*>(aNativeHttpTransaction);
     int respTimeOut = aResponseTimeout;
     tran->iJniPeer = aJni->NewWeakGlobalRef(aPeer);
-    TRAPD(err,tran->SubmitL(aJni, &aPeer,aHeaders, aPostData, aPostDataLength, respTimeOut));
-    return err;
+    try
+    {
+        TRAPD(err,tran->SubmitL(aJni, &aPeer,aHeaders, aPostData, aPostDataLength, respTimeOut));
+        return err;
+    }
+    catch(...)
+    {
+        ELOG(ESOCKET,"Http JNI Error, exception caught!: _submitTransaction");    	
+        return -1;	    	
+    }    
 }
 
 JNIEXPORT jobjectArray JNICALL Java_com_nokia_mj_impl_http_HttpConnectionNative__1getResponse(
@@ -111,18 +135,24 @@ JNIEXPORT jobjectArray JNICALL Java_com_nokia_mj_impl_http_HttpConnectionNative_
     jobject aPeer,
     jint aNativeHttpTransaction)
 {
+		LOG(ESOCKET,EInfo,"http jni _getResponse");
     jobjectArray rawHeaders=NULL;
-//          java::util::Monitor *iMonitor2;
-//  iMonitor2 = java::util::Monitor::createMonitor();
-//  iMonitor2->wait();
-
     NativeHttpTransaction* tran = reinterpret_cast<NativeHttpTransaction*>(aNativeHttpTransaction);
     tran->iJniPeer = aJni->NewWeakGlobalRef(aPeer);
-    TRAPD(err, rawHeaders =  tran->GetResponseL(aJni));
-    if (err!=KErrNone)
+    try
     {
-        rawHeaders=NULL;
-    }
+		    TRAPD(err, rawHeaders =  tran->GetResponseL(aJni));
+		    if (err!=KErrNone)
+		    {
+		        rawHeaders=NULL;
+		    }
+		}
+		catch(...)
+		{
+				rawHeaders=NULL;
+				ELOG(ESOCKET,"Http JNI Error, exception caught!: _getResponse");    	
+			
+		}
     return rawHeaders;
 }
 
@@ -134,20 +164,27 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_http_HttpConnectionNative__1getByt
     jbyteArray  aBytes,
     jint        aLength)
 {
+		LOG(ESOCKET,EInfo,"http jni _getBytes");
     jbyte* bytes = aEnv->GetByteArrayElements(aBytes, NULL);
-
 
     if (bytes == NULL)
     {
         return -1;
     }
-
-    NativeHttpTransaction* tran = reinterpret_cast<NativeHttpTransaction*>(aNativeHttpTransaction);
-    tran->iJniPeer = aEnv->NewWeakGlobalRef(aPeer);
-    TInt length = tran->ReadBytes(reinterpret_cast<TUint8*>(bytes), aLength);
-
-    aEnv->ReleaseByteArrayElements(aBytes, bytes, NULL);
-    return length;
+		try
+		{
+		    NativeHttpTransaction* tran = reinterpret_cast<NativeHttpTransaction*>(aNativeHttpTransaction);
+		    tran->iJniPeer = aEnv->NewWeakGlobalRef(aPeer);
+		    TInt length = tran->ReadBytes(reinterpret_cast<TUint8*>(bytes), aLength);
+		
+		    aEnv->ReleaseByteArrayElements(aBytes, bytes, NULL);
+		    return length;
+		}
+		catch(...)
+		{
+				ELOG(ESOCKET,"Http JNI Error, exception caught!: _getBytes");    	
+				return -1;					
+		}
 }
 
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_http_HttpConnectionNative__1available(
@@ -157,7 +194,15 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_http_HttpConnectionNative__1availa
 {
     NativeHttpTransaction* tran = reinterpret_cast<NativeHttpTransaction*>(aNativeHttpTransaction);
     tran->iJniPeer = aJni->NewWeakGlobalRef(aPeer);
-    return tran->Available();
+    try
+    {
+    		return tran->Available();
+    }
+    catch(...)
+    {
+    		ELOG(ESOCKET,"Http JNI Error, exception caught!: _available");    	
+    		return -1;    	
+    }
 }
 
 JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_http_HttpConnectionNative__1getUserAgentHeaderValue(

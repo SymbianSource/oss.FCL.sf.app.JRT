@@ -257,7 +257,7 @@ void CSwtDateEditor::SetBackgroundL(const MSwtColor* aColor)
     {
         iBgColorIsCustom = EFalse;
     }
-    
+
     Redraw();
 }
 
@@ -268,7 +268,7 @@ void CSwtDateEditor::SetBackgroundL(const MSwtColor* aColor)
 void CSwtDateEditor::SetForegroundL(const MSwtColor* aColor)
 {
     ASwtControlBase::DoSetForegroundL(aColor);
-    
+
     TRgb color((aColor) ? aColor->RgbValue() : iEikonEnv->Color(EColorControlText));
     iEditor->OverrideColorL(EColorControlText, color);
 
@@ -293,7 +293,7 @@ void CSwtDateEditor::SetForegroundL(const MSwtColor* aColor)
     {
         iFgColorIsCustom = EFalse;
     }
-    
+
     Redraw();
 }
 
@@ -1107,7 +1107,7 @@ TBool CSwtDateEditor::IsKeyUsed(TUint aKeyCode) const
 void CSwtDateEditor::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 {
     TBool hit = ETrue;
-    
+
 #ifdef RD_JAVA_S60_RELEASE_9_2
     TBool pressed = iPressed;
     hit = Rect().Contains(aPointerEvent.iPosition);
@@ -1119,9 +1119,9 @@ void CSwtDateEditor::HandlePointerEventL(const TPointerEvent& aPointerEvent)
     else if (aPointerEvent.iType == TPointerEvent::EDrag)
         iPressed = hit;
 #endif
-    
-    if (!(aPointerEvent.iType == TPointerEvent::EButton1Up 
-        && (iDisplay.RevertPointerEvent() || !hit)))
+
+    if (!(aPointerEvent.iType == TPointerEvent::EButton1Up
+            && (iDisplay.RevertPointerEvent() || !hit)))
     {
         iEditor->HandlePointerEventL(aPointerEvent);
 
@@ -1141,7 +1141,7 @@ void CSwtDateEditor::HandlePointerEventL(const TPointerEvent& aPointerEvent)
     iCurrentFieldLength = 0;
     iCurrentFieldDecimalPlacesCount = 0;
     iLastField = iEditor->CurrentField();
-    
+
 #ifdef RD_JAVA_S60_RELEASE_9_2
     if (pressed != iPressed)
         Redraw();

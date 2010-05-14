@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -21,7 +21,8 @@ import org.eclipse.swt.graphics.Point;
 /**
  * Item representing a Choice group.
  */
-public class ChoiceGroup extends Item implements Choice {
+public class ChoiceGroup extends Item implements Choice
+{
 
     private ChoiceImpl choiceImpl;
     private int type;
@@ -32,7 +33,8 @@ public class ChoiceGroup extends Item implements Choice {
      * @param label the label
      * @param type the type
      */
-    public ChoiceGroup(String label, int type) {
+    public ChoiceGroup(String label, int type)
+    {
         this(label, type, new String[] {}, null);
     }
 
@@ -51,27 +53,30 @@ public class ChoiceGroup extends Item implements Choice {
      * @throws NullPointerException if any of the text elements is null
      */
     public ChoiceGroup(String label, int type,
-            String[] textElements,
-            Image[] imgElements) {
-        switch (type) {
-            case Choice.EXCLUSIVE:
-            case Choice.POPUP:
-                choiceImpl = new ChoiceImpl(false);
-                break;
-            case Choice.MULTIPLE:
-                choiceImpl = new ChoiceImpl(true);
-                break;
-            default:
-                throw new IllegalArgumentException(
-                        MsgRepository.CHOICEGROUP_EXCEPTION_INVALID_TYPE);
+                       String[] textElements,
+                       Image[] imgElements)
+    {
+        switch(type)
+        {
+        case Choice.EXCLUSIVE:
+        case Choice.POPUP:
+            choiceImpl = new ChoiceImpl(false);
+            break;
+        case Choice.MULTIPLE:
+            choiceImpl = new ChoiceImpl(true);
+            break;
+        default:
+            throw new IllegalArgumentException(
+                MsgRepository.CHOICEGROUP_EXCEPTION_INVALID_TYPE);
         }
         choiceImpl.check(textElements, imgElements);
         setLabel(label != null ? label : "");
         this.type = type;
         // append elements
-        for (int i = 0; i < textElements.length; i++) {
+        for(int i = 0; i < textElements.length; i++)
+        {
             append(textElements[i], imgElements != null
-                    ? imgElements[i] : null);
+                   ? imgElements[i] : null);
         }
     }
 
@@ -82,7 +87,8 @@ public class ChoiceGroup extends Item implements Choice {
      * @param img the image
      * @return index of added item
      */
-    public int append(String text, Image img) {
+    public int append(String text, Image img)
+    {
         int ret = choiceImpl.append(text, img);
         updateParent(UPDATE_SIZE_CHANGED);
         return ret;
@@ -95,7 +101,8 @@ public class ChoiceGroup extends Item implements Choice {
      * @param text the text
      * @param img the image
      */
-    public void insert(int position, String text, Image img) {
+    public void insert(int position, String text, Image img)
+    {
         choiceImpl.insert(position, text, img);
         updateParent(UPDATE_SIZE_CHANGED);
     }
@@ -107,7 +114,8 @@ public class ChoiceGroup extends Item implements Choice {
      * @param text the text
      * @param img the image
      */
-    public void set(int position, String text, Image img) {
+    public void set(int position, String text, Image img)
+    {
         choiceImpl.set(position, text, img);
         updateParent(UPDATE_CONTENT);
     }
@@ -117,7 +125,8 @@ public class ChoiceGroup extends Item implements Choice {
      *
      * @param position the item index
      */
-    public void delete(int position) {
+    public void delete(int position)
+    {
         choiceImpl.delete(position);
         updateParent(UPDATE_SIZE_CHANGED);
     }
@@ -125,7 +134,8 @@ public class ChoiceGroup extends Item implements Choice {
     /**
      * Remove all items.
      */
-    public void deleteAll() {
+    public void deleteAll()
+    {
         choiceImpl.deleteAll();
         updateParent(UPDATE_SIZE_CHANGED);
     }
@@ -135,7 +145,8 @@ public class ChoiceGroup extends Item implements Choice {
      *
      * @return the ChoiceGroup's fit policy
      */
-    public int getFitPolicy() {
+    public int getFitPolicy()
+    {
         return choiceImpl.getFitPolicy();
     }
 
@@ -145,7 +156,8 @@ public class ChoiceGroup extends Item implements Choice {
      * @param position the index of the item
      * @return the items font
      */
-    public Font getFont(int position) {
+    public Font getFont(int position)
+    {
         return choiceImpl.getFont(position);
     }
 
@@ -155,7 +167,8 @@ public class ChoiceGroup extends Item implements Choice {
      * @param position the index of the item
      * @return the items image part
      */
-    public Image getImage(int position) {
+    public Image getImage(int position)
+    {
         return choiceImpl.getImage(position);
     }
 
@@ -165,7 +178,8 @@ public class ChoiceGroup extends Item implements Choice {
      * @param position the index of the item
      * @return the items string part
      */
-    public String getString(int position) {
+    public String getString(int position)
+    {
         return choiceImpl.getString(position);
     }
 
@@ -175,7 +189,8 @@ public class ChoiceGroup extends Item implements Choice {
      * @param selectedArray an array with selected items
      * @return selected flags
      */
-    public int getSelectedFlags(boolean[] selectedArray) {
+    public int getSelectedFlags(boolean[] selectedArray)
+    {
         return choiceImpl.getSelectedFlags(selectedArray);
     }
 
@@ -184,7 +199,8 @@ public class ChoiceGroup extends Item implements Choice {
      *
      * @return the selected index
      */
-    public int getSelectedIndex() {
+    public int getSelectedIndex()
+    {
         return choiceImpl.getSelectedIndex();
     }
 
@@ -194,7 +210,8 @@ public class ChoiceGroup extends Item implements Choice {
      * @param position specified element index
      * @return true if its selected, false otherwise
      */
-    public boolean isSelected(int position) {
+    public boolean isSelected(int position)
+    {
         return choiceImpl.isSelected(position);
     }
 
@@ -203,7 +220,8 @@ public class ChoiceGroup extends Item implements Choice {
      *
      * @param newFitPolicy the new fit policy
      */
-    public void setFitPolicy(int newFitPolicy) {
+    public void setFitPolicy(int newFitPolicy)
+    {
         choiceImpl.setFitPolicy(newFitPolicy);
         updateParent(UPDATE_SIZE_CHANGED);
     }
@@ -214,7 +232,8 @@ public class ChoiceGroup extends Item implements Choice {
      * @param position the index of the item
      * @param font the desired font
      */
-    public void setFont(int position, Font font) {
+    public void setFont(int position, Font font)
+    {
         choiceImpl.setFont(position, font);
         updateParent(UPDATE_SIZE_CHANGED);
     }
@@ -224,7 +243,8 @@ public class ChoiceGroup extends Item implements Choice {
      *
      * @param selectedArray an array with selected items
      */
-    public void setSelectedFlags(boolean[] selectedArray) {
+    public void setSelectedFlags(boolean[] selectedArray)
+    {
         choiceImpl.setSelectedFlags(selectedArray);
         updateParent(UPDATE_CONTENT);
     }
@@ -235,7 +255,8 @@ public class ChoiceGroup extends Item implements Choice {
      * @param position the index of the item
      * @param select selected or not
      */
-    public void setSelectedIndex(int position, boolean select) {
+    public void setSelectedIndex(int position, boolean select)
+    {
         choiceImpl.setSelected(position, select);
         updateParent(UPDATE_CONTENT);
     }
@@ -245,7 +266,8 @@ public class ChoiceGroup extends Item implements Choice {
      *
      * @return the lists size
      */
-    public int size() {
+    public int size()
+    {
         return choiceImpl.size();
     }
 
@@ -254,7 +276,8 @@ public class ChoiceGroup extends Item implements Choice {
      *
      * @return Minimum size.
      */
-    Point calculateMinimumSize() {
+    Point calculateMinimumSize()
+    {
         return ChoiceGroupLayouter.calculateMinimumBounds(this);
     }
 
@@ -263,14 +286,16 @@ public class ChoiceGroup extends Item implements Choice {
      *
      * @return Preferred size.
      */
-    Point calculatePreferredSize() {
+    Point calculatePreferredSize()
+    {
         return ChoiceGroupLayouter.calculatePreferredBounds(this);
     }
 
     /**
      * Called by widget listeners to update Item value.
      */
-    void internalSetSelectedIndex(int position, boolean select) {
+    void internalSetSelectedIndex(int position, boolean select)
+    {
         choiceImpl.setSelected(position, select);
         // notify item state listener
         notifyStateChanged();
@@ -281,21 +306,24 @@ public class ChoiceGroup extends Item implements Choice {
      *
      * @return layout directive
      */
-    int internalGetLayout() {
+    int internalGetLayout()
+    {
         return super.internalGetLayout() | Item.LAYOUT_NEWLINE_BEFORE;
     }
 
     /**
      * Return the ChoiceGroup type.
      */
-    final int getType() {
+    final int getType()
+    {
         return type;
     }
 
     /* (non-Javadoc)
      * @see javax.microedition.lcdui.Item#isFocusable()
      */
-    boolean isFocusable() {
+    boolean isFocusable()
+    {
         return true;
     }
 

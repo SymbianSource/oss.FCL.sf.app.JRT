@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -53,9 +53,6 @@ import java.util.Vector;
  * sets path to the converted and renamed icon to suite and application
  * icons. [This must be done in S60 because icon cannot be registered
  * into AppArc unless it can be opened in write mode and it has unique name.]
- *
- * @author Nokia Corporation
- * @version $Rev: 2259 $ $Date: 2008-09-19 12:27:49 +0300 (Fri, 19 Sep 2008) $
  */
 public class ConvertIcons extends ExeStep
 {
@@ -161,12 +158,14 @@ public class ConvertIcons extends ExeStep
         {
             // Set suite icon
             ball.iSuite.setConvertedIconPath(defaultIcon);
+            ball.iSuite.setUseDefaultIcon(true);
 
             // Set application icons
             for (int i = 0; i < newApps.size(); i++)
             {
-                ((ApplicationInfo)newApps.elementAt(i)).setConvertedIconPath(
-                    defaultIcon);
+                ApplicationInfo app = (ApplicationInfo)newApps.elementAt(i);
+                app.setConvertedIconPath(defaultIcon);
+                app.setUseDefaultIcon(true);
             }
         }
         else
@@ -224,6 +223,7 @@ public class ConvertIcons extends ExeStep
                 else
                 {
                     ball.iSuite.setConvertedIconPath(defaultIcon);
+                    ball.iSuite.setUseDefaultIcon(true);
                     // Cannot use suite icon file
                     suiteIconFile = "";
                 }
@@ -231,6 +231,7 @@ public class ConvertIcons extends ExeStep
             else
             {
                 ball.iSuite.setConvertedIconPath(defaultIcon);
+                ball.iSuite.setUseDefaultIcon(true);
             }
 
             // The icon of the application can be specified in two attributes.
@@ -289,6 +290,7 @@ public class ConvertIcons extends ExeStep
                     {
                         // use default icon
                         newApp.setConvertedIconPath(defaultIcon);
+                        newApp.setUseDefaultIcon(true);
                     }
                 }
                 else
@@ -362,6 +364,7 @@ public class ConvertIcons extends ExeStep
                             // use default icon
                             ball.log("Using default icon for midlet number " + (i+1));
                             newApp.setConvertedIconPath(defaultIcon);
+                            newApp.setUseDefaultIcon(true);
                         }
                     }
                 }

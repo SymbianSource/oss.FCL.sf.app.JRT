@@ -372,6 +372,7 @@ public class MultiPageDialog extends Dialog {
         int mask = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT | 
                    SWT.APPLICATION_MODAL | SWT.PRIMARY_MODAL | SWT.SYSTEM_MODAL;
         shell = new Shell(parent, SWT.DIALOG_TRIM | (Internal_PackageSupport.style(this) & mask));
+        Internal_PackageSupport.setWidgetInternalOnly(shell);
         shell.setText(getText());
         shell.setLayout(new FillLayout());
         

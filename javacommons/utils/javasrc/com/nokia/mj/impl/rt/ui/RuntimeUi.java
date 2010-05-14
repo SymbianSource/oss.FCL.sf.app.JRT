@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -21,16 +21,12 @@ import com.nokia.mj.impl.utils.exception.ExceptionBase;
 import com.nokia.mj.impl.utils.Logger;
 
 /**
- * Base class for any UI interfaces.
- *
- * @author Nokia Corporation
- * @version $Rev: 0 $
+ * Base class for RuntimeUI implementation.
  */
 public class RuntimeUi
 {
     /** Id for the log file where log entries are written. */
-    private static final int LOG_ID = Logger.EJavaRuntime;
-    //private static final int LOG_ID = Logger.EJavaInstaller;
+    protected static int iLogId = Logger.EJavaRuntime;
     /** Identified flag. */
     private boolean iIdentified = false;
 
@@ -111,7 +107,7 @@ public class RuntimeUi
      */
     protected static void log(String aMsg)
     {
-        Logger.ILOG(LOG_ID, "RuntimeUi: " + aMsg);
+        Logger.ILOG(iLogId, "RuntimeUi: " + aMsg);
     }
 
     /**
@@ -122,6 +118,6 @@ public class RuntimeUi
      */
     protected static void logError(String aMsg, Throwable aThrowable)
     {
-        Logger.ELOG(LOG_ID, "RuntimeUi: " + aMsg, aThrowable);
+        Logger.ELOG(iLogId, "RuntimeUi: " + aMsg, aThrowable);
     }
 }

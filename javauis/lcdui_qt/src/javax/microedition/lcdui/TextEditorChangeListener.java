@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 
@@ -27,7 +27,8 @@ package javax.microedition.lcdui;
  * {@link TextEditor#setTextEditorChangeListener setTextEditorChangeListener()}.
  */
 
-public interface TextEditorChangeListener {
+public interface TextEditorChangeListener
+{
 
     /**
      * Constant indicating the caret movement direction up.
@@ -55,7 +56,7 @@ public interface TextEditorChangeListener {
      * external front end processors for advanced input methods. The parameters
      * indicate the range of the new modified text. The length parameter is
      * always > 0.
-     * 
+     *
      * @param index the index of the first character that is selected.
      * @param length the length of selection as number of characters.
      */
@@ -65,7 +66,7 @@ public interface TextEditorChangeListener {
      * Called by the implementation to indicate that the caret has been moved.
      * The parameters indicate the new caret index and the movement direction in
      * relation the previous caret position.
-     * 
+     *
      * @param newIndex the character index before which the caret is placed
      *            after the movement
      * @param movementDirection the caret movement direction; must be one of
@@ -78,7 +79,7 @@ public interface TextEditorChangeListener {
      * the TextEditor has been selected. The selection have been set with
      * programmatically or by user interaction. The parameters indicate the
      * range of the current selection.
-     * 
+     *
      * @param index the index of the first character that is selected.
      * @param length the length of selection as number of characters.
      */

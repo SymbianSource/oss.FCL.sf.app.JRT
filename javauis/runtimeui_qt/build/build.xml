@@ -23,9 +23,6 @@
 
   <import file="../../../build/utilities.xml"/>
 
-  <property name="localisation.file.base"
-	    value="javausermessages"/>
-
   <target name="init.component.properties" if="target.s60">
       <property name="javah.classnames"
                 value="com.nokia.mj.impl.rt.ui.qt.RuntimeUiQt"/>

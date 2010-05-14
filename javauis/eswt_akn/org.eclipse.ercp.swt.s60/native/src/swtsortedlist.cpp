@@ -393,7 +393,7 @@ void CSwtSortedList::UpdateSize()
 //
 TInt CSwtSortedList::CountComponentControls() const
 {
-    // The filter is orphaned to force its editor to draw CAknSearchField's 
+    // The filter is orphaned to force its editor to draw CAknSearchField's
     // background instead of our Shell's background.
     return 1;
 }
@@ -405,7 +405,7 @@ TInt CSwtSortedList::CountComponentControls() const
 //
 CCoeControl* CSwtSortedList::ComponentControl(TInt /*aIndex*/) const
 {
-    // The filter is orphaned to force its editor to draw CAknSearchField's 
+    // The filter is orphaned to force its editor to draw CAknSearchField's
     // background instead of our Shell's background.
     return iList;
 }
@@ -603,8 +603,8 @@ void CSwtSortedList::ProcessKeyEventL(
 void CSwtSortedList::DoPaint(const TRect& aRect) const
 {
     CSwtListBase::DoPaint(aRect);
-    
-    // The filter is orphaned to force its editor to draw CAknSearchField's 
+
+    // The filter is orphaned to force its editor to draw CAknSearchField's
     // background instead of our Shell's background. Therefore drawing must
     // be done 'manually'.
     if (iSearchField)
@@ -612,7 +612,7 @@ void CSwtSortedList::DoPaint(const TRect& aRect) const
         CWindowGc& gc = SystemGc();
         iSearchField->SetGc(&gc); // required by effects
         iSearchField->DrawBackground(aRect);
-        iSearchField->DrawForeground(aRect);        
+        iSearchField->DrawForeground(aRect);
         DrawComponentControls(*iSearchField, aRect, gc, EFalse);
     }
 }
@@ -915,11 +915,11 @@ void CSwtSortedList::SetModeStyleL(TInt aModeStyle)
         iSearchField = CAknSearchField::NewL(*this,
                                              CAknSearchField::EAdaptiveSearch, NULL, KSwtSearchFieldTextLimit);
         iSearchField->Editor().AddEdwinObserverL(this);
-        
-        // Orphane the filter to force its editor to draw CAknSearchField's 
+
+        // Orphane the filter to force its editor to draw CAknSearchField's
         // background instead of our Shell's background.
         iSearchField->SetParent(NULL);
-        
+
         iSearchField->AddAdaptiveSearchTextObserverL(this);
         iSearchField->SetComponentsToInheritVisibility(ETrue);
         CAknFilteredTextListBoxModel* model = STATIC_CAST(

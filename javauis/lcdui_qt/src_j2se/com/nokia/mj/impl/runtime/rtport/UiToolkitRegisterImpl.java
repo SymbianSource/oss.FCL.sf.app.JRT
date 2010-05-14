@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 
@@ -27,7 +27,7 @@ public class UiToolkitRegisterImpl implements UiToolkitRegister
 {
     private String mRegisteredToolkit;
     private String[] mRegisteredToolkits;
-    
+
     public void registerUiToolkit(String toolkitId)
     {
         if(mRegisteredToolkit != null)
@@ -50,9 +50,9 @@ public class UiToolkitRegisterImpl implements UiToolkitRegister
 
     public String[] getRegisteredUiToolkits()
     {
-        if (mRegisteredToolkits == null)
+        if(mRegisteredToolkits == null)
         {
-    		return new String[0];
+            return new String[0];
         }
         return mRegisteredToolkits;
     }

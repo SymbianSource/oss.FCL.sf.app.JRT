@@ -17,7 +17,7 @@
 
 
 
-#include<QWidget>
+#include <QWidget>
 #include <coecntrl.h>
 #include <touchfeedback.h>
 #include <com_nokia_mid_ui_internal_OS.h>

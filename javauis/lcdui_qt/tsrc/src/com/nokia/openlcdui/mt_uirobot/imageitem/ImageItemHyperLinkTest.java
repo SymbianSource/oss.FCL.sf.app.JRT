@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt_uirobot.imageitem;
@@ -34,7 +34,8 @@ import com.nokia.mj.impl.uitestutils.Key;
  * <br>
  * Created: 2008-10-20
  */
-public class ImageItemHyperLinkTest extends ItemUITestBase {
+public class ImageItemHyperLinkTest extends ItemUITestBase
+{
 
     private Image smallImage;
     private Image mediumImage;
@@ -43,7 +44,8 @@ public class ImageItemHyperLinkTest extends ItemUITestBase {
     /**
      * Constructor.
      */
-    public ImageItemHyperLinkTest() {
+    public ImageItemHyperLinkTest()
+    {
     }
 
     /**
@@ -52,27 +54,31 @@ public class ImageItemHyperLinkTest extends ItemUITestBase {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public ImageItemHyperLinkTest(String sTestName) {
+    public ImageItemHyperLinkTest(String sTestName)
+    {
         super(sTestName);
     }
 
-    public static Test suite() {
+    public static Test suite()
+    {
         TestSuite suite = new TestSuite();
 
         java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = ImageItemHyperLinkTest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new ImageItemHyperLinkTest((String)e.nextElement()));
-	    }
-        
+        // Add widget tests
+        methodNames = ImageItemHyperLinkTest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new ImageItemHyperLinkTest((String)e.nextElement()));
+        }
+
         return suite;
     }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testCommands");
         methodNames.addElement("testAppearanceModeChangePlain");
@@ -84,16 +90,17 @@ public class ImageItemHyperLinkTest extends ItemUITestBase {
         methodNames.addElement("testLongImageHyperlink");
         return methodNames;
     }
-    
-    public void runTest() throws Throwable {
-        if (getName().equals("testCommands")) testCommands();
-        else if (getName().equals("testAppearanceModeChangePlain")) testAppearanceModeChange(ImageItem.PLAIN);
-        else if (getName().equals("testAppearanceModeChangeButton")) testAppearanceModeChange(ImageItem.BUTTON);
-        else if (getName().equals("testAppearanceModeChangeHyperlink")) testAppearanceModeChange(ImageItem.HYPERLINK);
-        else if (getName().equals("testFocusInAppearanceModeChangePlain")) testFocusInAppearanceModeChange(ImageItem.PLAIN);
-        else if (getName().equals("testFocusInAppearanceModeChangeButton")) testFocusInAppearanceModeChange(ImageItem.BUTTON);
-        else if (getName().equals("testFocusInAppearanceModeChangeHyperlink")) testFocusInAppearanceModeChange(ImageItem.HYPERLINK);
-        else if (getName().equals("testLongImageHyperlink")) testLongImageHyperlink();      
+
+    public void runTest() throws Throwable
+    {
+        if(getName().equals("testCommands")) testCommands();
+        else if(getName().equals("testAppearanceModeChangePlain")) testAppearanceModeChange(ImageItem.PLAIN);
+        else if(getName().equals("testAppearanceModeChangeButton")) testAppearanceModeChange(ImageItem.BUTTON);
+        else if(getName().equals("testAppearanceModeChangeHyperlink")) testAppearanceModeChange(ImageItem.HYPERLINK);
+        else if(getName().equals("testFocusInAppearanceModeChangePlain")) testFocusInAppearanceModeChange(ImageItem.PLAIN);
+        else if(getName().equals("testFocusInAppearanceModeChangeButton")) testFocusInAppearanceModeChange(ImageItem.BUTTON);
+        else if(getName().equals("testFocusInAppearanceModeChangeHyperlink")) testFocusInAppearanceModeChange(ImageItem.HYPERLINK);
+        else if(getName().equals("testLongImageHyperlink")) testLongImageHyperlink();
         else super.runTest();
     }
 
@@ -101,24 +108,31 @@ public class ImageItemHyperLinkTest extends ItemUITestBase {
     /**
      * Any pre-test setup can be done here
      */
-    protected void setUp() throws Exception {
-    	super.setUp();
-        try {
+    protected void setUp() throws Exception
+    {
+        super.setUp();
+        try
+        {
             smallImage = Image.createImage("32x32.jpeg");
         }
-        catch (IOException e) {
+        catch(IOException e)
+        {
             //
         }
-        try {
+        try
+        {
             mediumImage = Image.createImage("100x100.png");
         }
-        catch (IOException e) {
+        catch(IOException e)
+        {
             //
         }
-        try {
+        try
+        {
             longImage = Image.createImage("100x300.png");
         }
-        catch (IOException e) {
+        catch(IOException e)
+        {
             //
         }
     }
@@ -127,9 +141,10 @@ public class ImageItemHyperLinkTest extends ItemUITestBase {
     /**
      * Tests the basic functionality of command added to Hyperlink.
      */
-    public void testCommands() {
+    public void testCommands()
+    {
         ImageItem hyperlink = new ImageItem("label", smallImage, 0, "small",
-                ImageItem.HYPERLINK);
+                                            ImageItem.HYPERLINK);
 
         testCommand(hyperlink);
 
@@ -138,14 +153,14 @@ public class ImageItemHyperLinkTest extends ItemUITestBase {
         form.deleteAll();
         Command dummyCommand = new Command("dummy", "", Command.ITEM, 0);
         ImageItem button1 = new ImageItem(null, smallImage, 0, "small",
-                ImageItem.BUTTON);
+                                          ImageItem.BUTTON);
         ImageItem button2 = new ImageItem(null, smallImage, 0, "small",
-                ImageItem.BUTTON);
+                                          ImageItem.BUTTON);
         button1.addCommand(dummyCommand);
         button2.addCommand(dummyCommand);
 
         ImageItem hyperlink3 = new ImageItem(null, mediumImage, 0, "medium",
-                       ImageItem.HYPERLINK);
+                                             ImageItem.HYPERLINK);
         hyperlink3.addCommand(ok);
         hyperlink3.setItemCommandListener(this);
 
@@ -171,20 +186,22 @@ public class ImageItemHyperLinkTest extends ItemUITestBase {
      *
      * @param mode Appearancemode of ImageItem.
      */
-    public void testAppearanceModeChange(int mode) {
-        switch (mode) {
-            case ImageItem.PLAIN:
-                print("Running test with appearance mode PLAIN.");
-                break;
-            case ImageItem.BUTTON:
-                print("Running test with appearance mode BUTTON.");
-                break;
-            case ImageItem.HYPERLINK:
-                print("Running test with appearance mode HYPERLINK.");
-                break;
-            default:
-                fail("Invalid test (incorrect appearance mode).");
-                break;
+    public void testAppearanceModeChange(int mode)
+    {
+        switch(mode)
+        {
+        case ImageItem.PLAIN:
+            print("Running test with appearance mode PLAIN.");
+            break;
+        case ImageItem.BUTTON:
+            print("Running test with appearance mode BUTTON.");
+            break;
+        case ImageItem.HYPERLINK:
+            print("Running test with appearance mode HYPERLINK.");
+            break;
+        default:
+            fail("Invalid test (incorrect appearance mode).");
+            break;
         }
 
         ImageItem imageItem = new ImageItem("label", smallImage, 0, "url", mode);
@@ -208,39 +225,41 @@ public class ImageItemHyperLinkTest extends ItemUITestBase {
         imageItem.addCommand(ok);
         block(CHANGE_DISPLAYABLE_DELAY);
 
-		key(Key.CBA1);
+        key(Key.CBA1);
         assertItemCmdListener("Added command", ok, imageItem);
     }
 
     /**
-	 * Tests that focus transfer works when commands are added/removed
-	 * dynamically.
-	 *
-	 * @param mode
-	 *            Appearancemode of ImageItem.
-	 */
-    public void testFocusInAppearanceModeChange(int mode) {
-        switch (mode) {
-            case ImageItem.PLAIN:
-                print("Running test with appearance mode PLAIN.");
-                break;
-            case ImageItem.BUTTON:
-                print("Running test with appearance mode BUTTON.");
-                break;
-            case ImageItem.HYPERLINK:
-                print("Running test with appearance mode HYPERLINK.");
-                break;
-            default:
-                fail("Invalid test (incorrect appearance mode).");
-                break;
+     * Tests that focus transfer works when commands are added/removed
+     * dynamically.
+     *
+     * @param mode
+     *            Appearancemode of ImageItem.
+     */
+    public void testFocusInAppearanceModeChange(int mode)
+    {
+        switch(mode)
+        {
+        case ImageItem.PLAIN:
+            print("Running test with appearance mode PLAIN.");
+            break;
+        case ImageItem.BUTTON:
+            print("Running test with appearance mode BUTTON.");
+            break;
+        case ImageItem.HYPERLINK:
+            print("Running test with appearance mode HYPERLINK.");
+            break;
+        default:
+            fail("Invalid test (incorrect appearance mode).");
+            break;
         }
 
         ImageItem imageItem = new ImageItem(null, smallImage, 0, "url", mode);
 
         ImageItem button1 = new ImageItem(null, mediumImage, 0, "button1",
-                ImageItem.BUTTON);
+                                          ImageItem.BUTTON);
         ImageItem button2 = new ImageItem(null, smallImage, 0, "button2",
-                ImageItem.BUTTON);
+                                          ImageItem.BUTTON);
 
         Command ok = new Command("Ok", "", Command.ITEM, 0);
         Command buttonCommand1 = new Command("bc1", "", Command.ITEM, 0);
@@ -309,16 +328,17 @@ public class ImageItemHyperLinkTest extends ItemUITestBase {
      * test that ImageItem of HYPERLINK type working ok with when image is
      * bigger then screensize.
      */
-    public void testLongImageHyperlink() {
+    public void testLongImageHyperlink()
+    {
         ImageItem imageItem = new ImageItem(null, smallImage, 0, "button",
-                ImageItem.BUTTON);
+                                            ImageItem.BUTTON);
 
         ImageItem hyperlink1 = new ImageItem(null, longImage, 0, "hyperlink",
-                ImageItem.HYPERLINK);
+                                             ImageItem.HYPERLINK);
         hyperlink1.setLayout(Item.LAYOUT_RIGHT);
 
         ImageItem hyperlink2 = new ImageItem(null, smallImage, 0, "button2",
-                ImageItem.BUTTON);
+                                             ImageItem.BUTTON);
         hyperlink2.setLayout(Item.LAYOUT_CENTER);
 
         Form forma = new Form("Form A");

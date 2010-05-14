@@ -52,6 +52,10 @@
                    com.nokia.amms.ModuleBase"/>
 
 
+  <target name="create.public.api.jar">
+    <omj.public.apis includes="javax/microedition/amms/**/*.class"/>
+  </target>
+
   <target name="system.properties">
     <properties>
         audio.samplerates=8000 16000

@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.mj.impl.properties.lcduib;
@@ -26,12 +26,14 @@ import com.nokia.mj.impl.rt.support.SystemPropertyProvider;
  * "com.nokia.key.scancode"<br>
  * "com.nokia.key.modifier"
  */
-public final class LcduiDynamicProperty implements SystemPropertyProvider {
+public final class LcduiDynamicProperty implements SystemPropertyProvider
+{
 
     /* (non-Javadoc)
      * @see com.nokia.mj.impl.rt.support.SystemPropertyProvider#getProperty(java.lang.String)
      */
-    public String getProperty(String propertyName) {
+    public String getProperty(String propertyName)
+    {
         // Set the property value.
         return LCDUIInvoker.getDynamicProperty(propertyName);
     }

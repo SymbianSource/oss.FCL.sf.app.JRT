@@ -46,9 +46,10 @@ public class UninstallConfirmationView extends ConfirmationViewBase
     }
 
     /** Constructor */
-    protected UninstallConfirmationView(InstallerUiEswt aInstaller, Composite aParent)
+    protected UninstallConfirmationView(
+        InstallerUiEswt aInstallerUi, Composite aParent)
     {
-        super(aInstaller, aParent, 8);
+        super(aInstallerUi, aParent, 8);
         setTitle(InstallerUiTexts.get(InstallerUiTexts.UNINSTALL));
         setCommands(InstallerUiTexts.get(InstallerUiTexts.OK),
                     InstallerUiTexts.get(InstallerUiTexts.CANCEL));

@@ -44,7 +44,8 @@ public: // Constructor and destructor
     /**
      * Two-phased constructor.
      */
-    static CPIMToDoListAdapter* NewL(java::util::FunctionServer* aFuncServer);
+    static CPIMToDoListAdapter* NewL(java::util::FunctionServer* aFuncServer,
+        CCalSession *aCalSession);
 
     /**
      * Destructor.
@@ -134,8 +135,7 @@ public: // Functions from MPIMToDoListAdapter
      */
     void CreateToDoItemL(MPIMToDoItem& aToDoItem);
 
-    void CPIMToDoListAdapter::DoCreateToDoItemL(
-        MPIMToDoItem& aToDoItem);
+    void DoCreateToDoItemL(MPIMToDoItem& aToDoItem);
 
     /**
      * Reads an existing To-Do item from the Agenda File.
@@ -160,8 +160,7 @@ public: // Functions from MPIMToDoListAdapter
      */
     void ReadToDoItemL(MPIMToDoItem& aToDoItem);
 
-    void CPIMToDoListAdapter::DoReadToDoItemL(
-        MPIMToDoItem& aToDoItem);
+    void DoReadToDoItemL(MPIMToDoItem& aToDoItem);
 
     /**
      * Writes an existing To-Do item to the native Agenda File.
@@ -187,8 +186,7 @@ public: // Functions from MPIMToDoListAdapter
      */
     void WriteToDoItemL(MPIMToDoItem& aToDoItem);
 
-    void CPIMToDoListAdapter::DoWriteToDoItemL(
-        MPIMToDoItem& aToDoItem);
+    void DoWriteToDoItemL(MPIMToDoItem& aToDoItem);
 
     /**
      * Removes an existing To-Do from the native Agenda File.
@@ -208,8 +206,7 @@ public: // Functions from MPIMToDoListAdapter
      */
     void RemoveToDoItemL(TPIMItemID aItemID);
 
-    void CPIMToDoListAdapter::DoRemoveToDoItemL(
-        TPIMItemID aItemID);
+    void DoRemoveToDoItemL(TPIMItemID aItemID);
 
 protected:
 
@@ -221,7 +218,7 @@ protected:
     /**
      * By default Symbian 2nd phase constructor is private.
      */
-    void ConstructL();
+    void ConstructL(TInt aCalSessionInt );
 
 private: // Member data
 

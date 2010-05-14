@@ -56,9 +56,6 @@ import org.eclipse.swt.widgets.Shell;
 
 /**
  * JavaInstaller eSWT UI.
- *
- * @author Nokia Corporation
- * @version $Rev: 0 $
  */
 public class InstallerUiEswt extends InstallerUi
 {
@@ -663,7 +660,7 @@ public class InstallerUiEswt extends InstallerUi
         {
             return;
         }
-        if (iDlProgressView != null)
+        if (iDlProgressView != null && !iDlProgressView.isDisposed())
         {
             iDlProgressView.dispose();
             iDlProgressView = null;

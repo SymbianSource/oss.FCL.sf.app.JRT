@@ -37,7 +37,7 @@ public final class SMSTextMessageImpl extends SMSMessageImpl implements
      * @return Returns the message payload data as a String
      *         or null if it is not set
      */
-    public String getPayloadTextData()
+    String getPayloadTextData()
     {
         return getPayloadText();
     }
@@ -45,7 +45,7 @@ public final class SMSTextMessageImpl extends SMSMessageImpl implements
      * Method to get the message payload Data
      * @returns null if it is not supported
      */
-    public byte[] getPayloadBinaryData()
+    byte[] getPayloadBinaryData()
     {
         return null;
     }

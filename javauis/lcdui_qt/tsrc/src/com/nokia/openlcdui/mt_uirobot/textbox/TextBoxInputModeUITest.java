@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt_uirobot.textbox;
@@ -59,7 +59,8 @@ import com.nokia.mj.impl.uitestutils.Key;
  *
  * Note: The references images differ from 3.0 to 3.1
  */
-public class TextBoxInputModeUITest extends UITestBase {
+public class TextBoxInputModeUITest extends UITestBase
+{
 
     private static final int LENGTH = 2000;
     /* Possible build variants */
@@ -92,10 +93,10 @@ public class TextBoxInputModeUITest extends UITestBase {
         "" + (char) 38463 + (char) 24694 + (char) 21704 + (char) 25289;
     private static final String HONGKONG_adgj =
         "" + (char) 26159 + (char) 21542 + (char) 30340 + (char) 35441
-           + (char) 28858 + (char) 20102 + (char) 20057 + (char) 28911;
+        + (char) 28858 + (char) 20102 + (char) 20057 + (char) 28911;
     private static final String TAIWAN_adgj =
         "" + (char) 12553 + (char) 30340 + (char) 12557 + (char) 30340
-           + (char) 12560 + (char) 30340 + (char) 12563 + (char) 30340;
+        + (char) 12560 + (char) 30340 + (char) 12563 + (char) 30340;
     private static final String KANJI_adgj =
         "" + (char) 12363 + (char) 12373 + (char) 12383 + (char) 12394;
     private static final String KATAKANA_adgj =
@@ -114,8 +115,9 @@ public class TextBoxInputModeUITest extends UITestBase {
     /**
      * Constructor.
      */
-    public TextBoxInputModeUITest() {
-    	super();
+    public TextBoxInputModeUITest()
+    {
+        super();
     }
 
     /**
@@ -124,27 +126,31 @@ public class TextBoxInputModeUITest extends UITestBase {
      * @param sTestName name of the test
      * @param rTestMethod TestMethod used
      */
-    public TextBoxInputModeUITest(String sTestName) {
+    public TextBoxInputModeUITest(String sTestName)
+    {
         super(sTestName);
     }
 
-    public static Test suite() {
+    public static Test suite()
+    {
         TestSuite suite = new TestSuite();
 
         java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = TextBoxInputModeUITest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new TextBoxInputModeUITest((String)e.nextElement()));
-	    }
-        
+        // Add widget tests
+        methodNames = TextBoxInputModeUITest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new TextBoxInputModeUITest((String)e.nextElement()));
+        }
+
         return suite;
     }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testIS_TRADITIONAL_HANZI");
         methodNames.addElement("testDefaultInputMode");
@@ -190,52 +196,53 @@ public class TextBoxInputModeUITest extends UITestBase {
         methodNames.addElement("testcommaInLowerAndUpperCase");
         return methodNames;
     }
-    
-    public void runTest() throws Throwable {
-        if (getName().equals("testDefaultInputMode")) testDefaultInputMode();
-        else if (getName().equals("testIS_LATIN_DIGITS")) testIS_LATIN_DIGITS();
-        else if (getName().equals("testMIDP_UPPERCASE_LATIN")) testMIDP_UPPERCASE_LATIN();
-        else if (getName().equals("testMIDP_LOWERCASE_LATIN")) testMIDP_LOWERCASE_LATIN();
-        else if (getName().equals("testUCB_BASIC_LATIN")) testUCB_BASIC_LATIN();
-        else if (getName().equals("testUCB_GREEK")) testUCB_GREEK();
-        else if (getName().equals("testUCB_CYRILLIC")) testUCB_CYRILLIC();
-        else if (getName().equals("testUCB_HEBREW")) testUCB_HEBREW();
-        else if (getName().equals("testUCB_ARABIC")) testUCB_ARABIC();
-        else if (getName().equals("testUCB_DEVANAGARI")) testUCB_DEVANAGARI();
-        else if (getName().equals("testUCB_ARMENIAN")) testUCB_ARMENIAN();
-        else if (getName().equals("testUCB_THAI")) testUCB_THAI();
-        else if (getName().equals("testUCB_HIRAGANA")) testUCB_HIRAGANA();
-        else if (getName().equals("testUCB_KATAKANA")) testUCB_KATAKANA();
-        else if (getName().equals("testIS_HALFWIDTH_KATAKANA")) testIS_HALFWIDTH_KATAKANA();
-        else if (getName().equals("testIS_KANJI")) testIS_KANJI();
-        else if (getName().equals("testIS_FULLWIDTH_DIGITS")) testIS_FULLWIDTH_DIGITS();
-        else if (getName().equals("testIS_FULLWIDTH_LATIN")) testIS_FULLWIDTH_LATIN();
-        else if (getName().equals("testIS_SIMPLIFIED_HANZI")) testIS_SIMPLIFIED_HANZI();
-        else if (getName().equals("testIS_TRADITIONAL_HANZI")) testIS_TRADITIONAL_HANZI();
-        else if (getName().equals("testnull")) testnull();
-        else if (getName().equals("testUNKNOWN")) testUNKNOWN();
-        else if (getName().equals("testempty")) testempty();
-        else if (getName().equals("testinputModeChange")) testinputModeChange();
-        else if (getName().equals("testinputModeAndMenuOpen")) testinputModeAndMenuOpen();
-        else if (getName().equals("testinputModesInNumber")) testinputModesInNumber();
-        else if (getName().equals("testinputModesInEmailaddr2")) testinputModesInEmailaddr2();
-        else if (getName().equals("testinputModesInUrl")) testinputModesInUrl();
-        else if (getName().equals("testinputModesInUrl2")) testinputModesInUrl2();
-        else if (getName().equals("testinputModesInPassword")) testinputModesInPassword();
-        else if (getName().equals("testinputModesInPassword2")) testinputModesInPassword2();
-        else if (getName().equals("testinputModesInAny")) testinputModesInAny();
-        else if (getName().equals("testinputModesInAny2")) testinputModesInAny2();
-        else if (getName().equals("testinputModesInCapsSentence")) testinputModesInCapsSentence();
-        else if (getName().equals("testinputModesInCapsWord")) testinputModesInCapsWord();
-        else if (getName().equals("testinputModesInCapsSentenceEmailaddr")) testinputModesInCapsSentenceEmailaddr();
-        else if (getName().equals("testinputModesInCapsSentenceUrl")) testinputModesInCapsSentenceUrl();
-        else if (getName().equals("testinputLatinAfterOtherModes")) testinputLatinAfterOtherModes();
-        else if (getName().equals("testinputLatinAfterOtherModes2")) testinputLatinAfterOtherModes2();
-        else if (getName().equals("testinputModeNullSetting")) testinputModeNullSetting();
-        else if (getName().equals("testcommaInLowerAndUpperCase")) testcommaInLowerAndUpperCase();
+
+    public void runTest() throws Throwable
+    {
+        if(getName().equals("testDefaultInputMode")) testDefaultInputMode();
+        else if(getName().equals("testIS_LATIN_DIGITS")) testIS_LATIN_DIGITS();
+        else if(getName().equals("testMIDP_UPPERCASE_LATIN")) testMIDP_UPPERCASE_LATIN();
+        else if(getName().equals("testMIDP_LOWERCASE_LATIN")) testMIDP_LOWERCASE_LATIN();
+        else if(getName().equals("testUCB_BASIC_LATIN")) testUCB_BASIC_LATIN();
+        else if(getName().equals("testUCB_GREEK")) testUCB_GREEK();
+        else if(getName().equals("testUCB_CYRILLIC")) testUCB_CYRILLIC();
+        else if(getName().equals("testUCB_HEBREW")) testUCB_HEBREW();
+        else if(getName().equals("testUCB_ARABIC")) testUCB_ARABIC();
+        else if(getName().equals("testUCB_DEVANAGARI")) testUCB_DEVANAGARI();
+        else if(getName().equals("testUCB_ARMENIAN")) testUCB_ARMENIAN();
+        else if(getName().equals("testUCB_THAI")) testUCB_THAI();
+        else if(getName().equals("testUCB_HIRAGANA")) testUCB_HIRAGANA();
+        else if(getName().equals("testUCB_KATAKANA")) testUCB_KATAKANA();
+        else if(getName().equals("testIS_HALFWIDTH_KATAKANA")) testIS_HALFWIDTH_KATAKANA();
+        else if(getName().equals("testIS_KANJI")) testIS_KANJI();
+        else if(getName().equals("testIS_FULLWIDTH_DIGITS")) testIS_FULLWIDTH_DIGITS();
+        else if(getName().equals("testIS_FULLWIDTH_LATIN")) testIS_FULLWIDTH_LATIN();
+        else if(getName().equals("testIS_SIMPLIFIED_HANZI")) testIS_SIMPLIFIED_HANZI();
+        else if(getName().equals("testIS_TRADITIONAL_HANZI")) testIS_TRADITIONAL_HANZI();
+        else if(getName().equals("testnull")) testnull();
+        else if(getName().equals("testUNKNOWN")) testUNKNOWN();
+        else if(getName().equals("testempty")) testempty();
+        else if(getName().equals("testinputModeChange")) testinputModeChange();
+        else if(getName().equals("testinputModeAndMenuOpen")) testinputModeAndMenuOpen();
+        else if(getName().equals("testinputModesInNumber")) testinputModesInNumber();
+        else if(getName().equals("testinputModesInEmailaddr2")) testinputModesInEmailaddr2();
+        else if(getName().equals("testinputModesInUrl")) testinputModesInUrl();
+        else if(getName().equals("testinputModesInUrl2")) testinputModesInUrl2();
+        else if(getName().equals("testinputModesInPassword")) testinputModesInPassword();
+        else if(getName().equals("testinputModesInPassword2")) testinputModesInPassword2();
+        else if(getName().equals("testinputModesInAny")) testinputModesInAny();
+        else if(getName().equals("testinputModesInAny2")) testinputModesInAny2();
+        else if(getName().equals("testinputModesInCapsSentence")) testinputModesInCapsSentence();
+        else if(getName().equals("testinputModesInCapsWord")) testinputModesInCapsWord();
+        else if(getName().equals("testinputModesInCapsSentenceEmailaddr")) testinputModesInCapsSentenceEmailaddr();
+        else if(getName().equals("testinputModesInCapsSentenceUrl")) testinputModesInCapsSentenceUrl();
+        else if(getName().equals("testinputLatinAfterOtherModes")) testinputLatinAfterOtherModes();
+        else if(getName().equals("testinputLatinAfterOtherModes2")) testinputLatinAfterOtherModes2();
+        else if(getName().equals("testinputModeNullSetting")) testinputModeNullSetting();
+        else if(getName().equals("testcommaInLowerAndUpperCase")) testcommaInLowerAndUpperCase();
         else super.runTest();
     }
-    
+
 
     // ==============================================================
 
@@ -243,34 +250,39 @@ public class TextBoxInputModeUITest extends UITestBase {
      * Tests default input mode, i.e. setInitialInputMode not called. The
      * default input mode depends on the build variant in use.
      */
-    private void testDefaultInputMode() {
+    private void testDefaultInputMode()
+    {
         String expectedContent = "Adgj";
-        if (variant == CHINA_VARIANT) {
+        if(variant == CHINA_VARIANT)
+        {
             expectedContent = CHINA_adgj;
         }
-        else if (variant == JAPAN_VARIANT) {
+        else if(variant == JAPAN_VARIANT)
+        {
             expectedContent = KANJI_adgj;
         }
-        else if (variant == THAI_VARIANT) {
+        else if(variant == THAI_VARIANT)
+        {
             expectedContent = THAI_adgj;
         }
         doInputModeTest(getName(),
-                TextField.ANY, "NONE", // no initial input mode setting
-                "",                             // initial content
-                inputKeys(new int[] {'2', '3', '4', '5'}), // key presses
-                expectedContent);
+                        TextField.ANY, "NONE", // no initial input mode setting
+                        "",                             // initial content
+                        inputKeys(new int[] {'2', '3', '4', '5'}), // key presses
+                        expectedContent);
     }
 
     /**
      * Tests setInitialInputMode("IS_LATIN_DIGITS"). The method is called before
      * displaying the text box. Number input mode will be used.
      */
-    private void testIS_LATIN_DIGITS() {
+    private void testIS_LATIN_DIGITS()
+    {
         doInputModeTest(getName(),
-                TextField.ANY, "IS_LATIN_DIGITS",
-                "",                             // initial content
-                new int[]{'2', '3', '4', '5'},  // key presses
-                "2345");                        // expected content
+                        TextField.ANY, "IS_LATIN_DIGITS",
+                        "",                             // initial content
+                        new int[] {'2', '3', '4', '5'}, // key presses
+                        "2345");                        // expected content
     }
 
     /**
@@ -278,12 +290,13 @@ public class TextBoxInputModeUITest extends UITestBase {
      * The method is called before displaying the text box.
      * Latin text input mode will be used
      */
-    private void testIS_LATIN() {
+    private void testIS_LATIN()
+    {
         doInputModeTest(getName(),
-                TextField.ANY, "IS_LATIN",
-                "",                             // initial content
-                new int[]{'2', '3', '4', '5'},  // key presses
-                "Adgj");                        // expected content
+                        TextField.ANY, "IS_LATIN",
+                        "",                             // initial content
+                        new int[] {'2', '3', '4', '5'}, // key presses
+                        "Adgj");                        // expected content
     }
 
     /**
@@ -291,12 +304,13 @@ public class TextBoxInputModeUITest extends UITestBase {
      * The method is called before displaying the text box.
      * Uppercase latin text input mode will be used.
      */
-    private void testMIDP_UPPERCASE_LATIN() {
+    private void testMIDP_UPPERCASE_LATIN()
+    {
         doInputModeTest(getName(),
-                TextField.ANY, "MIDP_UPPERCASE_LATIN",
-                "",                             // initial content
-                new int[]{'2', '3', '4', '5'},  // key presses
-                "ADGJ");                        // expected content
+                        TextField.ANY, "MIDP_UPPERCASE_LATIN",
+                        "",                             // initial content
+                        new int[] {'2', '3', '4', '5'}, // key presses
+                        "ADGJ");                        // expected content
     }
 
     /**
@@ -304,12 +318,13 @@ public class TextBoxInputModeUITest extends UITestBase {
      * The method is called before displaying the text box.
      * Lowercase latin text input mode will be used.
      */
-    private void testMIDP_LOWERCASE_LATIN() {
+    private void testMIDP_LOWERCASE_LATIN()
+    {
         doInputModeTest(getName(),
-                TextField.ANY, "MIDP_LOWERCASE_LATIN",
-                "",                             // initial content
-                new int[]{'2', '3', '4', '5'},  // key presses
-                "adgj");                        // expected content
+                        TextField.ANY, "MIDP_LOWERCASE_LATIN",
+                        "",                             // initial content
+                        new int[] {'2', '3', '4', '5'}, // key presses
+                        "adgj");                        // expected content
     }
 
     /**.
@@ -317,12 +332,13 @@ public class TextBoxInputModeUITest extends UITestBase {
      * The method is called before displaying the text box.
      * Latin text input mode will be used (same as "IS_LATIN").
      */
-    private void testUCB_BASIC_LATIN() {
+    private void testUCB_BASIC_LATIN()
+    {
         doInputModeTest(getName(),
-                TextField.ANY, "UCB_BASIC_LATIN",
-                "",                             // initial content
-                new int[]{'2', '3', '4', '5'},  // key presses
-                "Adgj");                        // expected content
+                        TextField.ANY, "UCB_BASIC_LATIN",
+                        "",                             // initial content
+                        new int[] {'2', '3', '4', '5'}, // key presses
+                        "Adgj");                        // expected content
     }
 
     /**
@@ -330,12 +346,13 @@ public class TextBoxInputModeUITest extends UITestBase {
      * The method is called before displaying the text box.
      * Greek input mode will be used.
      */
-    private void testUCB_GREEK() {
+    private void testUCB_GREEK()
+    {
         doInputModeTest(getName(),
-                TextField.ANY, "UCB_GREEK",
-                "",                             // initial content
-                new int[]{'2', '3', '4', '5'},  // key presses
-                GREEK_Adgj);                    // expected content
+                        TextField.ANY, "UCB_GREEK",
+                        "",                             // initial content
+                        new int[] {'2', '3', '4', '5'}, // key presses
+                        GREEK_Adgj);                    // expected content
     }
 
     /**
@@ -343,12 +360,13 @@ public class TextBoxInputModeUITest extends UITestBase {
      * The method is called before displaying the text box.
      * Cyrillic input mode will be used.
      */
-    private void testUCB_CYRILLIC() {
+    private void testUCB_CYRILLIC()
+    {
         doInputModeTest(getName(),
-                TextField.ANY, "UCB_CYRILLIC",
-                "",                             // initial content
-                new int[]{'2', '3', '4', '5'},  // key presses
-                CYRILLIC_Adgj);                 // expected content
+                        TextField.ANY, "UCB_CYRILLIC",
+                        "",                             // initial content
+                        new int[] {'2', '3', '4', '5'}, // key presses
+                        CYRILLIC_Adgj);                 // expected content
     }
 
     /**
@@ -356,12 +374,13 @@ public class TextBoxInputModeUITest extends UITestBase {
      * The method is called before displaying the text box.
      * Hebrew input mode will be used.
      */
-    private void testUCB_HEBREW() {
+    private void testUCB_HEBREW()
+    {
         doInputModeTest(getName(),
-                TextField.ANY, "UCB_HEBREW",
-                "",                             // initial content
-                new int[]{'2', '3', '4', '5'},  // key presess
-                HEBREW_adgj);                   // expected content
+                        TextField.ANY, "UCB_HEBREW",
+                        "",                             // initial content
+                        new int[] {'2', '3', '4', '5'}, // key presess
+                        HEBREW_adgj);                   // expected content
     }
 
     /**
@@ -369,12 +388,13 @@ public class TextBoxInputModeUITest extends UITestBase {
      * The method is called before displaying the text box.
      * Arabic input mode will be used.
      */
-    private void testUCB_ARABIC() {
+    private void testUCB_ARABIC()
+    {
         doInputModeTest(getName(),
-                TextField.ANY, "UCB_ARABIC",
-                "",                             // initial content
-                new int[]{'2', '3', '4', '5'},  // key presses
-                ARABIC_adgj);                   // expected content
+                        TextField.ANY, "UCB_ARABIC",
+                        "",                             // initial content
+                        new int[] {'2', '3', '4', '5'}, // key presses
+                        ARABIC_adgj);                   // expected content
     }
 
     /**
@@ -382,14 +402,15 @@ public class TextBoxInputModeUITest extends UITestBase {
      * The method is called before displaying the text box.
      * Devanagari/Hindi input mode will be used.
      */
-    private void testUCB_DEVANAGARI() {
+    private void testUCB_DEVANAGARI()
+    {
 
         String expectedContent = "\u0905\u090f\u0915\u091a";
         doInputModeTest(getName(),
-                TextField.ANY, "UCB_DEVANAGARI",
-                "",            // initial content
-                inputKeys(new int[]{'2', '3', '4', '5'}),  // key presses
-                expectedContent);  // expected content
+                        TextField.ANY, "UCB_DEVANAGARI",
+                        "",            // initial content
+                        inputKeys(new int[] {'2', '3', '4', '5'}), // key presses
+                        expectedContent);  // expected content
     }
 
     /**
@@ -398,23 +419,27 @@ public class TextBoxInputModeUITest extends UITestBase {
      * This input mode is not supported in 3.0, so default input mode
      * will be used.
      */
-    private void testUCB_ARMENIAN() {
+    private void testUCB_ARMENIAN()
+    {
 
         String expectedContent = "Adgj";
-        if (variant == CHINA_VARIANT) {
+        if(variant == CHINA_VARIANT)
+        {
             expectedContent = CHINA_adgj;
         }
-        else if (variant == JAPAN_VARIANT) {
+        else if(variant == JAPAN_VARIANT)
+        {
             expectedContent = KANJI_adgj;
         }
-        else if (variant == THAI_VARIANT) {
+        else if(variant == THAI_VARIANT)
+        {
             expectedContent = THAI_adgj;
         }
         doInputModeTest(getName(),
-                TextField.ANY, "UCB_ARMENIAN",
-                "",                             // initial content
-                inputKeys(new int[]{'2', '3', '4', '5'}), // key presses
-                expectedContent);
+                        TextField.ANY, "UCB_ARMENIAN",
+                        "",                             // initial content
+                        inputKeys(new int[] {'2', '3', '4', '5'}), // key presses
+                        expectedContent);
     }
 
     /**
@@ -423,23 +448,27 @@ public class TextBoxInputModeUITest extends UITestBase {
      * This input mode is supported only in Thai variant; other variants
      * will use the default input mode.
      */
-    private void testUCB_THAI() {
+    private void testUCB_THAI()
+    {
 
         String expectedContent = "Adgj";
-        if (variant == CHINA_VARIANT) {
+        if(variant == CHINA_VARIANT)
+        {
             expectedContent = CHINA_adgj;
         }
-        else if (variant == JAPAN_VARIANT) {
+        else if(variant == JAPAN_VARIANT)
+        {
             expectedContent = KANJI_adgj;
         }
-        else if (variant == THAI_VARIANT) {
+        else if(variant == THAI_VARIANT)
+        {
             expectedContent = THAI_adgj;
         }
         doInputModeTest(getName(),
-                TextField.ANY, "UCB_THAI",
-                "",                             // initial content
-                inputKeys(new int[]{'2', '3', '4', '5'}),  // key presses
-                expectedContent);
+                        TextField.ANY, "UCB_THAI",
+                        "",                             // initial content
+                        inputKeys(new int[] {'2', '3', '4', '5'}), // key presses
+                        expectedContent);
     }
 
     /**
@@ -448,23 +477,27 @@ public class TextBoxInputModeUITest extends UITestBase {
      * This input mode is supported only in Japan variant; other variants
      * will use the default input mode.
      */
-    private void testUCB_HIRAGANA() {
+    private void testUCB_HIRAGANA()
+    {
 
         String expectedContent = "Adgj";
-        if (variant == CHINA_VARIANT) {
+        if(variant == CHINA_VARIANT)
+        {
             expectedContent = CHINA_adgj;
         }
-        else if (variant == JAPAN_VARIANT) {
+        else if(variant == JAPAN_VARIANT)
+        {
             expectedContent = KANJI_adgj;
         }
-        else if (variant == THAI_VARIANT) {
+        else if(variant == THAI_VARIANT)
+        {
             expectedContent = THAI_adgj;
         }
         doInputModeTest(getName(),
-                TextField.ANY, "UCB_HIRAGANA",
-                "",                             // initial content
-                inputKeys(new int[]{'2', '3', '4', '5'}),  // key presses
-                expectedContent);
+                        TextField.ANY, "UCB_HIRAGANA",
+                        "",                             // initial content
+                        inputKeys(new int[] {'2', '3', '4', '5'}), // key presses
+                        expectedContent);
     }
 
     /**
@@ -473,23 +506,27 @@ public class TextBoxInputModeUITest extends UITestBase {
      * This input mode is supported only in Japan variant; other variants
      * will use the default input mode.
      */
-    private void testUCB_KATAKANA() {
+    private void testUCB_KATAKANA()
+    {
 
         String expectedContent = "Adgj";
-        if (variant == CHINA_VARIANT) {
+        if(variant == CHINA_VARIANT)
+        {
             expectedContent = CHINA_adgj;
         }
-        else if (variant == JAPAN_VARIANT) {
+        else if(variant == JAPAN_VARIANT)
+        {
             expectedContent = KATAKANA_adgj;
         }
-        else if (variant == THAI_VARIANT) {
+        else if(variant == THAI_VARIANT)
+        {
             expectedContent = THAI_adgj;
         }
         doInputModeTest(getName(),
-                TextField.ANY, "UCB_KATAKANA",
-                "",                             // initial content
-                inputKeys(new int[]{'2', '3', '4', '5'}),  // key presses
-                expectedContent);
+                        TextField.ANY, "UCB_KATAKANA",
+                        "",                             // initial content
+                        inputKeys(new int[] {'2', '3', '4', '5'}), // key presses
+                        expectedContent);
     }
 
     /**
@@ -498,23 +535,27 @@ public class TextBoxInputModeUITest extends UITestBase {
      * This input mode is supported only in Japan variant; other variants
      * will use the default input mode.
      */
-    private void testIS_HALFWIDTH_KATAKANA() {
+    private void testIS_HALFWIDTH_KATAKANA()
+    {
 
         String expectedContent = "Adgj";
-        if (variant == CHINA_VARIANT) {
+        if(variant == CHINA_VARIANT)
+        {
             expectedContent = CHINA_adgj;
         }
-        else if (variant == JAPAN_VARIANT) {
+        else if(variant == JAPAN_VARIANT)
+        {
             expectedContent = HALFWIDTH_KATAKANA_adgj;
         }
-        else if (variant == THAI_VARIANT) {
+        else if(variant == THAI_VARIANT)
+        {
             expectedContent = THAI_adgj;
         }
         doInputModeTest(getName(),
-                TextField.ANY, "IS_HALFWIDTH_KATAKANA",
-                "",                             // initial content
-                inputKeys(new int[]{'2', '3', '4', '5'}),  // key presses
-                expectedContent);
+                        TextField.ANY, "IS_HALFWIDTH_KATAKANA",
+                        "",                             // initial content
+                        inputKeys(new int[] {'2', '3', '4', '5'}), // key presses
+                        expectedContent);
     }
 
     /**
@@ -523,23 +564,27 @@ public class TextBoxInputModeUITest extends UITestBase {
      * This input mode is supported only in Japan variant; other variants
      * will use the default input mode.
      */
-    private void testIS_KANJI() {
+    private void testIS_KANJI()
+    {
 
         String expectedContent = "Adgj";
-        if (variant == CHINA_VARIANT) {
+        if(variant == CHINA_VARIANT)
+        {
             expectedContent = CHINA_adgj;
         }
-        else if (variant == JAPAN_VARIANT) {
+        else if(variant == JAPAN_VARIANT)
+        {
             expectedContent = KANJI_adgj;
         }
-        else if (variant == THAI_VARIANT) {
+        else if(variant == THAI_VARIANT)
+        {
             expectedContent = THAI_adgj;
         }
         doInputModeTest(getName(),
-                TextField.ANY, "IS_KANJI",
-                "",                             // initial content
-                inputKeys(new int[]{'2', '3', '4', '5'}),  // key presses
-                expectedContent);
+                        TextField.ANY, "IS_KANJI",
+                        "",                             // initial content
+                        inputKeys(new int[] {'2', '3', '4', '5'}), // key presses
+                        expectedContent);
     }
 
     /**
@@ -548,23 +593,27 @@ public class TextBoxInputModeUITest extends UITestBase {
      * This input mode is supported only in Japan variant; other variants
      * will use the default input mode.
      */
-    private void testIS_FULLWIDTH_DIGITS() {
+    private void testIS_FULLWIDTH_DIGITS()
+    {
 
         String expectedContent = "Adgj";
-        if (variant == CHINA_VARIANT) {
+        if(variant == CHINA_VARIANT)
+        {
             expectedContent = CHINA_adgj;
         }
-        else if (variant == JAPAN_VARIANT) {
+        else if(variant == JAPAN_VARIANT)
+        {
             expectedContent = FULLWIDTH_2345;
         }
-        else if (variant == THAI_VARIANT) {
+        else if(variant == THAI_VARIANT)
+        {
             expectedContent = THAI_adgj;
         }
         doInputModeTest(getName(),
-                TextField.ANY, "IS_FULLWIDTH_DIGITS",
-                "",                             // initial content
-                inputKeys(new int[]{'2', '3', '4', '5'}),  // key presses
-                expectedContent);
+                        TextField.ANY, "IS_FULLWIDTH_DIGITS",
+                        "",                             // initial content
+                        inputKeys(new int[] {'2', '3', '4', '5'}), // key presses
+                        expectedContent);
     }
 
     /**
@@ -573,23 +622,27 @@ public class TextBoxInputModeUITest extends UITestBase {
      * This input mode is supported only in Japan variant; other variants
      * will use the default input mode.
      */
-    private void testIS_FULLWIDTH_LATIN() {
+    private void testIS_FULLWIDTH_LATIN()
+    {
 
         String expectedContent = "Adgj";
-        if (variant == CHINA_VARIANT) {
+        if(variant == CHINA_VARIANT)
+        {
             expectedContent = CHINA_adgj;
         }
-        else if (variant == JAPAN_VARIANT) {
+        else if(variant == JAPAN_VARIANT)
+        {
             expectedContent = FULLWIDTH_Adgj;
         }
-        else if (variant == THAI_VARIANT) {
+        else if(variant == THAI_VARIANT)
+        {
             expectedContent = THAI_adgj;
         }
         doInputModeTest(getName(),
-                TextField.ANY, "IS_FULLWIDTH_LATIN",
-                "",                             // initial content
-                inputKeys(new int[]{'2', '3', '4', '5'}),  // key presses
-                expectedContent);
+                        TextField.ANY, "IS_FULLWIDTH_LATIN",
+                        "",                             // initial content
+                        inputKeys(new int[] {'2', '3', '4', '5'}), // key presses
+                        expectedContent);
     }
 
     /**
@@ -598,23 +651,27 @@ public class TextBoxInputModeUITest extends UITestBase {
      * This input mode is supported only in China variant; other variants
      * will use the default input mode.
      */
-    private void testIS_SIMPLIFIED_HANZI() {
+    private void testIS_SIMPLIFIED_HANZI()
+    {
 
         String expectedContent = "Adgj";
-        if (variant == CHINA_VARIANT) {
+        if(variant == CHINA_VARIANT)
+        {
             expectedContent = CHINA_adgj;
         }
-        else if (variant == JAPAN_VARIANT) {
+        else if(variant == JAPAN_VARIANT)
+        {
             expectedContent = KANJI_adgj;
         }
-        else if (variant == THAI_VARIANT) {
+        else if(variant == THAI_VARIANT)
+        {
             expectedContent = THAI_adgj;
         }
         doInputModeTest(getName(),
-                TextField.ANY, "IS_SIMPLIFIED_HANZI",
-                "",                             // initial content
-                inputKeys(new int[]{'2', '3', '4', '5'}),  // key presses
-                expectedContent);
+                        TextField.ANY, "IS_SIMPLIFIED_HANZI",
+                        "",                             // initial content
+                        inputKeys(new int[] {'2', '3', '4', '5'}), // key presses
+                        expectedContent);
     }
 
     /**
@@ -624,47 +681,55 @@ public class TextBoxInputModeUITest extends UITestBase {
      * when user's display/input language is either Traditional Hongkong or
      * Traditional Taiwan; otherwise the default input mode will be used.
      */
-    private void testIS_TRADITIONAL_HANZI() {
+    private void testIS_TRADITIONAL_HANZI()
+    {
 
         String expectedContent = "Adgj";
-        if (variant == CHINA_VARIANT) {
+        if(variant == CHINA_VARIANT)
+        {
             expectedContent = CHINA_adgj;
         }
-        else if (variant == JAPAN_VARIANT) {
+        else if(variant == JAPAN_VARIANT)
+        {
             expectedContent = KANJI_adgj;
         }
-        else if (variant == THAI_VARIANT) {
+        else if(variant == THAI_VARIANT)
+        {
             expectedContent = THAI_adgj;
         }
         doInputModeTest(getName(),
-                TextField.ANY, "IS_TRADITIONAL_HANZI",
-                "",                             // initial content
-                inputKeys(new int[]{'2', '3', '4', '5'}),  // key presses
-                expectedContent);
+                        TextField.ANY, "IS_TRADITIONAL_HANZI",
+                        "",                             // initial content
+                        inputKeys(new int[] {'2', '3', '4', '5'}), // key presses
+                        expectedContent);
 
     }
 
-      /**
-     * Tests setInitialInputMode(null).
-     * The method is called before displaying the text box. This
-     * default input mode will be used.
-     */
-    private void testnull() {
+    /**
+         * Tests setInitialInputMode(null).
+         * The method is called before displaying the text box. This
+         * default input mode will be used.
+         */
+    private void testnull()
+    {
         String expectedContent = "Adgj";
-        if (variant == CHINA_VARIANT) {
+        if(variant == CHINA_VARIANT)
+        {
             expectedContent = CHINA_adgj;
         }
-        else if (variant == JAPAN_VARIANT) {
+        else if(variant == JAPAN_VARIANT)
+        {
             expectedContent = KANJI_adgj;
         }
-        else if (variant == THAI_VARIANT) {
+        else if(variant == THAI_VARIANT)
+        {
             expectedContent = THAI_adgj;
         }
         doInputModeTest(getName(),
-                TextField.ANY, null,
-                "",                             // initial content
-                inputKeys(new int[]{'2', '3', '4', '5'}),  // key presses
-                expectedContent);
+                        TextField.ANY, null,
+                        "",                             // initial content
+                        inputKeys(new int[] {'2', '3', '4', '5'}), // key presses
+                        expectedContent);
     }
 
     /**
@@ -672,23 +737,27 @@ public class TextBoxInputModeUITest extends UITestBase {
      * The method is called before displaying the text box.
      * The default input mode will be used.
      */
-    private void testUNKNOWN() {
+    private void testUNKNOWN()
+    {
 
         String expectedContent = "Adgj";
-        if (variant == CHINA_VARIANT) {
+        if(variant == CHINA_VARIANT)
+        {
             expectedContent = CHINA_adgj;
         }
-        else if (variant == JAPAN_VARIANT) {
+        else if(variant == JAPAN_VARIANT)
+        {
             expectedContent = KANJI_adgj;
         }
-        else if (variant == THAI_VARIANT) {
+        else if(variant == THAI_VARIANT)
+        {
             expectedContent = THAI_adgj;
         }
         doInputModeTest(getName(),
-                TextField.ANY, "UNKNOWN",
-                "",                             // initial content
-                inputKeys(new int[]{'2', '3', '4', '5'}),  // key presses
-                expectedContent);
+                        TextField.ANY, "UNKNOWN",
+                        "",                             // initial content
+                        inputKeys(new int[] {'2', '3', '4', '5'}), // key presses
+                        expectedContent);
     }
 
     /**
@@ -696,23 +765,27 @@ public class TextBoxInputModeUITest extends UITestBase {
      * The method is called before displaying the text box.
      * The default input mode will be used.
      */
-    private void testempty() {
+    private void testempty()
+    {
 
         String expectedContent = "Adgj";
-        if (variant == CHINA_VARIANT) {
+        if(variant == CHINA_VARIANT)
+        {
             expectedContent = CHINA_adgj;
         }
-        else if (variant == JAPAN_VARIANT) {
+        else if(variant == JAPAN_VARIANT)
+        {
             expectedContent = KANJI_adgj;
         }
-        else if (variant == THAI_VARIANT) {
+        else if(variant == THAI_VARIANT)
+        {
             expectedContent = THAI_adgj;
         }
         doInputModeTest(getName(),
-                TextField.ANY, "",
-                "",                             // initial content
-                inputKeys(new int[]{'2', '3', '4', '5'}),  // key presses
-                expectedContent);
+                        TextField.ANY, "",
+                        "",                             // initial content
+                        inputKeys(new int[] {'2', '3', '4', '5'}), // key presses
+                        expectedContent);
     }
 
 
@@ -721,28 +794,32 @@ public class TextBoxInputModeUITest extends UITestBase {
      * already visible. Setting the initial input mode has no effect until
      * focus is changed temporarily elsewhere and then back to TextBox.
      */
-    private void testinputModeChange() {
+    private void testinputModeChange()
+    {
 
         String expectedContent = "Adgj2345";
-        if (variant == CHINA_VARIANT) {
+        if(variant == CHINA_VARIANT)
+        {
             expectedContent = CHINA_adgj;  // Clear-keys used in chinese input
-                                           // will remove latin numbers
+            // will remove latin numbers
         }
-        else if (variant == JAPAN_VARIANT) {
+        else if(variant == JAPAN_VARIANT)
+        {
             expectedContent = KANJI_adgj + "2345";
         }
-        else if (variant == THAI_VARIANT) {
+        else if(variant == THAI_VARIANT)
+        {
             expectedContent = THAI_adgj + "2345";
         }
         doInputModeSequenceTest(getName(),
-                TextField.ANY, new String[]{"IS_LATIN_DIGITS"},
-                "",                             // initial content
-                inputKeys(new int[]{'2', '3', '4', '5'}), true,
-                      // keys are pressed both before and after the temporary
-                      // focus change => input mode before the focus change
-                      // will be the same as the original input mode although
-                      // setInitialInputMode has already been called
-                expectedContent);
+                                TextField.ANY, new String[] {"IS_LATIN_DIGITS"},
+                                "",                             // initial content
+                                inputKeys(new int[] {'2', '3', '4', '5'}), true,
+                                // keys are pressed both before and after the temporary
+                                // focus change => input mode before the focus change
+                                // will be the same as the original input mode although
+                                // setInitialInputMode has already been called
+                                expectedContent);
     }
 
     /**
@@ -750,29 +827,33 @@ public class TextBoxInputModeUITest extends UITestBase {
      * has obscured the editor. Setting the initial input mode has no effect
      * until focus is changed temporarily elsewhere and then back to TextBox.
      */
-    private void testinputModeAndMenuOpen() {
+    private void testinputModeAndMenuOpen()
+    {
 
         String expectedContent = "Adgj2345";
-        if (variant == CHINA_VARIANT) {
+        if(variant == CHINA_VARIANT)
+        {
             expectedContent = CHINA_adgj;  // Clear-keys used in chinese input
-                                           // will remove latin numbers
+            // will remove latin numbers
         }
-        else if (variant == JAPAN_VARIANT) {
+        else if(variant == JAPAN_VARIANT)
+        {
             expectedContent = KANJI_adgj + "2345";
         }
-        else if (variant == THAI_VARIANT) {
+        else if(variant == THAI_VARIANT)
+        {
             expectedContent = THAI_adgj + "2345";
         }
         doInputModeSequenceTest(getName(),
-                TextField.ANY, new String[]{"IS_LATIN_DIGITS"},
-                "",                             // initial content
-                inputKeys(new int[]{'2', '3', Key.Edit, Key.CBA2, '4', '5'}),
-                true,
-                      // keys are pressed both before and after the temporary
-                      // focus change => input mode before the focus change
-                      // will be the same as the original input mode although
-                      // setInitialInputMode has already been called
-                expectedContent);
+                                TextField.ANY, new String[] {"IS_LATIN_DIGITS"},
+                                "",                             // initial content
+                                inputKeys(new int[] {'2', '3', Key.Edit, Key.CBA2, '4', '5'}),
+                                true,
+                                // keys are pressed both before and after the temporary
+                                // focus change => input mode before the focus change
+                                // will be the same as the original input mode although
+                                // setInitialInputMode has already been called
+                                expectedContent);
     }
 
     /**
@@ -780,16 +861,19 @@ public class TextBoxInputModeUITest extends UITestBase {
      * Focus is changed after each setting to make the input mode effective.
      * Setting the initial input mode has no effect in NUMERIC text box.
      */
-    private void testinputModesInNumber() {
+    private void testinputModesInNumber()
+    {
         doInputModeSequenceTest(getName(),
-                TextField.NUMERIC, new String[]
-                {"NONE", // starts from default input mode
-                 "IS_LATIN", "IS_LATIN_DIGITS", "IS_FULLWIDTH_DIGITS",
-                 "UCB_ARABIC", "UCB_GREEK", "IS_KANJI", },
-                 "",                              // initial content
-                 new int[]{'2', '3', '4', '5'}, false,
-                 // key presses (per input mode)
-                 "2345234523452345234523452345"); // expected content
+                                TextField.NUMERIC, new String[]
+                                {
+                                    "NONE", // starts from default input mode
+                                    "IS_LATIN", "IS_LATIN_DIGITS", "IS_FULLWIDTH_DIGITS",
+                                    "UCB_ARABIC", "UCB_GREEK", "IS_KANJI",
+                                },
+                                "",                              // initial content
+                                new int[] {'2', '3', '4', '5'}, false,
+                                // key presses (per input mode)
+                                "2345234523452345234523452345"); // expected content
     }
 
     /**
@@ -797,16 +881,19 @@ public class TextBoxInputModeUITest extends UITestBase {
      * Focus is changed after each setting to make the input mode effective.
      * Setting the initial input mode has no effect in DECIMAL text box.
      */
-    private void testinputModesInDecimal() {
+    private void testinputModesInDecimal()
+    {
         doInputModeSequenceTest(getName(),
-                TextField.DECIMAL, new String[]
-                {"NONE", // starts from default input mode
-                 "IS_LATIN", "IS_LATIN_DIGITS", "IS_FULLWIDTH_DIGITS",
-                 "UCB_ARABIC", "UCB_GREEK", "IS_KANJI", },
-                 "",                              // initial content
-                 new int[]{'2', '3', '4', '5'}, false,
-                 // key presses (per input mode)
-                 "2345234523452345234523452345"); // expected content
+                                TextField.DECIMAL, new String[]
+                                {
+                                    "NONE", // starts from default input mode
+                                    "IS_LATIN", "IS_LATIN_DIGITS", "IS_FULLWIDTH_DIGITS",
+                                    "UCB_ARABIC", "UCB_GREEK", "IS_KANJI",
+                                },
+                                "",                              // initial content
+                                new int[] {'2', '3', '4', '5'}, false,
+                                // key presses (per input mode)
+                                "2345234523452345234523452345"); // expected content
     }
 
     /**
@@ -814,17 +901,20 @@ public class TextBoxInputModeUITest extends UITestBase {
      * Focus is changed after each setting to make the input mode effective.
      * In all variants the default input mode is latin with lower case.
      */
-    private void testinputModesInEmailaddr() {
+    private void testinputModesInEmailaddr()
+    {
         doInputModeSequenceTest(getName(),
-                TextField.EMAILADDR, new String[]
-                {"NONE", // starts from default input mode
-                 "IS_LATIN", "MIDP_UPPERCASE_LATIN", "MIDP_LOWERCASE_LATIN",
-                 "UCB_ARABIC", "UCB_GREEK", "IS_LATIN_DIGITS", },
-                 "",                             // initial content
-                 new int[]{'2', '3', '4', '5'}, false,
-                 // key presses (per input mode)
-                  "adgjadgjADGJadgj" + ARABIC_adgj + GREEK_adgj + "2345");
-                                                // expected content
+                                TextField.EMAILADDR, new String[]
+                                {
+                                    "NONE", // starts from default input mode
+                                    "IS_LATIN", "MIDP_UPPERCASE_LATIN", "MIDP_LOWERCASE_LATIN",
+                                    "UCB_ARABIC", "UCB_GREEK", "IS_LATIN_DIGITS",
+                                },
+                                "",                             // initial content
+                                new int[] {'2', '3', '4', '5'}, false,
+                                // key presses (per input mode)
+                                "adgjadgjADGJadgj" + ARABIC_adgj + GREEK_adgj + "2345");
+        // expected content
     }
 
     /**
@@ -833,27 +923,33 @@ public class TextBoxInputModeUITest extends UITestBase {
      * Setting a Japanese or Chinese input mode will have effect in
      * the corresponding variants.
      */
-    private void testinputModesInEmailaddr2() {
+    private void testinputModesInEmailaddr2()
+    {
         String expectedContent = "23452345234523452345";
-        if (variant == CHINA_VARIANT) {
+        if(variant == CHINA_VARIANT)
+        {
             expectedContent = CHINA_adgj + CHINA_adgj + CHINA_adgj + CHINA_adgj;
-                  // Clear-keys used in chinese input will remove latin numbers
+            // Clear-keys used in chinese input will remove latin numbers
         }
-        else if (variant == JAPAN_VARIANT) {
+        else if(variant == JAPAN_VARIANT)
+        {
             expectedContent = "23452345" + FULLWIDTH_2345 + KANJI_adgj
                               + KANJI_adgj;
         }
-        else if (variant == THAI_VARIANT) {
+        else if(variant == THAI_VARIANT)
+        {
             expectedContent = "2345234523452345" + THAI_adgj;
         }
         doInputModeSequenceTest(getName(),
-                TextField.EMAILADDR, new String[]
-                {"IS_LATIN_DIGITS", "IS_SIMPLIFIED_HANZI",
-                 "IS_FULLWIDTH_DIGITS", "IS_KANJI", "UCB_THAI", },
-                 "",                             // initial content
-                 inputKeys(new int[]{'2', '3', '4', '5'}), false,
-                                                // key presses (per input mode)
-                 expectedContent);
+                                TextField.EMAILADDR, new String[]
+                                {
+                                    "IS_LATIN_DIGITS", "IS_SIMPLIFIED_HANZI",
+                                    "IS_FULLWIDTH_DIGITS", "IS_KANJI", "UCB_THAI",
+                                },
+                                "",                             // initial content
+                                inputKeys(new int[] {'2', '3', '4', '5'}), false,
+                                // key presses (per input mode)
+                                expectedContent);
     }
 
     /**
@@ -861,17 +957,20 @@ public class TextBoxInputModeUITest extends UITestBase {
      * Focus is changed after each setting to make the input mode effective.
      * In all variants the default input mode is latin with lower case.
      */
-    private void testinputModesInUrl() {
+    private void testinputModesInUrl()
+    {
         doInputModeSequenceTest(getName(),
-                TextField.URL, new String[]
-                {"NONE", // default input mode in ANY text box
-                 "IS_LATIN", "MIDP_UPPERCASE_LATIN", "MIDP_LOWERCASE_LATIN",
-                 "UCB_ARABIC", "UCB_GREEK", "IS_LATIN_DIGITS", },
-                 "",                             // initial content
-                 new int[]{'2', '3', '4', '5'}, false,
-                                                // key presses (per input mode)
-                 "adgjadgjADGJadgj" + ARABIC_adgj + GREEK_adgj + "2345");
-                                                // expected content
+                                TextField.URL, new String[]
+                                {
+                                    "NONE", // default input mode in ANY text box
+                                    "IS_LATIN", "MIDP_UPPERCASE_LATIN", "MIDP_LOWERCASE_LATIN",
+                                    "UCB_ARABIC", "UCB_GREEK", "IS_LATIN_DIGITS",
+                                },
+                                "",                             // initial content
+                                new int[] {'2', '3', '4', '5'}, false,
+                                // key presses (per input mode)
+                                "adgjadgjADGJadgj" + ARABIC_adgj + GREEK_adgj + "2345");
+        // expected content
     }
 
     /**
@@ -880,27 +979,33 @@ public class TextBoxInputModeUITest extends UITestBase {
      * Setting a Japanese or Chinese input mode will have effect in
      * the corresponding variants.
      */
-    private void testinputModesInUrl2() {
+    private void testinputModesInUrl2()
+    {
         String expectedContent = "23452345234523452345";
-        if (variant == CHINA_VARIANT) {
+        if(variant == CHINA_VARIANT)
+        {
             expectedContent = CHINA_adgj + CHINA_adgj + CHINA_adgj + CHINA_adgj;
-                  // Clear-keys used in chinese input removes latin numbers
+            // Clear-keys used in chinese input removes latin numbers
         }
-        else if (variant == JAPAN_VARIANT) {
+        else if(variant == JAPAN_VARIANT)
+        {
             expectedContent = "23452345" + FULLWIDTH_2345 + KANJI_adgj
-                             + KANJI_adgj;
+                              + KANJI_adgj;
         }
-        else if (variant == THAI_VARIANT) {
+        else if(variant == THAI_VARIANT)
+        {
             expectedContent = "2345234523452345" + THAI_adgj;
         }
         doInputModeSequenceTest(getName(),
-                TextField.URL, new String[]
-                {"IS_LATIN_DIGITS", "IS_SIMPLIFIED_HANZI",
-                 "IS_FULLWIDTH_DIGITS", "IS_KANJI", "UCB_THAI", },
-                 "",                             // initial content
-                 inputKeys(new int[]{'2', '3', '4', '5'}), false,
-                                                // key presses (per input mode)
-                 expectedContent);
+                                TextField.URL, new String[]
+                                {
+                                    "IS_LATIN_DIGITS", "IS_SIMPLIFIED_HANZI",
+                                    "IS_FULLWIDTH_DIGITS", "IS_KANJI", "UCB_THAI",
+                                },
+                                "",                             // initial content
+                                inputKeys(new int[] {'2', '3', '4', '5'}), false,
+                                // key presses (per input mode)
+                                expectedContent);
     }
 
     /**
@@ -908,17 +1013,20 @@ public class TextBoxInputModeUITest extends UITestBase {
      * Focus is changed after each setting to make the input mode effective.
      * In all variants the default input mode is latin with lower case.
      */
-    private void testinputModesInPassword() {
+    private void testinputModesInPassword()
+    {
         doInputModeSequenceTest(getName(),
-                TextField.PASSWORD, new String[]
-                {"NONE", // default input mode in ANY text box
-                 "IS_LATIN", "MIDP_UPPERCASE_LATIN", "MIDP_LOWERCASE_LATIN",
-                 "UCB_ARABIC", "UCB_GREEK", /*"IS_LATIN_DIGITS", */},
-                 "",                             // initial content
-                 new int[]{'2', '3', '4', '5'}, false,
-                                                // key presses (per input mode)
-                 "adgjadgjADGJadgj" + ARABIC_adgj + GREEK_adgj/* + "2345"*/);
-                                                // expected content
+                                TextField.PASSWORD, new String[]
+                                {
+                                    "NONE", // default input mode in ANY text box
+                                    "IS_LATIN", "MIDP_UPPERCASE_LATIN", "MIDP_LOWERCASE_LATIN",
+                                    "UCB_ARABIC", "UCB_GREEK", /*"IS_LATIN_DIGITS", */
+                                },
+                                "",                             // initial content
+                                new int[] {'2', '3', '4', '5'}, false,
+                                // key presses (per input mode)
+                                "adgjadgjADGJadgj" + ARABIC_adgj + GREEK_adgj/* + "2345"*/);
+        // expected content
     }
 
     /**
@@ -927,43 +1035,52 @@ public class TextBoxInputModeUITest extends UITestBase {
      * Setting a Japanese or Chinese input mode will have effect in
      * the corresponding variants.
      */
-    private void testinputModesInPassword2() {
+    private void testinputModesInPassword2()
+    {
         String expectedContent = "23452345234523452345";
-        if (variant == CHINA_VARIANT) {
+        if(variant == CHINA_VARIANT)
+        {
             expectedContent = CHINA_adgj + CHINA_adgj + CHINA_adgj + CHINA_adgj;
-                  // Clear-keys used in chinese input removes latin numbers
+            // Clear-keys used in chinese input removes latin numbers
         }
-        else if (variant == JAPAN_VARIANT) {
+        else if(variant == JAPAN_VARIANT)
+        {
             expectedContent = "23452345" + FULLWIDTH_2345 + KANJI_adgj
                               + KANJI_adgj;
         }
-        else if (variant == THAI_VARIANT) {
+        else if(variant == THAI_VARIANT)
+        {
             expectedContent = "2345234523452345" + THAI_adgj;
         }
         doInputModeSequenceTest(getName(),
-                TextField.PASSWORD, new String[]
-                {"IS_LATIN_DIGITS", "IS_SIMPLIFIED_HANZI",
-                 "IS_FULLWIDTH_DIGITS", "IS_KANJI", "UCB_THAI", },
-                 "",                             // initial content
-                 inputKeys(new int[]{'2', '3', '4', '5'}), false,
-                                                // pressed keys (per input mode)
-                 expectedContent);
+                                TextField.PASSWORD, new String[]
+                                {
+                                    "IS_LATIN_DIGITS", "IS_SIMPLIFIED_HANZI",
+                                    "IS_FULLWIDTH_DIGITS", "IS_KANJI", "UCB_THAI",
+                                },
+                                "",                             // initial content
+                                inputKeys(new int[] {'2', '3', '4', '5'}), false,
+                                // pressed keys (per input mode)
+                                expectedContent);
     }
 
     /**
      * Tests different sequential input modes in ANY text box.
      * Focus is changed after each setting to make the input mode effective.
      */
-    private void testinputModesInAny() {
+    private void testinputModesInAny()
+    {
         doInputModeSequenceTest(getName(),
-                TextField.ANY, new String[]
-                {"UCB_GREEK", "MIDP_UPPERCASE_LATIN", "MIDP_LOWERCASE_LATIN",
-                 "UCB_ARABIC", "IS_LATIN_DIGITS", },
-                 "",                             // initial content
-                 new int[]{'2', '3', '4', '5'}, false,
-                                                // pressed keys (per input mode)
-                 GREEK_Adgj + "ADGJadgj" + ARABIC_adgj + "2345");
-                                                // expected content
+                                TextField.ANY, new String[]
+                                {
+                                    "UCB_GREEK", "MIDP_UPPERCASE_LATIN", "MIDP_LOWERCASE_LATIN",
+                                    "UCB_ARABIC", "IS_LATIN_DIGITS",
+                                },
+                                "",                             // initial content
+                                new int[] {'2', '3', '4', '5'}, false,
+                                // pressed keys (per input mode)
+                                GREEK_Adgj + "ADGJadgj" + ARABIC_adgj + "2345");
+        // expected content
     }
 
     /**
@@ -972,29 +1089,35 @@ public class TextBoxInputModeUITest extends UITestBase {
      * Setting a Japanese or Chinese input mode will have effect in
      * the corresponding variants.
      */
-    private void testinputModesInAny2() {
+    private void testinputModesInAny2()
+    {
         String expectedContent = "Adgjadgjadgjadgjadgj";
-        if (variant == CHINA_VARIANT) {
+        if(variant == CHINA_VARIANT)
+        {
             expectedContent = CHINA_adgj + CHINA_adgj + CHINA_adgj
-                + CHINA_adgj + CHINA_adgj;
+                              + CHINA_adgj + CHINA_adgj;
         }
-        else if (variant == JAPAN_VARIANT) {
+        else if(variant == JAPAN_VARIANT)
+        {
             expectedContent = KANJI_adgj + KANJI_adgj
-                + FULLWIDTH_2345 + KANJI_adgj + KANJI_adgj;
+                              + FULLWIDTH_2345 + KANJI_adgj + KANJI_adgj;
         }
-        else if (variant == THAI_VARIANT) {
+        else if(variant == THAI_VARIANT)
+        {
             expectedContent = THAI_adgj + THAI_adgj + THAI_adgj
-                + THAI_adgj + THAI_adgj;
+                              + THAI_adgj + THAI_adgj;
         }
         doInputModeSequenceTest(getName(),
-                TextField.ANY, new String[]
-                {"NONE", // starts from default input mode
-                 "IS_SIMPLIFIED_HANZI", "IS_FULLWIDTH_DIGITS", "IS_KANJI",
-                 "UCB_THAI", },
-                 "",                             // initial content
-                 inputKeys(new int[]{'2', '3', '4', '5'}), false,
-                                                // key presses (per input mode)
-                 expectedContent);
+                                TextField.ANY, new String[]
+                                {
+                                    "NONE", // starts from default input mode
+                                    "IS_SIMPLIFIED_HANZI", "IS_FULLWIDTH_DIGITS", "IS_KANJI",
+                                    "UCB_THAI",
+                                },
+                                "",                             // initial content
+                                inputKeys(new int[] {'2', '3', '4', '5'}), false,
+                                // key presses (per input mode)
+                                expectedContent);
     }
 
     /**
@@ -1002,27 +1125,33 @@ public class TextBoxInputModeUITest extends UITestBase {
      * ignored if the INITIAL_CAPS_SENTENCE modifier is defined in ANY text box.
      * Focus is changed after each setting to make the input mode effective.
      */
-    private void testinputModesInCapsSentence() {
+    private void testinputModesInCapsSentence()
+    {
         String expectedContent = "Adgjadgj"  + ARABIC_adgj + "2345";
-        if (variant == CHINA_VARIANT) {
+        if(variant == CHINA_VARIANT)
+        {
             expectedContent = CHINA_adgj + CHINA_adgj;
-                  // Clear-keys used in chinese input removes latin etc. chars
+            // Clear-keys used in chinese input removes latin etc. chars
         }
-        else if (variant == JAPAN_VARIANT) {
+        else if(variant == JAPAN_VARIANT)
+        {
             expectedContent = KANJI_adgj + KANJI_adgj
                               + ARABIC_adgj + "2345";
         }
-        else if (variant == THAI_VARIANT) {
+        else if(variant == THAI_VARIANT)
+        {
             expectedContent = THAI_adgj + THAI_adgj + ARABIC_adgj + "2345";
         }
         doInputModeSequenceTest(getName(),
-                TextField.INITIAL_CAPS_SENTENCE, new String[]
-                {"MIDP_LOWERCASE_LATIN", "MIDP_UPPERCASE_LATIN",
-                 "UCB_ARABIC", "IS_LATIN_DIGITS", },
-                 "",                             // initial content
-                 inputKeys(new int[]{'2', '3', '4', '5'}), false,
-                                                 // key presses (per input mode)
-                 expectedContent);
+                                TextField.INITIAL_CAPS_SENTENCE, new String[]
+                                {
+                                    "MIDP_LOWERCASE_LATIN", "MIDP_UPPERCASE_LATIN",
+                                    "UCB_ARABIC", "IS_LATIN_DIGITS",
+                                },
+                                "",                             // initial content
+                                inputKeys(new int[] {'2', '3', '4', '5'}), false,
+                                // key presses (per input mode)
+                                expectedContent);
     }
 
     /**
@@ -1030,26 +1159,32 @@ public class TextBoxInputModeUITest extends UITestBase {
      * ignored if the INITIAL_CAPS_WORD modifier is defined in ANY text box.
      * Focus is changed after each setting to make the input mode effective.
      */
-    private void testinputModesInCapsWord() {
+    private void testinputModesInCapsWord()
+    {
         String expectedContent = "Adgjadgj"  + ARABIC_adgj + "2345";
-        if (variant == CHINA_VARIANT) {
+        if(variant == CHINA_VARIANT)
+        {
             expectedContent = CHINA_adgj + CHINA_adgj;
-                  // Clear-keys used in chinese input removes latin etc. chars
+            // Clear-keys used in chinese input removes latin etc. chars
         }
-        else if (variant == JAPAN_VARIANT) {
+        else if(variant == JAPAN_VARIANT)
+        {
             expectedContent = KANJI_adgj + KANJI_adgj + ARABIC_adgj + "2345";
         }
-        else if (variant == THAI_VARIANT) {
+        else if(variant == THAI_VARIANT)
+        {
             expectedContent = THAI_adgj + THAI_adgj + ARABIC_adgj + "2345";
         }
         doInputModeSequenceTest(getName(),
-                TextField.INITIAL_CAPS_WORD, new String[]
-                {"MIDP_LOWERCASE_LATIN", "MIDP_UPPERCASE_LATIN",
-                 "UCB_ARABIC", "IS_LATIN_DIGITS", },
-                 "",                            // initial content
-                 inputKeys(new int[]{'2', '3', '4', '5'}), false,
-                                                // key presses (per input mode)
-                 expectedContent);
+                                TextField.INITIAL_CAPS_WORD, new String[]
+                                {
+                                    "MIDP_LOWERCASE_LATIN", "MIDP_UPPERCASE_LATIN",
+                                    "UCB_ARABIC", "IS_LATIN_DIGITS",
+                                },
+                                "",                            // initial content
+                                inputKeys(new int[] {'2', '3', '4', '5'}), false,
+                                // key presses (per input mode)
+                                expectedContent);
     }
 
     /**
@@ -1058,15 +1193,16 @@ public class TextBoxInputModeUITest extends UITestBase {
      * because the modifier is meaningless in EMAILADDR.
      * Focus is changed after each setting to make the input mode effective.
      */
-    private void testinputModesInCapsSentenceEmailaddr() {
+    private void testinputModesInCapsSentenceEmailaddr()
+    {
         doInputModeSequenceTest(getName(),
-                TextField.EMAILADDR | TextField.INITIAL_CAPS_SENTENCE,
-                new String[]
-                {"IS_LATIN", "MIDP_UPPERCASE_LATIN", "MIDP_LOWERCASE_LATIN"},
-                 "",                            // initial content
-                 new int[]{'2', '3', '4', '5'}, false,
-                                                // key presses (per input mode)
-                 "adgjADGJadgj");               // expected content
+                                TextField.EMAILADDR | TextField.INITIAL_CAPS_SENTENCE,
+                                new String[]
+                                {"IS_LATIN", "MIDP_UPPERCASE_LATIN", "MIDP_LOWERCASE_LATIN"},
+                                "",                            // initial content
+                                new int[] {'2', '3', '4', '5'}, false,
+                                // key presses (per input mode)
+                                "adgjADGJadgj");               // expected content
     }
 
     /**
@@ -1075,14 +1211,15 @@ public class TextBoxInputModeUITest extends UITestBase {
      * because the modifier is meaningless in URL.
      * Focus is changed after each setting to make the input mode effective.
      */
-    private void testinputModesInCapsSentenceUrl() {
+    private void testinputModesInCapsSentenceUrl()
+    {
         doInputModeSequenceTest(getName(),
-                TextField.URL | TextField.INITIAL_CAPS_SENTENCE, new String[]
-                {"IS_LATIN", "MIDP_UPPERCASE_LATIN", "MIDP_LOWERCASE_LATIN"},
-                 "",                             // initial content
-                 new int[]{'2', '3', '4', '5'}, false,
-                                                // key presses (per input mode)
-                 "adgjADGJadgj");               // expected content
+                                TextField.URL | TextField.INITIAL_CAPS_SENTENCE, new String[]
+                                {"IS_LATIN", "MIDP_UPPERCASE_LATIN", "MIDP_LOWERCASE_LATIN"},
+                                "",                             // initial content
+                                new int[] {'2', '3', '4', '5'}, false,
+                                // key presses (per input mode)
+                                "adgjADGJadgj");               // expected content
     }
 
     /**
@@ -1135,17 +1272,20 @@ public class TextBoxInputModeUITest extends UITestBase {
      * Tests latin input modes after other input modes.
      * Focus is changed after each setting to make the input mode effective.
      */
-    private void testinputLatinAfterOtherModes() {
+    private void testinputLatinAfterOtherModes()
+    {
         doInputModeSequenceTest(getName(),
-                TextField.ANY, new String[]
-                {"UCB_HEBREW", "IS_LATIN",
-                 "UCB_GREEK", "MIDP_UPPERCASE_LATIN",
-                 "UCB_ARABIC", "MIDP_LOWERCASE_LATIN",
-                 "UCB_CYRILLIC", "IS_LATIN", },
-                 "",                             // initial content
-                 new int[]{'2', '3', '4', '5'}, false,
-                 HEBREW_adgj + "adgj" + GREEK_adgj + "ADGJ"
-                    + ARABIC_adgj + "adgj" + CYRILLIC_adgj + "adgj");
+                                TextField.ANY, new String[]
+                                {
+                                    "UCB_HEBREW", "IS_LATIN",
+                                    "UCB_GREEK", "MIDP_UPPERCASE_LATIN",
+                                    "UCB_ARABIC", "MIDP_LOWERCASE_LATIN",
+                                    "UCB_CYRILLIC", "IS_LATIN",
+                                },
+                                "",                             // initial content
+                                new int[] {'2', '3', '4', '5'}, false,
+                                HEBREW_adgj + "adgj" + GREEK_adgj + "ADGJ"
+                                + ARABIC_adgj + "adgj" + CYRILLIC_adgj + "adgj");
     }
 
     /**
@@ -1154,67 +1294,79 @@ public class TextBoxInputModeUITest extends UITestBase {
      * Setting a Japanese or Chinese input mode will have effect only in
      * the corresponding variants.
      */
-    private void testinputLatinAfterOtherModes2() {
+    private void testinputLatinAfterOtherModes2()
+    {
         String expectedContent = "Adgjadgjadgjadgjadgjadgjadgjadgj";
-        if (variant == CHINA_VARIANT) {
+        if(variant == CHINA_VARIANT)
+        {
             expectedContent = CHINA_adgj;
-                  // Clear-keys used in chinese input removes latin chars
+            // Clear-keys used in chinese input removes latin chars
         }
-        else if (variant == JAPAN_VARIANT) {
+        else if(variant == JAPAN_VARIANT)
+        {
             expectedContent = KANJI_adgj + "adgj" + KANJI_adgj + "adgj"
-                + FULLWIDTH_2345 + "adgjadgjadgj";
+                              + FULLWIDTH_2345 + "adgjadgjadgj";
         }
-        else if (variant == THAI_VARIANT) {
+        else if(variant == THAI_VARIANT)
+        {
             expectedContent = THAI_adgj + "adgjadgjadgjadgjadgj"
-                + THAI_adgj + "adgj";
+                              + THAI_adgj + "adgj";
         }
         doInputModeSequenceTest(getName(),
-                TextField.ANY, new String[]
-                {"IS_SIMPLIFIED_HANZI", "MIDP_LOWERCASE_LATIN",
-                 "IS_KANJI", "MIDP_LOWERCASE_LATIN",
-                 "IS_FULLWIDTH_DIGITS", "MIDP_LOWERCASE_LATIN",
-                 "UCB_THAI", "MIDP_LOWERCASE_LATIN", },
-                 "",                             // initial content
-                 inputKeys(new int[]{'2', '3', '4', '5'}), false,
-                                                // key presses (per input mode)
-                 expectedContent);
+                                TextField.ANY, new String[]
+                                {
+                                    "IS_SIMPLIFIED_HANZI", "MIDP_LOWERCASE_LATIN",
+                                    "IS_KANJI", "MIDP_LOWERCASE_LATIN",
+                                    "IS_FULLWIDTH_DIGITS", "MIDP_LOWERCASE_LATIN",
+                                    "UCB_THAI", "MIDP_LOWERCASE_LATIN",
+                                },
+                                "",                             // initial content
+                                inputKeys(new int[] {'2', '3', '4', '5'}), false,
+                                // key presses (per input mode)
+                                expectedContent);
     }
 
     /**
      * Tests null input mode after different input modes in ANY text box.
      */
-    private void testinputModeNullSetting() {
+    private void testinputModeNullSetting()
+    {
         // NOTE: upper cases should be corrected!
         String expectedContent = "2345adgj" + ARABIC_adgj + "adgj"
-                 + "adgjadgjadgjadgjadgjadgjadgjadgj";
-        if (variant == CHINA_VARIANT) {
+                                 + "adgjadgjadgjadgjadgjadgjadgjadgj";
+        if(variant == CHINA_VARIANT)
+        {
             expectedContent = CHINA_adgj + CHINA_adgj
-                  + CHINA_adgj + CHINA_adgj + CHINA_adgj + CHINA_adgj
-                  + CHINA_adgj + CHINA_adgj + CHINA_adgj + CHINA_adgj;
-                    // Clear-keys used in chinese input removes latin etc. chars
+                              + CHINA_adgj + CHINA_adgj + CHINA_adgj + CHINA_adgj
+                              + CHINA_adgj + CHINA_adgj + CHINA_adgj + CHINA_adgj;
+            // Clear-keys used in chinese input removes latin etc. chars
         }
-        else if (variant == JAPAN_VARIANT) {
+        else if(variant == JAPAN_VARIANT)
+        {
             expectedContent = "2345" + KANJI_adgj + ARABIC_adgj + KANJI_adgj
-                 + KANJI_adgj + KANJI_adgj + HALFWIDTH_KATAKANA_adgj
-                 + KANJI_adgj + FULLWIDTH_2345 + KANJI_adgj + KANJI_adgj
-                 + KANJI_adgj;
+                              + KANJI_adgj + KANJI_adgj + HALFWIDTH_KATAKANA_adgj
+                              + KANJI_adgj + FULLWIDTH_2345 + KANJI_adgj + KANJI_adgj
+                              + KANJI_adgj;
         }
-        else if (variant == THAI_VARIANT) {
+        else if(variant == THAI_VARIANT)
+        {
             expectedContent = "2345A" + THAI_adgj + ARABIC_adgj + THAI_adgj
-                 + THAI_adgj + THAI_adgj + THAI_adgj + THAI_adgj
-                 + THAI_adgj + THAI_adgj + THAI_adgj + THAI_adgj;
+                              + THAI_adgj + THAI_adgj + THAI_adgj + THAI_adgj
+                              + THAI_adgj + THAI_adgj + THAI_adgj + THAI_adgj;
         }
         doInputModeSequenceTest(getName(),
-                TextField.ANY, new String[]
-                {"IS_LATIN_DIGITS", null,
-                 "UCB_ARABIC", null,
-                 "IS_SIMPLIFIED_HANZI", null,
-                 "IS_HALFWIDTH_KATAKANA", null,
-                 "IS_FULLWIDTH_DIGITS", null,
-                 "UCB_THAI", null, },
-                 "",                             // initial content
-                 inputKeys(new int[]{'2', '3', '4', '5'}), false,
-                 expectedContent);
+                                TextField.ANY, new String[]
+                                {
+                                    "IS_LATIN_DIGITS", null,
+                                    "UCB_ARABIC", null,
+                                    "IS_SIMPLIFIED_HANZI", null,
+                                    "IS_HALFWIDTH_KATAKANA", null,
+                                    "IS_FULLWIDTH_DIGITS", null,
+                                    "UCB_THAI", null,
+                                },
+                                "",                             // initial content
+                                inputKeys(new int[] {'2', '3', '4', '5'}), false,
+                                expectedContent);
     }
 
     /**
@@ -1222,14 +1374,15 @@ public class TextBoxInputModeUITest extends UITestBase {
      * text box. Note: after a comma and space the input mode changes to
      * Text case (not sure whether this is correct behaviour)
      */
-    private void testcommaInLowerAndUpperCase() {
+    private void testcommaInLowerAndUpperCase()
+    {
         doInputModeSequenceTest(getName(),
-                TextField.ANY, new String[]
-                {"MIDP_LOWERCASE_LATIN", "MIDP_UPPERCASE_LATIN"},
-                 "",                            // initial content
-                 new int[]{'2', '3', '1', '0', '4', '5' }, false,
-                                                // key presses (per input mode)
-                 "ad. GjAD. Gj");
+                                TextField.ANY, new String[]
+                                {"MIDP_LOWERCASE_LATIN", "MIDP_UPPERCASE_LATIN"},
+                                "",                            // initial content
+                                new int[] {'2', '3', '1', '0', '4', '5' }, false,
+                                // key presses (per input mode)
+                                "ad. GjAD. Gj");
     }
 
 
@@ -1250,40 +1403,47 @@ public class TextBoxInputModeUITest extends UITestBase {
      * @param expectedContent Expected content of TextBox
      */
     private void doInputModeTest(String testCaseName,
-            int constraints, String initialInputMode, String initialContent,
-            int[] pressedKeys, String expectedContent) {
+                                 int constraints, String initialInputMode, String initialContent,
+                                 int[] pressedKeys, String expectedContent)
+    {
 
         boolean passed = true;
 
-        try {
+        try
+        {
             // Create TextBox
             TextBox textBox = new TextBox(
-                    testCaseName, // title
-                    initialContent, LENGTH, constraints);
+                testCaseName, // title
+                initialContent, LENGTH, constraints);
 
             // Set initial input mode before displaying TextBox
-            if ("NONE".equals(initialInputMode)) {
+            if("NONE".equals(initialInputMode))
+            {
                 // initial input mode not set
             }
-            else {
+            else
+            {
                 textBox.setInitialInputMode(initialInputMode);
                 block(KEYEVENT_DELAY);
             }
             setCurrent(textBox);
 
             // Do key presses
-            if (pressedKeys != null) {
-                for (int i = 0; i < pressedKeys.length; i++) {
+            if(pressedKeys != null)
+            {
+                for(int i = 0; i < pressedKeys.length; i++)
+                {
                     key(pressedKeys[i]);
                 }
             }
 
             // Check the result of key presses (i.e. the used input mode)
             passed = checkResult(testCaseName, textBox,
-                    expectedContent, expectedContent == null ? true : false);
+                                 expectedContent, expectedContent == null ? true : false);
         }
-        catch (Exception exc) {
-        	fail(testCaseName + " failed: "+exc.toString());
+        catch(Exception exc)
+        {
+            fail(testCaseName + " failed: "+exc.toString());
             passed = false;
         }
         assertTrue(testCaseName, passed);
@@ -1309,34 +1469,40 @@ public class TextBoxInputModeUITest extends UITestBase {
      * @param expectedContent Expected content of TextBox
      */
     private void doInputModeSequenceTest(String testCaseName,
-            int constraints, String[] nextInputModes, String initialContent,
-            int[] pressedKeys, boolean beforeAndAfter,
-            String expectedContent) {
+                                         int constraints, String[] nextInputModes, String initialContent,
+                                         int[] pressedKeys, boolean beforeAndAfter,
+                                         String expectedContent)
+    {
 
         boolean passed = true;
 
-        try {
+        try
+        {
             // Create TextBox
-			TextBox textBox = new TextBox(testCaseName,
-					initialContent, LENGTH, constraints);
+            TextBox textBox = new TextBox(testCaseName,
+                                          initialContent, LENGTH, constraints);
 
             // Create another TextBox in order to be able to change focus
             TextBox other = new TextBox("Focus change",
-                    "Temporary text box", LENGTH, TextField.ANY);
+                                        "Temporary text box", LENGTH, TextField.ANY);
 
             // Display the original TextBox
             Display.getDisplay(getMIDlet()).setCurrent(textBox);
             block(CHANGE_DISPLAYABLE_DELAY);
 
-            for (int m = 0; m < nextInputModes.length; m++) {
+            for(int m = 0; m < nextInputModes.length; m++)
+            {
 
                 // Set initial input mode while the original TextBox is visible
                 textBox.setInitialInputMode(nextInputModes[m]);
 
-                if (beforeAndAfter) {
+                if(beforeAndAfter)
+                {
                     // Do key presses (input mode setting not yet effective)
-                    if (pressedKeys != null) {
-                        for (int i = 0; i < pressedKeys.length; i++) {
+                    if(pressedKeys != null)
+                    {
+                        for(int i = 0; i < pressedKeys.length; i++)
+                        {
                             key(pressedKeys[i]);
                         }
                     }
@@ -1348,8 +1514,10 @@ public class TextBoxInputModeUITest extends UITestBase {
                 setCurrent(textBox);
 
                 // Do key presses again (now input mode setting is effective)
-                if (pressedKeys != null) {
-                    for (int i = 0; i < pressedKeys.length; i++) {
+                if(pressedKeys != null)
+                {
+                    for(int i = 0; i < pressedKeys.length; i++)
+                    {
                         key(pressedKeys[i]);
                     }
                 }
@@ -1358,11 +1526,12 @@ public class TextBoxInputModeUITest extends UITestBase {
 
             // Check the result of all key presses (i.e. the used input modes)
             passed = checkResult(testCaseName, textBox,
-                    expectedContent, expectedContent == null ? true : false);
+                                 expectedContent, expectedContent == null ? true : false);
 
         }
-        catch (Exception exc) {
-        	fail(testCaseName + " failed: "+exc.toString());
+        catch(Exception exc)
+        {
+            fail(testCaseName + " failed: "+exc.toString());
             passed = false;
         }
         assertTrue(testCaseName, passed);
@@ -1380,30 +1549,36 @@ public class TextBoxInputModeUITest extends UITestBase {
      * @return result Returns whether test case passed or failed
      */
     private boolean checkResult(String testCaseName,
-            TextBox textBox, String expectedContent, boolean takeScreenshot) {
+                                TextBox textBox, String expectedContent, boolean takeScreenshot)
+    {
 
         boolean passed = true;
 
         // Check the expected content
-        if (expectedContent != null) {
-            if (!expectedContent.equals(textBox.getString())) {
+        if(expectedContent != null)
+        {
+            if(!expectedContent.equals(textBox.getString()))
+            {
                 passed = false;
                 print(testCaseName + " test failed: content: " + textBox.getString()
-                     + ", expected: " + expectedContent);
+                      + ", expected: " + expectedContent);
             }
         }
 
         // Take the screenshot and compare it with the previous one
-        if (takeScreenshot) {
-            if (!takeScreenshot(testCaseName + ".gif")) {
-				passed = false;
-				print(testCaseName + " test "
-						+ " failed: screenshot does not match");
-			}
+        if(takeScreenshot)
+        {
+            if(!takeScreenshot(testCaseName + ".gif"))
+            {
+                passed = false;
+                print(testCaseName + " test "
+                      + " failed: screenshot does not match");
+            }
         }
 
-        if (passed) {
-			print(testCaseName + " test succeeded: " + textBox.getString());
+        if(passed)
+        {
+            print(testCaseName + " test succeeded: " + textBox.getString());
         }
         return passed;
     }
@@ -1414,17 +1589,21 @@ public class TextBoxInputModeUITest extends UITestBase {
      * @param keys Key presses according to westen input
      * @return Key presses for the current variant
      */
-    private int[] inputKeys(int[] keys) {
+    private int[] inputKeys(int[] keys)
+    {
 
         int[] input = null;
         int k = 0;
 
-        if (variant == CHINA_VARIANT) {
+        if(variant == CHINA_VARIANT)
+        {
             input = new int[4 * keys.length];
-            for (int i = 0; i < keys.length; i++) {
+            for(int i = 0; i < keys.length; i++)
+            {
                 input[k] = keys[i];
                 k = k + 1;
-                if (keys[i] >= '0' && keys[i] <= '9') {
+                if(keys[i] >= '0' && keys[i] <= '9')
+                {
                     input[k] = Key.Select;
                     input[k + 1] = Key.Select;
                     input[k + 2] = Key.Clear;
@@ -1432,25 +1611,29 @@ public class TextBoxInputModeUITest extends UITestBase {
                 }
             }
         }
-        else
-            if (variant == JAPAN_VARIANT) {
-                input = new int[2 * keys.length];
-                for (int i = 0; i < keys.length; i++) {
-                    input[k] = keys[i];
+        else if(variant == JAPAN_VARIANT)
+        {
+            input = new int[2 * keys.length];
+            for(int i = 0; i < keys.length; i++)
+            {
+                input[k] = keys[i];
+                k = k + 1;
+                if(keys[i] >= '0' && keys[i] <= '9')
+                {
+                    input[k] = Key.Select;
                     k = k + 1;
-                    if (keys[i] >= '0' && keys[i] <= '9') {
-                        input[k] = Key.Select;
-                        k = k + 1;
-                    }
                 }
             }
-            else {
-                input = keys;
-                k = input.length;
-            }
+        }
+        else
+        {
+            input = keys;
+            k = input.length;
+        }
 
         // Set the array size correct
-        if (k < input.length) {
+        if(k < input.length)
+        {
             int[] temp = new int[k];
             System.arraycopy(input, 0, temp, 0, temp.length);
             input = temp;

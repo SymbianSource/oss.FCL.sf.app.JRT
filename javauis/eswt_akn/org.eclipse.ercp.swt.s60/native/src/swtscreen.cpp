@@ -73,6 +73,13 @@ void CSwtScreen::ConstructL()
     }
     iIsTheOnlyScreen = (iDisplay.MobileDevice()->GetScreenNumber() == 1);
     iOrientationState = EOrientationNotSet;
+
+    iActivationState = EFalse;
+    if (iScreenDevice->GetScreenNumber() == iId)
+    {
+        iActivationState = ETrue;
+    }
+
     if (IsScreenOn())
     {
         iOrientation = CurrentOrientation();

@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -21,9 +21,11 @@ import org.eclipse.swt.SWT;
 /**
  * Key table.
  */
-final class KeyTable {
+final class KeyTable
+{
 
-    static final int[][] KEY_TO_GAME_TABLE = {
+    static final int[][] KEY_TO_GAME_TABLE =
+    {
         {-1,  Canvas.UP},
         {50,  Canvas.UP},
         {SWT.ARROW_UP,  Canvas.UP},
@@ -53,33 +55,42 @@ final class KeyTable {
     /**
      * Private constructor.
      */
-    private KeyTable() {
+    private KeyTable()
+    {
     }
 
-    static int getGameAction(int keyCode) {
-        for (int i = 0; i < KEY_TO_GAME_TABLE.length; i++) {
-            if (KEY_TO_GAME_TABLE[i][0] == keyCode) {
+    static int getGameAction(int keyCode)
+    {
+        for(int i = 0; i < KEY_TO_GAME_TABLE.length; i++)
+        {
+            if(KEY_TO_GAME_TABLE[i][0] == keyCode)
+            {
                 return KEY_TO_GAME_TABLE[i][1];
             }
         }
         throw new IllegalArgumentException(
-                MsgRepository.CANVAS_EXCEPTION_INVALID_KEY_CODE);
+            MsgRepository.CANVAS_EXCEPTION_INVALID_KEY_CODE);
     }
 
-    static int getKeyCode(int gameAction) {
-        for (int i = 0; i < KEY_TO_GAME_TABLE.length; i++) {
-            if (KEY_TO_GAME_TABLE[i][1] == gameAction) {
+    static int getKeyCode(int gameAction)
+    {
+        for(int i = 0; i < KEY_TO_GAME_TABLE.length; i++)
+        {
+            if(KEY_TO_GAME_TABLE[i][1] == gameAction)
+            {
                 return KEY_TO_GAME_TABLE[i][0];
             }
         }
         throw new IllegalArgumentException(
-                MsgRepository.CANVAS_EXCEPTION_INVALID_GAME_ACTION);
+            MsgRepository.CANVAS_EXCEPTION_INVALID_GAME_ACTION);
     }
 
 
-    static String getKeyName(int keyCode) {
+    static String getKeyName(int keyCode)
+    {
 
-        switch(keyCode) {
+        switch(keyCode)
+        {
             /*case Canvas.KEY_NUM0:
                 return "0";
 
@@ -117,23 +128,23 @@ final class KeyTable {
             case Canvas.KEY_POUND:
                 return "#";
                 */
-            case -1:
-                return OpenLcduiLocalization.getMessage("key_up");
+        case -1:
+            return OpenLcduiLocalization.getMessage("key_up");
 
-            case -2:
-                return OpenLcduiLocalization.getMessage("key_down");
-                
-            case -3:
-                return OpenLcduiLocalization.getMessage("key_left");
+        case -2:
+            return OpenLcduiLocalization.getMessage("key_down");
 
-            case -4:
-                return OpenLcduiLocalization.getMessage("key_right");
+        case -3:
+            return OpenLcduiLocalization.getMessage("key_left");
 
-            case -5:
-                return OpenLcduiLocalization.getMessage("key_select");
+        case -4:
+            return OpenLcduiLocalization.getMessage("key_right");
 
-            default:
-                return "";
+        case -5:
+            return OpenLcduiLocalization.getMessage("key_select");
+
+        default:
+            return "";
         }
     }
 

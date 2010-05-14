@@ -9,11 +9,23 @@
       <module name="jrt">
         <unit unitID="jrt.jrt" mrp="" bldFile="&layer_real_source_path;/group"
         filter="!sf_build" name="jrt" />
-      </module>
+      </module>      
+
+<!--  When releasing to SF, change the sf_build to this.      
       <module name="jrt_sf">
         <unit unitID="jrt.jrt_sf" mrp="" bldFile="&layer_real_source_path;/group/sf"
         filter="sf_build" name="jrt_sf" />
       </module>
+-->
+      <module name="jrt">
+        <unit unitID="jrt.jrt.jrt_plat" mrp="" bldFile="&layer_real_source_path;/jrt_plat/group"
+        filter="sf_build" name="jrt_jrt_plat" />
+      </module>
+      <module name="jrt">
+        <unit unitID="jrt.jrt.java_stubs" mrp="" bldFile="&layer_real_source_path;/java_stubs/group"
+        filter="sf_build" name="jrt_jrt_stubs" />
+      </module>
+      
     </layer>
   </systemModel>
 </SystemDefinition>

@@ -697,7 +697,7 @@ void CSwtButton::ProcessKeyEventL(const TKeyEvent& aKeyEvent,
 {
     // Do not pass SKs to CAknButton as it will activate.
     if (iButton && (aKeyEvent.iScanCode != EStdKeyDevice0 && aKeyEvent.iScanCode != EStdKeyDevice1))
-    {        
+    {
         TBool forward(EFalse);
         if ((iStyle & KSwtStyleRadio)
                 && (GetParent()->Control()->CaptionedControlInterface() == NULL)
@@ -712,10 +712,11 @@ void CSwtButton::ProcessKeyEventL(const TKeyEvent& aKeyEvent,
         {
             forward = ETrue;
         }
-        
+
         if (forward)
         {
-            if (aKeyEvent.iScanCode == EStdKeyNkpEnter) {
+            if (aKeyEvent.iScanCode == EStdKeyNkpEnter)
+            {
                 // Workaround for CAknButton's inability to handle EKeyEnter correctly
                 TKeyEvent ev;
                 ev.iCode = aKeyEvent.iCode;

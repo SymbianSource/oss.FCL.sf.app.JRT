@@ -27,7 +27,7 @@
     <!-- Needed by the utilities.xml. See the description form the utilities.xml
          file -->
 
-    <property name="java.src.paths" value="../org.eclipse.swt/Eclipse_SWT_PI/s60:../org.eclipse.swt/Eclipse_SWT_PI/qt:../org.eclipse.swt/Eclipse_SWT_PI/common_j2me:../org.eclipse.swt/Eclipse SWT/qt:../org.eclipse.swt/Eclipse SWT/common_j2me:../org.eclipse.swt/Eclipse SWT/common:../org.eclipse.swt/Eclipse SWT Drag and Drop/qt:../org.eclipse.swt/Eclipse SWT Browser/qt:../org.eclipse.swt/Eclipse SWT Browser/common:../com.nokia.swt.extensions/extensions:../com.nokia.swt.extensions/midp_common"/>
+    <property name="java.src.paths" value="../org.eclipse.swt/Eclipse_SWT_PI/s60:../org.eclipse.swt/Eclipse_SWT_PI/qt:../org.eclipse.swt/Eclipse_SWT_PI/common_j2me:../org.eclipse.swt/Eclipse SWT/qt:../org.eclipse.swt/Eclipse SWT/common_j2me:../org.eclipse.swt/Eclipse SWT/common:../org.eclipse.swt/Eclipse SWT Drag and Drop/qt:../org.eclipse.swt/Eclipse SWT Browser/qt:../org.eclipse.swt/Eclipse SWT Browser/common:../com.nokia.swt.extensions/extensions:../com.nokia.swt.extensions/midp_common:../org.eclipse.swt/Eclipse SWT Custom Widgets/common"/>
 
     <target name="compile">
         <omj.javac classpath="${impl.cldc.jar}" excludes="**/CDCCompatibilityDelegate.java"/>
@@ -35,7 +35,8 @@
 
     <property name="javah.classnames" value="org.eclipse.swt.internal.qt.OS,
                                              org.eclipse.swt.internal.qt.graphics.OS,
-                                             org.eclipse.swt.internal.qt.s60.OS"/>
+                                             org.eclipse.swt.internal.qt.s60.OS,
+                                             org.eclipse.swt.internal.extension.OS"/>
 
     <!-- This property gets added to eswtqt.odc created by the build system -->
     <target name="system.properties">

@@ -33,4 +33,5 @@ grant allowed {
 
 grant assigned {
     permission javax.microedition.PropertyPermission "mobinfo.msisdn" "read";
+    permission javax.microedition.PropertyPermission "mobinfo.cellid" "read";
 }

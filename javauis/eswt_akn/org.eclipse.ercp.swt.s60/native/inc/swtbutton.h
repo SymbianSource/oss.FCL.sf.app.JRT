@@ -135,19 +135,19 @@ private:
     void RetrieveDefaultFontL();
 
     void ProcessFontUpdate();
-    
+
 #ifdef RD_JAVA_ADVANCED_TACTILE_FEEDBACK
     /**
      * Returns ETrue when tactile feedback is needed on touch down
      */
     TBool IsFeedbackOnTouchDownNeeded(
-            const TPointerEvent& aPointerEvent) const;
+        const TPointerEvent& aPointerEvent) const;
 
     /**
      * Returns ETrue when tactile feedback is needed on touch release
      */
     TBool IsFeedbackOnTouchReleaseNeeded(
-            const TPointerEvent& aPointerEvent) const;
+        const TPointerEvent& aPointerEvent) const;
 #endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
 
 // From CCoeControl

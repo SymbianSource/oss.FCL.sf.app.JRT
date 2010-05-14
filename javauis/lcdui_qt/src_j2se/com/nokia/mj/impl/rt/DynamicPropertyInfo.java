@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 
@@ -26,7 +26,8 @@ package com.nokia.mj.impl.rt;
  * value.
  */
 
-public class DynamicPropertyInfo {
+public class DynamicPropertyInfo
+{
 
     /**
      * Tells whether the dynamic parameter does not change during the lifetime
@@ -47,7 +48,8 @@ public class DynamicPropertyInfo {
     /**
      * Constructor of DynamicPropertyInfo class.
      */
-    public DynamicPropertyInfo (String aPropertyName) {
+    public DynamicPropertyInfo(String aPropertyName)
+    {
         iPropertyName = aPropertyName;
         iIsPropertyValueStatic = false;
     }
@@ -56,7 +58,8 @@ public class DynamicPropertyInfo {
      * Getter method for the name of the system property.
      * @return The name of the system property.
      */
-    public String getPropertyName () {
+    public String getPropertyName()
+    {
         return iPropertyName;
     }
 
@@ -64,7 +67,8 @@ public class DynamicPropertyInfo {
      * Setter method for the value of the system property.
      * @param aPropertyValue the value of the system property.
      */
-    public void setPropertyValue (String aPropertyValue) {
+    public void setPropertyValue(String aPropertyValue)
+    {
         iPropertyValue = aPropertyValue;
     }
 
@@ -72,7 +76,8 @@ public class DynamicPropertyInfo {
      * Getter method for the value of the system property.
      * @return The value of the system property.
      */
-    public String getPropertyValue () {
+    public String getPropertyValue()
+    {
         return iPropertyValue;
     }
 
@@ -81,7 +86,8 @@ public class DynamicPropertyInfo {
      * not change during the lifetime of the application.
      * @param aIsPropertyValueStatic boolean info.
      */
-    public void setIsPropertyValueStatic (boolean aIsPropertyValueStatic) {
+    public void setIsPropertyValueStatic(boolean aIsPropertyValueStatic)
+    {
         iIsPropertyValueStatic = aIsPropertyValueStatic;
     }
 
@@ -90,7 +96,8 @@ public class DynamicPropertyInfo {
      * not change during the lifetime of the application.
      * @return Boolean info.
      */
-    public boolean getIsPropertyValueStatic () {
+    public boolean getIsPropertyValueStatic()
+    {
         return iIsPropertyValueStatic;
     }
 }

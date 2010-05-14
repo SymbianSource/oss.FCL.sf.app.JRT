@@ -285,12 +285,12 @@ private:
     TPtrC Read() const;
 
     void CreateNonMidletCommandsL();
-    void AddCommandToArrayL(RPointerArray<MMIDCommand>& aArray,
-                            TInt aCommandResIdShort, TInt aCommandResIdLong, TInt aCommandId);
-    void AddCommandToArrayL(RPointerArray<MMIDCommand>& aArray,
-                            TInt aCommandResId, TInt aCommandId);
+    void AddCommandToEdwinL(TInt aCommandResIdShort,
+                            TInt aCommandResIdLong,
+                            TInt aCommandId);
+    void AddCommandToEdwinL(TInt aCommandResId, TInt aCommandId);
     void RemoveNonMidletCommands();
-    void AddCommandsToEdwinL(RPointerArray<MMIDCommand>& aArray);
+    void AddCommandToEdwinL(MMIDCommand& aCommand);
     void CreatePhoneCallL();
 
     void CreatePasswordTextL();

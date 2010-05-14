@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -21,7 +21,8 @@ import java.util.Vector;
 /**
  * Class which represents one row in the Form.
  */
-class Row {
+class Row
+{
 
     private Vector layoutObjects = new Vector();
 
@@ -39,7 +40,8 @@ class Row {
      * @param rowWidth - total row width.
      * @param hLayout horizontal layout
      */
-    Row(int rowWidth, int hLayout) {
+    Row(int rowWidth, int hLayout)
+    {
         this.rowWidth = rowWidth;
         setRowHLayout(hLayout);
     }
@@ -49,9 +51,12 @@ class Row {
      *
      * @param layoutObj structure which represents Item or part Of Item.
      */
-    void addLayoutObject(final LayoutObject layoutObj) {
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+    void addLayoutObject(final LayoutObject layoutObj)
+    {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 eswtAddLayoutObject(layoutObj);
             }
         });
@@ -62,7 +67,8 @@ class Row {
      *
      * @param lo structure which represents Item or part Of Item.
      */
-    void eswtAddLayoutObject(LayoutObject lo) {
+    void eswtAddLayoutObject(LayoutObject lo)
+    {
         layoutObjects.addElement(lo);
         // update actual occupiedSpace
         occupiedSpace += lo.getWidth();
@@ -73,13 +79,16 @@ class Row {
     /**
      * Get the number of items with the given layout.
      */
-    int getNumLayoutObjects(int layoutMask) {
+    int getNumLayoutObjects(int layoutMask)
+    {
         int ret = 0;
         int num = layoutObjects.size();
         LayoutObject lo = null;
-        for (int i = 0; i < num; i++) {
+        for(int i = 0; i < num; i++)
+        {
             lo = (LayoutObject) layoutObjects.elementAt(i);
-            if (lo.getOwningItem().hasLayout(layoutMask)) {
+            if(lo.getOwningItem().hasLayout(layoutMask))
+            {
                 ret++;
             }
         }
@@ -91,7 +100,8 @@ class Row {
      *
      * @return space available for Items on that Row in pixels.
      */
-    int getFreeSpace() {
+    int getFreeSpace()
+    {
         return getFreeSpace(Item.LAYOUT_SHRINK | Item.LAYOUT_EXPAND);
     }
 
@@ -102,11 +112,13 @@ class Row {
      *
      * @param layoutMask layout mask
      */
-    int getFreeSpace(int layoutMask) {
+    int getFreeSpace(int layoutMask)
+    {
         int ret = 0;
         int num = layoutObjects.size();
         LayoutObject lo = null;
-        for (int i = 0; i < num; i++) {
+        for(int i = 0; i < num; i++)
+        {
             lo = (LayoutObject) layoutObjects.elementAt(i);
             ret += getObjectWidth(lo, layoutMask);
         }
@@ -120,33 +132,41 @@ class Row {
      *
      * @param layoutMask layout mask
      */
-    int getRowHeight(int layoutMask) {
+    int getRowHeight(int layoutMask)
+    {
         int ret = 0;
         int num = layoutObjects.size();
         LayoutObject lo = null;
-        for (int i = 0; i < num; i++) {
+        for(int i = 0; i < num; i++)
+        {
             lo = (LayoutObject) layoutObjects.elementAt(i);
             ret = Math.max(ret, getObjectHeight(lo, layoutMask));
         }
         return ret;
     }
 
-    private int getObjectWidth(LayoutObject lo, int layoutMask) {
-        if (lo.getOwningItem().hasLayout(layoutMask)) {
+    private int getObjectWidth(LayoutObject lo, int layoutMask)
+    {
+        if(lo.getOwningItem().hasLayout(layoutMask))
+        {
             // this returns the min/pref width
             return lo.getOwningItem().getLayoutWidth();
         }
-        else {
+        else
+        {
             return lo.getWidth();
         }
     }
 
-    private int getObjectHeight(LayoutObject lo, int layoutMask) {
-        if (lo.getOwningItem().hasLayout(layoutMask)) {
+    private int getObjectHeight(LayoutObject lo, int layoutMask)
+    {
+        if(lo.getOwningItem().hasLayout(layoutMask))
+        {
             // this returns the min/pref width
             return lo.getOwningItem().getLayoutHeight();
         }
-        else {
+        else
+        {
             return lo.getHeight();
         }
     }
@@ -156,15 +176,19 @@ class Row {
      *
      * @param keepItem Last Item to leave in a row.
      */
-    boolean cleanRow(Item keepItem) {
+    boolean cleanRow(Item keepItem)
+    {
         LayoutObject lo = null;
-        for (int i = (layoutObjects.size() - 1); i >= 0; i--) {
+        for(int i = (layoutObjects.size() - 1); i >= 0; i--)
+        {
             lo = (LayoutObject) layoutObjects.elementAt(i);
-            if (keepItem != null && keepItem == lo.getOwningItem()) {
+            if(keepItem != null && keepItem == lo.getOwningItem())
+            {
                 updateRowInternals();
                 return true;
             }
-            else {
+            else
+            {
                 layoutObjects.removeElement(lo);
                 lo.dispose();
             }
@@ -178,25 +202,30 @@ class Row {
      * This method called by Layouters or FormLayoutPolicy when row is full and
      * ready for layout.
      */
-    void updateRowLayout(boolean isLeftToRight) {
+    void updateRowLayout(boolean isLeftToRight)
+    {
         // update xShift
         xShift = ItemLayouter.getXLocation(rowWidth, occupiedSpace, rowHLayout);
         int xDelta = 0;
         LayoutObject lo = null;
-        if (isLeftToRight) {
-            for (int i = 0; i < layoutObjects.size(); i++) {
+        if(isLeftToRight)
+        {
+            for(int i = 0; i < layoutObjects.size(); i++)
+            {
                 lo = (LayoutObject) layoutObjects.elementAt(i);
                 int yDelta = ItemLayouter.getYLocation(rowHeight,
-                        lo.getHeight(), lo.getVerticalLayout());
+                                                       lo.getHeight(), lo.getVerticalLayout());
                 lo.eswtSetLocation(xShift + xDelta, yShift + yDelta);
                 xDelta += lo.getWidth();
             }
         }
-        else {
-            for (int i = layoutObjects.size() - 1; i > 0; i--) {
+        else
+        {
+            for(int i = layoutObjects.size() - 1; i > 0; i--)
+            {
                 lo = (LayoutObject) layoutObjects.elementAt(i);
                 int yDelta = ItemLayouter.getYLocation(rowHeight,
-                        lo.getHeight(), lo.getVerticalLayout());
+                                                       lo.getHeight(), lo.getVerticalLayout());
                 lo.eswtSetLocation(xShift + xDelta, yShift + yDelta);
                 xDelta += lo.getWidth();
             }
@@ -207,12 +236,14 @@ class Row {
      * Update width and height of a row if some layout objects were removed or
      * changed.
      */
-    void updateRowInternals() {
+    void updateRowInternals()
+    {
         int newRowHeight = 0;
         int newOccupiedSpace = 0;
         int num = layoutObjects.size();
         LayoutObject lo = null;
-        for (int i = 0; i < num; i++) {
+        for(int i = 0; i < num; i++)
+        {
             lo = (LayoutObject) layoutObjects.elementAt(i);
             newRowHeight = Math.max(newRowHeight, lo.getHeight());
             newOccupiedSpace += lo.getWidth();
@@ -227,7 +258,8 @@ class Row {
      *
      * @param aYShift yPosition of the row inside ScrolledComposite
      */
-    void setYShift(int aYShift) {
+    void setYShift(int aYShift)
+    {
         yShift = aYShift;
     }
 
@@ -236,7 +268,8 @@ class Row {
      *
      * @return yShift in pixels
      */
-    int getYShift() {
+    int getYShift()
+    {
         return yShift;
     }
 
@@ -245,7 +278,8 @@ class Row {
      *
      * @return - row's total width.
      */
-    int getRowWidth() {
+    int getRowWidth()
+    {
         return rowWidth;
     }
 
@@ -254,14 +288,16 @@ class Row {
      *
      * @return height of a row;
      */
-    int getRowHeight() {
+    int getRowHeight()
+    {
         return rowHeight;
     }
 
     /**
      * Get the bottom (yPosition + rowHeight) of a Row .
      */
-    int getBottomPosition() {
+    int getBottomPosition()
+    {
         return yShift + rowHeight;
     }
 
@@ -271,7 +307,8 @@ class Row {
      * @param yPosition the y position
      * @return yShift + rowHeight in pixels
      */
-    boolean isInsideRow(int yPosition) {
+    boolean isInsideRow(int yPosition)
+    {
         return (yShift <= yPosition && yPosition < yShift + rowHeight);
     }
 
@@ -280,7 +317,8 @@ class Row {
      *
      * @param aRowHLayout - set new horizontal of the row.
      */
-    void setRowHLayout(int aRowHLayout) {
+    void setRowHLayout(int aRowHLayout)
+    {
         rowHLayout = aRowHLayout;
     }
 
@@ -289,60 +327,73 @@ class Row {
      *
      * @return horizontal Layout of a row;
      */
-    int getRowHLayout() {
+    int getRowHLayout()
+    {
         return rowHLayout;
     }
 
-    boolean isEmpty() {
+    boolean isEmpty()
+    {
         return ((occupiedSpace == 0) && (layoutObjects.size() == 0));
     }
 
-    LayoutObject getNextLayoutObject(LayoutObject lo, Item item) {
+    LayoutObject getNextLayoutObject(LayoutObject lo, Item item)
+    {
         int startIdx = layoutObjects.indexOf(lo);
         startIdx = (startIdx < 0 ? 0 : startIdx + 1);
         int num = layoutObjects.size();
         LayoutObject temp = null;
-        for (int i = startIdx; i < num; i++) {
+        for(int i = startIdx; i < num; i++)
+        {
             temp = getLayoutObject(i);
-            if (item == null || item == temp.getOwningItem()) {
+            if(item == null || item == temp.getOwningItem())
+            {
                 return temp;
             }
         }
         return null;
     }
 
-    LayoutObject getPrevLayoutObject(LayoutObject lo, Item item) {
+    LayoutObject getPrevLayoutObject(LayoutObject lo, Item item)
+    {
         int startIdx = layoutObjects.indexOf(lo);
         startIdx = (startIdx < 0 ? layoutObjects.size() - 1 : startIdx - 1);
         LayoutObject temp = null;
-        for (int i = startIdx; i >= 0; i--) {
+        for(int i = startIdx; i >= 0; i--)
+        {
             temp = getLayoutObject(i);
-            if (item == null || item == temp.getOwningItem()) {
+            if(item == null || item == temp.getOwningItem())
+            {
                 return temp;
             }
         }
         return null;
     }
 
-    LayoutObject getNextLayoutObject(LayoutObject lo, int layoutMask) {
+    LayoutObject getNextLayoutObject(LayoutObject lo, int layoutMask)
+    {
         int startIdx = layoutObjects.indexOf(lo);
         startIdx = (startIdx < 0 ? 0 : startIdx + 1);
         int num = layoutObjects.size();
         LayoutObject temp = null;
-        for (int i = startIdx; i < num; i++) {
+        for(int i = startIdx; i < num; i++)
+        {
             temp = getLayoutObject(i);
-            if (temp.getOwningItem().hasLayout(layoutMask)) {
+            if(temp.getOwningItem().hasLayout(layoutMask))
+            {
                 return temp;
             }
         }
         return null;
     }
 
-    LayoutObject getLayoutObject(int index) {
+    LayoutObject getLayoutObject(int index)
+    {
         return (LayoutObject) layoutObjects.elementAt(index);
     }
 
-    int size() {
+    int size()
+    {
         return layoutObjects.size();
     }
 

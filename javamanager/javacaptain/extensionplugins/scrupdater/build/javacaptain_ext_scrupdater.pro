@@ -20,6 +20,6 @@ CONFIG += omj stl
 CONFIG -= qt
 
 
-LIBS += -lapgrfx -ljavacomms -ljavastorage -lscrclient
-
+LIBS += -lapgrfx -ljavacomms -ljavastorage -lscrclient -lefsrv
+ 
 include(../../../../../build/omj.pri)

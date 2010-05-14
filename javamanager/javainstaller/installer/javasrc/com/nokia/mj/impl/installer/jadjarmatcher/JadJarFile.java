@@ -22,9 +22,6 @@ import java.util.Hashtable;
 
 /**
  * JadJarFile contains names of Jad and Jar files and attributes from them.
- *
- * @author Nokia Corporation
- * @version $Rev: 9041 $
  */
 public class JadJarFile
 {

@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt_uirobot.list;
@@ -32,7 +32,8 @@ import com.nokia.mj.impl.uitestutils.Key;
  * <br>
  * @created 7.8.2008
  */
-public class ListUITest extends UITestBase {
+public class ListUITest extends UITestBase
+{
 
     private static final int SETCURRENT_TIMEOUT = 6000;
     private static final int WAIT_CYCLE_TIME = 50;
@@ -45,7 +46,8 @@ public class ListUITest extends UITestBase {
     /**
      * Constructor.
      */
-    public ListUITest() {
+    public ListUITest()
+    {
     }
 
     /**
@@ -54,34 +56,39 @@ public class ListUITest extends UITestBase {
      * @param sTestName name of the test
      * @param rTestMethod TestMethod used
      */
-    public ListUITest(String sTestName) {
+    public ListUITest(String sTestName)
+    {
         super(sTestName);
     }
 
-    public static Test suite() {
+    public static Test suite()
+    {
         TestSuite suite = new TestSuite();
 
         java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = ListUITest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new ListUITest((String)e.nextElement()));
-	    }
-        
+        // Add widget tests
+        methodNames = ListUITest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new ListUITest((String)e.nextElement()));
+        }
+
         return suite;
     }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testDefaultSelectCmd");
         return methodNames;
     }
-    
-    public void runTest() throws Throwable {
-        if (getName().equals("testDefaultSelectCmd")) testDefaultSelectCmd();
+
+    public void runTest() throws Throwable
+    {
+        if(getName().equals("testDefaultSelectCmd")) testDefaultSelectCmd();
         else super.runTest();
     }
 
@@ -89,7 +96,8 @@ public class ListUITest extends UITestBase {
     /**
      * Test method.
      */
-    public void testDefaultSelectCmd() {
+    public void testDefaultSelectCmd()
+    {
         List list = new List("Implicit List", Choice.IMPLICIT);
         list.setCommandListener(this);
         assertSetCurrent(list);
@@ -123,7 +131,8 @@ public class ListUITest extends UITestBase {
      * @param aCommand Command.
      * @param aDisplayable Displayable.
      */
-    public void commandAction(Command aCommand, Displayable aDisplayable) {
+    public void commandAction(Command aCommand, Displayable aDisplayable)
+    {
         lastCommand = aCommand;
         lastDisplayable = aDisplayable;
         doNotify();
@@ -134,11 +143,13 @@ public class ListUITest extends UITestBase {
      *
      * @param disp a displayable
      */
-    protected void assertSetCurrent(Displayable disp) {
+    protected void assertSetCurrent(Displayable disp)
+    {
         display.setCurrent(disp);
         Displayable curr = null;
         int waitSum = 0;
-        while (curr != disp && waitSum <= SETCURRENT_TIMEOUT) {
+        while(curr != disp && waitSum <= SETCURRENT_TIMEOUT)
+        {
             block(CHANGE_DISPLAYABLE_DELAY);
             waitSum += CHANGE_DISPLAYABLE_DELAY;
             curr = display.getCurrent();
@@ -152,12 +163,13 @@ public class ListUITest extends UITestBase {
      * @param expCmd expected Command
      * @param expDisp expected Displayable
      */
-    protected void assertCommandListener(Command expCmd, Displayable expDisp) {
+    protected void assertCommandListener(Command expCmd, Displayable expDisp)
+    {
         assertTrue("Command listener wasn't called with " + expCmd.getLabel(),
-                syncFlag);
+                   syncFlag);
         assertEquals("Last displayable mismatch", expDisp, lastDisplayable);
         assertEquals("Last command should be " + expCmd.getLabel(), expCmd,
-                lastCommand);
+                     lastCommand);
     }
 
     /**
@@ -166,11 +178,13 @@ public class ListUITest extends UITestBase {
      * @param timeout timeout
      * @return true if the doNotify was called during this, else otherwise
      */
-    protected boolean doWait(int timeout) {
+    protected boolean doWait(int timeout)
+    {
         clearCallbackValues();
         int waitSum = 0;
         // wait here until syncFlag gets true or timeout expires
-        while (!syncFlag && waitSum <= timeout) {
+        while(!syncFlag && waitSum <= timeout)
+        {
             block(WAIT_CYCLE_TIME);
             waitSum += WAIT_CYCLE_TIME;
         }
@@ -180,14 +194,16 @@ public class ListUITest extends UITestBase {
     /**
      * Notify the doWait method.
      */
-    protected void doNotify() {
+    protected void doNotify()
+    {
         syncFlag = true;
     }
 
     /**
      * Clear command listener values.
      */
-    protected void clearCallbackValues() {
+    protected void clearCallbackValues()
+    {
         syncFlag = false;
         lastCommand = null;
         lastDisplayable = null;

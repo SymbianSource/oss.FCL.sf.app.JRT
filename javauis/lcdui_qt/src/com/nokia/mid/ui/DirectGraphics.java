@@ -11,14 +11,15 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.mid.ui;
 
 import javax.microedition.lcdui.Image;
 
-public interface DirectGraphics {
+public interface DirectGraphics
+{
 
     /**
      * Constant for horizontal image flipping.
@@ -286,7 +287,7 @@ public interface DirectGraphics {
      * @since 1.0
      */
     public void drawImage(Image img, int x, int y, int anchor,
-            int manipulation);
+                          int manipulation);
 
     /**
      * Copies or draws the pixel data directly to graphics context to specific
@@ -331,8 +332,8 @@ public interface DirectGraphics {
      * @since 1.0
      */
     public void drawPixels(byte[] pixels, byte[] transparencyMask, int offset,
-            int scanlength, int x, int y, int width, int height,
-            int manipulation, int format);
+                           int scanlength, int x, int y, int width, int height,
+                           int manipulation, int format);
 
     /**
      * Copies or draws the pixel data directly to graphics context to specific
@@ -384,8 +385,8 @@ public interface DirectGraphics {
      * @since 1.0
      */
     public void drawPixels(int[] pixels, boolean transparency, int offset,
-            int scanlength, int x, int y, int width, int height,
-            int manipulation, int format);
+                           int scanlength, int x, int y, int width, int height,
+                           int manipulation, int format);
 
     /**
      * Copies or draws the pixel data directly to graphics context to specific
@@ -436,8 +437,8 @@ public interface DirectGraphics {
      * @since 1.0
      */
     public void drawPixels(short[] pixels, boolean transparency, int offset,
-            int scanlength, int x, int y, int width, int height,
-            int manipulation, int format);
+                           int scanlength, int x, int y, int width, int height,
+                           int manipulation, int format);
 
     /**
      * Draws a closed polygon defined by arrays of x and y coordinates. Each
@@ -459,7 +460,7 @@ public interface DirectGraphics {
      * @since 1.0
      */
     public void drawPolygon(int[] xPoints, int xOffset, int[] yPoints,
-            int yOffset, int nPoints, int argbColor);
+                            int yOffset, int nPoints, int argbColor);
 
     /**
      * Draws closed triangle defined by coordinates.
@@ -481,7 +482,7 @@ public interface DirectGraphics {
      * @since 1.0
      */
     public void drawTriangle(int x1, int y1, int x2, int y2, int x3,
-            int y3, int argbColor);
+                             int y3, int argbColor);
 
     /**
      * Fills a closed polygon defined by arrays of x and y coordinates.
@@ -505,7 +506,7 @@ public interface DirectGraphics {
      * @since 1.0
      */
     public void fillPolygon(int[] xPoints, int xOffset, int[] yPoints,
-            int yOffset, int nPoints, int argbColor);
+                            int yOffset, int nPoints, int argbColor);
 
     /**
      * Fills closed triangle defined by coordinates.
@@ -527,7 +528,7 @@ public interface DirectGraphics {
      * @since 1.0
      */
     public void fillTriangle(int x1, int y1, int x2, int y2, int x3,
-            int y3, int argbColor);
+                             int y3, int argbColor);
 
     /**
      * Gets the alpha component of the current color.
@@ -594,7 +595,7 @@ public interface DirectGraphics {
      * @since 1.0
      */
     public void getPixels(byte[] pixels, byte[] transparencyMask, int offset,
-            int scanlength, int x, int y, int width, int height, int format);
+                          int scanlength, int x, int y, int width, int height, int format);
 
     /**
      * Gets the pixel values of an image to an array defined by format
@@ -637,7 +638,7 @@ public interface DirectGraphics {
      * @since 1.0
      */
     public void getPixels(int[] pixels, int offset, int scanlength, int x,
-            int y, int width, int height, int format);
+                          int y, int width, int height, int format);
 
     /**
      * Gets the pixel values of an image to an array of short values from
@@ -683,7 +684,7 @@ public interface DirectGraphics {
      *             negative, or format is wrong or unsupported
      */
     public void getPixels(short[] pixels, int offset, int scanlength, int x,
-            int y, int width, int height, int format);
+                          int y, int width, int height, int format);
 
     /**
      * Sets the current color to the specified ARGB value. All subsequent

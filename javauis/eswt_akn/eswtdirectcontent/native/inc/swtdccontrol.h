@@ -51,7 +51,7 @@ NONSHARABLE_CLASS(CSwtDCControl)
         , public MSwtAppFocusObserver
         , public MMMAContainer
         , public MSwtDcEventConsumer
-#ifdef SWTDCCONTROL_DSA_ENABLED        
+#ifdef SWTDCCONTROL_DSA_ENABLED
         , public MDirectScreenAccess
 #endif
 {
@@ -119,8 +119,8 @@ public: // From MSWTContainer
 
 public: // From MSwtDcFullscreenProvider
     void HandleDcEvent(int aType);
-    
-#ifdef SWTDCCONTROL_DSA_ENABLED  
+
+#ifdef SWTDCCONTROL_DSA_ENABLED
 public: // MDirectScreenAccess
     void Restart(RDirectScreenAccess::TTerminationReasons aReason);
     void AbortNow(RDirectScreenAccess::TTerminationReasons aReason);
@@ -153,7 +153,7 @@ public: // New methods
 
 private:
     TBool IsControlActive() const;
-#ifdef SWTDCCONTROL_DSA_ENABLED       
+#ifdef SWTDCCONTROL_DSA_ENABLED
     TBool IsDsaRegionValid() const;
 #endif
     TBool IsContentVisibilityAllowed() const;
@@ -188,13 +188,13 @@ private: // Data
     // True, is DSA was started already
     TBool iDsaWasStartedAlready;
 #endif
-    
+
     // Own.
     // This observer receives requests from any thread and asynchronously
     // calls a callback in ESWT thread to a given receiver
     CSwtDcObserver* iDcObserver;
-    
-    
+
+
 };
 
 

@@ -192,11 +192,11 @@ public:
 // From MSwtPopupMenuCallBack
 public:
     void HandlePopupMenuClosedL();
-    
+
 // From MSwtMediaKeysListener
 public:
     void HandleMediaKeyEvent(TKeyEvent& aKeyEvent, TInt aEventType);
-    
+
 private:
     TInt LoadResourceFileL();
 
@@ -204,10 +204,10 @@ private:
 protected:
     // The thread of the Java VM
     RThread iJavaUiThread;
-    
+
     // The event queue, owned, cannot be NULL
     CSwtEventQueue* iEventQueue;
-    
+
     // Our status object used for notification of events
     TRequestStatus iRequestStatus;
 
@@ -215,62 +215,62 @@ protected:
 protected:
     // DLL's factory, owned, cannot be NULL
     MSwtFactory* iFactory;
-    
+
     // The UI utility object, owned, cannot be NULL
     MSwtUiUtils* iUiUtils;
-    
+
     // The Menu arranger, owned, cannot be NULL
     MSwtMenuArranger* iMenuArranger;
-    
+
     // The Command arranger, owned, may be NULL
     MSwtCommandArranger* iCommandArranger;
-    
+
     // The key mapper, owned, cannot be NULL
     CSwtKeyMapper* iKeyMapper;
-    
-    // The system font, object owned. Null at construction, 
+
+    // The system font, object owned. Null at construction,
     // allocated at the first SystemFontL() method call.
     MSwtFont* iSystemFont;
-    
+
     // The java side timers that are currently active
-    RPointerArray<CSwtTimer> iTimers;               
-    
+    RPointerArray<CSwtTimer> iTimers;
+
     // Registered resource change observers
     RPointerArray<MSwtResourceChangeObserver> iResourceChangeObservers;
-    
+
     // Registered app focus observers
     RPointerArray<MSwtAppFocusObserver> iAppFocusObservers;
-    
+
     // The unique instance of the mobile device
     MSwtMobileDevice* iMobileDevice;
-    
+
     // The listener object for media keys
     CSwtMIDRemConObserver* iRemConObserver;
-    
-    // The shared object taking care of drawing the Java 
+
+    // The shared object taking care of drawing the Java
     // content for all controls, owned, cannot be NULL
     CSwtJavaBufferDrawer* iJavaBufferDrawer;
-    
+
 #ifdef RD_SCALABLE_UI_V2
     // The long tap detector, cannot be NULL
     CAknLongTapDetector* iLongTapDetector;
-    
+
     // Indicates if a long tap has been detected after the previous EButton1Down event.
     TBool iLongTapDetected;
-    
+
     // The pointer event of type EButton1Down which initiates the long tap
     TPointerEvent iLongTapPointerEvent;
-    
+
     // The control upon which long tap started
     MSwtControl* iLongTapControl;
 #endif
-    
+
     // Id of the loaded resource file
     TInt iResId;
-    
+
     // Cached Coe env reference.
     CEikonEnv* iCoeEnv;
-    
+
     // Flag for state reverting pointer events.
     TBool iRevertPointerEvent;
 

@@ -27,9 +27,6 @@ import com.nokia.mj.impl.rt.support.JvmInternal;
 
 /**
  * A class for storing the heap usage to a file after fixed time period.
- *
- * @author Nokia Corporation
- * @version $Rev$
  */
 public class MemoryLogger extends Thread
 {

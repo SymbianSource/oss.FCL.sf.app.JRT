@@ -174,8 +174,11 @@ abstract public class ViewBase
         {
             public void run()
             {
-                log(className + ": disposing view container");
-                iContainer.dispose();
+                if (!isDisposed())
+                {
+                    log(className + ": disposing view container");
+                    iContainer.dispose();
+                }
             }
         });
     }
@@ -212,11 +215,14 @@ abstract public class ViewBase
             }
         }
         // UI updates must be executed in UI thread.
-        iParent.getDisplay().syncExec
-        (new Runnable()
+        iParent.getDisplay().syncExec(new Runnable()
         {
             public void run()
             {
+                if (isDisposed())
+                {
+                    return;
+                }
                 if (iVisible)
                 {
                     updateSize();
@@ -421,10 +427,10 @@ abstract public class ViewBase
     {
         Label label = createLabel((Image)null, 1, SWT.NONE);
         Image securityIcon = null;
-        if (iInstallerUi instanceof InstallerUiEswt)
+        if (iInstallerUi != null)
         {
-            securityIcon = ((InstallerUiEswt)iInstallerUi).getSecurityIcon
-                           (getDisplay(), aIdentified);
+            securityIcon = iInstallerUi.getSecurityIcon(
+                getDisplay(), aIdentified);
         }
         if (securityIcon != null)
         {

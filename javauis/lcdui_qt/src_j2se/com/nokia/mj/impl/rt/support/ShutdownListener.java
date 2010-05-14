@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 
@@ -24,7 +24,7 @@ package com.nokia.mj.impl.rt.support;
  * @version 1.0
  */
 
-public interface ShutdownListener 
+public interface ShutdownListener
 {
     /**
      * JAVADOCS ARE UNDER CONSTRUCTION!!

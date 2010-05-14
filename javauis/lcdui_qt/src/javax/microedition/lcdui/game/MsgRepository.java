@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui.game;
@@ -21,7 +21,8 @@ package javax.microedition.lcdui.game;
  * constants in this class should begin with prefix "CLASSNAME_" where CLASSNAME
  * is the name of the class which is using the constant.
  */
-final class MsgRepository {
+final class MsgRepository
+{
 
     public static final String SPRITE_EXCEPTION_INVALID_WIDTH_HEIGHT =
         "Width and height cannot be negative";
@@ -73,7 +74,8 @@ final class MsgRepository {
     /**
      * Private Constructor.
      */
-    private MsgRepository() {
+    private MsgRepository()
+    {
     }
 
 }

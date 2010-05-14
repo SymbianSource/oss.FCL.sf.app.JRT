@@ -280,8 +280,7 @@ private:
      * @param   aSelected   The new selection state of the element
      * @param   aPostEvent  If true, itemStateChanged event is sent to the midlet
      */
-    void CMIDChoiceGroupControl::SelectElementL(TInt aIndex, TBool aSelected,
-            TBool aPostEvent);
+    void SelectElementL(TInt aIndex, TBool aSelected, TBool aPostEvent);
 
     void UpdateMargins();
     void UpdatePopupListAppearanceL(TChoiceGroupModelEvent aEvent);

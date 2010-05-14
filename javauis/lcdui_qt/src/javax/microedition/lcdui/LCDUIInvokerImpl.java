@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -23,23 +23,27 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Button;
 import com.nokia.mid.ui.DirectGraphics;
 import com.nokia.mj.impl.nokialcdui.LCDUIInvoker;
+import com.nokia.mj.impl.nokialcdui.ItemControlStateChangeListener;
 
-final class LCDUIInvokerImpl extends LCDUIInvoker {
+final class LCDUIInvokerImpl extends LCDUIInvoker
+{
 
     private boolean eswtReturn;
 
-   /**
-     * Constant for Soft Key Label Height
-     */
+    /**
+      * Constant for Soft Key Label Height
+      */
     public static final int LABEL_HEIGHT = 30;
-    
-    static void createInvoker() {
+
+    static void createInvoker()
+    {
         LCDUIInvoker.setInvoker(
-                new javax.microedition.lcdui.LCDUIInvokerImpl());
+            new javax.microedition.lcdui.LCDUIInvokerImpl());
     }
-    
-    
-    protected void doESWTUIThreadRunnerSyncExec(Runnable runnable) {
+
+
+    protected void doESWTUIThreadRunnerSyncExec(Runnable runnable)
+    {
         ESWTUIThreadRunner.syncExec(runnable);
     }
 
@@ -50,19 +54,30 @@ final class LCDUIInvokerImpl extends LCDUIInvoker {
      * @return eSWT Control that is used by Displayable/Item or null if no
      *         Control is available.
      */
-    protected Control doGetEswtControl(Object lcduiObject) {
+    protected Control doGetEswtControl(Object lcduiObject)
+    {
         Logger.method(this, "doGetEswtControl", lcduiObject);
-        if (lcduiObject instanceof Displayable) {
+        if(lcduiObject instanceof Displayable)
+        {
             return ((Displayable) lcduiObject).getShell();
         }
-        else if (lcduiObject instanceof Item) {
+        else if(lcduiObject instanceof Item)
+        {
             Item item = (Item) lcduiObject;
-            if (item.isContainedInForm()) {
+            if(item.isContainedInForm())
+            {
                 Form parentForm = (Form) item.getParent();
                 return parentForm.getLayoutPolicy().getItemControl(item);
             }
         }
         return null;
+    }
+
+
+    protected void doSetItemControlStateChangeListener(ItemControlStateChangeListener listener,Item item)
+    {
+        Logger.method(this, "doItemStateChangeListener",listener);
+        item.setItemControlStateChangeListener(listener);
     }
 
     /*
@@ -76,25 +91,26 @@ final class LCDUIInvokerImpl extends LCDUIInvoker {
 
         Displayable disp = javax.microedition.lcdui.Display.getDisplay().getCurrent();
 
-            if( ( disp != null) && (disp instanceof Canvas))
+        if((disp != null) && (disp instanceof Canvas))
+        {
+            if(((Canvas) disp).IsFullScreenMode())
             {
-                  if( ( (Canvas) disp).IsFullScreenMode()) {
 
-                      if("com.nokia.softkey1.label.location".equals(softKeyId))
-                      {
-                          SoftKeyLabelLocation = "0," + String.valueOf(( (Canvas) disp).getHeight()) + ","
-                                                 + String.valueOf( (((Canvas) disp).getWidth())/2 ) + ","
-                                                 + String.valueOf(LABEL_HEIGHT);
-                      }
-                      else if("com.nokia.softkey2.label.location".equals(softKeyId))
-                      {
-                          SoftKeyLabelLocation = String.valueOf( (((Canvas) disp).getWidth())/2 ) + "," 
-                                                 + String.valueOf(( (Canvas) disp).getHeight()) + ","
-                                                 + String.valueOf( (((Canvas) disp).getWidth())/2 ) + ","
-                                                 + String.valueOf(LABEL_HEIGHT);
-                      }
-                  }
+                if("com.nokia.softkey1.label.location".equals(softKeyId))
+                {
+                    SoftKeyLabelLocation = "0," + String.valueOf(((Canvas) disp).getHeight()) + ","
+                                           + String.valueOf((((Canvas) disp).getWidth())/2) + ","
+                                           + String.valueOf(LABEL_HEIGHT);
+                }
+                else if("com.nokia.softkey2.label.location".equals(softKeyId))
+                {
+                    SoftKeyLabelLocation = String.valueOf((((Canvas) disp).getWidth())/2) + ","
+                                           + String.valueOf(((Canvas) disp).getHeight()) + ","
+                                           + String.valueOf((((Canvas) disp).getWidth())/2) + ","
+                                           + String.valueOf(LABEL_HEIGHT);
+                }
             }
+        }
 
         return SoftKeyLabelLocation;
     }
@@ -110,94 +126,117 @@ final class LCDUIInvokerImpl extends LCDUIInvoker {
 
         Displayable disp = javax.microedition.lcdui.Display.getDisplay().getCurrent();
 
-            if( ( disp != null) && (disp instanceof Canvas))
+        if((disp != null) && (disp instanceof Canvas))
+        {
+            if(null == ((Canvas) disp).getCanvasKeypad())
             {
-                 if( null == ((Canvas) disp).getCanvasKeypad())
-                 {
-                     SoftKeyLabelAnchor = String.valueOf(Graphics.TOP | Graphics.HCENTER);
-                 }
-                 else
-                 {
-                     if("com.nokia.softkey1.label.anchor".equals(softKeyId))
-                     {
-                         SoftKeyLabelAnchor = String.valueOf(Graphics.TOP | Graphics.LEFT);
-                     }
-                     else if("com.nokia.softkey2.label.anchor".equals(softKeyId))
-                     {
-                         SoftKeyLabelAnchor = String.valueOf(Graphics.TOP | Graphics.RIGHT);
-                     }
-                 }
+                SoftKeyLabelAnchor = String.valueOf(Graphics.TOP | Graphics.HCENTER);
             }
+            else
+            {
+                if("com.nokia.softkey1.label.anchor".equals(softKeyId))
+                {
+                    SoftKeyLabelAnchor = String.valueOf(Graphics.TOP | Graphics.LEFT);
+                }
+                else if("com.nokia.softkey2.label.anchor".equals(softKeyId))
+                {
+                    SoftKeyLabelAnchor = String.valueOf(Graphics.TOP | Graphics.RIGHT);
+                }
+            }
+        }
 
         return SoftKeyLabelAnchor;
     }
 
-    protected Display doGetEswtDisplay() {
+    protected Display doGetEswtDisplay()
+    {
         Logger.method(this, "doGetEswtDisplay");
         return ESWTUIThreadRunner.getInstance().getDisplay();
     }
 
-    protected org.eclipse.swt.graphics.Image doGetEswtImage(Image img) {
+    protected org.eclipse.swt.graphics.Image doGetEswtImage(Image img)
+    {
         Logger.method(this, "doGetEswtImage", img);
         return Image.getESWTImage(img);
     }
 
-    protected DirectGraphics doGetDirectGraphics(Graphics g) {
+    protected Image doGetLcduiImage(org.eclipse.swt.graphics.Image img)
+    {
+        Logger.method(this, "doGetLcduiImage", img);
+        return new Image(img, true);
+    }
+
+    protected DirectGraphics doGetDirectGraphics(Graphics g)
+    {
         Logger.method(this, "doGetDirectGraphics", g);
-        if (g != null) {
+        if(g != null)
+        {
             return g.getDirectGraphics();
         }
         return null;
     }
 
-    protected GraphicsContext doGetGc(Graphics g) {
+    protected GraphicsContext doGetGc(Graphics g)
+    {
         Logger.method(this, "doGetGc", g);
-        if (g != null) {
+        if(g != null)
+        {
             return g.getGc();
         }
         return null;
     }
 
-    protected Font doGetFreeSizedFont(int face, int style, int height) {
+    protected Font doGetFreeSizedFont(int face, int style, int height)
+    {
         Logger.method(this, "doGetFreeSizedFont");
         return Font.getFreeSizedFont(face, style, height);
     }
 
 
-    protected void doInitGameCanvas(Object canvas, boolean suppressKeys) {
+    protected void doInitGameCanvas(Object canvas, boolean suppressKeys)
+    {
         Logger.method(canvas, "doInitGameCanvas", String.valueOf(suppressKeys));
         ((Canvas) canvas).initGameCanvas(suppressKeys);
     }
 
-    protected Object doGetGraphics(Object canvas) {
+    protected Object doGetGraphics(Object canvas)
+    {
         return ((Canvas) canvas).getGameBufferGraphics();
     }
 
-    protected Object doGetFlushLock(Object graphics) {
-    	return ((Graphics) graphics).getLock();
+    protected Object doGetFlushLock(Object graphics)
+    {
+        return ((Graphics) graphics).getLock();
     }
-    
-    protected int doGetKeyStates(Object canvas) {
+
+    protected int doGetKeyStates(Object canvas)
+    {
         return ((Canvas) canvas).getGameKeyStates();
     }
 
-    protected void doRenderGraphics(Object canvas, Object graphics) {
+    protected void doRenderGraphics(Object canvas, Object graphics)
+    {
         ((Canvas) canvas).renderGraphics((Graphics) graphics);
     }
 
     protected void doFlushGraphics(Object canvas,
-            int x, int y, int width, int height) {
+                                   int x, int y, int width, int height)
+    {
         ((Canvas) canvas).flushGameBuffer(x, y, width, height);
     }
 
-    protected String doGetDynamicProperty(String key) {
-        if ("com.nokia.key.scancode".equals(key)) {
+    protected String doGetDynamicProperty(String key)
+    {
+        if("com.nokia.key.scancode".equals(key))
+        {
             return String.valueOf(ESWTUIThreadRunner.getLastKeyScancode());
         }
-        else if ("com.nokia.key.modifier".equals(key)) {
+        else if("com.nokia.key.modifier".equals(key))
+        {
             return String.valueOf(ESWTUIThreadRunner.getLastKeyModifier());
         }
-        else if ("com.nokia.keyboard.type".equals(key)) {
+        else if("com.nokia.keyboard.type".equals(key))
+        {
             // TODO: eSWT support required
             /*
             No keypad (for example a touch device without keypad)   - None
@@ -213,19 +252,19 @@ final class LCDUIInvokerImpl extends LCDUIInvoker {
         }
         else if("com.nokia.softkey1.label.location".equals(key))
         {
-        	  return getSoftKeyLabelLocationImpl(key);
+            return getSoftKeyLabelLocationImpl(key);
         }
         else if("com.nokia.softkey1.label.anchor".equals(key))
         {
-        	  return getSoftKeyLabelAnchorImpl(key);
+            return getSoftKeyLabelAnchorImpl(key);
         }
         else if("com.nokia.softkey2.label.location".equals(key))
         {
-        	  return getSoftKeyLabelLocationImpl(key);
+            return getSoftKeyLabelLocationImpl(key);
         }
         else if("com.nokia.softkey2.label.anchor".equals(key))
         {
-        	  return getSoftKeyLabelAnchorImpl(key);
+            return getSoftKeyLabelAnchorImpl(key);
         }
         return "key not supported";
     }
@@ -233,7 +272,8 @@ final class LCDUIInvokerImpl extends LCDUIInvoker {
     protected boolean doDetectCollision(Image image1, int transform1, int p1x, int p1y,
                                         int r1x1, int r1y1, int r1x2, int r1y2,
                                         Image image2, int transform2, int p2x, int p2y,
-                                        int r2x1, int r2y1, int r2x2, int r2y2) {
+                                        int r2x1, int r2y1, int r2x2, int r2y2)
+    {
 
         final org.eclipse.swt.graphics.Image eswtImg1 = Image.getESWTImage(image1);;
         final int ftransform1 = transform1;
@@ -254,13 +294,15 @@ final class LCDUIInvokerImpl extends LCDUIInvoker {
         final int fr2y2 = r2y2;
 
         eswtReturn = false;
-        ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        {
+            public void run()
+            {
                 eswtReturn = org.eclipse.swt.internal.qt.graphics.Image.detectCollision(
-                        Internal_GfxPackageSupport.getImage(eswtImg1), ftransform1, fp1x, fp1y,
-                        fr1x1, fr1y1, fr1x2, fr1y2,
-                        Internal_GfxPackageSupport.getImage(eswtImg2), ftransform2, fp2x, fp2y,
-                        fr2x1, fr2y1, fr2x2, fr2y2);
+                                 Internal_GfxPackageSupport.getImage(eswtImg1), ftransform1, fp1x, fp1y,
+                                 fr1x1, fr1y1, fr1x2, fr1y2,
+                                 Internal_GfxPackageSupport.getImage(eswtImg2), ftransform2, fp2x, fp2y,
+                                 fr2x1, fr2y1, fr2x2, fr2y2);
             }
         });
         return eswtReturn;

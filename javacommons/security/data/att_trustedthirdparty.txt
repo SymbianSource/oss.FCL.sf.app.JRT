@@ -2,9 +2,6 @@ domain IdentifiedThirdParty;
 grant user "Net Access" session,oneshot,no {
     permission javax.microedition.io.HttpProtocolPermission "http://*";
     permission javax.microedition.io.HttpsProtocolPermission "https://*";
-    permission javax.microedition.io.DatagramProtocolPermission "datagram://*";
-    permission javax.microedition.io.DatagramProtocolPermission "datagram://";
-    permission javax.microedition.io.SSLProtocolPermission "ssl://*";
 }
 
 grant user "Local Connectivity" session,oneshot,no {

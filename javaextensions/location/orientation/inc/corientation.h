@@ -34,7 +34,7 @@ namespace java
 {
 namespace location
 {
-
+// re arrange this header file to have more readable format
 class COrientation: public CBase, public MSensrvDataListener
 {
 public:
@@ -44,6 +44,9 @@ public:
 
     // Channel Info
     TSensrvChannelInfo ichannelInfo;
+    
+    // Location Function Server
+    LocationFunctionServer* mFunctionServer;
 
 public:
     // Constructors and destructor
@@ -79,13 +82,9 @@ public:
 
     /**
      * Opens the Channel and Starts the Data Listening
-     * @return Error number which indicates either sucess or failure
+     * @return 
      */
-    TInt GetOrientationL();
-
-public:
-    // Location Function Server
-    LocationFunctionServer* mFunctionServer;
+    void GetOrientationL();
 
 private:
     // new methods
@@ -93,7 +92,7 @@ private:
     /**
      * Opens the the Channel
      */
-    TInt OpenChannel();
+    void OpenChannelL();
 
     /**
      * Creates the Channel Finder
@@ -108,13 +107,10 @@ private:
     /**
      * Checks the hardware caliberation
      */
-    TInt CheckCalibration();
+    void CheckCalibrationL();
 
 private:
 
-    // JNI Environment Data
-    JNIEnv* mJni;
-    jobject mPeer;
     jclass iOrientationClass;
 
     // Azimuth Data Callback JNI Method ID

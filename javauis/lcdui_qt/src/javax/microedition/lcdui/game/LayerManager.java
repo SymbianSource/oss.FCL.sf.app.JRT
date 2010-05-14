@@ -23,7 +23,8 @@ import javax.microedition.lcdui.Graphics;
 /**
  * LayerManager class.
  */
-public class LayerManager {
+public class LayerManager
+{
 
     private Vector layers;
 
@@ -33,52 +34,64 @@ public class LayerManager {
     private int viewWidth = Integer.MAX_VALUE;
     private int viewHeight = Integer.MAX_VALUE;
 
-    public LayerManager() {
+    public LayerManager()
+    {
         layers = new Vector();
     }
 
-    public void append(Layer aLayer) {
+    public void append(Layer aLayer)
+    {
         remove(aLayer);
         layers.addElement(aLayer);
     }
 
-    public void insert(Layer layer, int index) {
-        if (layer == null) {
+    public void insert(Layer layer, int index)
+    {
+        if(layer == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.LAYERMANAGER_EXCEPTION_LAYER_NULL);
+                MsgRepository.LAYERMANAGER_EXCEPTION_LAYER_NULL);
         }
-        if (index < 0 || index > layers.size()) {
+        if(index < 0 || index > layers.size())
+        {
             throw new IndexOutOfBoundsException(
-                    MsgRepository.LAYERMANAGER_EXCEPTION_INVALID_LAYER_INDEX);
+                MsgRepository.LAYERMANAGER_EXCEPTION_INVALID_LAYER_INDEX);
         }
-        if (index > layers.size() - 1 && layers.contains(layer)) {
+        if(index > layers.size() - 1 && layers.contains(layer))
+        {
             throw new IndexOutOfBoundsException(
-                    MsgRepository.LAYERMANAGER_EXCEPTION_INVALID_LAYER_INDEX);
+                MsgRepository.LAYERMANAGER_EXCEPTION_INVALID_LAYER_INDEX);
         }
         remove(layer);
         layers.insertElementAt(layer, index);
     }
 
-    public void remove(Layer layer) {
-        if (layer == null) {
+    public void remove(Layer layer)
+    {
+        if(layer == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.LAYERMANAGER_EXCEPTION_LAYER_NULL);
+                MsgRepository.LAYERMANAGER_EXCEPTION_LAYER_NULL);
         }
         layers.removeElement(layer);
     }
 
-    public Layer getLayerAt(int index) {
+    public Layer getLayerAt(int index)
+    {
         return (Layer) layers.elementAt(index);
     }
 
-    public int getSize() {
+    public int getSize()
+    {
         return layers.size();
     }
 
-    public void setViewWindow(int x, int y, int width, int height) {
-        if (width < 0 || height < 0) {
+    public void setViewWindow(int x, int y, int width, int height)
+    {
+        if(width < 0 || height < 0)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.LAYERMANAGER_EXCEPTION_INVALID_WIDTH_HEIGHT);
+                MsgRepository.LAYERMANAGER_EXCEPTION_INVALID_WIDTH_HEIGHT);
         }
         viewX = x;
         viewY = y;
@@ -86,7 +99,8 @@ public class LayerManager {
         viewHeight = height;
     }
 
-    public void paint(Graphics graphics, int x, int y) {
+    public void paint(Graphics graphics, int x, int y)
+    {
         // save Graphics clip and translate
         final int oldClipX = graphics.getClipX();
         final int oldClipY = graphics.getClipY();
@@ -106,9 +120,11 @@ public class LayerManager {
 
         // paint visible Layers
         Layer layer = null;
-        for (int i = layers.size() - 1; i >= 0; i--) {
+        for(int i = layers.size() - 1; i >= 0; i--)
+        {
             layer = getLayerAt(i);
-            if (layer.isVisible(graphics, x, y)) {
+            if(layer.isVisible(graphics, x, y))
+            {
                 graphics.translate(x, y);
                 layer.paint(graphics);
                 graphics.translate(-x, -y);
@@ -118,7 +134,7 @@ public class LayerManager {
         // restore Graphics translation because translation is concatenated
         // need to translate back to 0,0 first
         graphics.translate(-graphics.getTranslateX(),
-                -graphics.getTranslateY());
+                           -graphics.getTranslateY());
 
         // restore Graphics translate and clip
         graphics.translate(oldTransX, oldTransY);

@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -22,11 +22,14 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.ercp.swt.mobile.CaptionedControl;
+
 
 /**
  * Structure which represents Control stored in Form Row.
  */
-final class LayoutObject {
+final class LayoutObject
+{
 
     /**
      * Control which is represented by this LayoutObject.
@@ -59,7 +62,8 @@ final class LayoutObject {
      * @param owningItem - Item which this LayoutObject corresponds to
      * @param control - Control for that LayoutObject
      */
-    LayoutObject(Item owningItem, Control control) {
+    LayoutObject(Item owningItem, Control control)
+    {
         this.owningItem = owningItem;
         setControl(control);
     }
@@ -69,9 +73,12 @@ final class LayoutObject {
      *
      * @param newControl Control to set
      */
-    private void setControl(final Control newControl) {
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+    private void setControl(final Control newControl)
+    {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 control = newControl;
                 eswtUpdateSize();
                 Control temp = eswtGetCommandControl(control);
@@ -79,7 +86,8 @@ final class LayoutObject {
 
                 Enumeration e = owningItem.getCommands().elements();
                 Command cmd = null;
-                while (e.hasMoreElements()) {
+                while(e.hasMoreElements())
+                {
                     cmd = (Command) e.nextElement();
                     eswtAddCommand(cmd);
                 }
@@ -95,17 +103,31 @@ final class LayoutObject {
      * @param ctrl Control of this LayoutObject.
      * @return Control.
      */
-    Control eswtGetCommandControl(Control ctrl) {
+    Control eswtGetCommandControl(Control ctrl)
+    {
         Control ret = null;
-        if (ctrl != null) {
-            if (ctrl instanceof Button) {
+
+        //If the Control is focusable add the commands to the same.
+        if((ctrl instanceof CaptionedControl) || (ctrl.isFocusControl()))
+        {
+            return ctrl;
+        }
+
+
+        if(ctrl != null)
+        {
+            if(ctrl instanceof Button)
+            {
                 ret = ctrl;
             }
-            else if (ctrl instanceof Composite) {
+            else if(ctrl instanceof Composite)
+            {
                 Control[] children = ((Composite) ctrl).getChildren();
-                for (int i = 0; i < children.length; i++) {
+                for(int i = 0; i < children.length; i++)
+                {
                     Control result = eswtGetCommandControl(children[i]);
-                    if (result != null) {
+                    if(result != null)
+                    {
                         ret = result;
                         break;
                     }
@@ -118,9 +140,12 @@ final class LayoutObject {
     /**
      * Dispose LayoutObject.
      */
-    void dispose() {
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+    void dispose()
+    {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 control.dispose();
                 control = null;
                 commandControl = null;
@@ -131,7 +156,8 @@ final class LayoutObject {
     /**
      * Returns the Item's vertical layout.
      */
-    int getVerticalLayout() {
+    int getVerticalLayout()
+    {
         return Item.getVerticalLayout(owningItem.getLayout());
     }
 
@@ -140,7 +166,8 @@ final class LayoutObject {
      *
      * @return control
      */
-    Control getControl() {
+    Control getControl()
+    {
         return control;
     }
 
@@ -149,7 +176,8 @@ final class LayoutObject {
      *
      * @return owning Item
      */
-    Item getOwningItem() {
+    Item getOwningItem()
+    {
         return owningItem;
     }
 
@@ -159,7 +187,8 @@ final class LayoutObject {
      * @param xCoord x coordinate
      * @param yCoord y coordinate
      */
-    void eswtSetLocation(int xCoord, int yCoord) {
+    void eswtSetLocation(int xCoord, int yCoord)
+    {
         x = xCoord;
         y = yCoord;
         control.setLocation(xCoord, yCoord);
@@ -168,7 +197,8 @@ final class LayoutObject {
     /**
      * Update LayoutObject width and height.
      */
-    void eswtUpdateSize() {
+    void eswtUpdateSize()
+    {
         Rectangle bounds = control.getBounds();
         width = bounds.width;
         height = bounds.height;
@@ -179,7 +209,8 @@ final class LayoutObject {
      *
      * @return xCoordinate of LayoutObject.
      */
-    int getX() {
+    int getX()
+    {
         return x;
     }
 
@@ -188,7 +219,8 @@ final class LayoutObject {
      *
      * @return yCoordinate of LayoutObject.
      */
-    int getY() {
+    int getY()
+    {
         return y;
     }
 
@@ -197,7 +229,8 @@ final class LayoutObject {
      *
      * @return width of a control
      */
-    int getWidth() {
+    int getWidth()
+    {
         return width;
     }
 
@@ -206,7 +239,8 @@ final class LayoutObject {
      *
      * @return width of a control
      */
-    int getHeight() {
+    int getHeight()
+    {
         return height;
     }
 
@@ -215,7 +249,8 @@ final class LayoutObject {
      *
      * @param row Row index.
      */
-    void setRowIdx(int row) {
+    void setRowIdx(int row)
+    {
         layoutRowIdx = row;
     }
 
@@ -224,11 +259,13 @@ final class LayoutObject {
      *
      * @return Index of the row.
      */
-    int getRowIdx() {
+    int getRowIdx()
+    {
         return layoutRowIdx;
     }
 
-    boolean contains(int xCoord, int yCoord) {
+    boolean contains(int xCoord, int yCoord)
+    {
         return (y <= yCoord && yCoord <= y + height
                 && x <= xCoord && xCoord <= x + width);
     }
@@ -236,8 +273,10 @@ final class LayoutObject {
     /**
      * Returns if this LayoutObject is below the other.
      */
-    boolean isBelow(LayoutObject other) {
-        if (other != null) {
+    boolean isBelow(LayoutObject other)
+    {
+        if(other != null)
+        {
             return (this.getRowIdx() > other.getRowIdx());
         }
         return true;
@@ -246,8 +285,10 @@ final class LayoutObject {
     /**
      * Returns if this LayoutObject is above the other.
      */
-    boolean isAbove(LayoutObject other) {
-        if (other != null) {
+    boolean isAbove(LayoutObject other)
+    {
+        if(other != null)
+        {
             return (this.getRowIdx() < other.getRowIdx());
         }
         return true;
@@ -258,7 +299,8 @@ final class LayoutObject {
      *
      * @return x horizontal coordinate of the middle of LayoutObject.
      */
-    private int getXMiddle() {
+    private int getXMiddle()
+    {
         return (x + width / 2);
     }
 
@@ -267,7 +309,8 @@ final class LayoutObject {
      *
      * @return y vertical coordinate of the middle of LayoutObject.
      */
-    private int getYMiddle() {
+    private int getYMiddle()
+    {
         return (y + height / 2);
     }
 
@@ -278,13 +321,16 @@ final class LayoutObject {
      * @param other another LayoutObject
      * @return positive distance between the middles
      */
-    int distanceTo(LayoutObject other) {
-        if (other != null) {
+    int distanceTo(LayoutObject other)
+    {
+        if(other != null)
+        {
             int xd = Math.abs(getXMiddle() - other.getXMiddle());
             int yd = Math.abs(getYMiddle() - other.getYMiddle());
             return (int) Math.sqrt(xd * xd + yd * yd);
         }
-        else {
+        else
+        {
             return Integer.MAX_VALUE - 1;
         }
     }
@@ -292,46 +338,52 @@ final class LayoutObject {
     /**
      * Activates commands associated with owning item.
      */
-    void eswtAddSelectionListenerForCommands() {
+    void eswtAddSelectionListenerForCommands()
+    {
         // Logger.method(this, "eswtAddSelectionListenerForCommands");
         commandsActivated = true;
 
         // Add new control to commands in owning item:
         Enumeration e = owningItem.getCommands().elements();
         Command cmd = null;
-        while (e.hasMoreElements()) {
+        while(e.hasMoreElements())
+        {
             cmd = (Command) e.nextElement();
             cmd.eswtAddCommandSelectionListener(commandControl,
-                    eswtItemCommandListener);
+                                                eswtItemCommandListener);
         }
         // Add SelectionListener to Button control.
         // Listener is activated when command mapped to MSK is clicked.
-        if (commandControl instanceof Button && !commandControl.isDisposed()) {
+        if(commandControl instanceof Button && !commandControl.isDisposed())
+        {
             ((Button) commandControl)
-                    .addSelectionListener(eswtItemCommandListener);
+            .addSelectionListener(eswtItemCommandListener);
         }
     }
 
     /**
      * DeActivates commands associated with owning item.
      */
-    void eswtRemoveSelectionListenerForCommands() {
+    void eswtRemoveSelectionListenerForCommands()
+    {
         // Logger.method(this, "eswtRemoveSelectionListenerForCommands");
         commandsActivated = false;
 
         // Add new control to commands in owning item:
         Enumeration e = owningItem.getCommands().elements();
         Command cmd = null;
-        while (e.hasMoreElements()) {
+        while(e.hasMoreElements())
+        {
             cmd = (Command) e.nextElement();
             cmd.eswtRemoveCommandSelectionListener(commandControl,
-                    eswtItemCommandListener);
+                                                   eswtItemCommandListener);
         }
         // Remove SelectionListener from Button control.
         // Listener is activated when command mapped to MSK is clicked.
-        if (commandControl instanceof Button && !commandControl.isDisposed()) {
+        if(commandControl instanceof Button && !commandControl.isDisposed())
+        {
             ((Button) commandControl)
-                    .removeSelectionListener(eswtItemCommandListener);
+            .removeSelectionListener(eswtItemCommandListener);
         }
     }
 
@@ -340,9 +392,12 @@ final class LayoutObject {
      *
      * @param command The command to be added.
      */
-    void addCommand(final Command command) {
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+    void addCommand(final Command command)
+    {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 eswtAddCommand(command);
             }
         });
@@ -351,14 +406,17 @@ final class LayoutObject {
     /**
      * eSWT callback to add a Command.
      */
-    void eswtAddCommand(Command command) {
+    void eswtAddCommand(Command command)
+    {
         //Logger.method(this, "eswtAddCommand", command);
-        if (command != null && commandControl != null) {
+        if(command != null && commandControl != null)
+        {
             command.eswtAddESWTCommand(commandControl,
-                    (command == owningItem.getDefaultCommand()));
-            if (commandsActivated) {
+                                       (command == owningItem.getDefaultCommand()));
+            if(commandsActivated)
+            {
                 command.eswtAddCommandSelectionListener(commandControl,
-                        eswtItemCommandListener);
+                                                        eswtItemCommandListener);
             }
         }
     }
@@ -368,9 +426,12 @@ final class LayoutObject {
      *
      * @param command The command to be removed.
      */
-    void removeCommand(final Command command) {
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+    void removeCommand(final Command command)
+    {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 eswtRemoveCommand(command);
             }
         });
@@ -379,10 +440,13 @@ final class LayoutObject {
     /**
      * eSWT callback to remove a Command.
      */
-    private void eswtRemoveCommand(Command command) {
+    private void eswtRemoveCommand(Command command)
+    {
         //Logger.method(this, "eswtRemoveCommand", command);
-        if (command != null && commandControl != null) {
-            if (commandsActivated) {
+        if(command != null && commandControl != null)
+        {
+            if(commandsActivated)
+            {
                 command.eswtRemoveCommandSelectionListener(commandControl,
                         eswtItemCommandListener);
             }
@@ -394,9 +458,11 @@ final class LayoutObject {
      * Inner class which receives SelectionEvents from eSWT and convert and
      * forwards those events to LCDUI Item's ItemCommandListener.
      */
-    class EswtItemCommandListener implements SelectionListener {
+    class EswtItemCommandListener implements SelectionListener
+    {
 
-        public void widgetDefaultSelected(SelectionEvent e) {
+        public void widgetDefaultSelected(SelectionEvent e)
+        {
         }
 
         /**
@@ -404,23 +470,28 @@ final class LayoutObject {
          * Item's ItemCommandListener if event source matches with the
          * Commands added to the Item.
          */
-        public void widgetSelected(SelectionEvent event) {
+        public void widgetSelected(SelectionEvent event)
+        {
             // Go through all Commands added to owning item:
             Enumeration e = owningItem.getCommands().elements();
             Command cmd = null;
-            while (e.hasMoreElements()) {
+            while(e.hasMoreElements())
+            {
                 cmd = (Command) e.nextElement();
                 // get eSWT Command of this Control from Command and compare
                 // it to the widget which launched the event:
-                if (cmd.getESWTCommand(commandControl) == event.widget) {
+                if(cmd.getESWTCommand(commandControl) == event.widget)
+                {
                     owningItem.callCommandAction(cmd);
                     break;
                 }
 
                 // Handle MSK:
                 Command mskCmd = owningItem.getMSKCommand();
-                if (mskCmd != null && cmd == mskCmd) {
-                    if (commandControl == event.widget) {
+                if(mskCmd != null && cmd == mskCmd)
+                {
+                    if(commandControl == event.widget)
+                    {
                         owningItem.callCommandAction(cmd);
                         break;
                     }
@@ -429,7 +500,8 @@ final class LayoutObject {
         }
     }
 
-    public String toString() {
+    public String toString()
+    {
         return owningItem + " [line:" + layoutRowIdx + "]";
     }
 

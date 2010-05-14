@@ -18,6 +18,7 @@
 
 package com.nokia.mj.impl.installer.ui.eswt2;
 
+import org.eclipse.ercp.swt.mobile.Screen;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -44,9 +45,10 @@ public class UsernamePasswordView extends ConfirmationViewBase
     }
 
     /** Constructor */
-    protected UsernamePasswordView(InstallerUiEswt aInstaller, Composite aParent)
+    protected UsernamePasswordView(
+        InstallerUiEswt aInstallerUi, Composite aParent)
     {
-        super(aInstaller, aParent, 1);
+        super(aInstallerUi, aParent, 1);
         setTitle(InstallerUiTexts.get(InstallerUiTexts.CONNECT_TO));
         setCommands(InstallerUiTexts.get(InstallerUiTexts.OK),
                     InstallerUiTexts.get(InstallerUiTexts.CANCEL));
@@ -86,8 +88,11 @@ public class UsernamePasswordView extends ConfirmationViewBase
         }
         iUrl = aUrl;
 
+        // UsernamePasswordView is always displayed in portrait mode.
+        //forceScreenOrientation(Screen.PORTRAIT);
         // Use confirm() from super class to display the view.
         boolean confirmation = confirm();
+        //forceScreenOrientation(SWT.DEFAULT);
 
         // And return the result to the client.
         String[] result = null;

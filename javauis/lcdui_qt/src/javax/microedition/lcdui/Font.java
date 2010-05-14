@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -28,7 +28,8 @@ import org.eclipse.swt.widgets.*;
 /**
  * Implementation of LCDUI <code>Font</code> class.
  */
-public final class Font {
+public final class Font
+{
 
     /**
      * System font face.
@@ -115,7 +116,7 @@ public final class Font {
     public static final int FONT_STATIC_TEXT = 0;
 
     private static final int STYLE_ALL = STYLE_PLAIN | STYLE_BOLD
-            | STYLE_ITALIC | STYLE_UNDERLINED;
+                                         | STYLE_ITALIC | STYLE_UNDERLINED;
 
     private static final String FONTDATA_CONST = "|-1|-1|-1|-1|-1|-1|1|";
 
@@ -141,8 +142,10 @@ public final class Font {
     /**
      * Disposes all fonts created.
      */
-    static void disposeFonts() {
-        for (Enumeration e = fontTable.elements(); e.hasMoreElements();) {
+    static void disposeFonts()
+    {
+        for(Enumeration e = fontTable.elements(); e.hasMoreElements();)
+        {
             Font font = (Font) e.nextElement();
             font.eswtFont.dispose();
         }
@@ -152,8 +155,10 @@ public final class Font {
     /**
      * LCDUI Font --> eSWT Font
      */
-    static org.eclipse.swt.graphics.Font getESWTFont(Font font) {
-        if (font != null) {
+    static org.eclipse.swt.graphics.Font getESWTFont(Font font)
+    {
+        if(font != null)
+        {
             return font.eswtFont;
         }
         return null;
@@ -162,8 +167,10 @@ public final class Font {
     /**
      * eSWT Font --> LCDUI Font
      */
-    static Font getFont(final org.eclipse.swt.graphics.Font font) {
-        if (font != null) {
+    static Font getFont(final org.eclipse.swt.graphics.Font font)
+    {
+        if(font != null)
+        {
             FontData fd = getFontData(font);
             return getFont(fd);
         }
@@ -175,7 +182,8 @@ public final class Font {
      *
      * @return default system font.
      */
-    public static Font getDefaultFont() {
+    public static Font getDefaultFont()
+    {
         return getFont(Font.FACE_SYSTEM, Font.STYLE_PLAIN, Font.SIZE_MEDIUM);
     }
 
@@ -185,13 +193,16 @@ public final class Font {
      * @param specifier font specifier
      * @return the font
      */
-    public static Font getFont(int specifier) {
-        if (specifier == FONT_INPUT_TEXT || specifier == FONT_STATIC_TEXT) {
+    public static Font getFont(int specifier)
+    {
+        if(specifier == FONT_INPUT_TEXT || specifier == FONT_STATIC_TEXT)
+        {
             return getFont(getFontData(specifier));
         }
-        else {
+        else
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.FONT_EXCEPTION_INVALID_SPECIFIER);
+                MsgRepository.FONT_EXCEPTION_INVALID_SPECIFIER);
         }
     }
 
@@ -203,25 +214,30 @@ public final class Font {
      * @param size font size
      * @return the font
      */
-    public static Font getFont(int face, int style, int size) {
-        if (face != FACE_SYSTEM && face != FACE_MONOSPACE
-                && face != FACE_PROPORTIONAL) {
+    public static Font getFont(int face, int style, int size)
+    {
+        if(face != FACE_SYSTEM && face != FACE_MONOSPACE
+                && face != FACE_PROPORTIONAL)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.FONT_EXCEPTION_INVALID_FACE);
+                MsgRepository.FONT_EXCEPTION_INVALID_FACE);
         }
-        if (style < STYLE_PLAIN || style > STYLE_ALL) {
+        if(style < STYLE_PLAIN || style > STYLE_ALL)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.FONT_EXCEPTION_INVALID_STYLE);
+                MsgRepository.FONT_EXCEPTION_INVALID_STYLE);
         }
-        if (size != SIZE_SMALL && size != SIZE_MEDIUM && size != SIZE_LARGE) {
+        if(size != SIZE_SMALL && size != SIZE_MEDIUM && size != SIZE_LARGE)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.FONT_EXCEPTION_INVALID_SIZE);
+                MsgRepository.FONT_EXCEPTION_INVALID_SIZE);
         }
         FontData fd = getFontData(face, style, size);
         Font font = getFont(fd);
         // We must handle underlining separately because it is not part of
         // eSWT's style.
-        if ((style & Font.STYLE_UNDERLINED) == Font.STYLE_UNDERLINED) {
+        if((style & Font.STYLE_UNDERLINED) == Font.STYLE_UNDERLINED)
+        {
             font.style |= Font.STYLE_UNDERLINED;
         }
         return font;
@@ -235,25 +251,30 @@ public final class Font {
      * @param height font height
      * @return the font
      */
-    static Font getFreeSizedFont(int face, int style, int height) {
-        if (face != FACE_SYSTEM && face != FACE_MONOSPACE
-                && face != FACE_PROPORTIONAL) {
+    static Font getFreeSizedFont(int face, int style, int height)
+    {
+        if(face != FACE_SYSTEM && face != FACE_MONOSPACE
+                && face != FACE_PROPORTIONAL)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.FONT_EXCEPTION_INVALID_FACE);
+                MsgRepository.FONT_EXCEPTION_INVALID_FACE);
         }
-        if (style < STYLE_PLAIN || style > STYLE_ALL) {
+        if(style < STYLE_PLAIN || style > STYLE_ALL)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.FONT_EXCEPTION_INVALID_STYLE);
+                MsgRepository.FONT_EXCEPTION_INVALID_STYLE);
         }
-        if (height < 0) {
+        if(height < 0)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.FONT_EXCEPTION_INVALID_SIZE);
+                MsgRepository.FONT_EXCEPTION_INVALID_SIZE);
         }
         FontData fd = getFontData(face, style, height);
         Font font = getFont(fd);
         // We must handle underlining separately because it is not part of
         // eSWT's style.
-        if ((style & Font.STYLE_UNDERLINED) == Font.STYLE_UNDERLINED) {
+        if((style & Font.STYLE_UNDERLINED) == Font.STYLE_UNDERLINED)
+        {
             font.style |= Font.STYLE_UNDERLINED;
         }
         return font;
@@ -265,13 +286,17 @@ public final class Font {
      * @param fontdata font's data
      * @return a font
      */
-    private static Font getFont(FontData fontdata) {
+    private static Font getFont(FontData fontdata)
+    {
         Font ret = null;
-        if (fontdata != null) {
-            if (fontTable.containsKey(fontdata)) {
+        if(fontdata != null)
+        {
+            if(fontTable.containsKey(fontdata))
+            {
                 ret = (Font) fontTable.get(fontdata);
             }
-            else {
+            else
+            {
                 ret = new Font(fontdata);
             }
         }
@@ -283,9 +308,12 @@ public final class Font {
      *
      * @param reqFD the requested eSWT FontData
      */
-    private Font(final FontData reqFD) {
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+    private Font(final FontData reqFD)
+    {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 eswtFont = new org.eclipse.swt.graphics.Font(ESWTUIThreadRunner
                         .getInstance().getDisplay(), reqFD);
             }
@@ -304,7 +332,8 @@ public final class Font {
      *
      * @return style
      */
-    public int getStyle() {
+    public int getStyle()
+    {
         return style;
     }
 
@@ -313,7 +342,8 @@ public final class Font {
      *
      * @return size
      */
-    public int getSize() {
+    public int getSize()
+    {
         return size;
     }
 
@@ -322,7 +352,8 @@ public final class Font {
      *
      * @return face
      */
-    public int getFace() {
+    public int getFace()
+    {
         return face;
     }
 
@@ -331,7 +362,8 @@ public final class Font {
      *
      * @return true if the font is plain, false otherwise
      */
-    public boolean isPlain() {
+    public boolean isPlain()
+    {
         return (style == Font.STYLE_PLAIN);
     }
 
@@ -340,7 +372,8 @@ public final class Font {
      *
      * @return true if the font is bold, false otherwise
      */
-    public boolean isBold() {
+    public boolean isBold()
+    {
         return ((style & Font.STYLE_BOLD) == Font.STYLE_BOLD);
     }
 
@@ -349,7 +382,8 @@ public final class Font {
      *
      * @return true if the font is italic, false otherwise
      */
-    public boolean isItalic() {
+    public boolean isItalic()
+    {
         return ((style & Font.STYLE_ITALIC) == Font.STYLE_ITALIC);
     }
 
@@ -358,7 +392,8 @@ public final class Font {
      *
      * @return true if the font is underlined, false otherwise.
      */
-    public boolean isUnderlined() {
+    public boolean isUnderlined()
+    {
         return ((style & Font.STYLE_UNDERLINED) == Font.STYLE_UNDERLINED);
     }
 
@@ -367,10 +402,14 @@ public final class Font {
      *
      * @return height
      */
-    public int getHeight() {
-        if (eswtTempFontHeight == 0) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+    public int getHeight()
+    {
+        if(eswtTempFontHeight == 0)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     FontUtils fu = eswtGetFontUtils(eswtFont);
                     eswtTempFontHeight = fu.getAscent() + fu.getDescent();
                 }
@@ -384,10 +423,14 @@ public final class Font {
      *
      * @return the baseline position
      */
-    public int getBaselinePosition() {
-        if (eswtTempFontAscent == 0) {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-                public void run() {
+    public int getBaselinePosition()
+    {
+        if(eswtTempFontAscent == 0)
+        {
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
                     eswtTempFontAscent = eswtGetFontUtils(eswtFont).getAscent();
                 }
             });
@@ -401,7 +444,8 @@ public final class Font {
      * @param c the character
      * @return the width
      */
-    public int charWidth(char c) {
+    public int charWidth(char c)
+    {
         return stringWidth(String.valueOf(c));
     }
 
@@ -413,7 +457,8 @@ public final class Font {
      * @param length the length
      * @return the width
      */
-    public int charsWidth(char[] c, int offset, int length) {
+    public int charsWidth(char[] c, int offset, int length)
+    {
         return stringWidth(new String(c, offset, length));
     }
 
@@ -423,15 +468,19 @@ public final class Font {
      * @param string the string
      * @return the width
      */
-    public int stringWidth(String string) {
-        if (string == null) {
+    public int stringWidth(String string)
+    {
+        if(string == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.FONT_EXCEPTION_NULL_STRING);
+                MsgRepository.FONT_EXCEPTION_NULL_STRING);
         }
         final String finalString = string;
         eswtTempFontWidth = 0;
-        ESWTUIThreadRunner.safeSyncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        {
+            public void run()
+            {
                 eswtGetFontUtils(eswtFont).getBoundingRect(tempFontRect, finalString);
                 eswtTempFontWidth = tempFontRect[2];
             }
@@ -442,11 +491,14 @@ public final class Font {
     /**
      * Get the static FontUtils instance setup with given font.
      */
-    private static FontUtils eswtGetFontUtils(org.eclipse.swt.graphics.Font font) {
-        if (fontUtils == null) {
+    private static FontUtils eswtGetFontUtils(org.eclipse.swt.graphics.Font font)
+    {
+        if(fontUtils == null)
+        {
             fontUtils = new FontUtils(font.handle);
         }
-        else {
+        else
+        {
             fontUtils.setFont(font.handle);
         }
         return fontUtils;
@@ -460,7 +512,8 @@ public final class Font {
      * @param length the length
      * @return the width of the specified region
      */
-    public int substringWidth(String string, int offset, int length) {
+    public int substringWidth(String string, int offset, int length)
+    {
         return stringWidth(string.substring(offset, offset + length));
     }
 
@@ -470,16 +523,21 @@ public final class Font {
      * @param control eSWT control
      * @return FontData
      */
-    private static FontData getFontData(final int specifier) {
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+    private static FontData getFontData(final int specifier)
+    {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 Control control = null;
                 MobileShell shell = new MobileShell(ESWTUIThreadRunner
-                        .getInstance().getDisplay(), SWT.NONE);
-                if (specifier == FONT_INPUT_TEXT) {
+                                                    .getInstance().getDisplay(), SWT.NONE);
+                if(specifier == FONT_INPUT_TEXT)
+                {
                     control = new Text(shell, SWT.NONE);
                 }
-                else {
+                else
+                {
                     control = new Label(shell, SWT.NONE);
                 }
                 eswtTempFontData = control.getFont().getFontData()[0];
@@ -497,9 +555,12 @@ public final class Font {
      * @return FontData
      */
     private static FontData getFontData(
-            final org.eclipse.swt.graphics.Font font) {
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        final org.eclipse.swt.graphics.Font font)
+    {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 eswtTempFontData = font.getFontData()[0];
             }
         });
@@ -512,11 +573,15 @@ public final class Font {
      * @return FontData
      */
     private static FontData getFontData(final int face, final int style,
-            final int size) {
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+                                        final int size)
+    {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 int underlined = 0;
-                if ((style & Font.STYLE_UNDERLINED) == Font.STYLE_UNDERLINED) {
+                if((style & Font.STYLE_UNDERLINED) == Font.STYLE_UNDERLINED)
+                {
                     underlined = 1;
                 }
                 /* FontData constructor format:
@@ -544,12 +609,16 @@ public final class Font {
      *
      * @return system FontData
      */
-    private static FontData getSystemFontData() {
-        if (eswtSystemFontData == null) {
-            ESWTUIThreadRunner.syncExec(new Runnable() {
-                public void run() {
+    private static FontData getSystemFontData()
+    {
+        if(eswtSystemFontData == null)
+        {
+            ESWTUIThreadRunner.syncExec(new Runnable()
+            {
+                public void run()
+                {
                     eswtSystemFontData = ESWTUIThreadRunner.getInstance()
-                            .getDisplay().getSystemFont().getFontData()[0];
+                                         .getDisplay().getSystemFont().getFontData()[0];
                 }
             });
         }
@@ -562,14 +631,16 @@ public final class Font {
      * @param face font's face type
      * @return font name
      */
-    private static String mapFaceToFontName(int face) {
+    private static String mapFaceToFontName(int face)
+    {
         // TODO: how to map face values to names
-        switch (face) {
-            case Font.FACE_MONOSPACE:
-            case Font.FACE_PROPORTIONAL:
-            case Font.FACE_SYSTEM:
-            default:
-                return getSystemFontData().getName();
+        switch(face)
+        {
+        case Font.FACE_MONOSPACE:
+        case Font.FACE_PROPORTIONAL:
+        case Font.FACE_SYSTEM:
+        default:
+            return getSystemFontData().getName();
         }
     }
 
@@ -579,12 +650,15 @@ public final class Font {
      * @param eswtFontName font's name
      * @return font face
      */
-    private static int mapFontNameToFace(String eswtFontName) {
+    private static int mapFontNameToFace(String eswtFontName)
+    {
         // TODO: how to map names to face values
-        if (eswtFontName.equals(getSystemFontData().getName())) {
+        if(eswtFontName.equals(getSystemFontData().getName()))
+        {
             return Font.FACE_SYSTEM;
         }
-        else {
+        else
+        {
             // Font.FACE_MONOSPACE:
             // Font.FACE_PROPORTIONAL:
             return 0;
@@ -598,19 +672,23 @@ public final class Font {
      * @param size font's size
      * @return font height
      */
-    private static int mapSizeToHeight(int size) {
+    private static int mapSizeToHeight(int size)
+    {
         //retreive the system default height
         int defHeight = getSystemFontData().getHeight();
-        
-        if (size == Font.SIZE_SMALL) {
+
+        if(size == Font.SIZE_SMALL)
+        {
             //calculate the small size height as a ratio of system default medium size and round off the value to an integer
-            return (int)Math.floor( (defHeight * ( 3f/4 )) + 0.5f );
+            return (int)Math.floor((defHeight * (3f/4)) + 0.5f);
         }
-        else if (size == Font.SIZE_LARGE) {
+        else if(size == Font.SIZE_LARGE)
+        {
             //calculate the large height as a ratio of system default medium size and round off the value to an integer
-            return (int)Math.floor( (defHeight * ( 4.5f/4 )) + 0.5f );
+            return (int)Math.floor((defHeight * (4.5f/4)) + 0.5f);
         }
-        else {
+        else
+        {
             //return the system default height for medium size which is generally 12 but 7 in symbian for qt
             return defHeight;
         }
@@ -622,15 +700,19 @@ public final class Font {
      * @param height font's height
      * @return font size
      */
-    private static int mapHeightToSize(int height) {
+    private static int mapHeightToSize(int height)
+    {
         int defHeight = getSystemFontData().getHeight();
-        if (height < defHeight) {
+        if(height < defHeight)
+        {
             return Font.SIZE_SMALL;
         }
-        else if (height > defHeight) {
+        else if(height > defHeight)
+        {
             return Font.SIZE_LARGE;
         }
-        else {
+        else
+        {
             return Font.SIZE_MEDIUM;
         }
     }
@@ -641,12 +723,15 @@ public final class Font {
      * @param style Font's LCDUI style.
      * @return Font's eSWT style.
      */
-    private static int mapStyleToESWTStyle(int style) {
+    private static int mapStyleToESWTStyle(int style)
+    {
         int retStyle = SWT.NORMAL;
-        if ((style & Font.STYLE_BOLD) == Font.STYLE_BOLD) {
+        if((style & Font.STYLE_BOLD) == Font.STYLE_BOLD)
+        {
             retStyle |= SWT.BOLD;
         }
-        if ((style & Font.STYLE_ITALIC) == Font.STYLE_ITALIC) {
+        if((style & Font.STYLE_ITALIC) == Font.STYLE_ITALIC)
+        {
             retStyle |= SWT.ITALIC;
         }
         return retStyle;
@@ -658,12 +743,15 @@ public final class Font {
      * @param eswtStyle Font's eSWT style.
      * @return Font's LCDUI style.
      */
-    private static int mapESWTStyleToStyle(int eswtStyle) {
+    private static int mapESWTStyleToStyle(int eswtStyle)
+    {
         int retStyle = Font.STYLE_PLAIN;
-        if ((eswtStyle & SWT.BOLD) != 0) {
+        if((eswtStyle & SWT.BOLD) != 0)
+        {
             retStyle |= Font.STYLE_BOLD;
         }
-        if ((eswtStyle & SWT.ITALIC) != 0) {
+        if((eswtStyle & SWT.ITALIC) != 0)
+        {
             retStyle |= Font.STYLE_ITALIC;
         }
         return retStyle;

@@ -11,14 +11,15 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 
 package javax.microedition.midlet;
 
-public abstract class MIDlet {
-    
+public abstract class MIDlet
+{
+
     protected abstract void destroyApp(boolean unconditional) throws MIDletStateChangeException;
     protected abstract void pauseApp();
     protected abstract void startApp() throws MIDletStateChangeException;

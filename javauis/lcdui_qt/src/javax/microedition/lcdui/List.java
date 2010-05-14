@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -25,7 +25,8 @@ import org.eclipse.swt.widgets.*;
 /**
  * Implementation of LCDUI <code>List</code> class.
  */
-public class List extends Screen implements Choice {
+public class List extends Screen implements Choice
+{
 
     /**
      * The default command triggered when selecting an item on IMPLICIT lists.
@@ -50,7 +51,8 @@ public class List extends Screen implements Choice {
      * @param title the list's title
      * @param type the type
      */
-    public List(String title, int type) {
+    public List(String title, int type)
+    {
         this(title, type, new String[] {}, null);
     }
 
@@ -68,35 +70,39 @@ public class List extends Screen implements Choice {
      * @throws NullPointerException if any of the text elements is null
      */
     public List(String title, int type, String[] textElements,
-            Image[] imgElements) {
+                Image[] imgElements)
+    {
         super(title);
-        switch (type) {
-            case Choice.IMPLICIT:
-            case Choice.EXCLUSIVE:
-                choiceImpl = new ChoiceImpl(false);
-                break;
-            case Choice.MULTIPLE:
-                choiceImpl = new ChoiceImpl(true);
-                break;
-            default:
-                throw new IllegalArgumentException(
-                        MsgRepository.LIST_EXCEPTION_INVALID_TYPE);
+        switch(type)
+        {
+        case Choice.IMPLICIT:
+        case Choice.EXCLUSIVE:
+            choiceImpl = new ChoiceImpl(false);
+            break;
+        case Choice.MULTIPLE:
+            choiceImpl = new ChoiceImpl(true);
+            break;
+        default:
+            throw new IllegalArgumentException(
+                MsgRepository.LIST_EXCEPTION_INVALID_TYPE);
         }
         choiceImpl.check(textElements, imgElements);
         this.selectCommand = SELECT_COMMAND;
         this.type = type;
         construct();
         // append elements
-        for (int i = 0; i < textElements.length; i++) {
+        for(int i = 0; i < textElements.length; i++)
+        {
             append(textElements[i], imgElements != null
-                    ? imgElements[i] : null);
+                   ? imgElements[i] : null);
         }
     }
 
     /* (non-Javadoc)
      * @see Displayable#eswtConstructContent(int)
      */
-    Composite eswtConstructContent(int style) {
+    Composite eswtConstructContent(int style)
+    {
         Composite comp = super.eswtConstructContent(style);
         eswtTable = new TableExtension(comp, getStyle(type));
         eswtTable.getHorizontalBar().setVisible(false);
@@ -106,7 +112,8 @@ public class List extends Screen implements Choice {
     /**
      * Called by Display when Displayable should become visible.
      */
-    void eswtHandleShowCurrentEvent() {
+    void eswtHandleShowCurrentEvent()
+    {
         super.eswtHandleShowCurrentEvent();
         eswtTable.addSelectionListener(eswtTableListener);
     }
@@ -114,7 +121,8 @@ public class List extends Screen implements Choice {
     /**
      * Called by Display when Displayable should become hidden.
      */
-    void eswtHandleHideCurrentEvent() {
+    void eswtHandleHideCurrentEvent()
+    {
         super.eswtHandleHideCurrentEvent();
         eswtTable.removeSelectionListener(eswtTableListener);
     }
@@ -122,7 +130,8 @@ public class List extends Screen implements Choice {
     /* (non-Javadoc)
      * @see Displayable#eswtHandleResizeEvent(int, int)
      */
-    void eswtHandleResizeEvent(int width, int height) {
+    void eswtHandleResizeEvent(int width, int height)
+    {
         super.eswtHandleResizeEvent(width, height);
         eswtTable.setBounds(getContentComp().getClientArea());
     }
@@ -130,27 +139,32 @@ public class List extends Screen implements Choice {
     /**
      * Get Table style based on list type.
      */
-    private int getStyle(int listType) {
+    private int getStyle(int listType)
+    {
         int tableStyle = SWT.NONE;
-        switch (listType) {
-            case Choice.IMPLICIT:
-                tableStyle |= SWT.SINGLE;
-                break;
-            case Choice.EXCLUSIVE:
-                tableStyle |= SWT.SINGLE | SWT.RADIO;
-                break;
-            case Choice.MULTIPLE:
-                tableStyle |= SWT.MULTI | SWT.CHECK;
-                break;
-            default:
-                break;
+        switch(listType)
+        {
+        case Choice.IMPLICIT:
+            tableStyle |= SWT.SINGLE;
+            break;
+        case Choice.EXCLUSIVE:
+            tableStyle |= SWT.SINGLE | SWT.RADIO;
+            break;
+        case Choice.MULTIPLE:
+            tableStyle |= SWT.MULTI | SWT.CHECK;
+            break;
+        default:
+            break;
         }
         return tableStyle;
     }
 
-    private void updateSelection() {
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+    private void updateSelection()
+    {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 eswtUpdateSelection();
             }
         });
@@ -159,58 +173,71 @@ public class List extends Screen implements Choice {
     /**
      * Update eSWT Table selection.
      */
-    private void eswtUpdateSelection() {
-        if (type == IMPLICIT || type == EXCLUSIVE) {
+    private void eswtUpdateSelection()
+    {
+        if(type == IMPLICIT || type == EXCLUSIVE)
+        {
             int sel = choiceImpl.getSelectedIndex();
-            if ((sel == 0) || (eswtTable.getSelectionIndex() != sel)) {
+            if((sel == 0) || (eswtTable.getSelectionIndex() != sel))
+            {
                 eswtTable.setSelection(sel);
             }
         }
-        else {
+        else
+        {
             int size = choiceImpl.size();
-            for (int i = 0; i < size; i++) {
-                if (choiceImpl.isSelected(i)) {
+            for(int i = 0; i < size; i++)
+            {
+                if(choiceImpl.isSelected(i))
+                {
                     eswtTable.select(i);
                 }
-                else {
+                else
+                {
                     eswtTable.deselect(i);
                 }
             }
         }
     }
 
-    private void eswtInsertItem(int index) {
+    private void eswtInsertItem(int index)
+    {
         TableItem item = new TableItem(eswtTable, SWT.NONE, index);
         Image img = choiceImpl.getImage(index);
         item.setImage(0, Image.getESWTImage(img));
         item.setText(0, choiceImpl.getString(index));
     }
 
-    private void eswtSetItem(int index) {
+    private void eswtSetItem(int index)
+    {
         TableItem item = eswtTable.getItem(index);
         Image img = choiceImpl.getImage(index);
         item.setImage(0, Image.getESWTImage(img));
         item.setText(0, choiceImpl.getString(index));
     }
 
-    private void eswtDeleteItem(int index) {
+    private void eswtDeleteItem(int index)
+    {
         eswtTable.getItem(index).dispose();
         choiceImpl.delete(index);
     }
 
-    private void eswtDeleteAllItems() {
-        for (int i = eswtTable.getItemCount() - 1; i >= 0; i--) {
-            if (type == Choice.IMPLICIT)
+    private void eswtDeleteAllItems()
+    {
+        for(int i = eswtTable.getItemCount() - 1; i >= 0; i--)
+        {
+            if(type == Choice.IMPLICIT)
             {
-               choiceImpl.delete(i);
+                choiceImpl.delete(i);
             }
             eswtTable.getItem(i).dispose();
         }
     }
 
-    private void eswtSetItemFont(int index) {
+    private void eswtSetItemFont(int index)
+    {
         org.eclipse.swt.graphics.Font font = Font.getESWTFont(choiceImpl
-                .getFont(index));
+                                             .getFont(index));
         eswtTable.getItem(index).setFont(0, font);
     }
 
@@ -221,10 +248,13 @@ public class List extends Screen implements Choice {
      * @param img the image
      * @return index of added item
      */
-    public int append(String text, Image img) {
+    public int append(String text, Image img)
+    {
         final int index = choiceImpl.append(text, img);
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 eswtInsertItem(index);
                 eswtUpdateSelection();
             }
@@ -239,11 +269,14 @@ public class List extends Screen implements Choice {
      * @param text the text
      * @param img the image
      */
-    public void insert(int position, String text, Image img) {
+    public void insert(int position, String text, Image img)
+    {
         choiceImpl.insert(position, text, img);
         final int index = position; // index of added element
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 eswtInsertItem(index);
                 eswtUpdateSelection();
             }
@@ -257,11 +290,14 @@ public class List extends Screen implements Choice {
      * @param text the text
      * @param img the image
      */
-    public void set(int position, String text, Image img) {
+    public void set(int position, String text, Image img)
+    {
         choiceImpl.set(position, text, img);
         final int index = position; // index of changed element
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 eswtSetItem(index);
                 eswtUpdateSelection();
             }
@@ -273,11 +309,14 @@ public class List extends Screen implements Choice {
      *
      * @param position the item index
      */
-    public void delete(int position) {
+    public void delete(int position)
+    {
 //        choiceImpl.delete(position);
         final int index = position; // index of changed element
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 eswtDeleteItem(index);
                 eswtUpdateSelection();
             }
@@ -287,13 +326,16 @@ public class List extends Screen implements Choice {
     /**
      * Remove all items.
      */
-    public void deleteAll() {
-        if (type != Choice.IMPLICIT)
+    public void deleteAll()
+    {
+        if(type != Choice.IMPLICIT)
         {
-           choiceImpl.deleteAll();
+            choiceImpl.deleteAll();
         }
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 eswtDeleteAllItems();
             }
         });
@@ -304,7 +346,8 @@ public class List extends Screen implements Choice {
      *
      * @return the lists fir policy
      */
-    public int getFitPolicy() {
+    public int getFitPolicy()
+    {
         return choiceImpl.getFitPolicy();
     }
 
@@ -314,7 +357,8 @@ public class List extends Screen implements Choice {
      * @param position the index of the item
      * @return the items font
      */
-    public Font getFont(int position) {
+    public Font getFont(int position)
+    {
         return choiceImpl.getFont(position);
     }
 
@@ -324,7 +368,8 @@ public class List extends Screen implements Choice {
      * @param position the index of the item
      * @return the items image part
      */
-    public Image getImage(int position) {
+    public Image getImage(int position)
+    {
         return choiceImpl.getImage(position);
     }
 
@@ -334,7 +379,8 @@ public class List extends Screen implements Choice {
      * @param position the index of the item
      * @return the items string part
      */
-    public String getString(int position) {
+    public String getString(int position)
+    {
         return choiceImpl.getString(position);
     }
 
@@ -344,7 +390,8 @@ public class List extends Screen implements Choice {
      * @param selectedArray an array with selected items
      * @return selected flags
      */
-    public int getSelectedFlags(boolean[] selectedArray) {
+    public int getSelectedFlags(boolean[] selectedArray)
+    {
         return choiceImpl.getSelectedFlags(selectedArray);
     }
 
@@ -353,7 +400,8 @@ public class List extends Screen implements Choice {
      *
      * @return the selected index
      */
-    public int getSelectedIndex() {
+    public int getSelectedIndex()
+    {
         return choiceImpl.getSelectedIndex();
     }
 
@@ -363,7 +411,8 @@ public class List extends Screen implements Choice {
      * @param position specified element index
      * @return true if its selected, false otherwise
      */
-    public boolean isSelected(int position) {
+    public boolean isSelected(int position)
+    {
         return choiceImpl.isSelected(position);
     }
 
@@ -372,12 +421,15 @@ public class List extends Screen implements Choice {
      *
      * @param newFitPolicy the new fit policy
      */
-    public void setFitPolicy(int newFitPolicy) {
+    public void setFitPolicy(int newFitPolicy)
+    {
         choiceImpl.setFitPolicy(newFitPolicy);
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 eswtTable.setWordWrap(choiceImpl.getFitPolicy()
-                        == Choice.TEXT_WRAP_ON);
+                                      == Choice.TEXT_WRAP_ON);
             }
         });
     }
@@ -388,11 +440,14 @@ public class List extends Screen implements Choice {
      * @param position the index of the item
      * @param font the desired font
      */
-    public void setFont(int position, Font font) {
+    public void setFont(int position, Font font)
+    {
         choiceImpl.setFont(position, font);
         final int index = position; // index of added element
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 eswtSetItemFont(index);
             }
         });
@@ -403,9 +458,12 @@ public class List extends Screen implements Choice {
      *
      * @param cmd a command.
      */
-    public void setSelectCommand(Command cmd) {
-        if (type == Choice.IMPLICIT) {
-            if (cmd != SELECT_COMMAND) {
+    public void setSelectCommand(Command cmd)
+    {
+        if(type == Choice.IMPLICIT)
+        {
+            if(cmd != SELECT_COMMAND)
+            {
                 addCommand(cmd);
             }
             selectCommand = cmd;
@@ -417,8 +475,10 @@ public class List extends Screen implements Choice {
      *
      * @param cmd a command.
      */
-    public void removeCommand(Command cmd) {
-        if (cmd == selectCommand) {
+    public void removeCommand(Command cmd)
+    {
+        if(cmd == selectCommand)
+        {
             selectCommand = null;
         }
         super.removeCommand(cmd);
@@ -429,7 +489,8 @@ public class List extends Screen implements Choice {
      *
      * @param selectedArray an array with selected items
      */
-    public void setSelectedFlags(boolean[] selectedArray) {
+    public void setSelectedFlags(boolean[] selectedArray)
+    {
         choiceImpl.setSelectedFlags(selectedArray);
         updateSelection();
     }
@@ -440,7 +501,8 @@ public class List extends Screen implements Choice {
      * @param position the index of the item
      * @param select selected or not
      */
-    public void setSelectedIndex(int position, boolean select) {
+    public void setSelectedIndex(int position, boolean select)
+    {
         choiceImpl.setSelected(position, select);
         updateSelection();
     }
@@ -450,40 +512,52 @@ public class List extends Screen implements Choice {
      *
      * @return the lists size
      */
-    public int size() {
+    public int size()
+    {
         return choiceImpl.size();
     }
 
     /**
      * Table Default Selection listener.
      */
-    class EswtTableSelectionListener implements SelectionListener {
+    class EswtTableSelectionListener implements SelectionListener
+    {
 
-        private void update(SelectionEvent se) {
-            if (se.widget != null && se.item != null) {
+        private void update(SelectionEvent se)
+        {
+            if(se.widget != null && se.item != null)
+            {
                 int index = ((Table) se.widget).indexOf((TableItem) se.item);
                 Logger.method(List.this, "updateSel", String.valueOf(index),
-                                se);
-                if (index >= 0) {
+                              se);
+                if(index >= 0)
+                {
                     choiceImpl.setSelected(index, !isSelected(index));
                 }
             }
         }
 
-        public void widgetDefaultSelected(SelectionEvent se) {
-            if (type == Choice.IMPLICIT) {
-                if (size() > 0) {
+        public void widgetDefaultSelected(SelectionEvent se)
+        {
+            if(type == Choice.IMPLICIT)
+            {
+                if(size() > 0)
+                {
                     callCommandAction(selectCommand);
                 }
             }
         }
 
-        public void widgetSelected(SelectionEvent se) {
-            if (type == Choice.IMPLICIT || type == Choice.EXCLUSIVE) {
+        public void widgetSelected(SelectionEvent se)
+        {
+            if(type == Choice.IMPLICIT || type == Choice.EXCLUSIVE)
+            {
                 update(se);
             }
-            else if (type == Choice.MULTIPLE) {
-                if (se.detail == SWT.CHECK) {
+            else if(type == Choice.MULTIPLE)
+            {
+                if(se.detail == SWT.CHECK)
+                {
                     update(se);
                 }
             }

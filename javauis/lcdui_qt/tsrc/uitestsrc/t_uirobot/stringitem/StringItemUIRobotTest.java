@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package t_uirobot.stringitem;
@@ -33,7 +33,8 @@ import com.nokia.mj.impl.uitestutils.Key;
  * Created: 2008-08-27
  */
 public class StringItemUIRobotTest extends UITestBase implements
-        ItemCommandListener, CommandListener {
+    ItemCommandListener, CommandListener
+{
 
     private Form form;
     private StringItem button1;
@@ -47,7 +48,8 @@ public class StringItemUIRobotTest extends UITestBase implements
     /**
      * Constructor.
      */
-    public StringItemUIRobotTest() {
+    public StringItemUIRobotTest()
+    {
     }
 
     /**
@@ -56,7 +58,8 @@ public class StringItemUIRobotTest extends UITestBase implements
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public StringItemUIRobotTest(String sTestName, TestMethod rTestMethod) {
+    public StringItemUIRobotTest(String sTestName, TestMethod rTestMethod)
+    {
         super(sTestName, rTestMethod);
     }
 
@@ -66,15 +69,18 @@ public class StringItemUIRobotTest extends UITestBase implements
      *
      * @return New testsuite.
      */
-    public Test suite() {
+    public Test suite()
+    {
         TestSuite aSuite = new TestSuite();
 
         aSuite.addTest(new StringItemUIRobotTest("testSetTextNullEmpty",
-                new TestMethod() {
-                    public void run(TestCase tc) {
-                        ((StringItemUIRobotTest) tc).testSetTextNullEmpty();
-                    }
-                }));
+                       new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((StringItemUIRobotTest) tc).testSetTextNullEmpty();
+            }
+        }));
 
         return aSuite;
     }
@@ -83,7 +89,8 @@ public class StringItemUIRobotTest extends UITestBase implements
      * Test that StringItem.setText(text) working properly.
      * Only text = null and text = "" investigated.
      */
-    public void testSetTextNullEmpty() {
+    public void testSetTextNullEmpty()
+    {
         button1 = new StringItem("", "click!", Item.BUTTON);
         button2 = new StringItem("", "click 2!", Item.BUTTON);
         button3 = new StringItem("", "click 3!", Item.BUTTON);
@@ -91,7 +98,7 @@ public class StringItemUIRobotTest extends UITestBase implements
         c1 = new Command("Ok1", "", Command.ITEM, 0);
         c2 = new Command("Ok2", "", Command.ITEM, 0);
         c3 = new Command("Ok3", "", Command.ITEM, 0);
-        form = new Form ("setTextTest");
+        form = new Form("setTextTest");
         form.setCommandListener(this);
         button1.addCommand(c1);
         button1.setItemCommandListener(this);
@@ -115,7 +122,7 @@ public class StringItemUIRobotTest extends UITestBase implements
         key(Key.RightArrow);
         key(Key.Select);
         assertEquals("StringItem content was not changed!", "some text", si
-                .getText());
+                     .getText());
 
     }
 
@@ -124,14 +131,18 @@ public class StringItemUIRobotTest extends UITestBase implements
      * @param c Command.
      * @param item that triggered the command.
      */
-    public void commandAction(Command c, Item item) {
-        if (c == c1) {
+    public void commandAction(Command c, Item item)
+    {
+        if(c == c1)
+        {
             si.setText("");
         }
-        if (c == c2) {
+        if(c == c2)
+        {
             si.setText(null);
         }
-        if (c == c3) {
+        if(c == c3)
+        {
             si.setText("some text");
         }
     }
@@ -140,7 +151,8 @@ public class StringItemUIRobotTest extends UITestBase implements
      * @param c Command.
      * @param d displayable that triggered the command.
      */
-    public void commandAction(Command c, Displayable d) {
+    public void commandAction(Command c, Displayable d)
+    {
 
     }
 

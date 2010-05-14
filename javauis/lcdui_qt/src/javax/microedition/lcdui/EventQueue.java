@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 
@@ -19,38 +19,48 @@ package javax.microedition.lcdui;
 
 import javax.microedition.lcdui.EventDispatcher.LCDUIEvent;
 
-final class EventQueue {
+final class EventQueue
+{
 
-	LCDUIEvent first;
-	LCDUIEvent last;
+    LCDUIEvent first;
+    LCDUIEvent last;
 
-	EventQueue() {
-	}
+    EventQueue()
+    {
+    }
 
-	synchronized void push(LCDUIEvent event) {
-		event.next = null;
-		if(isEmpty()) {
-			first = last = event;
-		} else {
-			last.next = event;
-			last = event;
-		}
-	}
+    synchronized void push(LCDUIEvent event)
+    {
+        event.next = null;
+        if(isEmpty())
+        {
+            first = last = event;
+        }
+        else
+        {
+            last.next = event;
+            last = event;
+        }
+    }
 
-	synchronized LCDUIEvent pop() {
-		if (isEmpty()) {
-			return null;
-		}
-		LCDUIEvent event = first;
-		first = first.next;
-		event.next = null;
-		if(isEmpty()) {
-			last = null;
-		}
-		return event;
-	}
+    synchronized LCDUIEvent pop()
+    {
+        if(isEmpty())
+        {
+            return null;
+        }
+        LCDUIEvent event = first;
+        first = first.next;
+        event.next = null;
+        if(isEmpty())
+        {
+            last = null;
+        }
+        return event;
+    }
 
-	synchronized boolean isEmpty() {
-		return first == null;
-	}
+    synchronized boolean isEmpty()
+    {
+        return first == null;
+    }
 }

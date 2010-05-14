@@ -59,9 +59,10 @@ public class PermissionConfirmationView extends ConfirmationViewBase
     }
 
     /** Constructor */
-    protected PermissionConfirmationView(InstallerUiEswt aInstaller, Composite aParent)
+    protected PermissionConfirmationView(
+        InstallerUiEswt aInstallerUi, Composite aParent)
     {
-        super(aInstaller, aParent, 8, true);
+        super(aInstallerUi, aParent, 8, true);
         setTitle(InstallerUiTexts.get(InstallerUiTexts.INSTALL));
         setCommands(null, null);
     }

@@ -87,11 +87,7 @@ public final class FileSystemUtils
         for (int index = 0; index < drives.length; index++)
         {
             String toAdd = drives[index].iRootPath.replace('\\', '/');
-            if (FileAccessHelper.accessAllowed(toAdd,
-                                               FileConstants.INTENT_READ, getProtectionDomain(), false))
-            {
-                roots.addElement(toAdd);
-            }
+            roots.addElement(toAdd);
         }
         return roots;
     }
@@ -222,11 +218,7 @@ public final class FileSystemUtils
         for (int index = 0; index < drives.length; index++)
         {
             String toAdd = drives[index].iRootPath.replace('\\', '/');
-            if (FileAccessHelper.accessAllowed(toAdd,
-                                               FileConstants.INTENT_READ, getProtectionDomain(), false))
-            {
-                roots.addElement(drives[index]);
-            }
+            roots.addElement(drives[index]);
         }
 
         Vector rootNames = new Vector();
@@ -327,42 +319,20 @@ public final class FileSystemUtils
         return FileConnectionTexts.get(propKey);
     }
 
-    public static Vector getForbiddenPaths()
-    {
-        String pathString = _getForbiddenPaths();
-        String[] pathArray = Tokenizer.split(pathString, "*");
-        Vector paths = new Vector();
-
-        for (int index = 0; index < pathArray.length - 1; index++)
-        {
-            String toAdd = pathArray[index];
-            toAdd = toAdd.replace('\\', '/');
-            paths.addElement(toAdd);
-        }
-        return paths;
-    }
-
-    public static Vector getRestrictedPaths()
-    {
-        String pathString = _getRestrictedPaths();
-        String[] pathArray = Tokenizer.split(pathString, "*");
-        Vector paths = new Vector();
-
-        for (int index = 0; index < pathArray.length - 1; index++)
-        {
-            String toAdd = pathArray[index];
-            toAdd = toAdd.replace('\\', '/');
-            paths.addElement(toAdd);
-        }
-        return paths;
-    }
-
     public static String getAppPrivateDir()
     {
         String appPrivateDir = iAppInfo.getRootPath();
         appPrivateDir = appPrivateDir.replace('\\', '/');
         appPrivateDir += "scratch/";
         return appPrivateDir;
+    }
+
+    public static String getMidpRoot()
+    {
+        String midpRoot = _getMidpRoot();
+        
+        midpRoot = midpRoot.replace('\\', '/');
+        return midpRoot;
     }
 
     private static native String _getMemoryCardDrivePath();
@@ -375,7 +345,5 @@ public final class FileSystemUtils
 
     private static native String _getPathOfProperty(int value, boolean addRoot);
 
-    private static native String _getForbiddenPaths();
-
-    private static native String _getRestrictedPaths();
+    private static native String _getMidpRoot();
 }

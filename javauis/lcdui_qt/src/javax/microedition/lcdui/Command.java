@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -25,7 +25,8 @@ import org.eclipse.swt.widgets.Control;
 /**
  * Implementation of LCDUI <code>Command</code> class.
  */
-public class Command {
+public class Command
+{
 
     /**
      * Command type SCREEN.
@@ -82,7 +83,8 @@ public class Command {
     // are mapped to eSWT priorities.
     private static Hashtable priorities;
 
-    static {
+    static
+    {
         priorities = new Hashtable();
         priorities.put(new Integer(Integer.MIN_VALUE),
                        new Integer(0));
@@ -97,7 +99,8 @@ public class Command {
      * @param type Type of command.
      * @param priority Priority of command.
      */
-    public Command(String shortLabel, int type, int priority) {
+    public Command(String shortLabel, int type, int priority)
+    {
         this(shortLabel, null, type, priority);
     }
 
@@ -112,14 +115,17 @@ public class Command {
     public Command(String shortLabel,
                    String longLabel,
                    int type,
-                   int priority) {
-        if (shortLabel == null) {
+                   int priority)
+    {
+        if(shortLabel == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.COMMAND_EXCEPTION_LABEL_IS_NULL);
+                MsgRepository.COMMAND_EXCEPTION_LABEL_IS_NULL);
         }
-        if (type < SCREEN || type > ITEM) {
+        if(type < SCREEN || type > ITEM)
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.COMMAND_EXCEPTION_INVALID_TYPE);
+                MsgRepository.COMMAND_EXCEPTION_INVALID_TYPE);
         }
 
         this.type = type;
@@ -127,7 +133,8 @@ public class Command {
         this.longLabel = longLabel;
         this.priority = priority;
 
-        if (EMPTY_STRING.equals(this.shortLabel)) {
+        if(EMPTY_STRING.equals(this.shortLabel))
+        {
             this.shortLabel = getDefaultLabel(this.type);
         }
     }
@@ -137,7 +144,8 @@ public class Command {
      *
      * @return Label of this command.
      */
-    public String getLabel() {
+    public String getLabel()
+    {
         return shortLabel;
     }
 
@@ -146,7 +154,8 @@ public class Command {
      *
      * @return Long label of this command.
      */
-    public String getLongLabel() {
+    public String getLongLabel()
+    {
         return longLabel;
     }
 
@@ -155,7 +164,8 @@ public class Command {
      *
      * @return Type of this command.
      */
-    public int getCommandType() {
+    public int getCommandType()
+    {
         return type;
     }
 
@@ -164,7 +174,8 @@ public class Command {
      *
      * @return Priority of this command.
      */
-    public int getPriority() {
+    public int getPriority()
+    {
         return priority;
     }
 
@@ -174,10 +185,12 @@ public class Command {
      * @param control the queried Control.
      * @return eSWT Command.
      */
-    org.eclipse.ercp.swt.mobile.Command getESWTCommand(Control control) {
-        if (control != null) {
+    org.eclipse.ercp.swt.mobile.Command getESWTCommand(Control control)
+    {
+        if(control != null)
+        {
             return (org.eclipse.ercp.swt.mobile.Command)
-                eswtCommands.get(control);
+                   eswtCommands.get(control);
         }
         return null;
     }
@@ -190,10 +203,13 @@ public class Command {
      * @param listener
      */
     void eswtAddCommandSelectionListener(Control control,
-            SelectionListener listener) {
-        if (listener != null) {
+                                         SelectionListener listener)
+    {
+        if(listener != null)
+        {
             org.eclipse.ercp.swt.mobile.Command cmd = getESWTCommand(control);
-            if (cmd != null && !cmd.isDisposed()) {
+            if(cmd != null && !cmd.isDisposed())
+            {
                 // Remove listener if it is already added. Same listener
                 // should be in same command only once:
                 cmd.removeSelectionListener(listener);
@@ -210,10 +226,13 @@ public class Command {
      * @param listener
      */
     void eswtRemoveCommandSelectionListener(Control control,
-            SelectionListener listener) {
-        if (listener != null) {
+                                            SelectionListener listener)
+    {
+        if(listener != null)
+        {
             org.eclipse.ercp.swt.mobile.Command cmd = getESWTCommand(control);
-            if (cmd != null && !cmd.isDisposed()) {
+            if(cmd != null && !cmd.isDisposed())
+            {
                 cmd.removeSelectionListener(listener);
             }
         }
@@ -226,10 +245,13 @@ public class Command {
      *            Shell.
      * @param isDefault If true, created eSWT command is set to be default one.
      */
-    void addESWTCommand(Control control, final boolean isDefault) {
+    void addESWTCommand(Control control, final boolean isDefault)
+    {
         final Control finalControl = control;
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 eswtAddESWTCommand(finalControl, isDefault);
             }
         });
@@ -241,19 +263,23 @@ public class Command {
      * @param control eSWT control on which the command is created.
      * @param isDefault If true, created eSWT command is set to be default one.
      */
-    void eswtAddESWTCommand(Control control, boolean isDefault) {
-        if (!eswtCommands.containsKey(control)) {
+    void eswtAddESWTCommand(Control control, boolean isDefault)
+    {
+        if(!eswtCommands.containsKey(control))
+        {
             int eswtType = getEswtType(type);
             int eswtPriority = getESWTPriority(priority);
 
             org.eclipse.ercp.swt.mobile.Command eswtCommand =
                 new org.eclipse.ercp.swt.mobile.Command(
-                    control, eswtType, eswtPriority);
+                control, eswtType, eswtPriority);
             eswtCommand.setText(shortLabel);
-            if (longLabel != null) {
+            if(longLabel != null)
+            {
                 eswtCommand.setLongLabel(longLabel);
             }
-            if (isDefault) {
+            if(isDefault)
+            {
                 eswtCommand.setDefaultCommand();
             }
             eswtCommands.put(control, eswtCommand);
@@ -265,10 +291,13 @@ public class Command {
      *
      * @param control The Control where eSWT Command is located.
      */
-    void removeESWTCommand(Control control) {
+    void removeESWTCommand(Control control)
+    {
         final Control finalControl = control;
-        ESWTUIThreadRunner.syncExec(new Runnable() {
-            public void run() {
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
                 eswtRemoveESWTCommand(finalControl);
             }
         });
@@ -277,9 +306,12 @@ public class Command {
     /**
      * eSWT callback to remove an eSWT Command to vector of eSWT Commands.
      */
-    void eswtRemoveESWTCommand(Control control) {
-        if (eswtCommands.containsKey(control)) {
-            if (getESWTCommand(control) != null) {
+    void eswtRemoveESWTCommand(Control control)
+    {
+        if(eswtCommands.containsKey(control))
+        {
+            if(getESWTCommand(control) != null)
+            {
                 getESWTCommand(control).dispose();
             }
             eswtCommands.remove(control);
@@ -292,37 +324,39 @@ public class Command {
      * @param cmdType LCDUI type
      * @return mapped eSWT command type.
      */
-    private int getEswtType(int cmdType) {
+    private int getEswtType(int cmdType)
+    {
         int eswtType = 0;
         // There are no Command types SCREEN and ITEM in eSWT so
         // the eSWT type GENERAL is used for those types.
-        switch (cmdType) {
-            case SCREEN:
-                eswtType = org.eclipse.ercp.swt.mobile.Command.GENERAL;
-                break;
-            case BACK:
-                eswtType = org.eclipse.ercp.swt.mobile.Command.BACK;
-                break;
-            case CANCEL:
-                eswtType = org.eclipse.ercp.swt.mobile.Command.CANCEL;
-                break;
-            case OK:
-                eswtType = org.eclipse.ercp.swt.mobile.Command.OK;
-                break;
-            case HELP:
-                eswtType = org.eclipse.ercp.swt.mobile.Command.HELP;
-                break;
-            case STOP:
-                eswtType = org.eclipse.ercp.swt.mobile.Command.STOP;
-                break;
-            case EXIT:
-                eswtType = org.eclipse.ercp.swt.mobile.Command.EXIT;
-                break;
-            case ITEM:
-                eswtType = org.eclipse.ercp.swt.mobile.Command.GENERAL;
-                break;
-            default:
-                break;
+        switch(cmdType)
+        {
+        case SCREEN:
+            eswtType = org.eclipse.ercp.swt.mobile.Command.GENERAL;
+            break;
+        case BACK:
+            eswtType = org.eclipse.ercp.swt.mobile.Command.BACK;
+            break;
+        case CANCEL:
+            eswtType = org.eclipse.ercp.swt.mobile.Command.CANCEL;
+            break;
+        case OK:
+            eswtType = org.eclipse.ercp.swt.mobile.Command.OK;
+            break;
+        case HELP:
+            eswtType = org.eclipse.ercp.swt.mobile.Command.HELP;
+            break;
+        case STOP:
+            eswtType = org.eclipse.ercp.swt.mobile.Command.STOP;
+            break;
+        case EXIT:
+            eswtType = org.eclipse.ercp.swt.mobile.Command.EXIT;
+            break;
+        case ITEM:
+            eswtType = org.eclipse.ercp.swt.mobile.Command.GENERAL;
+            break;
+        default:
+            break;
         }
         return eswtType;
     }
@@ -335,36 +369,38 @@ public class Command {
      *
      * @return Default label.
      */
-    static String getDefaultLabel(int type) {
+    static String getDefaultLabel(int type)
+    {
         String rValue;
-        switch (type) {
-            case SCREEN:
-                rValue = MsgRepository.COMMAND_LABEL_SCREEN;
-                break;
-            case BACK:
-                rValue = MsgRepository.COMMAND_LABEL_BACK;
-                break;
-            case CANCEL:
-                rValue = MsgRepository.COMMAND_LABEL_CANCEL;
-                break;
-            case OK:
-                rValue = MsgRepository.COMMAND_LABEL_OK;
-                break;
-            case HELP:
-                rValue = MsgRepository.COMMAND_LABEL_HELP;
-                break;
-            case STOP:
-                rValue = MsgRepository.COMMAND_LABEL_STOP;
-                break;
-            case EXIT:
-                rValue = MsgRepository.COMMAND_LABEL_EXIT;
-                break;
-            case ITEM:
-                rValue = MsgRepository.COMMAND_LABEL_ITEM;
-                break;
-            default:
-                rValue = EMPTY_STRING;
-                break;
+        switch(type)
+        {
+        case SCREEN:
+            rValue = MsgRepository.COMMAND_LABEL_SCREEN;
+            break;
+        case BACK:
+            rValue = MsgRepository.COMMAND_LABEL_BACK;
+            break;
+        case CANCEL:
+            rValue = MsgRepository.COMMAND_LABEL_CANCEL;
+            break;
+        case OK:
+            rValue = MsgRepository.COMMAND_LABEL_OK;
+            break;
+        case HELP:
+            rValue = MsgRepository.COMMAND_LABEL_HELP;
+            break;
+        case STOP:
+            rValue = MsgRepository.COMMAND_LABEL_STOP;
+            break;
+        case EXIT:
+            rValue = MsgRepository.COMMAND_LABEL_EXIT;
+            break;
+        case ITEM:
+            rValue = MsgRepository.COMMAND_LABEL_ITEM;
+            break;
+        default:
+            rValue = EMPTY_STRING;
+            break;
         }
         return rValue;
     }
@@ -394,17 +430,21 @@ public class Command {
      * @see OpenLCDUI design document for more detailed description of the
      *      algorithm.
      */
-    private int getESWTPriority(int c) {
+    private int getESWTPriority(int c)
+    {
         // Find out nearest values from keys (LCDUI priorities). "a" will
         // be nearest smaller value and "b" will be nearest larger value.
         Integer a = new Integer(Integer.MIN_VALUE);
         Integer b = new Integer(Integer.MAX_VALUE);
-        for (Enumeration e = priorities.keys(); e.hasMoreElements();) {
+        for(Enumeration e = priorities.keys(); e.hasMoreElements();)
+        {
             Integer i = (Integer) e.nextElement();
-            if ((i.intValue() >= a.intValue()) && (i.intValue() <= c)) {
+            if((i.intValue() >= a.intValue()) && (i.intValue() <= c))
+            {
                 a = i;
             }
-            if ((i.intValue() <= b.intValue()) && (i.intValue() >= c)) {
+            if((i.intValue() <= b.intValue()) && (i.intValue() >= c))
+            {
                 b = i;
             }
         }
@@ -426,29 +466,36 @@ public class Command {
         // Decide whether to use candidate or one of the nearest values:
         int c1 = 0;
 
-        if (ac > cb) {
-            if (cb < a1x) {
+        if(ac > cb)
+        {
+            if(cb < a1x)
+            {
                 // Use nearest larger value:
-                c1 = (int) (b1 - cb);
+                c1 = (int)(b1 - cb);
             }
-            else {
+            else
+            {
                 // Use candidate:
                 c1 = x;
             }
         }
-        else {
-            if (ac < a1x) {
+        else
+        {
+            if(ac < a1x)
+            {
                 // Use nearest smaller value:
-                c1 = (int) (a1 + ac);
+                c1 = (int)(a1 + ac);
             }
-            else {
+            else
+            {
                 // Use candidate:
                 c1 = x;
             }
         }
 
         // Save new priority to the HashTable if not already exists.
-        if (!priorities.contains(new Integer(c1))) {
+        if(!priorities.contains(new Integer(c1)))
+        {
             priorities.put(new Integer(c), new Integer(c1));
         }
 

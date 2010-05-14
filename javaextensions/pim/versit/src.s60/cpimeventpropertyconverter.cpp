@@ -27,7 +27,7 @@
 #include "cpimitem.h"
 #include "cpimeventitem.h"
 #include "mpimrepeatruledata.h"
-#include "cleanupresetanddestroy.h"
+#include "javasymbianoslayer.h"
 #include "logger.h"
 
 // EXTERNAL INCLUDES

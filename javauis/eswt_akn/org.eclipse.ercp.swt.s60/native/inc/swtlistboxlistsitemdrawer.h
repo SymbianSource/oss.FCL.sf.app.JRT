@@ -55,7 +55,7 @@ public:
     CEikListBox* aOwner);
 
     ~CSwtColumnListBoxItemDrawer();
-    
+
 // From CListItemDrawer
 protected:
     void DrawItemText(TInt aItemIndex,
@@ -76,7 +76,7 @@ public:
         CColumnListBoxData* aListBoxData, CEikListBox* aOwner);
 
     ~CSwtSingleHeadingStyleListBoxItemDrawer();
-    
+
 // From CListItemDrawer
 protected:
     void DrawItemText(TInt aItemIndex,

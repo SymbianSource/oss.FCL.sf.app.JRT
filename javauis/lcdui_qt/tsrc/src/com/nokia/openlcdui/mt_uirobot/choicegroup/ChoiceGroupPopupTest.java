@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package com.nokia.openlcdui.mt_uirobot.choicegroup;
@@ -32,12 +32,14 @@ import com.nokia.mj.impl.uitestutils.Key;
  * <br>
  * Created: 2008-11-04
  */
-public class ChoiceGroupPopupTest extends ItemUITestBase {
+public class ChoiceGroupPopupTest extends ItemUITestBase
+{
 
     /**
      * Constructor.
      */
-    public ChoiceGroupPopupTest() {
+    public ChoiceGroupPopupTest()
+    {
     }
 
     /**
@@ -46,41 +48,47 @@ public class ChoiceGroupPopupTest extends ItemUITestBase {
      * @param sTestName Test name.
      * @param rTestMethod Test method.
      */
-    public ChoiceGroupPopupTest(String sTestName) {
+    public ChoiceGroupPopupTest(String sTestName)
+    {
         super(sTestName);
     }
 
-    public static Test suite() {
+    public static Test suite()
+    {
         TestSuite suite = new TestSuite();
 
         java.util.Vector methodNames;
-	    java.util.Enumeration e;
+        java.util.Enumeration e;
 
-	    // Add widget tests
-	    methodNames = ChoiceGroupPopupTest.methodNames();
-	    e = methodNames.elements();
-	    while (e.hasMoreElements()) {
-	        suite.addTest(new ChoiceGroupPopupTest((String)e.nextElement()));
-	    }
-        
+        // Add widget tests
+        methodNames = ChoiceGroupPopupTest.methodNames();
+        e = methodNames.elements();
+        while(e.hasMoreElements())
+        {
+            suite.addTest(new ChoiceGroupPopupTest((String)e.nextElement()));
+        }
+
         return suite;
     }
 
-    public static java.util.Vector methodNames() {
+    public static java.util.Vector methodNames()
+    {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testOpenPopup");
         return methodNames;
     }
-    
-    public void runTest() throws Throwable {
-        if (getName().equals("testOpenPopup")) testOpenPopup();
+
+    public void runTest() throws Throwable
+    {
+        if(getName().equals("testOpenPopup")) testOpenPopup();
         else super.runTest();
     }
-    
+
     /**
      * Test command on Items.
      */
-    public void testOpenPopup() {
+    public void testOpenPopup()
+    {
         Command cmd = new Command("Cmd", Command.ITEM, 0);
         ChoiceGroup choiceGroup = new ChoiceGroup("Popup", Choice.POPUP);
         choiceGroup.append("item1", null);
@@ -106,7 +114,7 @@ public class ChoiceGroupPopupTest extends ItemUITestBase {
 
         assertTrue("No item selected", choiceGroup.getSelectedIndex() != -1);
         assertTrue("Could not change selection",
-                choiceGroup.getSelectedIndex() != sel);
+                   choiceGroup.getSelectedIndex() != sel);
 
         assertItemStateChanged("case1", choiceGroup);
     }

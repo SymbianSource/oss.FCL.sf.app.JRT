@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -19,13 +19,14 @@ package javax.microedition.lcdui;
 import java.util.Vector;
 
 import javax.microedition.lcdui.EventDispatcher.LCDUIEvent;
-
+import com.nokia.mj.impl.nokialcdui.ItemControlStateChangeListener;
 import org.eclipse.swt.graphics.Point;
 
 /**
  * Abstract class representing an item.<br>
  */
-public abstract class Item {
+public abstract class Item
+{
 
     /**
      * A layout directive.
@@ -116,7 +117,7 @@ public abstract class Item {
      * Combination of all possible layout directives.
      */
     private static final int LAYOUT_BITMASK =
-          LAYOUT_DEFAULT
+        LAYOUT_DEFAULT
         | LAYOUT_LEFT
         | LAYOUT_RIGHT
         | LAYOUT_CENTER
@@ -173,6 +174,7 @@ public abstract class Item {
      */
     private Vector commands = new Vector();
     private ItemCommandListener itemCommandListener;
+    private ItemControlStateChangeListener controlListener;
 
     private Command defaultCommand;
     private Screen parent;
@@ -191,7 +193,8 @@ public abstract class Item {
      * Sets the parent of this Item.
      * @param parent new Parent. If null, current parent is removed.
      */
-    void setParent(Screen parent) {
+    void setParent(Screen parent)
+    {
         this.parent = parent;
     }
 
@@ -200,7 +203,8 @@ public abstract class Item {
      *
      * @return the Item's parent or null if it has none.
      */
-    Screen getParent() {
+    Screen getParent()
+    {
         return parent;
     }
 
@@ -210,10 +214,12 @@ public abstract class Item {
      * @param newLabel New label to be set.
      * @throws IllegalStateException If this item is contained within an alert.
      */
-    public void setLabel(String newLabel) {
-        if (isContainedInAlert()) {
+    public void setLabel(String newLabel)
+    {
+        if(isContainedInAlert())
+        {
             throw new IllegalStateException(
-                    MsgRepository.ITEM_EXCEPTION_OWNED_BY_ALERT);
+                MsgRepository.ITEM_EXCEPTION_OWNED_BY_ALERT);
         }
         label = newLabel;
         updateParent(UPDATE_SIZE_CHANGED);
@@ -224,14 +230,16 @@ public abstract class Item {
      *
      * @return The label of the item.
      */
-    public String getLabel() {
+    public String getLabel()
+    {
         return label;
     }
 
     /**
      * Returns if this item has a valid label, not null and not empty.
      */
-    boolean hasLabel() {
+    boolean hasLabel()
+    {
         return ((label != null) && (!label.equals("")));
     }
 
@@ -240,7 +248,8 @@ public abstract class Item {
      *
      * @return A combination of layout directives currently in use.
      */
-    public int getLayout() {
+    public int getLayout()
+    {
         return layout;
     }
 
@@ -252,15 +261,18 @@ public abstract class Item {
      *             combination of layout directives spesified in this class.
      * @throws IllegalStateException If this Item is contained within an Alert.
      */
-    public void setLayout(int newLayout) {
-        if (isContainedInAlert()) {
+    public void setLayout(int newLayout)
+    {
+        if(isContainedInAlert())
+        {
             throw new IllegalStateException(
-                    MsgRepository.ITEM_EXCEPTION_OWNED_BY_ALERT);
+                MsgRepository.ITEM_EXCEPTION_OWNED_BY_ALERT);
         }
 
-        if (!isValidLayout(newLayout)) {
+        if(!isValidLayout(newLayout))
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.ITEM_EXCEPTION_INVALID_LAYOUT);
+                MsgRepository.ITEM_EXCEPTION_INVALID_LAYOUT);
         }
         layout = newLayout;
         Logger.method(this, "setLayout", String.valueOf(layout));
@@ -275,24 +287,30 @@ public abstract class Item {
      * @throws NullPointerException if cmd is null.
      * @throws IllegalStateException If this Item is contained within an Alert.
      */
-    public void addCommand(Command command) {
-        if (isContainedInAlert()) {
+    public void addCommand(Command command)
+    {
+        if(isContainedInAlert())
+        {
             throw new IllegalStateException(
-                    MsgRepository.ITEM_EXCEPTION_OWNED_BY_ALERT);
+                MsgRepository.ITEM_EXCEPTION_OWNED_BY_ALERT);
         }
-        if (command == null) {
+        if(command == null)
+        {
             throw new NullPointerException(
-                    MsgRepository.ITEM_EXCEPTION_NULL_COMMAND_ADDED);
+                MsgRepository.ITEM_EXCEPTION_NULL_COMMAND_ADDED);
         }
-        if (!commands.contains(command)) {
+        if(!commands.contains(command))
+        {
             commands.addElement(command);
 
             int reason = UPDATE_ADDCOMMAND;
 
-            if (this instanceof StringItem && commands.size() == 1) {
+            if(this instanceof StringItem && commands.size() == 1)
+            {
                 reason |= UPDATE_SIZE_CHANGED;
             }
-            if (this instanceof ImageItem && commands.size() == 1) {
+            if(this instanceof ImageItem && commands.size() == 1)
+            {
                 reason |= UPDATE_SIZE_CHANGED;
             }
 
@@ -306,19 +324,25 @@ public abstract class Item {
      *
      * @param command The command to be removed.
      */
-    public void removeCommand(Command command) {
+    public void removeCommand(Command command)
+    {
         // It is not specified what should happen when this method is
         // called with null-parameter !
-        if (command != null && commands.contains(command)) {
+        if(command != null && commands.contains(command))
+        {
             // Remove command from commands-vector
             commands.removeElement(command);
 
+            defaultCommand = null;
+
             int reason = UPDATE_REMOVECOMMAND;
 
-            if (this instanceof StringItem && commands.size() == 0) {
+            if(this instanceof StringItem && commands.size() == 0)
+            {
                 reason |= UPDATE_SIZE_CHANGED;
             }
-            if (this instanceof ImageItem && commands.size() == 0) {
+            if(this instanceof ImageItem && commands.size() == 0)
+            {
                 reason |= UPDATE_SIZE_CHANGED;
             }
 
@@ -335,10 +359,12 @@ public abstract class Item {
      *            listener is removed.
      * @throws IllegalStateException If this Item is contained within an Alert.
      */
-    public void setItemCommandListener(ItemCommandListener newItemCmdListener) {
-        if (isContainedInAlert()) {
+    public void setItemCommandListener(ItemCommandListener newItemCmdListener)
+    {
+        if(isContainedInAlert())
+        {
             throw new IllegalStateException(
-                    MsgRepository.ITEM_EXCEPTION_OWNED_BY_ALERT);
+                MsgRepository.ITEM_EXCEPTION_OWNED_BY_ALERT);
         }
         itemCommandListener = newItemCmdListener;
     }
@@ -348,7 +374,8 @@ public abstract class Item {
      *
      * @return Minimum width.
      */
-    public int getMinimumWidth() {
+    public int getMinimumWidth()
+    {
         return getCalculatedMinimumSize().x;
     }
 
@@ -357,12 +384,15 @@ public abstract class Item {
      *
      * @return Minimum height.
      */
-    public int getMinimumHeight() {
+    public int getMinimumHeight()
+    {
         return getCalculatedMinimumSize().y;
     }
 
-    private Point getCalculatedMinimumSize() {
-        if (calculatedMinSize == null) {
+    private Point getCalculatedMinimumSize()
+    {
+        if(calculatedMinSize == null)
+        {
             calculatedMinSize = calculateMinimumSize();
             // Logger.method(this, "calculateMinimumSize", calculatedMinSize);
         }
@@ -381,14 +411,18 @@ public abstract class Item {
      *
      * @return Preferred width.
      */
-    public int getPreferredWidth() {
-        if (lockedPrefWidth >= 0) {
-            if (calculatedMinSize == null) {
+    public int getPreferredWidth()
+    {
+        if(lockedPrefWidth >= 0)
+        {
+            if(calculatedMinSize == null)
+            {
                 checkLockedSizes();
             }
             return lockedPrefWidth;
         }
-        else {
+        else
+        {
             return getCalculatedPreferredSize().x;
         }
     }
@@ -398,33 +432,42 @@ public abstract class Item {
      *
      * @return Preferred height.
      */
-    public int getPreferredHeight() {
-        if (lockedPrefHeight >= 0) {
-            if (calculatedMinSize == null) {
+    public int getPreferredHeight()
+    {
+        if(lockedPrefHeight >= 0)
+        {
+            if(calculatedMinSize == null)
+            {
                 checkLockedSizes();
             }
             return lockedPrefHeight;
         }
-        else {
+        else
+        {
             return getCalculatedPreferredSize().y;
         }
     }
 
-    private Point getCalculatedPreferredSize() {
-        if (calculatedPrefSize == null) {
+    private Point getCalculatedPreferredSize()
+    {
+        if(calculatedPrefSize == null)
+        {
             calculatedPrefSize = calculatePreferredSize();
             // Logger.method(this, "calculatePreferredSize", calculatedPrefSize);
         }
         return calculatedPrefSize;
     }
 
-    void checkLockedSizes() {
-        if (lockedPrefWidth >= 0) {
+    void checkLockedSizes()
+    {
+        if(lockedPrefWidth >= 0)
+        {
             lockedPrefWidth = Math.min(
-                    Math.max(lockedPrefWidth, getMinimumWidth()),
-                    ItemLayouter.getMaximumItemWidth(null));
+                                  Math.max(lockedPrefWidth, getMinimumWidth()),
+                                  ItemLayouter.getMaximumItemWidth(null));
         }
-        if (lockedPrefHeight >= 0) {
+        if(lockedPrefHeight >= 0)
+        {
             lockedPrefHeight = Math.max(lockedPrefHeight, getMinimumHeight());
         }
     }
@@ -433,7 +476,8 @@ public abstract class Item {
      * Invalidates this Item's calculated preferred size. Forces the
      * implementation to calculate it again.
      */
-    void invalidateCachedSizes() {
+    void invalidateCachedSizes()
+    {
         calculatedMinSize = null;
         calculatedPrefSize = null;
     }
@@ -456,22 +500,25 @@ public abstract class Item {
      * @throws IllegalArgumentException if w or h is less than -1.
      * @throws IllegalStateException If this Item is contained within an Alert.
      */
-    public synchronized void setPreferredSize(int w, int h) {
-        if (isContainedInAlert()) {
+    public synchronized void setPreferredSize(int w, int h)
+    {
+        if(isContainedInAlert())
+        {
             throw new IllegalStateException(
-                    MsgRepository.ITEM_EXCEPTION_OWNED_BY_ALERT);
+                MsgRepository.ITEM_EXCEPTION_OWNED_BY_ALERT);
         }
-        if ((w < -1) || (h < -1)) {
+        if((w < -1) || (h < -1))
+        {
             throw new IllegalArgumentException(
-                    MsgRepository.ITEM_EXCEPTION_INVALID_DIMENSION);
+                MsgRepository.ITEM_EXCEPTION_INVALID_DIMENSION);
         }
 
         lockedPrefWidth = w;
         lockedPrefHeight = h;
         checkLockedSizes();
         Logger.method(this, "setPrefSize",
-                String.valueOf(lockedPrefWidth),
-                String.valueOf(lockedPrefHeight));
+                      String.valueOf(lockedPrefWidth),
+                      String.valueOf(lockedPrefHeight));
         updateParent(UPDATE_SIZE_CHANGED);
     }
 
@@ -484,13 +531,16 @@ public abstract class Item {
      *            command at all after this call.
      * @throws IllegalStateException If this Item is contained within an Alert.
      */
-    public void setDefaultCommand(Command cmd) {
-        if (isContainedInAlert()) {
+    public void setDefaultCommand(Command cmd)
+    {
+        if(isContainedInAlert())
+        {
             throw new IllegalStateException(
-                    MsgRepository.ITEM_EXCEPTION_OWNED_BY_ALERT);
+                MsgRepository.ITEM_EXCEPTION_OWNED_BY_ALERT);
         }
         defaultCommand = cmd;
-        if (cmd != null) {
+        if(cmd != null)
+        {
             // It is safe to call addCommand() even if command already exists
             // because the addCommand() wont create duplicates:
             addCommand(cmd);
@@ -510,10 +560,12 @@ public abstract class Item {
      *
      * @throws IllegalStateException If the item is not owned by a form.
      */
-    public void notifyStateChanged() {
-        if (!isContainedInForm()) {
+    public void notifyStateChanged()
+    {
+        if(!isContainedInForm())
+        {
             throw new IllegalStateException(
-                    MsgRepository.ITEM_EXCEPTION_NOT_OWNED_BY_FORM);
+                MsgRepository.ITEM_EXCEPTION_NOT_OWNED_BY_FORM);
         }
         // Notify item state listener
         ((Form) parent).notifyItemStateChanged(this);
@@ -522,7 +574,8 @@ public abstract class Item {
     /**
      * Is this item's size locked.
      */
-    boolean isSizeLocked() {
+    boolean isSizeLocked()
+    {
         return (lockedPrefWidth >= 0) || (lockedPrefHeight >= 0);
     }
 
@@ -531,7 +584,8 @@ public abstract class Item {
      *
      * @return Locked preferred width. If width is not locked, returns -1.
      */
-    int getLockedPreferredWidth() {
+    int getLockedPreferredWidth()
+    {
         return lockedPrefWidth;
     }
 
@@ -540,15 +594,18 @@ public abstract class Item {
      *
      * @return Locked preferred height. If height is not locked, returns -1.
      */
-    int getLockedPreferredHeight() {
+    int getLockedPreferredHeight()
+    {
         return lockedPrefHeight;
     }
 
     /**
      * Gets LAYOUT_2 width of this item.
      */
-    int getLayoutWidth() {
-        if (hasLayout(LAYOUT_SHRINK)) {
+    int getLayoutWidth()
+    {
+        if(hasLayout(LAYOUT_SHRINK))
+        {
             return getMinimumWidth();
         }
         return getPreferredWidth();
@@ -557,8 +614,10 @@ public abstract class Item {
     /**
      * Gets LAYOUT_2 height of this item.
      */
-    int getLayoutHeight() {
-        if (hasLayout(LAYOUT_VSHRINK)) {
+    int getLayoutHeight()
+    {
+        if(hasLayout(LAYOUT_VSHRINK))
+        {
             return getMinimumHeight();
         }
         return getPreferredHeight();
@@ -567,14 +626,16 @@ public abstract class Item {
     /**
      * If the item is owned by an Alert.
      */
-    boolean isContainedInAlert() {
+    boolean isContainedInAlert()
+    {
         return (parent != null && parent instanceof Alert);
     }
 
     /**
      * If the item is owned by an Form.
      */
-    boolean isContainedInForm() {
+    boolean isContainedInForm()
+    {
         return (parent != null && parent instanceof Form);
     }
 
@@ -583,14 +644,16 @@ public abstract class Item {
      *
      * @return layout directive
      */
-    int internalGetLayout() {
+    int internalGetLayout()
+    {
         return getLayout();
     }
 
     /**
      * Updates the parent if it's a Form.
      */
-    void updateParent(int updateReason) {
+    void updateParent(int updateReason)
+    {
         updateParent(updateReason, null);
     }
 
@@ -599,16 +662,20 @@ public abstract class Item {
      *
      * @param param additional parameter
      */
-    void updateParent(int updateReason, Object param) {
-        if ((updateReason & UPDATE_SIZE_CHANGED) != 0) {
+    void updateParent(int updateReason, Object param)
+    {
+        if((updateReason & UPDATE_SIZE_CHANGED) != 0)
+        {
             invalidateCachedSizes();
         }
-        if (isContainedInForm()) {
+        if(isContainedInForm())
+        {
             ((Form) parent).updateItemState(this, updateReason, param);
         }
     }
 
-    boolean hasLayout(int aLayout) {
+    boolean hasLayout(int aLayout)
+    {
         return (getLayout() & aLayout) != 0;
     }
 
@@ -619,8 +686,10 @@ public abstract class Item {
      * @param layout Layout combination to be check.
      * @return true If provided layout is valid.
      */
-    static boolean isValidLayout(int layout) {
-        if ((layout & (0xffffffff ^ LAYOUT_BITMASK)) != 0) {
+    static boolean isValidLayout(int layout)
+    {
+        if((layout & (0xffffffff ^ LAYOUT_BITMASK)) != 0)
+        {
             return false;
         }
         return true;
@@ -633,7 +702,8 @@ public abstract class Item {
      * @param layout item Layout.
      * @return horizontal layout of an Item.
      */
-    static int getHorizontalLayout(int layout) {
+    static int getHorizontalLayout(int layout)
+    {
         return layout & Item.LAYOUT_HORIZONTAL_MASK;
     }
 
@@ -644,22 +714,26 @@ public abstract class Item {
      * @param layout item Layout.
      * @return vertical layout of an Item.
      */
-    static int getVerticalLayout(int layout) {
+    static int getVerticalLayout(int layout)
+    {
         return layout & Item.LAYOUT_VERTICAL_MASK;
     }
 
     /**
      * Is item focusable.
      */
-    boolean isFocusable() {
+    boolean isFocusable()
+    {
         return false;
     }
 
     /**
      * Sets current item as focused
      */
-    void internalSetFocused(boolean isFocused) {
-        if (isFocusable()) {
+    void internalSetFocused(boolean isFocused)
+    {
+        if(isFocusable())
+        {
             focused = isFocused;
         }
     }
@@ -669,14 +743,16 @@ public abstract class Item {
      *
      * @return true if item has focus.
      */
-    boolean isFocused() {
+    boolean isFocused()
+    {
         return focused;
     }
 
     /**
      * Sets current item visibility
      */
-    void internalSetVisible(boolean isVisible) {
+    void internalSetVisible(boolean isVisible)
+    {
         this.visible = isVisible;
     }
 
@@ -685,7 +761,8 @@ public abstract class Item {
      *
      * @return true if item is visible
      */
-    boolean isVisible() {
+    boolean isVisible()
+    {
         return visible;
     }
 
@@ -694,7 +771,8 @@ public abstract class Item {
      *
      * @return number of commands.
      */
-    int getNumCommands() {
+    int getNumCommands()
+    {
         return commands.size();
     }
 
@@ -703,19 +781,23 @@ public abstract class Item {
      *
      * @return Default command or null if no default set.
      */
-    Command getDefaultCommand() {
+    Command getDefaultCommand()
+    {
         return defaultCommand;
     }
 
     /**
      * Returns the Default Command or if not set, then the first Command.
      */
-    Command getMSKCommand() {
+    Command getMSKCommand()
+    {
         Command ret = null;
-        if (defaultCommand != null) {
+        if(defaultCommand != null)
+        {
             ret = defaultCommand;
         }
-        else if (commands.elementAt(0) != null) {
+        else if(getNumCommands() == 1)
+        {
             ret = (Command) commands.elementAt(0);
         }
         return ret;
@@ -726,15 +808,17 @@ public abstract class Item {
      *
      * @param command the Command
      */
-    void callCommandAction(Command command) {
-        if (itemCommandListener != null && command != null) {
-        	EventDispatcher eventDispatcher = EventDispatcher.instance();
-        	LCDUIEvent event = eventDispatcher.newEvent(
-        			LCDUIEvent.ITEM_COMMANDACTION, 
-        			this);
-        	event.command = command;
-        	event.itemCommandListener = itemCommandListener;
-        	eventDispatcher.postEvent(event);
+    void callCommandAction(Command command)
+    {
+        if(itemCommandListener != null && command != null)
+        {
+            EventDispatcher eventDispatcher = EventDispatcher.instance();
+            LCDUIEvent event = eventDispatcher.newEvent(
+                                   LCDUIEvent.ITEM_COMMANDACTION,
+                                   this);
+            event.command = command;
+            event.itemCommandListener = itemCommandListener;
+            eventDispatcher.postEvent(event);
         }
     }
 
@@ -744,7 +828,8 @@ public abstract class Item {
      * @return Vector of commands added to this item.
      *      Vector may be empty but not null.
      */
-    Vector getCommands() {
+    Vector getCommands()
+    {
         return commands;
     }
 
@@ -753,18 +838,31 @@ public abstract class Item {
      * @return Current ItemCommandListener or null if
      *      no listener set.
      */
-    ItemCommandListener getItemCommandListener() {
+    ItemCommandListener getItemCommandListener()
+    {
         return itemCommandListener;
     }
 
+    void setItemControlStateChangeListener(ItemControlStateChangeListener listener)
+    {
+        controlListener = listener;
+    }
+
+    ItemControlStateChangeListener getItemControlStateChangeListener()
+    {
+        return controlListener;
+    }
+
     /*
-     * Dispatcher thread calls. 
+     * Dispatcher thread calls.
      */
-    void doCallback(LCDUIEvent event) {
-    	switch(event.type) {
-    	case LCDUIEvent.ITEM_COMMANDACTION:
-    		event.itemCommandListener.commandAction(event.command, this);
-    		break;
-    	}
+    void doCallback(LCDUIEvent event)
+    {
+        switch(event.type)
+        {
+        case LCDUIEvent.ITEM_COMMANDACTION:
+            event.itemCommandListener.commandAction(event.command, this);
+            break;
+        }
     }
 }

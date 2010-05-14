@@ -252,10 +252,7 @@ void CMIDTextFieldEdwin::SetContainerWindowL(const CCoeControl& aContainer)
 }
 
 
-void CMIDTextFieldEdwin::AddCommandsToEdwinL(RPointerArray<MMIDCommand>& aArray)
+void CMIDTextFieldEdwin::AddCommandToEdwinL(MMIDCommand& aCommand)
 {
-    for (TInt i = 0; i < aArray.Count(); i++)
-    {
-        STATIC_CAST(CMIDTextFieldItem*, iTextFieldItem)->AddCommandL(aArray[i]);
-    }
+    STATIC_CAST(CMIDTextFieldItem*, iTextFieldItem)->AddCommandL(&aCommand);
 }

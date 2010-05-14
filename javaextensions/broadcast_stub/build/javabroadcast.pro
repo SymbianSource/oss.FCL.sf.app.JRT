@@ -16,7 +16,7 @@
 
 TARGET=javabroadcast
 TEMPLATE=lib
-CONFIG += omj java javaonly
+CONFIG += omj java javaonly stl
 CONFIG -= qt
 
 include(../../../build/omj.pri)
