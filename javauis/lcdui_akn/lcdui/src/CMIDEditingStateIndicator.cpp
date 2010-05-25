@@ -591,11 +591,24 @@ void CMIDEditingStateIndicator::Draw(const TRect& aRect) const
     DEBUG("CMIDEditingStateIndicator::Draw +");
 
     CWindowGc& gc = SystemGc();
+
+    // If scaling is on, clip to canvas rect is needed.
+    if (iIsScalingOn)
+    {
+        gc.SetClippingRect(iOnScreenCanvasRect);
+    }
+
     // Draw background with background color
     TRgb backgroundColor;
     GetColor(EColorControlBackground, backgroundColor);
     gc.SetBrushColor(backgroundColor);
     gc.Clear(aRect);
+
+    // cancel of clip
+    if (iIsScalingOn)
+    {
+        gc.CancelClippingRect();
+    }
 
     DEBUG("CMIDEditingStateIndicator::Draw -");
 }
@@ -615,7 +628,7 @@ void CMIDEditingStateIndicator::Reserved_1()
 // ---------------------------------------------------------------------------
 //
 CMIDEditingStateIndicator::CMIDEditingStateIndicator() :
-        CAknIndicatorContainer(CAknIndicatorContainer::EQueryEditorIndicators)
+    CAknIndicatorContainer(CAknIndicatorContainer::EQueryEditorIndicators)
 {
     DEBUG("CMIDEditingStateIndicator::CMIDEditingStateIndicator");
 }

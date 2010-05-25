@@ -200,6 +200,7 @@ public:
     void MakeVisible(TBool aVisible);
     void SizeChanged();
     TKeyResponse OfferKeyEventL(const TKeyEvent& aKeyEvent,TEventCode aType);
+    void HandleResourceChange(TInt aType);
 #ifdef RD_SCALABLE_UI_V2
     void HandlePointerEventL(const TPointerEvent &aPointerEvent);
 #endif // RD_SCALABLE_UI_V2
@@ -305,6 +306,8 @@ private:
 
     TTypeUid::Ptr MopSupplyObject(TTypeUid aId);
 
+    void CMIDTextBoxQueryDialog::SetRightScrollBarPosition();
+
 private:
     inline TUint GetConstraints() const;
     inline TBool IsConstraintSet(TUint aConstraints);
@@ -379,11 +382,18 @@ private:
      * Boolean value indicating whether key events are pending.
      */
     TBool                       iKeyEventsPending;
-
     /**
      * Used key event
      */
     const TKeyEvent*            iusedKeyEvent;
+    /**
+     * Count line of text in iEditor
+     */
+    TInt                        iLastCountLine;
+    /**
+     * Rect of Editor
+     */
+    TRect iEditorRect;
 };
 
 

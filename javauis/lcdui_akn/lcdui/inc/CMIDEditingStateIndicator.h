@@ -196,6 +196,24 @@ public: // New methods
      */
     void OverrideColorL(TInt aLogicalColor, TRgb aColor);
 
+    /**
+     * Sets flag if scaling is on now.
+     *
+     * @param Flag if scaling is on now.
+     *
+     * @since S60 5.0
+     */
+    inline void SetScalingOn(TBool aScaling);
+
+    /**
+     * Sets current fullscreen canvas size.
+     *
+     * @param Current fullscreen canvas size.
+      *
+     * @since S60 5.0
+     */
+    inline void SetCanvasRect(const TRect& aRect);
+
 private: // From CAknIndicatorContainer
 
     /**
@@ -238,7 +256,21 @@ private: // Data
     TRgb iBackgroundColor;
     // Top parent of this control. Not owned.
     CCoeControl* iParent;
+    // Flag if scaling is on now.
+    TBool iIsScalingOn;
+    // Canvas fullscreen size
+    TRect iOnScreenCanvasRect;
 };
+
+void CMIDEditingStateIndicator::SetScalingOn(TBool aScaling)
+{
+    iIsScalingOn = aScaling;
+}
+
+void CMIDEditingStateIndicator::SetCanvasRect(const TRect& aRect)
+{
+    iOnScreenCanvasRect = aRect;
+}
 
 #endif // CMIDEDITINGSTATEINDICATOR_H
 

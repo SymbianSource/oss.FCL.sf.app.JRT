@@ -21,6 +21,7 @@
 
 // INTERNAL INCLUDES
 #include "CMIDEdwinUtils.h"
+#include <MMIDScalable.h>
 
 // EXTERNAL INCLUDES
 #include <eikedwin.h>
@@ -42,7 +43,8 @@ class CAknExtendedInputCapabilities;
  */
 NONSHARABLE_CLASS(CMIDTextEditorEdwin) :
         public CEikEdwin,
-        public MEikEdwinObserver
+        public MEikEdwinObserver,
+        public MMIDScalable
 {
 public: // Constructors and destructor
 
@@ -477,6 +479,36 @@ public: // New methods
      */
     const TPtrC Read() const;
 
+    /**
+     * Sets current fullscreen canvas size.
+     *
+     * @param Current fullscreen canvas size.
+      *
+     * @since S60 5.0
+     */
+    inline void SetOnScreenCanvasRect(const TRect& aSize);
+
+    /**
+     * Gets current fullscreen canvas size.
+     *
+     * @return Current fullscreen canvas size.
+      *
+     * @since S60 5.0
+     */
+    inline TRect GetOnScreenCanvasRect() const;
+
+    /**
+     * Sets flag if scaling is on now.
+     *
+     * @param Flag if scaling is on now.
+     *
+     * @since S60 5.0
+     */
+    inline void SetScaling(TBool aScaling);
+
+public: // From MMIDScalable
+    inline TBool IsScalingOn() const;
+
 protected: // New methods.
 
     /**
@@ -559,6 +591,10 @@ private: // Data
     TAknLayoutId iDirection;
     // Visible content height used for sending scroll event
     TBool iVisibleContentHeight;
+    // Canvas fullscreen size
+    TRect iOnScreenCanvasRect;
+    // Flag if scaling is on now.
+    TBool iIsScalingOn;
 };
 
 // ---------------------------------------------------------------------------
@@ -569,6 +605,26 @@ private: // Data
 inline TBool CMIDTextEditorEdwin::IsConstraintSet(TUint aConstraint) const
 {
     return (iConstraints & MMIDTextField::EConstraintMask) == aConstraint;
+}
+
+inline void CMIDTextEditorEdwin::SetOnScreenCanvasRect(const TRect& aRect)
+{
+    iOnScreenCanvasRect = aRect;
+}
+
+inline TRect CMIDTextEditorEdwin::GetOnScreenCanvasRect() const
+{
+    return iOnScreenCanvasRect;
+}
+
+inline TBool CMIDTextEditorEdwin::IsScalingOn() const
+{
+    return iIsScalingOn;
+}
+
+inline void CMIDTextEditorEdwin::SetScaling(TBool aScaling)
+{
+    iIsScalingOn = aScaling;
 }
 
 #endif // CMIDTEXTEDITOREDWIN_H

@@ -134,18 +134,14 @@ TKeyResponse CMIDChoiceGroupListBox::OfferKeyEventL(
             {
                 // First top visible element should be highlighted
                 iView->SetCurrentItemIndex(iTopVisibleItemIndex);
+
                 // Item drawer must know, that highlight should be enabled
                 // from now.
-                CColumnListBoxItemDrawer* drawer = ItemDrawer();
-                if (drawer)
+                if (IsHighlightNeeded(oldCurrent,aKeyEvent))
                 {
-                    drawer->ClearFlags(
-                        CListItemDrawer::ESingleClickDisabledHighlight);
+                    SingleClickDisableHighlightL(EFalse);
                 }
-                // Report, that current highlighted element changed
-                ReportEventL(MCoeControlObserver::EEventStateChanged);
                 resp = EKeyWasConsumed;
-                DrawNow();
                 iTopVisibleItemIndex = KErrNotFound;
             }
             // Enable highlight flag for this ChoiceGroup, even if top visible
@@ -170,19 +166,7 @@ TKeyResponse CMIDChoiceGroupListBox::OfferKeyEventL(
         // Return  EKeyWasNotConsumed so that the form knows to transfer focus
         // BUT ONLY if not used in a popup (otherwise the form will get it and
         // move focus under the popup)
-        TInt newCurrent = iView->CurrentItemIndex();
-        TBool change = oldCurrent != newCurrent;
-        TInt lastItemIdx = KErrNotFound;
-        if (iModel)
-        {
-            lastItemIdx = iModel->NumberOfItems() - 1;
-        }
-        if ((aKeyEvent.iCode == EKeyUpArrow) && !change && (newCurrent == 0))
-        {
-            resp = EKeyWasNotConsumed;
-        }
-        if ((aKeyEvent.iCode == EKeyDownArrow) && !change &&
-                (newCurrent == lastItemIdx))
+        if (!IsHighlightNeeded(oldCurrent,aKeyEvent))
         {
             resp = EKeyWasNotConsumed;
         }
@@ -470,6 +454,37 @@ void CMIDChoiceGroupListBox::HandlePointerEventL(const TPointerEvent& aPointerEv
 }
 #endif
 
+/**
+ * Checks if highlight is needed
+ * Returns EFalse if there should be no highlight
+ */
+TBool CMIDChoiceGroupListBox::IsHighlightNeeded(TInt aCurrentSelected,
+        const TKeyEvent& aKeyEvent)
+{
+    // If the key was up or down, and the current item did not change,
+    // we were apparently already on the first or last item.
+    // Return  EFalse when highlight should be lost
+    TBool isHighlightNeeded = ETrue;
+    TInt newCurrent = iView->CurrentItemIndex();
+    TBool change = aCurrentSelected != newCurrent;
+    TInt lastItemIdx = KErrNotFound;
+
+    if (iModel)
+    {
+        lastItemIdx = iModel->NumberOfItems() - 1;
+    }
+    if ((aKeyEvent.iCode == EKeyUpArrow) && !change && (newCurrent == 0))
+    {
+        isHighlightNeeded = EFalse;
+    }
+    if ((aKeyEvent.iCode == EKeyDownArrow) && !change &&
+            (newCurrent == lastItemIdx))
+    {
+        isHighlightNeeded = EFalse;
+    }
+    return isHighlightNeeded;
+}
+
 #ifdef RD_JAVA_S60_RELEASE_9_2
 /**
  * Returns index of ChoiceGroup element, which is the first
@@ -529,5 +544,41 @@ void CMIDChoiceGroupListBox::UpdateTopVisibleItemIndex()
         //  so we don't need highlight any element
         iTopVisibleItemIndex = KErrNotFound;
     }
+}
+/**
+ * Fuction sets ESingleClickDisabledHighlight - item drawer flags
+ * and reports current highlight element change event
+ */
+void CMIDChoiceGroupListBox::SingleClickDisableHighlightL(TBool aDisable)
+{
+    // Item drawer must know, that highlight should be enabled/disabled
+    // when listbox element taped
+    CColumnListBoxItemDrawer* drawer = ItemDrawer();
+    if (drawer)
+    {
+        if (aDisable)
+        {
+            if (iHighlight)
+            {
+                // Set flags in Item drawer so that highlight could be disabled
+                drawer->SetFlags(CListItemDrawer::ESingleClickDisabledHighlight);
+                iHighlight = EFalse;
+                iTopVisibleItemIndex = KErrNotFound;
+            }
+        }
+        else
+        {
+            // Set flags in Item drawer so that highlight could be enabled
+            drawer->ClearFlags(CListItemDrawer::ESingleClickDisabledHighlight);
+        }
+    }
+    // Report, that current highlighted element changed
+    ReportEventL(MCoeControlObserver::EEventStateChanged);
+    DrawNow();
+}
+
+void CMIDChoiceGroupListBox::SetHighlight(TBool aVisible)
+{
+    iHighlight = aVisible;
 }
 #endif // RD_JAVA_S60_RELEASE_9_2

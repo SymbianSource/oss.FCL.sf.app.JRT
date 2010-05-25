@@ -2166,7 +2166,8 @@ enum TEventType
     // Form/Item
     EItemChanged = 0,       // Futuredev: value
     // EList
-    ESelect = 0             // Futuredev: value
+    ESelect = 0,             // Futuredev: value
+    EM3GDraw = 32           // M3G content is drowned on canvas
 };
 
 /**

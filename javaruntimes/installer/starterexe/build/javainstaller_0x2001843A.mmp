@@ -76,6 +76,19 @@ LIBRARY		libc.lib
 LIBRARY		libm.lib
 LIBRARY		euser.lib
 LIBRARY		libdl.lib
+LIBRARY		cone.lib
+LIBRARY		eikcore.lib
+LIBRARY		mediaclientaudio.lib
+LIBRARY		eikcoctl.lib
+LIBRARY		eiksrv.lib
+LIBRARY		apparc.lib
+LIBRARY		avkon.lib
+LIBRARY		efsrv.lib
+LIBRARY		charconv.lib
+LIBRARY		ws32.lib
+LIBRARY		hal.lib
+LIBRARY		gdi.lib
+LIBRARY		apgrfx.lib
 STATICLIBRARY	libcrt0.lib
 
 CAPABILITY		LocalServices NetworkServices ProtServ WriteDeviceData ReadDeviceData ReadUserData WriteUserData UserEnvironment SwEvent Location MultiMediaDD NetworkControl TrustedUI 
@@ -96,10 +109,6 @@ PAGED
 BYTEPAIRCOMPRESSTARGET
 
 USERINCLUDE .
-
-#if defined(ARMCC) && !defined(ARMCC_2_2) && !defined(ARMCC_3_1)
-OPTION ARMCC --import_all_vtbl
-#endif
 
 #include <platform_paths.hrh>
 

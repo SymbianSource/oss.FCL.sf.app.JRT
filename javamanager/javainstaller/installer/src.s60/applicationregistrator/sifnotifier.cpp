@@ -23,7 +23,7 @@
 
 #if defined(SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK) && defined(RD_JAVA_USIF_NOTIFY_PROGRESS)
 
-#include <usif/sifnotification.h>
+#include <usif/sif/sifnotification.h>
 #include <usif/usifcommon.h>
 
 // Helper macro for logging a TDesC.
@@ -117,7 +117,7 @@ void NotifyStartL(
             aComponentSize, /*aIconPath=*/ (NULL != aIconDir? *iconDir: KNullDesC()),
             /*aComponentIcon=*/ KNullDesC(), Usif::KSoftwareTypeJava);
 
-    User::LeaveIfError(aNotifier->PublishStart(*startData));
+    aNotifier->PublishStartL(*startData);
 
     CleanupStack::PopAndDestroy(startData);
 
@@ -178,7 +178,7 @@ void NotifyEndL(
                                         *globalComponentId, (TErrorCategory)aErrCategory, aErrCode,
                                         *errMsg, *errMsgDetails);
 
-    User::LeaveIfError(aNotifier->PublishCompletion(*endData));
+    aNotifier->PublishCompletionL(*endData);
 
     CleanupStack::PopAndDestroy(endData);
 
@@ -225,7 +225,7 @@ void NotifyProgressL(
                 *globalComponentId, (TSifOperationPhase)aOperation,
                 (TSifOperationSubPhase)aSubOperation, aCurrent, aTotal);
 
-    User::LeaveIfError(aNotifier->PublishProgress(*progressData));
+    aNotifier->PublishProgressL(*progressData);
 
     CleanupStack::PopAndDestroy(progressData);
     CleanupStack::PopAndDestroy(globalComponentId);

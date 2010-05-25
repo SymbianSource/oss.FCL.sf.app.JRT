@@ -34,4 +34,11 @@ public interface InstallerUiListener
      * indicator.
      */
     public void uiIsReady();
+
+    /**
+     * Called when InstallerUi is hidden or unhidden.
+     *
+     * @param aHidden true if UI was hidden, false if UI was unhidden.
+     */
+    public void uiIsHidden(boolean aHidden);
 }

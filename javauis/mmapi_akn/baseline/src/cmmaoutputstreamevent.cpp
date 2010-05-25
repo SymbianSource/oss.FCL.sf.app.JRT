@@ -20,7 +20,11 @@
 
 #include "cmmaoutputstreamevent.h"
 
-
+CMMAOutputStreamEvent::~CMMAOutputStreamEvent()
+	{
+		iMutex.Close();
+	}
+	
 CMMAOutputStreamEvent::CMMAOutputStreamEvent(jmethodID aHandleEventMethod,
         jobject aNotifyObject)
         : CMMAEvent(EReusableEvent),
@@ -28,24 +32,31 @@ CMMAOutputStreamEvent::CMMAOutputStreamEvent(jmethodID aHandleEventMethod,
         iListenerObject(aNotifyObject)
 {
     iState = EMMAEventNotActive;
+    iMutex.CreateLocal();
 }
 
 void CMMAOutputStreamEvent::SetLength(TInt aLength)
 {
+		iMutex.Wait();
     iLength = aLength;
     iState = EMMAEventActive;
+    iMutex.Signal();
 }
 
 
 void CMMAOutputStreamEvent::SetStatus(TInt aStatus)
 {
+		iMutex.Wait();
     iStatus = aStatus;
     iState = EMMAEventActive;
+    iMutex.Signal();
 }
 
 void CMMAOutputStreamEvent::SetState(CMMAOutputStreamEvent::TMMAOutputStreamState aState)
 {
+		iMutex.Wait();
     iState = aState;
+    iMutex.Signal();
 }
 
 CMMAOutputStreamEvent::TMMAOutputStreamState CMMAOutputStreamEvent::State()
@@ -57,7 +68,7 @@ void CMMAOutputStreamEvent::Dispatch(JNIEnv& aJni)
 {
     DEBUG_INT2("CMMAOutputStreamEvent::Dispatch, len=%d status=%d-",
                iLength, iStatus);
-
+		iMutex.Wait();
     if (iState == EMMAEventActive)
     {
         aJni.CallVoidMethod(iListenerObject,
@@ -74,6 +85,7 @@ void CMMAOutputStreamEvent::Dispatch(JNIEnv& aJni)
 
         delete this;
     }
+    iMutex.Signal();
     // else event is not active
 }
 

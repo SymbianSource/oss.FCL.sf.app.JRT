@@ -307,6 +307,21 @@ void CMIDChoiceGroupControl::EnableListHighlight(TBool aEnable)
     }
 }
 
+#ifdef RD_JAVA_S60_RELEASE_9_2
+/**
+ * Fuction sets ESingleClickDisabledHighlight - item drawer flags
+ * and reports current highlight element change event
+ */
+void CMIDChoiceGroupControl::SingleClickDisableHighlightL(TBool aDisable)
+{
+    // Highlight should be disabled when listbox element taped
+    if (iListBox)
+    {
+        iListBox->SingleClickDisableHighlightL(aDisable);
+    }
+}
+#endif
+
 // msk
 void CMIDChoiceGroupControl::CurrentItemChanged()
 {
@@ -633,6 +648,14 @@ void CMIDChoiceGroupControl::HandleListBoxEventL(CEikListBox* aControl, TListBox
     case MEikListBoxObserver::EEventItemActioned:
         ToggleCurrentItemSelectionL();
         break;
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    case MEikListBoxObserver::EEventPenDownOnItem:
+        if (iListBox)
+        {
+            iListBox->SetHighlight(EFalse);
+        }
+        break;
+#endif
 
     default:
         break;

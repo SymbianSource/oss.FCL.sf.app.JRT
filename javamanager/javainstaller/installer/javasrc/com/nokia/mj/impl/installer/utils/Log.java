@@ -72,9 +72,6 @@ public class Log
      */
     public static void logWarning(String aMsg)
     {
-        //if (Logger.Activated[COMPONENT_ID]) {
-        //    Logger.LOG(COMPONENT_ID, Logger.EWarning, aMsg);
-        //}
         Logger.WLOG(COMPONENT_ID, aMsg);
     }
 
@@ -85,9 +82,6 @@ public class Log
      */
     public static void logWarning(String aMsg, Throwable aThrowable)
     {
-        //if (!Logger.Activated[COMPONENT_ID]) {
-        //    return;
-        //}
         Logger.WLOG(COMPONENT_ID, aMsg);
         if (aThrowable != null)
         {
@@ -107,9 +101,6 @@ public class Log
      */
     public static void logError(String aMsg)
     {
-        //if (Logger.Activated[COMPONENT_ID]) {
-        //    Logger.LOG(COMPONENT_ID, Logger.EError, aMsg);
-        //}
         Logger.ELOG(COMPONENT_ID, aMsg);
     }
 
@@ -120,9 +111,6 @@ public class Log
      */
     public static void logError(String aMsg, Throwable aThrowable)
     {
-        //if (!Logger.Activated[COMPONENT_ID]) {
-        //    return;
-        //}
         Logger.ELOG(COMPONENT_ID, aMsg);
         if (aThrowable != null)
         {
@@ -143,16 +131,13 @@ public class Log
     public static void logOut(String aMsg)
     {
         System.out.println(aMsg);
-        if (Logger.Activated[COMPONENT_ID])
+        try
         {
-            try
-            {
-                log(aMsg);
-            }
-            catch (Throwable t)
-            {
-                t.printStackTrace();
-            }
+            log(aMsg);
+        }
+        catch (Throwable t)
+        {
+            t.printStackTrace();
         }
     }
 
@@ -162,20 +147,17 @@ public class Log
      */
     public static void logMemory(String aMsg)
     {
-        if (Logger.Activated[COMPONENT_ID])
+        StringBuffer msg = new StringBuffer();
+        if (aMsg != null)
         {
-            StringBuffer msg = new StringBuffer();
-            if (aMsg != null)
-            {
-                msg.append(aMsg).append(": ");
-            }
-            long total = Runtime.getRuntime().totalMemory();
-            long free = Runtime.getRuntime().freeMemory();
-            msg.append("total=").append(total);
-            msg.append(", free=").append(free);
-            msg.append(", used=").append(total-free);
-            Logger.LOG(COMPONENT_ID, Logger.EInfo, msg.toString());
+            msg.append(aMsg).append(": ");
         }
+        long total = Runtime.getRuntime().totalMemory();
+        long free = Runtime.getRuntime().freeMemory();
+        msg.append("total=").append(total);
+        msg.append(", free=").append(free);
+        msg.append(", used=").append(total-free);
+        Logger.LOG(COMPONENT_ID, Logger.EInfo, msg.toString());
     }
 
     /**

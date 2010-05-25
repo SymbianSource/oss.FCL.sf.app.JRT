@@ -39,6 +39,7 @@ class RFCOMMServerConnection: public MBluetoothSocketNotifier
 public:
     OS_IMPORT RFCOMMServerConnection(
         java::bluetooth::BluetoothFunctionServer* server);
+            
     OS_IMPORT ~RFCOMMServerConnection();
 
     OS_IMPORT int openServer(bool authorize, bool authenticate, bool encrypt);
@@ -60,11 +61,9 @@ public:
     OS_IMPORT int restorePersistentRecord();
 
     OS_IMPORT int
-    ServerOpen(TBool authorize, TBool authenticate, TBool encrypt);
+        ServerOpen(TBool authorize, TBool authenticate, TBool encrypt);
 
     OS_IMPORT long Accept();
-
-    OS_IMPORT int CloseServer();
 
     OS_IMPORT int GetRfListeningChannel();
 
@@ -96,6 +95,8 @@ public:
     void HandleShutdownCompleteL(TInt err);
 
     void avoidFilter();
+
+    int CloseServer();
 
 private:
     RFCOMMServerConnection();

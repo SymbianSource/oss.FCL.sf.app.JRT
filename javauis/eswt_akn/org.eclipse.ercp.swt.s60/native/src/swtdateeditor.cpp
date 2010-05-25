@@ -22,6 +22,7 @@
 #include <swtbuttonproxy.h>
 #include <aknconsts.h>
 #include <avkon.mbg>
+#include <fepbase.h>
 #endif // RD_SCALABLE_UI_V2
 #include "swteditindicator.h"
 #include "swtfont.h"
@@ -67,7 +68,6 @@ CSwtDateEditor::CSwtDateEditor(MSwtDisplay& aDisplay,
 //
 CSwtDateEditor::~CSwtDateEditor()
 {
-    iEikonEnv->SyncNotifyFocusObserversOfChangeInFocus();
     delete iEditor;
     delete iIndicator;
     if (iDefaultFont)
@@ -202,10 +202,17 @@ CCoeControl* CSwtDateEditor::ComponentControl(TInt aIndex) const
 // ---------------------------------------------------------------------------------------------
 //
 void CSwtDateEditor::FocusChanged(TDrawNow aDrawNow)
-{
+{    
     if (iEditor)
     {
         TRAP_IGNORE(PrepareForFocusChangeL());
+        
+        // Aparenlty this is the only way of forcing the VKB to close.
+        if (iEditor->IsFocused() && !IsFocused())
+        {
+            iDisplay.CoeEnv()->Fep()->HandleDestructionOfFocusedItem();
+        }
+        
         iEditor->SetFocus(IsFocused());
     }
 

@@ -1,5 +1,0 @@
-EXPORTS
-	?jni_lookup@@YAP6AXXZPBD@Z @ 1 NONAME ; void (*)(void) jni_lookup(char const *)
-	?confirmL@RuntimeUiQt@runtimeui@java@@SAHABVTDesC16@@0@Z @ 2 NONAME ; int java::runtimeui::RuntimeUiQt::confirmL(class TDesC16 const &, class TDesC16 const &)
-	?errorL@RuntimeUiQt@runtimeui@java@@SAXABVTDesC16@@00@Z @ 3 NONAME ; void java::runtimeui::RuntimeUiQt::errorL(class TDesC16 const &, class TDesC16 const &, class TDesC16 const &)
-

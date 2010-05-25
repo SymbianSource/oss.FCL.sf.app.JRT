@@ -157,6 +157,7 @@ public class Graphics
     private Font    iScalableFont;
     private boolean iFontSet;
     private boolean iScalableFontSet;
+    private boolean iM3Gdraw;
 
     private int iOnScreenWidth;  // width of screen
     private int iOnScreenHeight; // height of screen
@@ -195,7 +196,7 @@ public class Graphics
         iToolkit = aToolkit;
         iBuffer = aToolkit.iBuffer;
         iTarget = aTarget;
-
+        iM3Gdraw = false;
         iIsSetTargetSize = false;
         // If a Graphics is drawing to image then a image is saved. Null otherwise
         iImage = (aTarget instanceof Image) ? (Image)aTarget : null;
@@ -954,8 +955,17 @@ public class Graphics
             {
                 // checking of anchor
                 aAnchor = checkAnchor(aAnchor, IMAGE_ANCHOR_MASK);
-                // send image with drawing point to native side
-                iBuffer.write(iHandle, OP_DRAW_IMAGE, aImage.iHandle, aX, aY, aAnchor);
+
+                // Prevent aImage to be disposed when in use
+                synchronized (aImage)
+                {
+                    // Check that aImage haven't been disposed yet
+                    if (aImage.iHandle != 0)
+                    {
+                        // send image with drawing point to native side
+                        iBuffer.write(iHandle, OP_DRAW_IMAGE, aImage.iHandle, aX, aY, aAnchor);
+                    }
+                }
             }
         }
     }
@@ -1388,18 +1398,27 @@ public class Graphics
         {
             synchronized (iBuffer)
             {
-                // If downscaling off, then it only send data to native side
-                iBuffer.write(iHandle,
-                              OP_DRAW_REGION,
-                              aImage.iHandle,
-                              aXsrc,
-                              aYsrc,
-                              aWidth,
-                              aHeight,
-                              aTransform,
-                              aXdest,
-                              aYdest,
-                              aAnchor);
+                // Prevent aImage to be disposed when in use
+                synchronized (aImage)
+                {
+                    // Check that aImage haven't been disposed yet
+                    if (aImage.iHandle != 0)
+                    {
+                        // If downscaling off, 
+                        // then it only send data to native side
+                        iBuffer.write(iHandle,
+                                      OP_DRAW_REGION,
+                                      aImage.iHandle,
+                                      aXsrc,
+                                      aYsrc,
+                                      aWidth,
+                                      aHeight,
+                                      aTransform,
+                                      aXdest,
+                                      aYdest,
+                                      aAnchor);
+                    }
+                }
             }
         }
     }
@@ -1457,14 +1476,33 @@ public class Graphics
     }
 
     /**
+     *this function blocking downscaled when M3G drawing some content    
+     **/    
+    void M3Gdraw(int aM3Gdraw)
+    {
+       if (aM3Gdraw == 0) 
+          {
+             iM3Gdraw = false;
+          }
+       else
+       { 
+          iM3Gdraw = true; 
+       }
+    }
+    /**
      * This function return flag if Graphics is downscaled.
      * Graphics is downscaled on if we have set original size, this size is bigger then screen
      * (at least on one measure) and iTarget is Canvas in full screen Canvas or a target size is
      * smaller than original size.
      * @return true if Graphics is downscaled, false otherwise
-     */
+     */ 
     boolean isDownscaled()
     {
+       // If M3G is drawnig then downscaling is turn off.
+       if (iM3Gdraw)
+          { 
+             return false;
+          }
         if ((iTarget instanceof Canvas) && ((Canvas)iTarget).getFullScreenMode()
                 && iIsSetOriginalSize)
         {

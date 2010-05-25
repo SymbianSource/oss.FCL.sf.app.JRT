@@ -424,7 +424,7 @@ public class RecordControl extends ControlImpl
      * must be called.
      *
      */
-    public void commit() throws IOException
+    synchronized public void commit() throws IOException
     {
         checkState();
         // If commit has been called and setRecordLocation or setRecordStream
@@ -463,6 +463,7 @@ public class RecordControl extends ControlImpl
         {
             throw new IOException("commit() failed, Symbian OS error: " + rval);
         }
+        iIgnoreCommitState = true;
     }
 
     /**
@@ -487,7 +488,7 @@ public class RecordControl extends ControlImpl
 
             Logger.ELOG(Logger.EJavaMMAPI, "MMA::RecordControl::run failed: ", e);
         }
-        iIgnoreCommitState = true;
+        //iIgnoreCommitState = true;
     }
 
     /**

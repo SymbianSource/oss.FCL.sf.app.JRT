@@ -30,7 +30,7 @@
 #include <e32property.h>
 #include <centralrepository.h>
 #include <settingsinternalcrkeys.h>
-#include <screensaverinternalpskeys.h>      // to work with screensaver
+#include <ScreensaverInternalPSKeys.h>      // to work with screensaver
 #include <gfxtranseffect/gfxtranseffect.h>  // For transition effects
 #include <akntranseffect.h>                                 // For transition effects
 //
@@ -566,34 +566,35 @@ void CMIDToolkit::BringToForeground()
 
         if (mFirst)
         {
-            java::ui::CoreUiAvkonAppUi* appUi = java::ui::CoreUiAvkonLcdui::getInstance().getJavaUiAppUi();
-            if (appUi && appUi->hasStartScreen())
-            {
-                MMIDComponent* content = iCurrentDisplayable ? iCurrentDisplayable->Component() : NULL;
-
-                TBool isCanvas = EFalse;
-                TBool isCanvasReadyToBlit = EFalse;
-                if (content)
-                {
-                    if (content->Type() == MMIDComponent::ECanvas)
-                    {
-                        isCanvas = ETrue;
-                        MMIDCanvas* canvas = static_cast<MMIDCanvas*>(content);
-                        isCanvasReadyToBlit = canvas->ReadyToBlit();
-                    }
-                }
-
-                if (!content || !isCanvas || isCanvasReadyToBlit)
-                {
-                    if (iCurrentDisplayable)
-                    {
-                        iCurrentDisplayable->DrawNow();
-                    }
-                    appUi->stopStartScreen();
-                }
-            }
-
             mFirst = EFalse;
+        }
+    }
+    
+    // Stop the start screen if it is still active.
+    java::ui::CoreUiAvkonAppUi* appUi = java::ui::CoreUiAvkonLcdui::getInstance().getJavaUiAppUi();
+    if (appUi && appUi->hasStartScreen())
+    {
+        MMIDComponent* content = iCurrentDisplayable ? iCurrentDisplayable->Component() : NULL;
+
+        TBool isCanvas = EFalse;
+        TBool isCanvasReadyToBlit = EFalse;
+        if (content)
+        {
+            if (content->Type() == MMIDComponent::ECanvas)
+            {
+                isCanvas = ETrue;
+                MMIDCanvas* canvas = static_cast<MMIDCanvas*>(content);
+                isCanvasReadyToBlit = canvas->ReadyToBlit();
+            }
+        }
+
+        if (!content || !isCanvas || isCanvasReadyToBlit)
+        {
+            if (iCurrentDisplayable)
+            {
+                iCurrentDisplayable->DrawNow();
+            }
+            appUi->stopStartScreen();
         }
     }
 }
@@ -605,7 +606,7 @@ void CMIDToolkit::SendToBackground()
     if (mFirst)
     {
         java::ui::CoreUiAvkonAppUi* appUi = java::ui::CoreUiAvkonLcdui::getInstance().getJavaUiAppUi();
-        appUi->stopStartScreen();
+        appUi->stopStartScreen(false); // no screenshot
         mFirst = EFalse;
     }
     iMidletRequestedBg = ETrue;

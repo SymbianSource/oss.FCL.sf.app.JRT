@@ -15,7 +15,7 @@
 #
 
 TEMPLATE=lib
-TARGET=javaenv
+TARGET=javaenvinfo
 CONFIG += omj stl
 CONFIG -= qt
 

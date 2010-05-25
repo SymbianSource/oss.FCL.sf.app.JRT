@@ -26,7 +26,7 @@ symbian {
     SOURCES += ../bluetoothplatformcontrol/src.s60/*.cpp
 }
 
-LIBS +=  -lsdpdatabase -lbtengsettings -lbtnotif -lbluetooth -lbtmanclient \
+LIBS +=  -lsdpdatabase -lbtengsettings -lbluetooth -lbtmanclient \
          -lbtdevice -ljavacomms -ljavafileutils -lesock
 
 

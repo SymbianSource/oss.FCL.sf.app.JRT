@@ -142,27 +142,30 @@ file=ABI_DIR\BUILD_DIR\javaglobalindicators.dll                             SHAR
 data=JAVA_VM_RES_BLD\javaglobalindicators.odc                               JAVA_VM_RES_IMG\javaglobalindicators.odc
 
 // SoftNotification API
-file=ABI_DIR\BUILD_DIR\javasoftnotification.dll                             SHARED_LIB_DIR\javasoftnotification.dll
+/*file=ABI_DIR\BUILD_DIR\javasoftnotification.dll                             SHARED_LIB_DIR\javasoftnotification.dll
 data=JAVA_VM_RES_BLD\javasoftnotification.odc                               JAVA_VM_RES_IMG\javasoftnotification.odc
+*/
 
 // 2G API
 /*file=ABI_DIR\BUILD_DIR\javam2g.dll                                          SHARED_LIB_DIR\javam2g.dll
 data=JAVA_VM_RES_BLD\javam2g.odc                                            JAVA_VM_RES_IMG\javam2g.odc
 */
 // 3G API
-file=ABI_DIR\BUILD_DIR\javam3g.dll                                          SHARED_LIB_DIR\javam3g.dll
+/*file=ABI_DIR\BUILD_DIR\javam3g.dll                                          SHARED_LIB_DIR\javam3g.dll
 data=JAVA_VM_RES_BLD\javam3g.odc                                            JAVA_VM_RES_IMG\javam3g.odc
-
+*/
 // Nokia UI API
 file=ABI_DIR\BUILD_DIR\javanokiaui.dll                                     SHARED_LIB_DIR\javanokiaui.dll
 data=JAVA_VM_RES_BLD\javanokiaui.odc                                       JAVA_VM_RES_IMG\javanokiaui.odc
 
 // Nokia Sound API
-file=ABI_DIR\BUILD_DIR\javanokiasound.dll                                   SHARED_LIB_DIR\javanokiasound.dll
+/*file=ABI_DIR\BUILD_DIR\javanokiasound.dll                                   SHARED_LIB_DIR\javanokiasound.dll
 data=JAVA_VM_RES_BLD\javanokiasound.odc                                     JAVA_VM_RES_IMG\javanokiasound.odc
+*/
 
 // Remote Connection Observer
-file=ABI_DIR\BUILD_DIR\javaremconobserver.dll                               SHARED_LIB_DIR\javaremconobserver.dll
+/*file=ABI_DIR\BUILD_DIR\javaremconobserver.dll                               SHARED_LIB_DIR\javaremconobserver.dll
+*/
 
 // Legacy utilities
 file=ABI_DIR\BUILD_DIR\javalegacyutils.dll                                  SHARED_LIB_DIR\javalegacyutils.dll
@@ -240,7 +243,7 @@ data=JAVA_POLICY_BLD\all.ser                                                JAVA
 
 
 // Java environment info
-file=ABI_DIR\BUILD_DIR\javaenv.dll                                          SHARED_LIB_DIR\javaenv.dll
+file=ABI_DIR\BUILD_DIR\javaenvinfo.dll                                      SHARED_LIB_DIR\javaenvinfo.dll
 data=ABI_DIR\BUILD_DIR\Z\Resource\versions\java.txt                         RESOURCE_FILES_DIR\versions\java.txt
 
 // Storage
@@ -353,5 +356,8 @@ data=JAVA_VM_RES_BLD\resources.jar                                          JAVA
 data=ZRESOURCE\java\midpOdcList                                             JAVA_RES_IMG\midpodclist
 data=ZRESOURCE\java\installerOdcList                                        JAVA_RES_IMG\installerodclist
 data=ZRESOURCE\java\tckRunnerOdcList                                        JAVA_RES_IMG\tckrunnerodclist
+
+// trust roots list
+data=ZRESOURCE\java\security\trustroots\midprootslist                       JAVA_RES_IMG\security\trustroots\midprootslist
 
 #endif

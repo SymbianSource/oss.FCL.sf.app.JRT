@@ -1,0 +1,15 @@
+MIDlet-1: Run1, , test1.Runner1
+MIDlet-2: Run2, , test2.Runner2
+MIDlet-3: Run3, , test3.Runner3
+MIDlet-4: Run1, , test4.Runner4
+MIDlet-5: Run5, , test4.Runner4
+MIDlet-6: Launcher, , Launcher
+MIDlet-Jar-Size: 5110
+MIDlet-Jar-URL: LocalAppSuite.jar
+MIDlet-Name: LocalAppSuite
+MIDlet-Vendor: Nokia
+MIDlet-Version: 1.0
+MicroEdition-Configuration: CLDC-1.1
+MicroEdition-Profile: MIDP-2.0
+Nokia-MIDlet-Background-Event: pause
+Nokia-MIDlet-Launch-Params: sounds,difficulty, wizard_mode, microedition.locale, com.test.extra

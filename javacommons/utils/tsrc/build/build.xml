@@ -62,6 +62,7 @@
 
   <target name="deploy.ut" depends="compile.ut">
       <property name="dist.dir" location="${vm.extension.directory}"/>
+      <mkdir dir="${dist.dir}"/>
       <jar destfile="${dist.dir}/${javacommonutilstests.jar.filename}" basedir="${classes.dir}"/>
       <copy file="${junit.jar.dir}/${junit.jar.filename}"
             tofile="${dist.dir}/${junit.jar.filename}"/>
@@ -73,6 +74,11 @@
       <echo>Running BufferedReaderTests</echo>
       <exec executable="${java.bin.root}/bin/javainstaller">
           <arg line="test -mainclass=com.nokia.mj.impl.utils.BufferedReaderTests"/>
+      </exec>
+
+      <echo>Running ConcurrencyTests</echo>
+      <exec executable="${java.bin.root}/bin/javainstaller">
+          <arg line="test -mainclass=com.nokia.mj.impl.utils.concurrency.ConcurrencyTests"/>
       </exec>
 
   </target>

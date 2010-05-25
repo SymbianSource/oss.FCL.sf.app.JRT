@@ -87,7 +87,6 @@ NONSHARABLE_CLASS(CMIDUtils) : public CBase, public MMIDUtils
     {
     public:
         inline TScalingData();
-        inline TBool operator==(const TScalingData& aData) const;
 
         TSize iOriginalSize;
         TSize iTargetSize;
@@ -280,12 +279,26 @@ public:
      */
     TSize DoDescaling(TSize aNonScaled);
 
+
     /**
-     * Reset of iScalingData
+     * Get information about scaling settings.
+     *
+     * @return ETrue if Nokia-MIDlet-Original-Display-Size is set.
+     *         EFalse otherwise.
      *
      * @since S60 5.0
      */
-    void ResetScalingData();
+    TBool IsScalingEnabled();
+
+
+    /**
+     * Gets current size of fullscreen canvas.
+     *
+     * @return current size of fullscreen canvas
+     *
+     * @since S60 5.0
+     */
+    TRect GetOnScreenCanvasRect();
 
     /**
      * @return ETrue if aChar is one of the following characters: 0x0a, 0x0d, 0x2028
@@ -354,6 +367,8 @@ private:
      */
     CMIDUtils::TScalingData GetScalingData();
 
+    void UpdateScalingData();
+
     void UpdateStickyKeyFlags(const TKeyEvent& aKeyEvent);
     void UpdatePTIEngineStatusL();
 
@@ -410,6 +425,9 @@ private:
 
     // Instace of menu handler. Needed for scaling. Not owned.
     CMIDMenuHandler* iMenuHandler;
+
+    // Flag if scaling data was initialized.
+    TBool iScalingDataInitialized;
 };
 
 inline void CMIDUtils::Dispose()
@@ -418,25 +436,11 @@ inline void CMIDUtils::Dispose()
 }
 
 inline CMIDUtils::TScalingData::TScalingData(): iOriginalSize(),
-        iTargetSize(),
-        iScreenSize(),
-        iCanvasSize(),
-        iRatioX(1.0f),
-        iRatioY(1.0f)
+    iTargetSize(),
+    iScreenSize(),
+    iCanvasSize(),
+    iRatioX(1.0f),
+    iRatioY(1.0f)
 {}
-
-inline TBool CMIDUtils::TScalingData::operator==(const TScalingData& aData) const
-{
-    if (iOriginalSize == aData.iOriginalSize
-            && iTargetSize == aData.iTargetSize
-            && iScreenSize == aData.iScreenSize
-            && iCanvasSize == aData.iCanvasSize
-            && iRatioX == aData.iRatioX
-            && iRatioY == aData.iRatioY)
-    {
-        return ETrue;
-    }
-    return EFalse;
-}
 
 #endif // CMIDUTILS_H

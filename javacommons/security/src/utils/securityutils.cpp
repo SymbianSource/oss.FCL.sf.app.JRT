@@ -494,18 +494,15 @@ void SecurityUtils::getAuthInfo(JNIEnv* env, jobjectArray authInfos, int authInf
     authInfo->signature = new char[sig_len];
     BIO * b64 = BIO_new(BIO_f_base64());
     BIO * mem = BIO_new_mem_buf((char *)sig, sig_len);
-    if ((NULL == b64) || (NULL == mem))
-    {
-        env->ReleaseStringUTFChars(signature,sig);
-        delete[] jcert;
-        jcert = NULL;
+    if (b64 && mem)
+    {    
+        BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
+        BIO_set_close(b64, BIO_CLOSE);
+        BIO_set_close(mem, BIO_CLOSE);
+        mem = BIO_push(b64, mem);
+        authInfo->signature_len = BIO_read(mem, authInfo->signature, sig_len);
+        BIO_free_all(mem);
     }
-    BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
-    BIO_set_close(b64, BIO_CLOSE);
-    BIO_set_close(mem, BIO_CLOSE);
-    mem = BIO_push(b64, mem);
-    authInfo->signature_len = BIO_read(mem, authInfo->signature, sig_len);
-    BIO_free_all(mem);
     env->ReleaseStringUTFChars(signature,sig);
     delete[] jcert;
     jcert = NULL;

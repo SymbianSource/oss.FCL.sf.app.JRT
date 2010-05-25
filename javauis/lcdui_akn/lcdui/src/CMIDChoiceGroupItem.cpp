@@ -509,7 +509,7 @@ void CMIDChoiceGroupItem::HandlePointerEventL(const TPointerEvent& aPointerEvent
         {
             CMIDControlItem::HandlePointerEventL(aPointerEvent);
         }
-#endif // RD_JAVA_S60_RELEASE_9_2        
+#endif // RD_JAVA_S60_RELEASE_9_2
         break;
     }
 
@@ -517,6 +517,14 @@ void CMIDChoiceGroupItem::HandlePointerEventL(const TPointerEvent& aPointerEvent
         CMIDControlItem::HandlePointerEventL(aPointerEvent);
         break;
     }
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    if (aPointerEvent.iType == TPointerEvent::EButton1Down)
+    {
+        // highlight should be disabled when choicegroup taped
+        iChoiceGroupControl->SingleClickDisableHighlightL(ETrue);
+    }
+#endif // RD_JAVA_S60_RELEASE_9_2
 }
 #endif //RD_SCALABLE_UI_V2
 

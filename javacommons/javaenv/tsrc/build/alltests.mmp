@@ -36,4 +36,4 @@ SOURCEPATH ../src
 SOURCE alltests.cpp     // For STL execution
 SOURCE testjavaenvinfo.cpp
 
-LIBRARY javaenv.lib
+LIBRARY javaenvinfo.lib

@@ -347,6 +347,10 @@ public final class PermissionGranter
             boolean permissions_from_sensitive_combination_list_2 = false;
             boolean local_connectivity = false;
             boolean net_access = false;
+            boolean multimedia = false;
+            boolean read_user_data = false;
+            boolean call_control = false;
+            boolean messaging = false;
             Vector blanketPermissions =
                 new Vector();
             for (int i=0; i<grantedPermissions.size(); i++)
@@ -402,11 +406,16 @@ public final class PermissionGranter
                 else if (settings.getName().equalsIgnoreCase(
                              UserSecuritySettings.MESSAGING_SETTINGS)
                          || settings.getName().equalsIgnoreCase(
-                             UserSecuritySettings.RESTRICTED_MESSAGING_SETTINGS)
-                         || settings.getName().equalsIgnoreCase(
+                             UserSecuritySettings.RESTRICTED_MESSAGING_SETTINGS))
+                {
+                    permissions_from_sensitive_combination_list_1 = true;
+                    messaging = true;
+                }
+                else if (settings.getName().equalsIgnoreCase(
                              UserSecuritySettings.CALL_CONTROL_SETTINGS))
                 {
                     permissions_from_sensitive_combination_list_1 = true;
+                    call_control = true;
                 }
                 else if (settings.getName().equalsIgnoreCase(
                              UserSecuritySettings.LOCAL_CONNECTIVITY_SETTINGS))
@@ -415,11 +424,16 @@ public final class PermissionGranter
                     local_connectivity = true;
                 }
                 else if (settings.getName().equalsIgnoreCase(
-                             UserSecuritySettings.MULTIMEDIA_RECORDING_SETTINGS)
-                         || settings.getName().equalsIgnoreCase(
+                             UserSecuritySettings.MULTIMEDIA_RECORDING_SETTINGS))
+                {
+                    permissions_from_sensitive_combination_list_2 = true;
+                    multimedia = true;
+                }
+                else if (settings.getName().equalsIgnoreCase(
                              UserSecuritySettings.READ_USER_DATA_ACCESS_SETTINGS))
                 {
                     permissions_from_sensitive_combination_list_2 = true;
+                    read_user_data = true;
                 }
             }
             if (!defaultNotBlanket)
@@ -442,9 +456,15 @@ public final class PermissionGranter
             if (permissions_from_sensitive_combination_list_1
                     && permissions_from_sensitive_combination_list_2)
             {
-                String blanketPermissionsDetails = ((local_connectivity && !net_access) ? 
-                    "settings_inst_query_perm_sec" : 
-                    "settings_inst_query_perm_net");
+                String blanketPermissionsDetails = ( 
+                    ((call_control == true && multimedia == true)
+                    || (call_control == true && read_user_data == true) 
+                    || (net_access == true && multimedia == true)
+                    || (net_access == true && read_user_data == true)
+                    || (messaging == true && multimedia == true)
+                    || (messaging == true && read_user_data == true)) ? 
+                    "settings_inst_query_perm_net" : 
+                    "settings_inst_query_perm_sec");
                 iBlanketPermissionsDetails.put(msUidKey,
                                                UserSecuritySettingsImpl.getLocalizedString(
                                                    blanketPermissionsDetails));

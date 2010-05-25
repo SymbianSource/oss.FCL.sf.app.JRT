@@ -45,7 +45,7 @@ class OsFunctionClient;
  * See usage example from \javaextensions\jsr\midp\push\pushregistryplugin\src.s60
  * directory.
  */
-class OS_IMPORT FunctionServer
+class FunctionServer
 {
 
 public:

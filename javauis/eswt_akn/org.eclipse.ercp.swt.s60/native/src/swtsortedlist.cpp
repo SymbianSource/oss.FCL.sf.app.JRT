@@ -922,6 +922,13 @@ void CSwtSortedList::SetModeStyleL(TInt aModeStyle)
 
         iSearchField->AddAdaptiveSearchTextObserverL(this);
         iSearchField->SetComponentsToInheritVisibility(ETrue);
+
+        // Set search field to use only second column to get
+        // item text. Items use \t as column separators, see method 
+        // CSwtListBase::CreateItemTextLC() for details. 
+        const int KItemTextColumnFlag = 2;
+        iSearchField->SetListColumnFilterFlags(KItemTextColumnFlag);
+
         CAknFilteredTextListBoxModel* model = STATIC_CAST(
                                                   CAknFilteredTextListBoxModel*, iList->Model());
         ASSERT(model);

@@ -37,10 +37,10 @@ const TInt KCharMinus   = 0x2d;
 // ---------------------------------------------------------------------------
 //
 CMIDTextEditorEdwin::CMIDTextEditorEdwin(CMIDEdwinUtils& aEdwinUtils)
-        : CEikEdwin(),
-        iMultiline(EFalse),
-        iCursorPosForAction(KErrNotFound),
-        iEdwinUtils(aEdwinUtils)
+    : CEikEdwin(),
+      iMultiline(EFalse),
+      iCursorPosForAction(KErrNotFound),
+      iEdwinUtils(aEdwinUtils)
 {
     DEBUG("CMIDTextEditorEdwin::CMIDTextEditorEdwin +");
 
@@ -247,12 +247,24 @@ void CMIDTextEditorEdwin::Draw(const TRect& aRect) const
     // problems. Currently it just handles the selection color.
     CWindowGc& gc = SystemGc();
 
+    // If scaling is on, clip to canvas rect is needed.
+    if (iIsScalingOn)
+    {
+        gc.SetClippingRect(iOnScreenCanvasRect);
+    }
+
     // Draw background with alpha.
     gc.SetBrushColor(iBackgroundColor);
     gc.Clear(aRect);
 
     // Now draw the content of the editor.
     CEikEdwin::Draw(aRect);
+
+    // cancel of clip
+    if (iIsScalingOn)
+    {
+        gc.CancelClippingRect();
+    }
 
     // Part of transparency workaround. Set drawing not active.
     iDrawInvoked = EFalse;

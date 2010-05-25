@@ -152,7 +152,10 @@ void CSwtDisplay::OfferWsEventL(const TSwtWsEvent& aEvent, CCoeControl* aDestina
         TBool focused = aEvent == SwtWsEventAppFocusGained;
 
         // UiUtils intentionally handled separately although it is an app focus observer also.
-        iUiUtils->HandleAppFocusChangeL(focused);
+        if (iUiUtils)
+        {
+            iUiUtils->HandleAppFocusChangeL(focused);
+        }
 
         // Inform other observers.
         const TInt count = iAppFocusObservers.Count();
@@ -182,7 +185,10 @@ void CSwtDisplay::OfferWsEventL(const TSwtWsEvent& aEvent, CCoeControl* aDestina
     if (aEvent == CSwtLafFacade::GetConstant(CSwtLafFacade::EBrowserFreeRam)
             ||  aEvent == CSwtLafFacade::GetConstant(CSwtLafFacade::EBrowserMemoryGood))
     {
-        iUiUtils->HandleFreeRamEventL(aEvent);
+        if (iUiUtils)
+        {
+            iUiUtils->HandleFreeRamEventL(aEvent);
+        }
     }
 }
 

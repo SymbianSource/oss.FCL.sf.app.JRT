@@ -1479,23 +1479,91 @@ public class Display extends Device
 
     void releaseSystemColors()
     {
-        if (COLOR_WIDGET_DARK_SHADOW != null) COLOR_WIDGET_DARK_SHADOW.dispose();
-        if (COLOR_WIDGET_NORMAL_SHADOW != null) COLOR_WIDGET_NORMAL_SHADOW.dispose();
-        if (COLOR_WIDGET_LIGHT_SHADOW != null) COLOR_WIDGET_LIGHT_SHADOW.dispose();
-        if (COLOR_WIDGET_HIGHLIGHT_SHADOW != null) COLOR_WIDGET_HIGHLIGHT_SHADOW.dispose();
-        if (COLOR_WIDGET_FOREGROUND != null) COLOR_WIDGET_FOREGROUND.dispose();
-        if (COLOR_WIDGET_BACKGROUND != null) COLOR_WIDGET_BACKGROUND.dispose();
-        if (COLOR_WIDGET_BORDER != null) COLOR_WIDGET_BORDER.dispose();
-        if (COLOR_LIST_FOREGROUND != null) COLOR_LIST_FOREGROUND.dispose();
-        if (COLOR_LIST_BACKGROUND != null) COLOR_LIST_BACKGROUND.dispose();
-        if (COLOR_LIST_SELECTION != null) COLOR_LIST_SELECTION.dispose();
-        if (COLOR_LIST_SELECTION_TEXT != null) COLOR_LIST_SELECTION_TEXT.dispose();
-        if (COLOR_TITLE_FOREGROUND != null) COLOR_TITLE_FOREGROUND.dispose();
-        if (COLOR_TITLE_BACKGROUND != null) COLOR_TITLE_BACKGROUND.dispose();
-        if (COLOR_TITLE_BACKGROUND_GRADIENT != null) COLOR_TITLE_BACKGROUND_GRADIENT.dispose();
-        if (COLOR_TITLE_INACTIVE_FOREGROUND != null) COLOR_TITLE_INACTIVE_FOREGROUND.dispose();
-        if (COLOR_TITLE_INACTIVE_BACKGROUND != null) COLOR_TITLE_INACTIVE_BACKGROUND.dispose();
-        if (COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT != null) COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT.dispose();
+        if (COLOR_WIDGET_DARK_SHADOW != null) 
+        {
+            COLOR_WIDGET_DARK_SHADOW.dispose(); 
+            COLOR_WIDGET_DARK_SHADOW = null;
+        }
+        if (COLOR_WIDGET_NORMAL_SHADOW != null) 
+        {
+            COLOR_WIDGET_NORMAL_SHADOW.dispose();
+            COLOR_WIDGET_NORMAL_SHADOW = null;
+        }
+        if (COLOR_WIDGET_LIGHT_SHADOW != null) 
+        {
+            COLOR_WIDGET_LIGHT_SHADOW.dispose();
+            COLOR_WIDGET_LIGHT_SHADOW = null;
+        }
+        if (COLOR_WIDGET_HIGHLIGHT_SHADOW != null) 
+        {
+            COLOR_WIDGET_HIGHLIGHT_SHADOW.dispose();
+            COLOR_WIDGET_HIGHLIGHT_SHADOW = null;
+        }
+        if (COLOR_WIDGET_FOREGROUND != null)
+        { 
+            COLOR_WIDGET_FOREGROUND.dispose();
+            COLOR_WIDGET_FOREGROUND = null;
+        }
+        if (COLOR_WIDGET_BACKGROUND != null)
+        {
+            COLOR_WIDGET_BACKGROUND.dispose();
+            COLOR_WIDGET_BACKGROUND = null;
+        }
+        if (COLOR_WIDGET_BORDER != null)
+        {
+            COLOR_WIDGET_BORDER.dispose();
+            COLOR_WIDGET_BORDER = null;
+        }
+        if (COLOR_LIST_FOREGROUND != null)
+        {
+            COLOR_LIST_FOREGROUND.dispose();
+            COLOR_LIST_FOREGROUND = null;
+        }
+        if (COLOR_LIST_BACKGROUND != null)
+        {
+            COLOR_LIST_BACKGROUND.dispose();
+            COLOR_LIST_BACKGROUND = null;
+        }
+        if (COLOR_LIST_SELECTION != null)
+        {
+            COLOR_LIST_SELECTION.dispose();
+            COLOR_LIST_SELECTION = null;
+        }
+        if (COLOR_LIST_SELECTION_TEXT != null)
+        {
+            COLOR_LIST_SELECTION_TEXT.dispose();
+            COLOR_LIST_SELECTION_TEXT = null;
+        }
+        if (COLOR_TITLE_FOREGROUND != null)
+        {
+            COLOR_TITLE_FOREGROUND.dispose();
+            COLOR_TITLE_FOREGROUND = null;
+        }
+        if (COLOR_TITLE_BACKGROUND != null)
+        {
+            COLOR_TITLE_BACKGROUND.dispose();
+            COLOR_TITLE_BACKGROUND = null;
+        }
+        if (COLOR_TITLE_BACKGROUND_GRADIENT != null)
+        {
+            COLOR_TITLE_BACKGROUND_GRADIENT.dispose();
+            COLOR_TITLE_BACKGROUND_GRADIENT = null;
+        }
+        if (COLOR_TITLE_INACTIVE_FOREGROUND != null)
+        {
+            COLOR_TITLE_INACTIVE_FOREGROUND.dispose();
+            COLOR_TITLE_INACTIVE_FOREGROUND = null;
+        }
+        if (COLOR_TITLE_INACTIVE_BACKGROUND != null)
+        {
+            COLOR_TITLE_INACTIVE_BACKGROUND.dispose();
+            COLOR_TITLE_INACTIVE_BACKGROUND = null;
+        }
+        if (COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT != null)
+        {
+            COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT.dispose();
+            COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT = null;
+        }
     }
 
     /**

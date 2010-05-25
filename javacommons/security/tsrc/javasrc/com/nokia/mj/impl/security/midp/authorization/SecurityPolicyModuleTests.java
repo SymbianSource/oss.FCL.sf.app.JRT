@@ -88,6 +88,7 @@ public class SecurityPolicyModuleTests extends TestCase implements InstallerMain
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.msisdn","read",null),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.publicinfo","read",null),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.cellid","read",null),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.midlet.AutoStartPermission"),null,null,null),
     };
     static final SecurityPolicyPermission[] OPERATOR_PERMS =
     {
@@ -140,6 +141,7 @@ public class SecurityPolicyModuleTests extends TestCase implements InstallerMain
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.msisdn","read",null),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.publicinfo","read",null),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.cellid","read",null),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.midlet.AutoStartPermission"),null,null,null),
     };
     static final SecurityPolicyPermission[] IDENTIFIED_THIRD_PARTY_PERMS =
     {

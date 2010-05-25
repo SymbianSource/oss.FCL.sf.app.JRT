@@ -426,7 +426,7 @@ public class InstallerResultMessage
             addValue(NAME_ERROR_CATEGORY, 10); // EUninstallationBlocked
             break;
         default:
-            addValue(NAME_ERROR_CATEGORY, 11); // EUnknown
+            addValue(NAME_ERROR_CATEGORY, 8); // EUnexpectedError
         }
     }
 }

@@ -154,8 +154,8 @@ TInt CMMASurfaceWindow::SetClipRect()
                 0.0f, // ignore
                 EVideoRotationNone,
                 EAutoScaleBestFit,
-                EHorizontalAlignLeft,
-                EVerticalAlignTop,
+                EHorizontalAlignCenter,
+                EVerticalAlignCenter,
                 (RWindow*)iWindow));
 
         return error;
@@ -629,8 +629,8 @@ void CMMASurfaceWindow::InitVideoDisplayL()
             0.0f, // ignore
             EVideoRotationNone,
             EAutoScaleBestFit,
-            EHorizontalAlignLeft,
-            EVerticalAlignTop,
+            EHorizontalAlignCenter,
+            EVerticalAlignCenter,
             (RWindow*)iWindow);
 
     DEBUG("MID::CMMASurfaceWindow::InitVideoDisplayL -");

@@ -569,8 +569,9 @@ public class Image
 
     /**
      * destroy native image.
+     * Synchronization prevents Image to be disposed when in use.     
      */
-    private void dispose()
+    synchronized private void dispose()
     {
         boolean freed = false;
         synchronized (iToolkit)

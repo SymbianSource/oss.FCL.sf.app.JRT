@@ -87,7 +87,7 @@ void CMIDTextBoxQueryDialog::ConstructL(TInt aConstraints,
     iEdwinUtils = CMIDEdwinUtils::NewL(this, iDecimalSeparator);
 
     iConstraints = aConstraints;
-
+    iLastCountLine = 0;
     // if text is invalid according to constraints, throw IllegalArgumentException,
     // except for a PHONENUMBER which only has the invalid characters removed
     if ((iConstraints & MMIDTextField::EConstraintMask) != MMIDTextField::EPhoneNumber
@@ -456,6 +456,7 @@ void CMIDTextBoxQueryDialog::FocusChanged(TDrawNow aDrawNow)
 {
     CAknTextQueryDialog::FocusChanged(aDrawNow);
     TBool isFocused = IsFocused();
+    SetRightScrollBarPosition();
 }
 //
 // We do not want to become visible if we are not showing
@@ -483,6 +484,12 @@ void CMIDTextBoxQueryDialog::SizeChanged()
     if (iShowing)
     {
         CAknTextQueryDialog::SizeChanged();
+    }
+    if (iEditor && iEditor->ScrollBarFrame() && iEditor->ScrollBarFrame()->VerticalScrollBar())
+    {
+        iEditorRect = iEditor->Rect();
+        iEditorRect.SetWidth(iEditorRect.Width() - iEditor->ScrollBarFrame()->VerticalScrollBar()->Rect().Width());
+        SetRightScrollBarPosition();
     }
 }
 
@@ -953,6 +960,14 @@ void CMIDTextBoxQueryDialog::HandleEdwinEventL(CEikEdwin* aEdwin, TEdwinEvent aE
         {
             iEditor->HandleTextChangedL();
         }
+        if (iEditor && iEditor->TextLayout())
+        {
+            if (iLastCountLine != iEditor->TextLayout()->GetLineNumber(iEditor->TextLength() - 1))
+            {
+                iLastCountLine = iEditor->TextLayout()->GetLineNumber(iEditor->TextLength() - 1);
+                SetRightScrollBarPosition();
+            }
+        }
     }
 }
 
@@ -1308,8 +1323,8 @@ Creates and adds new command to edwin based on shot & long label resource ids
 and other parameters.
 */
 void CMIDTextBoxQueryDialog::AddCommandToEdwinL(TInt aCommandResIdShort,
-                                                TInt aCommandResIdLong,
-                                                TInt aCommandId)
+        TInt aCommandResIdLong,
+        TInt aCommandId)
 {
     TBuf<64> shortLabel;
     iEikonEnv->ReadResourceL(shortLabel, aCommandResIdShort);
@@ -1329,7 +1344,7 @@ void CMIDTextBoxQueryDialog::AddCommandToEdwinL(TInt aCommandResIdShort,
 Creates and adds new command to edwin, short label is the same as long label.
 */
 void CMIDTextBoxQueryDialog::AddCommandToEdwinL(TInt aCommandResId,
-                                                TInt aCommandId)
+        TInt aCommandId)
 {
     AddCommandToEdwinL(aCommandResId, aCommandResId, aCommandId);
 }
@@ -1431,16 +1446,54 @@ void CMIDTextBoxQueryDialog::UpdateInitialInputModes()
 
 TTypeUid::Ptr CMIDTextBoxQueryDialog::MopSupplyObject(TTypeUid aId)
 {
+    TTypeUid::Ptr ret = TTypeUid::Null();
+
     if (aId.iUid == CEikMenuBar::ETypeId)
     {
         if (iDisplayable && iDisplayable->MenuHandler())
         {
-            return SupplyMopObject(aId,
-                                   iDisplayable->MenuHandler()->Cba(),
-                                   iDisplayable->MenuHandler()->MenuBar());
+            // number of all commands
+            TInt numberOfCommands = iDisplayable->CommandCount();
+
+            // If there are no commands we should not call SupplyMopObject
+            if (numberOfCommands > 0)
+            {
+                ret = SupplyMopObject(aId,
+                                      iDisplayable->MenuHandler()->Cba(),
+                                      iDisplayable->MenuHandler()->MenuBar());
+            }
         }
     }
-    return CAknTextQueryDialog::MopSupplyObject(aId);
+
+    if (!ret.Pointer())
+    {
+        ret = CAknTextQueryDialog::MopSupplyObject(aId);
+    }
+    return ret;
 }
 
+/* HandleResourceChange
+ *
+ * This method is called after a resource change event, for example after
+ * screen dynamic resolution change.
+ */
+void CMIDTextBoxQueryDialog::HandleResourceChange(TInt aType)
+{
+    CAknTextQueryDialog::HandleResourceChange(aType);
+    if (aType == KEikDynamicLayoutVariantSwitch ||
+            aType == KEikColorResourceChange || aType == KAknsMessageSkinChange ||
+            aType == KUidValueCoeColorSchemeChangeEvent)
+    {
+        SetRightScrollBarPosition();
+    }
+
+}
+
+void CMIDTextBoxQueryDialog::SetRightScrollBarPosition()
+{
+    if (iEditor)
+    {
+        iEditor->SetRect(iEditorRect);
+    }
+}
 // End of file

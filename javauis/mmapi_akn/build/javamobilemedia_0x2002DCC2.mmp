@@ -114,7 +114,6 @@ SOURCE		cmmaaudiovolumecontrol.cpp
 SOURCE		cmmabitmapwindow.cpp
 SOURCE		cmmacameraplayer.cpp
 SOURCE		cmmacameraplayerfactory.cpp
-SOURCE		cmmacamerawindow.cpp
 SOURCE		cmmacanvasdisplay.cpp
 SOURCE		cmmacontrol.cpp
 SOURCE		cmmadeleterefevent.cpp
@@ -189,6 +188,7 @@ SOURCE		cmmamanager.cpp
 SOURCE		emcsourceinfo.cpp
 
 SOURCEPATH 	../baseline/src.nga
+SOURCE		cmmacamerawindow.cpp
 SOURCE		cmmasurfacewindow.cpp
 SOURCE		cmmavideoplayer.cpp
 
@@ -262,6 +262,13 @@ LIBRARY		libstdcppv5.lib
 LIBRARY		libc.lib
 LIBRARY		libm.lib
 LIBRARY		libdl.lib
+LIBRARY		mediaclientaudio.lib
+LIBRARY		eiksrv.lib
+LIBRARY		apparc.lib
+LIBRARY		avkon.lib
+LIBRARY		charconv.lib
+LIBRARY		hal.lib
+LIBRARY		gdi.lib
 
 CAPABILITY		all -tcb 
 
@@ -281,10 +288,6 @@ PAGED
 BYTEPAIRCOMPRESSTARGET
 
 USERINCLUDE .
-
-#if defined(ARMCC) && !defined(ARMCC_2_2) && !defined(ARMCC_3_1)
-OPTION ARMCC --import_all_vtbl
-#endif
 
 #include <platform_paths.hrh>
 

@@ -123,9 +123,9 @@ int GetlocalIPAdressL(char *localaddr, int aMidletIapId, int aType)
 
                 if ((err == KErrNone) && (ifQuery.iZone[1] == activeIapId))
                 {
-                    TUint32 t5 = (TUint32)(ifQuery.iZone[15]);
-                    ILOG2(ESOCKET, "Network id = %d, IAP id = %d ", t5,
-                          ifQuery.iZone[1]);
+                    //TUint32 t5 = (TUint32)(ifQuery.iZone[15]);                    
+                    ILOG2(ESOCKET, "Network id = %d, IAP id = %d ",(TUint32)(ifQuery.iZone[15]),(TUint32)ifQuery.iZone[1]);
+                    
                     // IAP ID is index 1 of iZone
                     // We have found an interface using the IAP we are interested in.
                     if (ifInfo.iAddress.Address() > 0)

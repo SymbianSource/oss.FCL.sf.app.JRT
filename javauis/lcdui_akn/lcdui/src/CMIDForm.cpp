@@ -3647,6 +3647,14 @@ void CMIDForm::SizeItemsInFormRowsL()
 // modifies: CMIDForm, CMIDFormRow
 void CMIDForm::DeleteRows()
 {
+    // By deleting rows we are losing pointers to original items.
+    // To avoid any problems with using iPointedControl, which
+    // could points to invalid object (e.g. used in
+    // CMIDForm::HandleHighlightTimer or
+    // in CMIDForm::HandlePhysicsPointerEventL),
+    // iPointedControl must be set to NULL.
+    iPointedControl = NULL;
+
     for (TInt i=0; i < iRows.Count(); i++)
     {
         delete iRows[i];

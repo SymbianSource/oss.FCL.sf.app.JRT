@@ -712,7 +712,8 @@ void CMIDUtils::MappingDataForKey(TKeyEvent& aEvent, TEventCode aType)
         textCase = EPtiCaseUpper;
     }
     if (modifiers & EModifierRightFunc)
-    {//EModifierRightFunc in Fn key
+    {
+        //EModifierRightFunc in Fn key
         textCase = EPtiCaseFnLower;
     }
     else if (modifiers & EModifierLeftFunc)
@@ -837,13 +838,14 @@ void CMIDUtils::HandleForegroundL(TBool aForeground)
 // ---------------------------------------------------------------------------
 //
 CMIDUtils::CMIDUtils(MMIDEnv& aEnv, CMIDUIManager* aUIManager)
-        : iEnv(&aEnv)
-        , iUIManager(aUIManager)
-        , iScalingData()
-        , iQwertyMode(EFalse)
-        , iStickyKey(0)
-        , iLastScanCode(0)
-        , iModifier(0)
+    : iEnv(&aEnv)
+    , iUIManager(aUIManager)
+    , iScalingData()
+    , iQwertyMode(EFalse)
+    , iStickyKey(0)
+    , iLastScanCode(0)
+    , iModifier(0)
+    , iScalingDataInitialized(EFalse)
 {}
 
 CMIDUtils::~CMIDUtils()
@@ -925,7 +927,7 @@ TInt CMIDUtils::DoScaling(TInt aNonScaled, TInt aDirection)
         scaled *= data.iRatioY;
     }
 
-    DEBUG_INT("DoScaling scaled %d", scaled);
+    DEBUG_INT("DoScaling processed %d", scaled);
 
     // return of scaled value
     return scaled;
@@ -945,7 +947,7 @@ TPoint CMIDUtils::DoScaling(TPoint aNonScaled)
     scaled.iX *= data.iRatioX;
     scaled.iY *= data.iRatioY;
 
-    DEBUG_INT2("DoScaling scaled %d %d", scaled.iX, scaled.iY);
+    DEBUG_INT2("DoScaling processed %d %d", scaled.iX, scaled.iY);
 
     // return of scaled value
     return scaled;
@@ -972,7 +974,8 @@ TPoint CMIDUtils::DoScalingAndPositioning(TPoint aNonScaled)
     // move according to canvas origin
     scaled += canvasOrigin;
 
-    DEBUG_INT2("DoScalingAndPositioning scaled %d %d", scaled.iX, scaled.iY);
+    DEBUG_INT2("DoScalingAndPositioning processed %d %d",
+               scaled.iX, scaled.iY);
 
     // return of scaled value
     return scaled;
@@ -994,7 +997,8 @@ TRect CMIDUtils::DoScaling(TRect aNonScaled)
     scaled.iTl.iX *= data.iRatioX;
     scaled.iTl.iY *= data.iRatioY;
 
-    DEBUG_INT4("DoScaling scaled %d %d", scaled.iBr.iX, scaled.iBr.iY, scaled.iTl.iX, scaled.iTl.iY);
+    DEBUG_INT4("DoScaling processed %d %d",
+               scaled.iBr.iX, scaled.iBr.iY, scaled.iTl.iX, scaled.iTl.iY);
 
     // return of scaled value
     return scaled;
@@ -1023,8 +1027,8 @@ TRect CMIDUtils::DoScalingAndPositioning(TRect aNonScaled)
     // move according to canvas origin
     scaled.Move(canvasOrigin);
 
-    DEBUG_INT4("DoScalingAndPositioning scaled %d %d", scaled.iBr.iX, scaled.iBr.iY,
-               scaled.iTl.iX, scaled.iTl.iY);
+    DEBUG_INT4("DoScalingAndPositioning processed %d %d",
+               scaled.iBr.iX, scaled.iBr.iY, scaled.iTl.iX, scaled.iTl.iY);
 
     // return of scaled value
     return scaled;
@@ -1044,7 +1048,7 @@ TSize CMIDUtils::DoScaling(TSize aNonScaled)
     scaled.iWidth *= data.iRatioX;
     scaled.iHeight *= data.iRatioY;
 
-    DEBUG_INT2("DoScaling scaled %d %d", scaled.iWidth, scaled.iHeight);
+    DEBUG_INT2("DoScaling processed %d %d", scaled.iWidth, scaled.iHeight);
 
     // return of scaled value
     return scaled;
@@ -1071,7 +1075,7 @@ TInt CMIDUtils::DoDescaling(TInt aNonScaled, TInt aDirection)
         scaled /= data.iRatioY;
     }
 
-    DEBUG_INT("DoDescaling scaled %d", scaled);
+    DEBUG_INT("DoDescaling processed %d", scaled);
 
     // return of descaled value
     return scaled;
@@ -1091,7 +1095,7 @@ TPoint CMIDUtils::DoDescaling(TPoint aNonScaled)
     scaled.iX /= data.iRatioX;
     scaled.iY /= data.iRatioY;
 
-    DEBUG_INT2("DoDescaling scaled %d %d", scaled.iX, scaled.iY);
+    DEBUG_INT2("DoDescaling processed %d %d", scaled.iX, scaled.iY);
 
     // return of descaled value
     return scaled;
@@ -1118,7 +1122,8 @@ TPoint CMIDUtils::DoDescalingAndPositioning(TPoint aNonScaled)
     scaled.iX /= data.iRatioX;
     scaled.iY /= data.iRatioY;
 
-    DEBUG_INT2("DoDescalingAndPositioning scaled %d %d", scaled.iX, scaled.iY);
+    DEBUG_INT2("DoDescalingAndPositioning processed %d %d",
+               scaled.iX, scaled.iY);
 
     // return of descaled value
     return scaled;
@@ -1140,7 +1145,8 @@ TRect CMIDUtils::DoDescaling(TRect aNonScaled)
     scaled.iTl.iX /= data.iRatioX;
     scaled.iTl.iY /= data.iRatioY;
 
-    DEBUG_INT4("DoDescaling scaled %d %d", scaled.iBr.iX, scaled.iBr.iY, scaled.iTl.iX, scaled.iTl.iY);
+    DEBUG_INT4("DoDescaling processed %d %d",
+               scaled.iBr.iX, scaled.iBr.iY, scaled.iTl.iX, scaled.iTl.iY);
 
     // return of descaled value
     return scaled;
@@ -1169,7 +1175,8 @@ TRect CMIDUtils::DoDescalingAndPositioning(TRect aNonScaled)
     scaled.iTl.iX /= data.iRatioX;
     scaled.iTl.iY /= data.iRatioY;
 
-    DEBUG_INT4("DoDescalingAndPositioning scaled %d %d", scaled.iBr.iX, scaled.iBr.iY, scaled.iTl.iX, scaled.iTl.iY);
+    DEBUG_INT4("DoDescalingAndPositioning processed %d %d",
+               scaled.iBr.iX, scaled.iBr.iY, scaled.iTl.iX, scaled.iTl.iY);
 
     // return of descaled value
     return scaled;
@@ -1187,7 +1194,7 @@ TSize CMIDUtils::DoDescaling(TSize aNonScaled)
     scaled.iWidth /= data.iRatioX;
     scaled.iHeight /= data.iRatioY;
 
-    DEBUG_INT2("DoDescaling scaled %d %d", scaled.iWidth, scaled.iHeight);
+    DEBUG_INT2("DoDescaling processed %d %d", scaled.iWidth, scaled.iHeight);
 
     // return of descaled value
     return scaled;
@@ -1195,93 +1202,88 @@ TSize CMIDUtils::DoDescaling(TSize aNonScaled)
 
 CMIDUtils::TScalingData CMIDUtils::GetScalingData()
 {
-    // If iScalingData is not initialized, this method will initialized it.
-    if (iScalingData == TScalingData())
-    {
-        // Create local instance of TScalingData
-        TScalingData data = TScalingData();
-
-        // Get actual rect of screen without with eventual OSK.
-        TRect screenRect =iEnv->Current()->GetCanvasRectFromLaf();
-
-        // Traslate of rect of screen into size
-        data.iScreenSize = screenRect.Size();
-
-        // Check if scaling is is on now.
-        if (iMenuHandler->IsScalingEffectiveInCurrentScreen())
-        {
-
-            // Get original and target size from JAD attributes
-            data.iOriginalSize = iMenuHandler->GetScalingParameterOrgMIDletScrSize();
-            data.iTargetSize = iMenuHandler->GetScalingParameterTargetMIDletScrSize();
-
-            // Check if JAD attribute allows orientation change during scalling
-            // is present. If it is present, this switches orientation of original
-            // size, if it is needed.
-            if (iMenuHandler->GetScalingParameterScaleMIDletOnOrientSwitch())
-            {
-                // portait
-                if (data.iScreenSize.iWidth < data.iScreenSize.iHeight)
-                {
-                    data.iOriginalSize = TSize(Min(data.iOriginalSize.iHeight,
-                                                   data.iOriginalSize.iWidth),
-                                               Max(data.iOriginalSize.iHeight,
-                                                   data.iOriginalSize.iWidth));
-                }
-                // landscape
-                else
-                {
-                    data.iOriginalSize = TSize(Max(data.iOriginalSize.iHeight,
-                                                   data.iOriginalSize.iWidth),
-                                               Min(data.iOriginalSize.iHeight,
-                                                   data.iOriginalSize.iWidth));
-                }
-            }
-
-        }
-
-        if (data.iTargetSize != TSize())
-        {
-            // When target size is set, then possible horizontal and vertical
-            // scaling factor are various. And in this case canvas size is
-            //  equal to target size.
-            data.iRatioX = (TReal) data.iTargetSize.iWidth / data.iOriginalSize.iWidth;
-            data.iRatioY = (TReal) data.iTargetSize.iHeight / data.iOriginalSize.iHeight;
-            data.iCanvasSize = data.iTargetSize;
-        }
-        else if (data.iOriginalSize != TSize())
-        {
-            // When target size is not set, then only one scaling factor is present.
-            // It is smaller of horizontal and vertical scaling factors.
-            // And in this case canvas have size calculated according to
-            // the scaling factor.
-            data.iRatioX = (TReal) data.iScreenSize.iWidth / data.iOriginalSize.iWidth;
-            data.iRatioY = (TReal) data.iScreenSize.iHeight / data.iOriginalSize.iHeight;
-            TReal ratio = Min(data.iRatioX, data.iRatioY);
-            data.iRatioX = ratio;
-            data.iRatioY = ratio;
-            data.iCanvasSize = TSize(data.iOriginalSize.iWidth * ratio,
-                                     data.iOriginalSize.iHeight * ratio);
-        }
-        else
-        {
-            // When scaling is off, then canvas ocupied whole screen.
-            data.iCanvasSize = data.iScreenSize;
-        }
-
-        // Set local variable to iScalingData
-        iScalingData = data;
-    }
-
+	UpdateScalingData();
     return iScalingData;
 }
 
-void CMIDUtils::ResetScalingData()
+void CMIDUtils::UpdateScalingData()
 {
-    // Firstly is needed set iScaling data to notinicialized value.
-    iScalingData = TScalingData();
-    // Now we can set new scaling data.
-    iScalingData = GetScalingData();
+    // Create local instance of TScalingData
+    TScalingData data = TScalingData();
+
+    //
+    iScalingDataInitialized = ETrue;
+
+    // Get actual rect of screen without with eventual OSK.
+    TRect screenRect =iEnv->Current()->GetCanvasRectFromLaf();
+
+    // Traslate of rect of screen into size
+    data.iScreenSize = screenRect.Size();
+
+    // Check if scaling is is on now.
+    if (iMenuHandler->IsScalingEffectiveInCurrentScreen())
+    {
+
+        // Get original and target size from JAD attributes
+        data.iOriginalSize = iMenuHandler->GetScalingParameterOrgMIDletScrSize();
+        data.iTargetSize = iMenuHandler->GetScalingParameterTargetMIDletScrSize();
+
+        // Check if JAD attribute allows orientation change during scalling
+        // is present. If it is present, this switches orientation of original
+        // size, if it is needed.
+        if (iMenuHandler->GetScalingParameterScaleMIDletOnOrientSwitch())
+        {
+            // portait
+            if (data.iScreenSize.iWidth < data.iScreenSize.iHeight)
+            {
+                data.iOriginalSize = TSize(Min(data.iOriginalSize.iHeight,
+                                               data.iOriginalSize.iWidth),
+                                           Max(data.iOriginalSize.iHeight,
+                                               data.iOriginalSize.iWidth));
+            }
+            // landscape
+            else
+            {
+                data.iOriginalSize = TSize(Max(data.iOriginalSize.iHeight,
+                                               data.iOriginalSize.iWidth),
+                                           Min(data.iOriginalSize.iHeight,
+                                               data.iOriginalSize.iWidth));
+            }
+        }
+
+    }
+
+    if (data.iTargetSize != TSize())
+    {
+        // When target size is set, then possible horizontal and vertical
+        // scaling factor are various. And in this case canvas size is
+        //  equal to target size.
+        data.iRatioX = (TReal) data.iTargetSize.iWidth / data.iOriginalSize.iWidth;
+        data.iRatioY = (TReal) data.iTargetSize.iHeight / data.iOriginalSize.iHeight;
+        data.iCanvasSize = data.iTargetSize;
+    }
+    else if (data.iOriginalSize != TSize())
+    {
+        // When target size is not set, then only one scaling factor is present.
+        // It is smaller of horizontal and vertical scaling factors.
+        // And in this case canvas have size calculated according to
+        // the scaling factor.
+        data.iRatioX = (TReal) data.iScreenSize.iWidth / data.iOriginalSize.iWidth;
+        data.iRatioY = (TReal) data.iScreenSize.iHeight / data.iOriginalSize.iHeight;
+        TReal ratio = Min(data.iRatioX, data.iRatioY);
+        data.iRatioX = ratio;
+        data.iRatioY = ratio;
+        data.iCanvasSize = TSize(data.iOriginalSize.iWidth * ratio,
+                                 data.iOriginalSize.iHeight * ratio);
+    }
+    else
+    {
+        // When scaling is off, then canvas ocupied whole screen.
+        data.iCanvasSize = data.iScreenSize;
+    }
+
+    // Set local variable to iScalingData
+    iScalingData = data;
 }
 
 // ============================ TStickyKeysHandler ===========================
@@ -1591,6 +1593,31 @@ inline TBool CMIDUtils::TStickyKeysHandler::IsShiftModifierOn(
     return aModifiers & EModifierShift ||
            aModifiers & EModifierLeftShift ||
            aModifiers & EModifierRightShift;
+}
+
+TBool CMIDUtils::IsScalingEnabled()
+{
+    // If iScalingData is not initialized, we do it.
+    if (!iScalingDataInitialized)
+    {
+        UpdateScalingData();
+    }
+
+    //If iOrgMIDletScrSize has been initialized then scaling is on.
+    //It's enough to check either height or width only.
+    return (iScalingData.iOriginalSize.iHeight != 0);
+}
+
+TRect CMIDUtils::GetOnScreenCanvasRect()
+{
+    if (!iScalingDataInitialized)
+    {
+        UpdateScalingData();
+    }
+
+    TSize subtract = iScalingData.iScreenSize - iScalingData.iCanvasSize;
+    TPoint canvasOrigin = TPoint(subtract.iWidth / 2, subtract.iHeight / 2);
+    return TRect(canvasOrigin, iScalingData.iCanvasSize);
 }
 
 // End of File

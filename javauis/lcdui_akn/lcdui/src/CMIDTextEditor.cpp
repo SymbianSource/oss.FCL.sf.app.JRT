@@ -217,8 +217,7 @@ void CMIDTextEditor::SetEditorSize(TInt aWidth, TInt aHeight)
 
     // If parent is in fullscreen mode then it tries scale input size.
     // Only setting otherwise.
-    if (!iRowCountActive &&iComponentContainer &&
-            iComponentContainer->IsFullScreen())
+    if (IsScalingOn())
     {
         iTextEdwin->SetSize(iUtils->DoScaling(aWidth, CMIDUtils::EHorizontal),
                             iUtils->DoScaling(aHeight, CMIDUtils::EVertical));
@@ -260,7 +259,7 @@ TSize CMIDTextEditor::EditorSize() const
     TSize editorSize = iTextEdwin->Size();
 
     // When scaling is on it has to descaled editor size.
-    if (iComponentContainer && iComponentContainer->IsFullScreen())
+    if (IsScalingOn())
     {
         editorSize = iUtils->DoDescaling(editorSize);
     }
@@ -314,17 +313,31 @@ void CMIDTextEditor::SetParentL(
     // Store container. NULL is ok.
     iComponentContainer = aComponentContainer;
 
-    if (iComponentContainer &&
-            iComponentContainer->IsFullScreen())
+    if (iComponentContainer)
     {
         if (!iRowCountActive)
         {
-            // When it is fullscreen we need call SetEditorSize to prevent wrong
+            // We need call SetEditorSize to prevent wrong
             // scaling of TextEditor.
             // (only for TextEditor not created with row counter)
             SetEditorSize(iTextEdwin->Size().iWidth, iTextEdwin->Size().iHeight);
         }
+        else
+        {
+            iNonScaledEditorSize = iTextEdwin->Size();
+        }
         SetFontL(iNonScaledFont);
+    }
+
+    if (iUtils)
+    {
+        // It sets edwin variables necessary for correct clipping.
+        iTextEdwin->SetOnScreenCanvasRect(iUtils->GetOnScreenCanvasRect());
+        iTextEdwin->SetScaling(IsScalingOn());
+
+        // It sets indicator variables necessary for correct clipping.
+        iEditingStateIndicator->SetScalingOn(IsScalingOn());
+        iEditingStateIndicator->SetCanvasRect(iUtils->GetOnScreenCanvasRect());
     }
 
     DEBUG("CMIDTextEditor::SetParentL -");
@@ -504,7 +517,7 @@ void CMIDTextEditor::SetPosition(TInt aX, TInt aY)
 
     // If parent is in fullscreen mode then it tries scale input position.
     // Only setting otherwise.
-    if (iComponentContainer && iComponentContainer->IsFullScreen())
+    if (IsScalingOn())
     {
         DEBUG_INT2("CMIDTextEditor::SetPosition DoScaling, aX=%d, aY=%d",
                    iUtils->DoScaling(aX, CMIDUtils::EHorizontal),
@@ -540,14 +553,14 @@ void CMIDTextEditor::SetCaretXYL(TInt aX, TInt aY)
     // If position will be found in formatted text, posInfo will be filled
     // with desired informations.
     TTmPosInfo2 posInfo;
-    
+
     if (iTextEdwin->TextLayout()->FindXyPos(pos, posInfo))
     {
         // Position was found. Try to set cursor to found position.
         iTextEdwin->SetCursorPosL(posInfo.iDocPos.iPos, EFalse);
     }
 
-    DEBUG("CMIDTextEditor::SetCaretXYL -");    
+    DEBUG("CMIDTextEditor::SetCaretXYL -");
 }
 
 // ---------------------------------------------------------------------------
@@ -582,7 +595,7 @@ void CMIDTextEditor::SetFocusStateL(TBool aFocusState)
             iTextEdwin->SetCursorVisible(EFalse);
         }
         else if (iEditingStateIndicator->EnabledState() ==
-            CMIDEditingStateIndicator::EIndicatorStateRelative)
+                 CMIDEditingStateIndicator::EIndicatorStateRelative)
         {
             // Enable the custom indicators as in Avkon if not controlled
             // by the client application
@@ -906,7 +919,7 @@ TInt CMIDTextEditor::ContentHeight() const
 
     // If parent is in fullscreen mode,
     // then content height has to be descaled.
-    if (iComponentContainer && iComponentContainer->IsFullScreen())
+    if (IsScalingOn())
     {
         height = iUtils->DoDescaling(height, CMIDUtils::EHorizontal);
     }
@@ -1076,7 +1089,7 @@ void CMIDTextEditor::SetMultilineL(TBool aMultiline)
     // if the constraint modifier PASSWORD is set. Passwords are single
     // line editors due to CMIDEdwinUtils::CPasswordText implementation.
     if (aMultiline == iTextEdwin->IsWrapEnabled() ||
-        iConstraints & MMIDTextField::EPassword)
+            iConstraints & MMIDTextField::EPassword)
     {
         DEBUG("CMIDTextEditor::SetMultilineL -, ignoring request");
 
@@ -1104,7 +1117,7 @@ void CMIDTextEditor::SetMultilineL(TBool aMultiline)
     // it needs to redraw itself again.
     iTextEdwin->HandleTextChangedL();
     // Cursor position handling is done in CMIDTextEditorEdwin
-    iTextEdwin->SetCursorPosL(iTextEdwin->CursorPos(), EFalse); 
+    iTextEdwin->SetCursorPosL(iTextEdwin->CursorPos(), EFalse);
 
     DEBUG("CMIDTextEditor::SetMultilineL -");
 }
@@ -1335,7 +1348,7 @@ void CMIDTextEditor::SetFontL(MMIDFont* aFont)
 
     TFontSpec fontspec = (aFont->Font(ETrue))->FontSpecInTwips();
     // If scaling is on, this code does scaling of size of font.
-    if (iComponentContainer && iComponentContainer->IsFullScreen())
+    if (IsScalingOn())
     {
         fontspec.iHeight=iUtils->DoScaling(fontspec.iHeight, CMIDUtils::EVertical);
     }
@@ -1972,9 +1985,7 @@ TBool CMIDTextEditor::isConnected()
 // CMIDTextEditor::CMIDTextEditor
 // ---------------------------------------------------------------------------
 //
-CMIDTextEditor::CMIDTextEditor() : iNonScaledFont(NULL),
-        iNonScaledPosition(),
-        iNonScaledEditorSize()
+CMIDTextEditor::CMIDTextEditor() : iNonScaledFont(NULL)
 {
     // No implementation.
 }
@@ -2108,6 +2119,17 @@ void CMIDTextEditor::HandleFullscreenModeChange()
 
     // restoring of iRowCountActive
     iRowCountActive = rowCountActive;
+
+    if (iUtils)
+    {
+        // It sets edwin variables necessary for correct clipping.
+        iTextEdwin->SetOnScreenCanvasRect(iUtils->GetOnScreenCanvasRect());
+        iTextEdwin->SetScaling(IsScalingOn());
+
+        // It sets indicator variables necessary for correct clipping.
+        iEditingStateIndicator->SetScalingOn(IsScalingOn());
+        iEditingStateIndicator->SetCanvasRect(iUtils->GetOnScreenCanvasRect());
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -2117,9 +2139,6 @@ void CMIDTextEditor::HandleFullscreenModeChange()
 //
 void CMIDTextEditor::HandleResolutionChange()
 {
-    // Reset of scaling data is needed, because size of screen is changed.
-    iUtils->ResetScalingData();
-
     // It is needed to store iRowCountActive, because SetEditorSize resets it.
     TBool rowCountActive = iRowCountActive;
 
@@ -2137,6 +2156,21 @@ void CMIDTextEditor::HandleResolutionChange()
 
     // restoring of iRowCountActive
     iRowCountActive = rowCountActive;
+
+    if (iUtils)
+    {
+        // It sets edwin variable necessary for correct clipping.
+        iTextEdwin->SetOnScreenCanvasRect(iUtils->GetOnScreenCanvasRect());
+
+        // It sets indicator variable necessary for correct clipping.
+        iEditingStateIndicator->SetCanvasRect(iUtils->GetOnScreenCanvasRect());
+    }
+}
+
+TBool CMIDTextEditor::IsScalingOn() const
+{
+    return iUtils && iComponentContainer && iUtils->IsScalingEnabled() &&
+           iComponentContainer->IsFullScreen();
 }
 
 // End of file

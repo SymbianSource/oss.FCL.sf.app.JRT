@@ -179,6 +179,8 @@ ifdef RD_JAVA_USIF_ENABLED
   PROJECT_DEFINES += RD_JAVA_USIF_APP_REG
   # Following flag enables application notifications to AppArc.
   #PROJECT_DEFINES += RD_JAVA_USIF_NOTIFY_APP_ARC
+  # Following flag enables installation progress notifications through USIF.
+  #PROJECT_DEFINES += RD_JAVA_USIF_NOTIFY_PROGRESS
 endif
 
 # Java proximity Listener support exsist in 9.2 only(can not be used if 5.0 untill IAD dependecy mentioned)
@@ -238,7 +240,7 @@ endif
 
 # Skip the following targets in 10.1 build
 ifdef RD_JAVA_S60_RELEASE_10_1
-  SKIPTARGETS=pim
+  SKIPTARGETS=
 endif
 
 ifdef RD_JAVA_S60_RELEASE_10_1

@@ -19,6 +19,7 @@
 #ifndef CMMAOUTPUTSTREAMEVENT_H
 #define CMMAOUTPUTSTREAMEVENT_H
 
+#include <e32std.h>
 #include "cmmaevent.h"
 
 
@@ -41,7 +42,7 @@ public:
 public:
     CMMAOutputStreamEvent(jmethodID aHandleEventMethod,
                           jobject aNotifyObject);
-
+		~CMMAOutputStreamEvent();
     // status of the source stream
     void SetStatus(TInt aStatus);
 
@@ -68,6 +69,8 @@ private:
      * State of this event.
      */
     TMMAOutputStreamState iState;
+    
+    RMutex iMutex;
 };
 
 #endif // CMMAOUTPUTSTREAMEVENT_H

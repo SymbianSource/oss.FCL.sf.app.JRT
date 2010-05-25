@@ -21,8 +21,11 @@
 
 // EXTERNAL INCLUDES
 #include <e32base.h>
+
+// INTERNAL INCLUDES
 #include <MMIDCanvasGraphicsItem.h>
 #include <MMIDCustomComponent.h>
+#include <MMIDScalable.h>
 
 // FORWARD DECLARATIONS
 class CMIDCanvasGraphicsItemPainter;
@@ -37,7 +40,8 @@ class CMIDUtils;
 NONSHARABLE_CLASS(CMIDCanvasGraphicsItem) :
         public CBase,
         public MMIDCanvasGraphicsItem,
-        public MMIDCustomComponent
+        public MMIDCustomComponent,
+        public MMIDScalable
 {
 public: // Type definitions
 
@@ -50,8 +54,8 @@ public: // Type definitions
         CMIDUtils* iUtils;
 
         TCtorParams::TCtorParams() :
-                iPainterHandle(NULL),
-                iUtils(NULL) {}
+            iPainterHandle(NULL),
+            iUtils(NULL) {}
     };
 
 public: // Constructors and destructor
@@ -142,6 +146,12 @@ public: // From MMIDCustomComponent
     {
         return EFalse;
     }
+
+public: // From MMIDScalable
+
+    TBool IsScalingOn() const;
+
+public: //Own methods
 
     /**
      * Handles fullscreen state of parent Canvas.
@@ -284,6 +294,12 @@ private: // Data
 
     // The shared CMIDUtils instance. Not owned.
     CMIDUtils* iUtils;
+
+    // A non-scaled size of item. Needed by scaling.
+    TSize iNonScaledSize;
+
+    // A non-scaled position of item. Needed by scaling.
+    TPoint iNonScaledPosition;
 };
 
 #endif // CMIDCANVASGRAPHICSITEM_H

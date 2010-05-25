@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -110,6 +110,16 @@ public class ExeBall implements InstallerUiListener
      * indicator.
      */
     public void uiIsReady()
+    {
+        // This method is overriden in InstallBall class.
+    }
+
+    /**
+     * Called when InstallerUi is hidden or unhidden.
+     *
+     * @param aHidden true if UI was hidden, false if UI was unhidden.
+     */
+    public void uiIsHidden(boolean aHidden)
     {
         // This method is overriden in InstallBall class.
     }

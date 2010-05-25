@@ -60,6 +60,8 @@ private static boolean started;
  * 
  * @param runnable The Runnable object to call back
  * @exception SWTError <ul>
+ *                <li>ERROR_NULL_ARGUMENT if the runnable is null</li>
+ * @exception SWTError <ul>
  *                <li>ERROR_NO_HANDLES if a handle could not be obtained for
  *                thread creation</li>
  * @exception SWTError <ul>
@@ -68,6 +70,9 @@ private static boolean started;
  * @see MIDlet#startApp
  */
 public static void startInUIThread(Runnable runnable) {
+    if(runnable == null) {
+        SWT.error(SWT.ERROR_NULL_ARGUMENT);
+    }
     synchronized(UIThreadSupport.class) {
         if(started) {
             SWT.error(SWT.ERROR_FAILED_EXEC);

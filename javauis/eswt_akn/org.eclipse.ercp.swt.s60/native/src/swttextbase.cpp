@@ -48,7 +48,6 @@ CSwtTextBase::CSwtTextBase(
 //
 CSwtTextBase::~CSwtTextBase()
 {
-    iEikonEnv->SyncNotifyFocusObserversOfChangeInFocus();
     // Own
     delete iEditor;
     iEditor = NULL;
@@ -910,35 +909,29 @@ void CSwtTextBase::HandlePointerEventL(
 //
 void CSwtTextBase::FocusChanged(TDrawNow aDrawNow)
 {
-    TBool isFocused = IsFocused();
-
     if (iEditor)
     {
         TRAP_IGNORE(iEditor->UpdateScrollBarsL());
     }
 
-    if (!isFocused)
+    if (iEditor)
     {
-        if (iEditor)
+        if (iIndicator)
         {
-            iEditor->SetFocus(IsFocused());
-
-            if (iIndicator)
-            {
+            if (!IsFocused())
                 iIndicator->SetState(EStateNone);
-            }
         }
+        
+        // Aparenlty this is the only way of forcing the VKB to close.
+        if (iEditor->IsFocused() && !IsFocused())
+        {
+            iDisplay.CoeEnv()->Fep()->HandleDestructionOfFocusedItem();
+        }
+        
+        iEditor->SetFocus(IsFocused());
     }
 
     HandleFocusChanged(aDrawNow);
-
-    if (isFocused)
-    {
-        if (iEditor)
-        {
-            iEditor->SetFocus(IsFocused());
-        }
-    }
 }
 
 // ---------------------------------------------------------------------------

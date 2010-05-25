@@ -590,36 +590,30 @@ int MidpRuntimeStarter::getHeapSize() const
 
 std::wstring MidpRuntimeStarter::encodeArgs(const std::wstring& str)
 {
-    // Modify the places where the following characters are used to prevent
+    // Encode each 16 bit (or 8 bit) character to 4 (or 2) safe characters to prevent
     // possible security problems when this string is passed as an command line
     // system property parameter to JVM
-    const std::wstring specials(L"= -%");
-
-    std::string::size_type idx = str.find_first_of(specials);
-    std::string::size_type cur = 0;
-
     std::wstring res;
-    std::string convBuf;
+    int len = str.length();
 
-    while (idx != std::string::npos)
+    for (int pos = 0; pos < len; ++pos)
     {
-        // Add all characters up to and including the current special char to
-        // final result string
-        if (idx >= cur)
+        wchar_t c = str[pos];
+        if (c & 0xFF00)
         {
-            res.append(str.substr(cur, (idx - cur) + 1));
+            // 16 bit char, must send all bits
+            res += ( L'A' + (c >> 12) );
+            res += ( L'A' + ((c & 0x0F00) >> 8) );
+            res += ( L'A' + ((c & 0x00F0) >> 4) );
+            res += ( L'A' + ((c & 0x000F)) );
         }
-
-        // Encode all special characters 'X' in same way.
-        // "X" -> "X%"
-        res.append(L"%");
-
-        cur = idx + 1;
-        idx = str.find_first_of(specials, cur);
+        else
+        {
+            // 8 bit char, send only lowest 8 bits
+            res += ( L'a' + ((c & 0x00F0) >> 4) );
+            res += ( L'a' + ((c & 0x000F)) );
+        }
     }
-
-    // Add characters after last special character if any
-    res.append(str.substr(cur, str.length() - cur));
 
     return res;
 }

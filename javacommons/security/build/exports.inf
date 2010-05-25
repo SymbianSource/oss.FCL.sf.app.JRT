@@ -27,9 +27,12 @@ PRJ_EXPORTS
 
 #include <platform_paths.hrh>
 
-// Generic configuration interface for javasecurity cenrep settings  
-// javasecurity_2001B289.crml implementation specifics for cenrep data
-// javasecurity_2001B289.gcfml implementation specifics for genconf ml data
+#ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS 
+../conf/javasecurity2.confml        APP_LAYER_CONFML(javasecurity.confml)
+../conf/CI_javasecurity.confml      APP_LAYER_CONFML(CI_javasecurity.confml)
+#else
 ../conf/javasecurity.confml         APP_LAYER_CONFML(javasecurity.confml)
+#endif /* RD_JAVA_S60_RELEASE_10_1_ONWARDS */
+
 ../conf/javasecurity_2001B289.crml  APP_LAYER_CRML(javasecurity_2001B289.crml)
 #endif

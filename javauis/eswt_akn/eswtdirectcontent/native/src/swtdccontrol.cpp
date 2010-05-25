@@ -230,6 +230,7 @@ void CSwtDCControl::HandleResourceChange(TInt aType)
              ((iLastFadeMessage == KEikMessageUnfadeWindows) ||
               (iLastFadeMessage == KEikMessageFadeAllWindows)))
     {
+#ifdef SWTDCCONTROL_DSA_ENABLED
         TBool isFaded = iLastFadeMessage == KEikMessageFadeAllWindows;
 
         DEBUG_INT("CSwtDCControl::HandleResourceChange(): isFaded=%d", isFaded);
@@ -243,7 +244,7 @@ void CSwtDCControl::HandleResourceChange(TInt aType)
                 iContent->MdcContainerVisibilityChanged(!isFaded);
             }
         }
-
+#endif
         iLastFadeMessage = 0;
     }
 
@@ -422,7 +423,16 @@ void CSwtDCControl::HandleAppFocusChangeL(TBool aFocused)
         }
     }
 #else
-    (void)aFocused; //Supresses compilation warning
+    DEBUG_INT("CSwtDCControl::HandleAppFocusChangeL(): aFocused=%d", aFocused);
+
+    // Hide anytime, but show only when visibility conditions are fulfilled
+    if (!aFocused || IsContentVisibilityAllowed())
+    {
+        if (iContent)
+        {
+            iContent->MdcContainerVisibilityChanged(aFocused);
+        }
+    }
 #endif
 }
 
@@ -508,6 +518,9 @@ void CSwtDCControl::MdcGetDSAResources(
     TBool aIsInUiThread)
 {
     DEBUG_INT("CSwtDCControl::MdcGetDSAResources()+ eswt_thread=%d", aIsInUiThread);
+
+    // To avoid compilation warnings
+    (void)aIsInUiThread;
 
     iDcObserver->InvokeDSAResourcesCallback(*this,
                                             aConsumer);

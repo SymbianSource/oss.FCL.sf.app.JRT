@@ -101,7 +101,7 @@ public final class JvmPortJ2se extends JvmPort
                                     name = line.substring(2,pos);
                                     value = line.substring(pos+1);
                                 }
-                                newProperties.basePut(name, value);
+                                newProperties.setSystemProperty(name, value);
                             }
                         }
                     }

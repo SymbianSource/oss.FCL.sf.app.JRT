@@ -76,7 +76,7 @@ S60BluetoothPlatformControl::~S60BluetoothPlatformControl()
     delete mPlatformPlugin;
 }
 
-std::wstring BluetoothPlatformControl::getSystemProperty(const int aProperty)
+OS_EXPORT std::wstring BluetoothPlatformControl::getSystemProperty(const int aProperty)
 {
     JELOG2(EJavaBluetooth);
 

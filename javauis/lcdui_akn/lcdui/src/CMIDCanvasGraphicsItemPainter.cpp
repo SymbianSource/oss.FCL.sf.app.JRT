@@ -64,7 +64,7 @@ void CMIDCanvasGraphicsItemPainter::ConstructL(
 // ---------------------------------------------------------------------------
 //
 CMIDCanvasGraphicsItemPainter::CMIDCanvasGraphicsItemPainter(MMIDEnv& aEnv) :
-        iEnv(aEnv)
+    iEnv(aEnv)
 {
     // No implementation.
 }
@@ -117,7 +117,8 @@ TBool CMIDCanvasGraphicsItemPainter::ProcessL(
         switch (aOp->OpCode())
         {
         case ESync:
-            DrawNow();
+            // We redraw the proper drawing rect.
+            DrawNow(TRect(iPosition, iViewSize));
             break;
 
         case ESyncRect:
@@ -501,11 +502,38 @@ void CMIDCanvasGraphicsItemPainter::Draw(const TRect& /*aRect*/) const
     DEBUG("+ CMIDCanvasGraphicsItemPainter::Draw");
     ASSERT(iFrameBuffer);
 
-    if (IsVisible())
+    // This verifies if canvas graphics item can be drawn.
+    if (iItem && IsVisible())
     {
+        // Gets a size of content.
+        TSize nonScaledSize = iContentRect.Size();
+
         CWindowGc& gc = SystemGc();
 
-        gc.BitBlt(iContentRect.iTl, iFrameBuffer);
+        if (nonScaledSize == iViewSize)
+        {
+            // It draws non-scaled canvas graphics item.
+            DEBUG("BitBlt - non-scaled - DrawBitmap");
+            gc.BitBlt(iContentRect.iTl, iFrameBuffer);
+        }
+        else
+        {
+            // Scaling.
+
+            // When scaling is on, move drawing position is needed.
+            TRect windowRect = TRect(iViewSize);
+            windowRect.Move(PositionRelativeToScreen());
+
+            // It sets clip of system gc to current canvas size.
+            gc.SetClippingRect(iOnScreenCanvasRect);
+
+            // It draws scaled canvas graphics item.
+            DEBUG("DrawWindow - Scaling - DrawBitmap");
+            gc.DrawBitmap(windowRect, iFrameBuffer, TRect(nonScaledSize));
+
+            // Cancel of clipping rect.
+            gc.CancelClippingRect();
+        }
     }
 
     DEBUG("- CMIDCanvasGraphicsItemPainter::Draw");

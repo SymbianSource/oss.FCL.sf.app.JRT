@@ -22,7 +22,7 @@
 //  Name        : javaenv.mmp
 // ==============================================================================
 
-TARGET		javaenv.dll
+TARGET		javaenvinfo.dll
 TARGETTYPE		DLL
 
 UID		0x1000008d 0x2001B2A5
@@ -75,6 +75,18 @@ LIBRARY		libc.lib
 LIBRARY		libm.lib
 LIBRARY		euser.lib
 LIBRARY		libdl.lib
+LIBRARY		cone.lib
+LIBRARY		eikcore.lib
+LIBRARY		mediaclientaudio.lib
+LIBRARY		eikcoctl.lib
+LIBRARY		eiksrv.lib
+LIBRARY		apparc.lib
+LIBRARY		avkon.lib
+LIBRARY		charconv.lib
+LIBRARY		ws32.lib
+LIBRARY		hal.lib
+LIBRARY		gdi.lib
+LIBRARY		apgrfx.lib
 
 CAPABILITY		all -tcb 
 
@@ -95,10 +107,6 @@ BYTEPAIRCOMPRESSTARGET
 
 USERINCLUDE .
 
-#if defined(ARMCC) && !defined(ARMCC_2_2) && !defined(ARMCC_3_1)
-OPTION ARMCC --import_all_vtbl
-#endif
-
 #include <platform_paths.hrh>
 
  APP_LAYER_SYSTEMINCLUDE
@@ -107,7 +115,7 @@ OPTION ARMCC --import_all_vtbl
 
  OS_LAYER_SSL_SYSTEMINCLUDE
 
-deffile ./~/javaenv.def
+deffile ./~/javaenvinfo.def
 
  SYSTEMINCLUDE OS_LAYER_PUBLIC_EXPORT_PATH(stdapis/stlportv5)
 

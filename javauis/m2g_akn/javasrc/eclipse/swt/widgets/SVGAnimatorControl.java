@@ -34,7 +34,8 @@ public class SVGAnimatorControl extends Canvas
         KeyListener,
         MouseListener,
         DisposeListener,
-        ShellListener
+        ShellListener,
+        PaintListener
 {
     //--------------------------------------------------
     // STATIC CONSTANTS
@@ -91,6 +92,7 @@ public class SVGAnimatorControl extends Canvas
         addMouseListener(this);
         addDisposeListener(this);
         parent.getShell().addShellListener(this);
+        addPaintListener(this);
 
         return true;
     }
@@ -98,11 +100,8 @@ public class SVGAnimatorControl extends Canvas
     /**
      * @see org.eclipse.swt.widgets.Control#paint()
      */
-    Rectangle paint(Rectangle aRect,
-                    boolean aPaintNatively, boolean aPaintChildren)
-    {
-
-        GC gc = new GC(this);
+        public void paintControl(PaintEvent e) {
+        GC gc = e.gc;
 
         // Render image
         try
@@ -116,10 +115,6 @@ public class SVGAnimatorControl extends Canvas
         {
             iSg.releaseTarget();
         }
-
-        gc.dispose();
-
-        return null;
     }
 
     /**

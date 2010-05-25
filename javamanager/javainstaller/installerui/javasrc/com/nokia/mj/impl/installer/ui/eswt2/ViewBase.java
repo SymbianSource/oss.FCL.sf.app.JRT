@@ -450,12 +450,12 @@ abstract public class ViewBase
         boolean aSecurityButton)
     {
         // Add title.
-        String title = "Install?";
+        String title = InstallerUiTexts.get(InstallerUiTexts.INSTALL_QUERY);
         if (aInstallInfo != null)
         {
             if (aInstallInfo.getOldVersion() != null)
             {
-                title = "Update?";
+                title = InstallerUiTexts.get(InstallerUiTexts.UPDATE_QUERY);
             }
             iCertificates = aInstallInfo.getCertificates();
         }
@@ -527,9 +527,25 @@ abstract public class ViewBase
             return;
         }
 
-        // Add suite name.
+        // Add suite name and version.
         createAppInfoLabel(
-            aInstallInfo.getName() + " " + aInstallInfo.getVersion());
+            InstallerUiTexts.get(
+                InstallerUiTexts.SUITE_NAME,
+                new String[] { aInstallInfo.getName(),
+                               aInstallInfo.getVersion() }));
+        if (aFull)
+        {
+            // Add vendor.
+            if (aInstallInfo.getCertificates() != null)
+            {
+                // Vendor information must be displayed only for
+                // identified applications.
+                createAppInfoLabel(
+                    InstallerUiTexts.get(
+                        InstallerUiTexts.SUITE_VENDOR,
+                        new String[] { aInstallInfo.getVendor() }));
+            }
+        }
         // Add size.
         long size = 0;
         if (aInstallInfo.getJarSize() > 0)
@@ -544,21 +560,11 @@ abstract public class ViewBase
         {
             createAppInfoLabel(
                 InstallerUiTexts.get(
-                    InstallerUiTexts.SIZE,
+                    InstallerUiTexts.SIZE_KB,
                     new String[] { Long.toString(1 + size/1024) }));
         }
         if (aFull)
         {
-            // Add vendor.
-            if (aInstallInfo.getCertificates() != null)
-            {
-                // Vendor information must be displayed only for
-                // identified applications.
-                createAppInfoLabel(
-                    InstallerUiTexts.get(
-                        InstallerUiTexts.VENDOR,
-                        new String[] { aInstallInfo.getVendor() }));
-            }
             // Add application names.
             ApplicationInfo[] apps = aInstallInfo.getApplications();
             if (apps != null && apps.length > 0)
@@ -568,7 +574,10 @@ abstract public class ViewBase
                 {
                     for (int i = 0; i < apps.length; i++)
                     {
-                        createAppInfoLabel(apps[i].getName());
+                        createAppInfoLabel(
+                            InstallerUiTexts.get(
+                                InstallerUiTexts.APP_NAME,
+                                new String[] { apps[i].getName() }));
                     }
                 }
             }

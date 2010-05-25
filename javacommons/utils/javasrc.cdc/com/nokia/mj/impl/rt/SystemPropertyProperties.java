@@ -33,7 +33,11 @@ import java.util.Hashtable;
  */
 
 public class SystemPropertyProperties extends Properties
+                                      implements DynamicProperty
 {
+    /** Storage place for user defined properties. */
+    private Properties mUserProperties = new Properties(); 
+
     public SystemPropertyProperties(Hashtable originalProperties)
     {
         // Store the original properties
@@ -58,9 +62,12 @@ public class SystemPropertyProperties extends Properties
      */
     public Object get(Object name)
     {
-        return SystemPropertyUtils.solvePropertyValue(name,
-                super.get(name),
-                this);
+        Object val = super.get(name);
+        if (val != null)
+        {
+            return SystemPropertyUtils.solvePropertyValue(name, val, this);
+        }
+        return mUserProperties.get(name);
     }
 
 
@@ -88,13 +95,19 @@ public class SystemPropertyProperties extends Properties
     }
 
     /**
-     * A workaround for calling directly put method of the Hashtable. This
-     * method is meant to be used in occasion where the escaping of ':'
-     * done by overriden put method is unwanted behvior.
+     * Adds the defined system property to Hashtable containing all the system
+     * properties without escaping any leading colon.
      */
-    public Object basePut(Object key, Object value)
+    public Object setSystemProperty(Object key, Object value)
     {
         return super.put(key, value);
     }
 
+    /**
+     * Adds the defined system property to Hashtable containing all the user
+     */
+    public Object setUserProperty(Object key, Object value)
+    {
+        return mUserProperties.put(key, value);
+    }
 }

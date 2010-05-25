@@ -53,6 +53,7 @@ void CMIDCanvasGraphicsItem::ConstructL(const TCtorParams& aParams)
 {
     // Set painter
     iItemPainter = aParams.iPainterHandle;
+    iItemPainter->SetItem(this);
     iComponentContainer = NULL;
     iUtils = aParams.iUtils;
 }
@@ -61,7 +62,8 @@ void CMIDCanvasGraphicsItem::ConstructL(const TCtorParams& aParams)
 // CMIDCanvasGraphicsItem::CMIDCanvasGraphicsItem
 // ---------------------------------------------------------------------------
 //
-CMIDCanvasGraphicsItem::CMIDCanvasGraphicsItem()
+CMIDCanvasGraphicsItem::CMIDCanvasGraphicsItem() :
+    iUtils(NULL)
 {
     // No implementation.
 }
@@ -150,6 +152,18 @@ void CMIDCanvasGraphicsItem::SetParentL(
     // Store container. NULL is ok.
     iComponentContainer = aComponentContainer;
 
+    // Set item size and position is needed here.
+    TSize size = iItemPainter->Size();
+    SetSizeL(size.iWidth, size.iHeight);
+    TPoint position = iItemPainter->Position();
+    SetPosition(position.iX, position.iY);
+
+    if (iUtils)
+    {
+        // Set canvas fullscreen size is needed here.
+        iItemPainter->SetOnScreenCanvasRect(iUtils->GetOnScreenCanvasRect());
+    }
+
     DEBUG("CMIDCanvasGraphicsItem::SetParentL -");
 }
 
@@ -227,11 +241,27 @@ void CMIDCanvasGraphicsItem::SetVisibleL(TBool aVisible)
 //
 void CMIDCanvasGraphicsItem::SetSizeL(const TInt aWidth, const TInt aHeight)
 {
+    // We need store non-scaled size for possible resolution
+    // and fullscreen mode changes.
+    iNonScaledSize = TSize(aWidth, aHeight);
     DEBUG_INT2(
         "CMIDCanvasGraphicsItem::SetItemSize +, aWidth=%d, aHeight=%d",
         aWidth, aHeight);
 
+    // Set item size.
     iItemPainter->SetItemSizeL(aWidth, aHeight);
+
+    // If parent is in fullscreen mode
+    // then it tries scale viewing rect for painter.
+    // Otherwise the non scaled size is set.
+    if (IsScalingOn())
+    {
+        iItemPainter->SetViewSize(iUtils->DoScaling(iNonScaledSize));
+    }
+    else
+    {
+        iItemPainter->SetViewSize(iNonScaledSize);
+    }
 
     DEBUG("CMIDCanvasGraphicsItem::SetItemSize -");
 }
@@ -245,7 +275,22 @@ void CMIDCanvasGraphicsItem::SetPosition(const TInt aX, const TInt aY)
 {
     DEBUG_INT2("CMIDCanvasGraphicsItem::SetPosition +, aX=%d, aY=%d", aX, aY);
 
-    iItemPainter->SetPosition(aX, aY);
+    // We need store non-scaled size for possible resolution
+    // and fullscreen mode changes.
+    iNonScaledPosition = TPoint(aX, aY);
+
+    // If parent is in fullscreen mode
+    // then it tries scale position of item.
+    // Otherwise the non scaled size is set.
+    if (IsScalingOn())
+    {
+        TPoint origin = iUtils->DoScalingAndPositioning(iNonScaledPosition);
+        iItemPainter->SetPosition(origin.iX, origin.iY);
+    }
+    else
+    {
+        iItemPainter->SetPosition(aX, aY);
+    }
 
     DEBUG("CMIDCanvasGraphicsItem::SetPosition -");
 }
@@ -266,22 +311,51 @@ void CMIDCanvasGraphicsItem::Dispose()
 
 // ---------------------------------------------------------------------------
 // CMIDCanvasGraphicsItem::HandleFullscreenModeChange
-// Intentionally this is not implemented.
-// CanavsGraohicsItem is not doing any action in this case.
+// (other items are commented in the header file)
 // ---------------------------------------------------------------------------
 //
 void CMIDCanvasGraphicsItem::HandleFullscreenModeChange()
 {
+    // Calling all functions which set size and position.
+    TRAPD(err, SetSizeL(iNonScaledSize.iWidth, iNonScaledSize.iHeight));
+    if (err != KErrNone)
+    {
+        DEBUG_INT("CMIDCanvasGraphicsItem::HandleFullscreenModeChange: SetSizeL method leave with %d code", err);
+    }
+    SetPosition(iNonScaledPosition.iX, iNonScaledPosition.iY);
+
+    if (iUtils)
+    {
+        // Setting of fullscreen canvas rect.
+        iItemPainter->SetOnScreenCanvasRect(iUtils->GetOnScreenCanvasRect());
+    }
 }
 
 // ---------------------------------------------------------------------------
 // CMIDCanvasGraphicsItem::HandleResolutionChange
-// Intentionally this is not implemented.
-// CanavsGraohicsItem is not doing any action in this case.
+// (other items are commented in the header file)
 // ---------------------------------------------------------------------------
 //
 void CMIDCanvasGraphicsItem::HandleResolutionChange()
 {
+    // Calling all functions which set size and position.
+    TRAPD(err, SetSizeL(iNonScaledSize.iWidth, iNonScaledSize.iHeight));
+    if (err != KErrNone)
+    {
+        DEBUG_INT("CMIDCanvasGraphicsItem::HandleFullscreenModeChange: SetSizeL method leave with %d code", err);
+    }
+    SetPosition(iNonScaledPosition.iX, iNonScaledPosition.iY);
+    if (iUtils)
+    {
+        // Setting of fullscreen canvas rect.
+        iItemPainter->SetOnScreenCanvasRect(iUtils->GetOnScreenCanvasRect());
+    }
+}
+
+TBool CMIDCanvasGraphicsItem::IsScalingOn() const
+{
+    return iUtils && iComponentContainer && iUtils->IsScalingEnabled() &&
+           iComponentContainer->IsFullScreen();
 }
 
 // End of file

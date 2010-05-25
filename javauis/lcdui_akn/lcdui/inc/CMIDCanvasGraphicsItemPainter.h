@@ -59,9 +59,9 @@ public: // Type definitions
         MMIDEnv* iEnv;
 
         TCtorParams::TCtorParams() :
-                iWidth(0),
-                iHeight(0),
-                iEnv(NULL)
+            iWidth(0),
+            iHeight(0),
+            iEnv(NULL)
         {}
     };
 
@@ -280,6 +280,33 @@ public: // Constructors and destructor
      */
     void MdcResumeDSA();
 
+public:    // Own methods
+
+    /**
+     * Sets the new view size. Needed by scaling.
+     *
+     * @param aSize New view size.
+     * @since S60 5.0
+     */
+    inline void SetViewSize(const TSize& aSize);
+
+    /**
+     * Sets the rect of canvas if it is scaled. Needed by scaling.
+     *
+     * @param aSize New view size.
+     * @since S60 5.0
+     */
+    inline void SetOnScreenCanvasRect(const TRect& aSize);
+
+    /**
+     * Sets the item. Called during construction of CMIDCanvasGraphicsItem.
+     *
+     * @param aItem CMIDCanvasGraphicsItem to which is this painter assigned.
+     * @since S60 5.0
+     */
+    inline void SetItem(CMIDCanvasGraphicsItem* aItem);
+
+
 private: // Construtors
 
     /**
@@ -355,13 +382,39 @@ private: // Data
     TRect iContentRect;
 
     /**
+     * View rectangle.
+     */
+    TSize iViewSize;
+
+    /**
      * Canvas graphics item painter inner visibility
      */
     TBool iVisible;
 
     // A MIDlet environment.
     MMIDEnv& iEnv;
+
+    // rect of canvas if it is scaled
+    TRect iOnScreenCanvasRect;
+
 };
+
+inline void CMIDCanvasGraphicsItemPainter::SetItem(
+                                          CMIDCanvasGraphicsItem* aItem)
+{
+    iItem = aItem;
+}
+
+inline void CMIDCanvasGraphicsItemPainter::SetViewSize(const TSize& aSize)
+{
+    iViewSize = aSize;
+}
+
+inline void CMIDCanvasGraphicsItemPainter::SetOnScreenCanvasRect(
+                                          const TRect& aRect)
+{
+    iOnScreenCanvasRect = aRect;
+}
 
 #endif // CMIDCANVASGRAPHICSITEMPAINTER_H
 

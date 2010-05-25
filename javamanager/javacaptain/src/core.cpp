@@ -450,7 +450,7 @@ void Core::processMessage(CommsMessage& aMessage)
         case CORE_MSG_ID_DO_THREAD_DUMP:
             if (aMessage.hasPermission(LAUNCH_APPLICATION))
             {
-                LOG(EJavaCaptain, EInfo, "DO_THREAD_DUMP message reveived");
+                WLOG(EJavaCaptain, "DO_THREAD_DUMP message reveived");
                 mRtc.routeMessageToAll(aMessage);
             }
             break;
@@ -468,6 +468,18 @@ void Core::processMessage(CommsMessage& aMessage)
             {
                 WLOG(EJavaCaptain, "STOP prewarm message received");
                 mRtc.stopPrewarm();
+            }
+            break;
+
+        case CORE_MSG_ID_GET_PREWARM:
+            if (aMessage.hasPermission(STOP_APPLICATION))
+            {
+                int isSupported = (int) mRtc.isPrewarmSupported();
+                WLOG1(EJavaCaptain, "GET prewarm message received (%d)", isSupported);
+                CommsMessage reply;
+                reply.replyTo(aMessage);
+                reply << isSupported;
+                send(reply);
             }
             break;
 

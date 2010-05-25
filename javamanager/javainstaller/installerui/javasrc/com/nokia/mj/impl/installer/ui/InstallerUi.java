@@ -69,6 +69,7 @@ public class InstallerUi
 
     protected int iMode = 0;
     protected InstallerUiListener iListener = null;
+    protected boolean iHidden = false;
 
     /** InstallInfo initialized when confirm() is called. */
     protected InstallInfo iInstallInfo = null;
@@ -376,6 +377,11 @@ public class InstallerUi
      */
     public void hide(boolean aHide)
     {
+        iHidden = aHide;
+        if (iListener != null)
+        {
+            iListener.uiIsHidden(aHide);
+        }
     }
 
     /**

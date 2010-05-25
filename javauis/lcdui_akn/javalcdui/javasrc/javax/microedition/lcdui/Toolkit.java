@@ -127,13 +127,14 @@ final class Toolkit
     static final int EVENT_TRAVERSE    = 26;
     static final int EVENT_SET_CURRENT = 29;
     static final int EVENT_SERIAL      = 30;
-
+    
     static final int EVET_CANVAS_GRAPHICS_ITEM_REPAINT = 31;
-
+    static final int EVENT_M3G_DRAW = 32 ;
     // IMPLICIT EVENT TYPES
     static final int EVENT_DISMISS = 0;         // ALERT
     static final int EVENT_ITEM_CHANGED = 0;    // ITEM(S)
     static final int EVENT_SELECT  = 0;         // LIST
+    
 
     //
     // Op codes for syncing to screen

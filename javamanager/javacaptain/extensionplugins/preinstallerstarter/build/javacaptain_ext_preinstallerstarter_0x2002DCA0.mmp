@@ -80,6 +80,17 @@ LIBRARY		libc.lib
 LIBRARY		libm.lib
 LIBRARY		euser.lib
 LIBRARY		libdl.lib
+LIBRARY		cone.lib
+LIBRARY		eikcore.lib
+LIBRARY		mediaclientaudio.lib
+LIBRARY		eikcoctl.lib
+LIBRARY		eiksrv.lib
+LIBRARY		apparc.lib
+LIBRARY		avkon.lib
+LIBRARY		efsrv.lib
+LIBRARY		charconv.lib
+LIBRARY		ws32.lib
+LIBRARY		gdi.lib
 
 CAPABILITY		all -tcb 
 
@@ -99,10 +110,6 @@ PAGED
 BYTEPAIRCOMPRESSTARGET
 
 USERINCLUDE .
-
-#if defined(ARMCC) && !defined(ARMCC_2_2) && !defined(ARMCC_3_1)
-OPTION ARMCC --import_all_vtbl
-#endif
 
 #include <platform_paths.hrh>
 

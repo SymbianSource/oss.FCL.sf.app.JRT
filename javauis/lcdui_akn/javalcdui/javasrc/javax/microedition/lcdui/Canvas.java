@@ -635,6 +635,16 @@ public abstract class Canvas extends Displayable
                 }
             }
             break;
+        case Toolkit.EVENT_M3G_DRAW:
+            if (shown)
+             {
+                synchronized (iCallbackLock)
+                {
+                   Graphics graphics = GetPaintGraphics();
+                   graphics.M3Gdraw(aData0);
+                }
+             }
+             break;    
         default:
             super.handleEvent(aEvent, aData0, aData1);
             break;

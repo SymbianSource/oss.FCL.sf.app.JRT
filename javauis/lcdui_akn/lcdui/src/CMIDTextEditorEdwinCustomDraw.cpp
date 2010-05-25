@@ -31,8 +31,8 @@ CMIDTextEditorEdwinCustomDraw::CMIDTextEditorEdwinCustomDraw(
     const MLafEnv& aLafEnv,
     const MFormCustomDraw& aParentDraw,
     const CMIDTextEditorEdwin& aEdwin) :
-        CLafEdwinCustomDrawBase(aLafEnv, aEdwin),
-        iEdwin(aEdwin), iParentDraw(aParentDraw)
+    CLafEdwinCustomDrawBase(aLafEnv, aEdwin),
+    iEdwin(aEdwin), iParentDraw(aParentDraw)
 {
     DEBUG("CMIDTextEditorEdwinCustomDraw::CMIDTextEditorEdwinCustomDraw");
 }
@@ -71,7 +71,21 @@ void CMIDTextEditorEdwinCustomDraw::DrawBackground(
     }
     else
     {
-        iParentDraw.DrawBackground(aParam, aBackground, aDrawn);
+        // If scaling is on, it clips drawing to canvas size. After it
+        // draws its background.
+        // Only drawing otherwise.
+        if (iEdwin.IsScalingOn())
+        {
+            aParam.iGc.SetClippingRect(iEdwin.GetOnScreenCanvasRect());
+
+            iParentDraw.DrawBackground(aParam, aBackground, aDrawn);
+
+            aParam.iGc.CancelClippingRect();
+        }
+        else
+        {
+            iParentDraw.DrawBackground(aParam, aBackground, aDrawn);
+        }
     }
 }
 
@@ -84,7 +98,21 @@ void CMIDTextEditorEdwinCustomDraw::DrawLineGraphics(
     const TParam& aParam,
     const TLineInfo& aLineInfo) const
 {
-    iParentDraw.DrawLineGraphics(aParam, aLineInfo);
+    // If scaling is on, it clips drawing to canvas size. After it
+    // draws its lines.
+    // Only drawing otherwise.
+    if (iEdwin.IsScalingOn())
+    {
+        aParam.iGc.SetClippingRect(iEdwin.GetOnScreenCanvasRect());
+
+        iParentDraw.DrawLineGraphics(aParam, aLineInfo);
+
+        aParam.iGc.CancelClippingRect();
+    }
+    else
+    {
+        iParentDraw.DrawLineGraphics(aParam, aLineInfo);
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -113,13 +141,33 @@ void CMIDTextEditorEdwinCustomDraw::DrawText(
         return;
     }
 
-    iParentDraw.DrawText(
-        aParam,
-        aLineInfo,
-        aFormat,
-        aText,
-        aTextOrigin,
-        aExtraPixels);
+    // If scaling is on, it clips drawing to canvas size. After it
+    // draws its text.
+    // Only drawing otherwise.
+    if (iEdwin.IsScalingOn())
+    {
+        aParam.iGc.SetClippingRect(iEdwin.GetOnScreenCanvasRect());
+
+        iParentDraw.DrawText(
+            aParam,
+            aLineInfo,
+            aFormat,
+            aText,
+            aTextOrigin,
+            aExtraPixels);
+
+        aParam.iGc.CancelClippingRect();
+    }
+    else
+    {
+        iParentDraw.DrawText(
+            aParam,
+            aLineInfo,
+            aFormat,
+            aText,
+            aTextOrigin,
+            aExtraPixels);
+    }
 }
 
 #ifdef RD_JAVA_S60_RELEASE_9_2
@@ -151,15 +199,37 @@ void CMIDTextEditorEdwinCustomDraw::DrawText(
         return;
     }
 
-    iParentDraw.DrawText(
-        aParam,
-        aLineInfo,
-        aFormat,
-        aText,
-        aStart,
-        aEnd,
-        aTextOrigin,
-        aExtraPixels);
+    // If scaling is on, it clips drawing to canvas size. After it
+    // draws its text.
+    // Only drawing otherwise.
+    if (iEdwin.IsScalingOn())
+    {
+        aParam.iGc.SetClippingRect(iEdwin.GetOnScreenCanvasRect());
+
+        iParentDraw.DrawText(
+            aParam,
+            aLineInfo,
+            aFormat,
+            aText,
+            aStart,
+            aEnd,
+            aTextOrigin,
+            aExtraPixels);
+
+        aParam.iGc.CancelClippingRect();
+    }
+    else
+    {
+        iParentDraw.DrawText(
+            aParam,
+            aLineInfo,
+            aFormat,
+            aText,
+            aStart,
+            aEnd,
+            aTextOrigin,
+            aExtraPixels);
+    }
 }
 #endif
 

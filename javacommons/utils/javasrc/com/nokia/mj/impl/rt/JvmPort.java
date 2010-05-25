@@ -48,7 +48,7 @@ public abstract class JvmPort
      * A reference to object containing properties. In CLDC it is Hashtable,
      * otherwise it is Properties.
      */
-    private static Hashtable mPropertiesContainer;
+    private static DynamicProperty mPropertiesContainer;
 
     protected JvmPort()
     {
@@ -95,7 +95,7 @@ public abstract class JvmPort
      * Sets the container containing system properties.
      * @param propertiesContainer system properties.
      */
-    public static void setPropertiesContainer(Hashtable propertiesContainer)
+    public static void setPropertiesContainer(DynamicProperty propertiesContainer)
     {
         mPropertiesContainer = propertiesContainer;
     }
@@ -194,8 +194,16 @@ public abstract class JvmPort
      * @see com.nokia.mj.impl.runtimesupport.JvmPort#setSystemProperty.
      */
     public void setSystemProperty(Object key, Object value)
-{
-        mPropertiesContainer.put(key, value);
+    {
+        mPropertiesContainer.setSystemProperty(key, value);
+    }
+
+    /**
+     * @see com.nokia.mj.impl.runtimesupport.JvmPort#setUserProperty.
+     */
+    public void setUserProperty(Object key, Object value)
+    {
+        mPropertiesContainer.setUserProperty(key, value);
     }
 
     /**

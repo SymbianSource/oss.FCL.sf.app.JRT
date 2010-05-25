@@ -146,7 +146,7 @@ inline const TBitBltData& BitBltData(const TMIDBufferOp* aOp)
     return *static_cast< const TBitBltData* >(aOp->Data());
 }
 
-
+#ifdef RD_JAVA_NGA_ENABLED
 // ---------------------------------------------------------------------------
 // IsDownScaling
 // Check if downscaling in use.
@@ -154,13 +154,30 @@ inline const TBitBltData& BitBltData(const TMIDBufferOp* aOp)
 // @param aDestRect Destination rect.
 // ---------------------------------------------------------------------------
 //
+inline TBool IsDownScaling(const TSize& aSourceSize, const TRect& aDestRect, TBool aM3GContent)
+{
+    // if m3G is drawing then downscaling is turn off
+    if (aM3GContent)
+    {
+        return EFalse;
+    }
+    return (aSourceSize.iWidth > aDestRect.Width() ||
+            aSourceSize.iHeight > aDestRect.Height());
+}
+#else
+// ---------------------------------------------------------------------------
+// IsDownScaling
+// Check if downscaling in use.
+// @param aSourceSize Source rect size.
+// @param aDestRect Destination rect.
+// ---------------------------------------------------------------------------
 inline TBool IsDownScaling(const TSize& aSourceSize, const TRect& aDestRect)
 {
     return (aSourceSize.iWidth > aDestRect.Width() ||
             aSourceSize.iHeight > aDestRect.Height());
 }
 
-
+#endif //RD_JAVA_NGA_ENABLED
 // ======== MEMBER FUNCTIONS ========
 
 // ---------------------------------------------------------------------------
@@ -384,7 +401,7 @@ CCoeControl* CMIDCanvas::ComponentControl(TInt aIndex) const
 //
 void CMIDCanvas::SetFocusedComponent(MMIDCustomComponent* aComponent)
 {
-    if (aComponent == NULL)
+    if (!aComponent)
     {
         iFocusedComponent = KComponentFocusedNone;
         iPressedComponent = NULL;
@@ -829,7 +846,7 @@ TBool CMIDCanvas::ProcessL(
             DEBUG("CMIDCanvas::ProcessL - M3G content start");
             iM3GContent = ETrue;
             iM3GStart = ETrue;
-
+            PostEvent(EM3GDraw, iM3GContent, 0);
             // First time when M3G content is drawn =>
             // switch to EGL surface drawing.
             // Pixel source must be disposed first.
@@ -854,7 +871,7 @@ TBool CMIDCanvas::ProcessL(
         {
             iFirstPaintState = EFirstPaintInitiated;
         }
-        
+
         const TBitBltData& data = BitBltData(aRead);
         UpdateL(data.iRect);
     }
@@ -865,7 +882,7 @@ TBool CMIDCanvas::ProcessL(
         {
             iFirstPaintState = EFirstPaintInitiated;
         }
-        
+
         UpdateL(iViewRect);
     }
     break;
@@ -963,12 +980,12 @@ TBool CMIDCanvas::ProcessL(
         aRead += aRead->Size();
     }
 #endif // CANVAS_DOUBLE_BUFFER
-    
+
     if (iFirstPaintState == EFirstPaintNeverOccurred)
     {
         if (iForeground)
         {
-            // The canvas is current, therefore we can flush 
+            // The canvas is current, therefore we can flush
             // the graphics and take the start screen snapshot.
             iFirstPaintState = EFirstPaintOccurred;
             java::ui::CoreUiAvkonLcdui::getInstance().getJavaUiAppUi()->stopStartScreen();
@@ -980,9 +997,9 @@ TBool CMIDCanvas::ProcessL(
             iFirstPaintState = EFirstPaintInitiated;
         }
     }
-    
+
     DEBUG("- CMIDCanvas::ProcessL");
-    
+
     return EFalse;
 }
 #endif // RD_JAVA_NGA_ENABLED
@@ -1534,7 +1551,14 @@ void CMIDCanvas::UpdateL(const TRect& aRect)
     else
     {
         // Must draw via CCoeControl framework
-        DrawNow(aRect);
+        if (iFullScreen && iScalingOn)
+        {
+            DrawNow(iViewRect);
+        }
+        else
+        {
+            DrawNow(aRect);
+        }
     }
 
     // This is needed to avoid artifacting after orientation switch.
@@ -1725,9 +1749,9 @@ void CMIDCanvas::DrawWindowNgaL(const TRect& aRect)
             ELOG1(EJavaUI, "eglSwapBuffers() failed, eglError=%d", eglGetError());
             ASSERT(EFalse);
         }
-        
+
         SetCurrentEglType(EEglNone);
-        
+
         if (iFirstPaintState != EFirstPaintOccurred)
         {
             iFirstPaintState = EFirstPaintOccurred;
@@ -1768,40 +1792,45 @@ void CMIDCanvas::DrawWindow(const TRect& aRect) const
         DEBUG("DrawWindow - Not scaled - BitBlt");
         gc.BitBlt(windowRect.iTl, iFrameBuffer, windowRect);
     }
-    else if (IsDownScaling(iContentSize, iViewRect))
-    {
-        DEBUG("DrawWindow - Downscaling - BitBlt");
-        gc.BitBlt(windowRect.iTl, iFrameBuffer, windowRect.Size());
-    }
+    else
+#ifdef RD_JAVA_NGA_ENABLED
+        if (IsDownScaling(iContentSize, iViewRect, iM3GContent))
+#else
+        if (IsDownScaling(iContentSize, iViewRect))
+#endif //RD_JAVA_NGA_ENABLED
+        {
+            DEBUG("DrawWindow - Downscaling - BitBlt");
+            gc.BitBlt(windowRect.iTl, iFrameBuffer, windowRect.Size());
+        }
     // Upscaling
-    else if (iScaler)
-    {
-        iFrameBuffer->LockHeap();
-        TUint32* pixelData = iFrameBuffer->DataAddress();
-
-        // Scale the framebuffer content.
-        CFbsBitmap* map = iScaler->Process(
-                              iFrameBuffer->DisplayMode(),
-                              pixelData,
-                              iContentSize.iWidth,
-                              iContentSize.iHeight,
-                              iFrameBuffer->SizeInPixels().iWidth - iContentSize.iWidth,
-                              iViewRect.Width(),
-                              iViewRect.Height());
-
-        iFrameBuffer->UnlockHeap();
-
-        if (map)
+        else if (iScaler)
         {
-            DEBUG("DrawWindow - Upscaling - BitBlt - map ok");
-            gc.BitBlt(windowRect.iTl, map, windowRect.Size());
+            iFrameBuffer->LockHeap();
+            TUint32* pixelData = iFrameBuffer->DataAddress();
+
+            // Scale the framebuffer content.
+            CFbsBitmap* map = iScaler->Process(
+                                  iFrameBuffer->DisplayMode(),
+                                  pixelData,
+                                  iContentSize.iWidth,
+                                  iContentSize.iHeight,
+                                  iFrameBuffer->SizeInPixels().iWidth - iContentSize.iWidth,
+                                  iViewRect.Width(),
+                                  iViewRect.Height());
+
+            iFrameBuffer->UnlockHeap();
+
+            if (map)
+            {
+                DEBUG("DrawWindow - Upscaling - BitBlt - map ok");
+                gc.BitBlt(windowRect.iTl, map, windowRect.Size());
+            }
+            else
+            {
+                DEBUG("DrawWindow - Upscaling - DrawBitmap - no map");
+                gc.DrawBitmap(windowRect, iFrameBuffer, iContentSize);
+            }
         }
-        else
-        {
-            DEBUG("DrawWindow - Upscaling - DrawBitmap - no map");
-            gc.DrawBitmap(windowRect, iFrameBuffer, iContentSize);
-        }
-    }
 
 #ifdef RD_JAVA_NGA_ENABLED
     iCoeEnv->WsSession().Finish();
@@ -2040,8 +2069,7 @@ void CMIDCanvas::HandleResourceChange(TInt aType)
     {
         // If orientation change is done,
         // then we have to inform all components about it.
-        if (iFocusedComponent != KComponentFocusedNone &&
-                iFullScreen)
+        if (iFullScreen && iScalingOn)
         {
             for (int i = 0; i < iCustomComponents.Count(); i++)
             {
@@ -2393,12 +2421,12 @@ void CMIDCanvas::FocusChanged(TDrawNow /* aDrawNow */)
             CustomComponentControl(KComponentMainControl)->
             SetFocus(EFalse);
         }
-        
-#ifdef RD_JAVA_NGA_ENABLED        
+
+#ifdef RD_JAVA_NGA_ENABLED
         // Avoid the situation when the content is drawn over the menu
         SuspendPixelSource();
 #endif // RD_JAVA_NGA_ENABLED
-        
+
         // Repaint to ensure that fading will be displayed correctly for Alert
         // or PopupTextBox when DSA is paused.
         DrawDeferred();
@@ -2631,23 +2659,23 @@ CMIDCanvas::CMIDCanvas(
     TBool aUpdateRequired
 #endif // CANVAS_DIRECT_ACCESS
 ) :
-        CCoeControl()
-        ,iEnv(aEnv)
+    CCoeControl()
+    ,iEnv(aEnv)
 #ifdef CANVAS_DOUBLE_BUFFER
-        ,iFrameBuffer(NULL)
+    ,iFrameBuffer(NULL)
 #endif // CANVAS_DOUBLE_BUFFER
-        ,iIsGameCanvas((
-                           aComponentType == MMIDComponent::EGameCanvas ? ETrue : EFalse))
-        ,iFlags(EPostKeyEvents)
-        ,iFullScreen(EFalse)
-        ,iScalingOn(EFalse)
-        ,iS60SelectionKeyCompatibility(EFalse)
-        ,iRestoreContentWhenUnfaded(EFalse)
-        ,iLastFadeMessage(0)
+    ,iIsGameCanvas((
+                       aComponentType == MMIDComponent::EGameCanvas ? ETrue : EFalse))
+    ,iFlags(EPostKeyEvents)
+    ,iFullScreen(EFalse)
+    ,iScalingOn(EFalse)
+    ,iS60SelectionKeyCompatibility(EFalse)
+    ,iRestoreContentWhenUnfaded(EFalse)
+    ,iLastFadeMessage(0)
 #ifdef CANVAS_DIRECT_ACCESS
-        ,iDcDsaToStart(EFalse)
+    ,iDcDsaToStart(EFalse)
 #endif // CANVAS_DIRECT_ACCESS
-        ,iDragEventsStartedInside(EFalse)
+    ,iDragEventsStartedInside(EFalse)
 {
     DEBUG("+ CMIDCanvas::CMIDCanvas - EDirectEnabled");
 
@@ -3407,7 +3435,7 @@ TBool CMIDCanvas::IsNetworkIndicatorEnabledL() const
 void CMIDCanvas::HandleForeground(TBool aForeground)
 {
     DEBUG_INT("CMIDCanvas::HandleForeground(%d) ++", aForeground);
-    
+
     iForeground = aForeground;
 
 #ifdef RD_JAVA_NGA_ENABLED
@@ -3429,7 +3457,7 @@ void CMIDCanvas::HandleForeground(TBool aForeground)
         SuspendPixelSource();
     }
 #endif // RD_JAVA_NGA_ENABLED
-    
+
     DEBUG("CMIDCanvas::HandleForeground --");
 }
 
@@ -3511,7 +3539,7 @@ void CMIDCanvas::ActivatePixelSourceL()
         return;
     }
 
-    // ProduceNewFrameL() is called in some cases 
+    // ProduceNewFrameL() is called in some cases
     // directly from ActivateSyncL(), need to set iFrameReady
     // before ActivateSyncL()
     iFrameReady = ETrue;
@@ -3589,27 +3617,27 @@ TBool CMIDCanvas::ProduceNewFrameL(const TRegion& aVisibleRegion, TUint8*& aBuff
     else
     {
         NotifyMonitor();
-    
+
         TUint8* from = (TUint8*)iFrameBuffer->DataAddress();
-    
-        TBool downScaling = IsDownScaling(iContentSize, iViewRect);
+
+        TBool downScaling = IsDownScaling(iContentSize, iViewRect, iM3GContent);
         TInt width =  downScaling ? iViewRect.Width()  : iContentSize.iWidth;
         TInt height = downScaling ? iViewRect.Height() : iContentSize.iHeight;
-    
+
         TUint bytes = width * KBytesPerPixel;
         TInt scanLength = CFbsBitmap::ScanLineLength(
                               iFrameBuffer->SizeInPixels().iWidth, iFrameBuffer->DisplayMode());
-    
+
         for (TInt y = 0; y < height; ++y)
         {
             Mem::Copy(aBuffer, from, bytes);
             aBuffer += iAlfBufferAttributes.iStride;
             from += scanLength;
         }
-    
+
         res = ETrue;
     }
-    
+
     if (iFirstPaintState == EFirstPaintInitiated || iFirstPaintState == EFirstPaintPrepared)
     {
         if (iFirstPaintState == EFirstPaintInitiated)
@@ -3622,9 +3650,9 @@ TBool CMIDCanvas::ProduceNewFrameL(const TRegion& aVisibleRegion, TUint8*& aBuff
             java::ui::CoreUiAvkonLcdui::getInstance().getJavaUiAppUi()->stopStartScreen();
         }
     }
-    
+
     DEBUG("CMIDCanvas::ProduceNewFrameL --");
-    
+
     return res;
 }
 
@@ -3639,7 +3667,7 @@ MAlfBufferProvider::TBufferCreationAttributes& CMIDCanvas::BufferAttributes()
     DEBUG_INT2("CMIDCanvas::BufferAttributes - iContentSize(w=%d, h=%d) ++",
                iContentSize.iWidth, iContentSize.iHeight);
 
-    TBool downScaling = IsDownScaling(iContentSize, iViewRect);
+    TBool downScaling = IsDownScaling(iContentSize, iViewRect, iM3GContent);
     iAlfBufferAttributes.iWidth  = downScaling ? iViewRect.Width() : iContentSize.iWidth;
     iAlfBufferAttributes.iHeight = downScaling ? iViewRect.Height() : iContentSize.iHeight;
 
@@ -3804,7 +3832,7 @@ void CMIDCanvas::CloseEgl()
     iM3GStart = EFalse;
     iEglPendingResize = EFalse;
     iEglPendingDispose = EFalse;
-
+    PostEvent(EM3GDraw, iM3GContent, 0);
     if (iEglDisplay == EGL_NO_DISPLAY)
     {
         return;
@@ -4209,7 +4237,7 @@ TBool CMIDCanvas::ClearEglSurface(
         return EFalse;
     }
     TEglType current = GetCurrentEglType();
-    if (aSurfaceType == EEglNone || aRgba == NULL)
+    if (aSurfaceType == EEglNone || !aRgba)
     {
         if (iScalingOn && iFullScreen)
         {
@@ -4217,7 +4245,7 @@ TBool CMIDCanvas::ClearEglSurface(
             {
                 aSurfaceType = EEglPbuffer;
             }
-            if (aRgba == NULL)
+            if (!aRgba)
             {
                 glClearColor(0.f, 0.f, 0.f, 1.f);
             }
@@ -4228,14 +4256,14 @@ TBool CMIDCanvas::ClearEglSurface(
             {
                 aSurfaceType = EEglWindow;
             }
-            if (aRgba == NULL)
+            if (!aRgba)
             {
                 glClearColor(1.f, 1.f, 1.f, 1.f);
             }
         }
     }
     SetCurrentEglType(aSurfaceType);
-    if (aRgba != NULL)
+    if (aRgba)
     {
         glClearColor(
             aRgba->Red() / 255.f, aRgba->Green() / 255.0f,
@@ -4260,7 +4288,7 @@ void CMIDCanvas::UpdateRect(const TRect& aRect)
     }
 
     TRect rect(aRect);
-    TRect canvasRect = IsDownScaling(iContentSize, iViewRect) ?
+    TRect canvasRect = IsDownScaling(iContentSize, iViewRect, iM3GContent) ?
                        TRect(iViewRect.Size()) : TRect(iContentSize);
     rect.Intersection(canvasRect);
 
@@ -4896,7 +4924,6 @@ const TDesC8& CMIDCanvas::GetEglError(EGLint aErr)
     }
     return KEglSuccess;
 }
-
 
 #endif // RD_JAVA_NGA_ENABLED        
 // End of File.

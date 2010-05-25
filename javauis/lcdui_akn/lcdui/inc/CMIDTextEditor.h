@@ -21,8 +21,11 @@
 
 // EXTERNAL INCLUDES
 #include <e32base.h>
+
+// INTERNAL INCLUDES
 #include <MMIDTextEditor.h>
 #include <MMIDCustomComponent.h>
+#include <MMIDScalable.h>
 
 #ifdef RD_TACTILE_FEEDBACK
 #include <peninputclient.h>
@@ -49,7 +52,8 @@ NONSHARABLE_CLASS(CMIDTextEditor) :
         public MMIDTextEditor,
         public MMIDCustomComponent,
         public MDirectContent,
-        public MCoeControlObserver
+        public MCoeControlObserver,
+        public MMIDScalable
 {
 public: // Type definitions
 
@@ -68,11 +72,11 @@ public: // Type definitions
         CMIDUtils* iUtils;
 
         TCtorParams::TCtorParams() :
-                iMaxSize(0),
-                iWidth(0),
-                iHeight(0),
-                iHeightInRows(EFalse),
-                iUtils(NULL) {}
+            iMaxSize(0),
+            iWidth(0),
+            iHeight(0),
+            iHeightInRows(EFalse),
+            iUtils(NULL) {}
     };
 
 public: // Constructors and destructor
@@ -646,6 +650,12 @@ public: // From MMIDTextEditor
      * @since S60 5.0
      */
     void SetDefaultIndicatorsL();
+
+public: // From MMIDScalable
+
+    TBool IsScalingOn() const;
+
+public: // own methods
 
     /**
      * Handles fullscreen state of parent Canvas.

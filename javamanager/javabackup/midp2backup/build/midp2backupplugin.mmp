@@ -63,7 +63,7 @@ LIBRARY                 sysutil.lib
 LIBRARY                 apgrfx.lib
 LIBRARY                 apparc.lib
 LIBRARY                 estlib.lib
-LIBRARY                 javaenv.lib
+LIBRARY                 javaenvinfo.lib
 
 #if defined(WINSCW)
   deffile ./bwins/backup.def

@@ -455,9 +455,13 @@ public final class SecurityStorage
                 permEntry.addAttribute(new StorageAttribute(
                                            StorageNames.CLASS,
                                            p.getName()));
-                permEntry.addAttribute(new StorageAttribute(
-                                           StorageNames.NAME,
-                                           p.getTarget()));
+                if (p.getTarget() != null
+                        && p.getTarget().length() > 0)
+                {
+                    permEntry.addAttribute(new StorageAttribute(
+                                               StorageNames.NAME,
+                                               p.getTarget()));
+                }
                 if (p.getActionList() != null
                         && p.getActionList().length() > 0)
                 {
@@ -1250,9 +1254,13 @@ public final class SecurityStorage
                 removePermissionQuery.addAttribute(new StorageAttribute(
                                                        StorageNames.CLASS,
                                                        p.getName()));
-                removePermissionQuery.addAttribute(new StorageAttribute(
-                                                       StorageNames.NAME,
-                                                       p.getTarget()));
+                if (p.getTarget() != null
+                        && p.getTarget().length() > 0)
+                {
+                    removePermissionQuery.addAttribute(new StorageAttribute(
+                                                           StorageNames.NAME,
+                                                           p.getTarget()));
+                }
                 if (p.getActionList() != null
                         && p.getActionList().length() > 0)
                 {

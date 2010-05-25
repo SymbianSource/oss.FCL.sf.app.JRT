@@ -76,6 +76,14 @@ public:  // from CCoeControl
      * visible element in ChoiceGroup from top of Form.
      */
     TInt TopVisibleItemIndex();
+
+    /**
+     * Fuction sets ESingleClickDisabledHighlight - item drawer flags
+     * and reports current highlight element change event
+     */
+    void SingleClickDisableHighlightL(TBool aDisable);
+    void SetHighlight(TBool aVisible);
+
 #endif // RD_JAVA_S60_RELEASE_9_2
 
 #ifdef RD_TACTILE_FEEDBACK
@@ -92,12 +100,21 @@ protected:
 private:
     void SetTextColors();
 
+    /**
+     * Checks if highlight is needed
+     * @param aCurrentSelected - currently selected item
+     * @param aKeyEvent
+     * @return EFalse when highlight is not needed
+     */
+    TBool IsHighlightNeeded(TInt aCurrentSelected, const TKeyEvent& aKeyEvent);
+
 #ifdef RD_JAVA_S60_RELEASE_9_2
     /**
      * Fuction calculates index of element, which is the first
      * visible element in ChoiceGroup from top of Form.
      */
     void UpdateTopVisibleItemIndex();
+
 #endif // RD_JAVA_S60_RELEASE_9_2
 
 private:

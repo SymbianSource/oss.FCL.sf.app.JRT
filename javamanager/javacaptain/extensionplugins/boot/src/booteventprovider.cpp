@@ -33,9 +33,15 @@ namespace java
 namespace captain
 {
 
-// In S60 working directory is initalized to C:\private\<UID> by OpenC
-const char IAD_BOOT_FLAG[]   = "iadboot.dat";
-const char FIRST_BOOT_FLAG[] = "firstbootdone.dat";
+// In S60 working directory should be initalized to C:\private\<UID> by OpenC
+// But for some reason this does not seem to work if captain binary is in rom.
+#ifdef __SYMBIAN32__
+const char* const IAD_BOOT_FLAG   = "c:\\private\\200211DC\\iadboot.dat";
+const char* const FIRST_BOOT_FLAG = "c:\\private\\200211DC\\firstbootdone.dat";
+#else
+const char* const IAD_BOOT_FLAG   = "iadboot.dat";
+const char* const FIRST_BOOT_FLAG = "firstbootdone.dat";
+#endif /* __SYMBIAN32__ */
 
 BootEventProvider::BootEventProvider() : mCore(0)
 {

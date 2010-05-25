@@ -44,8 +44,7 @@ public: // Constructor and destructor
     /**
      * Two-phased constructor.
      */
-    static CPIMToDoListAdapter* NewL(java::util::FunctionServer* aFuncServer,
-        CCalSession *aCalSession);
+    static CPIMToDoListAdapter* NewL(java::util::FunctionServer* aFuncServer);
 
     /**
      * Destructor.
@@ -218,7 +217,7 @@ protected:
     /**
      * By default Symbian 2nd phase constructor is private.
      */
-    void ConstructL(TInt aCalSessionInt );
+    void ConstructL();
 
 private: // Member data
 

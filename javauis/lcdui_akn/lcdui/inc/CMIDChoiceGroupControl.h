@@ -226,6 +226,13 @@ public:
 
 #ifdef RD_JAVA_S60_RELEASE_9_2
     CMIDForm* Form() const;
+
+    /**
+     * Fuction sets ESingleClickDisabledHighlight - item drawer flags
+     * and reports current highlight element change event
+     */
+    void SingleClickDisableHighlightL(TBool aDisable);
+
 #endif // RD_JAVA_S60_RELEASE_9_2    
 
 #ifdef RD_TACTILE_FEEDBACK

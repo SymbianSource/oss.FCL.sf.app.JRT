@@ -41,11 +41,14 @@ class CoreInterface;
 const char KFileSeparator = '\\';
 const char KJavaCertsDir[] = "security\\trustroots\\device\\certificates";
 const char KJavaCertsStateDir[] = "security\\trustroots\\device\\state";
+const char KJavaRootsListDir[] = "security\\trustroots";
 #else //__SYMBIAN32__
 const char KFileSeparator = '/';
 const char KJavaCertsDir[] = "security/trustroots/device/certificates";
 const char KJavaCertsStateDir[] = "security/trustroots/device/state";
+const char KJavaRootsListDir[] = "security/trustroots";
 #endif //__SYMBIAN32__
+const char KJavaRootsListName[] = "midprootslist";
 const char KMetadataSuffix[] = ".metadata";
 const char KStateSuffix[] = ".state";
 const char KCertSuffix1[] = ".der";
@@ -106,16 +109,18 @@ private:
     void queryCerts(java::comms::CommsMessage& aMessage);
     void loadCertsMetadata();
     void loadCertsMetadata(std::string aCertsLocation);
+    void loadCertsMetadata(std::string aCertsLocation, bool primaryPath);
     void unloadCertsMetadata();
-    bool readMetadataFromFiles(const std::string& certFileName, CERT_METADATA *);
+    bool readMetadataFromFiles(const std::string& aCertsLocation, const std::string& certFileName, CERT_METADATA *);
     void writeMetadataIntoFile(CERT_METADATA * metadata);
     int encodeState(bool, bool, int);
     void manageCert(const std::string&, int);
     std::string readCert(const std::string& certFileName, long *);
+    void readCert(const std::string& aCertsLocation, const std::string& aCertFileName);
     long replyWithContent(java::comms::CommsMessage& aReplyMessage, const CERT_METADATA&, int format = DER_FORMAT);
     void assignProtectionDomain(std::vector<std::string>, CERT_METADATA *);
     void addCertMetadataToCache(CERT_METADATA* metadata, bool overwrite);
-    bool mkDirAll(const char* dirPath);
+    bool mkDirAll(const char* dirPath, const std::string& aBaseDir);
 
 private:
     CoreInterface* iCore;
