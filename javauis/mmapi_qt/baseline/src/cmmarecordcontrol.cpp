@@ -54,7 +54,7 @@ void CMMARecordControl::WaitForPauseL(const TInt64& aMediaTime)
     // reusing time variable
     TInt64 time = iStartTime - aMediaTime + KMinRecordPauseInterval;
     iStartTime = 0;
-    LOG1( EJavaMMAPI, EInfo, "CMMARecordControl::WaitForPauseL wait time = %d", (TInt)time);
+    LOG1(EJavaMMAPI, EInfo, "CMMARecordControl::WaitForPauseL wait time = %d", (TInt)time);
     // if time > 0, time between record and pause is smaller than
     // KMinRecordPauseInterval and we have to wait.
     if (time > 0)
@@ -84,7 +84,7 @@ void CMMARecordControl::ConstructL()
 
 void CMMARecordControl::StartRecordL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMARecordControl::StartRecordL+");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMARecordControl::StartRecordL+");
 
     // Initialize needs to be done only once after setRecordLocation or
     // setRecordStream and before commit or reset. Although startRecord can be
@@ -102,13 +102,13 @@ void CMMARecordControl::StartRecordL()
     iPlayer->GetMediaTime(&iStartTime);
     iPlayer->PostLongEvent(CMMAPlayerEvent::ERecordStarted, iStartTime);
 
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMARecordControl::StartRecordL-");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMARecordControl::StartRecordL-");
 }
 
 
 void CMMARecordControl::StopRecordL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMARecordControl::StopRecordL+");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMARecordControl::StopRecordL+");
     if (iState == ERecordRecording)
     {
         NextStateL(iPlayer->State());
@@ -121,13 +121,13 @@ void CMMARecordControl::StopRecordL()
     iPlayer->GetMediaTime(&time);
     iPlayer->PostLongEvent(CMMAPlayerEvent::ERecordStopped, time);
 
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMARecordControl::StopRecordL-");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMARecordControl::StopRecordL-");
 }
 
 
 void CMMARecordControl::CommitL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMARecordControl::CommitL+");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMARecordControl::CommitL+");
     // reset the recorder if already initialized
     if (iState > ERecordUninitialized)
     {
@@ -144,7 +144,7 @@ void CMMARecordControl::CommitL()
     // Create buffer for file context
     TInt fileSize;
     User::LeaveIfError(iFile.Size(fileSize));
-    LOG1( EJavaMMAPI, EInfo, "MMA:CMMARecordControl::CommitL size in bytes = %d", fileSize);
+    LOG1(EJavaMMAPI, EInfo, "MMA:CMMARecordControl::CommitL size in bytes = %d", fileSize);
 
     HBufC8* data = HBufC8::NewLC(fileSize);
 
@@ -160,18 +160,18 @@ void CMMARecordControl::CommitL()
     iOutputStream->WriteL(dataPtr);
     CleanupStack::PopAndDestroy(data);
 
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMARecordControl::CommitL-");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMARecordControl::CommitL-");
 }
 
 
 void CMMARecordControl::ResetL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMARecordControl::ResetL+");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMARecordControl::ResetL+");
     // reset the recorder if already initialized
     if (iState > ERecordUninitialized)
     {
         DoResetL();
-        LOG( EJavaMMAPI, EInfo, "MMA:CMMARecordControl::DoResetL done");
+        LOG(EJavaMMAPI, EInfo, "MMA:CMMARecordControl::DoResetL done");
         iState = ERecordUninitialized;
 
         // Empty file that it can be reused
@@ -179,12 +179,12 @@ void CMMARecordControl::ResetL()
         User::LeaveIfError(iFile.Flush());
     }
 
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMARecordControl::ResetL-");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMARecordControl::ResetL-");
 }
 
 void CMMARecordControl::SetRecordStream(CMMAOutputStream* aStream)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMARecordControl::SetRecordStream");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMARecordControl::SetRecordStream");
     __ASSERT_DEBUG(aStream, User::Panic(
                        _L("CMMAVideoRecordControl:: Stream is NULL."),
                        KErrArgument));
@@ -195,7 +195,7 @@ void CMMARecordControl::SetRecordStream(CMMAOutputStream* aStream)
 
 HBufC* CMMARecordControl::GetContentTypeL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMARecordControl::GetContentTypeL");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMARecordControl::GetContentTypeL");
     return iPlayer->ContentType();
 }
 
@@ -215,7 +215,7 @@ void CMMARecordControl::StateChanged(TInt aState)
 
 void CMMARecordControl::Error(TInt aErrorCode)
 {
-    ELOG1( EJavaMMAPI, "MMA:CMMARecordControl::Error %d", aErrorCode);
+    ELOG1(EJavaMMAPI, "MMA:CMMARecordControl::Error %d", aErrorCode);
     TBuf<KRecordErrorMessageSize> errorMessage;
     errorMessage.Format(KMMARecordErrorMsg, aErrorCode);
     iPlayer->PostStringEvent(CMMAPlayerEvent::ERecordError,
@@ -233,13 +233,13 @@ void CMMARecordControl::HandleRecordSizeLimit()
 
 void CMMARecordControl::NextStateL(TInt aPlayerState)
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA:CMMARecordControl::NextStateL Player state = %d", aPlayerState);
-    LOG1( EJavaMMAPI, EInfo, "MMA:CMMARecordControl::NextStateL internal state = %d", iState);
+    LOG1(EJavaMMAPI, EInfo, "MMA:CMMARecordControl::NextStateL Player state = %d", aPlayerState);
+    LOG1(EJavaMMAPI, EInfo, "MMA:CMMARecordControl::NextStateL internal state = %d", iState);
     switch (iState)
     {
     case ERecordUninitialized:
     {
-        LOG( EJavaMMAPI, EInfo, "MMA:CMMARecordControl::NextStateL: case ERecordUninitialized");
+        LOG(EJavaMMAPI, EInfo, "MMA:CMMARecordControl::NextStateL: case ERecordUninitialized");
         // This is the initial state.
         // To getinto this state, commit or reset must be called
         // To get out of this state startRecord must be called
@@ -248,7 +248,7 @@ void CMMARecordControl::NextStateL(TInt aPlayerState)
     }
     case ERecordInitialized:
     {
-        LOG( EJavaMMAPI, EInfo, "MMA:CMMARecordControl::NextStateL: case ERecordInitialized");
+        LOG(EJavaMMAPI, EInfo, "MMA:CMMARecordControl::NextStateL: case ERecordInitialized");
         // To get into this state stopRecord must be called.
         // To get out of this state startRecord, commit or reset must be
         // called
@@ -256,7 +256,7 @@ void CMMARecordControl::NextStateL(TInt aPlayerState)
     }
     case ERecordStandBy:
     {
-        LOG( EJavaMMAPI, EInfo, "MMA:CMMARecordControl::NextStateL: case ERecordStandBy");
+        LOG(EJavaMMAPI, EInfo, "MMA:CMMARecordControl::NextStateL: case ERecordStandBy");
         // To get into this state startRecord must be called.
         // To get out of this state stopRecord, commit or reset must be
         // called, or state of the Player must change to STARTED
@@ -265,7 +265,7 @@ void CMMARecordControl::NextStateL(TInt aPlayerState)
         // start the actual recording if player is started
         if (aPlayerState == CMMAPlayer::EStarted)
         {
-            LOG( EJavaMMAPI, EInfo, "MMA:CMMARecordControl::NextStateL: ERecordStandBy -> ERecordRecording");
+            LOG(EJavaMMAPI, EInfo, "MMA:CMMARecordControl::NextStateL: ERecordStandBy -> ERecordRecording");
             DoStartRecordL();
             iState = ERecordRecording;
         }
@@ -273,7 +273,7 @@ void CMMARecordControl::NextStateL(TInt aPlayerState)
     }
     case ERecordRecording:
     {
-        LOG( EJavaMMAPI, EInfo, "MMA:CMMARecordControl::NextStateL: case ERecordRecording");
+        LOG(EJavaMMAPI, EInfo, "MMA:CMMARecordControl::NextStateL: case ERecordRecording");
 
         // To get into this state startRecord must have been called and
         // the Player must be in STARTED state.
@@ -288,7 +288,7 @@ void CMMARecordControl::NextStateL(TInt aPlayerState)
     }
     default:
     {
-        LOG( EJavaMMAPI, EInfo, "MMA:CMMARecordControl::NextStateL: case default - code should not reach here!!");
+        LOG(EJavaMMAPI, EInfo, "MMA:CMMARecordControl::NextStateL: case default - code should not reach here!!");
         __ASSERT_DEBUG(KErrGeneral, User::Invariant());   // This will newer occur
         break;
     }

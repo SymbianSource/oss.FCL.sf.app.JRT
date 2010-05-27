@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -11,12 +11,9 @@
 *
 * Contributors:
 *
-* Description: 
+* Description: AnimationPlayer
 *
 */
-/**
- * 
- */
 package com.nokia.microedition.media.animation;
 
 import java.io.InputStream;
@@ -28,7 +25,6 @@ import javax.microedition.media.MediaException;
 import javax.microedition.media.PlayerListener;
 import javax.microedition.media.protocol.DataSource;
 
-import org.eclipse.ercp.swt.mobile.MobileShell;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -38,19 +34,15 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 
 import com.nokia.microedition.media.BufferDataSource;
 import com.nokia.microedition.media.InputStreamDataSource;
 import com.nokia.microedition.media.InputStreamSourceStream;
-import com.nokia.microedition.media.Locator;
 import com.nokia.microedition.media.PlayerBase;
 import com.nokia.microedition.media.PlayerListenerImpl;
+import com.nokia.mj.impl.nokialcdui.LCDUIInvoker;
+import com.nokia.mj.impl.utils.Logger;
 
-/**
- * @author d35kumar
- *
- */
 public class AnimationPlayer extends PlayerBase {
 	// GIF image information, array length will be equal to the number of frames in image 
 	protected ImageData [] iImageData;
@@ -58,51 +50,59 @@ public class AnimationPlayer extends PlayerBase {
 	// by default it's value is one 
 	private int iTotalLoopCount=1;
 	// this holds all control related to this player 
-	Hashtable iControls= new Hashtable();
+	private Hashtable iControls= new Hashtable();
 	// Current frame index of the Animation file
-	private int iFrameindex;
+	private int iFrameIndex;
 	// Current Loop Count 
 	private int iCurrentLoopCount;
+	// Indicates if looping indefinitely 
+	private boolean iRepeatForeEver;
+	// Current rate of the player, Used for RateControl
+	// Currently only two mode are supported 
+	// paused and default rate 
+	private int iCurrentRate;
 	// Display object of the eSWT API, creating this object will integrate the current java code with eSWT API. 
-	Display iDisplay; 
+	private Display iDisplay; 
 	// Control object of ESWT API, return from LCDUIInvoker. 
 	org.eclipse.swt.widgets.Control iControl;
-	// Constants used everywhere to compare the string 
+	// Following constants are used for comparison of the string, throughout the class 
 	private static final String ANIMATION_CONTENT_TYPE = "image/gif";
-	
-	private final String fVideoControl=VideoControl.class.getName();
-	private final String fFramePositioningControl=FramePositioningControl.class.getName();
-	private final String fStopTimeControl=StopTimeControl.class.getName();
-	private final String fRateControl=RateControl.class.getName();
-	 /**
+	private static final String fVideoControl 				= VideoControl.class.getName();
+	private static final String fFramePositioningControl 	= FramePositioningControl.class.getName();
+	private static final String fStopTimeControl			= StopTimeControl.class.getName();
+	private static final String fRateControl				= RateControl.class.getName();
+	 
+	/**
      * Default control package. Used when getting control with
      * getControl method which appends default control package if package is
      * not specified.
      */
-    static final String CONTROL_DEFAULT_PACKAGE =
+    private static final String CONTROL_DEFAULT_PACKAGE =
         "javax.microedition.media.control.";
     
 	//For Player listener 
 	protected PlayerListenerImpl iPlayerListenerImpl;
-	//Image to be displayed, again object of eSWT API. 
+	//Image to be displayed, an object of eSWT API. 
 	protected Image iImage;
 	// Actual dimension of the image, this should be initialized while creating the player
 	// as user can change the size of the image later, in that case too, getSourceheight and getSourceWidth 
 	// of VideoControl should return the actual width and height of the image 
-	Point iSourceDimension;
-	long iMediaTime;
+	private Point iSourceDimension;
+	// Total time taken so far to playe the animation 
+	private long iMediaTime;
+	// Time at which, player should be stopped
+	// This will set through StopTimeControl.setTime();
+	private long iStopTime=Long.MAX_VALUE;
 	
-	// Display Location, of the image   
+	// Display Location, of the image
+	// there won't be any use of this, in case of Form(customItem)
 	private Point iDisplayLocation= new Point(0,0);
-	
 
 	/**
 	 * 
 	 * @param ds DataSource which contains the data to be displayed 
 	 */
 	public AnimationPlayer(DataSource ds){
-		final String DEBUG_STR="AnimationPlayer::AnimationPlayer(DataSource)";
-		System.out.println(DEBUG_STR+"+");
 		iPlayerListenerImpl= new PlayerListenerImpl(this);
 		//TODO check if we can do it in better way 
 		// this is temporary solution
@@ -119,7 +119,6 @@ public class AnimationPlayer extends PlayerBase {
 			iSourceDimension= new Point(imageLoader.logicalScreenWidth, imageLoader.logicalScreenHeight);
 		}
 		pupulateControl();
-		System.out.println(DEBUG_STR+"-");
 	}
 	
 	/**
@@ -128,27 +127,20 @@ public class AnimationPlayer extends PlayerBase {
 	 * @throws SWTException
 	 */
 	public AnimationPlayer(String locator) throws SWTException{
-		final String DEBUG_STR="AnimationPlayer::AnimationPlayer(Locator )";
-		System.out.println(DEBUG_STR+"+");
 		ImageLoader imageLoader= new ImageLoader();
-		System.out.println(DEBUG_STR+"Locator string is "+locator);
 		// Following line may throw SWTException 
 		iImageData=imageLoader.load(locator);
 		//iRepeatCount=imageLoader.repeatCount;
 		iSourceDimension= new Point(imageLoader.logicalScreenWidth, imageLoader.logicalScreenHeight);
 		pupulateControl();
-		System.out.println(DEBUG_STR+"-");
 	}
 	
 	/**
 	 * Moved the player to close state and releases all resources, called from PlayerBase class  
 	 */
 	protected void doClose() {
-		final String DEBUG_STR="AnimationPlayer::doClose()";
-		System.out.println(DEBUG_STR+"+");
 		iState=CLOSED;
 		iPlayerListenerImpl.postEvent(PlayerListener.CLOSED, null);
-		System.out.println(DEBUG_STR+"-");
 	}
 
 	protected void doDeallocate() {
@@ -156,28 +148,23 @@ public class AnimationPlayer extends PlayerBase {
 	}
 
 	protected void doPrefetch() throws MediaException {
-		final String DEBUG_STR="AnimationPlayer::doPrefetch()";
-		System.out.println(DEBUG_STR+"+");
 		iState=PREFETCHED;
-		System.out.println(DEBUG_STR+"-");
 	}
 
 	protected void doRealize() throws MediaException {
-		final String DEBUG_STR="AnimationPlayer::doRealize()";
-		System.out.println(DEBUG_STR+"+");
 		iState=REALIZED;
-		// this is temporary solution implement it in proper way 
+		// this is temporary solution implement it in proper way
+		// initialize the iImage object with first frame  
 		iImage=new Image(iDisplay, iImageData[0]);
-		System.out.println(DEBUG_STR+"-");
 	}
-
+	
+	/**
+	 * 
+	 */
 	protected void doStop() throws MediaException {
-		final String DEBUG_STR="AnimationPlayer::doStop()";
-		System.out.println(DEBUG_STR+"+");
 		// since after stopping the player the player state will move to pre-fetched state 
 		iState=PREFETCHED;
 		iPlayerListenerImpl.postEvent(PlayerListener.STOPPED, new Long(iMediaTime * 10000));
-		System.out.println(DEBUG_STR+"-");
 	}
 
 	public void addControl(Control aControl, String aControlType)
@@ -214,9 +201,10 @@ public class AnimationPlayer extends PlayerBase {
 	}
 	
 	/**
-	 * This returned the total time taken, till now, to play the video.  
+	 * This returns the total time taken, till now, to play the video.  
 	 */
 	public long getMediaTime() {
+		// Since we have to return it in microsecond multiply it with 1000;
 		return iMediaTime*10000;
 	}
 
@@ -231,91 +219,120 @@ public class AnimationPlayer extends PlayerBase {
 		closeCheck();
         iPlayerListenerImpl.removePlayerListener(aPlayerListener);
 	}
+	
+	/**
+	 * 
+	 */
+	
 	public void start() throws MediaException {
 		final String DEBUG_STR = "AnimationPlayer::start()";
-//		prefetch();
-		initialize();
-		addPaintListener(iControl);
-		iState = STARTED;
-		Thread thread = new Thread("Animation") {
-			int frameIndex = iFrameindex;
-			int loopCount = iCurrentLoopCount;
-			GC gc=null;
-			public void run() {
-				final int noOfFrames = iImageData.length;
-				while (frameIndex < noOfFrames && (loopCount < iTotalLoopCount)
-						&& (iState == STARTED)) {
-					final int delayTimeForNextFrame = iImageData[frameIndex].delayTime;
-					System.out.println("\n\n\n************" + DEBUG_STR
-							+ "Inside the while loop " + frameIndex + "/"
-							+ noOfFrames);
-					// Since we are going to display first frame, notify all
-					// PlayerListener that Player has started
-					if (frameIndex == 0) {
-						iPlayerListenerImpl.postEvent(PlayerListener.STARTED,
-								new Long(iMediaTime * 10000));
-					}
-					iDisplay.asyncExec(new Runnable() {
-						public void run() {
-							System.out.println(DEBUG_STR+"Inside run method");
-							try {
-								if (gc == null)gc = new GC(iImage);
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							System.out.println(DEBUG_STR+"Inside run method246");
-							Image tempImage = new Image(iDisplay,
-									iImageData[frameIndex]);
-							System.out.println(DEBUG_STR+"Inside run method246");
-							gc.drawImage(tempImage, 0, 0);
-							tempImage.dispose();
-							frameIndex = (frameIndex + 1) % noOfFrames;
-							System.out.println(DEBUG_STR+"Inside run method253>>>>>>>>>"+frameIndex);
-							iControl.redraw();
-							// update the mediaTime, as Animation progress
-							iMediaTime += delayTimeForNextFrame;
-							// If imageIndex becomes zero it means, all frames
-							// has been displayed
-							// So increase the loopCount
-							if (frameIndex == 0) {
-								// send the END_OF_MEDIA event to all listener
-								iPlayerListenerImpl.postEvent(
-										PlayerListener.END_OF_MEDIA, new Long(
-												iMediaTime * 10000));
-								loopCount++;
-								// since player is again going to start from the
-								// first frame
-								// so media time should be set to zero
-								iMediaTime = 0;
-							}
-							System.out
-									.println(DEBUG_STR
-											+ "end of asynchronous block imageIndex is "
-											+ frameIndex + " and loop count is"
-											+ loopCount );
+		Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,DEBUG_STR + "+");
+		prefetch();
+		// Only prefetched player may be started. If player is already started
+		// this method returns silently.
+		if (getState() == PREFETCHED) {
+			initialize();
+			addPaintListener(iControl);
+			iState = STARTED;
+			Thread thread = new Thread("Animation") {
+				// int frameIndex = iFrameindex;
+				int loopCount = iCurrentLoopCount;
+				GC gc = null;
+				public void run() {
+					final int noOfFrames = iImageData.length;
+					while (iFrameIndex < noOfFrames
+							&& (iRepeatForeEver || (loopCount < iTotalLoopCount))
+							&& (iState == STARTED)) {
+						final int delayTimeForNextFrame = iImageData[iFrameIndex].delayTime;
+						// Since we are going to display first frame, notify all
+						// PlayerListener that Player has started
+						if (iFrameIndex == 0) {
+							// TODO Is it true that whenever STARTED event will
+							// be posted
+							// 2nd argument in postEvent function(mediaTime)
+							// will be zero?
+							// in that case just pass the 2nd argument as zero,
+							// instead of multiplying
+							// iMediaTime with 10000.
+							iPlayerListenerImpl.postEvent(
+									PlayerListener.STARTED, new Long(
+											iMediaTime * 10000));
 						}
-					});
-					try {
-						Thread.sleep(delayTimeForNextFrame * 10);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						// if stop time has become more than the media time
+						// TODO This solution may not be accurate, if the delay
+						// between two frames is grater than 1 second.
+						// Do we need to implement the TimerTask only.
+						if ( iMediaTime > iStopTime ) {
+							Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,DEBUG_STR+"Going to post Stopped at time event to player Listener ");
+							iPlayerListenerImpl.postEvent(
+									PlayerListener.STOPPED_AT_TIME, new Long(
+											iMediaTime * 10000));
+							break;
+						}
+						iDisplay.asyncExec(new Runnable() {
+							public void run() {
+								try {
+									if (gc == null)
+										gc = new GC(iImage);
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									// e.printStackTrace();
+								}
+								// iImage.dispose();
+								// iImage=new Image(iDisplay,
+								// iImageData[iFrameIndex]);
+								Image tempImage = new Image(iDisplay,
+										iImageData[iFrameIndex]);
+								gc.drawImage(tempImage, 0, 0);
+								tempImage.dispose();
+								iFrameIndex = (iFrameIndex + 1) % noOfFrames;
+								iControl.redraw();
+								// update the mediaTime, as Animation progress
+								iMediaTime += delayTimeForNextFrame;
+
+								// If imageIndex becomes zero it means, all
+								// frames
+								// has been displayed
+								// So increase the loopCount
+								if (iFrameIndex == 0) {
+									// send the END_OF_MEDIA event to all
+									// listener
+									iPlayerListenerImpl.postEvent(
+											PlayerListener.END_OF_MEDIA,
+											new Long(iMediaTime * 10000));
+									loopCount++;
+									// since player is again going to start from
+									// the
+									// first frame
+									// so media time should be set to zero
+									iMediaTime = 0;
+								}
+								System.out
+										.println(DEBUG_STR
+												+ "\n End of asynchronous block imageIndex is "
+												+ iFrameIndex
+												+ " and loop count is"
+												+ loopCount);
+							}
+						});
+						try {
+							Thread.sleep(delayTimeForNextFrame * 10);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
-					System.out
-							.println("**********************End of while loop\n\n\n");
+					iCurrentLoopCount = loopCount;
+					Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,DEBUG_STR
+									+ "Came out side the while loop " + iState
+									+ " iFrameIndex " + iFrameIndex
+									+ " loopCount " + loopCount
+									);
 				}
-				iCurrentLoopCount=loopCount;
-				System.out.println(DEBUG_STR + "Came out side the while loop "
-						+ iState);
-			}
-		};
-		thread.start();
-		System.out.println(DEBUG_STR + "-");
-		// }catch(Exception e){
-		// System.out.println(DEBUG_STR+"Exception caught"+e);
-		// e.printStackTrace();
-		// }
+			};
+			thread.start();
+		}
+		Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,DEBUG_STR + "-");
 	}
 	
 	/**
@@ -325,26 +342,16 @@ public class AnimationPlayer extends PlayerBase {
 	 * @throws MediaException 
 	 */
 	 void addPaintListener(org.eclipse.swt.widgets.Control aControl) throws MediaException{
-		 final String DEBUG_STR="AnimationPlayer::addPaintListener()";
 		 iControl=aControl;
 		// iDisplay and IControl shouldn't be null here 
-		System.out.println(DEBUG_STR+" Control is "+iControl+" Display "+iDisplay);
 		// Following line should never execute
 		// TODO check what message to provide in case of Exception 
 		if(iControl==null)
 			throw new MediaException("Update this message");
 		iDisplay.syncExec(new Runnable(){
 			public void run() {
-				// if user is writing his MIDlet using eSWT API, then the Control object will be MobileShell
-				// and in that case it is mandatory to open the shell
-//				if(iControl instanceof MobileShell){
-				if(iControl instanceof Shell){
-					((Shell)iControl).open();
-				}
 				iControl.addPaintListener(new PaintListener(){
 					public void paintControl(PaintEvent pe) {
-//						System.out.println(DEBUG_STR+"paintControl() paintEvent is "+pe);
-//						System.out.println(DEBUG_STR+"paintControl() Display location is "+iDisplayLocation.x+", "+iDisplayLocation.y);
 						if(iImage!=null){
 							pe.gc.drawImage(iImage, iDisplayLocation.x, iDisplayLocation.y);
 						}
@@ -412,47 +419,46 @@ public class AnimationPlayer extends PlayerBase {
 	 * 
 	 */
 	public void setLoopCount(int aCount){
+		iRepeatForeEver = ( aCount == -1);
 		super.setLoopCount(aCount);
 		iTotalLoopCount=aCount;
 	}
 	/**
      * From PlayerBase
+     * Here iFrameIndex variable will be updated according to the argument(aNow) supplied
+     * We are updating the iFrameIndex variable, which is being used in the start function
+     * 
      * @see PlayerBase
      */
 	public long setMediaTime(long aNow) throws MediaException {
+		final String DEBUG_STR="AnimationPlayer::setmediaTime()";
 		long now = super.setMediaTime(aNow);
 		int totalFrames = iImageData.length;
 		int totalTime = 0;
 		for (int i = 0; i < totalFrames; i++) {
-			if (now < totalTime) {
-				iFrameindex=i;
+			totalTime += iImageData[i].delayTime;
+			if (totalTime*10000 >= now ) {
+				iFrameIndex=i;
 				break;
 			}
-			totalTime += iImageData[i].delayTime * 10000;
 		}
-		return totalTime;
+		// we need to update the iMediaTime as well 
+		iMediaTime=totalTime;
+		return totalTime * 10000;
 	}
 	//////////////////////////////////////////////////////////////////////////////////////
 	// Following functions are for internal use, and not exposed to MIDlet developer//////
 	/////////////////////////////////////////////////////////////////////////////////////
-	/**
-	 * 
-	 */
-	private void doStart(){
-		
-	}
-	
-	
     /**
 	 * This function is responsible for creating all controls and adding it into Controls hashtable.
 	 */
 	private void pupulateControl(){
-		final String DEBUG_STR="AnimationPlayer::pupulateControl()";
-		System.out.println(DEBUG_STR+"+");
 		VideoControl videoControl= new VideoControl(this);
 		FramePositioningControl fpc= new FramePositioningControl(this);
 		StopTimeControl stc= new StopTimeControl(this);
 		RateControl rc= new RateControl(this);
+		// there are four control provided by AnimationPlayer 
+		// adding all one by one to the controlList(iControls)
 		try {
 			addControl(videoControl, fVideoControl);
 			addControl(fpc, fFramePositioningControl);
@@ -462,7 +468,6 @@ public class AnimationPlayer extends PlayerBase {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println(DEBUG_STR+"-");
 	}
 	/**
 	 * This function initialize iControl and iDisplay object if it is null,
@@ -474,10 +479,6 @@ public class AnimationPlayer extends PlayerBase {
 	 */
 	
 	private void initialize() {
-		final String DEBUG_STR = "AnimationPlayer::initialize()";
-		System.out.println(DEBUG_STR + "+");
-		System.out.println(DEBUG_STR + " Control is " + iControl
-				+ " display is " + iDisplay);
 		if (iControl == null || iDisplay == null) {
 			VideoControl vc = (VideoControl) getControl(fVideoControl);
 			iDisplay = vc.getiDisplay();
@@ -490,7 +491,6 @@ public class AnimationPlayer extends PlayerBase {
 				}
 			}
 		}
-		System.out.println(DEBUG_STR + "-");
 	}
 	
 	/**
@@ -500,14 +500,18 @@ public class AnimationPlayer extends PlayerBase {
 	 * @param height : height to be set of video(Animated GIF) 
 	 */
 	void updateImageData(int width, int height){
-		final String DEBUG_STR= "AnimationPlayer::updateImageData(int width, int height)";
-		System.out.println(DEBUG_STR+"+");
 		int noOfFrames= iImageData.length;
 		for(int i=0;i<noOfFrames;i++){
 			iImageData[i]=iImageData[i].scaledTo(width, height);
 		}
 		iImage=new Image(iDisplay, iImageData[0]);
-		System.out.println(DEBUG_STR+"-");
+	}
+	
+	/**
+	 * Overloaded function for calling the above function  
+	 */
+	void updateImageData(Point aSize){
+		updateImageData(aSize.x, aSize.y);
 	}
 	
 	/**
@@ -517,31 +521,9 @@ public class AnimationPlayer extends PlayerBase {
 	 * @param format
 	 */
 	// This function is not implemented fully  
-	int[] getCurrentFrame(String format){
-		final String DEBUG_STR="AnimationPlayer::getCurrentFrame()";
-		System.out.println(DEBUG_STR+"+");
-		ImageData currentFrameImageData=iImage.getImageData();
-		int data[][]= new int[currentFrameImageData.height][currentFrameImageData.width];
-		System.out.println("Width of the current Image is "+data[0].length+" height "+data.length);
-		
-		int imageWidth=data[0].length;
-		int imageHeight=data.length;
-		System.out.println("Image Width "+imageWidth+", "+currentFrameImageData.width+" height "+imageHeight+", "+currentFrameImageData.height);
-		
-		for(int i=0;i<imageHeight;i++){
-			currentFrameImageData.getPixels(0, i, imageWidth, data[i], 0);
-			System.out.println(DEBUG_STR+"=========>"+data[i]);
-		}
-		System.out.println(DEBUG_STR+"After reading all pixel value");
-		int[] byteArray=new int[imageWidth*imageHeight];
-		//int dataLength=data.length;
-		
-		for(int i=0;i<imageHeight;i++){
-			System.arraycopy(data[i], 0, byteArray, i*imageWidth, imageWidth);
-		}
-		System.out.println(DEBUG_STR+"After merging all array into single array ");
-		System.out.println(DEBUG_STR+"-"+byteArray+">>>>>"+byteArray.length);
-		return byteArray;
+	javax.microedition.lcdui.Image getCurrentFrame(String format){
+		javax.microedition.lcdui.Image currentFrameImage= LCDUIInvoker.createLcduiImage(iImage);
+		return currentFrameImage;
 	}
 	
 	/**
@@ -588,5 +570,56 @@ public class AnimationPlayer extends PlayerBase {
 	 */
 	PlayerListenerImpl getiPlayerListenerImpl() {
 		return iPlayerListenerImpl;
+	}
+
+	/**
+	 * @return the iFrameIndex
+	 */
+	int getiFrameIndex() {
+		return iFrameIndex;
+	}
+
+	/**
+	 * @return the iCurrentRate
+	 */
+	int getiCurrentRate() {
+		return iCurrentRate;
+	}
+
+	/**
+	 * @param aCurrentRate the iCurrentRate to set
+	 * @return actual rate set 
+	 */
+	int setiCurrentRate(int aCurrentRate) {
+		// if the player is already started and was paused due to setRate
+		// then we need to start the player again from the same frame 
+		if(iState == STARTED &&  iCurrentRate != aCurrentRate){
+			if(aCurrentRate<=0){
+				// pause the player
+				// following line will break the while loop in start method
+				// Objective here is to pause the animation, if is in started state
+				// also we do not need to notify to the playerListener that player has been stopped or paused 
+				iState=PREFETCHED;
+			}else{
+				//start the player
+				// this will start playing animation from the very same frame
+				// where it was paused due to setRate(0)
+				try {
+					start();
+				} catch (MediaException e) {
+					// ignore the exception
+					e.printStackTrace();
+				}
+			}
+		}
+		this.iCurrentRate = aCurrentRate;
+		return iCurrentRate;
+	}
+
+	/**
+	 * @param iStopTime the iStopTime to set
+	 */
+	void setiStopTime(long iStopTime) {
+		this.iStopTime = iStopTime;
 	}
 }

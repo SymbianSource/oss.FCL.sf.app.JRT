@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 package javax.microedition.lcdui;
@@ -36,63 +36,68 @@ import org.eclipse.swt.layout.FormLayout;
 import javax.microedition.lcdui.EventDispatcher.LCDUIEvent;
 
 
-
-final class CanvasKeypad
+/**
+ * The CanvasKeypad class is designed to generate the on screen keypad
+ * and handle graphical operations as well as low-level pointer events.
+ * CanvasKeypad maps the pointer events to key events that are needed by the Canvas.
+ *
+ */
+final class CanvasKeypad implements MouseListener, MouseMoveListener
 {
 
     /**
-     *  Constant for <code>UP</code> game action.
-     */
+             *  Constant for <code>UP</code> game action.
+             */
     private static final int UP = -1;
 
     /**
-     * Constant for <code>DOWN</code> game action.
-     */
+             * Constant for <code>DOWN</code> game action.
+             */
     private static final int DOWN = -2;
 
     /**
-     * Constant for <code>LEFT</code> game action.
-     */
+             * Constant for <code>LEFT</code> game action.
+             */
     private static final int LEFT = -3;
 
     /**
-     * Constant for <code>RIGHT</code> game action.
-     */
+             * Constant for <code>RIGHT</code> game action.
+             */
     private static final int RIGHT = -4;
 
     /**
-     * Constant for <code>FIRE</code> game action.
-     */
+             * Constant for <code>FIRE</code> game action.
+             */
     private static final int FIRE = -5;
 
     /**
-     * Constant for <code>SLK</code> game action.
-     */
+             * Constant for <code>SLK</code> game action.
+             */
     private static final int SLK = -6;
 
     /**
-     * Constant for <code>SRK</code> game action.
-     */
+             * Constant for <code>SRK</code> game action.
+             */
     private static final int SRK = -7;
 
     /**
-     * Constant for general "<code>A</code>" game action.
-     */
+             * Constant for general "<code>A</code>" game action.
+             */
     private static final int GAME_A = 55;
 
     /**
-     * Constant for general "<code>B</code>" game action.
-     */
+             * Constant for general "<code>B</code>" game action.
+             */
     private static final int GAME_B = 57;
 
     /**
-     * Constant for general "<code>C</code>" game action.
-     */
+             * Constant for general "<code>C</code>" game action.
+             */
     private static final int GAME_C = 42;
 
     /**
-     * Constant for general "<code>D</code>" game action.
-     */
+             * Constant for general "<code>D</code>" game action.
+             */
     private static final int GAME_D = 35;
 
     /**
@@ -105,28 +110,52 @@ final class CanvasKeypad
             */
     private static final int KEYREPEAT_INTERVAL = 500;
 
-    private BaseCSSEngine cssEngine;
+    /**
+             * alpha value of a transparent pixel.
+             */
+    private static final int TRANSPARENT = 0;
 
     /**
-            * keypad and game keys composites.
-            */
+             * keypad and game keys composites.
+             */
     private Composite keypadComposite;
     private Composite gameKeysComposite;
     private Canvas canvas;
 
     /**
-            * Listener for receiving mouse events on the keypad buttons.
-            */
-    private CanvasKeypadMouseListener mouseListener = new CanvasKeypadMouseListener();
+             * CSS engine instance
+             */
+    private BaseCSSEngine cssEngine;
 
     /**
             * Canvas keypad buttons.
             */
-    private Button up;
-    private Button down;
-    private Button left;
-    private Button right;
-    private Button center;
+
+    private Label center;
+    private Label up;
+    private Label down;
+    private Label left;
+    private Label right;
+
+    private org.eclipse.swt.graphics.Image center_normal;
+    private org.eclipse.swt.graphics.Image center_pressed;
+    private org.eclipse.swt.graphics.Image left_normal;
+    private org.eclipse.swt.graphics.Image left_pressed;
+    private org.eclipse.swt.graphics.Image right_normal;
+    private org.eclipse.swt.graphics.Image right_pressed;
+    private org.eclipse.swt.graphics.Image up_normal;
+    private org.eclipse.swt.graphics.Image up_pressed;
+    private org.eclipse.swt.graphics.Image down_normal;
+    private org.eclipse.swt.graphics.Image down_pressed;
+
+    private ImageData center_data;
+    private ImageData left_data;
+    private ImageData right_data;
+    private ImageData up_data;
+    private ImageData down_data;
+
+    private ImageData pressedKeyData;
+
     private Button skright;
     private Button skleft;
     private Button gameA;
@@ -134,10 +163,27 @@ final class CanvasKeypad
     private Button gameC;
     private Button gameD;
 
-    private int keyPressed;
+    private Display display;
 
+    private int keyPressed;
+    private Label rockerKeyPressed;
+
+    /**
+             * Timer for handling long key press and mouse move events.
+             */
     private Timer timer = new Timer();
     private CanvasKeypadTimerTask timerTask;
+
+    /**
+             * Path of the osk graphics
+             */
+    private static final String RESOURCE_PATH = "c:/data/images/";
+
+    /**
+             * offset on the composite in pixels where the osk rocker keys are layed out.
+             */
+    private int image_offset;
+
 
     /**
              * Constructs a canvas kepad based on the JAD attribute
@@ -150,9 +196,34 @@ final class CanvasKeypad
     {
 
         this.canvas = canvas;
-        cssEngine = new BaseCSSEngine(Display.getCurrent());
+        display = ESWTUIThreadRunner.getInstance().getDisplay();
 
-        //Set form layout for the shell conatining the canvas.
+        cssEngine = new BaseCSSEngine(display);
+
+
+        //load the images
+        center_normal = new org.eclipse.swt.graphics.Image(display,RESOURCE_PATH + "qtg_fr_rocker_normal_c.svg");
+        center_pressed = new org.eclipse.swt.graphics.Image(display,RESOURCE_PATH + "qtg_fr_rocker_pressed_c.svg");
+        left_normal = new org.eclipse.swt.graphics.Image(display,RESOURCE_PATH + "qtg_fr_rocker_normal_l.svg");
+        left_pressed = new org.eclipse.swt.graphics.Image(display,RESOURCE_PATH + "qtg_fr_rocker_pressed_l.svg");
+        right_normal = new org.eclipse.swt.graphics.Image(display,RESOURCE_PATH + "qtg_fr_rocker_normal_r.svg");
+        right_pressed = new org.eclipse.swt.graphics.Image(display,RESOURCE_PATH + "qtg_fr_rocker_pressed_r.svg");
+        up_normal = new org.eclipse.swt.graphics.Image(display,RESOURCE_PATH + "qtg_fr_rocker_normal_t.svg");
+        up_pressed = new org.eclipse.swt.graphics.Image(display,RESOURCE_PATH + "qtg_fr_rocker_pressed_t.svg");
+        down_normal = new org.eclipse.swt.graphics.Image(display,RESOURCE_PATH + "qtg_fr_rocker_normal_b.svg");
+        down_pressed = new org.eclipse.swt.graphics.Image(display,RESOURCE_PATH + "qtg_fr_rocker_pressed_b.svg");
+
+        image_offset = (display.getBounds().width/2) - (center_normal.getBounds().width/2);
+
+        //Load image data required to determine the osk button pressed on mouse events
+        center_data = center_normal.getImageData();
+        left_data = left_normal.getImageData();
+        right_data = right_normal.getImageData();
+        up_data = up_normal.getImageData();
+        down_data = down_normal.getImageData();
+
+
+        //Set form layout for the shell containing the canvas.
         canvas.getShell().setLayout(new FormLayout());
 
         //Create the Navigation keypad
@@ -166,7 +237,7 @@ final class CanvasKeypad
         }
 
 
-        //Layout the game keys, navigation keys and the canvas on the shell using form layout
+        //Layout the game keys, navigation keys and the canvas composites on the shell using form layout
 
         FormData canvasData = new FormData();
         canvasData.right = new FormAttachment(100);
@@ -178,6 +249,7 @@ final class CanvasKeypad
         FormData navKeyData = new FormData();
         navKeyData.right = new FormAttachment(100);
         navKeyData.left = new FormAttachment(0);
+
         if(gameKeysComposite != null)
         {
             //game keypad was created above, so layout the game keys.
@@ -188,12 +260,13 @@ final class CanvasKeypad
             //game keys are not needed
             navKeyData.bottom = new FormAttachment(100);
         }
+
         keypadComposite.setLayoutData(navKeyData);
 
 
         if(gameKeysComposite != null)
         {
-            //layout the game keys
+            //game keys were created, layout the game keys
             FormData gameKeyData = new FormData();
             gameKeyData.right = new FormAttachment(100);
             gameKeyData.left = new FormAttachment(0);
@@ -203,8 +276,6 @@ final class CanvasKeypad
 
         //layout the shell
         canvas.getShell().layout();
-
-
 
     }
 
@@ -218,144 +289,43 @@ final class CanvasKeypad
 
         keypadComposite = new Composite(canvas.getShell(), SWT.NONE);
 
-        //Create the buttons of the navigation keypad
+        center = new Label(keypadComposite, SWT.NONE);
+        left = new Label(keypadComposite, SWT.NONE);
+        right = new Label(keypadComposite, SWT.NONE);
+        up = new Label(keypadComposite, SWT.NONE);
+        down = new Label(keypadComposite, SWT.NONE);
 
-        up = new Button(keypadComposite, SWT.PUSH);
-        up.addMouseListener(mouseListener);
-
-        left = new Button(keypadComposite, SWT.PUSH);
-        left.addMouseListener(mouseListener);
-
-        center = new Button(keypadComposite, SWT.PUSH);
-        center.addMouseListener(mouseListener);
-
-        right = new Button(keypadComposite, SWT.PUSH);
-        right.addMouseListener(mouseListener);
-
-        down = new Button(keypadComposite, SWT.PUSH);
-        down.addMouseListener(mouseListener);
-
-        //up.setStyleSheet(
-        cssEngine.applyCSS(up,"QPushButton" +
-                           "{" +
-                           "background-color:blue;" +
-                           "border-style: outset;" +
-                           "border-width: 2px; " +
-                           "border-radius: 5px;" +
-                           "border-top-right-radius: 27px;"+
-                           "border-top-left-radius: 27px;"+
-                           "border-color: beige;" +
-                           "font: bold 14px;" +
-                           "min-width: 3em;" +
-                           "min-height: 2em;" +
-                           "}" +
-                           "QPushButton:pressed { background-color: rgb(224, 0, 0);" +
-                           " border-style: inset;" +
-                           "}");
-
-        cssEngine.applyCSS(down,"QPushButton" +
-                           "{" +
-                           "background-color:blue;" +
-                           "border-style: outset;" +
-                           "border-width: 2px; " +
-                           "border-radius: 5px;" +
-                           "border-bottom-right-radius: 27px;"+
-                           "border-bottom-left-radius: 27px;"+
-                           "border-color: beige;" +
-                           "font: bold 14px;" +
-                           "min-width: 3em;" +
-                           "min-height: 2em;" +
-                           "}" +
-                           "QPushButton:pressed { background-color: rgb(224, 0, 0);" +
-                           " border-style: inset;" +
-                           "}");
-
-        cssEngine.applyCSS(left,"QPushButton" +
-                           "{" +
-                           "background-color:blue;" +
-                           "border-style: outset;" +
-                           "border-width: 2px; " +
-                           "border-radius: 5px;" +
-                           "border-top-left-radius: 27px;"+
-                           "border-bottom-left-radius: 27px;"+
-                           "border-color: beige;" +
-                           "font: bold 14px;" +
-                           "min-height: 3em;" +
-                           "min-width: 2em;" +
-                           "}" +
-                           "QPushButton:pressed { background-color: rgb(224, 0, 0);" +
-                           " border-style: inset;" +
-                           "}");
-
-        cssEngine.applyCSS(right,"QPushButton" +
-                           "{" +
-                           "background-color:blue;" +
-                           "border-style: outset;" +
-                           "border-width: 2px; " +
-                           "border-radius: 5px;" +
-                           "border-top-right-radius: 27px;"+
-                           "border-bottom-right-radius: 27px;"+
-                           "border-color: beige;" +
-                           "font: bold 14px;" +
-                           "min-height: 3em;" +
-                           "min-width: 2em;" +
-                           "}" +
-                           "QPushButton:pressed { background-color: rgb(224, 0, 0);" +
-                           " border-style: inset;" +
-                           "}");
-
-        cssEngine.applyCSS(center, "QPushButton" +
-                           "{" +
-                           "background-color:blue;" +
-                           "border-style: outset;" +
-                           "border-width: 2px; " +
-                           "border-radius: 27px;" +
-                           "border-color: beige;" +
-                           "font: bold 14px;" +
-                           "min-height: 3em;" +
-                           "min-width: 3em;" +
-                           "}" +
-                           "QPushButton:pressed { background-color: rgb(224, 0, 0);" +
-                           " border-style: inset;" +
-                           "}");
-
-        up.setText("^");
-        center.setText("*");
-        left.setText("<");
-        right.setText(">");
-        down.setText("v");
-
+        center.setImage(center_normal);
+        center.pack();
+        left.setImage(left_normal);
+        left.pack();
+        right.setImage(right_normal);
+        right.pack();
+        up.setImage(up_normal);
+        up.pack();
+        down.setImage(down_normal);
+        down.pack();
 
         //layout the navigation keys
         keypadComposite.setLayout(new FormLayout());
 
 
-        FormData upFormData = new FormData();
-        upFormData.top=new FormAttachment(0,10);
-        upFormData.left=new FormAttachment(40);
-        up.setLayoutData(upFormData);
+        FormData navkeysFormData = new FormData();
+        navkeysFormData.top=new FormAttachment(0);
+        navkeysFormData.left = new FormAttachment(0,image_offset);
+        center.setLayoutData(navkeysFormData);
+        left.setLayoutData(navkeysFormData);
+        right.setLayoutData(navkeysFormData);
+        up.setLayoutData(navkeysFormData);
+        down.setLayoutData(navkeysFormData);
 
-        FormData centerFormData = new FormData();
-        centerFormData.top=new FormAttachment(up,0,SWT.CENTER|SWT.TRAIL);
-        centerFormData.left=new FormAttachment(40);
-        center.setLayoutData(centerFormData);
-
-        FormData downFormData = new FormData();
-        downFormData.top = new FormAttachment(center,0,SWT.TRAIL);
-        downFormData.left=new FormAttachment(left);
-        down.setLayoutData(downFormData);
-
-        FormData rightFormData = new FormData();
-        rightFormData.top=new FormAttachment(up,0,SWT.TRAIL);
-        rightFormData.left=new FormAttachment(center);
-        right.setLayoutData(rightFormData);
-
-        FormData leftFormData = new FormData();
-        leftFormData.top= new FormAttachment(up);
-        leftFormData.right = new FormAttachment(center);
-        left.setLayoutData(leftFormData);
+        keypadComposite.pack();
 
         keypadComposite.layout();
+
+        keypadComposite.addMouseListener(this);
+        keypadComposite.addMouseMoveListener(this);
+
     }
 
 
@@ -370,41 +340,79 @@ final class CanvasKeypad
 
         //Add the game buttons
         gameA = new Button(gameKeysComposite, SWT.PUSH);
-        gameA.addMouseListener(mouseListener);
+        gameA.addMouseListener(this);
 
         gameB = new Button(gameKeysComposite, SWT.PUSH);
-        gameB.addMouseListener(mouseListener);
+        gameB.addMouseListener(this);
 
         gameC = new Button(gameKeysComposite, SWT.PUSH);
-        gameC.addMouseListener(mouseListener);
+        gameC.addMouseListener(this);
 
         gameD = new Button(gameKeysComposite, SWT.PUSH);
-        gameD.addMouseListener(mouseListener);
+        gameD.addMouseListener(this);
 
-        //set the style sheet
-        String gameKeysStylesheet = "QPushButton" +
-                                    "{" +
-                                    "background-color:blue;" +
-                                    "border-style: outset;" +
-                                    "border-width: 0px; " +
-                                    "border-color: beige;" +
-                                    "font: bold 14px;" +
-                                    "min-height: 2em;" +
-                                    "min-width: 5.5em;" +
-                                    "}" +
-                                    "QPushButton:pressed { background-color: rgb(224, 0, 0);" +
-                                    " border-style: inset;" +
-                                    "}";
+        //Set the game key style sheets
+        cssEngine.applyCSS(gameA,"QPushButton" +
+                           "{" +
+                           "background-color:white;" +
+                           "border-style: outset;" +
+                           "border-width: 1px; " +
+                           "border-color: black;" +
+                           "border-radius: 2px;" +
+                           "font: bold 14px;" +
+                           "min-height: 2em;" +
+                           "min-width: 5.1em;" +
+                           "image: url(" + RESOURCE_PATH + "qtg_mono_game_a.svg);" +
+                           "}" +
+                           "QPushButton:pressed { image: url(" + RESOURCE_PATH + "qtg_mono_game_a.svg);" +
+                           " border-style: inset;" +
+                           "}");
+        cssEngine.applyCSS(gameB,"QPushButton" +
+                           "{" +
+                           "background-color:white;" +
+                           "border-style: outset;" +
+                           "border-width: 1px; " +
+                           "border-color: black;" +
+                           "border-radius: 2px;" +
+                           "font: bold 14px;" +
+                           "min-height: 2em;" +
+                           "min-width: 5.1em;" +
+                           "image: url(" + RESOURCE_PATH + "qtg_mono_game_b.svg);" +
+                           "}" +
+                           "QPushButton:pressed { image: url(" + RESOURCE_PATH + "qtg_mono_game_b.svg);" +
+                           " border-style: inset;" +
+                           "}");
+        cssEngine.applyCSS(gameC,"QPushButton" +
+                           "{" +
+                           "background-color:white;" +
+                           "border-style: outset;" +
+                           "border-width: 1px; " +
+                           "border-color: black;" +
+                           "border-radius: 2px;" +
+                           "font: bold 14px;" +
+                           "min-height: 2em;" +
+                           "min-width: 5.1em;" +
+                           "image: url(" + RESOURCE_PATH + "qtg_mono_game_c.svg);" +
+                           "}" +
+                           "QPushButton:pressed { image: url(" + RESOURCE_PATH + "qtg_mono_game_c.svg);" +
+                           " border-style: inset;" +
+                           "}");
+        cssEngine.applyCSS(gameD,"QPushButton" +
+                           "{" +
+                           "background-color:white;" +
+                           "border-style: outset;" +
+                           "border-width: 1px; " +
+                           "border-color: black;" +
+                           "border-radius: 2px;" +
+                           "font: bold 14px;" +
+                           "min-height: 2em;" +
+                           "min-width: 5.1em;" +
+                           "image: url(" + RESOURCE_PATH + "qtg_mono_game_d.svg);" +
+                           "}" +
+                           "QPushButton:pressed { image: url(" + RESOURCE_PATH + "qtg_mono_game_d.svg);" +
+                           " border-style: inset;" +
+                           "}");
 
-        cssEngine.applyCSS(gameA,gameKeysStylesheet);
-        cssEngine.applyCSS(gameB,gameKeysStylesheet);
-        cssEngine.applyCSS(gameC,gameKeysStylesheet);
-        cssEngine.applyCSS(gameD,gameKeysStylesheet);
-
-        gameA.setText("A");
-        gameB.setText("B");
-        gameC.setText("C");
-        gameD.setText("D");
 
         //layout the game Keys
         FormData gameAFormData = new FormData();
@@ -453,45 +461,48 @@ final class CanvasKeypad
             if(keypadComposite != null)
             {
 
+                Color black = display.getSystemColor(SWT.COLOR_BLACK);
+                keypadComposite.setBackground(black);
+
                 skright = new Button(keypadComposite, SWT.PUSH);
-                skright.addMouseListener(mouseListener);
+                skright.addMouseListener(this);
 
                 skleft = new Button(keypadComposite, SWT.PUSH);
-                skleft.addMouseListener(mouseListener);
+                skleft.addMouseListener(this);
 
                 //Set the style sheet
                 cssEngine.applyCSS(skright,"QPushButton" +
                                    "{" +
-                                   "background-color:blue;" +
+                                   "background-color:white;" +
                                    "border-style: outset;" +
                                    "border-width: 1px; " +
                                    "border-bottom-left-radius: 22px;"+
-                                   "border-color: beige;" +
+                                   "border-color: black;" +
                                    "font: bold 14px;" +
                                    "min-width: 3em;" +
                                    "min-height: 2em;" +
+                                   "image: url(" + RESOURCE_PATH + "qtg_mono_rsk_horizontal.svg);" +
                                    "}" +
-                                   "QPushButton:pressed { background-color: rgb(224, 0, 0);" +
+                                   "QPushButton:pressed { image: url(" + RESOURCE_PATH + "qtg_mono_rsk_horizontal.svg);" +
                                    " border-style: inset;" +
                                    "}");
 
                 cssEngine.applyCSS(skleft,"QPushButton" +
                                    "{" +
-                                   "background-color:blue;" +
+                                   "background-color:white;" +
                                    "border-style: outset;" +
                                    "border-width: 1px; " +
                                    "border-bottom-right-radius: 22px;"+
-                                   "border-color: beige;" +
+                                   "border-color: black;" +
                                    "font: bold 14px;" +
                                    "min-width: 3em;" +
                                    "min-height: 2em;" +
+                                   "image: url(" + RESOURCE_PATH + "qtg_mono_lsk_horizontal.svg);" +
                                    "}" +
-                                   "QPushButton:pressed { background-color: rgb(224, 0, 0);" +
+                                   "QPushButton:pressed { image: url(" + RESOURCE_PATH + "qtg_mono_lsk_horizontal.svg);" +
                                    " border-style: inset;" +
                                    "}");
 
-                skright.setText("RSK");
-                skleft.setText("LSK");
 
                 FormData sklFormData = new FormData();
                 sklFormData.top=new FormAttachment(0, 0);
@@ -513,18 +524,10 @@ final class CanvasKeypad
                 skright.dispose();
             if(skleft != null)
                 skleft.dispose();
+
+            keypadComposite.setBackground(null);
         }
 
-    }
-
-    Button getLeftSoftKey()
-    {
-        return skleft;
-    }
-
-    Button getRightSoftKey()
-    {
-        return skright;
     }
 
     /**
@@ -617,62 +620,405 @@ final class CanvasKeypad
 
 
     /**
-             * Mouse listener.
+             * Mouse listeners.
              */
-    class CanvasKeypadMouseListener implements MouseListener
+
+    public void mouseDown(MouseEvent e)
     {
 
-        public void mouseDown(MouseEvent e)
+        //handle the mouse down event
+        handleMouseDown(e);
+
+    }
+
+    public void mouseUp(MouseEvent e)
+    {
+
+        //handle the mouse up event
+        handleMouseUp(e);
+
+    }
+
+    public void mouseMove(MouseEvent e)
+    {
+
+        //handle the mouse move event
+        handleMouseMove(e);
+
+    }
+
+    public void mouseDoubleClick(MouseEvent event)
+    {
+        //do nothing
+    }
+
+
+
+
+
+    /**
+             * Handles the mouse down event
+             *
+             */
+    private void handleMouseDown(MouseEvent e)
+    {
+
+        if(e.widget == keypadComposite)
+        {
+            //the mouse down was grabbed by the keypad composite, map the key code based on the on rocker images.
+            keyPressed = handleRockerPressed(e);
+
+        }
+        else
+        {
+            //get the keycode of the game or soft keys based on the button that was clicked
+            keyPressed = getKeyCode(e.widget);
+        }
+
+        if(keyPressed != INVALID_CODE)
         {
 
-            canvas.doKeyPressed(getKeyCode(e.widget));
-
-            keyPressed = getKeyCode(e.widget);
+            //notify the canvas
+            canvas.doKeyPressed(keyPressed);
 
             // Create and Schedule the long keypress timer
             timerTask = new CanvasKeypadTimerTask();
             timer.schedule(timerTask, KEYREPEAT_INTERVAL);
         }
+    }
 
-        public void mouseUp(MouseEvent e)
+    /**
+             * Handles the mouse up event
+             *
+             */
+    private void handleMouseUp(MouseEvent e)
+    {
+        int keyReleased;
+
+        if(timerTask != null)
         {
-
-            if(timerTask != null)
-            {
-                //cancel the long keypress timer if it is running
-                timerTask.cancel();
-                timerTask = null;
-            }
-            canvas.doKeyReleased(getKeyCode(e.widget));
+            //cancel the long keypress timer if it is running
+            timerTask.cancel();
+            timerTask = null;
         }
 
-        public void mouseMove(MouseEvent e)
+        if(e.widget == keypadComposite)
+        {
+            //the mouse up was grabbed by the keypad composite, map the key code based on the on rocker images.
+            keyReleased = handleRockerReleased(e);
+
+        }
+        else
+        {
+            //get the keycode of the game or soft keys based on the button that was clicked
+            keyReleased = getKeyCode(e.widget);
+        }
+
+        if(keyReleased != INVALID_CODE)
         {
 
-            if(timerTask != null)
-            {
-                timerTask.cancel();
-                timerTask = null;
-            }
+            //notify the canvas
+            canvas.doKeyReleased(keyReleased);
+        }
+    }
 
-            canvas.doKeyPressed(getKeyCode(e.widget));
 
+    /**
+             * Handles the mouse move event
+             *
+             */
+    private void handleMouseMove(MouseEvent e)
+    {
+
+        if(timerTask != null)
+        {
+            //cancel the long keypress timer if it is running
+            timerTask.cancel();
+            timerTask = null;
+        }
+
+        if(e.widget == keypadComposite)
+        {
+            //the mouse move was grabbed by the keypad composite, handle the rocker key swipe
+            handleRockerMoved(e);
+
+        }
+        else
+        {
+            //get the keycode of the game or soft keys based on the button that was clicked
             keyPressed = getKeyCode(e.widget);
+
+            //notify the canvas
+            canvas.doKeyPressed(keyPressed);
 
             // Create and Schedule Timer
             timerTask = new CanvasKeypadTimerTask();
             timer.schedule(timerTask, KEYREPEAT_INTERVAL);
-
-        }
-
-        public void mouseDoubleClick(MouseEvent event)
-        {
-            //do nothing
         }
 
 
     }
 
+
+    /**
+             * Handles the rocker key press
+             *
+             */
+    private int handleRockerPressed(MouseEvent e)
+    {
+
+        keyPressed = INVALID_CODE;
+
+        Rectangle image_bounds = center.getBounds();
+
+        // Find out which rocker button was pressed
+        if(image_bounds.contains(e.x,e.y) == true)
+        {
+            //check each of the button images  to check which osk navkey button was pressed
+            if(center_data.getAlpha(e.x-image_offset,e.y)!=TRANSPARENT)
+            {
+                //center button was pressed
+                keyPressed = FIRE;
+                rockerKeyPressed = center;
+                center.setImage(center_pressed);
+            }
+            else if(left_data.getAlpha(e.x-image_offset,e.y)!=TRANSPARENT)
+            {
+                //left button was pressed
+                keyPressed = LEFT;
+                rockerKeyPressed = left;
+                left.setImage(left_pressed);
+            }
+            else if(right_data.getAlpha(e.x-image_offset,e.y)!=TRANSPARENT)
+            {
+                //right button was pressed
+                keyPressed = RIGHT;
+                rockerKeyPressed = right;
+                right.setImage(right_pressed);
+            }
+            else if(up_data.getAlpha(e.x-image_offset,e.y)!=TRANSPARENT)
+            {
+                //up button was pressed
+                keyPressed = UP;
+                rockerKeyPressed = up;
+                up.setImage(up_pressed);
+            }
+            else if(down_data.getAlpha(e.x-image_offset,e.y)!=TRANSPARENT)
+            {
+                //down button was pressed
+                keyPressed = DOWN;
+                rockerKeyPressed = down;
+                down.setImage(down_pressed);
+            }
+            else
+            {
+                keyPressed = INVALID_CODE;;
+            }
+
+        }
+
+        return keyPressed;
+
+    }
+
+
+    /**
+             * Handles the mouse released on the rocker keys
+             *
+             */
+    private int handleRockerReleased(MouseEvent e)
+    {
+
+        int keyReleased = INVALID_CODE;
+
+        Rectangle image_bounds = center.getBounds();
+
+        // Find out which rocker button was released
+        if(image_bounds.contains(e.x,e.y) == true)
+        {
+            //check each of the button images  to check which osk navkey button was released
+            if((rockerKeyPressed == center) &&
+                    (center_data.getAlpha(e.x-image_offset,e.y)!=TRANSPARENT))
+            {
+                //center button was released
+                keyReleased = FIRE;
+                center.setImage(center_normal);
+            }
+            else if((rockerKeyPressed == left) &&
+                    (left_data.getAlpha(e.x-image_offset,e.y)!=TRANSPARENT))
+            {
+                //left button was released
+                keyReleased = LEFT;
+                left.setImage(left_normal);
+            }
+            else if((rockerKeyPressed == right) &&
+                    (right_data.getAlpha(e.x-image_offset,e.y)!=TRANSPARENT))
+            {
+                //right button was released
+                keyReleased = RIGHT;
+                right.setImage(right_normal);
+            }
+            else if((rockerKeyPressed == up) &&
+                    (up_data.getAlpha(e.x-image_offset,e.y)!=TRANSPARENT))
+            {
+                //up button was released
+                keyReleased = UP;
+                up.setImage(up_normal);
+            }
+            else if((rockerKeyPressed == down) &&
+                    (down_data.getAlpha(e.x-image_offset,e.y)!=TRANSPARENT))
+            {
+                //down button was released
+                keyReleased = DOWN;
+                down.setImage(down_normal);
+            }
+            else
+            {
+                keyReleased = INVALID_CODE;;
+            }
+
+        }
+
+        return keyReleased;
+
+    }
+
+
+    /**
+             * Handles the mouse move on the rocker keys
+             *
+             */
+    private void handleRockerMoved(MouseEvent e)
+    {
+
+        keyPressed = INVALID_CODE;
+
+        Rectangle image_bounds = center.getBounds();
+
+        // Find out which rocker button was traversed to
+        if(image_bounds.contains(e.x,e.y) == true)
+        {
+            //check each of the button images  to check which osk navkey button was traversed to
+            if((center_data.getAlpha(e.x-image_offset,e.y)!=TRANSPARENT) &&
+                    (rockerKeyPressed != center))
+            {
+                //Mouse moved to center rocker key from another rocker key, release the other(source) rocker key
+                releaseRockerKey(rockerKeyPressed);
+            }
+            else if((left_data.getAlpha(e.x-image_offset,e.y)!=TRANSPARENT) &&
+                    (rockerKeyPressed != left))
+            {
+                //Mouse moved to left rocker key from another rocker key, release the other(source) rocker key
+                // and press the left key
+                releaseRockerKey(rockerKeyPressed);
+                keyPressed = LEFT;
+                left.setImage(left_pressed);
+                rockerKeyPressed = left;
+                canvas.doKeyPressed(keyPressed);
+                pressedKeyData = left_data;
+            }
+            else if((right_data.getAlpha(e.x-image_offset,e.y)!=TRANSPARENT) &&
+                    (rockerKeyPressed != right))
+            {
+                //Mouse moved to right rocker key from another rocker key, release the other(source) rocker key
+                // and press the right key
+                releaseRockerKey(rockerKeyPressed);
+                keyPressed = RIGHT;
+                right.setImage(right_pressed);
+                rockerKeyPressed = right;
+                canvas.doKeyPressed(keyPressed);
+                pressedKeyData = right_data;
+            }
+            else if((up_data.getAlpha(e.x-image_offset,e.y)!=TRANSPARENT) &&
+                    (rockerKeyPressed != up))
+            {
+                //Mouse moved to up rocker key from another rocker key, release the other(source) rocker key
+                // and press the up key
+                releaseRockerKey(rockerKeyPressed);
+                keyPressed = UP;
+                up.setImage(up_pressed);
+                canvas.doKeyPressed(keyPressed);
+                rockerKeyPressed = up;
+                pressedKeyData = up_data;
+            }
+            else if((down_data.getAlpha(e.x-image_offset,e.y)!=TRANSPARENT) &&
+                    (rockerKeyPressed != down))
+            {
+                //Mouse moved to down rocker key from another rocker key, release the other(source) rocker key
+                // and press the down key
+                releaseRockerKey(rockerKeyPressed);
+                keyPressed = DOWN;
+                down.setImage(down_pressed);
+                rockerKeyPressed = down;
+                canvas.doKeyPressed(keyPressed);
+                pressedKeyData = down_data;
+            }
+            else
+            {
+                if((pressedKeyData != null) &&
+                        (pressedKeyData.getAlpha(e.x-image_offset,e.y) == TRANSPARENT))
+                {
+                    //Mouse moved to out of all rocker keys from another rocker key, release the other(source) rocker key
+                    releaseRockerKey(rockerKeyPressed);
+                    pressedKeyData = null;
+                    rockerKeyPressed = null;
+
+                }
+            }
+
+        }
+        else
+        {
+            //Mouse moved to out of all rocker keys, release the other(source) rocker key
+            releaseRockerKey(rockerKeyPressed);
+        }
+
+
+    }
+
+
+
+    /**
+             * Releases a rocker key
+             *
+             */
+    private void releaseRockerKey(Label rockerKeyPressed)
+    {
+
+        if(rockerKeyPressed == center)
+        {
+            center.setImage(center_normal);
+            canvas.doKeyReleased(FIRE);
+        }
+        else if(rockerKeyPressed == left)
+        {
+            left.setImage(left_normal);
+            canvas.doKeyReleased(LEFT);
+        }
+        else if(rockerKeyPressed == right)
+        {
+            right.setImage(right_normal);
+            canvas.doKeyReleased(RIGHT);
+        }
+        else if(rockerKeyPressed == up)
+        {
+            up.setImage(up_normal);
+            canvas.doKeyReleased(UP);
+        }
+        else if(rockerKeyPressed == down)
+        {
+            down.setImage(down_normal);
+            canvas.doKeyReleased(DOWN);
+        }
+
+    }
+
+
+
+    /**
+             * Canvas Keypad timer task
+             *
+             */
     class CanvasKeypadTimerTask extends TimerTask
     {
 

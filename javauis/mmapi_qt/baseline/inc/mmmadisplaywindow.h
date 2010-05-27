@@ -22,8 +22,8 @@
 
 #include "mmmadisplay.h"
 #include "qwidget.h"
-#include "COECNTRL.h"
-#include "COEMAIN.h"
+#include "coecntrl.h"
+#include "coemain.h"
 //  FORWARD DECLARATIONS
 class CFbsBitmap;
 class CMMAPlayer;
@@ -135,7 +135,7 @@ public:
      *
      * @param aRect Windows size.
      */
-    virtual void SetWindowRect(const TRect& aRect, MMMADisplay::TThreadType aThreadType) = 0;
+    virtual void SetWindowRect(const TRect& /*aRect*/, MMMADisplay::TThreadType /*aThreadType*/) = 0;
 
     /**
      * Gets window rect.
@@ -144,9 +144,7 @@ public:
      */
     virtual const TRect& WindowRect() = 0;
     
-    virtual CMMAPlayer* UiPlayer() 
-    {
-    }
+    
         
     #ifdef RD_JAVA_NGA_ENABLED
     /**
@@ -238,14 +236,14 @@ public:
     /**
      * gets window resources from QT
      */
-    virtual void ProcureWindowResourcesFromQWidget(RWsSession * aWs,
-    																										CWsScreenDevice* aScreenDevice,
-  																													  RWindowBase* aWindow)
+    virtual void ProcureWindowResourcesFromQWidget(RWsSession * /*aWs*/,
+    																										CWsScreenDevice* /*aScreenDevice*/,
+  																													  RWindowBase* /*aWindow*/)
     {
         // default empty implementation
     }
     
-    virtual void UICallback( TInt aCallbackId )
+    virtual void UICallback( TInt /*aCallbackId*/ )
     {
     }
 };

@@ -39,7 +39,7 @@ void CMMASourceStreamEvent::SetLength(TInt aLength)
 
 void CMMASourceStreamEvent::Dispatch(JNIEnv& aJni)
 {
-    LOG1( EJavaMMAPI, EInfo, "CMMASourceStreamEvent:Dispatch len=%d", iLength);
+    LOG1(EJavaMMAPI, EInfo, "CMMASourceStreamEvent:Dispatch len=%d", iLength);
     aJni.CallVoidMethod(iListenerObject,
                         iHandleEventMethod,
                         iLength);

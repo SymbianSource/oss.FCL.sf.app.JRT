@@ -40,7 +40,7 @@ CMMAVideoPlayer* CMMAVideoPlayer::NewLC(
 
 CMMAVideoPlayer::~CMMAVideoPlayer()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAVideoPlayer::~CMMAVideoPlayer");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAVideoPlayer::~CMMAVideoPlayer");
     if (iDisplay)
     {
         TRAPD(err, iDisplay->SetWindowL(NULL));
@@ -103,7 +103,7 @@ EXPORT_C void CMMAVideoPlayer::SetDisplayL(MMMADisplay* aDisplay)
 }
 void CMMAVideoPlayer::RealizeL()
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAVideoPlayer::RealizeL");
+    LOG(EJavaMMAPI, EInfo, "CMMAVideoPlayer::RealizeL");
     // DataSource must have at least 1 stream or
     // we must have file to play
     if ((iSourceStreams.Count() == 0) && !iFileName)
@@ -136,7 +136,7 @@ void CMMAVideoPlayer::RealizeL()
 
 void CMMAVideoPlayer::PrefetchL()
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAVideoPlayer::PrefetchL");
+    LOG(EJavaMMAPI, EInfo, "CMMAVideoPlayer::PrefetchL");
     if (iFileName)
     {
         // File has already been prefetched when realizing
@@ -161,7 +161,7 @@ void CMMAVideoPlayer::PrefetchL()
 
 EXPORT_C void CMMAVideoPlayer::ReadCompletedL(TInt aStatus, const TDesC8& aData)
 {
-    LOG1( EJavaMMAPI, EInfo, "CMMAVideoPlayer::ReadCompletedL: status = %d", aStatus);
+    LOG1(EJavaMMAPI, EInfo, "CMMAVideoPlayer::ReadCompletedL: status = %d", aStatus);
     if (aStatus < KErrNone)
     {
         PostActionCompleted(aStatus);
@@ -179,7 +179,7 @@ EXPORT_C void CMMAVideoPlayer::ReadCompletedL(TInt aStatus, const TDesC8& aData)
 
 void CMMAVideoPlayer::HandleEvent(const TMMFEvent& aEvent)
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA:CMMAVideoPlayer::HandleEvent %d", aEvent.iEventType.iUid);
+    LOG1(EJavaMMAPI, EInfo, "MMA:CMMAVideoPlayer::HandleEvent %d", aEvent.iEventType.iUid);
 
     // KNotCompleteVideoError can be notified when video is not complete
     // ( missing sound ) but still can be played. Because
@@ -219,7 +219,7 @@ void CMMAVideoPlayer::HandleEvent(const TMMFEvent& aEvent)
         PrepareDisplay();
         if (iFileName)
         {
-            LOG( EJavaMMAPI, EInfo, "CMMAVideoPlayer::HandleEvent: Using filename, change state to REALIZED");
+            LOG(EJavaMMAPI, EInfo, "CMMAVideoPlayer::HandleEvent: Using filename, change state to REALIZED");
 
             // If there is an error condition, then the player state is not
             // changed, which indicates the error condition to StartL when
@@ -236,7 +236,7 @@ void CMMAVideoPlayer::HandleEvent(const TMMFEvent& aEvent)
         }
         else
         {
-            LOG( EJavaMMAPI, EInfo, "CMMAVideoPlayer::HandleEvent: Not using filename, change state to PREFETCHED");
+            LOG(EJavaMMAPI, EInfo, "CMMAVideoPlayer::HandleEvent: Not using filename, change state to PREFETCHED");
             CompletePrefetch(aEvent.iErrorCode);
         }
     }
@@ -251,18 +251,18 @@ void CMMAVideoPlayer::HandleEvent(const TMMFEvent& aEvent)
 
 void CMMAVideoPlayer::CompletePrefetch(TInt aError)
 {
-    ELOG1( EJavaMMAPI, "CMMAVideoPlayer::CompletePrefetch + error = %d",aError);
+    ELOG1(EJavaMMAPI, "CMMAVideoPlayer::CompletePrefetch + error = %d",aError);
     // Post KNotCompleteVideoError as KErrNone to the Java side, because
     // video can be played.
     if (aError == KNotCompleteVideoError)
     {
-        LOG( EJavaMMAPI, EInfo, "CMMAVideoPlayer::CompletePrefetch  KNotCompleteVideoError ");
+        LOG(EJavaMMAPI, EInfo, "CMMAVideoPlayer::CompletePrefetch  KNotCompleteVideoError ");
         // release java
         PostActionCompleted(KErrNone);
     }
     else
     {
-        LOG( EJavaMMAPI, EInfo, "CMMAVideoPlayer::CompletePrefetch  CompleteVideoError ");
+        LOG(EJavaMMAPI, EInfo, "CMMAVideoPlayer::CompletePrefetch  CompleteVideoError ");
         // release java
         PostActionCompleted(aError);
     }
@@ -271,19 +271,19 @@ void CMMAVideoPlayer::CompletePrefetch(TInt aError)
     {
         ChangeState(EPrefetched);
     }
-    LOG( EJavaMMAPI, EInfo, "CMMAVideoPlayer::CompletePrefetch - ");
+    LOG(EJavaMMAPI, EInfo, "CMMAVideoPlayer::CompletePrefetch - ");
 }
 
 void CMMAVideoPlayer::PrepareDisplay()
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAVideoPlayer::PrepareDisplay +");
+    LOG(EJavaMMAPI, EInfo, "CMMAVideoPlayer::PrepareDisplay +");
     // construction should have leaved if iDSAWindow does not exist
     __ASSERT_DEBUG(iDSAWindow,
                    User::Panic(_L("CMMVideoPlayer::iDSAWindow is null"),
                                KErrArgument));
 
     // Video must be initially not visible
-    LOG( EJavaMMAPI, EInfo, "CMMAVideoPlayer::PrepareDisplay: Initially aborting DSA");
+    LOG(EJavaMMAPI, EInfo, "CMMAVideoPlayer::PrepareDisplay: Initially aborting DSA");
     iVideoPlayControllerCustomCommands.DirectScreenAccessEvent(EAbortDSA);
 
     //First place where we are certain that source size can be fetched
@@ -291,14 +291,14 @@ void CMMAVideoPlayer::PrepareDisplay()
 
     TInt err = iVideoControllerCustomCommands.GetVideoFrameSize(sourceSize);
 
-    ELOG1( EJavaMMAPI, "MID::CMMAVideoPlayer::PrepareDisplay: GetVideoFrameSize err = %d", err);
+    ELOG1(EJavaMMAPI, "MID::CMMAVideoPlayer::PrepareDisplay: GetVideoFrameSize err = %d", err);
 
     // Still we did not get the size of video
     if ((err != KErrNone) ||
             (sourceSize.iWidth <= 0) ||
             (sourceSize.iHeight <= 0))
     {
-        LOG( EJavaMMAPI, EInfo, "MID::CMMAVideoPlayer::PrepareDisplay: No sourcesize found, using DSAWindow size");
+        LOG(EJavaMMAPI, EInfo, "MID::CMMAVideoPlayer::PrepareDisplay: No sourcesize found, using DSAWindow size");
         // setting size to window size (client rect)
         sourceSize = iDSAWindow->WindowSize();
     }
@@ -308,7 +308,7 @@ void CMMAVideoPlayer::PrepareDisplay()
     if ((sourceSize.iWidth < KMMAVideoMinDimension) ||
             (sourceSize.iHeight < KMMAVideoMinDimension))
     {
-        LOG( EJavaMMAPI, EInfo, "MID::CMMAVideoPlayer::PrepareDisplay: Unacceptable source size, using failsafe");
+        LOG(EJavaMMAPI, EInfo, "MID::CMMAVideoPlayer::PrepareDisplay: Unacceptable source size, using failsafe");
         // This is a special case and ought to be used only in
         // the rare case that real size is not got from stream.
         sourceSize = TSize(KMMAVideoMinDimension, KMMAVideoMinDimension);
@@ -319,7 +319,7 @@ void CMMAVideoPlayer::PrepareDisplay()
     // If init has been already done
     if (iDisplay)
     {
-        LOG( EJavaMMAPI, EInfo, "MID::CMMAVideoPlayer::PrepareDisplay: display exists, changing source size");
+        LOG(EJavaMMAPI, EInfo, "MID::CMMAVideoPlayer::PrepareDisplay: display exists, changing source size");
         SourceSizeChanged();
     }
 
@@ -327,7 +327,7 @@ void CMMAVideoPlayer::PrepareDisplay()
     // (e.g. prepare). If initDisplayMode is not called, this will always
     // set visibility to false.
     iDSAWindow->SetVisible(iDSAWindow->IsVisible(), EFalse);
-    LOG( EJavaMMAPI, EInfo, "CMMAVideoPlayer::PrepareDisplay -");
+    LOG(EJavaMMAPI, EInfo, "CMMAVideoPlayer::PrepareDisplay -");
 }
 
 EXPORT_C const TDesC& CMMAVideoPlayer::Type()

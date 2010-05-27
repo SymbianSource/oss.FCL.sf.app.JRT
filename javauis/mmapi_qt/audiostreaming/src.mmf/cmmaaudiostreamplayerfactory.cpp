@@ -101,7 +101,7 @@ CMMAPlayer* CMMAAudioStreamPlayerFactory::CreatePlayerL(
         new(ELeave) CMMAAudioMetaDataControl(player->Controller());
     CleanupStack::PushL(metaDataControl);
     player->AddControlL(metaDataControl);
-    CleanupStack::Pop(metaDataControl);   
+    CleanupStack::Pop(metaDataControl);
 
     CMMAStopTimeControl* stopTimeControl = CMMAStopTimeControl::NewL(player);
     CleanupStack::PushL(stopTimeControl);

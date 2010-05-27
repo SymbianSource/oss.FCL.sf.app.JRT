@@ -32,9 +32,9 @@ CMMADCInvalidateEvent::CMMADCInvalidateEvent(jobject aGUIObject,
 // from CJavaEvent
 void CMMADCInvalidateEvent::Dispatch(JNIEnv& aJni)
 {
-    LOG2( EJavaMMAPI, EInfo, "MMA::CMMADCInvalidateEvent::Dispatch w=%d h=%d",
-               iSize.iWidth,
-               iSize.iHeight);
+    LOG2(EJavaMMAPI, EInfo, "MMA::CMMADCInvalidateEvent::Dispatch w=%d h=%d",
+         iSize.iWidth,
+         iSize.iHeight);
 
     iHandleEventMethod = aJni.GetMethodID(aJni.GetObjectClass(iListenerObject),
                                           "invalidate",

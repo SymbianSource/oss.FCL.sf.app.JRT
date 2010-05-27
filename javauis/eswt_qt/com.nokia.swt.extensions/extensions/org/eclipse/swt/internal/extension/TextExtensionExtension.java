@@ -40,6 +40,8 @@ public class TextExtensionExtension extends TextExtension {
 	// Bit set to make sure API extension styles don't overlap with the official API
 	private static final int TEXTEXTENSIONEXTENSIONSTYLEBIT = 0x80000000;
 	
+	private int validator;
+	
 	/**
 	 * NUMERIC, DECIMAL, PHONENUMBER values can be used in the extensionStyle
 	 * constructor parameter to set the corresponding constraints. In the
@@ -63,12 +65,21 @@ public class TextExtensionExtension extends TextExtension {
         switch(extensionStyle) {
         case TextExtensionExtension.NUMERIC:
         	newHints |= OS.QT_IMHDIGITSONLY;
+        	// Intermediate restriction: anything that builds up to a valid integer is allowed
+            // I.E.: You can have + alone, since it is the beginning of a positive integer
+            validator = OS.QRegExpValidator_new(topHandle, "[\\+\\-]?\\d*");
         	break;
         case TextExtensionExtension.DECIMAL:
         	newHints |= OS.QT_IMHFORMATTEDNUMBERSONLY;
+        	// Intermediate restriction: anything that builds up to a valid real is allowed
+            // I.E.: You can have '-.' alone, since it is the beginning of a negative real but
+            // cannot have 'E' since a exponential notation needs a valid real before E 
+            validator = OS.QRegExpValidator_new(topHandle, "[\\+\\-]?\\d*(\\.?(\\d+([eE][\\+\\-]?\\d*)?)?)?");
         	break;
         case TextExtensionExtension.PHONENUMBER:
         	newHints |= OS.QT_IMHDIALABLECHARACTERSONLY;
+        	// Very loose restriction: any of the chars in the set allowed in any order and amount
+            validator = OS.QRegExpValidator_new(topHandle, "[\\+\\d\\sABCD,TP!W@;>IiGg\\*\\#\\.\\(\\)\\/\\-]*");
         	break;
     	default:
        		break;
@@ -148,6 +159,74 @@ public class TextExtensionExtension extends TextExtension {
 				     OS.QT_IMHDIALABLECHARACTERSONLY)) == 0) {
 			super.setInitialInputMode(casingModifier, mode);
 		}
+	}
+	
+	public void setText (String string) {
+		checkWidget();
+		if ((Internal_PackageSupport.extraStyle(this) & (TextExtensionExtension.PHONENUMBER|TextExtensionExtension.DECIMAL|
+				 TextExtensionExtension.NUMERIC)) != 0) {
+			 boolean valid = OS.QValidator_validate(validator, string);
+			 if (valid) {
+				 super.setText(string);
+			 }
+			 else if ((Internal_PackageSupport.extraStyle(this) & (TextExtensionExtension.DECIMAL|
+						 TextExtensionExtension.NUMERIC)) != 0) {
+					 SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			 }
+		 } else{
+			 super.setText(string);
+		 }
+	}
+
+	public void insert(String string) {
+	    checkWidget();
+	    if ((Internal_PackageSupport.extraStyle(this) & (TextExtensionExtension.PHONENUMBER|
+	    		TextExtensionExtension.DECIMAL|TextExtensionExtension.NUMERIC)) != 0) {
+			 boolean valid = OS.QValidator_validate(validator, string);
+			 if (valid) {
+				 super.insert(string);
+			 }
+			 else if ((Internal_PackageSupport.extraStyle(this) & (TextExtensionExtension.DECIMAL|
+					 TextExtensionExtension.NUMERIC)) != 0) {
+					 SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			 }
+		 } else{
+			 super.insert(string);
+		 }
+	}
+
+	public void append(String string) {
+	    checkWidget();
+	    if ((Internal_PackageSupport.extraStyle(this) & (TextExtensionExtension.PHONENUMBER|
+	    		TextExtensionExtension.DECIMAL|TextExtensionExtension.NUMERIC)) != 0) {
+			 boolean valid = OS.QValidator_validate(validator, string);
+			 if (valid) {
+				 super.append(string);
+			 }
+			 else if ((Internal_PackageSupport.extraStyle(this) & (TextExtensionExtension.DECIMAL|
+						 TextExtensionExtension.NUMERIC)) != 0) {
+				 SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			 }
+		 } else {
+			 super.append(string);
+		 }
+	}
+
+	public void paste() {
+	    checkWidget();
+	    if ((Internal_PackageSupport.extraStyle(this) & (TextExtensionExtension.PHONENUMBER|
+	    		TextExtensionExtension.DECIMAL|TextExtensionExtension.NUMERIC)) != 0) {
+			 boolean valid = OS.QValidator_validate(validator, OS.QClipboard_text());
+			 if (valid) {
+				 super.paste();
+			 }
+			 else if ((Internal_PackageSupport.extraStyle(this) & (TextExtensionExtension.DECIMAL|
+						 TextExtensionExtension.NUMERIC)) != 0) {
+				 SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			 }
+		 }else {
+			 super.paste();
+		 }
 	}
 	
 }

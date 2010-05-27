@@ -132,6 +132,8 @@ int dialogWindowHandle;
 
 Rectangle defBounds;
 
+Point oldSize;
+
 /**
  * The WindowSurface wrapper for top level shells. Window surface
  * provides access for Qt created draw surface.
@@ -830,6 +832,20 @@ public Rectangle getBounds() {
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
     // On Symbian platform top-level Shells are forced to maximized
     if(OS.windowServer == OS.WS_SYMBIAN_S60 && parent == null) {
+    	//for updating the layout when shell.pack is called after shell open.
+    	// or aligning with other platform which has resizable top shell
+    	if(resize) {
+    		Point newSize = new Point(width, height);
+    		if(oldSize == null || !oldSize.equals(newSize)) {
+    			sendEvent(SWT.Resize);
+    			// Activate layout
+    			if (layout != null) {
+    				markLayout (false, false);
+    				updateLayout (false);
+    			}
+    			oldSize = newSize; 
+    		}
+    	}    
         return 0;
     }
     

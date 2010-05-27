@@ -29,6 +29,7 @@ import org.eclipse.swt.SWTException;
 import com.nokia.microedition.media.InternalPlayer;
 import com.nokia.microedition.media.Locator;
 import com.nokia.microedition.media.PlugIn;
+import com.nokia.mj.impl.utils.Logger;
 
 /**
  * This class is used for playing GIF image animation. This class also
@@ -56,11 +57,9 @@ public class AnimationPlayerFactory implements PlugIn {
 	public InternalPlayer createPlayer(DataSource aDataSource)
 			throws MediaException, IOException {
 		final String DEBUG_STR="AnimationPlayerFactory::createPlayer()";
-		System.out.println(DEBUG_STR+"+");
+		Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,DEBUG_STR+"+");
 		InternalPlayer player = null;
-		System.out.println(DEBUG_STR+"data source object is "+aDataSource);
 		String contentType = aDataSource.getContentType();
-		System.out.println(DEBUG_STR+"Content type is "+contentType);
 		// There is no difference in if and else block 
 		// in first if block only checking if the content type is available 
 		// Player is being created in the same way
@@ -69,7 +68,6 @@ public class AnimationPlayerFactory implements PlugIn {
 		if (contentType != null){
 			if(contentType.equals(ANIMATION_CONTENT_TYPE)) {
 				player = new AnimationPlayer(aDataSource);
-				System.out.println(DEBUG_STR+"Player created from  content type"+contentType);
 			}
 //			else{ 
 //	            throw new MediaException("Content type not supported: " + contentType);
@@ -86,13 +84,12 @@ public class AnimationPlayerFactory implements PlugIn {
 			// otherwise it will throw the SWTException, catch it and return properly
 			try{
 				player = new AnimationPlayer(aDataSource);
-				System.out.println(DEBUG_STR+"Player created from  content type");
 			}catch(SWTException e){
 				// Simply ignore the exception 
 				e.printStackTrace();
 			}
 		}
-		System.out.println(DEBUG_STR+"-");
+		Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,DEBUG_STR+"-");
 		return player;
 	}
 	
@@ -102,7 +99,7 @@ public class AnimationPlayerFactory implements PlugIn {
 	 */
 	public InternalPlayer createPlayer(String locator ){
 		final String DEBUG_STR="AnimationPlayerFactory::createPlayer(String locator )";
-		System.out.println(DEBUG_STR+"+");
+		Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,DEBUG_STR+"+");
 		InternalPlayer player = null;
 		try{
 			player = new AnimationPlayer(locator);
@@ -110,8 +107,7 @@ public class AnimationPlayerFactory implements PlugIn {
 			// just ignore it 
 			e.printStackTrace();
 		}
-		System.out.println(DEBUG_STR+"returning player "+player);
-		System.out.println(DEBUG_STR+"-");
+		Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,DEBUG_STR+"-");
 		return player;
 	}
 	
@@ -150,6 +146,6 @@ public class AnimationPlayerFactory implements PlugIn {
 	 * From PlugIn. Empty implementation.
 	 */
 	public void preparePlayer(InternalPlayer aPlayer) throws MediaException {
-		// tone does not extend existing players
+		
 	}
 }

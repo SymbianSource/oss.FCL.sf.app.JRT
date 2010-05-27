@@ -52,7 +52,7 @@ CMMAManager::CMMAManager()
 
 void CMMAManager::ConstructL(TInt aMIDletSuiteID)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAManager::ConstructL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAManager::ConstructL +");
     //
     // Create and insert known player factories
     //
@@ -108,7 +108,7 @@ void CMMAManager::ConstructL(TInt aMIDletSuiteID)
     CleanupStack::Pop(); // drmPlayerFactory
 #endif // RD_JAVA_OMA_DRM_V2
 
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAManager::ConstructL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAManager::ConstructL -");
 }
 
 void CMMAManager::StaticCreateManagerL(CMMAManager** aManager,

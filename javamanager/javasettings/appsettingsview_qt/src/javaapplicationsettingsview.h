@@ -40,6 +40,7 @@ private:
     Q_DISABLE_COPY(JavaApplicationSettingsView)
     Q_DECLARE_PRIVATE_D(d_ptr, JavaApplicationSettingsView)
     Q_PRIVATE_SLOT(d_func(), void _q_settingsChanged(const QString &newValue))
+    Q_PRIVATE_SLOT(d_func(), void _q_settingsChanged(bool))
     Q_PRIVATE_SLOT(d_func(), void _q_dataItemDisplayed(const QModelIndex))
 
 private:

@@ -23,7 +23,7 @@
 
 CMMAEvent::CMMAEvent(jobject aNotifyObject,
                      jmethodID aHandleEventMethod,
-                     TDisposability aDisposable):
+                     TDisposability /*aDisposable*/):
         iListenerObject(aNotifyObject),
         iHandleEventMethod(aHandleEventMethod)
 {
@@ -44,7 +44,7 @@ void CMMAEvent::SetEventData(TInt aEventData)
 // from CJavaEvent
 void CMMAEvent::Dispatch(JNIEnv& aJni)
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAEvent::Dispatch iEventData=%d", iEventData);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAEvent::Dispatch iEventData=%d", iEventData);
 
     aJni.CallVoidMethod(iListenerObject,
                         iHandleEventMethod,

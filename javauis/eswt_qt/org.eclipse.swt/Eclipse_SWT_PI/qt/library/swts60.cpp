@@ -228,9 +228,6 @@ bool SymbianUtils::eventFilter(QObject* object, const TWsEvent* aEvent)
     int swtEventType = -1;
     switch (aEvent->Type())
     {
-    case KAknUidValueEndKeyCloseEvent:
-        swtEventType = org_eclipse_swt_internal_qt_OS_QSWTEVENT_ENDKEYCLOSE;
-        break;
     case KAknShutOrHideApp: //The event is received when exit from task list, 
                             //which terminates application straight away
         swtEventType = org_eclipse_swt_internal_qt_OS_QSWTEVENT_SYSTEMSHUTDOWN;

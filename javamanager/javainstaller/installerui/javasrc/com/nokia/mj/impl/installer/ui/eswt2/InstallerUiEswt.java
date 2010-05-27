@@ -39,6 +39,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.util.Hashtable;
 
+import org.eclipse.ercp.swt.midp.UIThreadSupport;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
@@ -55,7 +56,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-//import org.eclipse.swt.widgets.MessageBox;
 
 /**
  * JavaInstaller eSWT UI.
@@ -72,7 +72,6 @@ public class InstallerUiEswt extends InstallerUi
     private ProgressView iDlProgressView = null;
     private ProgressView iOcspProgressView = null;
     private InstallConfirmationView iInstallConfirmationView = null;
-    private UninstallConfirmationView iUninstallConfirmationView = null;
     private PermissionConfirmationView iPermissionConfirmationView = null;
     private UsernamePasswordView iUsernamePasswordView = null;
     private LaunchAppQueryView iLaunchAppQueryView = null;
@@ -137,13 +136,13 @@ public class InstallerUiEswt extends InstallerUi
         iImageTable = new Hashtable();
         // Create a new thread to be the UI main thread.
         iUiThreadExists = true;
-        new Thread(new Runnable()
+        UIThreadSupport.startInUIThread(new Runnable()
         {
             public void run()
             {
                 uiMain();
             }
-        }, "InstallerUiMainThread").start();
+        });
         // To wait InstallerUi to be ready before installer main thread
         // continues, uncomment the following line.
         //waitForUi();
@@ -257,10 +256,6 @@ public class InstallerUiEswt extends InstallerUi
         {
             iInstallConfirmationView.confirmCancel();
         }
-        if (iUninstallConfirmationView != null)
-        {
-            iUninstallConfirmationView.confirmCancel();
-        }
         if (iPermissionConfirmationView != null)
         {
             iPermissionConfirmationView.confirmCancel();
@@ -332,8 +327,7 @@ public class InstallerUiEswt extends InstallerUi
             {
                 final Display display = iParent.getDisplay();
                 final InstallerUiEswt self = this;
-                display.syncExec
-                (new Runnable()
+                display.syncExec(new Runnable()
                 {
                     public void run()
                     {
@@ -374,8 +368,7 @@ public class InstallerUiEswt extends InstallerUi
         {
             // The install confirmation has been rejected,
             // nothing to display anymore.
-            iParent.getDisplay().syncExec
-            (new Runnable()
+            iParent.getDisplay().syncExec(new Runnable()
             {
                 public void run()
                 {
@@ -415,8 +408,7 @@ public class InstallerUiEswt extends InstallerUi
         {
             final Display display = iParent.getDisplay();
             final InstallerUiEswt self = this;
-            display.syncExec
-            (new Runnable()
+            display.syncExec(new Runnable()
             {
                 public void run()
                 {
@@ -446,66 +438,7 @@ public class InstallerUiEswt extends InstallerUi
      */
     public boolean confirm(UninstallInfo aUninstallInfo)
     {
-        super.confirm(aUninstallInfo);
-
-        waitForUi();
-        boolean result = true;
-        if (!isUiReady())
-        {
-            result = false;
-            if (iMinimalUiEnabled)
-            {
-                result = MinimalUi.confirmStatic(aUninstallInfo);
-                log("MinimalUi uninstallation confirmation returns " + result);
-                return result;
-            }
-            else
-            {
-                // If UI is not ready by the time confirmation is requested,
-                // throw an exception.
-                throw new RuntimeException("JavaInstallerUi not ready");
-            }
-        }
-        if (result)
-        {
-            StartUpTrace.doTrace("InstallerUiEswt confirm");
-            if (iUninstallConfirmationView == null)
-            {
-                final Display display = iParent.getDisplay();
-                final InstallerUiEswt self = this;
-                display.syncExec
-                (new Runnable()
-                {
-                    public void run()
-                    {
-                        iUninstallConfirmationView =
-                            new UninstallConfirmationView(self, iDialog);
-                    }
-                });
-            }
-            result = iUninstallConfirmationView.confirm(aUninstallInfo);
-            iUninstallConfirmationView.dispose();
-            iUninstallConfirmationView = null;
-        }
-        if (result)
-        {
-            iDisplayProgress = true;
-        }
-        else
-        {
-            // The uninstall confirmation has been rejected,
-            // nothing to display anymore.
-            iParent.getDisplay().syncExec
-            (new Runnable()
-            {
-                public void run()
-                {
-                    iParent.dispose();
-                }
-            });
-        }
-        log("Uninstallation confirmation returns " + result);
-        return result;
+        return super.confirm(aUninstallInfo);
     }
 
     /**
@@ -581,8 +514,7 @@ public class InstallerUiEswt extends InstallerUi
             return;
         }
         Display display = iParent.getDisplay();
-        display.syncExec
-        (new Runnable()
+        display.syncExec(new Runnable()
         {
             public void run()
             {
@@ -733,8 +665,7 @@ public class InstallerUiEswt extends InstallerUi
             if (iOcspProgressView == null)
             {
                 final InstallerUiEswt self = this;
-                iParent.getDisplay().syncExec
-                (new Runnable()
+                iParent.getDisplay().syncExec(new Runnable()
                 {
                     public void run()
                     {
@@ -826,7 +757,6 @@ public class InstallerUiEswt extends InstallerUi
 
         waitForUi();
         if (!isUiReady()) {
-            showRuntimeUiError(aInstallerException);
             return;
         }
 
@@ -873,6 +803,7 @@ public class InstallerUiEswt extends InstallerUi
      *
      * @param aInstallerException exception indicating the error reason
      */
+    /*
     private void showRuntimeUiError(InstallerExceptionBase aInstallerException)
     {
         boolean identified = false;
@@ -890,15 +821,7 @@ public class InstallerUiEswt extends InstallerUi
                 identified = true;
             }
         }
-        String tmpTitle = "";
-        if (iMode == MODE_INSTALL)
-        {
-            tmpTitle = InstallerUiTexts.get(InstallerUiTexts.INSTALL_FAILED);
-        }
-        else if (iMode == MODE_UNINSTALL)
-        {
-            tmpTitle = InstallerUiTexts.get(InstallerUiTexts.UNINSTALL_FAILED);
-        }
+        String tmpTitle = InstallerUiTexts.get(InstallerUiTexts.INSTALL_FAILED);
 
         // Ensure that no confirmations are being displayed.
         cancelConfirmations();
@@ -912,6 +835,7 @@ public class InstallerUiEswt extends InstallerUi
         runtimeUi.error(tmpTitle, aInstallerException);
         runtimeUi.destroy();
     }
+    */
 
     /**
      * Seeks confirmation from the user.
@@ -1039,10 +963,8 @@ public class InstallerUiEswt extends InstallerUi
                 }
             });
         }
-
         boolean result = iLaunchAppQueryView.launchAppQuery(aLaunchAppInfo);
-        iParent.getDisplay().syncExec
-        (new Runnable()
+        iParent.getDisplay().syncExec(new Runnable()
         {
             public void run()
             {
@@ -1059,7 +981,29 @@ public class InstallerUiEswt extends InstallerUi
      */
     public void hide(boolean aHide)
     {
-        iParent.setMinimized(aHide);
+        final boolean hide = aHide;
+        if (iParent != null)
+        {
+            iParent.getDisplay().syncExec(new Runnable()
+            {
+                public void run()
+                {
+                    iParent.setMinimized(hide);
+                }
+            });
+        }
+        super.hide(aHide);
+    }
+
+    /**
+     * Unhides the UI if it has been hidden.
+     */
+    protected void unhide()
+    {
+        if (iHidden)
+        {
+            hide(false);
+        }
     }
 
     /**
@@ -1074,15 +1018,13 @@ public class InstallerUiEswt extends InstallerUi
         }
         else if (iMode == MODE_UNINSTALL)
         {
-            result = InstallerUiTexts.get(InstallerUiTexts.UNINSTALLING);
+            result = InstallerUiTexts.get("Uninstalling");
         }
         else if (iMode == MODE_APP_CONVERSION)
         {
             result = InstallerUiTexts.get(
-                         InstallerUiTexts.APP_CONVERSION_PROGRESS,
-                         new Object[] { new Integer(iAppConversionCurrent),
-                                        new Integer(iAppConversionTotal)
-                                      });
+                "Converting data for application " +
+                iAppConversionCurrent + "/" + iAppConversionTotal);
         }
         return result;
     }

@@ -262,7 +262,7 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         grantedPermissions = storage.readGrantedPermissions(appUID);
         assertTrue(checkGrantedPermissions(grantedPermissions, getPolicyPermissions("Manufacturer", new String[]
                                            {
-                                               INTERNAL_DATAGRAM_PERMISSION, INTERNAL_COMM_PERMISSION, INTERNAL_SOCKET_PERMISSION,INTERNAL_HTTP_PERMISSION,"javax.microedition.PropertyPermission"
+                                               INTERNAL_DATAGRAM_PERMISSION, INTERNAL_COMM_PERMISSION, INTERNAL_SOCKET_PERMISSION,INTERNAL_HTTP_PERMISSION,"javax.microedition.PropertyPermission","javax.microedition.midlet.AutoStartPermission"
                                            }),
                                            getDefaultPermissions()));
         // 1.1 Legacy, signed: P1, P2 requested in the JAD, P3, P4 requested in the JAR -> grant the requested permissions filled in with right targets/actions from the policy
@@ -368,7 +368,7 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         grantedPermissions = storage.readGrantedPermissions(appUID);
         assertTrue(checkGrantedPermissions(grantedPermissions, getPolicyPermissions("Operator", new String[]
                                            {
-                                               INTERNAL_SOCKET_PERMISSION, INTERNAL_HTTP_PERMISSION,"javax.microedition.PropertyPermission"
+                                               INTERNAL_SOCKET_PERMISSION, INTERNAL_HTTP_PERMISSION,"javax.microedition.PropertyPermission","javax.microedition.midlet.AutoStartPermission"
                                            }),
                                            getDefaultPermissions()));
         // 3. Legacy, signed : permissions NOT requested in JAD & permissions NOT requested in JAR -> grant only the "assigned" permissions
@@ -410,7 +410,7 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         securityAttributes.addManifestAttributes(allAttributes);
         permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         grantedPermissions = storage.readGrantedPermissions(appUID);
-        assertTrue(checkGrantedPermissions(grantedPermissions, getPolicyPermissions("Operator", new String[] {"javax.microedition.PropertyPermission"}),
+        assertTrue(checkGrantedPermissions(grantedPermissions, getPolicyPermissions("Operator", new String[] {"javax.microedition.PropertyPermission","javax.microedition.midlet.AutoStartPermission"}),
                                            getDefaultPermissions()));
         // 4. Legacy, unsigned : permissions requested in JAD & permissions requested in JAR -> ignore requested permissions and
         //    grant all the permissions available in the policy for untrusted MIDlets
@@ -775,7 +775,8 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
                        new MIDPPermission(INTERNAL_SSL_PERMISSION,"ssl://*.sun.com"),
                        new MIDPPermission(INTERNAL_DATAGRAM_PERMISSION,"datagram://12345"),
                        new MIDPPermission(INTERNAL_COMM_PERMISSION, "comm:123"),
-                       new MIDPPermission("javax.microedition.PropertyPermission", "mobinfo.msisdn", "read")
+                       new MIDPPermission("javax.microedition.PropertyPermission", "mobinfo.msisdn", "read"),
+                       new MIDPPermission("javax.microedition.midlet.AutoStartPermission", null)
                    },
                    getDefaultPermissions()));
         // 18. identified third party (some assigned permissions exist)

@@ -25,28 +25,28 @@
 CMMAAudioStreamMetaDataControl::CMMAAudioStreamMetaDataControl(
     CMetaDataUtility* aMetadaDataUtility)
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAAudioStreamMetaDataControl constructor called.");
+    LOG(EJavaMMAPI, EInfo, "CMMAAudioStreamMetaDataControl constructor called.");
     // this class gets the ownership of MetaDataUtility
     iMetaDataUtility = aMetadaDataUtility;
 }
 
 CMMAAudioStreamMetaDataControl::~CMMAAudioStreamMetaDataControl()
 {
-    LOG( EJavaMMAPI, EInfo, "~CMMAAudioStreamMetaDataControl called.");
+    LOG(EJavaMMAPI, EInfo, "~CMMAAudioStreamMetaDataControl called.");
     delete iMetaDataUtility;
 }
 
 TInt CMMAAudioStreamMetaDataControl::KeyCountL()
 {
     TInt entries = iMetaDataUtility->MetaDataCount();
-    LOG1( EJavaMMAPI, EInfo, "MMA:CMMAAudioStreamMetaDataControl::KeyCountL, count = %d", entries);
+    LOG1(EJavaMMAPI, EInfo, "MMA:CMMAAudioStreamMetaDataControl::KeyCountL, count = %d", entries);
 
     return entries;
 }
 
 HBufC* CMMAAudioStreamMetaDataControl::KeyL(TInt aIndex)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamMetaDataControl::KeyL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamMetaDataControl::KeyL +");
     HBufC* key = NULL;
 
     if (KeyCountL() > 0)
@@ -55,11 +55,11 @@ HBufC* CMMAAudioStreamMetaDataControl::KeyL(TInt aIndex)
         const CMetaDataFieldContainer& fieldcontainer =
             iMetaDataUtility->MetaDataFieldsL();
         fieldcontainer.FieldIdAt(aIndex, fieldId);
-        LOG1( EJavaMMAPI, EInfo, "MMA:CMMAAudioStreamMetaDataControl::KeyL, fieldId = %d", fieldId);
+        LOG1(EJavaMMAPI, EInfo, "MMA:CMMAAudioStreamMetaDataControl::KeyL, fieldId = %d", fieldId);
         key = GetKeyL(fieldId);
     }
 
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamMetaDataControl::KeyL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamMetaDataControl::KeyL -");
     return key;
 }
 
@@ -69,7 +69,7 @@ HBufC* CMMAAudioStreamMetaDataControl::KeyL(TInt aIndex)
  */
 HBufC* CMMAAudioStreamMetaDataControl::KeyValueL(const TDesC& aKey)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamMetaDataControl::KeyValueL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamMetaDataControl::KeyValueL +");
     HBufC* retVal = NULL;
 
     if (KeyCountL() > 0)
@@ -85,8 +85,8 @@ HBufC* CMMAAudioStreamMetaDataControl::KeyValueL(const TDesC& aKey)
     }
 
     User::LeaveIfNull(retVal);
-    ELOG1( EJavaMMAPI, "MMA::CMMAAudioStreamMetaDataControl::KeyValueL, retVal = %S", retVal->Des().PtrZ());
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamMetaDataControl::KeyValueL -");
+    ELOG1(EJavaMMAPI, "MMA::CMMAAudioStreamMetaDataControl::KeyValueL, retVal = %S", retVal->Des().PtrZ());
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamMetaDataControl::KeyValueL -");
     return retVal;
 }
 
@@ -95,7 +95,7 @@ HBufC* CMMAAudioStreamMetaDataControl::KeyValueL(const TDesC& aKey)
 */
 HBufC* CMMAAudioStreamMetaDataControl::GetKeyL(TMetaDataFieldId aFieldId)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamMetaDataControl::GetKeyL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamMetaDataControl::GetKeyL +");
     HBufC* keyString = NULL;
     TBuf<KKeyStringMaxLength> tempBuf;
 
@@ -170,10 +170,10 @@ HBufC* CMMAAudioStreamMetaDataControl::GetKeyL(TMetaDataFieldId aFieldId)
         keyString = tempBuf.AllocL();
         break;
     default:
-        LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamMetaDataControl::GetKeyL, default case should not occur");
+        LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamMetaDataControl::GetKeyL, default case should not occur");
     }
 
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamMetaDataControl::GetKeyL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamMetaDataControl::GetKeyL -");
     return keyString;
 }
 
@@ -182,7 +182,7 @@ HBufC* CMMAAudioStreamMetaDataControl::GetKeyL(TMetaDataFieldId aFieldId)
 */
 TMetaDataFieldId CMMAAudioStreamMetaDataControl::GetFieldId(const TDesC& aKey, TBool& aCompare)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamMetaDataControl::GetFieldId +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamMetaDataControl::GetFieldId +");
     TMetaDataFieldId fieldId = EUnknownMetaDataField;
     aCompare = true; // found
 
@@ -267,7 +267,7 @@ TMetaDataFieldId CMMAAudioStreamMetaDataControl::GetFieldId(const TDesC& aKey, T
         aCompare = false; // not found
     }
 
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamMetaDataControl::GetFieldId -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamMetaDataControl::GetFieldId -");
     return fieldId;
 }
 

@@ -91,7 +91,8 @@ public: // New methods
                             jobject javaDisplayObject,
                             MMAFunctionServer* aEventSource,
                             TInt* aDisplayHandle,
-                            CMMAEvent* aDeleteRefEvent);
+                            CMMAEvent* aDeleteRefEvent,
+                            TBool aGuiType);
 
     /**
      * Dynamic display mode initialization.

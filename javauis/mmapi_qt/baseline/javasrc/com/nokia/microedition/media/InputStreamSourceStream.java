@@ -194,11 +194,12 @@ public class InputStreamSourceStream implements SourceStream
         }
     }
     /**
-     * @author d35kumar 
+     *
      * @return
      */
-    public InputStream getInputStream(){
-    	return iInputStream;
+    public InputStream getInputStream()
+    {
+        return iInputStream;
     }
 }
 

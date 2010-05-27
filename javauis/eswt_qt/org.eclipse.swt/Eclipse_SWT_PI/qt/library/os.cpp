@@ -5525,30 +5525,15 @@ JNIEXPORT void JNICALL OS_NATIVE( ListModel_1remove )
         }
     SWT_CATCH
     }
-
-JNIEXPORT void JNICALL OS_NATIVE( ListModel_1setItem__IILjava_lang_String_2 )
-( JNIEnv* aJniEnv , jclass, jint aHandle, jint aIndex, jstring aString )
+JNIEXPORT void JNICALL OS_NATIVE( ListModel_1setItemContentsToNull )
+( JNIEnv* aJniEnv , jclass, jint aHandle, jint aIndex )
     {
     SWT_TRY
         {
         SWT_LOG_JNI_CALL();
         SWT_LOG_DATA_2( "handle=%x index=%d ", aHandle, aIndex );
-        ListModel* dataModdel = reinterpret_cast< ListModel* > ( aHandle );
-        dataModdel->setItem(aIndex, swtApp->jniUtils().JavaStringToQString(aJniEnv, aString));
-        }
-    SWT_CATCH
-    }
-
-JNIEXPORT void JNICALL OS_NATIVE( ListModel_1setItem__IILjava_lang_String_2I )
-( JNIEnv* aJniEnv , jclass, jint aHandle, jint aIndex, jstring aString, jint aImageHandle )
-    {
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-        SWT_LOG_DATA_3( "handle=%x index=%d imageHandle=%x", aHandle, aIndex, aImageHandle );
-        ListModel* dataModdel = reinterpret_cast< ListModel* > ( aHandle );
-        QPixmap* pixmap = reinterpret_cast< QPixmap* >( aImageHandle );
-        dataModdel->setItem(aIndex, swtApp->jniUtils().JavaStringToQString(aJniEnv, aString), pixmap );
+        ListModel* dataModel = reinterpret_cast< ListModel* > ( aHandle );
+        dataModel->setItemContentsToNull( aIndex );
         }
     SWT_CATCH
     }
@@ -10026,41 +10011,37 @@ JNIEXPORT jstring JNICALL OS_NATIVE(QInputDialog_1swt_1getText)
     return text;
     }
 
-
-JNIEXPORT jstring JNICALL OS_NATIVE(QInputDialog_1swt_1getDouble)
-    (JNIEnv* aJniEnv , jclass, jint aParentHandle, jstring aTitle, jstring aLabel,
-    jdouble aMin, jdouble aMax, jdouble aDefaultValue, jint aDecimals, jstring aDialogId, jint aLayoutDirection)
+JNIEXPORT jstring JNICALL OS_NATIVE(QInputDialog_1swt_1getInteger)
+  (JNIEnv *aJniEnv, jclass, jint aParentHandle, jstring aTitle, jstring aLabel, 
+  jint aMin, jint aMax, jint aDefaultValue, jstring aDialogId, jint aLayoutDirection)
     {
-    jstring doubleString = NULL;
+    jstring integerString = NULL;
     SWT_TRY
         {
         SWT_LOG_JNI_CALL();
-        SWT_LOG_DATA_5("parent handle=%x min=%e, max=%e, default=%e, decimals=%d layoutDirection=%d",
-                        aParentHandle, aMin, aMax, aDefaultValue,  aDecimals);
+        SWT_LOG_DATA_5("parent handle=%x min=%d, max=%d, default=%d, layoutDirection=%d",
+                        aParentHandle, aMin, aMax, aDefaultValue, aLayoutDirection);
         HANDLE_TO_POINTER(QWidget*, parent, aParentHandle);
         QInputDialog dialog(parent);
         dialog.setObjectName(swtApp->jniUtils().JavaStringToQString(aJniEnv, aDialogId));
         dialog.setLayoutDirection( static_cast<Qt::LayoutDirection>(aLayoutDirection) );
-        dialog.setInputMode(QInputDialog::DoubleInput);
+        dialog.setInputMode(QInputDialog::IntInput);
         dialog.setWindowTitle(swtApp->jniUtils().JavaStringToQString(aJniEnv, aTitle));
         dialog.setLabelText(swtApp->jniUtils().JavaStringToQString(aJniEnv, aLabel));
-        dialog.setDoubleRange(aMin, aMax);
-        dialog.setDoubleDecimals(aDecimals);
+        dialog.setIntRange(aMin, aMax);
         // Order of this call matters, causes problems if done before setting range
-        dialog.setDoubleValue(aDefaultValue);
+        dialog.setIntValue(aDefaultValue);
         AutoPopExecStack stackExec(&dialog);
         int result = dialog.exec();
         if (result == QDialog::Accepted)
             {
-            QString str = QString("%1").arg(dialog.doubleValue(), 0 , 'f', aDecimals);
-            doubleString = swtApp->jniUtils().QStringToJavaString(aJniEnv, str);
+            QString str = QString("%1").arg(dialog.intValue());
+            integerString = swtApp->jniUtils().QStringToJavaString(aJniEnv, str);
             }
         }
     SWT_CATCH
-    return doubleString;
-    }
-
-
+    return integerString;
+}
 //
 // QVBoxLayout
 //

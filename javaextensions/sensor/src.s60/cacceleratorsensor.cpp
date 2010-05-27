@@ -297,6 +297,7 @@ int CAcceleratorSensor::OpenChannel(SensorListener *aListener)
 
 void CAcceleratorSensor::OpenChannelL()
 {
+    TInt err;
     JELOG2(ESensor);
     LOG(ESensor,EInfo,"Creating Open Channel");
     iChannel->OpenChannelL();
@@ -305,9 +306,10 @@ void CAcceleratorSensor::OpenChannelL()
     iScaleFactor = 1;
     TInt format(ESensrvChannelDataFormatAbsolute);
     TSensrvProperty property;
-    TRAPD(err1,iChannel->GetPropertyL(KSensrvPropIdChannelDataFormat, KSensrvItemIndexNone,
+    TRAP(err,iChannel->GetPropertyL(KSensrvPropIdChannelDataFormat, KSensrvItemIndexNone,
                                       property););
-    LOG1(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::GetPropertyL() One = %d",err1);
+    LOG1(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::GetPropertyL() One = %d",err);
+
     if (property.PropertyType() == ESensrvIntProperty)
     {
         property.GetValue(format);
@@ -326,18 +328,18 @@ void CAcceleratorSensor::OpenChannelL()
         // Scaled value maximum
         TSensrvProperty property_scaled;
         TInt maxScaled(0);
-        TRAPD(err2,iChannel->GetPropertyL(KSensrvPropIdScaledRange, KSensrvItemIndexNone,
+        TRAP(err,iChannel->GetPropertyL(KSensrvPropIdScaledRange, KSensrvItemIndexNone,
                                           property_scaled););
-        LOG1(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::GetPropertyL() Two = %d",err2);
+        LOG1(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::GetPropertyL() Two = %d",err);
 
         if (property_scaled.GetArrayIndex() == ESensrvArrayPropertyInfo)
         {
             LOG(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::If");
             //for 2G Accelerometer Sensor index value is 0.
             TInt rangeIndex(0);
-            TRAPD(err3,iChannel->GetPropertyL(KSensrvPropIdScaledRange, KSensrvItemIndexNone,
+            TRAP(err,iChannel->GetPropertyL(KSensrvPropIdScaledRange, KSensrvItemIndexNone,
                                               rangeIndex, property_scaled););
-            LOG1(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::GetPropertyL() Three = %d",err3);
+            LOG1(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::GetPropertyL() Three = %d",err);
 
             property_scaled.GetMaxValue(maxScaled);
 
@@ -351,12 +353,13 @@ void CAcceleratorSensor::OpenChannelL()
         }
         // MeasureRange can be an array property
         TReal maxMeasure;
+        TInt err1;
         TSensrvProperty property_Measured;
-        TRAPD(err4,iChannel->GetPropertyL(KSensrvPropIdMeasureRange, KSensrvItemIndexNone,
+        TRAP(err1,iChannel->GetPropertyL(KSensrvPropIdMeasureRange, KSensrvItemIndexNone,
                                           property_Measured););
-        LOG1(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::GetPropertyL() Four = %d",err4);
+        LOG1(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::GetPropertyL() Four = %d",err1);
 
-        if (err4 == KErrNone)
+        if (err1 == KErrNone)
         {
             TInt arrayIndex = property_Measured.GetArrayIndex();
             LOG1(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::KSensrvPropIdMeasureRange::arrayIndex = %d",arrayIndex);
@@ -368,9 +371,9 @@ void CAcceleratorSensor::OpenChannelL()
                 TInt index2g = 0;
                 LOG1(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::Getting RangeIndex = %f",index2g);
                 //We need to TypeCast variable rangeIndex to TInt for
-                TRAPD(err5,iChannel->GetPropertyL(KSensrvPropIdMeasureRange, KSensrvItemIndexNone,
+                TRAP(err,iChannel->GetPropertyL(KSensrvPropIdMeasureRange, KSensrvItemIndexNone,
                                                   index2g, property_Measured););
-                LOG1(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::GetPropertyL() Five = %d",err5);
+                LOG1(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::GetPropertyL() Five = %d",err);
                 property_Measured.GetMaxValue(maxMeasure);
             }
             else

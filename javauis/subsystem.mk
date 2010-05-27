@@ -41,5 +41,8 @@ else
 include subsystem_qt.mk
 endif
 
+# Declare that release preparation removes subdirectories not in build, except
+# listed special cases
+REMOVE_NOTBUILT_EXCLUDING = inc internal tsrc
 
 include ${JAVA_SRC_ROOT}/build/Makefile.subsystem

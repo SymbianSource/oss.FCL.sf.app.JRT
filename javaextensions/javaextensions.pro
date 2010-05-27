@@ -26,5 +26,6 @@ SUBDIRS += midppush
 SUBDIRS += bluetooth 
 SUBDIRS += datagram 
 SUBDIRS += wma 
+SUBDIRS += pim 
 SUBDIRS += midprms_db 
 BLD_INF_RULES.prj_extensions += "prj_extensions" 

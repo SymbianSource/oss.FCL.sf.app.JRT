@@ -169,7 +169,7 @@
 "\epoc32\release\armv5\urel\javabtsppscplugin.dll"-"c:\sys\bin\javabtsppscplugin.dll"
 "\epoc32\release\armv5\urel\javabtgoepscplugin.dll"-"c:\sys\bin\javabtgoepscplugin.dll"
 "\epoc32\release\armv5\urel\javadatagramscplugin.dll"-"c:\sys\bin\javadatagramscplugin.dll"
-"\epoc32\release\armv5\urel\javaenv.dll"-"c:\sys\bin\javaenv.dll"
+"\epoc32\release\armv5\urel\javaenvinfo.dll"-"c:\sys\bin\javaenvinfo.dll"
 "\epoc32\release\armv5\urel\javaipc.dll"-"c:\sys\bin\javaipc.dll"
 "\epoc32\release\armv5\urel\javainstallerstarter.dll"-"c:\sys\bin\javainstallerstarter.dll"
 "\epoc32\release\armv5\urel\javamidpstarter.dll"-"c:\sys\bin\javamidpstarter.dll"

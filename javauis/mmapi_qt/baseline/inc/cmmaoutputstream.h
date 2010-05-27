@@ -22,7 +22,7 @@
 //  EXTERNAL INCLUDES
 //#include <jutils.h>
 #include <s32mem.h>
-#include "MMAFunctionServer.h"
+#include "mmafunctionserver.h"
 
 //  FORWARD DECLARATIONS
 class CMMAOutputStreamEvent;

@@ -14,7 +14,7 @@
 #include <QImage>
 #include <QPixmap>
 #ifdef __SYMBIAN32__
-#include <EGL\egl.h>
+#include <EGL/egl.h>
 #endif
 
 class QFont;

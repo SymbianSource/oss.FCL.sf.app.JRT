@@ -59,7 +59,7 @@ Java_com_nokia_microedition_media_control_FramePositioningControl__1seek
  jint aEventSourceHandle,
  jint aFrameNumber)
 {
-    LOG( EJavaMMAPI, EInfo, "FramePositioningControl__1seek");
+    LOG(EJavaMMAPI, EInfo, "FramePositioningControl__1seek");
 
     // Get pointer to native event source.
     MMAFunctionServer* eventSource =
@@ -75,7 +75,7 @@ Java_com_nokia_microedition_media_control_FramePositioningControl__1seek
                                           &CMMAFramePositioningControl::SeekL,
                                           aFrameNumber,
                                           &returnValue);
-   LOG1( EJavaMMAPI, EInfo, "FramePositioningControl__1seek error= %d",error);
+    LOG1(EJavaMMAPI, EInfo, "FramePositioningControl__1seek error= %d",error);
 
     return (error == KErrNone) ? returnValue : error;
 }
@@ -91,7 +91,7 @@ Java_com_nokia_microedition_media_control_FramePositioningControl__1skip
  jint aEventSourceHandle,
  jintArray aValues)
 {
-    LOG( EJavaMMAPI, EInfo, "FramePositioningControl__1skip");
+    LOG(EJavaMMAPI, EInfo, "FramePositioningControl__1skip");
 
     // Get pointer to native event source.
     MMAFunctionServer* eventSource =
@@ -152,13 +152,13 @@ Java_com_nokia_microedition_media_control_FramePositioningControl__1mapFrameToTi
  jint aEventSourceHandle,
  jint aFrameNumber)
 {
-    LOG( EJavaMMAPI, EInfo, "FramePositioningControl__1mapFrameToTime");
+    LOG(EJavaMMAPI, EInfo, "FramePositioningControl__1mapFrameToTime");
 
     // Get pointer to native event source.
     MMAFunctionServer* eventSource =
-		reinterpret_cast< MMAFunctionServer *>(aEventSourceHandle);
-    
-	CMMAFramePositioningControl* FramePositioningControl =
+        reinterpret_cast< MMAFunctionServer *>(aEventSourceHandle);
+
+    CMMAFramePositioningControl* FramePositioningControl =
         reinterpret_cast< CMMAFramePositioningControl* >(aControlHandle);
 
     // Will leave on error. Media time of frame in question.
@@ -203,7 +203,7 @@ Java_com_nokia_microedition_media_control_FramePositioningControl__1mapTimeToFra
  jint aEventSourceHandle,
  jlong aMediaTime)
 {
-    LOG( EJavaMMAPI, EInfo, "FramePositioningControl__1mapFrameToTime");
+    LOG(EJavaMMAPI, EInfo, "FramePositioningControl__1mapFrameToTime");
 
     // Get pointer to native event source.
     MMAFunctionServer* eventSource =

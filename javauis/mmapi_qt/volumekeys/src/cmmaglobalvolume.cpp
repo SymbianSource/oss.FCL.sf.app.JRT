@@ -123,12 +123,12 @@ void CMMAGlobalVolume::RemovePlayer(CMMAPlayer* aPlayer)
 //
 void CMMAGlobalVolume::VolumeUp()
 {
-    LOG1( EJavaMMAPI, EInfo, "THREADID = %d : CMMAGlobalVolume: VolumeUp: +", RThread().Id().Id());
+    LOG1(EJavaMMAPI, EInfo, "THREADID = %d : CMMAGlobalVolume: VolumeUp: +", RThread().Id().Id());
     // Adjust volume if midlet is in foreground and the volume level value
     // is not too high, in this case it cannot be set over KMMAVolumeMaxLevel
     if (iForeground->IsForeground() && (iLevel < KMMAVolumeMaxLevel))
     {
-        LOG( EJavaMMAPI, EInfo, "CMMAGlobalVolume: VolumeUp: Volume up");
+        LOG(EJavaMMAPI, EInfo, "CMMAGlobalVolume: VolumeUp: Volume up");
         // Check that the current volume level is not increased too much
         TInt level =
             iLevel > (KMMAVolumeMaxLevel - KMMAVolumeLevelStep) ?
@@ -136,7 +136,7 @@ void CMMAGlobalVolume::VolumeUp()
         // Increase level by new value
         SetControlVolumeLevels(level);
     }
-    LOG( EJavaMMAPI, EInfo, "CMMAGlobalVolume: VolumeUp: -");
+    LOG(EJavaMMAPI, EInfo, "CMMAGlobalVolume: VolumeUp: -");
 }
 
 // ---------------------------------------------------------------------------
@@ -145,12 +145,12 @@ void CMMAGlobalVolume::VolumeUp()
 //
 void CMMAGlobalVolume::VolumeDown()
 {
-    LOG1( EJavaMMAPI, EInfo, "THREADID = %d : CMMAGlobalVolume: VolumeDown: +", RThread().Id().Id());
+    LOG1(EJavaMMAPI, EInfo, "THREADID = %d : CMMAGlobalVolume: VolumeDown: +", RThread().Id().Id());
     // Adjust volume if midlet is in foreground and the volume value
     // is not too low, in this case it cannot be set under zero
     if (iForeground->IsForeground() && (iLevel > 0))
     {
-        LOG( EJavaMMAPI, EInfo, "CMMAGlobalVolume: VolumeDown: Volume down");
+        LOG(EJavaMMAPI, EInfo, "CMMAGlobalVolume: VolumeDown: Volume down");
         // Check that the currnet volume level is not decreased too much
         TInt level =
             iLevel < KMMAVolumeLevelStep ?
@@ -158,7 +158,7 @@ void CMMAGlobalVolume::VolumeDown()
         // Decrease level by new value
         SetControlVolumeLevels(level);
     }
-    LOG( EJavaMMAPI, EInfo, "CMMAGlobalVolume: VolumeDown: -");
+    LOG(EJavaMMAPI, EInfo, "CMMAGlobalVolume: VolumeDown: -");
 }
 
 // ---------------------------------------------------------------------------
@@ -204,8 +204,8 @@ void CMMAGlobalVolume::SetControlVolumeLevels(TInt aLevel)
     }
 
     iLevel = aLevel;
-    LOG1( EJavaMMAPI, EInfo, 
-        "CMMAGlobalVolume::SetControlVolumeLevels - iLevel = %d", iLevel);
+    LOG1(EJavaMMAPI, EInfo,
+         "CMMAGlobalVolume::SetControlVolumeLevels - iLevel = %d", iLevel);
 
     // Store new volume to MMA global settings. Error cannot be reported
     // in any sophisticated way so we just have to ignore it. Debug builds
@@ -232,7 +232,7 @@ void CMMAGlobalVolume::ConstructL()
 {
     iVolumeKeysListener = CMMAVolumeKeysListener::NewL(this);
     // TO-DO remove TRAP_IGNORE
-   // TRAP_IGNORE(err,iSettingsStore = CRepository::NewL(KCRUidMobileMedia));
+    // TRAP_IGNORE(err,iSettingsStore = CRepository::NewL(KCRUidMobileMedia));
 
     // Get level from the settings store
     //User::LeaveIfError(iSettingsStore->Get(KMobileMediaVolumeLevel, iLevel));

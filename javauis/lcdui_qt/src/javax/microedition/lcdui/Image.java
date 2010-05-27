@@ -37,11 +37,12 @@ public class Image
     private org.eclipse.swt.graphics.Image eswtImage;
     private int eswtImageWidth;
     private int eswtImageHeight;
-
-    private Graphics imageGraphics;
     private boolean mutable;
-
     private com.nokia.mj.impl.rt.support.Finalizer finalizer;
+
+    // buffer has package visibility so that it can be used as
+    // a lock in other classes
+    ImageBuffer graphicsBuffer;
 
     /**
      * Constructor.
@@ -52,6 +53,7 @@ public class Image
         this.mutable = isMutable;
         eswtImageWidth = eswtImage.getBounds().width;
         eswtImageHeight = eswtImage.getBounds().height;
+        graphicsBuffer = new ImageBuffer(this);
         finalizer = ((finalizer != null) ? finalizer
                      : new com.nokia.mj.impl.rt.support.Finalizer()
         {
@@ -85,6 +87,7 @@ public class Image
                     eswtImage.dispose();
                     eswtImage = null;
                 }
+                graphicsBuffer.dispose();
             }
         });
     }
@@ -644,6 +647,17 @@ public class Image
     }
 
     /**
+     * Synchronizes any pending draw commands to this image
+     */
+    void sync()
+    {
+        synchronized(graphicsBuffer)
+        {
+            graphicsBuffer.sync();
+        }
+    }
+
+    /**
      * Creates new image from specified RGB array data.
      *
      * @param rgbData Pixel data.
@@ -746,22 +760,26 @@ public class Image
                 MsgRepository.IMAGE_EXCEPTION_INVALID_SCANLENGTH);
         }
 
-        final int[] localRgbData = rgbData;
-        final int localOffset = offset;
-        final int localLength = length;
-        final int localX = xPos;
-        final int localY = yPos;
-        final int localW = width;
-        final int localH = height;
-        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        synchronized(graphicsBuffer)
         {
-            public void run()
+            graphicsBuffer.sync();
+            final int[] localRgbData = rgbData;
+            final int localOffset = offset;
+            final int localLength = length;
+            final int localX = xPos;
+            final int localY = yPos;
+            final int localW = width;
+            final int localH = height;
+            ESWTUIThreadRunner.safeSyncExec(new Runnable()
             {
-                org.eclipse.swt.internal.qt.graphics.Image cgImage = Internal_GfxPackageSupport.getImage(eswtImage);
-                cgImage.getRGB(localRgbData, localOffset, localLength,
-                               localX, localY, localW, localH);
-            }
-        });
+                public void run()
+                {
+                    org.eclipse.swt.internal.qt.graphics.Image cgImage = Internal_GfxPackageSupport.getImage(eswtImage);
+                    cgImage.getRGB(localRgbData, localOffset, localLength,
+                                   localX, localY, localW, localH);
+                }
+            });
+        }
     }
 
     /**
@@ -774,20 +792,7 @@ public class Image
     {
         if(mutable)
         {
-            if(imageGraphics == null)
-            {
-                ESWTUIThreadRunner.safeSyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        // instantiate the Graphics object
-                        imageGraphics = new Graphics();
-                        // bind the GC to the Image target
-                        imageGraphics.eswtSetParentImage(Image.this);
-                    }
-                });
-            }
-            return imageGraphics;
+            return graphicsBuffer.getGraphics();
         }
         throw new IllegalStateException(MsgRepository.IMAGE_EXCEPTION_IMMUTABLE);
     }

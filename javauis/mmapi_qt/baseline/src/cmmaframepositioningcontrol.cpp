@@ -26,17 +26,17 @@
 CMMAFramePositioningControl::CMMAFramePositioningControl(CMMAPlayer* aPlayer)
         : iPlayer(aPlayer)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAFramePositioningControl::CMMAFramePositioningControl");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAFramePositioningControl::CMMAFramePositioningControl");
 }
 
 CMMAFramePositioningControl::~CMMAFramePositioningControl()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAFramePositioningControl::~CMMAFramePositioningControl");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAFramePositioningControl::~CMMAFramePositioningControl");
 }
 
 const TDesC& CMMAFramePositioningControl::ClassName() const
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAFramePositioningControl::ClassName");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAFramePositioningControl::ClassName");
     return KMMAFramePositioningControlName;
 }
 

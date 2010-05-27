@@ -31,5 +31,7 @@
 ;to be installed on Series 60 v5.0 platforms
 [0x1028315F], 0, 0, 0, {"Series60ProductID"}
 
-"\epoc32\release\armv5\urel\javastandalone.exe"-"c:\sys\bin\javastandalone.exe"
+"\epoc32\release\armv5\urel\javatest.exe"-"c:\sys\bin\javatest.exe"
 "\epoc32\data\z\private\10003a3f\apps\javastandalone_reg.rsc"-"c:\private\10003a3f\import\apps\javastandalone_reg.rsc"
+
+;"jvmargs.txt"-"c:\java\jvmargs.txt"

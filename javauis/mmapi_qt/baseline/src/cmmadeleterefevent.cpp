@@ -30,7 +30,7 @@ CMMADeleteRefEvent::CMMADeleteRefEvent(jobject aDeleteRefObject):
 // from CJavaEvent
 void CMMADeleteRefEvent::Dispatch(JNIEnv& aJni)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMADeleteRefEvent::Dispatch");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMADeleteRefEvent::Dispatch");
     aJni.DeleteGlobalRef(iDeleteRefObject);
 }
 

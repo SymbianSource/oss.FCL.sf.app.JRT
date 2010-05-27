@@ -45,7 +45,7 @@ public class SourcePlayer extends PlayerImpl
     {
         super(aPlayerHandle);
         iDataSource = aDataSource;
-				Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"SourcePlayer player handle = " + aPlayerHandle);
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"SourcePlayer player handle = " + aPlayerHandle);
         // Create reader for the stream
         iSourceStreamReader = new SourceStreamReader(
             aDataSource.getStreams()[ 0 ],

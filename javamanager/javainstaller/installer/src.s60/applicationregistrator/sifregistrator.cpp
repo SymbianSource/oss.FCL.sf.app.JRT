@@ -32,6 +32,7 @@
 #ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 
 #include <qservicemanager.h>
+#include <qurl.h>
 #include <usif/scr/scr.h>
 #include <usif/scr/screntries.h>
 #ifdef RD_JAVA_USIF_APP_REG
@@ -252,9 +253,6 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
 (JNIEnv *, jclass)
 {
     TInt err = KErrNone;
-    /*
-    //Application Library UID.
-    const TUid KAppLibUid = { 0x20022F35 };
 
     QServiceManager serviceManager;
     QObject* activityManager =
@@ -266,9 +264,10 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
               "launchAppView: loading ActivityManager failed, error %d", err);
         return KErrCouldNotConnect;
     }
+    // URL for launching AppLib.
+    QUrl url(QString("appto://20022F35?activityname=AppLibRecentView"));
     QMetaObject::invokeMethod(activityManager, "launchActivity",
-                              Q_ARG(int, KAppLibUid.iUid), // AppLib uid
-                              Q_ARG(QString, "showInstalledApps"));
+                              Q_ARG(QString, url.toString()));
     err = serviceManager.error();
     delete activityManager;
     if (QServiceManager::NoError != err)
@@ -280,8 +279,8 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
     }
 
     // Start AppLib and bring it to foreground.
+    const TUid KAppLibUid = { 0x20022F35 };
     TRAP(err, StartAppL(KAppLibUid));
-    */
     return err;
 }
 
@@ -539,7 +538,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
  jint aMediaId, jstring aMidletInfoUrl, jstring aMidletDescription,
  jstring aDownloadUrl, jobject aComponentId)
 {
-    __UHEAP_MARK;
+    //__UHEAP_MARK;
     RSoftwareComponentRegistry *pScr =
         reinterpret_cast<RSoftwareComponentRegistry*>(aSessionHandle<<2);
     TComponentId componentId = -1;
@@ -548,7 +547,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
                                  aComponentFiles, aComponentSize, aIsRemovable,
                                  aIsDrmProtected, aIsOriginVerified, aIsUpdate, aMediaId,
                                  aMidletInfoUrl, aMidletDescription, aDownloadUrl));
-    __UHEAP_MARKEND;
+    //__UHEAP_MARKEND;
     if (KErrNone == err)
     {
         jclass clazz = aEnv->GetObjectClass(aComponentId);
@@ -566,7 +565,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1unregisterComponent
 (JNIEnv *, jclass, jint aSessionHandle, jint aComponentId)
 {
-    __UHEAP_MARK;
+    //__UHEAP_MARK;
     RSoftwareComponentRegistry *pScr =
         reinterpret_cast<RSoftwareComponentRegistry*>(aSessionHandle<<2);
     TInt err = KErrNone;
@@ -577,7 +576,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
     {
         TRAP(err, pScr->DeleteComponentL(aComponentId));
     }
-    __UHEAP_MARKEND;
+    //__UHEAP_MARKEND;
     return err;
 }
 
@@ -640,7 +639,7 @@ void RegisterApplicationL(
             /*aCaption=*/ *caption,
             /*aIconFileName=*/ (NULL != aIconFilename? *iconFilename: KNullDesC()),
             /*aNumOfAppIcons=*/ numberOfAppIcons);
-    CLocalizableAppInfo *locAppInfo = 
+    CLocalizableAppInfo *locAppInfo =
         CLocalizableAppInfo::NewLC(
             /*aShortCaption=*/ KNullDesC, /*aApplicationLanguage=*/ KNonLocalized,
             /*aGroupName=*/ KNullDesC, /*aCaptionAndIconInfo=*/ captionAndIconInfo,
@@ -660,7 +659,7 @@ void RegisterApplicationL(
         for (TInt i = 0; i < langCount; i++)
         {
             TLanguage tmpLanguage = (TLanguage)languages[i];
-            HBufC *tmpCaption = 
+            HBufC *tmpCaption =
                 CreateHBufCFromJavaStringLC(
                     aEnv, (jstring)aEnv->GetObjectArrayElement(aAppNames, i));
             captionsArray.AppendL(tmpCaption);

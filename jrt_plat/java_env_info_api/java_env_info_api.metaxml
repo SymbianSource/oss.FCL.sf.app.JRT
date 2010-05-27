@@ -5,7 +5,7 @@
   <type>c++</type>
   <collection>javacommons</collection>
   <libs>
-    <lib name="javaenv.lib" />  
+    <lib name="javaenvinfo.lib" />  
   </libs>
   <release category="platform" sinceversion="3.2"/>
   <attributes>

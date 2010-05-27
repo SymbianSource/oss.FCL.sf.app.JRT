@@ -62,10 +62,11 @@ public: // Methods derived from MMMADisplay
     TBool IsVisible();
     TBool IsFullScreen();
     virtual void SetForeground(TBool aIsForeground, TBool aUseEventServer);
-    void SourceSizeChanged(const TSize& aSourceSize);      
+    void SourceSizeChanged(const TSize& aSourceSize);
     void SetUIPlayer(MMMAGuiPlayer* player);
     TSize SourceSize();
-    
+    virtual void SourceSizeChanged(TInt aJavaControlWidth, TInt aJavaControlHeight,TInt x,TInt y, TRect aBoundsRect) = 0;
+
     /**
      * Gets notification that there is container to draw assigned
      *
@@ -156,7 +157,7 @@ protected:// New Methods
      * Remove currently set clip region and refresh canvas
      */
     void RemoveClippingRegion();
-    
+
     /**
      * MMAPI_UI 3.x req
      * removes content bound from eSWT control
@@ -170,14 +171,14 @@ protected:// New Methods
      * MMAPI_UI 3.x req
      * Redraw the java side eSWT control
      */
-    void RefreshJavaControl(const TRect& aRect);
-    
-    /** 
+    void RefreshJavaControl();
+
+    /**
      * MMAPI_UI 3.x req
      * Reset the rectangle dimension in eSWT control
      */
     void ResetJavaRectObject(const TRect& aRect);
-    
+
     /**
     * Handling the change in container visibility
     */
@@ -192,20 +193,20 @@ public:
     * called from java to set the window resources
     */
     void SetWindowResources(QWidget* qtWidget);
-   
+
 		/**
     * Trigger a function call CalledBackInUiThread() from java in UI thread
     * arg 'placeholder' is used to identify the function, to be called back from UI Thread
-    */    
+    */
     void GetCallbackInUiThread(TInt placeholder);
-    
+
     /**
     * Called from java in UI thread context
     * arg 'placeholder' is used to identify the function, to be called back from UI Thread
-    */ 
+    */
     void CalledBackInUiThread(TInt placeholder);
-    
-    void SourceSizeChanged(TInt aJavaControlWidth, TInt aJavaControlHeight);
+
+
     void SetSourceSizeToDisplay(const TSize& aSourceSize);
     void SetDisplayPosition(TInt uiControlLocationX,TInt uiControlLocationY,TInt	videoControlLocationX,TInt videoControlLocationY);
 
@@ -263,11 +264,11 @@ protected:  // Data
      */
     TBool iResetDrawRect;
     // not owned
-    MMAFunctionServer* iEventSource; 
+    MMAFunctionServer* iEventSource;
     JNIEnv* iJni;
     jobject iJavaDisplayObject;
 		jclass iJavaDisplayClass;
-		TSize fullScreenSize;
+		TSize iFullScreenSize;
 		MMMAGuiPlayer* iUiPlayer;
 };
 

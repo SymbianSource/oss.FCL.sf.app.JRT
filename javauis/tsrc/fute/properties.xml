@@ -1,0 +1,99 @@
+<!--
+#
+# Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<project name="Properties">
+
+    <property name="top" value="."/>
+    <property name="src" value="src"/>
+    <property name="res" value="res"/>
+    <property name="build" value="build"/>
+    <property name="bin" value="${build}/bin"/>
+    <property name="classes" value="${build}/classes"/>
+    <property name="prever" value="${build}/preverified"/>
+    <property name="lib" value="${top}/lib"/>
+    <property name="ext" value="${lib}/ext"/>
+
+    <property name="wtk.home" value="C:/WTK"/>
+    <property name="midp_home" value="${wtk.home}"/>
+    <property name="midp_lib" value="${midp_home}/lib/midpapi21.jar"/>
+    <property name="cldc_home" value="${wtk.home}"/>
+    <property name="cldc_lib" value="${cldc_home}/lib/cldcapi11.jar"/>
+    <property name="wtk.cldc.version" value="1.1"/>
+    <property name="wtk.midp.version" value="2.1"/>
+    <property name="java_public_api" value="${wtk.home}/lib/ext/java_public_api.jar"/>
+
+    <taskdef resource="antenna.properties" classpath="${wtk.home}/lib/ext/antenna-bin-1.0.2.jar"/>
+
+
+    <filelist
+        id="ext_lib"
+        dir="${ext}"
+        files=""/>
+
+    <path id="project.class.path">
+        <pathelement path="${cldc_lib}"/>
+        <pathelement path="${midp_lib}"/>
+        <pathelement path="${java_public_api}"/>
+        <filelist refid="ext_lib"/>
+    </path>	
+    <property name="cp.path" refid="project.class.path"/>
+    <!-- <echo message="project.class.path: '${cp.path}'."/> -->
+
+
+    <!-- Combine Tasks -->
+    <target name="all" depends="init,compile,preverify,pack"/>
+
+    <!-- Remove Build Directories -->
+    <target name="clean">
+        <delete dir="${build}"/>
+    </target>
+
+    <!-- Create Build Directories -->
+    <target name="init" depends="clean">
+        <!-- Create the build directory structure used by compile and dist -->
+        <mkdir dir="${build}"/>
+        <mkdir dir="${bin}"/>
+        <mkdir dir="${classes}"/>
+        <mkdir dir="${prever}"/>
+        <mkdir dir="${res}"/>
+    </target>
+
+    <target name="compile" depends="init">
+        <mkdir dir="${classes}"/>
+        <javac
+            destdir="${classes}"
+            srcdir="${src}"
+            target="1.1"
+            source="1.3"
+            debug="true"
+            debuglevel="debug">
+            <classpath refid="project.class.path"/>
+        </javac>
+    </target>
+
+    <!-- Preverify classes -->
+    <target name="preverify" depends="compile">
+        <mkdir dir="${prever}"/>
+        <wtkpreverify
+            srcdir="${classes}"
+            destdir="${prever}">
+            <classpath refid="project.class.path"/>
+        </wtkpreverify>
+    </target>
+
+</project>

@@ -89,7 +89,7 @@ void CMMAVolumeControl::SetLevelL(TInt aLevel)
 
 void CMMAVolumeControl::StateChanged(TInt aState)
 {
-    LOG1( EJavaMMAPI, EInfo, "CMMAVolumeControl::StateChanged - state %d", aState);
+    LOG1(EJavaMMAPI, EInfo, "CMMAVolumeControl::StateChanged - state %d", aState);
     // Set the volume if the player is prefetched
     if (aState == CMMAPlayer::EPrefetched)
     {
@@ -119,10 +119,10 @@ void CMMAVolumeControl::StateChanged(TInt aState)
     {
         if ((iLevels.Count() - 1) == KMMAGlobalVolumeSoundIndex)
         {
-            LOG( EJavaMMAPI, EInfo, "MMA::CMMAVolumeControl::StateChanged : Post GLOBAL VOL EVENT  ");
+            LOG(EJavaMMAPI, EInfo, "MMA::CMMAVolumeControl::StateChanged : Post GLOBAL VOL EVENT  ");
             if (iLevels[ KMMAGlobalVolumeSoundIndex ] != KErrNotFound)
             {
-                LOG1( EJavaMMAPI, EInfo, "MMA::CMMAVolumeControl::StateChanged : Post complete Val = %d ",iLevels[ KMMAGlobalVolumeSoundIndex ]);
+                LOG1(EJavaMMAPI, EInfo, "MMA::CMMAVolumeControl::StateChanged : Post complete Val = %d ",iLevels[ KMMAGlobalVolumeSoundIndex ]);
                 iPlayer->PostLongEvent(CMMAPlayerEvent::ENOKIA_EXTERNAL_VOLUME_EVENT,
                                        iLevels[ KMMAGlobalVolumeSoundIndex ]);
             }
@@ -132,7 +132,7 @@ void CMMAVolumeControl::StateChanged(TInt aState)
 
 void CMMAVolumeControl::RefreshVolume()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAVolumeControl::RefreshVolume ++ ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAVolumeControl::RefreshVolume ++ ");
     TRAPD(error,
     {
         // Get the default value for the Java sound level
@@ -150,7 +150,7 @@ void CMMAVolumeControl::RefreshVolume()
         iPlayer->PostStringEvent(CMMAPlayerEvent::EError,
                                  KMMAVolumeErrorMsg);
     }
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAVolumeControl::RefreshVolume -- ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAVolumeControl::RefreshVolume -- ");
 }
 
 void CMMAVolumeControl::RefreshControl()
@@ -169,8 +169,8 @@ EXPORT_C TInt CMMAVolumeControl::AddLevelL()
 EXPORT_C void CMMAVolumeControl::SetVolumeLevelL(TInt aLevelIndex,
         TInt aVolumeLevel)
 {
-    LOG2( EJavaMMAPI, EInfo, "CMMAVolumeControl::SetVolumeLevelL - setting index %d, level %d",
-               aLevelIndex, aVolumeLevel);
+    LOG2(EJavaMMAPI, EInfo, "CMMAVolumeControl::SetVolumeLevelL - setting index %d, level %d",
+         aLevelIndex, aVolumeLevel);
     if (0 >= iLevels.Count() ||  iLevels.Count() > 3)
     {
         return ;
@@ -201,7 +201,7 @@ EXPORT_C void CMMAVolumeControl::SetVolumeLevelL(TInt aLevelIndex,
 void CMMAVolumeControl::GetVolumeLevelL(TInt aLevelIndex,
                                         TInt* aVolumeLevel)
 {
-    LOG1( EJavaMMAPI, EInfo, "CMMAVolumeControl::GetVolumeLevelL - level index %d", aLevelIndex);
+    LOG1(EJavaMMAPI, EInfo, "CMMAVolumeControl::GetVolumeLevelL - level index %d", aLevelIndex);
 
     // Return max volume if the default Java volume level is not yet known
     if (aLevelIndex == KMMAJavaSoundIndex &&
@@ -213,7 +213,7 @@ void CMMAVolumeControl::GetVolumeLevelL(TInt aLevelIndex,
 
     *aVolumeLevel = iLevels[ aLevelIndex ];
 
-    LOG1( EJavaMMAPI, EInfo, "CMMAVolumeControl::GetVolumeLevelL - level %d", *aVolumeLevel);
+    LOG1(EJavaMMAPI, EInfo, "CMMAVolumeControl::GetVolumeLevelL - level %d", *aVolumeLevel);
 }
 
 TInt CMMAVolumeControl::CalculateLevel()

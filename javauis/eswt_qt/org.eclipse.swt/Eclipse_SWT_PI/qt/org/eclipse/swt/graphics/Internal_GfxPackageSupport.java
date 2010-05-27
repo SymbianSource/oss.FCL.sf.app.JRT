@@ -46,4 +46,12 @@ public static Color newColor(Device device, int handle) {
 public static Font newFont(Device device, int handle) {
     return Font.qt_new(device, handle);
 }
+
+/*
+ * From the class Image
+ */
+public static Image createImageWithoutSecurityCheck(Device device,
+        String filename) {
+    return Image.createImageWithoutSecurityCheck(device, filename);
+}
 }

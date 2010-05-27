@@ -106,8 +106,8 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_NativePlayerFactory__1c
         {
             // Leave occured return error code to Java
             playerHandle = err;
-            ELOG1( EJavaMMAPI, "MMA::NativePlayerFactory createPlayerHeaderData err %d",
-                      playerHandle);
+            ELOG1(EJavaMMAPI, "MMA::NativePlayerFactory createPlayerHeaderData err %d",
+                  playerHandle);
         }
     }
     return playerHandle;
@@ -142,7 +142,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_NativePlayerFactory__1c
     __ASSERT_DEBUG((aEventSourceHandle > 0) && (aManagerHandle > 0), User::Invariant());
 
     MMAFunctionServer* eventSource =
-    	reinterpret_cast< MMAFunctionServer* >(aEventSourceHandle);
+        reinterpret_cast< MMAFunctionServer* >(aEventSourceHandle);
     CMMAManager* manager = reinterpret_cast< CMMAManager *>(aManagerHandle);
 
     // Get Java strings to native
@@ -180,8 +180,8 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_NativePlayerFactory__1c
     {
         // Leave occured return error code to Java
         playerHandle = err;
-        ELOG1( EJavaMMAPI, "MMA::NativePlayerFactory createPlayerLocator err %d",
-                  playerHandle);
+        ELOG1(EJavaMMAPI, "MMA::NativePlayerFactory createPlayerLocator err %d",
+              playerHandle);
     }
     return playerHandle;
 }
@@ -225,8 +225,8 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_NativePlayerFactory__1c
     {
         // Leave occured return error code to Java
         playerHandle = err;
-        ELOG1( EJavaMMAPI, "MMA::NativePlayerFactory createPlayerContentType err %d",
-                  playerHandle);
+        ELOG1(EJavaMMAPI, "MMA::NativePlayerFactory createPlayerContentType err %d",
+              playerHandle);
     }
     return playerHandle;
 }

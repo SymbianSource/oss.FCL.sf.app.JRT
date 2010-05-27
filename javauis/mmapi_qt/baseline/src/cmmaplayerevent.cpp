@@ -57,7 +57,7 @@ void CMMAPlayerEvent::SetLongEvent(TEventType aEventType,
 void CMMAPlayerEvent::SetStringEventL(TEventType aEventType,
                                       const TDesC& aEventData)
 {
-  //  __ASSERT_DEBUG(iStringEventData == NULL, User::Invariant());
+    //  __ASSERT_DEBUG(iStringEventData == NULL, User::Invariant());
     iEventType = aEventType;
     iStringEventData = aEventData.AllocL();
     iEventParams = EString;
@@ -65,10 +65,10 @@ void CMMAPlayerEvent::SetStringEventL(TEventType aEventType,
 
 void CMMAPlayerEvent::Dispatch(JNIEnv& aJni)
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAPlayerEvent::Dispatch type=%d", iEventType);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAPlayerEvent::Dispatch type=%d", iEventType);
     if (aJni.IsSameObject(iListenerObject, 0))
     {
-        LOG1( EJavaMMAPI, EInfo, "MMA::CMMAPlayerEvent::Dispatch EVENT_NOT_VALID type=%d", iEventType);
+        LOG1(EJavaMMAPI, EInfo, "MMA::CMMAPlayerEvent::Dispatch EVENT_NOT_VALID type=%d", iEventType);
         return;
     }
     switch (iEventParams)

@@ -11,21 +11,36 @@
 *
 * Contributors:
 *
-* Description:  This main entry point of Java processes.
+* Description:
 *
 */
 
 #include <string>
 #include <javastarter.h>
+#include "logger.h"
 
-
-int main(int argc, const char *argv[])
+int main()
 {
-#ifdef __WINS__
-    const char* const fileName = "c:\\java\\JvmArgs.txt";
-#else
-    const char* const fileName = "f:\\java\\JvmArgs.txt";
-#endif
-    int res = java::start(fileName);
+    const char* const fileName = "c:\\java\\jvmargs.txt";
+
+    int res = 0;
+    struct stat buf;
+
+    if (stat(fileName, &buf) == 0)
+    {
+        PLOG(EJavaRuntime, "javatest: using arguments from file");
+        res = java::start(fileName);
+    }
+    else
+    {
+        PLOG(EJavaRuntime, "javatest: using default arguments");
+        const char* argv[] = { "-profile=standalonemidlet",
+                               "-conf=cldc",
+                               "-jar",
+                               "c:\\java\\midlet.jar" };
+        int argc = sizeof(argv) / sizeof(argv[0]);
+        res = java::start(argc, argv);
+    }
+
     return res;
 }

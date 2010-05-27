@@ -1190,9 +1190,6 @@ final private boolean handleNativeSwtEvent(Widget widget, int widgetHandle,
         int arg5) {
 
     switch (eventType) {
-    case OS.QSWTEVENT_ENDKEYCLOSE:
-        qt_swt_event_endKeyPressed();
-        return true;
     case OS.QSWTEVENT_SYSTEMSHUTDOWN:
         qt_swt_event_systemShutdown();
         return false;
@@ -1258,8 +1255,13 @@ final private boolean handleQtEvent(Widget widget, int widgetHandle, int eventTy
 
     // These events are coming from an application event filter of QApplication.
     // The return value of this method will be returned by the filter.
-
-    if(widget == null) return false;
+    if (eventType == OS.QEVENT_KEYPRESS && arg1 == OS.QT_KEY_NO) {
+        qt_key_event_endKeyPressed();
+        return false;
+    }
+    if (widget == null) {
+        return false;
+    }
 
     switch (eventType) {
     case OS.QEVENT_PAINT:
@@ -2030,12 +2032,8 @@ void qt_signal_timer (int timerHandleIndex) {
 }
 
 
-void qt_swt_event_endKeyPressed(){
-    Event event = new Event ();
-    sendEvent (SWT.Close, event);
-    if (event.doit) ExitNotificationWrapper.notifyExit();
-    // Application has been sent to background by OS.
-    // don't need to do anything further even if doit is false
+void qt_key_event_endKeyPressed(){
+    close();
 }
 
 

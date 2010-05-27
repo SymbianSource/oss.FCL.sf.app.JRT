@@ -106,20 +106,16 @@ TBool CPIMToDoAdapterAccess::OpenContactListL(const TDesC* /*aListName*/,
     return EFalse;
 }
 
-TBool CPIMToDoAdapterAccess::OpenEventListL(CCalSession* /*aCalSession*/, 
-        const TDesC* /*aListName*/,
+TBool CPIMToDoAdapterAccess::OpenEventListL(const TDesC* /*aListName*/,
         MPIMEventAdapterManager** /*aRetAdapterManager*/,
-        MPIMEventListAdapter** /*aRetListAdapter*/, 
-        MPIMLocalizationData** /*aRetLocalizationData*/
-        )
+        MPIMEventListAdapter** /*aRetListAdapter*/, MPIMLocalizationData** /*aRetLocalizationData*/)
 {
     JELOG2(EPim);
     // no Event lists
     return EFalse;
 }
 
-TBool CPIMToDoAdapterAccess::OpenToDoListL(CCalSession* aCalSession, 
-        const TDesC* aListName,
+TBool CPIMToDoAdapterAccess::OpenToDoListL(const TDesC* aListName,
         MPIMToDoAdapterManager** aRetAdapterManager,
         MPIMToDoListAdapter** aRetListAdapter,
         MPIMLocalizationData** aRetLocalizationData)
@@ -140,7 +136,7 @@ TBool CPIMToDoAdapterAccess::OpenToDoListL(CCalSession* aCalSession,
                 (*iToDoListNames)[0]);
     CleanupDeletePushL(adapterManager);
 
-    MPIMToDoListAdapter* listAdapter = CPIMToDoListAdapter::NewL(iFuncServer, aCalSession);
+    MPIMToDoListAdapter* listAdapter = CPIMToDoListAdapter::NewL(iFuncServer);
     CleanupStack::Pop(adapterManager);
 
     MPIMLocalizationData* localizationData = iToDoLocalizationData;

@@ -117,6 +117,8 @@ public:
      */
     virtual void SourceSizeChanged(const TSize& aSourceSize) = 0;
     
+    virtual void SourceSizeChanged(TInt aJavaControlWidth, TInt aJavaControlHeight,TInt x, TInt y,TRect aBoundsRect) = 0;
+    
     virtual TSize SourceSize() = 0;
     
 		virtual void SetUIPlayer(MMMAGuiPlayer* player) = 0;

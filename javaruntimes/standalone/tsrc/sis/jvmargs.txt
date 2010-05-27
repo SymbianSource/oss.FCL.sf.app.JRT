@@ -1,0 +1,4 @@
+-profile=standalonemidlet
+-conf=cldc
+-jar
+c:\java\midlet.jar

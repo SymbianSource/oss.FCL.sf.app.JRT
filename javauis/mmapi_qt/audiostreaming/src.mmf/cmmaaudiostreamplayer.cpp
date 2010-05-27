@@ -168,7 +168,7 @@ void CMMAAudioStreamPlayer::StartL()
 
 void CMMAAudioStreamPlayer::StopL(TBool aPostEvent)
 {
-    LOG1( EJavaMMAPI, EInfo, "CMMAAudioStreamPlayer::Stop state %d", iState);
+    LOG1(EJavaMMAPI, EInfo, "CMMAAudioStreamPlayer::Stop state %d", iState);
     if (iState == EStarted)
     {
         User::LeaveIfError(Pause());
@@ -183,7 +183,7 @@ void CMMAAudioStreamPlayer::StopL(TBool aPostEvent)
         }
 
     }
-    LOG( EJavaMMAPI, EInfo, "CMMAAudioStreamPlayer::Stop OK");
+    LOG(EJavaMMAPI, EInfo, "CMMAAudioStreamPlayer::Stop OK");
 }
 
 TInt CMMAAudioStreamPlayer::Pause()
@@ -194,8 +194,8 @@ TInt CMMAAudioStreamPlayer::Pause()
 
 void CMMAAudioStreamPlayer::PlayCompleteL(TInt aError)
 {
-    ELOG1( EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::PlayCompleteL error %d",
-              aError);
+    ELOG1(EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::PlayCompleteL error %d",
+          aError);
 
     // Before controller is started it must be primed
     iControllerPrimed = EFalse;
@@ -236,8 +236,8 @@ void CMMAAudioStreamPlayer::GetDuration(TInt64* aDuration)
 
 void CMMAAudioStreamPlayer::PrepareComplete(TInt aError)
 {
-    ELOG1( EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::PrepareComplete error %d",
-              aError);
+    ELOG1(EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::PrepareComplete error %d",
+          aError);
     if (aError == KErrNone)
     {
         ChangeState(EPrefetched);
@@ -247,8 +247,8 @@ void CMMAAudioStreamPlayer::PrepareComplete(TInt aError)
 
 void CMMAAudioStreamPlayer::StartComplete(TInt aError)
 {
-    ELOG1( EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::StartComplete error %d",
-              aError);
+    ELOG1(EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::StartComplete error %d",
+          aError);
 
     // do not start if player is deallocated or closed
     // RateControl start can start controller in started state
@@ -262,11 +262,11 @@ void CMMAAudioStreamPlayer::StartComplete(TInt aError)
     if (!iControllerPrimed)
     {
         // Prime must be called when player is started first time or restarted
-        LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::StartComplete PRIME");
+        LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::StartComplete PRIME");
         err = iController.Prime();
         iControllerPrimed = ETrue;
-        ELOG1( EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::StartComplete prime error %d",
-                  err);
+        ELOG1(EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::StartComplete prime error %d",
+              err);
     }
     else
     {
@@ -279,27 +279,29 @@ void CMMAAudioStreamPlayer::StartComplete(TInt aError)
         // must be primed before media time can be get
         GetMediaTime(&time);
         err = iController.Play();
-        ELOG1( EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::StartComplete play error %d",
-                  err);
+        ELOG1(EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::StartComplete play error %d",
+              err);
     }
 
     // RateControl can start controller in started state, then Java event is
     // not sent
     if (err == KErrNone && iState != EStarted)
-    { // move to started state and post started event
+    {
+        // move to started state and post started event
         PostLongEvent(CMMAPlayerEvent::EStarted, time);
         ChangeState(EStarted);
     }
     else
-    { // post error event
+    {
+        // post error event
         HandleError(aError);
     }
 }
 
 void CMMAAudioStreamPlayer::HandleError(TInt aError)
 {
-    ELOG1( EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::HandleError error %d",
-              aError);
+    ELOG1(EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::HandleError error %d",
+          aError);
 
     TName errorMessage;
     errorMessage.Format(KMMAStreamErrorMessage, aError);

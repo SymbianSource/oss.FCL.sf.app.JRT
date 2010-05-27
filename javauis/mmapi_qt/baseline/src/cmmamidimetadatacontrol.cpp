@@ -26,19 +26,19 @@ CMMAMIDIMetaDataControl::CMMAMIDIMetaDataControl(
     CMMAMIDIPlayer* aPlayer)
         : iPlayer(aPlayer)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAMIDIMetaDataControl constructor called.");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAMIDIMetaDataControl constructor called.");
 }
 
 TInt CMMAMIDIMetaDataControl::KeyCountL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMAMIDIMetaDataControl::KeyCountL");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMAMIDIMetaDataControl::KeyCountL");
     TInt entries = iPlayer->MidiClient()->NumberOfMetaDataEntriesL();
     return entries;
 }
 
 HBufC* CMMAMIDIMetaDataControl::KeyL(TInt aIndex)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMAMIDIMetaDataControl::KeyL");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMAMIDIMetaDataControl::KeyL");
     CMMFMetaDataEntry* currEntry =
         iPlayer->MidiClient()->GetMetaDataEntryL(aIndex);
     CleanupStack::PushL(currEntry);
@@ -54,7 +54,7 @@ HBufC* CMMAMIDIMetaDataControl::KeyL(TInt aIndex)
  */
 HBufC* CMMAMIDIMetaDataControl::KeyValueL(const TDesC& aKey)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMAMIDIMetaDataControl::KeyValueL");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMAMIDIMetaDataControl::KeyValueL");
 
     HBufC* retVal = NULL;
     CMMFMetaDataEntry* currEntry = NULL;

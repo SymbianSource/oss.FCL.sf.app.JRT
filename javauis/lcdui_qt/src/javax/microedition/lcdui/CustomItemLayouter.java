@@ -45,8 +45,6 @@ class CustomItemLayouter extends ItemLayouter
      */
     private static final String MOUSE_LISTENER = "mouse";
 
-    Graphics graphics;
-
     boolean noBackground;
 
     private Timer timer = new Timer();
@@ -75,7 +73,6 @@ class CustomItemLayouter extends ItemLayouter
         noBackground = JadAttributeUtil.isValue(JadAttributeUtil.ATTRIB_NOKIA_UI_ENHANCEMENT,
                                                 JadAttributeUtil.VALUE_CANVAS_HAS_BACKGROUND);
 
-        graphics = new Graphics();
 
         selectionKeyCompatibility = JadAttributeUtil.isValue(JadAttributeUtil.ATTRIB_NOKIA_MIDLET_S60_SELECTION_KEY_COMPATIBILITY,
                                     JadAttributeUtil.VALUE_TRUE);
@@ -426,31 +423,23 @@ class CustomItemLayouter extends ItemLayouter
 
         public void paintControl(PaintEvent pe)
         {
-            if(customItem.bufferFlush)
-            {
-                // Paint event initiated by us to paint the Canvas.
-                pe.gc.getGCData().internalGc.render(graphics.getCommandBuffer());
-            }
-            else
-            {
-                // Native toolkit is requesting an update of an area that has
-                // become invalid. Can't do anything here because the contents
-                // need to be queried from the MIDlet in another thread by
-                // a paint callback. For this a paint callback event is posted.
-                // For a moment the native toolkit thinks that the area has
-                // been validated when in truth it will be painted later after
-                // the paint callback has been executed.
-                EventDispatcher eventDispatcher = EventDispatcher.instance();
-                LCDUIEvent event = eventDispatcher.newEvent(
-                                       LCDUIEvent.CUSTOMITEM_PAINT_NATIVE_REQUEST, dfi.getForm());
-                event.x = pe.x;
-                event.y = pe.y;
-                event.width = pe.width;
-                event.height = pe.height;
-                event.widget = pe.widget;
-                event.item = customItem;
-                eventDispatcher.postEvent(event);
-            }
+            // Native toolkit is requesting an update of an area that has
+            // become invalid. Can't do anything here because the contents
+            // need to be queried from the MIDlet in another thread by
+            // a paint callback. For this a paint callback event is posted.
+            // For a moment the native toolkit thinks that the area has
+            // been validated when in truth it will be painted later after
+            // the paint callback has been executed.
+            EventDispatcher eventDispatcher = EventDispatcher.instance();
+            LCDUIEvent event = eventDispatcher.newEvent(
+                                   LCDUIEvent.CUSTOMITEM_PAINT_NATIVE_REQUEST, dfi.getForm());
+            event.x = pe.x;
+            event.y = pe.y;
+            event.width = pe.width;
+            event.height = pe.height;
+            event.widget = pe.widget;
+            event.item = customItem;
+            eventDispatcher.postEvent(event);
         }
     }
 

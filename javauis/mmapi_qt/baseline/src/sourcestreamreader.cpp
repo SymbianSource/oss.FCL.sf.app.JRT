@@ -37,24 +37,24 @@ LOCAL_C void WriteDataL(TInt aSourceStream,
         User::Leave(KErrBadHandle);
     }
     CMMASourceStream* sourceStream =
-    	reinterpret_cast< CMMASourceStream *>(aSourceStream);
+        reinterpret_cast< CMMASourceStream *>(aSourceStream);
 
     sourceStream->WriteL(aData, aLength, aState);
-    LOG( EJavaMMAPI, EInfo, "jni SourceStreamReader.cpp: WriteDataL() -");
+    LOG(EJavaMMAPI, EInfo, "jni SourceStreamReader.cpp: WriteDataL() -");
 }
 
 JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_protocol_SourceStreamReader__1write
 (JNIEnv* aJni, jclass, jint aSourceStream, jint aEventSource,
  jbyteArray aData, jint aLength, jint aState, jint aPlayerHandle)
 {
-	 LOG( EJavaMMAPI, EInfo, "SourceStreamReaderjni_write");
+    LOG(EJavaMMAPI, EInfo, "SourceStreamReaderjni_write");
     MMAFunctionServer* eventSource =
-		reinterpret_cast< MMAFunctionServer* >(aEventSource);
+        reinterpret_cast< MMAFunctionServer* >(aEventSource);
 
     CHECK_HANDLE(eventSource, KErrNone);
 
     jbyte* data = aJni->GetByteArrayElements(aData, NULL);
-	LOG2( EJavaMMAPI, EInfo, "SourceStreamReaderjni_write , length = %d,state = %d",(TInt)aLength,(TInt)aState);
+    LOG2(EJavaMMAPI, EInfo, "SourceStreamReaderjni_write , length = %d,state = %d",(TInt)aLength,(TInt)aState);
     TInt err = eventSource->ExecuteTrap(&WriteDataL,
                                         aSourceStream,
                                         aPlayerHandle,
@@ -62,7 +62,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_protocol_SourceStreamRe
                                         (const TUint8*)data,
                                         aLength,
                                         aState);
-    ELOG1( EJavaMMAPI, "SourceStreamReaderjni_write , err = %d",err);
+    ELOG1(EJavaMMAPI, "SourceStreamReaderjni_write , err = %d",err);
     aJni->ReleaseByteArrayElements(aData, data, JNI_ABORT);
     return err;
 }

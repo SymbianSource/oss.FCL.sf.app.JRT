@@ -225,6 +225,9 @@ public class PermissionMappingTable
         PERMISSION_MAPPING_TABLE.put(
             "javax.microedition.location.LandmarkPermission", new MIDPPermission(
                 "com.nokia.mj.impl.location.LocationPermission", "*"));
+       PERMISSION_MAPPING_TABLE.put(
+            "javax.microedition.midlet.AutoStartPermission", new MIDPPermission(
+                "com.nokia.mj.impl.installer.utils.AutoStartPermission", null));
     }
 
     /**

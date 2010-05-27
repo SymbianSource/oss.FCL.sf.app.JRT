@@ -178,11 +178,12 @@ final class LCDUIInvokerImpl extends LCDUIInvoker
 
     protected GraphicsContext doGetGc(Graphics g)
     {
+        /*
         Logger.method(this, "doGetGc", g);
-        if(g != null)
-        {
+        if (g != null) {
             return g.getGc();
         }
+        */
         return null;
     }
 
@@ -206,7 +207,8 @@ final class LCDUIInvokerImpl extends LCDUIInvoker
 
     protected Object doGetFlushLock(Object graphics)
     {
-        return ((Graphics) graphics).getLock();
+        //return ((Graphics) graphics).graphicsBuffer;
+        return null;
     }
 
     protected int doGetKeyStates(Object canvas)

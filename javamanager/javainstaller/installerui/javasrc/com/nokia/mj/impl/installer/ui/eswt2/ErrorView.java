@@ -42,7 +42,7 @@ public class ErrorView extends ConfirmationViewBase
     {
         super(aInstallerUi, aParent, 8);
         setTitle(InstallerUiTexts.get(InstallerUiTexts.INSTALL_FAILED));
-        setCommands("Show",
+        setCommands(InstallerUiTexts.get(InstallerUiTexts.SHOW),
                     InstallerUiTexts.get(InstallerUiTexts.CLOSE));
     }
 
@@ -70,14 +70,9 @@ public class ErrorView extends ConfirmationViewBase
     protected void createView()
     {
         // Add header.
-        //String title = InstallerUiTexts.get(InstallerUiTexts.INSTALL_FAILED);
-        String title = "Installation failed";
+        String title = InstallerUiTexts.get(InstallerUiTexts.INSTALL_FAILED);
         if (iInstallerUi.getInstallInfo() != null)
         {
-            if (iInstallerUi.getInstallInfo().getOldVersion() != null)
-            {
-                title = "Update failed";
-            }
             addHeader(title, iInstallerUi.getInstallInfo(), null);
         }
         else

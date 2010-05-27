@@ -65,6 +65,10 @@ PRJ_EXPORTS
 
 #endif // RD_JAVA_UI_QT
 
+../rom/midprootslist      /epoc32/release/winscw/udeb/z/resource/java/security/trustroots/midprootslist
+../rom/midprootslist      /epoc32/release/winscw/urel/z/resource/java/security/trustroots/midprootslist
+../rom/midprootslist      /epoc32/data/z/resource/java/security/trustroots/midprootslist
+
 // Test utilities are included only in R&D and SubCon images
 ../rom/javatest.iby                CORE_IBY_EXPORT_PATH(tools,javatest.iby)
 

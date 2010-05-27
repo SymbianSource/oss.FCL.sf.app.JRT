@@ -31,17 +31,17 @@ _LIT(KMMAStreamErrorMessage, "Internal error: %d");
 CMMAAudioStreamPlayer* CMMAAudioStreamPlayer::NewLC(
     CMMAEMCResolver* aResolver)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::NewLC +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::NewLC +");
     CMMAAudioStreamPlayer* self = new(ELeave) CMMAAudioStreamPlayer(aResolver);
     CleanupStack::PushL(self);
     self->ConstructL();
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::NewLC -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::NewLC -");
     return self;
 }
 
 CMMAAudioStreamPlayer::~CMMAAudioStreamPlayer()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::~CMMAAudioStreamPlayer +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::~CMMAAudioStreamPlayer +");
 
     if (iMStreamControl->GetState() > MStreamControl::CLOSED)
     {
@@ -50,7 +50,7 @@ CMMAAudioStreamPlayer::~CMMAAudioStreamPlayer()
 
     delete iStreamHandler;
 
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::~CMMAAudioStreamPlayer -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::~CMMAAudioStreamPlayer -");
 }
 
 
@@ -58,12 +58,12 @@ CMMAAudioStreamPlayer::CMMAAudioStreamPlayer(
     CMMAEMCResolver* aResolver):
         CMMAEMCAudioPlayer(aResolver)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::CMMAAudioStreamPlayer");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::CMMAAudioStreamPlayer");
 }
 
 void CMMAAudioStreamPlayer::ConstructL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::ConstructL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::ConstructL +");
     iControllerPrimed = EFalse;
     CMMAEMCAudioPlayer::ConstructL();
     iMetaDataUtility = CMetaDataUtility::NewL();
@@ -73,14 +73,14 @@ void CMMAAudioStreamPlayer::ConstructL()
                      *iFactory,
                      *iMetaDataUtility);
     iActiveSchedulerWait = new(ELeave)CActiveSchedulerWait();
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::ConstructL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::ConstructL -");
 }
 
 CMMASourceStream* CMMAAudioStreamPlayer::AddSourceStreamL(JNIEnv* aJNIEnv,
         MMAFunctionServer* aEventSource,
         jobject aReader)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::AddSourceStreamL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::AddSourceStreamL +");
     CMMADataSourceStream* sourceStream = CMMADataSourceStream::NewLC(aJNIEnv,
                                          aEventSource,
                                          aReader,
@@ -89,7 +89,7 @@ CMMASourceStream* CMMAAudioStreamPlayer::AddSourceStreamL(JNIEnv* aJNIEnv,
     User::LeaveIfError(iSourceStreams.Append(sourceStream));
     CleanupStack::Pop(sourceStream);
     iStreamHandler->SetSourceStream(sourceStream);
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::AddSourceStreamL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::AddSourceStreamL -");
     return sourceStream;
 }
 
@@ -102,53 +102,56 @@ CMetaDataUtility* CMMAAudioStreamPlayer::MetaDataUtilityOwnership()
 
 void CMMAAudioStreamPlayer::DeallocateL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::DeallocateL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::DeallocateL +");
     iStreamHandler->Stop();
     iControllerPrimed = EFalse;
     CMMAEMCPlayerBase::DeallocateL();
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::DeallocateL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::DeallocateL -");
 }
 
 void CMMAAudioStreamPlayer::PrefetchL()
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAAudioStreamPlayer::PrefetchL +");
+    LOG(EJavaMMAPI, EInfo, "CMMAAudioStreamPlayer::PrefetchL +");
     __ASSERT_DEBUG(iSourceStreams.Count() > 0, User::Invariant());
     iStreamHandler->Prepare(*iMimeType);
-    LOG( EJavaMMAPI, EInfo, "CMMAAudioStreamPlayer::PrefetchL -");
+    LOG(EJavaMMAPI, EInfo, "CMMAAudioStreamPlayer::PrefetchL -");
 }
 
 void CMMAAudioStreamPlayer::StartL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::StartL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::StartL +");
     if (iStreamHandler->LastBufferWritten() &&
             (iMStreamControl ->GetState() == MStreamControl::PAUSED))
     {
-        LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::StartL If outer+");
+        LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::StartL If outer+");
         TInt64 time;
         GetMediaTime(&time);
         TInt err = iMStreamControl->Start();
         if (err == KErrNone && iState != EStarted)
-        {   LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::StartL If inner+");
-            // move to started state and post started event            
+        {
+            LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::StartL If inner+");
+            // move to started state and post started event
             ChangeState(EStarted);
             PostLongEvent(CMMAPlayerEvent::EStarted, time);
         }
         else
-        {   LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::StartL else inner+");
+        {
+            LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::StartL else inner+");
             HandleError(err);
         }
     }
     else
-    {   LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::StartL else outer+");
+    {
+        LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::StartL else outer+");
         iStreamHandler->Start();
     }
 
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::StartL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::StartL -");
 }
 
 void CMMAAudioStreamPlayer::StopL(TBool aPostEvent)
 {
-    LOG1( EJavaMMAPI, EInfo, "CMMAAudioStreamPlayer::Stop state %d", iState);
+    LOG1(EJavaMMAPI, EInfo, "CMMAAudioStreamPlayer::Stop state %d", iState);
     if (iState == EStarted)
     {
         User::LeaveIfError(Pause());
@@ -161,33 +164,33 @@ void CMMAAudioStreamPlayer::StopL(TBool aPostEvent)
             PostLongEvent(CMMAPlayerEvent::EStopped, time);
         }
     }
-    LOG( EJavaMMAPI, EInfo, "CMMAAudioStreamPlayer::Stop OK");
+    LOG(EJavaMMAPI, EInfo, "CMMAAudioStreamPlayer::Stop OK");
 }
 
 TInt CMMAAudioStreamPlayer::Pause()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::Pause +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::Pause +");
     iStreamHandler->Pause();
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer:: iStreamControl State = %d",iMStreamControl->GetState());
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer:: iStreamControl State = %d",iMStreamControl->GetState());
 
     TInt err = KErrNone;
     if (iMStreamControl->GetState() != MStreamControl::PAUSED)
     {
         err = iMStreamControl->Pause();
-        ELOG1( EJavaMMAPI, "MMA::CMMAAudioStreamPlayer:: iStreamControl Pause error = %d", err);
+        ELOG1(EJavaMMAPI, "MMA::CMMAAudioStreamPlayer:: iStreamControl Pause error = %d", err);
         if ((!iActiveSchedulerWait->IsStarted()) && (err == KErrNone))
         {
             iActiveSchedulerWait->Start();
         }
     }
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::Pause -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::Pause -");
     return err;
 }
 
 void CMMAAudioStreamPlayer::PlayCompleteL(TInt aError)
 {
-    ELOG1( EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::PlayCompleteL error %d",
-              aError);
+    ELOG1(EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::PlayCompleteL error %d",
+          aError);
 
     // Before controller is started it must be primed
     iControllerPrimed = EFalse;
@@ -228,8 +231,8 @@ void CMMAAudioStreamPlayer::GetDuration(TInt64* aDuration)
 
 void CMMAAudioStreamPlayer::PrepareComplete(TInt aError)
 {
-    ELOG1( EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::PrepareComplete error %d",
-              aError);
+    ELOG1(EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::PrepareComplete error %d",
+          aError);
 
     if (aError == KErrNone)
     {
@@ -240,8 +243,8 @@ void CMMAAudioStreamPlayer::PrepareComplete(TInt aError)
 
 void CMMAAudioStreamPlayer::StartComplete(TInt aError)
 {
-    ELOG1( EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::StartComplete error %d",
-              aError);
+    ELOG1(EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::StartComplete error %d",
+          aError);
 
     // do not start if player is deallocated or closed
     // RateControl start can start controller in started state
@@ -258,8 +261,8 @@ void CMMAAudioStreamPlayer::StartComplete(TInt aError)
         // Prime must be called when player is started first time or restarted
         err = iMStreamControl->Prime();
 
-        ELOG1( EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::StartComplete prime error %d",
-                  err);
+        ELOG1(EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::StartComplete prime error %d",
+              err);
     }
     else
     {
@@ -275,20 +278,22 @@ void CMMAAudioStreamPlayer::StartComplete(TInt aError)
             // must be primed before media time can be get
             GetMediaTime(&time);
             err = iMStreamControl->Start();
-            ELOG1( EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::StartComplete play error %d",
-                      err);
+            ELOG1(EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::StartComplete play error %d",
+                  err);
 
         }
 
         // RateControl can start controller in started state, then Java event is
         // not sent
         if (err == KErrNone && iState != EStarted)
-        { // move to started state and post started event
+        {
+            // move to started state and post started event
             PostLongEvent(CMMAPlayerEvent::EStarted, time);
             ChangeState(EStarted);
         }
         else
-        { // post error event
+        {
+            // post error event
             HandleError(aError);
             PostActionCompleted(aError);   // java start return
         }
@@ -298,8 +303,8 @@ void CMMAAudioStreamPlayer::StartComplete(TInt aError)
 
 void CMMAAudioStreamPlayer::HandleError(TInt aError)
 {
-    ELOG1( EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::HandleError error %d",
-              aError);
+    ELOG1(EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::HandleError error %d",
+          aError);
 
     TName errorMessage;
     errorMessage.Format(KMMAStreamErrorMessage, aError);
@@ -321,13 +326,13 @@ void CMMAAudioStreamPlayer::Event(MControl* aControl, TUint aEventType, TAny* aE
         case MStreamControl::CLOSED:
         {
             iPrevStreamControlState = MStreamControl::CLOSED;
-            LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::Event:KStateChangedEvent :CLOSED");
+            LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::Event:KStateChangedEvent :CLOSED");
         }
         break;
 
         case MStreamControl::INITIALIZED:
         {
-            LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::Event:KStateChangedEvent :INITIALIZED");
+            LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::Event:KStateChangedEvent :INITIALIZED");
             switch (iPrevStreamControlState)
             {
             case MStreamControl::CLOSED:
@@ -343,8 +348,8 @@ void CMMAAudioStreamPlayer::Event(MControl* aControl, TUint aEventType, TAny* aE
             case MStreamControl::INITIALIZED:
             {
                 iPrevStreamControlState = MStreamControl::INITIALIZED;
-                LOG( EJavaMMAPI, EInfo, "inner Switch case: MStreamControl::INITIALIZED ");
-                ELOG1( EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::Event:KStateChangedEvent:ErrorCode = %d ",evt->GetErrorCode());
+                LOG(EJavaMMAPI, EInfo, "inner Switch case: MStreamControl::INITIALIZED ");
+                ELOG1(EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::Event:KStateChangedEvent:ErrorCode = %d ",evt->GetErrorCode());
                 // error occured during prime operation
                 // move player back to prefetched state
                 if (iState == EStarted)
@@ -358,7 +363,7 @@ void CMMAAudioStreamPlayer::Event(MControl* aControl, TUint aEventType, TAny* aE
             case MStreamControl::PRIMED:
             {
                 iPrevStreamControlState = MStreamControl::INITIALIZED;
-                LOG( EJavaMMAPI, EInfo, "inner Switch case: MStreamControl::PRIMED ");
+                LOG(EJavaMMAPI, EInfo, "inner Switch case: MStreamControl::PRIMED ");
 
             }
             break;
@@ -366,14 +371,14 @@ void CMMAAudioStreamPlayer::Event(MControl* aControl, TUint aEventType, TAny* aE
             case MStreamControl::EXECUTING:
             {
                 iPrevStreamControlState = MStreamControl::INITIALIZED;
-                LOG( EJavaMMAPI, EInfo, "inner Switch case: MStreamControl::EXECUTING ");
-                ELOG1( EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::Event:KStateChangedEvent:ErrorCode = %d ",evt->GetErrorCode());
+                LOG(EJavaMMAPI, EInfo, "inner Switch case: MStreamControl::EXECUTING ");
+                ELOG1(EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::Event:KStateChangedEvent:ErrorCode = %d ",evt->GetErrorCode());
                 if (KErrEof == evt->GetErrorCode())
                 {
                     TRAPD(error, PlayCompleteL(KErrNone));
                     if (KErrNone != error)
                     {
-                        ELOG1( EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::Event:PlayCompleteL Error = %d", error);
+                        ELOG1(EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::Event:PlayCompleteL Error = %d", error);
                     }
                 }
             }
@@ -382,14 +387,14 @@ void CMMAAudioStreamPlayer::Event(MControl* aControl, TUint aEventType, TAny* aE
             case MStreamControl::BUFFERING:
             {
                 iPrevStreamControlState = MStreamControl::INITIALIZED;
-                LOG( EJavaMMAPI, EInfo, "inner Switch case: MStreamControl::BUFFERING ");
+                LOG(EJavaMMAPI, EInfo, "inner Switch case: MStreamControl::BUFFERING ");
             }
             break;
 
             case MStreamControl::PAUSED:
             {
                 iPrevStreamControlState = MStreamControl::INITIALIZED;
-                LOG( EJavaMMAPI, EInfo, "inner Switch case: MStreamControl::PAUSED ");
+                LOG(EJavaMMAPI, EInfo, "inner Switch case: MStreamControl::PAUSED ");
             }
             break;
             }
@@ -398,20 +403,21 @@ void CMMAAudioStreamPlayer::Event(MControl* aControl, TUint aEventType, TAny* aE
 
         case MStreamControl::PRIMED:
         {
-            LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::Event:KStateChangedEvent :PRIMED");
+            LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::Event:KStateChangedEvent :PRIMED");
             iPrevStreamControlState = MStreamControl::PRIMED;
             iControllerPrimed = ETrue;
             TInt64 time;
             // must be primed before media time can be get
             GetMediaTime(&time);
             TInt err = iMStreamControl->Start();
-            ELOG1( EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::Event play error %d",
-                      err);
+            ELOG1(EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::Event play error %d",
+                  err);
 
             // RateControl can start controller in started state, then Java event is
             // not sent
             if (err == KErrNone && iState != EStarted)
-            { // move to started state and post started event
+            {
+                // move to started state and post started event
                 PostLongEvent(CMMAPlayerEvent::EStarted, time);
                 ChangeState(EStarted);
             }
@@ -424,7 +430,7 @@ void CMMAAudioStreamPlayer::Event(MControl* aControl, TUint aEventType, TAny* aE
 
         case MStreamControl::EXECUTING:
         {
-            LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::Event:KStateChangedEvent :EXECUTING");
+            LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::Event:KStateChangedEvent :EXECUTING");
             iPrevStreamControlState = MStreamControl::EXECUTING;
             PostActionCompleted(KErrNone);   // java start return
         }
@@ -433,7 +439,7 @@ void CMMAAudioStreamPlayer::Event(MControl* aControl, TUint aEventType, TAny* aE
         case MStreamControl::BUFFERING:
         {
             iPrevStreamControlState = MStreamControl::BUFFERING;
-            LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::Event:KStateChangedEvent :BUFFERING");
+            LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::Event:KStateChangedEvent :BUFFERING");
         }
         break;
 
@@ -444,12 +450,12 @@ void CMMAAudioStreamPlayer::Event(MControl* aControl, TUint aEventType, TAny* aE
             {
                 iActiveSchedulerWait->AsyncStop();
             }
-            LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::Event:KStateChangedEvent :PAUSED");
+            LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::Event:KStateChangedEvent :PAUSED");
         }
         break;
 
         default:
-            LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::Event:KStateChangedEvent :DEFAULT");
+            LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioStreamPlayer::Event:KStateChangedEvent :DEFAULT");
             break;
         }
     }
@@ -460,7 +466,7 @@ void CMMAAudioStreamPlayer::Event(MControl* aControl, TUint aEventType, TAny* aE
         MErrorCode* evt = (MErrorCode*)aEventObject;
         if (KErrNone != evt->GetErrorCode())
         {
-            ELOG1( EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::Event:KErrorEvent, err = %d", evt->GetErrorCode());
+            ELOG1(EJavaMMAPI, "MMA::CMMAAudioStreamPlayer::Event:KErrorEvent, err = %d", evt->GetErrorCode());
         }
     }
     break;

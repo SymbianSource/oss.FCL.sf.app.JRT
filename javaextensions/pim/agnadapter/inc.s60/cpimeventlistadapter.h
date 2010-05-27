@@ -27,7 +27,6 @@
 // FORWARD DECLARATIONS
 class MPIMEventItem;
 class CPIMAgnEventAdapter;
-class CCalSession;
 
 // CLASS DECLARATION
 
@@ -48,8 +47,7 @@ public: // constructor and destructor
     static CPIMEventListAdapter* NewL(
         CCalEntry::TType aEntryType,
         CPIMAgnEventAdapter* aEventAdapter,
-        java::util::FunctionServer* aFuncServer,
-        CCalSession *aCalSession);
+        java::util::FunctionServer* aFuncServer);
 
     /**
      * Destructor.
@@ -224,9 +222,7 @@ protected:
      */
     void ConstructL(
         CCalEntry::TType aEntryType,
-
-        CPIMAgnEventAdapter* aEventAdapter,
-        TInt aCalSessionInt);
+        CPIMAgnEventAdapter* aEventAdapter);
 
 private: // Member data
 

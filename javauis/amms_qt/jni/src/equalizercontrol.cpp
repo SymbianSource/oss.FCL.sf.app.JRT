@@ -77,7 +77,7 @@ static void SetTrebleL(CAMMSEqualizerControlGroup *aControl, TInt *aLevel, TInt 
  * Signature: (III)I
  */
 JNIEXPORT jint JNICALL Java_com_nokia_amms_control_audioeffect_EqualizerControl__1getBand(
-    JNIEnv*, jclass, jint aEventSource, jint aControl, jint aFrequency)
+    JNIEnv*, jclass, jint, jint aControl, jint aFrequency)
 {
     CAMMSEqualizerControlGroup* control =
         static_cast<CAMMSEqualizerControlGroup*>(
@@ -92,7 +92,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_amms_control_audioeffect_EqualizerControl_
  * Signature: (II)I
  */
 JNIEXPORT jint JNICALL Java_com_nokia_amms_control_audioeffect_EqualizerControl__1getTreble(
-    JNIEnv*, jclass, jint aEventSource, jint aControl)
+    JNIEnv*, jclass, jint, jint aControl)
 {
     CAMMSEqualizerControlGroup* control =
         static_cast<CAMMSEqualizerControlGroup*>(
@@ -212,7 +212,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_amms_control_audioeffect_EqualizerControl_
 JNIEXPORT jint JNICALL Java_com_nokia_amms_control_audioeffect_EqualizerControl__1getNumberOfBands(
     JNIEnv*,
     jclass,
-    jint aEventSource,
+    jint,
     jint aControl)
 {
     CAMMSEqualizerControlGroup* control =
@@ -230,7 +230,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_amms_control_audioeffect_EqualizerControl_
 JNIEXPORT jint JNICALL Java_com_nokia_amms_control_audioeffect_EqualizerControl__1getMinBandLevel(
     JNIEnv*,
     jclass,
-    jint aEventSource,
+    jint,
     jint aControl)
 {
     CAMMSEqualizerControlGroup* control =
@@ -247,7 +247,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_amms_control_audioeffect_EqualizerControl_
  * Signature: (II)I
  */
 JNIEXPORT jint JNICALL Java_com_nokia_amms_control_audioeffect_EqualizerControl__1getBass(
-    JNIEnv*, jclass, jint aEventSource, jint aControl)
+    JNIEnv*, jclass, jint, jint aControl)
 {
     CAMMSEqualizerControlGroup* control =
         static_cast<CAMMSEqualizerControlGroup*>(
@@ -262,7 +262,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_amms_control_audioeffect_EqualizerControl_
  * Signature: (IILI)I
  */
 JNIEXPORT jint JNICALL Java_com_nokia_amms_control_audioeffect_EqualizerControl__1getMaxBandLevel(
-    JNIEnv*, jclass, jint aEventSource, jint aControl)
+    JNIEnv*, jclass, jint, jint aControl)
 {
     CAMMSEqualizerControlGroup* control =
         static_cast<CAMMSEqualizerControlGroup*>(

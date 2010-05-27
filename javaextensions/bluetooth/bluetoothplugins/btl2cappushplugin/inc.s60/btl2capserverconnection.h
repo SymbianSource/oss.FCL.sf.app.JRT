@@ -39,6 +39,7 @@ class L2CAPServerConnection: public MBluetoothSocketNotifier
 public:
     OS_IMPORT L2CAPServerConnection(
         java::bluetooth::BluetoothFunctionServer* server);
+            
     OS_IMPORT ~L2CAPServerConnection();
 
     OS_IMPORT int openServer(bool authorize, bool authenticate, bool encrypt,
@@ -67,8 +68,8 @@ public:
                              TBool encrypt, TBool master, TInt receiveMTU, TInt transmitMTU);
 
     OS_IMPORT int GetServerPSM();
+
     OS_IMPORT long Accept();
-    OS_IMPORT int CloseServer();
 
     OS_IMPORT ServiceRecord *getServiceRecordHandle();
 
@@ -98,6 +99,8 @@ public:
     void HandleShutdownCompleteL(TInt err);
 
     void avoidFilter();
+
+    int CloseServer();
 
 private:
     L2CAPServerConnection();

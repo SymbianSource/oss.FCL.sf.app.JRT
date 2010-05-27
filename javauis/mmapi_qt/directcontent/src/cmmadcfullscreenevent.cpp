@@ -31,7 +31,7 @@ CMMADCFullScreenEvent::CMMADCFullScreenEvent(jobject aGUIObject, TBool aFullScre
 // from CJavaEvent
 void CMMADCFullScreenEvent::Dispatch(JNIEnv& aJni)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMADCFullScreenEvent::Dispatch");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMADCFullScreenEvent::Dispatch");
     iHandleEventMethod = aJni.GetMethodID(aJni.GetObjectClass(iListenerObject),
                                           "setFullScreen",
                                           "(Z)V");

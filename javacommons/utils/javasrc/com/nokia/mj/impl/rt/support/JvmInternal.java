@@ -182,13 +182,29 @@ public class JvmInternal
     }
 
     /**
-     * Sets a system property.
+     * Adds the defined system property containing all the user
+     * properties. This will not override any system properies.
+     * The semanitc is equivalent to Hashtable.put() method.
      * @param key a key.
      * @param value a value.
+     * @throws NullPointerException if either key or value is null.
      */
     public static void setSystemProperty(Object key, Object value)
     {
         JvmPort.getInstance().setSystemProperty(key, value);
+    }
+
+    /**
+     * Adds the defined user property containing all the user
+     * properties. This will not override any system properies.
+     * The semanitc is equivalent to Hashtable.put() method.
+     * @param key a key.
+     * @param value a value.
+     * @throws NullPointerException if either key or value is null.
+     */
+    public static void setUserProperty(Object key, Object value)
+    {
+        JvmPort.getInstance().setUserProperty(key, value);
     }
 
     /**

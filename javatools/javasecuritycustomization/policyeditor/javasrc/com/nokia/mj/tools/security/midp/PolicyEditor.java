@@ -38,51 +38,14 @@ import com.nokia.mj.impl.security.midp.common.PermissionMappingTable;
 
 /**
  * Utility class for parsing security policy files from external/txt format
- * into internal format. The external format of the policy consists of a number
- * of "grant" clauses; each clause identifies the condition under which it is
- * granted and contains one or more Permissions.
- * Permissions which must be granted by the user using a single set of prompts
- * form a "grant user" clause that includes the function group name and a list
- * of the initial and other available user permission interaction modes. The
- * first listed mode is the initial mode.
- * The general form of the format is :
- * <ul>
- * <li>The domain described by name optionally followed by the distinguished
- * names of the corresponding Protection Domain Root Certificates.
- * <li>One or more grant clauses
- * <li>Each grant clause MUST include a directive to scope the permissions to
- * be Allowed, User or Assigned.
- * <li><li>A User grant MUST include a name, the initial and other interaction
- * modes. The permissions are granted only if the application has requested the
- * permission and the user replies positively to a prompt.
- * <li><li><li>The name is used to identify the user grant clause.
- * <li><li><li>The initial and other available interaction modes MUST be
- * supplied and may be one of “oneshot”, “session”, or “blanket”.
- * <li><li><li>All Permissions in a single grant share the same initial and
- * available user interaction modes. When the user grants access to one
- * permission in a “grant user” group they also grant access to all other
- * permissions in the same group with the same interaction mode. For oneshot,
- * this has little effect because the user is prompted for each API access.
- * For session and blanket, the grant is allowed until the end of the session,
- * the application is deleted, or the users changes the security settings for
- * the MIDlet suite.
- * <li><li>An Allowed grant contains a name and permissions that are granted
- * only if the application has requested the permission.
- * <li><li>An Assigned grant group contains permissions that are assigned to
- * all applications in the protection domain.
- * <li>Each grant group includes one or more Permissions, each permission is
- * the name of a subclass of java.security.Permission optionally followed by
- * arguments for name and action.
- * </ul>
+ * into internal format.
  *
- * BNF for External Domain Policy:
+ * External Policy Format:
  *
- * grammar domain_policy;
- * domain_policy: domain+;
- * domain: 'domain' Identifier root_dn_subjects? ';' grant+;
- * root_dn_subjects: Identifier ( ',' Identifier )* ;
+ * policy: domain+;
+ * domain: 'domain' Identifier ';' grant+;
  * grant: 'grant' (grant_user | grant_allowed | grant_assigned);
- * grant_allowed: 'allowed' grant_name permissions;
+ * grant_allowed: 'allowed' permissions;
  * grant_assigned: 'assigned' permissions;
  * grant_user: 'user' grant_name initial_mode other_modes permissions;
  * grant_name: '"' Identifier '"';
@@ -94,12 +57,9 @@ import com.nokia.mj.impl.security.midp.common.PermissionMappingTable;
  * initial_mode: interaction_mode;
  * other_modes: (',' interaction_mode)*;
  * interaction_mode: 'blanket' | 'session' | 'oneshot';
- * start : .+;
  * ALPHA: ('a'..'z'|'A'..'Z');
  * DIGIT: '0'..'9';
- * SYMBOL : ('*' | ':' | '/' );
  * Identifier: ALPHA (ALPHA | DIGIT)*;
- * WS: (' '|'\t'|'\n'|'\r')+ ;
  *
  * @see com.nokia.mj.impl.security.midp.authorization.SecurityPolicy
  */

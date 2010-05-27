@@ -31,7 +31,7 @@
 
 MMAFunctionServer::MMAFunctionServer(JNIEnv& aJni, jobject aPeer): java::util::FunctionServer("JavaMMAPIFunctionServer")
 {
-	LOG( EJavaMMAPI, EInfo, "++MMAFunctionServer::MMAFunctionServer");
+    LOG(EJavaMMAPI, EInfo, "++MMAFunctionServer::MMAFunctionServer");
     createServerToNewThread();
     attachToVm(aJni, aPeer);
     mVmAttached = true;
@@ -40,12 +40,12 @@ MMAFunctionServer::MMAFunctionServer(JNIEnv& aJni, jobject aPeer): java::util::F
 
 MMAFunctionServer::~MMAFunctionServer()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::MMAFunctionServer::~MMAFunctionServer()");
-        if (mVmAttached)
-        {
-            detachFromVm();
-        }
-        stopServer();
+    LOG(EJavaMMAPI, EInfo, "MMA::MMAFunctionServer::~MMAFunctionServer()");
+    if (mVmAttached)
+    {
+        detachFromVm();
+    }
+    stopServer();
 #ifdef RD_JAVA_VOLUME_CONTROL
     delete iGlobalVolume;
 #endif // RD_JAVA_VOLUME_CONTROL
@@ -53,42 +53,42 @@ MMAFunctionServer::~MMAFunctionServer()
 
 TInt MMAFunctionServer::NewL(JNIEnv& aJni, jobject aPeer)
 {
-	
-	MMAFunctionServer* self = 	new(ELeave) MMAFunctionServer(aJni,aPeer);
-	self->ConstructL(aJni,aPeer);
-	return reinterpret_cast<TInt>(self);
+
+    MMAFunctionServer* self =   new(ELeave) MMAFunctionServer(aJni,aPeer);
+    self->ConstructL(aJni,aPeer);
+    return reinterpret_cast<TInt>(self);
 }
 void MMAFunctionServer::ConstructL(JNIEnv& aJni,
-                                 jobject aPeer
-                                 )
+                                   jobject /*aPeer*/
+                                  )
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::MMAFunctionServer::ConstructL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::MMAFunctionServer::ConstructL +");
     aJni.GetJavaVM(&iJavaVM); // Get pointer to VM
-    LOG( EJavaMMAPI, EInfo, "MMA::MMAFunctionServer::ConstructL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::MMAFunctionServer::ConstructL -");
 }
 
 java::util::FunctionServer* MMAFunctionServer::getFunctionServer() const
 {
-	LOG( EJavaMMAPI, EInfo, "++getFunctionServer1");
+    LOG(EJavaMMAPI, EInfo, "++getFunctionServer1");
     JELOG2(EJavaMMAPI);
     return iServer;
 }
 JNIEnv* MMAFunctionServer::getValidJniEnv()
-    {
-        JELOG2(EJavaLocation);
-        return mJniEnv;
-    }
+{
+    JELOG2(EJavaLocation);
+    return mJniEnv;
+}
 jobject MMAFunctionServer::getPeer()
-    {
-        return mJavaPeerObject;
-    }
+{
+    return mJavaPeerObject;
+}
 
 void MMAFunctionServer::ConstructSvrL()
 {
     // creating fbs session
     User::LeaveIfError(RFbsSession::Connect());
     iFbsSessionConnected = ETrue;
-    LOG( EJavaMMAPI, EInfo, "MMA::MMAFunctionServer::ConstructSvrL ok");
+    LOG(EJavaMMAPI, EInfo, "MMA::MMAFunctionServer::ConstructSvrL ok");
 }
 
 EXPORT_C void MMAFunctionServer::StaticAddObjectFromHandleL(
@@ -186,16 +186,16 @@ void MMAFunctionServer::Release()
 
 void MMAFunctionServer::AddObjectFromHandleL(TInt aHandle)
 {
-	User::LeaveIfError(iObjects.Append(reinterpret_cast< CBase* >(aHandle)));
+    User::LeaveIfError(iObjects.Append(reinterpret_cast< CBase* >(aHandle)));
 }
 
 
 void MMAFunctionServer::FinalizeSvr()
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA::MMAFunctionServer::FinalizeSvr() object count = %d",
-              iObjects.Count());
-    LOG1( EJavaMMAPI, EInfo, "MMA::MMAFunctionServer::FinalizeSvr() player count = %d",
-              iPlayers.Count());
+    LOG1(EJavaMMAPI, EInfo, "MMA::MMAFunctionServer::FinalizeSvr() object count = %d",
+         iObjects.Count());
+    LOG1(EJavaMMAPI, EInfo, "MMA::MMAFunctionServer::FinalizeSvr() player count = %d",
+         iPlayers.Count());
 
     // After object array alements are deleted all external references to
     // player objects are removed and player array can be deleted.
@@ -207,29 +207,29 @@ void MMAFunctionServer::FinalizeSvr()
         RFbsSession::Disconnect();
         iFbsSessionConnected = EFalse;
     }
-    LOG( EJavaMMAPI, EInfo, "MMA::MMAFunctionServer::FinalizeSvr() ok");
+    LOG(EJavaMMAPI, EInfo, "MMA::MMAFunctionServer::FinalizeSvr() ok");
 }
 
 
 void MMAFunctionServer::PostEvent(CMMAEvent* aEvent, TInt /*aPriority*/)
 {
-   LOG( EJavaMMAPI, EInfo, "MMAFunctionServer::PostEvent");
-   aEvent->Dispatch(*mJniEnv);
+    LOG(EJavaMMAPI, EInfo, "MMAFunctionServer::PostEvent");
+    aEvent->Dispatch(*mJniEnv);
 }
 
 CMMAPlayer* MMAFunctionServer::FindPlayer(TInt aPlayerHandle)
 {
-    LOG( EJavaMMAPI, EInfo, "MMAFunctionServer::FindPlayer");
+    LOG(EJavaMMAPI, EInfo, "MMAFunctionServer::FindPlayer");
     CMMAPlayer* player = reinterpret_cast< CMMAPlayer* >(aPlayerHandle);
     TInt index = iPlayers.Find(player);
     if (index != KErrNotFound)
     {
         player = iPlayers[ index ];
-        LOG( EJavaMMAPI, EInfo, "MMAFunctionServer::FindPlayer: player found");
+        LOG(EJavaMMAPI, EInfo, "MMAFunctionServer::FindPlayer: player found");
     }
     else
     {
-        LOG( EJavaMMAPI, EInfo, "MMAFunctionServer::FindPlayer: player not found");
+        LOG(EJavaMMAPI, EInfo, "MMAFunctionServer::FindPlayer: player not found");
         player = NULL;
     }
     return player;

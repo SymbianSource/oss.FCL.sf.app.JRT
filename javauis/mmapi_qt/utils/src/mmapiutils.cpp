@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -11,13 +11,14 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:  MMAPIUtils
 *
 */
+
 #include "mmapiutils.h"
 #include "s60commonutils.h"
 using namespace java::util;
-    
+
 enum TJavaArrayPanic
 {
     EBadOffsetIntoJavaArray,
@@ -32,7 +33,7 @@ enum TJavaArrayPanic
  * @return The number of bytes copied.
  */
 TInt MMAPIUtils::CopyToJava(JNIEnv& aJni, const TDesC8& aNativeBuffer,
-                                     jbyteArray aJavaBuffer, TInt aOffset, TInt aLength)
+                            jbyteArray aJavaBuffer, TInt aOffset, TInt aLength)
 {
     __ASSERT_DEBUG(aOffset <= aJni.GetArrayLength(aJavaBuffer),
                    User::Panic(_L("ArrayUtils"), EBadOffsetIntoJavaArray));

@@ -42,18 +42,6 @@ protected:
 	QString txt;
  	};
 
-class ListViewItem : public ListItem
-	{
-public:
-	ListViewItem(const QString& aText, const QPixmap* aImage);
-	~ListViewItem();
-	const QPixmap* image() const;
-	void setImage(const QPixmap* pixmap);
-	
-private:	
-	const QPixmap* img;
-	};
-
 class ListBoxItem : public ListItem
 	{
 public:
@@ -65,9 +53,11 @@ public:
 	const QList<QPixmap>& headingImages() const;
 	int detailImageCount() const;
 	int headingImageCount() const;
+	void setContentsToNull();
+	
 	
 private:
-	const QString headingTxt;
+	QString headingTxt;
 	QList<QPixmap> detailImgs;
 	QList<QPixmap> headingImgs;
 	};	
@@ -109,14 +99,13 @@ public:
 	void remove( const int row );
 	void appendItem( const QString& string );
 	void appendItem( const QString& string, const QPixmap* pixmap );
-	void setItem( const int row, const QString& string );
-	void setItem( const int row, const QString& string, const QPixmap* pixmap );
 	void insertItem( const int row, const QString& string );
 	void insertItem( const int row, const QString& string, const QPixmap* pixmap );
 	virtual void appendItem(const QString& aDetailText, const QPixmap** aDetailImages, const int aDetailImageCount,  
 		const QString& aHeadingText, const QPixmap** aHeadingImages, const int aHeadingImageCount );
 	virtual int itemHeight();
 	virtual void clearList();
+	virtual void setItemContentsToNull( const int row );
 	
  	/**
  	 * called by other native classes
@@ -137,21 +126,6 @@ protected:
  	 */
 	QList<ListItem*> list;
 	};	
-
-
-class ListViewModel : public ListModel
-	{
-public:
-     ListViewModel( int type, int style, QListView *parent );
-     ~ListViewModel();
-     
-protected: 
- 	/**
- 	 * from ListModel
- 	 */
- 	ListItem* createItem( const QString& string );
- 	ListItem* createItem( const QString& string, const QPixmap* pixmap );
-	};
 
 
 class ListBoxModel : public ListModel
@@ -197,6 +171,7 @@ public:
 	QPoint headingImageSize(const int row) const;
 	int rowWithMaxDetailTextSize() const;
 	int rowWithMaxHeadingTextSize() const;
+	void setItemContentsToNull( const int row );
 	
 protected:	
  	/**

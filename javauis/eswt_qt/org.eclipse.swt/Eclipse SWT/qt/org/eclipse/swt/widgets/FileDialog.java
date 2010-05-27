@@ -50,10 +50,10 @@ public class FileDialog extends Dialog {
 
 	/**
 	 * Constructs a new instance of this class given only its parent.
-	 * 
+	 *
 	 * @param parent
 	 *            a shell which will be the parent of the new instance
-	 * 
+	 *
 	 * @exception IllegalArgumentException
 	 *                <ul>
 	 *                <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
@@ -81,12 +81,12 @@ public class FileDialog extends Dialog {
 	 * style constants. The class description lists the style constants that are
 	 * applicable to the class. Style bits are also inherited from superclasses.
 	 * </p>
-	 * 
+	 *
 	 * @param parent
 	 *            a shell which will be the parent of the new instance
 	 * @param style
 	 *            the style of dialog to construct
-	 * 
+	 *
 	 * @exception IllegalArgumentException
 	 *                <ul>
 	 *                <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
@@ -134,7 +134,7 @@ public class FileDialog extends Dialog {
 	 * Returns the path of the first file that was selected in the dialog
 	 * relative to the filter path, or an empty string if no such file has been
 	 * selected.
-	 * 
+	 *
 	 * @return the relative path of the file
 	 */
 	public String getFileName() {
@@ -144,7 +144,7 @@ public class FileDialog extends Dialog {
 	/**
 	 * Returns a (possibly empty) array with the paths of all files that were
 	 * selected in the dialog relative to the filter path.
-	 * 
+	 *
 	 * @return the relative paths of the files
 	 */
 	public String[] getFileNames() {
@@ -154,7 +154,7 @@ public class FileDialog extends Dialog {
 	/**
 	 * Returns the file extensions which the dialog will use to filter the files
 	 * it shows.
-	 * 
+	 *
 	 * @return the file extensions filter
 	 */
 	public String[] getFilterExtensions() {
@@ -168,12 +168,12 @@ public class FileDialog extends Dialog {
 	 * This is an index into the FilterExtensions array and the FilterNames
 	 * array.
 	 * </p>
-	 * 
+	 *
 	 * @return index the file extension filter index
-	 * 
+	 *
 	 * @see #getFilterExtensions
 	 * @see #getFilterNames
-	 * 
+	 *
 	 * @since 3.4
 	 */
 	public int getFilterIndex() {
@@ -183,7 +183,7 @@ public class FileDialog extends Dialog {
 	/**
 	 * Returns the names that describe the filter extensions which the dialog
 	 * will use to filter the files it shows.
-	 * 
+	 *
 	 * @return the list of filter names
 	 */
 	public String[] getFilterNames() {
@@ -194,9 +194,9 @@ public class FileDialog extends Dialog {
 	 * Returns the directory path that the dialog will use, or an empty string
 	 * if this is not set. File names in this path will appear in the dialog,
 	 * filtered according to the filter extensions.
-	 * 
+	 *
 	 * @return the directory path string
-	 * 
+	 *
 	 * @see #setFilterExtensions
 	 */
 	public String getFilterPath() {
@@ -205,10 +205,10 @@ public class FileDialog extends Dialog {
 
 	/**
 	 * Makes the dialog visible and brings it to the front of the display.
-	 * 
+	 *
 	 * @return a string describing the absolute path of the first selected file,
 	 *         or null if the dialog was cancelled or an error occurred
-	 * 
+	 *
 	 * @exception SWTException
 	 *                <ul>
 	 *                <li>ERROR_WIDGET_DISPOSED - if the dialog has been
@@ -299,7 +299,7 @@ public class FileDialog extends Dialog {
 						dialogID, qtLayoutDirection);
 			}
 		}
-		
+
 		if (parent != null && !parent.isDisposed()) {
 			parent.removeDisposeListener(listener);
 		}
@@ -357,7 +357,7 @@ public class FileDialog extends Dialog {
 		/*
 		 * get filter index
 		 */
-		int filterCount = filterExtensions.length;
+		int filterCount = filterExtensions==null ? 0 : filterExtensions.length;
 		String selectedFilter = result[count - 1];
 		filterIndex = -1;
 		if (filterCount > 0 && selectedFilter != null) {
@@ -380,7 +380,7 @@ public class FileDialog extends Dialog {
 	 * Set the initial filename which the dialog will select by default when
 	 * opened to the argument, which may be null. The name will be prefixed with
 	 * the filter path when one is supplied.
-	 * 
+	 *
 	 * @param string
 	 *            the file name
 	 */
@@ -396,10 +396,10 @@ public class FileDialog extends Dialog {
 	 * filter string is typically of the form "*.extension", where "*.*" matches
 	 * all files.
 	 * </p>
-	 * 
+	 *
 	 * @param extensions
 	 *            the file extension filter
-	 * 
+	 *
 	 * @see #setFilterNames to specify the user-friendly names corresponding to
 	 *      the extensions
 	 */
@@ -414,13 +414,13 @@ public class FileDialog extends Dialog {
 	 * This is an index into the FilterExtensions array and the FilterNames
 	 * array.
 	 * </p>
-	 * 
+	 *
 	 * @param index
 	 *            the file extension filter index
-	 * 
+	 *
 	 * @see #setFilterExtensions
 	 * @see #setFilterNames
-	 * 
+	 *
 	 * @since 3.4
 	 */
 	public void setFilterIndex(int index) {
@@ -435,10 +435,10 @@ public class FileDialog extends Dialog {
 	 * corresponding filter. The <code>names</code> array must be the same
 	 * length as the <code>extensions</code> array.
 	 * </p>
-	 * 
+	 *
 	 * @param names
 	 *            the list of filter names, or null for no filter names
-	 * 
+	 *
 	 * @see #setFilterExtensions
 	 */
 	public void setFilterNames(String[] names) {
@@ -454,10 +454,10 @@ public class FileDialog extends Dialog {
 	 * Note that the path string is platform dependent. For convenience, either
 	 * '/' or '\' can be used as a path separator.
 	 * </p>
-	 * 
+	 *
 	 * @param string
 	 *            the directory path
-	 * 
+	 *
 	 * @see #setFilterExtensions
 	 */
 	public void setFilterPath(String string) {

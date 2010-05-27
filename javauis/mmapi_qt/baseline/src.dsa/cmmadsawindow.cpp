@@ -40,7 +40,7 @@ CMMADSAWindow* CMMADSAWindow::NewL(
 // Destructor (virtual by CBase)
 CMMADSAWindow::~CMMADSAWindow()
 {
-    LOG( EJavaMMAPI, EInfo, "CMMADSAWindow::~CMMADSAWindow");
+    LOG(EJavaMMAPI, EInfo, "CMMADSAWindow::~CMMADSAWindow");
 }
 
 CMMADSAWindow::CMMADSAWindow(
@@ -104,10 +104,10 @@ void CMMADSAWindow::SetDrawRectThread(const TRect& aRect)
 
 void CMMADSAWindow::SetDrawRect(const TRect& aRect)
 {
-    LOG2( EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetDrawRect TL %d %d",
-               aRect.iTl.iX, aRect.iTl.iY);
-    LOG2( EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetDrawRect BR %d %d",
-               aRect.iBr.iX, aRect.iBr.iY);
+    LOG2(EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetDrawRect TL %d %d",
+         aRect.iTl.iX, aRect.iTl.iY);
+    LOG2(EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetDrawRect BR %d %d",
+         aRect.iBr.iX, aRect.iBr.iY);
 
     // setting video draw rect and adjusting it to window
     iDrawRect = aRect;
@@ -116,45 +116,45 @@ void CMMADSAWindow::SetDrawRect(const TRect& aRect)
 
     if (!iVideoPlayControllerCustomCommands)
     {
-        LOG( EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetDrawRect: no VideoPlayControllerCustomCommands set, aborting -");
+        LOG(EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetDrawRect: no VideoPlayControllerCustomCommands set, aborting -");
         return;
     }
 
     if (iVisible)
     {
-        LOG( EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetDrawRect: Abort DSA");
+        LOG(EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetDrawRect: Abort DSA");
         iVideoPlayControllerCustomCommands->DirectScreenAccessEvent(EAbortDSA);
     }
 
-    LOG2( EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetDrawRect: drawRect TL %d %d",
-               drawRect.iTl.iX, drawRect.iTl.iY);
-    LOG2( EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetDrawRect: drawRect BR %d %d",
-               drawRect.iBr.iX, drawRect.iBr.iY);
+    LOG2(EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetDrawRect: drawRect TL %d %d",
+         drawRect.iTl.iX, drawRect.iTl.iY);
+    LOG2(EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetDrawRect: drawRect BR %d %d",
+         drawRect.iBr.iX, drawRect.iBr.iY);
 
     // Area where should be drawn is the intersection of drawRect and iClientRect.
     TRect areaRect = iClientRect;
     areaRect.Intersection(drawRect);
 
-    LOG2( EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetDrawRect: areaRect TL %d %d",
-               areaRect.iTl.iX, areaRect.iTl.iY);
-    LOG2( EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetDrawRect: areaRect BR %d %d",
-               areaRect.iBr.iX, areaRect.iBr.iY);
+    LOG2(EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetDrawRect: areaRect TL %d %d",
+         areaRect.iTl.iX, areaRect.iTl.iY);
+    LOG2(EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetDrawRect: areaRect BR %d %d",
+         areaRect.iBr.iX, areaRect.iBr.iY);
 
     if (iVisible && !iDSAAborted)
     {
-        LOG( EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetDrawRect: SetDisplayWindow( drawRect, areaRect )");
+        LOG(EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetDrawRect: SetDisplayWindow( drawRect, areaRect )");
         iVideoPlayControllerCustomCommands->SetDisplayWindow(
             drawRect , areaRect);
 
-        LOG( EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetDrawRect: Update region (areaRect)");
+        LOG(EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetDrawRect: Update region (areaRect)");
         RRegion region(areaRect);
         iVideoPlayControllerCustomCommands->UpdateDisplayRegion(region);
         region.Close();
 
-        LOG( EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetDrawRect: Resume DSA");
+        LOG(EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetDrawRect: Resume DSA");
         iVideoPlayControllerCustomCommands->DirectScreenAccessEvent(EResumeDSA);
     }
-    LOG( EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetDrawRect: -");
+    LOG(EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetDrawRect: -");
 }
 
 const TRect& CMMADSAWindow::DrawRect()
@@ -196,13 +196,13 @@ void CMMADSAWindow::StaticSetWindowPosition(
 
 TBool CMMADSAWindow::IsVisible() const
 {
-    LOG1( EJavaMMAPI, EInfo, "MID::CMMADSAWindow::IsVisible %d ", iVisible);
+    LOG1(EJavaMMAPI, EInfo, "MID::CMMADSAWindow::IsVisible %d ", iVisible);
     return iVisible;
 }
 
 void CMMADSAWindow::SetVisible(TBool aVisible, TBool aUseEventServer)
 {
-    LOG2( EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetVisible avisible=%d useES=%d +", aVisible, aUseEventServer);
+    LOG2(EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetVisible avisible=%d useES=%d +", aVisible, aUseEventServer);
     // Event server may not be used if we already in mma event server thread
     if (aUseEventServer)
     {
@@ -219,7 +219,7 @@ void CMMADSAWindow::SetVisible(TBool aVisible, TBool aUseEventServer)
     {
         SetWindowVisible(this, aVisible, iEventSource, iPlayer);
     }
-    LOG1( EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetVisible %d -", aVisible);
+    LOG1(EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetVisible %d -", aVisible);
 }
 
 void CMMADSAWindow::SetWindowVisible(
@@ -228,33 +228,33 @@ void CMMADSAWindow::SetWindowVisible(
     MMAFunctionServer* aEventSource,
     CMMAPlayer* aPlayer)
 {
-    LOG1( EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetWindowVisible aVisible %d", aVisible);
+    LOG1(EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetWindowVisible aVisible %d", aVisible);
     RPointerArray< CMMAPlayer > players = aEventSource->Players();
     // Invoke SetDrawRect only if the player has not been cleaned
     if (players.Find(aPlayer) != KErrNotFound)
     {
-        LOG( EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetWindowVisible : Player found");
+        LOG(EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetWindowVisible : Player found");
         if (aVisible != aWindow->iVisible)
         {
-            LOG( EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetWindowVisible: Changed visibility");
+            LOG(EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetWindowVisible: Changed visibility");
             aWindow->iVisible = aVisible;
         }
         if (aVisible)
         {
-            LOG( EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetWindowVisible: aVisible = 1");
+            LOG(EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetWindowVisible: aVisible = 1");
             const TRect drawRect = aWindow->DrawRect();
 
             aWindow->SetDrawRect(drawRect);
         }
         else
         {
-            LOG( EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetWindowVisible: aVisible = 0");
+            LOG(EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetWindowVisible: aVisible = 0");
             TRect emptyRect(0, 0, 0, 0);
 
             RRegion region(emptyRect);
             aWindow->iVideoPlayControllerCustomCommands->UpdateDisplayRegion(region);
             region.Close();
-            LOG( EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetWindowVisible: Abort DSA");
+            LOG(EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetWindowVisible: Abort DSA");
 
             aWindow->iVideoPlayControllerCustomCommands->
             DirectScreenAccessEvent(EAbortDSA);
@@ -265,10 +265,10 @@ void CMMADSAWindow::SetWindowVisible(
 
 void CMMADSAWindow::SetWindowRect(const TRect& aRect,MMMADisplay::TThreadType /*aThreadType*/)
 {
-    LOG2( EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetWindowRect aRect TL %d %d",
-               aRect.iTl.iX, aRect.iTl.iY);
-    LOG2( EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetWindowRect aRect BR %d %d",
-               aRect.iBr.iX, aRect.iBr.iY);
+    LOG2(EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetWindowRect aRect TL %d %d",
+         aRect.iTl.iX, aRect.iTl.iY);
+    LOG2(EJavaMMAPI, EInfo, "MID::CMMADSAWindow::SetWindowRect aRect BR %d %d",
+         aRect.iBr.iX, aRect.iBr.iY);
 
     iClientRect = aRect;
 }

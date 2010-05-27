@@ -367,28 +367,34 @@ public final class Image implements Drawable {
      * </ul>
      */
     public Image(Device device, String filename) {
+        this(device, filename, true);
+     }
+    
+    private Image(Device device, String filename, boolean securityCheck) {
         this(device);
         if (filename == null) {
             SWT.error(SWT.ERROR_NULL_ARGUMENT);
         }
         init();
+        
+        if (securityCheck == true) {
+            // Drop the "file:///" prefix
+            String trimmedFileName = filename.trim();
+            final String prefix = "file:///";
+            if (trimmedFileName.startsWith(prefix)) {
+                trimmedFileName = trimmedFileName.substring(prefix.length());
+            }
+            filename = trimmedFileName;
 
-        // Drop the "file:///" prefix
-        String trimmedFileName = filename.trim();
-        final String prefix = "file:///";
-        if(trimmedFileName.startsWith(prefix)) {
-        	trimmedFileName = trimmedFileName.substring(prefix.length());
-        }
-        filename = trimmedFileName;
-
-        boolean canRead = false;
-        try {
-            canRead = Compatibility.canOpenFile(filename);
-        } catch (SecurityException e) {
-            SWT.error(SWT.ERROR_IO);
-        }
-        if (!canRead) {
-            SWT.error(SWT.ERROR_IO);
+            boolean canRead = false;
+            try {
+                canRead = Compatibility.canOpenFile(filename);
+            } catch (SecurityException e) {
+                SWT.error(SWT.ERROR_IO);
+            }
+            if (!canRead) {
+                SWT.error(SWT.ERROR_IO);
+            }
         }
 
         org.eclipse.swt.internal.qt.graphics.ImageLoader loader = new org.eclipse.swt.internal.qt.graphics.ImageLoader();
@@ -422,6 +428,10 @@ public final class Image implements Drawable {
         if (isDisposed()) {
             SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
         }
+    }
+    
+    static Image createImageWithoutSecurityCheck(Device device, String filename) {
+        return new Image(device, filename, false);
     }
 
     /**

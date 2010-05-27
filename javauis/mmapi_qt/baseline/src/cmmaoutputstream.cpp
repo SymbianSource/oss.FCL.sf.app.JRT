@@ -52,7 +52,7 @@ CMMAOutputStream* CMMAOutputStream::NewLC(JNIEnv* aJNIEnv,
 
 
 void CMMAOutputStream::CreateL(CMMAOutputStream** aOutputStream,
-																MMAFunctionServer* aEventServer,
+                               MMAFunctionServer* aEventServer,
                                JNIEnv* aJniEnv,
                                MMMAEventPoster* aEventPoster,
                                jobject aJavaOutputStreamWriter)
@@ -60,7 +60,7 @@ void CMMAOutputStream::CreateL(CMMAOutputStream** aOutputStream,
 
     // JNI interface pointer can't be passed to different thread, so
     // it is needed to get valid JNI interface pointer for Event Server thread
- 	aJniEnv = aEventServer->getValidJniEnv();
+    aJniEnv = aEventServer->getValidJniEnv();
 
     *aOutputStream = NewL(aJniEnv, aEventPoster, aJavaOutputStreamWriter);
 }
@@ -68,7 +68,7 @@ void CMMAOutputStream::CreateL(CMMAOutputStream** aOutputStream,
 
 CMMAOutputStream::~CMMAOutputStream()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAOutputStream::~");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAOutputStream::~");
 
     // If write event is in the event server, it cannot be deleted.
     // Thus set the event to be deleted when event dispatch is called.
@@ -83,7 +83,7 @@ CMMAOutputStream::~CMMAOutputStream()
     }
 
     delete iData;
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAOutputStream::~ OK");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAOutputStream::~ OK");
 }
 
 
@@ -92,14 +92,14 @@ CMMAOutputStream::CMMAOutputStream(MMMAEventPoster* aEventPoster)
         : iEventSource(aEventPoster),
         iPtr(NULL, 0)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAOutputStream constructed");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAOutputStream constructed");
 }
 
 
 void CMMAOutputStream::ConstructL(JNIEnv* aJNIEnv,
                                   jobject aJavaOutputStreamWriter)
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAOutputStream::ConstructL()");
+    LOG(EJavaMMAPI, EInfo, "CMMAOutputStream::ConstructL()");
 
     // void write( int aLength, int aStatus ) method in OutputStreamWriter
     jmethodID classMethodID =
@@ -109,7 +109,7 @@ void CMMAOutputStream::ConstructL(JNIEnv* aJNIEnv,
             "(II)V");
     if (!classMethodID)
     {
-        LOG( EJavaMMAPI, EInfo, "CMMAOutputStream::ConstructL: Cannot find java method");
+        LOG(EJavaMMAPI, EInfo, "CMMAOutputStream::ConstructL: Cannot find java method");
         User::Panic(_L("Java method write(II)V not found"), KErrGeneral);
     }
 
@@ -130,8 +130,8 @@ void CMMAOutputStream::ReadDataL(TUint8* aOutputData,
     TInt status = KErrNone;
 
     TPtr8 buffer(aOutputData, *aBufferSize);
-    LOG1( EJavaMMAPI, EInfo, " MMA::CMMAOutputStream::ReadDataL SIZE BEFORE READL %d", buffer.Length());
-    LOG1( EJavaMMAPI, EInfo, " MMA::CMMAOutputStream::ReadDataL BYTES AVAILABLE %d", iPtr.Length());
+    LOG1(EJavaMMAPI, EInfo, " MMA::CMMAOutputStream::ReadDataL SIZE BEFORE READL %d", buffer.Length());
+    LOG1(EJavaMMAPI, EInfo, " MMA::CMMAOutputStream::ReadDataL BYTES AVAILABLE %d", iPtr.Length());
 
     // Bytes available in native buffer
     TInt bytesAvailable = iPtr.Length();
@@ -166,9 +166,9 @@ void CMMAOutputStream::ReadDataL(TUint8* aOutputData,
     // Move pointer to next read position.
     iPtr = iPtr.Mid(writeLength);
 
-    LOG1( EJavaMMAPI, EInfo, " MMA::CMMAOutputStream::ReadDataL SIZE AFTER READL %d", buffer.Length());
-    LOG1( EJavaMMAPI, EInfo, " MMA::CMMAOutputStream::ReadDataL RETURN %d", status);
-    LOG1( EJavaMMAPI, EInfo, " MMA::CMMAOutputStream::ReadDataL dataLeft %d", iPtr.Length());
+    LOG1(EJavaMMAPI, EInfo, " MMA::CMMAOutputStream::ReadDataL SIZE AFTER READL %d", buffer.Length());
+    LOG1(EJavaMMAPI, EInfo, " MMA::CMMAOutputStream::ReadDataL RETURN %d", status);
+    LOG1(EJavaMMAPI, EInfo, " MMA::CMMAOutputStream::ReadDataL dataLeft %d", iPtr.Length());
 
     if (iPtr.Length() == 0)
     {
@@ -181,7 +181,7 @@ void CMMAOutputStream::ReadDataL(TUint8* aOutputData,
 
 void CMMAOutputStream::WriteL(const TDesC8& aData)
 {
-    LOG1( EJavaMMAPI, EInfo, "CMMAOutputStream::WriteL data size = %d", aData.Size());
+    LOG1(EJavaMMAPI, EInfo, "CMMAOutputStream::WriteL data size = %d", aData.Size());
     if (iData)
     {
         // Previous data was not readed from the stream.
@@ -197,13 +197,13 @@ void CMMAOutputStream::WriteL(const TDesC8& aData)
         iPtr.Set(iData->Des());
 
         // Set java event
-        LOG1( EJavaMMAPI, EInfo, "CMMAOutputStream::WriteL: available data: %d", iData->Length());
+        LOG1(EJavaMMAPI, EInfo, "CMMAOutputStream::WriteL: available data: %d", iData->Length());
         iWriteEvent->SetLength(iData->Length());
         iWriteEvent->SetStatus(EMoreData);
     }
     else
     {
-        LOG( EJavaMMAPI, EInfo, "CMMAOutputStream::WriteL Zero length data");
+        LOG(EJavaMMAPI, EInfo, "CMMAOutputStream::WriteL Zero length data");
         iWriteEvent->SetLength(0);
         iWriteEvent->SetStatus(ECompleted);
     }

@@ -1,0 +1,37 @@
+<!--
+#
+# Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<project name="Midp_TextField_02" default="pack">
+
+    <!-- Get general settings for MIDlet projects. -->
+    <import file="../../properties.xml"/>
+
+    <!-- Set properties for this project. -->
+    <property name="midlet1.name" value="Midp_TextField_02"/>
+    <property name="midlet1.icon.name" value=""/>
+    <property name="midlet1.package.name" value="Midp_TextField_02"/>
+    <property name="midlet.permissions" value=""/>
+    <property name="package.name" value="Midp_TextField_02"/>
+    <property name="company.name" value="Nokia"/>
+    <property name="midlet.version" value="1.1"/>
+    <property name="midlet.description" value=""/>
+
+    <!-- Get settings for a basic MIDlet. -->
+    <import file="../../properties-basic-midlet.xml"/>
+
+</project>

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -12,7 +12,7 @@
 * Contributors:
 *
 * Description:  The executable that enables launching OMJ Java
-*                applications in S60
+*               applications in S60
 *
 */
 
@@ -42,7 +42,14 @@ using namespace java::storage;
 using namespace java::util;
 
 
+_LIT(KHexValueStart, "0x");
+_LIT(KPercentage, "%");
 _LIT(KSemiColon, ";");
+_LIT(KMidletNameArg, "midlet-name=");
+_LIT(KMidletVendorArg, "midlet-vendor=");
+_LIT(KMidletNArg, "midlet-n=");
+_LIT(KMidletUidArg, "midlet-uid=");
+
 
 const TInt KExtraLenForLoggingAndPrompting = 22;
 const TInt KArgumentValueMaxLen = 1568;  // Support worst case % encoded args of 512 chars
@@ -58,7 +65,8 @@ const TInt KArgumentValueMaxLen = 1568;  // Support worst case % encoded args of
  *
  * @param aJs           JavaStorage connection, must be open
  * @param aPackageId    the id of the package
- * @param aMidletName   the name of the desired application in the package, can be empty
+ * @param aMidletId     the numerical id of the desired application in the
+ *                      package, can be empty
  * @param aUid          the Uid the found application is returned in this param
  * @return  KErrNone if Uid was found, otherwise one of the Symbian error codes
  * @throws  JavaStorageException if accessing Java Storage fails
@@ -66,21 +74,61 @@ const TInt KArgumentValueMaxLen = 1568;  // Support worst case % encoded args of
 static TInt getOneApplicationFromPackage(
     JavaStorage& aJs,
     const std::wstring& aPackageId,
-    const std::wstring& aMidletName,
+    const std::wstring& aMidletId,
     TInt32 &aUid)
 {
+    std::wstring midletId = L"MIDlet-";
+    if (aMidletId.length() == 0)
+    {
+        midletId.append(L"1");
+    }
+    else
+    {
+        midletId.append(aMidletId);
+    }
+
     JavaStorageEntry attribute;
     JavaStorageApplicationEntry_t findPattern;
     JavaStorageApplicationList_t  foundEntries;
 
-    // Get ID from APPLICATION_TABLE based on PACKAGE_ID and NAME
+
+    // Get MIDlet-n from APPLICATION_PACKAGE_ATTRIBUTES_TABLE based on 
+    // PACKAGE_ID and NAME.
+    attribute.setEntry(ID, aPackageId);
+    findPattern.insert(attribute);
+    attribute.setEntry(NAME, midletId);
+    findPattern.insert(attribute);
+    attribute.setEntry(VALUE, L"");
+    findPattern.insert(attribute);
+    aJs.search(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, findPattern, foundEntries);
+
+    if (foundEntries.size() < 1)
+    {
+        return KErrNotFound;
+    }
+
+    // Found the MIDlet-n argument. Now getting the MIDlet name and 
+    // main class. Name is the first argument and main class is the last
+    // in the comma separated list.
+    std::wstring value = foundEntries.front().begin()->entryValue();
+    int pos = value.find_first_of(L",");
+    std::wstring midletName = value.substr(0, pos);
+    pos = value.find_last_of(L",");
+    std::wstring className = value.substr(pos+1);
+
+    // Trim white spaces.
+    JavaCommonUtils::trimWstring(midletName, L' ');
+    JavaCommonUtils::trimWstring(className, L' ');
+    findPattern.clear();
+    foundEntries.clear();
+
+    // Get ID from APPLICATION_TABLE based on PACKAGE_ID and MAIN_CLASS
     attribute.setEntry(PACKAGE_ID, aPackageId);
     findPattern.insert(attribute);
-    if (aMidletName.length() > 0)
-    {
-        attribute.setEntry(NAME, aMidletName);
-        findPattern.insert(attribute);
-    }
+    attribute.setEntry(NAME, midletName);
+    findPattern.insert(attribute);
+    attribute.setEntry(MAIN_CLASS, className);
+    findPattern.insert(attribute);
     attribute.setEntry(ID, L"");
     findPattern.insert(attribute);
 
@@ -110,7 +158,6 @@ static TInt getOneApplicationFromPackage(
  */
 static void decodeCommandLineL(TPtr &aCmdLineBuf)
 {
-    _LIT(KPercentage, "%");
     TInt ind = aCmdLineBuf.Find(KPercentage);
     if (KErrNotFound == ind)
     {
@@ -180,7 +227,7 @@ static std::wstring getArgValue(const TPtrC &aMidletCmdLine, const TDesC &aArgNa
 /**
  * Parse the names of the MIDlet suite and MIDlet vendor from aMidletCmdLine
  * parameter and use them to find the MIDlet suite from Java Storage.
- * Then return Uid of the named MIDlet or if 'midlet-n' argument is not given
+ * Then return Uid of the named MIDlet or if 'midlet-app-name' argument is not given
  * in command line, the Uid of the first MIDlet in the suite.
  * Return the uid of the MIDlet in aUid.
  *
@@ -192,10 +239,6 @@ static std::wstring getArgValue(const TPtrC &aMidletCmdLine, const TDesC &aArgNa
  */
 static TInt getUidByNames(const TPtrC &aMidletCmdLine, TInt32 &aUid)
 {
-    _LIT(KMidletNameArg, "midlet-name=");
-    _LIT(KMidletVendorArg, "midlet-vendor=");
-    _LIT(KMidletNArg, "midlet-n=");
-
     TInt err = aMidletCmdLine.FindF(KMidletNameArg);
     if (KErrNotFound == err)
     {
@@ -209,7 +252,7 @@ static TInt getUidByNames(const TPtrC &aMidletCmdLine, TInt32 &aUid)
 
     std::wstring suiteName = getArgValue(aMidletCmdLine, KMidletNameArg);
     std::wstring vendorName = getArgValue(aMidletCmdLine, KMidletVendorArg);
-    std::wstring midletName = getArgValue(aMidletCmdLine, KMidletNArg);
+    std::wstring midletId = getArgValue(aMidletCmdLine, KMidletNArg);
 
     if (suiteName.empty() || vendorName.empty())
     {
@@ -247,7 +290,7 @@ static TInt getUidByNames(const TPtrC &aMidletCmdLine, TInt32 &aUid)
                      value.c_str());
 
             // Now find the Uid of the first or specified application in the package
-            err = getOneApplicationFromPackage(*js, value, midletName, aUid);
+            err = getOneApplicationFromPackage(*js, value, midletId, aUid);
         }
         else
         {
@@ -353,14 +396,12 @@ static TInt verifyAppExists(TInt32 aUid)
  * Java Storage / AppArc and return the Uid of the midlet.
  *
  * @param aMidletCmdLine  command line to be parsed, the format is
- *  [midlet-name=XXX;midlet-vendor=XXX;|midlet-uid=YYY;]midlet-args=XXX
+ *  [midlet-name=XXX;midlet-vendor=XXX;|midlet-uid=YYY;]<midlet_args>
  * @param aUid will contain the Uid parsed from command line
  * @return KErrNone if the command line specified Uid
  */
 static TInt getUidFromCommandLine(const TPtrC &aMidletCmdLine, TInt32 &aUid)
 {
-    _LIT(KMidletUidArg, "midlet-uid=");
-    _LIT(KHexValueStart, "0x");
     TInt err(KErrNone);
     TInt argPos = aMidletCmdLine.FindF(KMidletUidArg);
     if (KErrNotFound != argPos)
@@ -441,7 +482,7 @@ TInt getCmdLineAndUidL(HBufC **aCmdLine, TInt *aUid, TBool *aBackGroundLaunch)
     // Symbian Settings UI
     TInt maxExtraSpaceForDocumentArg = 0;
 #ifdef RD_JAVA_SUPPORT_JAVA_APPS_AS_MIME_TYPE_HANDLERS
-    _LIT(KDocumentOnlyCmdLine, "midlet-args=document=");
+    _LIT(KDocumentOnlyCmdLine, "document=");
     TFullName documentName;
     documentName = commandLine->DocumentName();
     if (documentName.Length() > 0)
@@ -541,13 +582,33 @@ TInt getCmdLineAndUidL(HBufC **aCmdLine, TInt *aUid, TBool *aBackGroundLaunch)
 
     // Uid has already been determined, the whole command line is not needed
     // anymore, only the arguments for the Java application
-    _LIT(KMidletArgs, "midlet-args=");
-    TInt  argsPos = cmdLineBuf.FindF(KMidletArgs);
+
+    // Find the last argument that is used to identify the MIDlet
     TBool cmdLineIsNotEmpty = EFalse;
-    if (argsPos >= 0)
+    TInt  lastArgPos = cmdLineBuf.FindF(KMidletUidArg);
+    TInt  currArgPos = cmdLineBuf.FindF(KMidletNArg);
+    if (currArgPos > lastArgPos)
     {
-        // Pass everything that follows "midlet-args="
-        cmdLineBuf.Delete(0, argsPos + KMidletArgs.iTypeLength);
+        lastArgPos = currArgPos;
+    }
+    currArgPos = cmdLineBuf.FindF(KMidletVendorArg);
+    if (currArgPos > lastArgPos)
+    {
+        lastArgPos = currArgPos;
+    }
+    currArgPos = cmdLineBuf.FindF(KMidletNameArg);
+    if (currArgPos > lastArgPos)
+    {
+        lastArgPos = currArgPos;
+    }
+
+    // Find the place where the last identity argument ends
+    cmdLineBuf.Delete(0, lastArgPos);
+    lastArgPos = cmdLineBuf.Find(KSemiColon);
+    if (lastArgPos >= 0)
+    {
+        // Pass everything that follows "<last_identity_arg_name>=....;"
+        cmdLineBuf.Delete(0, lastArgPos + 1);
         cmdLineIsNotEmpty = ETrue;
     }
     else
@@ -737,17 +798,17 @@ TInt handleLaunchL(void)
  * command line.
  *
  * The command line format is
- * [midlet-name=XXX;midlet-vendor=XXX;[midlet-n=XXX;]|midlet-uid=YYY;]midlet-args=XXX
+ * [midlet-name=XXX;midlet-vendor=XXX;[midlet-app-name=XXX;]|midlet-uid=YYY;]<midlet_args>
  * for example
- * midlet-name=Chess;midlet-vendor=Nokia;midlet-args=startMode=playChessDemo;sound=off;
- * 'midlet-args' specifies the arguments passed to Java application.
- * 'midlet-uid' or 'midlet-name'+'midlet-vendor' specify the Java application to be started
+ * midlet-name=Chess;midlet-vendor=Nokia;startMode=playChessDemo;sound=off;
+ * 'midlet-uid' or 'midlet-name'+'midlet-vendor'+ optional 'midlet-app-name' specify
+ * the Java application to be started
  *
  * Sample code for starting MIDlet from native code
  * @code
     RProcess rProcess;
     TInt err = rProcess.Create(_L("javalauncher.exe"),
-        _L("midlet-uid=0x10137c4d;midlet-args=startMode=startFromCmdLine;sound=ON;landscapeMode=true;"));
+        _L("midlet-uid=0x10137c4d;startMode=startFromCmdLine;sound=ON;landscapeMode=true;"));
     if (KErrNone == err)
     {
         TRequestStatus status;

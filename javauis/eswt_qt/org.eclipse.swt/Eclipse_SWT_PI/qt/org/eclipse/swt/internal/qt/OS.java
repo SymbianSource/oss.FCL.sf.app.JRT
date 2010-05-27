@@ -120,6 +120,8 @@ public final class OS {
     public static final int QT_KEY_Y = 0x59;
     public static final int QT_KEY_Z = 0x5a;
     public static final int QT_KEY_UNKNOWN = 0x01ffffff;
+    public static final int QT_KEY_YES = 0x01010001;
+    public static final int QT_KEY_NO = 0x01010002;
 
     // Mask for non-printable keys
     public static final int QT_NONPRINTABLEKEYMASK = 0x01000000;
@@ -231,14 +233,13 @@ public final class OS {
     public static final int QSWTEVENT_WIDGETPAINTED = QSWTEVENT_ID_RANGE_FIRST + 1;
     public static final int QSWTEVENT_WIDGETRESIZED = QSWTEVENT_ID_RANGE_FIRST + 2;
     public static final int QSWTEVENT_WIDGETMOVED = QSWTEVENT_ID_RANGE_FIRST + 3;
-    public static final int QSWTEVENT_ENDKEYCLOSE = QSWTEVENT_ID_RANGE_FIRST + 4;
-    public static final int QSWTEVENT_SYSTEMSHUTDOWN = QSWTEVENT_ID_RANGE_FIRST + 5;
-    public static final int QSWTEVENT_BUFFERFLUSH = QSWTEVENT_ID_RANGE_FIRST + 6;
-    public static final int QSWTEVENT_RESOURCECHANGE = QSWTEVENT_ID_RANGE_FIRST + 7;
-    public static final int QSWTEVENT_MOBILEDEVICEOPENED = QSWTEVENT_ID_RANGE_FIRST + 8;
-    public static final int QSWTEVENT_MOBILEDEVICECLOSED = QSWTEVENT_ID_RANGE_FIRST + 9;
-    public static final int QSWTEVENT_SCREENACTIVATED = QSWTEVENT_ID_RANGE_FIRST + 10;
-    public static final int QSWTEVENT_SCREENDEACTIVATED = QSWTEVENT_ID_RANGE_FIRST + 11;
+    public static final int QSWTEVENT_SYSTEMSHUTDOWN = QSWTEVENT_ID_RANGE_FIRST + 4;
+    public static final int QSWTEVENT_BUFFERFLUSH = QSWTEVENT_ID_RANGE_FIRST + 5;
+    public static final int QSWTEVENT_RESOURCECHANGE = QSWTEVENT_ID_RANGE_FIRST + 6;
+    public static final int QSWTEVENT_MOBILEDEVICEOPENED = QSWTEVENT_ID_RANGE_FIRST + 7;
+    public static final int QSWTEVENT_MOBILEDEVICECLOSED = QSWTEVENT_ID_RANGE_FIRST + 8;
+    public static final int QSWTEVENT_SCREENACTIVATED = QSWTEVENT_ID_RANGE_FIRST + 9;
+    public static final int QSWTEVENT_SCREENDEACTIVATED = QSWTEVENT_ID_RANGE_FIRST + 10;
 
     // Qt connection types for signal-slot connections
     public static final int QT_AUTOCONNECTION = 0;
@@ -1082,8 +1083,7 @@ public final class OS {
     public static final native String[] ListModel_itemStrings( int handle );
     public static final native int ListModel_indexOf( int handle, String string, int start );
     public static final native void ListModel_remove( int handle, int index );
-    public static final native void ListModel_setItem( int handle, int index, String string );
-    public static final native void ListModel_setItem( int handle, int index, String string, int imageHandle );
+    public static final native void ListModel_setItemContentsToNull( int handle, int index);
     public static final native void ListModel_clearList(int dataModelHandle);
 
     //
@@ -1498,8 +1498,8 @@ public final class OS {
     // QInputDialog
     //
     public static final native String QInputDialog_swt_getText(int parentHandle, String title, String label, int echoMode, String defaultText, String dialogId, int layoutDirection);
-    public static final native String QInputDialog_swt_getDouble(int parentHandle, String title, String label, double min,
-            double max, double defaultValue, int decimals, String dialogId, int layoutDirection);
+    public static final native String QInputDialog_swt_getInteger(int parentHandle, String title, String label, int min,
+            int max, int defaultValue, String dialogId, int layoutDirection);
 
     //
     // QWebView

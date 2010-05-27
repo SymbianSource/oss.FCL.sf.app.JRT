@@ -167,6 +167,11 @@ public final class UninstallBall extends ExeBall
             // No UI in silent mode.
             return null;
         }
+        if (SifRegistrator.getSifMode() > 0)
+        {
+            // No UI in uinstallation when SifMode > 0.
+            return null;
+        }
         if (iInstallerUi == null)
         {
             iInstallerUi = InstallerUiFactory.getInstallerUi

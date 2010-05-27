@@ -39,7 +39,7 @@ CMMAAudioStreamRateControl* CMMAAudioStreamRateControl::NewL(CMMAAudioStreamPlay
 
 CMMAAudioStreamRateControl::~CMMAAudioStreamRateControl()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAAudioStreamRateControl::~CMMAAudioStreamRateControl");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAAudioStreamRateControl::~CMMAAudioStreamRateControl");
     if (iPlayer)
     {
         iPlayer->RemoveStateListener(this);
@@ -49,7 +49,7 @@ CMMAAudioStreamRateControl::~CMMAAudioStreamRateControl()
 CMMAAudioStreamRateControl::CMMAAudioStreamRateControl(CMMAAudioStreamPlayer* aPlayer) :
         iPlayer(aPlayer), iCurrentRate(KMMADefaultRate)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAAudioStreamRateControl::CMMAAudioStreamRateControl");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAAudioStreamRateControl::CMMAAudioStreamRateControl");
 }
 
 void CMMAAudioStreamRateControl::ConstructL()
@@ -59,14 +59,14 @@ void CMMAAudioStreamRateControl::ConstructL()
 
 void CMMAAudioStreamRateControl::StateChanged(TInt aState)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAAudioStreamRateControl::StateChanged");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAAudioStreamRateControl::StateChanged");
     if (aState == CMMAPlayer::EStarted && iCurrentRate == KMMAMinRate)
     {
         // do not post event to Java or change player state
         TInt err = iPlayer->Pause();
         if (err != KErrNone)
         {
-            ELOG1( EJavaMMAPI, "CMMAAudioStreamRateControl::StateChanged: Pause error %d", err);
+            ELOG1(EJavaMMAPI, "CMMAAudioStreamRateControl::StateChanged: Pause error %d", err);
             TBuf<KErrorMessageSize> errorMessage;
             errorMessage.Format(KErrDefaultError, err);
             iPlayer->PostStringEvent(CMMAPlayerEvent::EError, errorMessage);
@@ -76,7 +76,7 @@ void CMMAAudioStreamRateControl::StateChanged(TInt aState)
 
 TInt CMMAAudioStreamRateControl::SetRateL(TInt aRate)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAAudioStreamRateControl::SetRateL");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAAudioStreamRateControl::SetRateL");
     TInt newRate;
     if (aRate <= KMMAMinRate)
     {

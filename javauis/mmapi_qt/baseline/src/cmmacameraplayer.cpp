@@ -43,7 +43,7 @@ CMMACameraPlayer* CMMACameraPlayer::NewLC(TInt aCameraIndex)
 
 CMMACameraPlayer::~CMMACameraPlayer()
 {
-    LOG( EJavaMMAPI, EInfo, "CMMACameraPlayer::~CMMACameraPlayer");
+    LOG(EJavaMMAPI, EInfo, "CMMACameraPlayer::~CMMACameraPlayer");
 
     // Free (duplicated) UI camera resources first.
     // Window is not able to send any
@@ -69,8 +69,8 @@ CMMACameraPlayer::~CMMACameraPlayer()
         // Window will delete itself
         // after all pending events are processed
         // (lazy delete)
-       // iDisplay->UIGetCallback(
-       //     *iWindow, CMMACameraWindow::EDestroyWindow);
+        // iDisplay->UIGetCallback(
+        //     *iWindow, CMMACameraWindow::EDestroyWindow);
     }
     else
     {
@@ -127,7 +127,7 @@ TInt64 CMMACameraPlayer::CurrentTime()
 
 void CMMACameraPlayer::ResolveViewFinderSizeL(TSize& aSize)
 {
-    LOG( EJavaMMAPI, EInfo, "CMMACameraPlayer::ResolveViewFinderSizeL");
+    LOG(EJavaMMAPI, EInfo, "CMMACameraPlayer::ResolveViewFinderSizeL");
 
     TSize resultSize;
 
@@ -149,7 +149,7 @@ void CMMACameraPlayer::ResolveViewFinderSizeL(TSize& aSize)
 
 void CMMACameraPlayer::ResolveScreenSizeL(TSize& aSize)
 {
-    LOG( EJavaMMAPI, EInfo, "CMMACameraPlayer::ResolveScreenSizeL");
+    LOG(EJavaMMAPI, EInfo, "CMMACameraPlayer::ResolveScreenSizeL");
 
 #if defined( __WINS__ )
     TSize size(0,0);
@@ -200,7 +200,7 @@ void CMMACameraPlayer::ResolveCaptureSizes(const CCamera::TFormat aFormat,
     // Temporary size for iterating capture sizes
     TSize tmpSize;
 
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::ResolveCaptureSizes: aFormat = 0x%x", aFormat);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::ResolveCaptureSizes: aFormat = 0x%x", aFormat);
 
     // go through all supported sizes.
     // Notice: Capture sizes are assumed to be in order from smaller to larger sizes
@@ -210,8 +210,8 @@ void CMMACameraPlayer::ResolveCaptureSizes(const CCamera::TFormat aFormat,
                                        i,
                                        aFormat);
 
-        LOG1( EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::ResolveCaptureSizes: tmpSize.iWidth = %d", tmpSize.iWidth);
-        LOG1( EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::ResolveCaptureSizes: tmpSize.iHeight = %d", tmpSize.iHeight);
+        LOG1(EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::ResolveCaptureSizes: tmpSize.iWidth = %d", tmpSize.iWidth);
+        LOG1(EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::ResolveCaptureSizes: tmpSize.iHeight = %d", tmpSize.iHeight);
 
         // Check if current is the largest
         if ((largestSize.iWidth < tmpSize.iWidth) &&
@@ -230,8 +230,8 @@ void CMMACameraPlayer::ResolveCaptureSizes(const CCamera::TFormat aFormat,
         }
     }
 
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::ResolveCaptureSizes: sourceSizeIndex = %d", sourceSizeIndex);
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::ResolveCaptureSizes: largestSizeIndex = %d", largestSizeIndex);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::ResolveCaptureSizes: sourceSizeIndex = %d", sourceSizeIndex);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::ResolveCaptureSizes: largestSizeIndex = %d", largestSizeIndex);
 
     aSourceSize = sourceSize;
     aSourceIndex = sourceSizeIndex;
@@ -240,7 +240,7 @@ void CMMACameraPlayer::ResolveCaptureSizes(const CCamera::TFormat aFormat,
 
 void CMMACameraPlayer::StartL()
 {
-    LOG1( EJavaMMAPI, EInfo, "CMMACameraPlayer:StartL iState %d", iState);
+    LOG1(EJavaMMAPI, EInfo, "CMMACameraPlayer:StartL iState %d", iState);
 
     // start can't be called to not ready player
     if (iState == EPrefetched)
@@ -264,13 +264,13 @@ void CMMACameraPlayer::StartL()
         // inform java side
         PostLongEvent(CMMAPlayerEvent::EStarted, time);
     }
-    PostActionCompletedStart();    
+    PostActionCompletedStart();
     PostActionCompleted(KErrNone);   // java start return
 }
 
 void CMMACameraPlayer::StopL(TBool aPostEvent)
 {
-    LOG1( EJavaMMAPI, EInfo, "CMMACameraPlayer::StopL", iState);
+    LOG1(EJavaMMAPI, EInfo, "CMMACameraPlayer::StopL", iState);
     if (iState == EStarted)
     {
         TInt64 time;
@@ -324,7 +324,7 @@ void CMMACameraPlayer::RealizeL()
 
 void CMMACameraPlayer::PrefetchL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::PrefetchL");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::PrefetchL");
     // nothing to do here
     ChangeState(EPrefetched);
     PostActionCompleted(KErrNone);
@@ -340,7 +340,7 @@ void CMMACameraPlayer::GetDuration(TInt64* aDuration)
 
 void CMMACameraPlayer::SetMediaTimeL(TInt64* /*aTime*/)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::SetMediaTimeL ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::SetMediaTimeL ");
     // with camera media time is not supported.
 }
 
@@ -361,7 +361,7 @@ void CMMACameraPlayer::GetMediaTime(TInt64* aMediaTime)
 
 void CMMACameraPlayer::CloseL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::CloseL()");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::CloseL()");
 
     // cancel all activity
     iCamera->CancelCaptureImage();
@@ -383,7 +383,7 @@ const TDesC& CMMACameraPlayer::Type()
 // MCameraObserver
 void CMMACameraPlayer::ReserveComplete(TInt aError)
 {
-    ELOG1( EJavaMMAPI, "MMA::CMMACameraPlayer::ReserveComplete %d", aError);
+    ELOG1(EJavaMMAPI, "MMA::CMMACameraPlayer::ReserveComplete %d", aError);
     if (aError == KErrNone)
     {
         // camera will notify completion with PowerOnComplete method.
@@ -400,7 +400,7 @@ void CMMACameraPlayer::ReserveComplete(TInt aError)
 
 void CMMACameraPlayer::PowerOnComplete(TInt aError)
 {
-    ELOG1( EJavaMMAPI, "MMA::CMMACameraPlayer::PowerOnComplete %d", aError);
+    ELOG1(EJavaMMAPI, "MMA::CMMACameraPlayer::PowerOnComplete %d", aError);
 
     TSize viewFinderSize;
     TInt error = aError;
@@ -437,7 +437,7 @@ void CMMACameraPlayer::ImageReady(CFbsBitmap* aBitmap,
                                   HBufC8* aData,
                                   TInt aError)
 {
-    ELOG1( EJavaMMAPI, "MMA::CMMACameraPlayer::ImageReady %d", aError);
+    ELOG1(EJavaMMAPI, "MMA::CMMACameraPlayer::ImageReady %d", aError);
 
     // This method should never be called,
     // unless we are taking snapshot
@@ -465,7 +465,7 @@ void CMMACameraPlayer::ImageReady(CFbsBitmap* aBitmap,
 void CMMACameraPlayer::FrameBufferReady(MFrameBuffer* /*aFrameBuffer*/,
                                         TInt /*aError*/)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::FrameBufferReady");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::FrameBufferReady");
     // this callback will never be called
     // Asserted in debug build to be sure.
     __ASSERT_DEBUG(EFalse, User::Invariant());
@@ -473,7 +473,7 @@ void CMMACameraPlayer::FrameBufferReady(MFrameBuffer* /*aFrameBuffer*/,
 
 void CMMACameraPlayer::SetDisplayL(MMMADisplay* aDisplay)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::SetDisplay");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::SetDisplay");
 
     // now it is ready to draw
     iDisplay = aDisplay;
@@ -536,8 +536,8 @@ MMMASnapshot::TEncoding CMMACameraPlayer::TakeSnapshotL(TRequestStatus* aStatus,
     // Set default image capture format
     CCamera::TFormat format = CCamera::EFormatFbsBitmapColor16M;
 
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::TakeSnapshotL: cameraInfo.iImageFormatsSupported = 0x%x", cameraInfo.iImageFormatsSupported);
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::TakeSnapshotL: cameraInfo.iNumImageSizesSupported = %d", cameraInfo.iNumImageSizesSupported);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::TakeSnapshotL: cameraInfo.iImageFormatsSupported = 0x%x", cameraInfo.iImageFormatsSupported);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::TakeSnapshotL: cameraInfo.iNumImageSizesSupported = %d", cameraInfo.iNumImageSizesSupported);
 
     // Check if size was set in Java
     if (aSize.iWidth != KErrNotFound &&
@@ -617,10 +617,10 @@ MMMASnapshot::TEncoding CMMACameraPlayer::TakeSnapshotL(TRequestStatus* aStatus,
     iWindow->SetStarted(EFalse);
 
     iCamera->CaptureImage();
-		
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::TakeSnapshotL: format = 0x%x", format);
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::TakeSnapshotL: sourceSizeIndex = %d", sourceSizeIndex);
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::TakeSnapshotL: encoding = %d", encoding);
+
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::TakeSnapshotL: format = 0x%x", format);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::TakeSnapshotL: sourceSizeIndex = %d", sourceSizeIndex);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMACameraPlayer::TakeSnapshotL: encoding = %d", encoding);
 
     // Inform caller which snapshot encoding was ultimately used
     return encoding;

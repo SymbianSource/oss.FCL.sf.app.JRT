@@ -39,13 +39,13 @@ CMMAMMFRateControl* CMMAMMFRateControl::NewL(CMMAMMFPlayerBase* aPlayer)
 
 CMMAMMFRateControl::~CMMAMMFRateControl()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAMMFRateControl::~CMMAMMFRateControl");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAMMFRateControl::~CMMAMMFRateControl");
 }
 
 CMMAMMFRateControl::CMMAMMFRateControl(CMMAMMFPlayerBase* aPlayer) :
         iPlayer(aPlayer), iCurrentRate(KMMADefaultRate)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAMMFRateControl::CMMAMMFRateControl");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAMMFRateControl::CMMAMMFRateControl");
 }
 
 void CMMAMMFRateControl::ConstructL()
@@ -55,14 +55,14 @@ void CMMAMMFRateControl::ConstructL()
 
 void CMMAMMFRateControl::StateChanged(TInt aState)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAMMFRateControl::StateChanged");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAMMFRateControl::StateChanged");
     if (aState == CMMAPlayer::EStarted && iCurrentRate == KMMAMinRate)
     {
         RMMFController& controller = iPlayer->Controller();
         TInt err = controller.Pause();
         if ((err != KErrNone) && (err != KErrNotReady))
         {
-            ELOG1( EJavaMMAPI, "CMMAMMFRateControl::StateChanged: Pause error %d", err);
+            ELOG1(EJavaMMAPI, "CMMAMMFRateControl::StateChanged: Pause error %d", err);
             TBuf<KErrorMessageSize> errorMessage;
             errorMessage.Format(KErrDefaultError, err);
             iPlayer->PostStringEvent(CMMAPlayerEvent::EError, errorMessage);
@@ -72,7 +72,7 @@ void CMMAMMFRateControl::StateChanged(TInt aState)
 
 TInt CMMAMMFRateControl::SetRateL(TInt aRate)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAMMFRateControl::SetRateL");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAMMFRateControl::SetRateL");
     RMMFController& controller = iPlayer->Controller();
 
     TInt newRate;

@@ -49,7 +49,7 @@ _LIT(KVideoControlName, "VideoControl");
 
 CMMAAnimationPlayer* CMMAAnimationPlayer::NewLC()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::NewLC");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::NewLC");
     CMMAAnimationPlayer* self = new(ELeave) CMMAAnimationPlayer();
     CleanupStack::PushL(self);
     self->ConstructL();
@@ -65,7 +65,7 @@ CMMAAnimationPlayer* CMMAAnimationPlayer::NewLC(const TDesC& aFileName)
 
 CMMAAnimationPlayer::~CMMAAnimationPlayer()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::~CMMAAnimationPlayer +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::~CMMAAnimationPlayer +");
     if (iViewer && iViewer->IsPlaying())
     {
         iViewer->Stop();
@@ -81,7 +81,7 @@ CMMAAnimationPlayer::~CMMAAnimationPlayer()
     delete iFileName;
 
     iFSession.Close();
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::~CMMAAnimationPlayer -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::~CMMAAnimationPlayer -");
 }
 
 CMMAAnimationPlayer::CMMAAnimationPlayer()
@@ -92,7 +92,7 @@ CMMAAnimationPlayer::CMMAAnimationPlayer()
 
 void CMMAAnimationPlayer::ConstructL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::ConstructL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::ConstructL +");
     CMMAPlayer::ConstructL();
     HBufC* contentType = KMMAAnimationContentType().AllocL();
     SetContentType(contentType);
@@ -103,7 +103,7 @@ void CMMAAnimationPlayer::ConstructL()
     // File session must be share protected for IHL
     User::LeaveIfError(iFSession.ShareProtected());
 
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::ConstructL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::ConstructL -");
 }
 
 void CMMAAnimationPlayer::SetPlayerListenerObjectL(
@@ -126,7 +126,7 @@ void CMMAAnimationPlayer::SetPlayerListenerObjectL(
 
 void CMMAAnimationPlayer::RealizeL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::RealizeL");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::RealizeL");
     // For file locator file must be prefetched here because
     // FramePositioningControl must know duration of media
     // in realized state
@@ -143,7 +143,7 @@ void CMMAAnimationPlayer::RealizeL()
 
 void CMMAAnimationPlayer::PrefetchL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::PrefetchL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::PrefetchL +");
     __ASSERT_DEBUG((iSourceStreams.Count() > 0) || iFileName, User::Invariant());
 
     if (iFileName)
@@ -158,11 +158,11 @@ void CMMAAnimationPlayer::PrefetchL()
             NotifyWithStringEvent(CMMAPlayerEvent::ESizeChanged, KVideoControlName);
         }
 
-       // ChangeState(EPrefetched);
-       // PostActionCompleted(KErrNone);
+        // ChangeState(EPrefetched);
+        // PostActionCompleted(KErrNone);
         // we can go to prefetched state immediately
         PostActionCompletedFile();
-        ChangeState(EPrefetched);       
+        ChangeState(EPrefetched);
     }
     else
     {
@@ -171,12 +171,12 @@ void CMMAAnimationPlayer::PrefetchL()
     }
 
     // CMMASourceStream will notify with ReadCompleted
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::PrefetchL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::PrefetchL -");
 }
 
 void CMMAAnimationPlayer::StartL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::StartL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::StartL +");
 
     // If end of media has been reached, then
     // start from beginning
@@ -198,10 +198,10 @@ void CMMAAnimationPlayer::StartL()
     }
     ChangeState(EStarted);
     PostActionCompletedStart();
-   // PostActionCompleted(KErrNone);   // java start return
-    
+    // PostActionCompleted(KErrNone);   // java start return
 
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::StartL -");
+
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::StartL -");
 }
 
 void CMMAAnimationPlayer::ProcessCurrentFrameL()
@@ -215,7 +215,7 @@ void CMMAAnimationPlayer::ProcessCurrentFrameL()
             iRepeatCount++;
             if (iRepeatCount >= iRepeatNumberOfTimes)
             {
-                LOG( EJavaMMAPI, EInfo, "CMMAAnimationPlayer:ProcessCurrentFrameL: Reached repeat count, Stopping");
+                LOG(EJavaMMAPI, EInfo, "CMMAAnimationPlayer:ProcessCurrentFrameL: Reached repeat count, Stopping");
                 // end looping, do not send stopped event
                 StopL(EFalse);
                 iViewer->SetAnimationFrame(iFrameCount - 1);
@@ -230,7 +230,7 @@ void CMMAAnimationPlayer::ProcessCurrentFrameL()
             }
         }
         PostLongEvent(CMMAPlayerEvent::EEndOfMedia, iMediaTime);
-        LOG( EJavaMMAPI, EInfo, "CMMAAnimationPlayer:ProcessCurrentFrameL: sent END_OF_MEDIA");
+        LOG(EJavaMMAPI, EInfo, "CMMAAnimationPlayer:ProcessCurrentFrameL: sent END_OF_MEDIA");
 
         // Prevents this frame from being viewed if playback has terminated
         // (e.g. not looping)
@@ -250,7 +250,7 @@ void CMMAAnimationPlayer::ProcessCurrentFrameL()
     TInt currentFrame = iViewer->AnimationFrame();
     if (currentFrame == 0)
     {
-        LOG( EJavaMMAPI, EInfo, "CMMAAnimationPlayer:ProcessCurrentFrameL: Reset mediatime");
+        LOG(EJavaMMAPI, EInfo, "CMMAAnimationPlayer:ProcessCurrentFrameL: Reset mediatime");
         // reset media time when looping
         iMediaTime = 0;
     }
@@ -279,7 +279,7 @@ void CMMAAnimationPlayer::ProcessCurrentFrameL()
 
 void CMMAAnimationPlayer::StopL(TBool aPostEvent)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::StopL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::StopL +");
     iViewer->Stop();
     // adjust mediatime
     if (aPostEvent)
@@ -287,12 +287,12 @@ void CMMAAnimationPlayer::StopL(TBool aPostEvent)
         PostLongEvent(CMMAPlayerEvent::EStopped, iMediaTime);
     }
     ChangeState(EPrefetched);
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::StopL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::StopL -");
 }
 
 void CMMAAnimationPlayer::DeallocateL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::DeallocateL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::DeallocateL +");
     // If player is in starte state when deallocate is called,
     // player is stopped from java side -> state is changed to
     // prefetched.
@@ -312,7 +312,7 @@ void CMMAAnimationPlayer::DeallocateL()
         iSendEndOfMediaOnNextFrame = EFalse;
         ChangeState(ERealized);
     }
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::DeallocateL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::DeallocateL -");
 }
 
 void CMMAAnimationPlayer::GetDuration(TInt64* aDuration)
@@ -437,8 +437,8 @@ void CMMAAnimationPlayer::PrefetchFileL()
 
 void CMMAAnimationPlayer::PrefetchDataL(const TDesC8& aData)
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::PrefetchDataL aData size %d",
-              aData.Size());
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAAnimationPlayer::PrefetchDataL aData size %d",
+         aData.Size());
 
     // Create source image from data
     iImage = IHLImageFactory::OpenBufferedFileImageL(iFSession, aData);
@@ -508,7 +508,7 @@ void CMMAAnimationPlayer::SetAnimationObserver(MMMAAnimationObserver* aAnimation
 
 TInt CMMAAnimationPlayer::SetRateL(TInt aRate)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAAnimationPlayer::SetRateL");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAAnimationPlayer::SetRateL");
     if ((iState == EStarted) && (iCurrentRate != aRate))
     {
         if (aRate <= 0)
@@ -526,7 +526,7 @@ TInt CMMAAnimationPlayer::SetRateL(TInt aRate)
 
 TInt CMMAAnimationPlayer::RateL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAAnimationPlayer::RateL");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAAnimationPlayer::RateL");
     return iCurrentRate;
 }
 

@@ -63,7 +63,7 @@ void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::StartL()
     // Completed in VideoPrepareComplete-event
     if (!iActiveSchedulerWait->IsStarted())
     {
-        LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: StartL() ASW Start1");
+        LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: StartL() ASW Start1");
         iActiveSchedulerWait->Start();
     }
 
@@ -75,7 +75,7 @@ void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::StartL()
     // Completed in VideoLoadingComplete-event
     if (!iActiveSchedulerWait->IsStarted())
     {
-        LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: StartL() ASW Start2");
+        LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: StartL() ASW Start2");
         iActiveSchedulerWait->Start();
     }
     iPlayer.PostActionCompleted(KErrNone);   // java start return
@@ -83,14 +83,14 @@ void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::StartL()
 
 void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::StopL(TBool aPostEvent)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: StopL");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: StopL");
     if (iPlayer.iState == EStarted)
     {
-        LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: StopL : Started ");
+        LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: StopL : Started ");
         GetMediaTime(&iStoppedAtTime);
         if (aPostEvent)
         {
-            LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: StopL : Postevent ");
+            LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: StopL : Postevent ");
             iPlayer.PostLongEvent(CMMAPlayerEvent::EStopped, iStoppedAtTime);
         }
         // go back to prefetched state
@@ -100,37 +100,37 @@ void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::StopL(TBool aPost
         // Pause has no meaning for live streaming
         iPlayer.iController.Stop();
     }
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: StopL - ");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: StopL - ");
 }
 
 void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::GetMediaTime(TInt64* aMediaTime)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::GetMediaTime +");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::GetMediaTime +");
     if (iPlayer.iState == EStarted)
     {
-        LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::GetMediaTime Started Playerbase call");
+        LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::GetMediaTime Started Playerbase call");
         iPlayer.CMMAMMFPlayerBase::GetMediaTime(aMediaTime);
         *aMediaTime -= iMediaStartTime;
     }
     else
     {
-        LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::GetMediaTime Stopped");
+        LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::GetMediaTime Stopped");
         *aMediaTime = iStoppedAtTime;
     }
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::GetMediaTime -");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::GetMediaTime -");
 }
 
 void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::HandleEvent(const TMMFEvent& aEvent)
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: HandleEvent %d", aEvent.iEventType.iUid);
-    ELOG1( EJavaMMAPI, "MMA:CMMAVideoUrlPlayer: Live stream: HandleEvent error code: %d", aEvent.iErrorCode);
+    LOG1(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: HandleEvent %d", aEvent.iEventType.iUid);
+    ELOG1(EJavaMMAPI, "MMA:CMMAVideoUrlPlayer: Live stream: HandleEvent error code: %d", aEvent.iErrorCode);
 
     TInt err = aEvent.iErrorCode;
 
     if ((aEvent.iEventType == KMMFEventCategoryVideoLoadingComplete) &&
             (iPlayer.iState == EPrefetched))
     {
-        LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoLoadingComplete +");
+        LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoLoadingComplete +");
         if (err == KErrNone)
         {
             TTimeIntervalMicroSeconds position(0);
@@ -150,19 +150,19 @@ void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::HandleEvent(const
         }
         if (iActiveSchedulerWait->IsStarted())
         {
-            LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoLoadingComplete ASW Stop");
+            LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoLoadingComplete ASW Stop");
             iActiveSchedulerWait->AsyncStop();
         }
         if (err != KErrNone)
         {
-            LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoLoadingComplete Error Inform Parent");
+            LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoLoadingComplete Error Inform Parent");
             iPlayer.HandleEventToParent(aEvent);
         }
-        LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoLoadingComplete -");
+        LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoLoadingComplete -");
     }
     else if (aEvent.iEventType == KMMFEventCategoryVideoPrepareComplete)
     {
-        LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoPrepareComplete +");
+        LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoPrepareComplete +");
         // going to prefetch state, after Play
         // KMMFEventCategoryVideoLoadingComplete event will be received
 
@@ -183,43 +183,43 @@ void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::HandleEvent(const
 
         if (iActiveSchedulerWait->IsStarted())
         {
-            LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoPrepareComplete ASW Stop");
+            LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoPrepareComplete ASW Stop");
             iActiveSchedulerWait->AsyncStop();
         }
-        LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoPrepareComplete -");
+        LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoPrepareComplete -");
     }
     else if (aEvent.iEventType == KMMFEventCategoryVideoPlayerGeneralError)
     {
-        LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoPlayerGeneralError +");
+        LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoPlayerGeneralError +");
         // For live streams: KMMFEventCategoryVideoPlayerGeneralError means helix is closed
         // side if player is in prefetched state.
         if (iActiveSchedulerWait->IsStarted())
         {
-            LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoPlayerGeneralError ASW Stop");
+            LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoPlayerGeneralError ASW Stop");
             iActiveSchedulerWait->AsyncStop();
         }
 
         // usually error condition -45 (KErrSessionClosed) or -33 (KErrTimedOut)
         if (err != KErrNone)
         {
-            LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoPlayerGeneralError Inform Parent");
+            LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoPlayerGeneralError Inform Parent");
             iPlayer.HandleEventToParent(aEvent);
         }
-        LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoPlayerGeneralError -");
+        LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoPlayerGeneralError -");
     }
     else
     {
-        LOG1( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: + 0x%X", aEvent.iEventType.iUid);
+        LOG1(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: + 0x%X", aEvent.iEventType.iUid);
         // For live streams: KErrSessionClosed is not posted to Java
         // side if player is in prefetched state.
         if ((iPlayer.iState != EPrefetched) ||
                 (aEvent.iErrorCode != KErrSessionClosed))
         {
-            LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: Error Inform Parent");
+            LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: Error Inform Parent");
             // All other events.
             iPlayer.HandleEventToParent(aEvent);
         }
-        LOG1( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: - 0x%X", aEvent.iEventType.iUid);
+        LOG1(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Live stream: - 0x%X", aEvent.iEventType.iUid);
     }
 
 }

@@ -38,8 +38,8 @@ CMMAVideoPlayer* CMMAVideoPlayer::NewLC(
 }
 
 CMMAVideoPlayer::~CMMAVideoPlayer()
-    {
-    LOG(EJavaMMAPI,EInfo, "MMA::CMMAVideoPlayer::~CMMAVideoPlayer" );
+{
+    LOG(EJavaMMAPI,EInfo, "MMA::CMMAVideoPlayer::~CMMAVideoPlayer");
 
     // Window is not able to send any
     // callback requests to UI from now.
@@ -48,15 +48,15 @@ CMMAVideoPlayer::~CMMAVideoPlayer()
         iSurfaceWindow->SetDisplay(NULL);
     }
 
-    if ( iDisplay && iDisplay->HasContainer() )
-       {
-       // Window will delete itself
-       // after all pending events are processed
-       // (lazy delete)
+    if (iDisplay && iDisplay->HasContainer())
+    {
+        // Window will delete itself
+        // after all pending events are processed
+        // (lazy delete)
 //       iDisplay->UIGetCallback(
-  //             *iSurfaceWindow, CMMASurfaceWindow::EDestroyWindow );
-       iDisplay->GetCallbackInUiThread((TInt)CMMASurfaceWindow::EDestroyWindow );        	
-       }
+        //             *iSurfaceWindow, CMMASurfaceWindow::EDestroyWindow );
+        iDisplay->GetCallbackInUiThread((TInt)CMMASurfaceWindow::EDestroyWindow);
+    }
     else
     {
         delete iSurfaceWindow;
@@ -114,23 +114,23 @@ EXPORT_C void CMMAVideoPlayer::SetDisplayL(MMMADisplay* aDisplay)
 {
     // now it is ready to draw
     iDisplay = aDisplay;
-		iDisplay->SetWindowL( iSurfaceWindow );
-    iSurfaceWindow->SetDisplay( aDisplay );
+    iDisplay->SetWindowL(iSurfaceWindow);
+    iSurfaceWindow->SetDisplay(aDisplay);
     iDisplay->SetUIPlayer(this);
 
-    
-/*
-    // if state < prefeteched then we dont know actual source size yet
-    // and it will be set after prefetch
-    if ( iState >= EPrefetched )
-        {
-        SourceSizeChanged();
-        }
-     */ 
-    }
+
+    /*
+        // if state < prefeteched then we dont know actual source size yet
+        // and it will be set after prefetch
+        if ( iState >= EPrefetched )
+            {
+            SourceSizeChanged();
+            }
+         */
+}
 void CMMAVideoPlayer::RealizeL()
 {
-    LOG( EJavaMMAPI, EInfo,  "CMMAVideoPlayer::RealizeL" );
+    LOG(EJavaMMAPI, EInfo,  "CMMAVideoPlayer::RealizeL");
     // DataSource must have at least 1 stream or
     // we must have file to play
     if ((iSourceStreams.Count() == 0) && !iFileName)
@@ -163,7 +163,7 @@ void CMMAVideoPlayer::RealizeL()
 
 void CMMAVideoPlayer::PrefetchL()
 {
-    LOG( EJavaMMAPI, EInfo,  "CMMAVideoPlayer::PrefetchL" );
+    LOG(EJavaMMAPI, EInfo,  "CMMAVideoPlayer::PrefetchL");
     if (iFileName)
     {
         // File has already been prefetched when realizing
@@ -176,7 +176,7 @@ void CMMAVideoPlayer::PrefetchL()
         }
 
         PostActionCompletedFile();
-        ChangeState( EPrefetched );
+        ChangeState(EPrefetched);
     }
     else
     {
@@ -188,7 +188,7 @@ void CMMAVideoPlayer::PrefetchL()
 
 EXPORT_C void CMMAVideoPlayer::ReadCompletedL(TInt aStatus, const TDesC8& aData)
 {
-    LOG1( EJavaMMAPI, EInfo,  "CMMAVideoPlayer::ReadCompletedL: status = %d", aStatus );
+    LOG1(EJavaMMAPI, EInfo,  "CMMAVideoPlayer::ReadCompletedL: status = %d", aStatus);
     if (aStatus < KErrNone)
     {
         PostActionCompleted(aStatus);
@@ -206,8 +206,8 @@ EXPORT_C void CMMAVideoPlayer::ReadCompletedL(TInt aStatus, const TDesC8& aData)
 
 void CMMAVideoPlayer::HandleEvent(const TMMFEvent& aEvent)
 {
-    LOG1( EJavaMMAPI, EInfo,  "MMA:CMMAVideoPlayer::HandleEvent %d", aEvent.iEventType.iUid );
-    
+    LOG1(EJavaMMAPI, EInfo,  "MMA:CMMAVideoPlayer::HandleEvent %d", aEvent.iEventType.iUid);
+
     // event KMMFEventCategoryPlaybackComplete is handled by both Video
     // and Audio players. first it should be handled by Video player
     if (aEvent.iEventType == KMMFEventCategoryPlaybackComplete)
@@ -243,7 +243,7 @@ void CMMAVideoPlayer::HandleEvent(const TMMFEvent& aEvent)
                 TInt error = iVideoPlaySurfaceSupportCustomCommands.SurfaceRemoved(iMMASurface.iPrevSurfaceId);
                 if (KErrNone != error)
                 {
-                 	ELOG1( EJavaMMAPI, "CMMAVideoPlayer::HandleEvent:SurfaceRemoved error, %d", aEvent.iErrorCode);
+                    ELOG1(EJavaMMAPI, "CMMAVideoPlayer::HandleEvent:SurfaceRemoved error, %d", aEvent.iErrorCode);
                 }
             }
             iMMASurface.iPrevSurfaceId = surfaceId;
@@ -253,11 +253,11 @@ void CMMAVideoPlayer::HandleEvent(const TMMFEvent& aEvent)
                                                  cropRect,
                                                  pixelAspectRatio);
 
-						LOG( EJavaMMAPI, EInfo,  "CMMAVideoPlayer::HandleEvent: KMMFEventCategoryVideoSurfaceCreated, surface parameters set" );
+            LOG(EJavaMMAPI, EInfo,  "CMMAVideoPlayer::HandleEvent: KMMFEventCategoryVideoSurfaceCreated, surface parameters set");
         }
         else
         {
-        		ELOG1( EJavaMMAPI,  "CMMAVideoPlayer::HandleEvent: error getting surface parameters, %d", aEvent.iErrorCode );
+            ELOG1(EJavaMMAPI,  "CMMAVideoPlayer::HandleEvent: error getting surface parameters, %d", aEvent.iErrorCode);
         }
     }
     else if (aEvent.iEventType == KMMFEventCategoryVideoSurfaceParametersChanged)
@@ -278,7 +278,7 @@ void CMMAVideoPlayer::HandleEvent(const TMMFEvent& aEvent)
                 TInt error = iVideoPlaySurfaceSupportCustomCommands.SurfaceRemoved(iMMASurface.iPrevSurfaceId);
                 if (KErrNone != error)
                 {
-                   	LOG1( EJavaMMAPI, EInfo, "CMMAVideoPlayer::HandleEvent:SurfaceRemoved error, %d", aEvent.iErrorCode);
+                    LOG1(EJavaMMAPI, EInfo, "CMMAVideoPlayer::HandleEvent:SurfaceRemoved error, %d", aEvent.iErrorCode);
                 }
             }
             iMMASurface.iPrevSurfaceAvailable = ETrue;
@@ -288,31 +288,31 @@ void CMMAVideoPlayer::HandleEvent(const TMMFEvent& aEvent)
                     cropRect,
                     pixelAspectRatio);
 
-						LOG( EJavaMMAPI, EInfo,  "CMMAVideoPlayer::HandleEvent: KMMFEventCategoryVideoSurfaceParametersChanged" );
+            LOG(EJavaMMAPI, EInfo,  "CMMAVideoPlayer::HandleEvent: KMMFEventCategoryVideoSurfaceParametersChanged");
         }
         else
         {
-          	ELOG1( EJavaMMAPI,  "CMMAVideoPlayer::HandleEvent: surface parameters changed error, %d", aEvent.iErrorCode );
+            ELOG1(EJavaMMAPI,  "CMMAVideoPlayer::HandleEvent: surface parameters changed error, %d", aEvent.iErrorCode);
         }
     }
     else if (aEvent.iEventType == KMMFEventCategoryVideoRemoveSurface)
     {
-    	  if (aEvent.iErrorCode == KErrNone)
+        if (aEvent.iErrorCode == KErrNone)
         {
-           if (iMMASurface.iPrevSurfaceAvailable)
-           {
+            if (iMMASurface.iPrevSurfaceAvailable)
+            {
                 // free Surface
                 TInt error = iVideoPlaySurfaceSupportCustomCommands.SurfaceRemoved(iMMASurface.iPrevSurfaceId);
                 if (KErrNone != error)
                 {
-				  ELOG1( EJavaMMAPI,  "CMMAVideoPlayer::HandleEvent:SurfaceRemoved error, %d", aEvent.iErrorCode);
+                    ELOG1(EJavaMMAPI,  "CMMAVideoPlayer::HandleEvent:SurfaceRemoved error, %d", aEvent.iErrorCode);
                 }
                 iMMASurface.iPrevSurfaceAvailable = EFalse;
-           }
+            }
         }
         else
         {
-           ELOG1( EJavaMMAPI, "CMMAVideoPlayer::HandleEvent:KMMFEventCategoryVideoRemoveSurface error, %d", aEvent.iErrorCode);
+            ELOG1(EJavaMMAPI, "CMMAVideoPlayer::HandleEvent:KMMFEventCategoryVideoRemoveSurface error, %d", aEvent.iErrorCode);
         }
     }
     // video opened, preparing
@@ -321,7 +321,7 @@ void CMMAVideoPlayer::HandleEvent(const TMMFEvent& aEvent)
         if (aEvent.iErrorCode == KErrNone)
         {
             TInt error = iVideoPlaySurfaceSupportCustomCommands.UseSurfaces();
-    				ELOG1( EJavaMMAPI,  "MMA::CMMAVideoPlayer::HandleEvent::After UseSurfaces(), error = %d", error );
+            ELOG1(EJavaMMAPI,  "MMA::CMMAVideoPlayer::HandleEvent::After UseSurfaces(), error = %d", error);
             TInt prepareError(iVideoPlayControllerCustomCommands.Prepare());
             if (prepareError != KErrNone)
             {
@@ -345,7 +345,7 @@ void CMMAVideoPlayer::HandleEvent(const TMMFEvent& aEvent)
         PrepareDisplay();
         if (iFileName)
         {
-            LOG( EJavaMMAPI, EInfo,  "CMMAVideoPlayer::HandleEvent: Using filename, change state to REALIZED" );
+            LOG(EJavaMMAPI, EInfo,  "CMMAVideoPlayer::HandleEvent: Using filename, change state to REALIZED");
 
             // If there is an error condition, then the player state is not
             // changed, which indicates the error condition to StartL when
@@ -362,7 +362,7 @@ void CMMAVideoPlayer::HandleEvent(const TMMFEvent& aEvent)
         }
         else
         {
-            LOG( EJavaMMAPI, EInfo,  "CMMAVideoPlayer::HandleEvent: Not using filename, change state to PREFETCHED" );
+            LOG(EJavaMMAPI, EInfo,  "CMMAVideoPlayer::HandleEvent: Not using filename, change state to PREFETCHED");
             CompletePrefetch(aEvent.iErrorCode);
         }
     }
@@ -377,18 +377,18 @@ void CMMAVideoPlayer::HandleEvent(const TMMFEvent& aEvent)
 
 void CMMAVideoPlayer::CompletePrefetch(TInt aError)
 {
-    ELOG1( EJavaMMAPI,  "CMMAVideoPlayer::CompletePrefetch + error = %d",aError);
+    ELOG1(EJavaMMAPI,  "CMMAVideoPlayer::CompletePrefetch + error = %d",aError);
     // Post KNotCompleteVideoError as KErrNone to the Java side, because
     // video can be played.
     if (aError == KNotCompleteVideoError)
     {
-        LOG( EJavaMMAPI, EInfo,  "CMMAVideoPlayer::CompletePrefetch  KNotCompleteVideoError ");
+        LOG(EJavaMMAPI, EInfo,  "CMMAVideoPlayer::CompletePrefetch  KNotCompleteVideoError ");
         // release java
         PostActionCompleted(KErrNone);
     }
     else
     {
-        LOG( EJavaMMAPI, EInfo,  "CMMAVideoPlayer::CompletePrefetch  CompleteVideoError ");
+        LOG(EJavaMMAPI, EInfo,  "CMMAVideoPlayer::CompletePrefetch  CompleteVideoError ");
         // release java
         PostActionCompleted(aError);
     }
@@ -397,12 +397,12 @@ void CMMAVideoPlayer::CompletePrefetch(TInt aError)
     {
         ChangeState(EPrefetched);
     }
-    LOG( EJavaMMAPI, EInfo,  "CMMAVideoPlayer::CompletePrefetch - ");
+    LOG(EJavaMMAPI, EInfo,  "CMMAVideoPlayer::CompletePrefetch - ");
 }
 
 void CMMAVideoPlayer::PrepareDisplay()
 {
-    LOG( EJavaMMAPI, EInfo,  "CMMAVideoPlayer::PrepareDisplay +" );
+    LOG(EJavaMMAPI, EInfo,  "CMMAVideoPlayer::PrepareDisplay +");
     // construction should have leaved if iSurfaceWindow does not exist
     __ASSERT_DEBUG(iSurfaceWindow,
                    User::Panic(_L("CMMVideoPlayer::iSurfaceWindow is null"),
@@ -413,14 +413,14 @@ void CMMAVideoPlayer::PrepareDisplay()
 
     TInt err = iVideoControllerCustomCommands.GetVideoFrameSize(sourceSize);
 
-    ELOG1( EJavaMMAPI,  "MID::CMMAVideoPlayer::PrepareDisplay: GetVideoFrameSize err = %d", err );
+    ELOG1(EJavaMMAPI,  "MID::CMMAVideoPlayer::PrepareDisplay: GetVideoFrameSize err = %d", err);
 
     // Still we did not get the size of video
     if ((err != KErrNone) ||
             (sourceSize.iWidth <= 0) ||
             (sourceSize.iHeight <= 0))
     {
-        LOG( EJavaMMAPI, EInfo,  "MID::CMMAVideoPlayer::PrepareDisplay: No sourcesize found, using SurfaceWindow size" );
+        LOG(EJavaMMAPI, EInfo,  "MID::CMMAVideoPlayer::PrepareDisplay: No sourcesize found, using SurfaceWindow size");
         // setting size to window size (client rect)
         sourceSize = iSurfaceWindow->WindowSize();
     }
@@ -430,7 +430,7 @@ void CMMAVideoPlayer::PrepareDisplay()
     if ((sourceSize.iWidth < KMMAVideoMinDimension) ||
             (sourceSize.iHeight < KMMAVideoMinDimension))
     {
-        LOG( EJavaMMAPI, EInfo,  "MID::CMMAVideoPlayer::PrepareDisplay: Unacceptable source size, using failsafe" );
+        LOG(EJavaMMAPI, EInfo,  "MID::CMMAVideoPlayer::PrepareDisplay: Unacceptable source size, using failsafe");
         // This is a special case and ought to be used only in
         // the rare case that real size is not got from stream.
         sourceSize = TSize(KMMAVideoMinDimension, KMMAVideoMinDimension);
@@ -441,7 +441,7 @@ void CMMAVideoPlayer::PrepareDisplay()
     // If init has been already done
     if (iDisplay)
     {
-        LOG( EJavaMMAPI, EInfo,  "MID::CMMAVideoPlayer::PrepareDisplay: display exists, changing source size" );
+        LOG(EJavaMMAPI, EInfo,  "MID::CMMAVideoPlayer::PrepareDisplay: display exists, changing source size");
         SourceSizeChanged();
     }
 
@@ -449,7 +449,7 @@ void CMMAVideoPlayer::PrepareDisplay()
     // (e.g. prepare). If initDisplayMode is not called, this will always
     // set visibility to false.
     iSurfaceWindow->SetVisible(iSurfaceWindow->IsVisible(), EFalse);
-    LOG( EJavaMMAPI, EInfo,  "CMMAVideoPlayer::PrepareDisplay -" );
+    LOG(EJavaMMAPI, EInfo,  "CMMAVideoPlayer::PrepareDisplay -");
 }
 
 EXPORT_C const TDesC& CMMAVideoPlayer::Type()
@@ -518,7 +518,9 @@ EXPORT_C MMMASnapshot* CMMAVideoPlayer::SnapshoterL()
 
 void CMMAVideoPlayer::SourceSizeChanged()
 {
+    LOG(EJavaMMAPI, EInfo,  "CMMAVideoPlayer::SourceSizeChanged() +");
     iDisplay->SourceSizeChanged(iSourceSize);
+    LOG(EJavaMMAPI, EInfo,  "CMMAVideoPlayer::SourceSizeChanged() -");
     NotifyWithStringEvent(CMMAPlayerEvent::ESizeChanged, KVideoControlName);
 }
 

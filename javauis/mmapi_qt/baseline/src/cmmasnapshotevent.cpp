@@ -45,7 +45,7 @@ CMMASnapshotEvent::~CMMASnapshotEvent()
 
 void CMMASnapshotEvent::Dispatch(JNIEnv& aJni)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMASnapshotEvent::Dispatch");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMASnapshotEvent::Dispatch");
 
     // create java byte array
     jbyteArray byteArray;
@@ -71,7 +71,7 @@ void CMMASnapshotEvent::Dispatch(JNIEnv& aJni)
         delete iImageBuffer;
         iImageBuffer = NULL; // otherwise double delete in destructor
 
-        LOG( EJavaMMAPI, EInfo, "MMA::CMMASnapshotEvent::Dispatch - Failed to create ByteArray");
+        LOG(EJavaMMAPI, EInfo, "MMA::CMMASnapshotEvent::Dispatch - Failed to create ByteArray");
         return;
     }
 

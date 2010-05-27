@@ -63,7 +63,7 @@ known_exts = [
     "findtr", "syncqt", "new",
 # Other peculiar filenames:
     "installerodclist", "installerodclist30", "midpodclist", "midpodclist30",
-    "notice", "package-list", "tckrunnerodclist", "tckrunnerodclist30", "unknowncert",
+    "notice", "package-list", "tckrunnerodclist", "tckrunnerodclist30", "unknowncert","midprootslist",
 ]
 
 # Command line options.

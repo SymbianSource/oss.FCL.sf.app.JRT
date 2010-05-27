@@ -47,7 +47,7 @@ CMMAAudioRecordControl::CMMAAudioRecordControl(CMMAAudioRecorder* aRecorder):
         CMMARecordControl(aRecorder)
 {
     iRecorder = aRecorder;
-    LOG( EJavaMMAPI, EInfo, "CMMAAudioRecordControl()");
+    LOG(EJavaMMAPI, EInfo, "CMMAAudioRecordControl()");
 }
 
 void CMMAAudioRecordControl::DoStartRecordL()
@@ -77,8 +77,8 @@ TInt CMMAAudioRecordControl::SetRecordSizeLimitL(TInt aSize)
 
 void CMMAAudioRecordControl::HandleEvent(const TMMFEvent& aEvent)
 {
-    ELOG2( EJavaMMAPI, "MMA:CMMAAudioRecordControl::HandleEvent(type=%x,err=%d)",
-               aEvent.iEventType.iUid, aEvent.iErrorCode);
+    ELOG2(EJavaMMAPI, "MMA:CMMAAudioRecordControl::HandleEvent(type=%x,err=%d)",
+          aEvent.iEventType.iUid, aEvent.iErrorCode);
     if (iState == ERecordRecording)
     {
         // Event's error code is KErrEof or KErrNone when record size limit

@@ -60,4 +60,12 @@
         supports.mediacapabilities=music audio3d
     </properties>
   </target>
+  
+  <target name="create.public.api.jar">
+    <omj.public.apis includes="javax/microedition/amms/**/*.class"/>
+    <omj.public.apis includes="com/nokia/mid/media/**/*.class"/>
+  </target>
+  
+ 
+  
 </project>

@@ -69,14 +69,9 @@ public class ErrorDetailsView extends ConfirmationViewBase
     protected void createView()
     {
         // Add title.
-        //String title = InstallerUiTexts.get(InstallerUiTexts.INSTALL_FAILED);
-        String title = "Installation failed";
+        String title = InstallerUiTexts.get(InstallerUiTexts.INSTALL_FAILED);
         if (iInstallerUi.getInstallInfo() != null)
         {
-            if (iInstallerUi.getInstallInfo().getOldVersion() != null)
-            {
-                title = "Update failed";
-            }
             Label titleLabel = createLabel(title, getColumns() - 1, SWT.WRAP);
             titleLabel.setFont(iInstallerUi.getBoldFont());
             // Add security icon.

@@ -40,17 +40,17 @@ CMMAVideoFramePositioningControl::
 CMMAVideoFramePositioningControl(CMMAVideoPlayer* aPlayer)
         : CMMAFramePositioningControl(aPlayer), iPlayer(aPlayer)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoFramePositioningControl::CMMAVideoFramePositioningControl");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoFramePositioningControl::CMMAVideoFramePositioningControl");
 }
 
 CMMAVideoFramePositioningControl::~CMMAVideoFramePositioningControl()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoFramePositioningControl::~CMMAVideoFramePositioningControl");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoFramePositioningControl::~CMMAVideoFramePositioningControl");
 }
 
 TInt CMMAVideoFramePositioningControl::SeekL(TInt aFrameNumber)
 {
-    LOG1( EJavaMMAPI, EInfo, "CMMAVideoFramePositioningControl::SeekL, aFrameNumber: %d", aFrameNumber);
+    LOG1(EJavaMMAPI, EInfo, "CMMAVideoFramePositioningControl::SeekL, aFrameNumber: %d", aFrameNumber);
 
     RMMFController& controller = iPlayer->Controller();
 
@@ -124,7 +124,7 @@ TInt CMMAVideoFramePositioningControl::SeekL(TInt aFrameNumber)
 
 TInt CMMAVideoFramePositioningControl::SkipL(TInt aFramesToSkip)
 {
-    LOG1( EJavaMMAPI, EInfo, "CMMAVideoFramePositioningControl::SkipL, aFramesToSkip: %d", aFramesToSkip);
+    LOG1(EJavaMMAPI, EInfo, "CMMAVideoFramePositioningControl::SkipL, aFramesToSkip: %d", aFramesToSkip);
 
     RMMFController& controller = iPlayer->Controller();
 
@@ -199,7 +199,7 @@ TInt CMMAVideoFramePositioningControl::SkipL(TInt aFramesToSkip)
 
 void CMMAVideoFramePositioningControl::MapFrameToTimeL(TInt aFrameNumber, TInt64* aMediaTime)
 {
-    LOG1( EJavaMMAPI, EInfo, "CMMAVideoFramePositioningControl::MapFrameToTimeL, aFrameNumber: %d", aFrameNumber);
+    LOG1(EJavaMMAPI, EInfo, "CMMAVideoFramePositioningControl::MapFrameToTimeL, aFrameNumber: %d", aFrameNumber);
     // Find out framerate of video
     TReal32 frameRate = 0;
     GetAndCheckFrameRateL(frameRate);
@@ -237,7 +237,7 @@ void CMMAVideoFramePositioningControl::MapFrameToTimeL(TInt aFrameNumber, TInt64
 
 TInt CMMAVideoFramePositioningControl::MapTimeToFrameL(TInt64* aMediaTime)
 {
-    LOG1( EJavaMMAPI, EInfo, "CMMAVideoFramePositioningControl::MapTimeToFrameL, aMediaTime: %d", *aMediaTime);
+    LOG1(EJavaMMAPI, EInfo, "CMMAVideoFramePositioningControl::MapTimeToFrameL, aMediaTime: %d", *aMediaTime);
     TInt64 mediaTime = *aMediaTime;
 
     // If given media time is < 0 or > duration, cannot map time to frame
@@ -265,18 +265,18 @@ TInt CMMAVideoFramePositioningControl::MapTimeToFrameL(TInt64* aMediaTime)
 void CMMAVideoFramePositioningControl::GetAndCheckFrameRateL(
     TReal32& aFrameRate)
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAVideoFramePositioningControl::GetAndCheckFrameRateL");
+    LOG(EJavaMMAPI, EInfo, "CMMAVideoFramePositioningControl::GetAndCheckFrameRateL");
     RMMFVideoControllerCustomCommands customCommands =
         RMMFVideoControllerCustomCommands(iPlayer->Controller());
 
     User::LeaveIfError(customCommands.GetFrameRate(aFrameRate));
-    LOG1( EJavaMMAPI, EInfo, "CMMAVideoFramePositioningControl::GetAndCheckFrameRateL, aFrameRate: %d", aFrameRate);
+    LOG1(EJavaMMAPI, EInfo, "CMMAVideoFramePositioningControl::GetAndCheckFrameRateL, aFrameRate: %d", aFrameRate);
     if (aFrameRate <= 0)
     {
         // zero framerate is not accepted because cannot
         // divide by zero. Negative framerate is not
         // acceptable aswell.
-        LOG( EJavaMMAPI, EInfo, "CMMAVideoFramePositioningControl::GetAndCheckFrameRateL: invalid framerate");
+        LOG(EJavaMMAPI, EInfo, "CMMAVideoFramePositioningControl::GetAndCheckFrameRateL: invalid framerate");
         User::Leave(KErrNotFound);
     }
 }

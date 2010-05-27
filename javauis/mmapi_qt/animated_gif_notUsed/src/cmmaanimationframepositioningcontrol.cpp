@@ -35,17 +35,17 @@ CMMAAnimationFramePositioningControl::
 CMMAAnimationFramePositioningControl(CMMAAnimationPlayer* aPlayer)
         : CMMAFramePositioningControl(aPlayer), iPlayer(aPlayer)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAAnimationFramePositioningControl::CMMAAnimationFramePositioningControl");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAAnimationFramePositioningControl::CMMAAnimationFramePositioningControl");
 }
 
 CMMAAnimationFramePositioningControl::~CMMAAnimationFramePositioningControl()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAAnimationFramePositioningControl::~CMMAAnimationFramePositioningControl");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAAnimationFramePositioningControl::~CMMAAnimationFramePositioningControl");
 }
 
 TInt CMMAAnimationFramePositioningControl::SeekL(TInt aFrameNumber)
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAAnimationFramePositioningControl::SeekL");
+    LOG(EJavaMMAPI, EInfo, "CMMAAnimationFramePositioningControl::SeekL");
     MIHLImageViewer* viewer = iPlayer->Viewer();
     if (!viewer)
     {
@@ -62,7 +62,7 @@ TInt CMMAAnimationFramePositioningControl::SeekL(TInt aFrameNumber)
 
 TInt CMMAAnimationFramePositioningControl::SkipL(TInt aFramesToSkip)
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAAnimationFramePositioningControl::SkipL");
+    LOG(EJavaMMAPI, EInfo, "CMMAAnimationFramePositioningControl::SkipL");
     MIHLImageViewer* viewer = iPlayer->Viewer();
     if (!viewer)
     {
@@ -81,7 +81,7 @@ void CMMAAnimationFramePositioningControl::MapFrameToTimeL(
     TInt aFrameNumber,
     TInt64* aMediaTime)
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAAnimationFramePositioningControl::MapFrameToTimeL");
+    LOG(EJavaMMAPI, EInfo, "CMMAAnimationFramePositioningControl::MapFrameToTimeL");
     MIHLImageViewer* viewer = iPlayer->Viewer();
     if (!viewer || (aFrameNumber < 0) ||
             (aFrameNumber >= viewer->AnimationFrameCount()))
@@ -96,7 +96,7 @@ void CMMAAnimationFramePositioningControl::MapFrameToTimeL(
 TInt CMMAAnimationFramePositioningControl::MapTimeToFrameL(
     TInt64* aMediaTime)
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAAnimationFramePositioningControl::MapTimeToFrameL");
+    LOG(EJavaMMAPI, EInfo, "CMMAAnimationFramePositioningControl::MapTimeToFrameL");
     MIHLImageViewer* viewer = iPlayer->Viewer();
     TInt64 duration;
     iPlayer->GetDuration(&duration);

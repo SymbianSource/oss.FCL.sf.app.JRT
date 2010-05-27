@@ -60,7 +60,7 @@ public: // From CJavaEventSource, construction
      * Method is defined in the base class.
      */
     void ConstructL(JNIEnv& aJni,
-                    jobject aPeer
+                    jobject /*aPeer*/
                     );
 
     /**

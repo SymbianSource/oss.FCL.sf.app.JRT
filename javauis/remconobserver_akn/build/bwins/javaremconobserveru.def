@@ -1,7 +1,0 @@
-EXPORTS
-	?NewL@CJavaRemConManager@@SAPAV1@XZ @ 1 NONAME ; class CJavaRemConManager * CJavaRemConManager::NewL(void)
-	?NewL@CJavaRemConObserver@@SAPAV1@AAVMRemConCoreApiTargetObserver@@@Z @ 2 NONAME ; class CJavaRemConObserver * CJavaRemConObserver::NewL(class MRemConCoreApiTargetObserver &)
-	?NewLC@CJavaRemConManager@@SAPAV1@XZ @ 3 NONAME ; class CJavaRemConManager * CJavaRemConManager::NewLC(void)
-	?RemoveObserver@CJavaRemConManager@@QAEXAAVCJavaRemConObserver@@@Z @ 4 NONAME ; void CJavaRemConManager::RemoveObserver(class CJavaRemConObserver &)
-	?SetObserverL@CJavaRemConManager@@QAEXAAVCJavaRemConObserver@@@Z @ 5 NONAME ; void CJavaRemConManager::SetObserverL(class CJavaRemConObserver &)
-

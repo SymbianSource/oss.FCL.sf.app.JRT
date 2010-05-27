@@ -17,6 +17,7 @@
 
 package com.nokia.microedition.media;
 
+import com.nokia.mj.impl.utils.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Vector;
@@ -68,27 +69,28 @@ public class ManagerImpl implements PlugIn
     {
         return new Finalizer()
         {
-        public void finalizeImpl()
-        {
-            doFinalize();
-        }
-    };
+            public void finalizeImpl()
+            {
+                doFinalize();
+            }
+        };
     }
 
     // Play tone implementation
     private PlayToneImpl iPlayToneImpl = new PlayToneImpl();
 
     static
-        {
+    {
 
-			try{
-				com.nokia.mj.impl.rt.support.Jvm.loadSystemLibrary("javalegacyutils");
-			}
-			catch(Exception e)
-			{
-				System.out.println("loading javalegacyutils failed.....");
-			}
-		System.out.println("inside static block of ManagerImpl.java");
+        try
+        {
+            com.nokia.mj.impl.rt.support.Jvm.loadSystemLibrary("javalegacyutils");
+        }
+        catch (Exception e)
+        {
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"loading javalegacyutils failed.....");
+        }
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside static block of ManagerImpl.java");
         // This is called when class is loaded for the first time
         sManager = new ManagerImpl();
         try
@@ -133,9 +135,9 @@ public class ManagerImpl implements PlugIn
             throw new OutOfMemoryError();
         }
         //Use ShutdownListener to get notification of exit and release the resource
-		//MMAPI UI 3.x work
+        //MMAPI UI 3.x work
 
-		 setShutdownListener();
+        setShutdownListener();
 
         // ManagerImpl is also a PlugIn that getAllSupportedContentTypes,
         // getAllSupportedProtocols and createPlayer methods can be used
@@ -148,8 +150,8 @@ public class ManagerImpl implements PlugIn
 
         // Create foreground listener which listens the state of the midlet
         // This feature is a part of the media keys feature so it is flagged
-         System.out.println("before constructing ForegroundListener....");
-         iForegroundListener = new ForegroundListener(iFunctionSourceHandle);
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"before constructing ForegroundListener....");
+        iForegroundListener = new ForegroundListener(iFunctionSourceHandle);
         iForegroundListener.init();
     }
 
@@ -193,8 +195,8 @@ public class ManagerImpl implements PlugIn
      */
     synchronized final void doFinalize()
     {
-	_dispose(iFunctionSourceHandle);
-	iFunctionSourceHandle = 0;
+        _dispose(iFunctionSourceHandle);
+        iFunctionSourceHandle = 0;
     }
 
     /**
@@ -606,50 +608,50 @@ public class ManagerImpl implements PlugIn
 
 
 
-/**
- * Registers for shutdown listener
- */
-	    private void setShutdownListener()
-	    {
-	         // Get the instance of ApplicationUtils.
-	        ApplicationUtils appUtils = ApplicationUtils.getInstance();
+    /**
+     * Registers for shutdown listener
+     */
+    private void setShutdownListener()
+    {
+        // Get the instance of ApplicationUtils.
+        ApplicationUtils appUtils = ApplicationUtils.getInstance();
 
-	        // add the listener
-	        appUtils.addShutdownListener(new ShutdownListener()
-	        {
-	            public void shuttingDown()
-	            {
-	               try
-	                {
-						System.out.println("Shutting down..........");
-	                    // Do cleaning...
-	                    release();
-	                }
-	                catch (Exception ex)
-	                {
-	                    // catch the exception and call dispose
-	                }
+        // add the listener
+        appUtils.addShutdownListener(new ShutdownListener()
+        {
+            public void shuttingDown()
+            {
+                try
+                {
+                    System.out.println("Shutting down..........");
+                    // Do cleaning...
+                    release();
+                }
+                catch (Exception ex)
+                {
+                    // catch the exception and call dispose
+                }
 
-	                if (iFunctionSourceHandle != 0)
-	                {
-	                   _dispose(iFunctionSourceHandle);
-       				  iFunctionSourceHandle = 0;
-	                }
-	            }
+                if (iFunctionSourceHandle != 0)
+                {
+                    _dispose(iFunctionSourceHandle);
+                    iFunctionSourceHandle = 0;
+                }
+            }
 
-	        });
-	    } // end setShutdownListener()
+        });
+    } // end setShutdownListener()
 
 
 // MMAPI UI 3.x req
-/**
- * get midlet state
- */
+    /**
+     * get midlet state
+     */
 
-	public boolean isForground()
-	{
-		return iForegroundListener.isForeground();
-	}
+    public boolean isForground()
+    {
+        return iForegroundListener.isForeground();
+    }
 
 
     private native int _createManager(int aEventSourceHandle,

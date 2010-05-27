@@ -16,7 +16,7 @@
 TEMPLATE = lib
 TARGET = javaapplicationsettingsview
 CONFIG += qt hb stl plugin
-LIBS += -ljavastorage
+LIBS += -ljavastorage -lcmapplsettingsui -ljavaconnectionmanager -lqtbearer -ljavautils
 TRANSLATIONS = javaruntimeapplicationsettings.ts          
 
 INCLUDEPATH += ../inc ../../../../inc

@@ -77,7 +77,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_volumekeys_ForegroundListener
  jint aToolkitHandle*/)   // for xm-radio fix
 {
     MMAFunctionServer* eventSource =
-    	reinterpret_cast< MMAFunctionServer *>(aEventSourceHandle);
+        reinterpret_cast< MMAFunctionServer *>(aEventSourceHandle);
 
     jobject fgListenerObject = NULL;
     fgListenerObject = aJni->NewWeakGlobalRef(aForegroundListener);
@@ -94,7 +94,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_volumekeys_ForegroundListener
     // xm-radio fix
     /*
     CMIDToolkit* ptoolkit = JavaUnhand< CMIDToolkit >(aToolkitHandle);
-*/
+    */
     jint error = eventSource->ExecuteTrap(CreateForegroundL,
                                           &foregroundHandle,
                                           eventSource,

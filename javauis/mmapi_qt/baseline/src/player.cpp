@@ -110,7 +110,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_PlayerImpl__1initPlayer
  jint aEventSourceHandle,
  jint aPlayerHandle)
 {
-	LOG(EJavaMMAPI,EInfo,"jni_PlayerImpl__1initPlayer Enter...   1");
+    LOG(EJavaMMAPI,EInfo,"jni_PlayerImpl__1initPlayer Enter...   1");
     MMAFunctionServer* eventSource =
         reinterpret_cast< MMAFunctionServer *>(aEventSourceHandle);
 
@@ -120,7 +120,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_PlayerImpl__1initPlayer
 
     // init player
     jobject playerObject = aJni->NewWeakGlobalRef(aObject);
-LOG(EJavaMMAPI,EInfo,"jni_PlayerImpl__1initPlayer Enter...   5");    
+    LOG(EJavaMMAPI,EInfo,"jni_PlayerImpl__1initPlayer Enter...   5");
     TInt err = eventSource->ExecuteTrap(&CMMAPlayer::StaticInitPlayerL,
                                         player,
                                         eventSource,
@@ -155,15 +155,15 @@ LOG(EJavaMMAPI,EInfo,"jni_PlayerImpl__1initPlayer Enter...   5");
 JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_PlayerImpl__1start
 (JNIEnv *, jclass, jint aEventSource, jint aPlayer)
 {
-	LOG( EJavaMMAPI, EInfo, "jni_PlayerImpl__1start...");
+    LOG(EJavaMMAPI, EInfo, "jni_PlayerImpl__1start...");
     MMAFunctionServer* eventSource =
         reinterpret_cast< MMAFunctionServer* >(aEventSource);
-	CHECK_HANDLE(eventSource, KErrNone);
+    CHECK_HANDLE(eventSource, KErrNone);
     TInt err = eventSource->ExecuteTrap(&VVoidFuncL,
                                         aPlayer,
                                         eventSource,
                                         &CMMAPlayer::StartL);
-       LOG1(EJavaMMAPI,EInfo,"jni_PlayerImpl__1start Enter... 3, err = %d",err);
+    LOG1(EJavaMMAPI,EInfo,"jni_PlayerImpl__1start Enter... 3, err = %d",err);
     // complete java side request in case of leave.
     if (err != KErrNone)
     {
@@ -210,12 +210,12 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_PlayerImpl__1close
 
     CHECK_HANDLE(eventSource, KErrNone);
 
-	LOG( EJavaMMAPI, EInfo, "jni_Player.cpp__1close before &CMMAPlayer::CloseL");
+    LOG(EJavaMMAPI, EInfo, "jni_Player.cpp__1close before &CMMAPlayer::CloseL");
     TInt err = eventSource->ExecuteTrap(&VVoidFuncL,
                                         aPlayer,
                                         eventSource,
                                         &CMMAPlayer::CloseL);
-    ELOG1( EJavaMMAPI, "jni_Player.cpp__1close %d", err);
+    ELOG1(EJavaMMAPI, "jni_Player.cpp__1close %d", err);
     return err;
 }
 
@@ -226,7 +226,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_PlayerImpl__1close
 JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_PlayerImpl__1prefetch
 (JNIEnv *, jclass, jint aEventSource, jint aPlayer)
 {
-    ELOG( EJavaMMAPI, "jni_Player.cpp__1prefetch ");
+    ELOG(EJavaMMAPI, "jni_Player.cpp__1prefetch ");
     MMAFunctionServer* eventSource =
         //JavaUnhand< MMAFunctionServer >(aEventSource);
         reinterpret_cast< MMAFunctionServer* >(aEventSource);
@@ -236,9 +236,9 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_PlayerImpl__1prefetch
     TInt err = eventSource->ExecuteTrap(&VVoidFuncL, aPlayer,
                                         eventSource,
                                         &CMMAPlayer::PrefetchL);
-                                            
-  ELOG1( EJavaMMAPI, "jni_Player.cpp__1prefetch %d", err);
-                                              
+
+    ELOG1(EJavaMMAPI, "jni_Player.cpp__1prefetch %d", err);
+
     return err;
 }
 
@@ -332,8 +332,8 @@ JNIEXPORT jlong JNICALL Java_com_nokia_microedition_media_PlayerImpl__1setMediaT
 
     if (err != KErrNone)
     {
-        ELOG1( EJavaMMAPI, "MMA::Java_com_nokia_microedition_media_PlayerImpl__1setMediaTime error %d ",
-                  err);
+        ELOG1(EJavaMMAPI, "MMA::Java_com_nokia_microedition_media_PlayerImpl__1setMediaTime error %d ",
+              err);
         return err;
     }
     return *reinterpret_cast< jlong* >(&time);
@@ -397,17 +397,17 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_PlayerImpl__1getState
 
     CHECK_HANDLE(eventSource, KErrNone);
 
-LOG(EJavaMMAPI,EInfo,"MMA::Java_com_nokia_microedition_media_PlayerImpl__1getState before finding player ");
+    LOG(EJavaMMAPI,EInfo,"MMA::Java_com_nokia_microedition_media_PlayerImpl__1getState before finding player ");
     CMMAPlayer* player = eventSource->FindPlayer(aPlayer);
-LOG(EJavaMMAPI,EInfo,"MMA::Java_com_nokia_microedition_media_PlayerImpl__1getState after finding player ");
+    LOG(EJavaMMAPI,EInfo,"MMA::Java_com_nokia_microedition_media_PlayerImpl__1getState after finding player ");
     TInt state = CMMAPlayer::EClosed;
     if (player != NULL)
     {
         state = player->State();
     }
 
-LOG1(EJavaMMAPI,EInfo,"MMA::Java_com_nokia_microedition_media_PlayerImpl__1getState state %d ",
-                  state);
+    LOG1(EJavaMMAPI,EInfo,"MMA::Java_com_nokia_microedition_media_PlayerImpl__1getState state %d ",
+         state);
     return state;
 }
 
@@ -418,7 +418,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_PlayerImpl__1addSourceS
 (JNIEnv* aJni, jclass, jint aEventSource, jint aPlayer, jobject aReader)
 {
     MMAFunctionServer* eventSource =
-       reinterpret_cast< MMAFunctionServer *>(aEventSource);
+        reinterpret_cast< MMAFunctionServer *>(aEventSource);
 
     CHECK_HANDLE(eventSource, KErrNone);
 
@@ -450,7 +450,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_PlayerImpl__1getControl
 (JNIEnv*, jclass, jint aEventSourceHandle, jint aPlayer)
 {
     MMAFunctionServer* eventSource =
-       reinterpret_cast< MMAFunctionServer* >(aEventSourceHandle);
+        reinterpret_cast< MMAFunctionServer* >(aEventSourceHandle);
 
     CHECK_HANDLE(eventSource, KErrNone);
 

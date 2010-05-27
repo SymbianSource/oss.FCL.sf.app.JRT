@@ -267,8 +267,7 @@ protected: // Constructors
      *
      * @param aEntryType Entry type for change callbacks (ToDo/Event/all).
      */
-    void ConstructL(MCalChangeCallBack::TChangeEntryType aEntryType,
-        CCalSession* aCalSession);
+    void ConstructL(MCalChangeCallBack::TChangeEntryType aEntryType);
 
     void DoClose();
 

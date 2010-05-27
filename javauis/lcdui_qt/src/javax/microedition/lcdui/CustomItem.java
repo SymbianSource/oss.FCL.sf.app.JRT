@@ -22,6 +22,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.extension.CanvasExtension;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Scrollable;
 
 /**
  * Implementation of LCDUI abstract <code>CustomItem</code> class.
@@ -59,9 +60,19 @@ public abstract class CustomItem extends Item
     private Object cleanupLock;
     private Object resizeLock;
 
-    boolean bufferFlush;
+    // Flag for passing info between UI thread
+    // and Dispatcher thread
+    private boolean widgetDisposed;
+
+    private com.nokia.mj.impl.rt.support.Finalizer finalizer;
+
+    // Graphics command buffer for this instance
+    CustomItemBuffer graphicsBuffer;
+    Graphics CustomItemGraphics;
 
     CustomItemLayouter layouter;
+
+
 
     /**
      * Constructor.
@@ -70,6 +81,21 @@ public abstract class CustomItem extends Item
      */
     protected CustomItem(String label)
     {
+        finalizer = ((finalizer != null) ? finalizer
+                     : new com.nokia.mj.impl.rt.support.Finalizer()
+        {
+            public void finalizeImpl()
+            {
+                if(finalizer != null)
+                {
+                    finalizer = null;
+                    if(!ESWTUIThreadRunner.isDisposed())
+                    {
+                        dispose();
+                    }
+                }
+            }
+        });
         repaintLock = new Object();
         cleanupLock = new Object();
         resizeLock = new Object();
@@ -417,9 +443,10 @@ public abstract class CustomItem extends Item
     }
 
     /*
-     * Dispatcher thread thread calls. Operations changing Form content are
-     * blocked for the duration of the method call. It has been checked that
-     * the eSWT widget has not been disposed and that the CustomItem has not
+     * Dispatcher thread thread calls. Operations changing Form content through
+     * public API are blocked for the duration of the method call, however form
+     * internal layout may modify items or even delete some. It has been checked
+     * that the eSWT widget has not been disposed and that the CustomItem has not
      * been removed from the Form.
      */
     void doCallback(final LCDUIEvent event)
@@ -475,6 +502,7 @@ public abstract class CustomItem extends Item
         // Before this thread obtains the repaintLock any repaint() calls
         // will still be adding to the invalid area that is going to be
         // painted by this callback.
+
         synchronized(repaintLock)
         {
             if(event.type == LCDUIEvent.CUSTOMITEM_PAINT_NATIVE_REQUEST)
@@ -506,10 +534,38 @@ public abstract class CustomItem extends Item
             }
         }
 
-        // Prepare the GC's buffer if not done yet
-        if(layouter.graphics.getCommandBuffer() == null)
+        // Instantiate GraphicsBuffer and Graphics if needed
+        // or just update the bounds
+        widgetDisposed = false;
+        final CustomItem self = this;
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
         {
-            layouter.graphics.initBuffered(this, event.x, event.y, event.width, event.height);
+            public void run()
+            {
+                // Checking the widget state here ensures that
+                // it is not disposed during this method execution
+                // as we are in UI thread
+                if(event.widget.isDisposed())
+                {
+                    widgetDisposed = true;
+                    return;
+                }
+                if(CustomItemGraphics == null)
+                {
+                    graphicsBuffer = new CustomItemBuffer(self, (Control)event.widget);
+                    CustomItemGraphics = graphicsBuffer.getGraphics();
+                }
+                else
+                {
+                    graphicsBuffer.setControlBounds((Control)event.widget);
+                }
+            }
+        });
+
+        // Quit if widget was already disposed
+        if(widgetDisposed)
+        {
+            return;
         }
 
         // Clean the background if dirty, buffer the operations.
@@ -526,17 +582,17 @@ public abstract class CustomItem extends Item
                     contentHeight = this.contentHeight;
                 }
 
-                layouter.graphics.setClip(0, 0, contentWidth, contentHeight);
-                layouter.graphics.cleanBackground(new Rectangle(0, 0, contentWidth, contentHeight));
+                CustomItemGraphics.setClip(0, 0, contentWidth, contentHeight);
+                CustomItemGraphics.cleanBackground(new Rectangle(0, 0, contentWidth, contentHeight));
                 cleanupNeeded = false;
             }
         }
 
         // Clip must define the invalid area
-        layouter.graphics.setClip(redrawNowX, redrawNowY, redrawNowW, redrawNowH);
+        CustomItemGraphics.setClip(redrawNowX, redrawNowY, redrawNowW, redrawNowH);
 
         // The callback
-        paint(layouter.graphics, contentWidth, contentHeight);
+        paint(CustomItemGraphics, contentWidth, contentHeight);
 
         // Wait until the UI thread is available. Then in the UI thread
         // synchronously send a paint event.
@@ -548,11 +604,49 @@ public abstract class CustomItem extends Item
                 {
                     return;
                 }
-                bufferFlush = true;
-                ((CanvasExtension) event.widget)
-                .redrawNow(redrawNowX, redrawNowY, redrawNowW, redrawNowH);
-                layouter.graphics.resetCommandBuffer();
-                bufferFlush = false;
+                // Transform invalid area to Display coordinates
+                // as the CustomItem is rendered directly to the
+                // window surface
+                Point topleft = ((Control)event.widget).toDisplay(redrawNowX, redrawNowY);
+
+                synchronized(graphicsBuffer)
+                {
+                    flushGraphicsBuffer(topleft.x, topleft.y, redrawNowW, redrawNowH);
+                }
+            }
+        });
+    }
+
+    private void flushGraphicsBuffer(final int redrawNowX, final int redrawNowY, final int redrawNowW, final int redrawNowH)
+    {
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        {
+            public void run()
+            {
+                graphicsBuffer.setupWindowSurface();
+                Rectangle rect = graphicsBuffer.toWindowCoordinates(redrawNowX, redrawNowY, redrawNowW, redrawNowH);
+                graphicsBuffer.windowSurface.beginPaint(rect.x, rect.y, rect.width, rect.height);
+                graphicsBuffer.sync();
+                graphicsBuffer.windowSurface.endPaint();
+                graphicsBuffer.windowSurface.flush();
+            }
+        });
+    }
+
+    /**
+     * Disposes this instance
+     */
+    private void dispose()
+    {
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        {
+            public void run()
+            {
+                if(graphicsBuffer != null)
+                {
+                    graphicsBuffer.dispose();
+                    graphicsBuffer = null;
+                }
             }
         });
     }

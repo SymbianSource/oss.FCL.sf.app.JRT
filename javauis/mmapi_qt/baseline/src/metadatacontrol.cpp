@@ -24,7 +24,7 @@
 #include "s60commonutils.h"
 #include "jstringutils.h"
 using namespace java::util;
-    
+
 //#include "mmapiutils.h"
 
 

@@ -1,0 +1,67 @@
+<!--
+#
+# Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<project name="ControlTestMidletSuite" default="pack">
+
+    <!-- Get general settings for MIDlet projects. -->
+    <import file="../../properties.xml"/>
+
+    <!-- Set properties for this project. -->
+    <property name="midlet1.name" value="ControlTestMIDlet_01"/>
+    <property name="midlet1.icon.name" value="icon.png"/>
+    <property name="midlet1.package.name" value="com.nokia.test.java.eswt.control.ControlTestMIDlet_01"/>
+    <property name="midlet2.name" value="ControlTestMIDlet_02"/>
+    <property name="midlet2.icon.name" value="icon.png"/>
+    <property name="midlet2.package.name" value="com.nokia.test.java.eswt.control.ControlTestMIDlet_02"/>
+    <property name="midlet.permissions" value=""/>
+    <property name="package.name" value="ControlTestMidletSuite"/>
+    <property name="company.name" value="Nokia"/>
+    <property name="midlet.version" value="1.1"/>
+    <property name="midlet.description" value=""/>
+
+    <!-- Package Preverifed classes, resources and MANIFEST file -->
+    <target name="pack" depends="preverify">
+        <wtkjad jadfile="${bin}/${package.name}.jad"
+            jarfile="${bin}/${package.name}.jar"
+            update="true"
+            config="1.1"
+            profile="2.1"
+            manifest="${bin}/MANIFEST.MF"
+            name="${package.name}"
+            vendor="${company.name}">
+            <attribute name="MIDlet-Permissions" value="${midlet.permissions}"/>
+            <attribute name="MicroEdition-Profile" value="MIDP-2.1"/>
+            <attribute name="MicroEdition-Configuration" value="CLDC-1.1"/>
+            <attribute name="MIDlet-Version" value="${midlet.version}"/>
+            <attribute name="MIDlet-Description" value="${midlet.description}"/>
+            <midlet name="${midlet1.name}" icon="${midlet1.icon.name}" class="${midlet1.package.name}" />
+            <midlet name="${midlet2.name}" icon="${midlet2.icon.name}" class="${midlet2.package.name}" />
+        </wtkjad>
+
+        <wtkpackage
+            jarfile="${bin}/${package.name}.jar"
+            jadfile="${bin}/${package.name}.jad"
+            classpath="${project.class.path}"
+            basedir="${prever}"
+            autoversion="false">
+            <fileset dir="${res}"
+                excludes="**/distribution.policy.s60" />
+        </wtkpackage>
+    </target>
+
+</project>

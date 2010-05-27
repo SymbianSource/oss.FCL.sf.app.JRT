@@ -32,7 +32,7 @@ CMMAStreamHandler* CMMAStreamHandler::NewL(
     CMultimediaFactory& aFactory,
     CMetaDataUtility& aMetaDataUtility)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::NewL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::NewL +");
     CMMAStreamHandler* self = new(ELeave) CMMAStreamHandler(aListener,
             aMStreamControl,
             aMDataBufferSource,
@@ -41,13 +41,13 @@ CMMAStreamHandler* CMMAStreamHandler::NewL(
     CleanupStack::PushL(self);
     self->ConstructL();
     CleanupStack::Pop(self);
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::NewL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::NewL -");
     return self;
 }
 
 CMMAStreamHandler::~CMMAStreamHandler()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::~CMMAStreamHandler() +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::~CMMAStreamHandler() +");
     iMDataBufferSource.RemoveObserver(*this);
     if (iBuffer != NULL)
     {
@@ -55,7 +55,7 @@ CMMAStreamHandler::~CMMAStreamHandler()
         iBuffer = NULL;
     }
     iRequests.ResetAndDestroy();
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::~CMMAStreamHandler() -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::~CMMAStreamHandler() -");
 }
 
 CMMAStreamHandler::CMMAStreamHandler(MMMAStreamHandlerListener& aListener,
@@ -78,7 +78,7 @@ CMMAStreamHandler::CMMAStreamHandler(MMMAStreamHandlerListener& aListener,
 
 void CMMAStreamHandler::ConstructL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::ConstructL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::ConstructL +");
     //Register source control to control observer to get the event
     iMDataBufferSource.AddObserver(*this);
     iLastBufferWritten = EFalse;
@@ -90,17 +90,17 @@ void CMMAStreamHandler::ConstructL()
         iRequests.AppendL(requestToAppend);
         CleanupStack::Pop(requestToAppend);
     }
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::ConstructL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::ConstructL -");
 }
 
 void CMMAStreamHandler::Prepare(const TDesC8& aMimeType)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Prepare +");
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Prepare state %d", iState);
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Prepare +");
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Prepare state %d", iState);
     iState = EMMAStreamPrepare;
     // initialize MetaDataUtility
     TInt error = iMetaDataUtility.InitChunkData(aMimeType, *this);
-    ELOG1( EJavaMMAPI, "MMA::CMMAStreamHandler::Prepare, error = %d", error);
+    ELOG1(EJavaMMAPI, "MMA::CMMAStreamHandler::Prepare, error = %d", error);
     if (error != KErrNone)
     {
         if (error == KErrArgument)
@@ -126,17 +126,18 @@ void CMMAStreamHandler::Prepare(const TDesC8& aMimeType)
 
     // when read completes iListerner.PrepareComplete will be called
     iSourceStream->Read(iRequests[ 0 ]);
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Prepare -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Prepare -");
 }
 
 void CMMAStreamHandler::Start()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Start +");
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Start state %d", iState);
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Start data source request=%d",(TInt)iSourceStream->Request());
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Start +");
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Start state %d", iState);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Start data source request=%d",(TInt)iSourceStream->Request());
     iState = EMMAStreamStart;
     if (iSourceStream->Request())
-    { // when read request is completed it will be written to server
+    {
+        // when read request is completed it will be written to server
         iState = EMMAStreamStarted;
         iListener.StartComplete(KErrNone);
         return;
@@ -149,11 +150,11 @@ void CMMAStreamHandler::Start()
         CMMAStreamRequest* r = iRequests[ i ];
         if (!r->IsActive() && r->DataPtr().Length() > 0)
         {
-            LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Start write request to server");
-            LOG1( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Start request length=%d",
-                      r->DataPtr().Length());
-            LOG1( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Start last buffer %d",
-                      r->RequestBuffer()());
+            LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Start write request to server");
+            LOG1(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Start request length=%d",
+                 r->DataPtr().Length());
+            LOG1(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Start last buffer %d",
+                 r->RequestBuffer()());
 
             // data was not yet written to server
             WriteRequest(r);
@@ -161,7 +162,7 @@ void CMMAStreamHandler::Start()
         }
         else if (r->IsActive())  // data is in server
         {
-            LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Start data is in server");
+            LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Start data is in server");
             // atleast one request is not processed
             started = ETrue;
         }
@@ -176,15 +177,15 @@ void CMMAStreamHandler::Start()
         // Need to read data before start
         iSourceStream->Read(iRequests[ 0 ]);
     }
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Start -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Start -");
 }
 
 void CMMAStreamHandler::Pause()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Pause +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Pause +");
     // ignore read/write completes
     iState = EMMAStreamPaused;
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Pause -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Pause -");
 }
 
 void CMMAStreamHandler::SetSourceStream(CMMADataSourceStream* aSourceStream)
@@ -194,12 +195,12 @@ void CMMAStreamHandler::SetSourceStream(CMMADataSourceStream* aSourceStream)
 
 void CMMAStreamHandler::WriteComplete(CMMAStreamRequest* aRequest)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::WriteComplete +");
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::WriteComplete state=%d", iState);
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::WriteComplete request length=%d",
-              aRequest->DataPtr().Length());
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::WriteComplete last buffer %d",
-              aRequest->RequestBuffer()());
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::WriteComplete +");
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::WriteComplete state=%d", iState);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::WriteComplete request length=%d",
+         aRequest->DataPtr().Length());
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::WriteComplete last buffer %d",
+         aRequest->RequestBuffer()());
     if (iState == EMMAStreamStarted)
     {
         if (aRequest->RequestBuffer()() == 1)
@@ -212,13 +213,13 @@ void CMMAStreamHandler::WriteComplete(CMMAStreamRequest* aRequest)
         }
     }
     // else, all other states ignore write complete
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::WriteComplete -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::WriteComplete -");
 }
 
 void CMMAStreamHandler::ReadComplete(CMMAStreamRequest* aRequest)
 {
 
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::ReadComplete +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::ReadComplete +");
 
     if (iState == EMMAStreamPrepare)
     {
@@ -238,15 +239,15 @@ void CMMAStreamHandler::ReadComplete(CMMAStreamRequest* aRequest)
     {
         WriteRequest(aRequest);
     }
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::ReadComplete -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::ReadComplete -");
     // else, all other states ignore read complete
 }
 
 void CMMAStreamHandler::HandleError(CMMAStreamRequest* /*aRequest*/,
                                     TInt aError)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::HandleError +");
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::HandleError state=%d", iState);
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::HandleError +");
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::HandleError state=%d", iState);
     if (iState == EMMAStreamPrepare)
     {
         iListener.PrepareComplete(aError);
@@ -261,13 +262,13 @@ void CMMAStreamHandler::HandleError(CMMAStreamRequest* /*aRequest*/,
     {
         iListener.HandleError(aError);
     }
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::HandleError -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::HandleError -");
 }
 
 void CMMAStreamHandler::WriteRequest(CMMAStreamRequest* aRequest)
 {
 
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::WriteRequest +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::WriteRequest +");
     iCurrentRequest = aRequest; //initialize the current StreamRequest for use in callback function
     iProcessedState = EMMANoneProcessed;
 
@@ -285,13 +286,13 @@ void CMMAStreamHandler::WriteRequest(CMMAStreamRequest* aRequest)
     }
     iFactory.CreateDataBuffer(KDataBufferSourceControl, KMMAStreamRequestBufferSize, iBuffer);
     iBuffer->GetBufferPtr().Set(aRequest->DataPtr());
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::WriteRequest: Size of the Data to be written is %d ",aRequest->DataPtr().Length());
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::WriteRequest: Size of the Data to be written is %d ",aRequest->DataPtr().Length());
     if (aRequest->RequestBuffer()() == 1)  //set that it is the last buffer
     {
         iState = EMMAStreamEof;
         iBuffer->SetLastBuffer(ETrue);
         iLastBufferWritten = ETrue;
-        LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::WriteRequest: LastBuffer");
+        LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::WriteRequest: LastBuffer");
     }
     else
     {
@@ -307,21 +308,21 @@ void CMMAStreamHandler::WriteRequest(CMMAStreamRequest* aRequest)
     {
         err = iMetaDataUtility.ProcessChunkData(aRequest->DataPtr(), iLastBufferWritten);
     }
-    ELOG1( EJavaMMAPI, "MMA::CMMAStreamHandler::WriteRequest, err = %d", err);
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::WriteRequest -");
+    ELOG1(EJavaMMAPI, "MMA::CMMAStreamHandler::WriteRequest, err = %d", err);
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::WriteRequest -");
 }
 
 void CMMAStreamHandler::Event(MControl* /*aControl*/, TUint aEventType, TAny* aEventObject)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Event ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Event ");
     switch (aEventType)
     {
 
     case MSourceControlObserver::KBufferProcessedEvent:
     {
-        LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Event:KBufferProcessedEvent");
+        LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Event:KBufferProcessedEvent");
         MBufferProcessedEvent* evt = (MBufferProcessedEvent*)aEventObject;
-        ELOG1( EJavaMMAPI, "MMA::CMMAStreamHandler::Event:KBufferProcessedEvent:ErrorCode = %d ",evt->GetErrorCode());
+        ELOG1(EJavaMMAPI, "MMA::CMMAStreamHandler::Event:KBufferProcessedEvent:ErrorCode = %d ",evt->GetErrorCode());
         // can be removed once MDU supports all the reqd formats
         if (!iMimeTypeSupportedByMDU ||
                 (iProcessedState == EMMAMetaDataProcessed || iMetaDataReadyToBeParsed))
@@ -355,8 +356,8 @@ void CMMAStreamHandler::Event(MControl* /*aControl*/, TUint aEventType, TAny* aE
 
 void CMMAStreamHandler::HandleChunkDataProcessed(TInt aError)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::HandleChunkDataProcessed + ");
-    ELOG1( EJavaMMAPI, "MMA::CMMAStreamHandler::HandleChunkDataProcessed, aError = %d", aError);
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::HandleChunkDataProcessed + ");
+    ELOG1(EJavaMMAPI, "MMA::CMMAStreamHandler::HandleChunkDataProcessed, aError = %d", aError);
     if (iProcessedState == EMMABufferProcessed)
     {
         iCurrentRequest->WriteRequestComplete(aError);
@@ -367,24 +368,24 @@ void CMMAStreamHandler::HandleChunkDataProcessed(TInt aError)
     {
         iProcessedState = EMMAMetaDataProcessed;
     }
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::HandleChunkDataProcessed - ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::HandleChunkDataProcessed - ");
 }
 
 void CMMAStreamHandler::HandleChunkDataReadyToBeParsed()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::HandleChunkDataReadyToBeParsed + ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::HandleChunkDataReadyToBeParsed + ");
     iMetaDataReadyToBeParsed = ETrue;
     TInt error = iMetaDataUtility.ParseChunkData();
-    ELOG1( EJavaMMAPI, "MMA::CMMAStreamHandler::HandleChunkDataReadyToBeParsed, error = %d ", error);
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::HandleChunkDataReadyToBeParsed - ");
+    ELOG1(EJavaMMAPI, "MMA::CMMAStreamHandler::HandleChunkDataReadyToBeParsed, error = %d ", error);
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::HandleChunkDataReadyToBeParsed - ");
 }
 
 void CMMAStreamHandler::HandleChunkDataComplete(TInt aError)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::HandleChunkDataComplete");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::HandleChunkDataComplete");
     if (KErrNone != aError)
     {
-        ELOG1( EJavaMMAPI, "MMA::CMMAStreamHandler::HandleChunkDataComplete, aError = %d ", aError);
+        ELOG1(EJavaMMAPI, "MMA::CMMAStreamHandler::HandleChunkDataComplete, aError = %d ", aError);
         iListener.HandleError(aError);
     }
 
@@ -397,7 +398,7 @@ TBool CMMAStreamHandler::LastBufferWritten()
 
 void CMMAStreamHandler::Stop()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Stop + ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Stop + ");
     // forcefully complete all requests
     // and release already read data.
     Pause();
@@ -409,7 +410,7 @@ void CMMAStreamHandler::Stop()
         r->WriteRequestComplete(KErrNone);
         r->SetActive(EFalse);
     }
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Stop - ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamHandler::Stop - ");
 }
 
 

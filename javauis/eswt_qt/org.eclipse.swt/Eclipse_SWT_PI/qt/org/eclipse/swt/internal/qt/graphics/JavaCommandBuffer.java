@@ -42,6 +42,9 @@ public final class JavaCommandBuffer {
 
     // This flag indicates if this buffer is empty or not
 	private boolean containsData;
+	
+	// This flag indicates if this buffer has any draw commands in it
+	private boolean containsPrimitiveData;
 
     // Memory management configuration constants
 	private static final int INT_BUF_GRANULARITY     	 = 10;
@@ -127,21 +130,31 @@ public final class JavaCommandBuffer {
 		images.removeAllElements();
 		rgbData.removeAllElements();
 		containsData = false;
+		containsPrimitiveData = false;
 	}
 
+	/**
+	 * Checks that does this buffer contain any commands
+	 * @return true if any command has been written to buffer otherwise false
+	 */
+	public boolean containsData() {
+		return containsData;
+	}
+	
+	/**
+	 * Checks that does this buffer contain any draw commands, i.e. any setters etc. 
+	 * that does to cause any pixels to be rendered are ignored 
+	 * @return true if any draw command has been written to buffer otherwise false
+	 */
+	public boolean containsDrawnPrimitives() {
+		return containsPrimitiveData;
+	}
+	
 	/**
 	 * Binds this buffer
 	 */
 	void bind() {
 		bound = true;
-	}
-
-	/**
-	 * Checks that does this buffer contain any commands
-	 * @return
-	 */
-	boolean containsData() {
-		return containsData;
 	}
 
 	/**
@@ -213,6 +226,10 @@ public final class JavaCommandBuffer {
 		System.out.println("StringBuffer Size: " + strParams.length());
 	}
 
+	private void raisePrimitiveFlag() {
+		containsPrimitiveData = true;
+	}
+	
 	int[] intParams() {
 		return intParams;
 	}
@@ -241,6 +258,7 @@ public final class JavaCommandBuffer {
 		writeInt(height);
 		writeInt(startAngle);
 		writeInt(arcAngle);
+		raisePrimitiveFlag();
 	}
 
 	void drawFocus (int x, int y, int width, int height) {
@@ -249,6 +267,7 @@ public final class JavaCommandBuffer {
 		writeInt(y);
 		writeInt(width);
 		writeInt(height);
+		raisePrimitiveFlag();
 	}
 
 	// must be called from UI thread as images cannot be creates outside that
@@ -259,6 +278,7 @@ public final class JavaCommandBuffer {
 		// creating copy of image here uses implicit data sharing,
 		// thus only a shallow copy is made
 		writeImage(new Image(image));
+		raisePrimitiveFlag();
 	}
 
 	// must be called from UI thread as images cannot be creates outside that
@@ -276,6 +296,7 @@ public final class JavaCommandBuffer {
 		// creating copy of image here uses implicit data sharing,
 		// thus only a shallow copy is made
 		writeImage(new Image(image));
+		raisePrimitiveFlag();
 	}
 
 	void drawLine (int x1, int y1, int x2, int y2) {
@@ -284,6 +305,7 @@ public final class JavaCommandBuffer {
 		writeInt(y1);
 		writeInt(x2);
 		writeInt(y2);
+		raisePrimitiveFlag();
 	}
 
 	void drawEllipse (int x, int y, int width, int height) {
@@ -292,12 +314,14 @@ public final class JavaCommandBuffer {
 		writeInt(y);
 		writeInt(width);
 		writeInt(height);
+		raisePrimitiveFlag();
 	}
 
 	void drawPoint (int x, int y) {
 		writeInt(OP_DRAWPOINT);
 		writeInt(x);
 		writeInt(y);
+		raisePrimitiveFlag();
 	}
 
 	void drawPolygon(int[] pointArray) {
@@ -306,6 +330,7 @@ public final class JavaCommandBuffer {
 		for(int i = 0; i < pointArray.length; ++i) {
 			writeInt(pointArray[i]);
 		}
+		raisePrimitiveFlag();
 	}
 
 	void drawPolyline(int[] pointArray) {
@@ -314,6 +339,7 @@ public final class JavaCommandBuffer {
 		for(int i = 0; i < pointArray.length; ++i) {
 			writeInt(pointArray[i]);
 		}
+		raisePrimitiveFlag();
 	}
 
 	void drawRect (int x, int y, int width, int height) {
@@ -322,6 +348,7 @@ public final class JavaCommandBuffer {
 		writeInt(y);
 		writeInt(width);
 		writeInt(height);
+		raisePrimitiveFlag();
 	}
 
 	void drawRGB(int[] rgbData, int offset, int scanlength, int x, int y, int width, int height, boolean processAlpha, int manipulation) {
@@ -335,6 +362,7 @@ public final class JavaCommandBuffer {
 		writeInt(processAlpha? 1 : 0);
 		writeInt(manipulation);
 		writeRgb(rgbData);
+		raisePrimitiveFlag();
 	}
 
 	void drawRGB(byte[] rgbData, byte[] transparencyMask,int offset, int scanlength, int x, int y, int width, int height, int manipulation, int format) {
@@ -349,6 +377,7 @@ public final class JavaCommandBuffer {
 		writeInt(format);
 		writeRgb(rgbData);
 		writeRgb(transparencyMask);
+		raisePrimitiveFlag();
 	}
 
 	void drawRGB(short[] rgbData, int offset, int scanlength, int x, int y, int width, int height, boolean processAlpha, int manipulation, int format) {
@@ -363,6 +392,7 @@ public final class JavaCommandBuffer {
 		writeInt(manipulation);
 		writeInt(format);
 		writeRgb(rgbData);
+		raisePrimitiveFlag();
 	}
 
 	void drawRoundRect (int x, int y, int width, int height, int arcWidth, int arcHeight) {
@@ -373,6 +403,7 @@ public final class JavaCommandBuffer {
 		writeInt(height);
 		writeInt(arcWidth);
 		writeInt(arcHeight);
+		raisePrimitiveFlag();
 	}
 
 	void drawString(String string, int x, int y, int width, int height, int alignments, int flags, boolean isTransparent) {
@@ -386,6 +417,7 @@ public final class JavaCommandBuffer {
 		writeInt(alignments);
 		writeInt(flags);
 		writeInt(isTransparent? 1 : 0);
+		raisePrimitiveFlag();
 	}
 
 	void fillArc (int x, int y, int width, int height, int startAngle, int arcAngle) {
@@ -396,6 +428,7 @@ public final class JavaCommandBuffer {
 		writeInt(height);
 		writeInt(startAngle);
 		writeInt(arcAngle);
+		raisePrimitiveFlag();
 	}
 
 	void fillGradientRect(int x, int y, int width, int height, boolean vertical, boolean swapColors) {
@@ -406,6 +439,7 @@ public final class JavaCommandBuffer {
 		writeInt(height);
 		writeInt(vertical ? 1 : 0);
 		writeInt(swapColors ? 1 : 0);
+		raisePrimitiveFlag();
 	}
 
 	void fillEllipse (int x, int y, int width, int height) {
@@ -414,6 +448,7 @@ public final class JavaCommandBuffer {
 		writeInt(y);
 		writeInt(width);
 		writeInt(height);
+		raisePrimitiveFlag();
 	}
 
 	void fillPolygon (int[] pointArray) {
@@ -422,6 +457,7 @@ public final class JavaCommandBuffer {
 		for(int i = 0; i < pointArray.length; ++i) {
 			writeInt(pointArray[i]);
 		}
+		raisePrimitiveFlag();
 	}
 
 	void fillRect (int x, int y, int width, int height) {
@@ -430,6 +466,7 @@ public final class JavaCommandBuffer {
 		writeInt(y);
 		writeInt(width);
 		writeInt(height);
+		raisePrimitiveFlag();
 	}
 
 	void fillRoundRectangle (int x, int y, int width, int height, int arcWidth, int arcHeight) {
@@ -440,6 +477,7 @@ public final class JavaCommandBuffer {
 		writeInt(height);
 		writeInt(arcWidth);
 		writeInt(arcHeight);
+		raisePrimitiveFlag();
 	}
 
 	public void setBackgroundAlpha(int alpha) {
@@ -519,6 +557,7 @@ public final class JavaCommandBuffer {
         writeInt(y);
         // TODO does this need flushing on the image
         images.addElement(new Image(image));
+        raisePrimitiveFlag();
     }
 
 	void copyArea(int srcX, int srcY, int width, int height, int destX, int destY, boolean paint) {
@@ -530,6 +569,7 @@ public final class JavaCommandBuffer {
         writeInt(destX);
         writeInt(destY);
         writeInt(paint? 1 : 0);
+        raisePrimitiveFlag();
     }
 
 	// Unsupported operations

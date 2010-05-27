@@ -480,12 +480,6 @@ void CMidp2BackupPlugin::RestoreMmcRegistryL()
 
         ILOG1(EBackup, "File copy, status: %d", err);
 
-        TDesC path_old_Des(path_old);
-        TDesC path_new_Des(path_new);
-
-        /*LOG1WSTR( EBackup, EInfo, "path_old: %S", &path_old );
-        LOG1WSTR( EBackup, EInfo, "path_new: %S", &path_new );
-        */
         User::LeaveIfError(err);
 
         CleanupStack::PopAndDestroy();

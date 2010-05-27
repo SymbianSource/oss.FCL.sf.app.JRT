@@ -98,6 +98,7 @@ public:
 
     void launchPrewarm();
     void stopPrewarm();
+    bool isPrewarmSupported();
 
 private:
     // Internal versions supporting CommsMessage based extra indiation options

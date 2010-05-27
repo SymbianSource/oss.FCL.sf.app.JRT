@@ -38,32 +38,32 @@ EXPORT_C CMMAEMCAudioPlayer::CMMAEMCAudioPlayer(
     CMMAEMCResolver* aResolver):
         CMMAEMCPlayerBase(aResolver)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCAudioPlayer::CMMAEMCAudioPlayer");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCAudioPlayer::CMMAEMCAudioPlayer");
 }
 
 EXPORT_C void CMMAEMCAudioPlayer::ConstructL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCAudioPlayer::ConstructL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCAudioPlayer::ConstructL +");
     CMMAEMCPlayerBase::ConstructL();
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCAudioPlayer::ConstructL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCAudioPlayer::ConstructL -");
 }
 
 EXPORT_C void CMMAEMCAudioPlayer::PrefetchDataL(const TDesC8& /*aData*/)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCAudioPlayer::PrefetchDataL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCAudioPlayer::PrefetchDataL +");
 
     User::LeaveIfError(iMStreamControl->Prime());
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCAudioPlayer::PrefetchDataL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCAudioPlayer::PrefetchDataL -");
 }
 
 EXPORT_C void CMMAEMCAudioPlayer::PrefetchFileL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCAudioPlayer::Prefetching from file");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCAudioPlayer::Prefetching from file");
 }
 
 EXPORT_C void CMMAEMCAudioPlayer::PlayCompleteL(TInt aError)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCAudioPlayer::PlayCompleteL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCAudioPlayer::PlayCompleteL +");
     TInt64 time;
     GetDuration(&time);
     iMediaTime = time;
@@ -99,17 +99,17 @@ EXPORT_C void CMMAEMCAudioPlayer::PlayCompleteL(TInt aError)
         // repeats for next start
         SetLoopCount(iRepeatNumberOfTimes);
     }
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCAudioPlayer::PlayCompleteL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCAudioPlayer::PlayCompleteL -");
 }
 
 EXPORT_C void CMMAEMCAudioPlayer::RealizeL()
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAEMCAudioPlayer::RealizeL +");
+    LOG(EJavaMMAPI, EInfo, "CMMAEMCAudioPlayer::RealizeL +");
     // DataSource must have at least 1 stream or
     // we must have file to play
     if ((iSourceStreams.Count() == 0) && !iFileName)
     {
-        LOG( EJavaMMAPI, EInfo, "CMMAEMCAudioPlayer::RealizeL : Not Enough Streams");
+        LOG(EJavaMMAPI, EInfo, "CMMAEMCAudioPlayer::RealizeL : Not Enough Streams");
         User::Leave(KErrNotEnoughStreams);
     }
     User::LeaveIfError(iMStreamControl->Open());
@@ -119,12 +119,12 @@ EXPORT_C void CMMAEMCAudioPlayer::RealizeL()
         iActiveSchedulerWait->Start();
     }
     CMMAPlayer::RealizeL();
-    LOG( EJavaMMAPI, EInfo, "CMMAEMCAudioPlayer::RealizeL -");
+    LOG(EJavaMMAPI, EInfo, "CMMAEMCAudioPlayer::RealizeL -");
 }
 
 EXPORT_C void CMMAEMCAudioPlayer::PrefetchL()
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAEMCAudioPlayer::PrefetchL +");
+    LOG(EJavaMMAPI, EInfo, "CMMAEMCAudioPlayer::PrefetchL +");
     __ASSERT_DEBUG((iSourceStreams.Count() > 0) || iFileName, User::Invariant());
 
     if (iFileName)
@@ -141,7 +141,7 @@ EXPORT_C void CMMAEMCAudioPlayer::PrefetchL()
         iSourceStreams[ 0 ]->ReadAllL();
     }
     // CMMASourceStream will notify with ReadCompleted
-    LOG( EJavaMMAPI, EInfo, "CMMAEMCAudioPlayer::PrefetchL -");
+    LOG(EJavaMMAPI, EInfo, "CMMAEMCAudioPlayer::PrefetchL -");
 }
 
 EXPORT_C const TDesC& CMMAEMCAudioPlayer::Type()
@@ -157,8 +157,8 @@ EXPORT_C const TDesC& CMMAEMCAudioPlayer::Type()
 //
 EXPORT_C void CMMAEMCAudioPlayer::ReadCompletedL(TInt aStatus, const TDesC8& aData)
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAEMCAudioPlayer::ReadCompletedL +");
-    LOG1( EJavaMMAPI, EInfo, "CMMAEMCAudioPlayer::ReadCompletedL: status = %d", aStatus);
+    LOG(EJavaMMAPI, EInfo, "CMMAEMCAudioPlayer::ReadCompletedL +");
+    LOG1(EJavaMMAPI, EInfo, "CMMAEMCAudioPlayer::ReadCompletedL: status = %d", aStatus);
     if (aStatus < KErrNone)
     {
         PostActionCompleted(aStatus);
@@ -172,7 +172,7 @@ EXPORT_C void CMMAEMCAudioPlayer::ReadCompletedL(TInt aStatus, const TDesC8& aDa
         }
         PostActionCompleted(err);
     }
-    LOG( EJavaMMAPI, EInfo, "CMMAEMCAudioPlayer::ReadCompletedL -");
+    LOG(EJavaMMAPI, EInfo, "CMMAEMCAudioPlayer::ReadCompletedL -");
 }
 
 //  END OF FILE

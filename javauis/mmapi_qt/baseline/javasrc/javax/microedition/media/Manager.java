@@ -11,16 +11,17 @@
 *
 * Contributors:
 *
-* Description: Please refer JSR 135 for more details. 
+* Description: Please refer JSR 135 for more details.
 */
 
 
 package javax.microedition.media;
 
 import java.io.IOException;
+import java.io.InputStream;
 import com.nokia.microedition.media.ManagerImpl;
 import javax.microedition.media.protocol.DataSource;
-import java.io.InputStream;
+import com.nokia.mj.impl.utils.Logger;
 
 public final class Manager
 {
@@ -28,7 +29,9 @@ public final class Manager
 
     static
     {
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"MMAPI: Manager....interface  1");
         sInstance = ManagerImpl.getInstance();
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"MMAPI: Manager....interface  2");
     }
 
     final public static String TONE_DEVICE_LOCATOR = "device://tone";

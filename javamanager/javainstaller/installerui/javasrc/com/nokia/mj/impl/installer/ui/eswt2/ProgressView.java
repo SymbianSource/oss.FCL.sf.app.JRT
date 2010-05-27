@@ -173,7 +173,7 @@ public class ProgressView extends ViewBase
                 GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
                 gridData.horizontalSpan = 1;
                 iHideCommand.setLayoutData(gridData);
-                iHideCommand.setText("Hide"); //InstallerUiTexts.get(InstallerUiTexts.HIDE));
+                iHideCommand.setText(InstallerUiTexts.get(InstallerUiTexts.HIDE));
                 iHideCommand.addSelectionListener
                 (new SelectionListener()
                 {

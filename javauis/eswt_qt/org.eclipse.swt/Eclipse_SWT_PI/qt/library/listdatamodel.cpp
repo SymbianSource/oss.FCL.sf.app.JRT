@@ -85,34 +85,6 @@ void ListItem::setCheckState( Qt::CheckState state )
 	this->state = state;
 	}
 	
-	
-/** 
- * ListViewItem
- */
-
-ListViewItem::ListViewItem(const QString& aText, const QPixmap* aImage) 
- : ListItem(aText), img(aImage)
-	{
-	SWT_LOG_FUNC_CALL();
-	}
-
-ListViewItem::~ListViewItem()
-	{
-	SWT_LOG_FUNC_CALL();
-	}
-
-
-const QPixmap* ListViewItem::image() const
-	{
-	return img;
-	}
-	
-void ListViewItem::setImage(const QPixmap* pixmap)
-	{
-	img = pixmap;
-	}
-
-
 /**
  *  ListBoxItem
  */
@@ -138,8 +110,6 @@ ListBoxItem::~ListBoxItem()
 	SWT_LOG_FUNC_CALL();
 	}
 	
-
-
 const QString& ListBoxItem::headingText() const
 	{
 	SWT_LOG_FUNC_CALL();
@@ -169,7 +139,21 @@ int ListBoxItem::headingImageCount() const
 	SWT_LOG_FUNC_CALL();
 	return headingImgs.count();
 	}
-	
+
+void ListBoxItem::setContentsToNull()
+    {
+    SWT_LOG_FUNC_CALL();
+    setText( QString() );
+    headingTxt = QString();
+    for (int i = 0; i < detailImgs.count(); i++) 
+        {
+        detailImgs.pop_back();
+        }
+    for (int i = 0; i < headingImgs.count(); i++) 
+        {
+        headingImgs.pop_back();
+        }
+    }
 	
 /**
  *  ListModel
@@ -195,10 +179,6 @@ ListModel* ListModel::createDataModel( int type, int style, QListView *parent )
 	if( ( type & LISTTYPE_LISTBOX ) != 0 )
 		{
 		return new ListBoxModel( type, style, parent );
-		}
-	else if ( ( type & LISTTYPE_LISTVIEW ) != 0 )
-		{
-		return new ListViewModel( type, style, parent );
 		}
 	else
 		{
@@ -435,24 +415,6 @@ void ListModel::appendItem(const QString& /*aDetailText*/, const QPixmap** /*aDe
 	Q_ASSERT( false );	
 	}
 
-void ListModel::setItem( const int row, const QString& string )
-	{
-	SWT_LOG_FUNC_CALL();
-	Q_ASSERT(row > -1 && row < list.size());
-	list.at(row)->setText(string);
-	}
-
-	
-void ListModel::setItem( const int row, const QString& string, const QPixmap* pixmap )
-	{
-	SWT_LOG_FUNC_CALL();
-	Q_ASSERT(row > -1 && row < list.size());
-	list.at(row)->setText(string);
-	static_cast<ListViewItem*>(list.at(row))->setImage(pixmap);
-	}
-
-	
-
 void ListModel::insertItem( const int row, const QString& string )
 	{
 	SWT_LOG_FUNC_CALL();
@@ -519,48 +481,11 @@ ListItem* ListModel::createItem(const QString& /*aDetailText*/, const QPixmap** 
 	return NULL;
 	}
 
-
-
-
-/**
- *  ListViewModel
- */
-
-ListViewModel::ListViewModel( int type, int style, QListView *parent )
-	: ListModel(type, style, parent )
-	{
-	SWT_LOG_FUNC_CALL();
-	}
-	
-	
-ListViewModel::~ListViewModel()
-	{
-	SWT_LOG_FUNC_CALL();
-	}
-	
-	
-ListItem* ListViewModel::createItem( const QString& string )
-	{
-	SWT_LOG_FUNC_CALL();
-	ListItem* item =  new ListViewItem(string, NULL );
-	if( !item )
-		{	
-       	throw std::bad_alloc();
-		}
-	return item;	
-	}
-	
-ListItem* ListViewModel::createItem( const QString& string, const QPixmap* pixmap )
-	{
-	SWT_LOG_FUNC_CALL();
-	ListItem* item =  new ListViewItem( string, pixmap );
-	if( !item )
-		{	
-       	throw std::bad_alloc();
-		}
-	return item;	
-	}
-
+void ListModel::setItemContentsToNull( const int /*row*/ )
+    {
+    SWT_LOG_FUNC_CALL();
+    Q_ASSERT( false );
+    }   
 
 // ListBoxModel
 
@@ -847,7 +772,13 @@ int ListBoxModel::rowWithMaxHeadingTextSize() const
 	SWT_LOG_FUNC_CALL();
 	return headingTxtIndex;
 	}
-	
+
+void ListBoxModel::setItemContentsToNull( const int row )
+    {
+    SWT_LOG_FUNC_CALL();
+    Q_ASSERT(row > -1 && row < list.size());
+    static_cast<ListBoxItem*>(list.at(row))->setContentsToNull( );
+    }	
 	
 ListItem* ListBoxModel::createItem(const QString& aDetailText, const QPixmap** aDetailImages, const int aDetailImageCount,  
 	const QString& aHeadingText, const QPixmap** aHeadingImages, const int aHeadingImageCount )

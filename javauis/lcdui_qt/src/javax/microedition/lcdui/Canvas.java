@@ -27,6 +27,8 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.extension.CompositeExtension;
+import org.eclipse.swt.internal.qt.graphics.WindowSurface;
+
 
 /**
  * The abstract <code>Canvas</code> class is designed to handle low-level
@@ -153,10 +155,12 @@ public abstract class Canvas extends Displayable
     private CanvasShellMouseListener mouseListener =
         new CanvasShellMouseListener();
 
-    // Canvas Graphics object passed to paint(Graphics g).
-    // Graphics has its own back-buffer for double buffering.
+    // Canvas Graphics object passed to paint(Graphics g)
     private Graphics canvasGraphics;
 
+    // Graphics command buffer for this instance
+	CanvasBuffer graphicsBuffer;
+	
     //On Screen Keypad
     //private Composite keypadComposite;
     private CanvasKeypad onScreenkeypad;
@@ -167,25 +171,12 @@ public abstract class Canvas extends Displayable
     // key repeat events.
     private Vector keysPressed;
 
-    // Canvas modes
-    private static final int MODE_UNINITIALIZED = 0;
-    private static final int MODE_NORMAL = 1;
-    private static final int MODE_BUFFER_FLUSH = 2;
-    private static final int MODE_GAME_BUFFER_FLUSH = 3;
-    private int canvasMode = MODE_UNINITIALIZED;
-
     private boolean suppressGameKeys;
     private boolean suppressDragEvent;
     private boolean cleanupNeeded;
     private Object cleanupLock;
     private boolean noBackground;
     private int gameKeyState;
-
-    private Graphics gameBufferGraphics;
-
-    // lock created by graphics object for serializing
-    // flushing against graphics buffer writing
-    private Object flushLock;
 
     private Timer timer = new Timer();
     private CanvasTimerTask timerTask;
@@ -217,9 +208,8 @@ public abstract class Canvas extends Displayable
         repaintLock = new Object();
         cleanupLock = new Object();
         construct();
-        canvasGraphics = new Graphics();
-        canvasMode = MODE_UNINITIALIZED;
         keysPressed = new Vector();
+        graphicsBuffer = new CanvasBuffer(this, getContentComp());
     }
 
     /* (non-Javadoc)
@@ -628,31 +618,11 @@ public abstract class Canvas extends Displayable
     }
 
     /**
-     * Update game buffer graphics.
-     */
-    final void eswtUpdateGameBufferGraphics()
-    {
-        if(gameBufferGraphics == null)
-        {
-            gameBufferGraphics = new Graphics();
-            gameBufferGraphics.initBuffered(this, 0, 0, getWidth(), getHeight());
-            flushLock = gameBufferGraphics.getLock();
-        }
-    }
-
-    /**
      * Get game canvas frame buffer graphics.
      */
     final Graphics getGameBufferGraphics()
     {
-        ESWTUIThreadRunner.safeSyncExec(new Runnable()
-        {
-            public void run()
-            {
-                eswtUpdateGameBufferGraphics();
-            }
-        });
-        return gameBufferGraphics;
+        return graphicsBuffer.getGraphics();
     }
 
     CanvasKeypad getCanvasKeypad()
@@ -696,18 +666,9 @@ public abstract class Canvas extends Displayable
     void flushGameBuffer(final int x, final int y, final int width,
                          final int height)
     {
-        synchronized(flushLock)
+        synchronized(graphicsBuffer)
         {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable()
-            {
-                public void run()
-                {
-                    canvasMode = MODE_GAME_BUFFER_FLUSH;
-                    ((CompositeExtension)getContentComp()).redrawNow(x, y, width, height);
-                    gameBufferGraphics.resetCommandBuffer();
-                    canvasMode = MODE_NORMAL;
-                }
-            });
+            flushGraphicsBuffer(x, y, width, height);
         }
     }
 
@@ -720,7 +681,7 @@ public abstract class Canvas extends Displayable
 
         // reset the game key state
         gameKeyState = 0;
-        canvasMode = MODE_NORMAL;
+
         synchronized(cleanupLock)
         {
             cleanupNeeded = true;
@@ -746,7 +707,11 @@ public abstract class Canvas extends Displayable
     void eswtHandleResizeEvent(int width, int height)
     {
         super.eswtHandleResizeEvent(width, height);
-        canvasMode = MODE_NORMAL;
+        // update new bounds to graphicsBuffer
+        synchronized(graphicsBuffer)
+        {
+            graphicsBuffer.setControlBounds(getContentComp());
+        }
         synchronized(cleanupLock)
         {
             cleanupNeeded = true;
@@ -759,7 +724,6 @@ public abstract class Canvas extends Displayable
     void eswtHandleEvent(Event e)
     {
         super.eswtHandleEvent(e);
-
         if(e.type == SWT.KeyDown)
         {
             doKeyPressed(e.keyCode);
@@ -768,7 +732,6 @@ public abstract class Canvas extends Displayable
         {
             doKeyReleased(e.keyCode);
         }
-
     }
 
     /*
@@ -779,36 +742,23 @@ public abstract class Canvas extends Displayable
 
         public void paintControl(PaintEvent pe)
         {
-            switch(canvasMode)
-            {
-            case MODE_BUFFER_FLUSH:
-                // Paint event initiated by us to paint the Canvas.
-                doBufferFlush(pe, canvasGraphics);
-                break;
-            case MODE_GAME_BUFFER_FLUSH:
-                // Paint event initiated by us to paint the GameCanvas.
-                doBufferFlush(pe, gameBufferGraphics);
-                break;
-            case MODE_NORMAL:
-                // Native toolkit is requesting an update of an area that has
-                // become invalid. Can't do anything here because the contents
-                // need to be queried from the MIDlet in another thread by
-                // a paint callback. For this a paint callback event is posted.
-                // For a moment the native toolkit thinks that the area has
-                // been validated when in truth it will be painted later after
-                // the paint callback has been executed.
-                EventDispatcher eventDispatcher = EventDispatcher.instance();
-                LCDUIEvent event = eventDispatcher.newEvent(
-                                       LCDUIEvent.CANVAS_PAINT_NATIVE_REQUEST,
-                                       javax.microedition.lcdui.Canvas.this);
-                event.x = pe.x;
-                event.y = pe.y;
-                event.width = pe.width;
-                event.height = pe.height;
-                event.widget = pe.widget;
-                eventDispatcher.postEvent(event);
-                break;
-            }
+            // Native toolkit is requesting an update of an area that has
+            // become invalid. Can't do anything here because the contents
+            // need to be queried from the MIDlet in another thread by
+            // a paint callback. For this a paint callback event is posted.
+            // For a moment the native toolkit thinks that the area has
+            // been validated when in truth it will be painted later after
+            // the paint callback has been executed.
+            EventDispatcher eventDispatcher = EventDispatcher.instance();
+            LCDUIEvent event = eventDispatcher.newEvent(
+                                   LCDUIEvent.CANVAS_PAINT_NATIVE_REQUEST,
+                                   javax.microedition.lcdui.Canvas.this);
+            event.x = pe.x;
+            event.y = pe.y;
+            event.width = pe.width;
+            event.height = pe.height;
+            event.widget = pe.widget;
+            eventDispatcher.postEvent(event);
         }
     }
 
@@ -898,10 +848,10 @@ public abstract class Canvas extends Displayable
             }
         }
 
-        // Prepare the GC's buffer if not done yet
-        if(canvasGraphics.getCommandBuffer() == null)
+        // Create instance of Graphics if not created yet
+        if(canvasGraphics == null)
         {
-            canvasGraphics.initBuffered(this, event.x, event.y, event.width, event.height);
+            canvasGraphics = graphicsBuffer.getGraphics();
         }
 
         // Clean the background if dirty, buffer the operations.
@@ -927,23 +877,26 @@ public abstract class Canvas extends Displayable
         // The callback
         paint(canvasGraphics);
 
-        // Wait until the UI thread is available. Then in the UI thread
-        // synchronously send a paint event.
+
+        // Flush drawn graphics to display
+        synchronized(graphicsBuffer)
+        {
+            flushGraphicsBuffer(redrawNowX, redrawNowY, redrawNowW, redrawNowH);
+        }
+    }
+
+    private void flushGraphicsBuffer(final int redrawNowX, final int redrawNowY, final int redrawNowW, final int redrawNowH)
+    {
         ESWTUIThreadRunner.safeSyncExec(new Runnable()
         {
             public void run()
             {
-                if(event.widget.isDisposed())
-                {
-                    return;
-                }
-
-                canvasMode = MODE_BUFFER_FLUSH;
-
-                ((CompositeExtension) event.widget)
-                .redrawNow(redrawNowX, redrawNowY, redrawNowW, redrawNowH);
-                canvasGraphics.resetCommandBuffer();
-                canvasMode = MODE_NORMAL;
+                graphicsBuffer.setupWindowSurface();
+                Rectangle rect = graphicsBuffer.toWindowCoordinates(redrawNowX, redrawNowY, redrawNowW, redrawNowH);
+                graphicsBuffer.windowSurface.beginPaint(rect.x, rect.y, rect.width, rect.height);
+                graphicsBuffer.sync();
+                graphicsBuffer.windowSurface.endPaint();
+                graphicsBuffer.windowSurface.flush();
             }
 
         });
@@ -954,7 +907,7 @@ public abstract class Canvas extends Displayable
      */
     private final void doBufferFlush(PaintEvent event, Graphics graphics)
     {
-        event.gc.getGCData().internalGc.render(graphics.getCommandBuffer());
+        //  event.gc.getGCData().internalGc.render(graphics.getCommandBuffer());
     }
 
     /*
@@ -1262,6 +1215,26 @@ public abstract class Canvas extends Displayable
         repaintY2 = repaintY2 < h ? repaintY2 : h;
 
         return valid;
+    }
+
+    /**
+     * Disposes this instance
+     * Called when finalizer is destroying this instance.
+     */
+    void dispose()
+    {
+        super.dispose();
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        {
+            public void run()
+            {
+                if(graphicsBuffer != null)
+                {
+                    graphicsBuffer.dispose();
+                    graphicsBuffer = null;
+                }
+            }
+        });
     }
 
     class CanvasTimerTask extends TimerTask

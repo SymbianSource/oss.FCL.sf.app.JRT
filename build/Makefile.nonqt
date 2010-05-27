@@ -34,6 +34,8 @@ clean_generated:
 
 clean_configure:
 
+remove_notbuilt:
+
 test:
 	$(PHASEINFO)
 	$(EXEC_NONQT)

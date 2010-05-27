@@ -44,10 +44,10 @@ EXPORTS
 	_ZN4java9bluetooth26RFCOMMPushServerConnectionD2Ev @ 43 NONAME
 	_ZNK4java9bluetooth26RFCOMMPushServerConnection6getUriEv @ 44 NONAME
 	_ZNK4java9bluetooth26RFCOMMPushServerConnection9getFilterEv @ 45 NONAME
-	_ZTI31BTRFCOMMServerConnectionFactory @ 46 NONAME ; #<TI>#
-	_ZTIN4java9bluetooth22RFCOMMServerConnectionE @ 47 NONAME ; #<TI>#
-	_ZTIN4java9bluetooth26RFCOMMPushServerConnectionE @ 48 NONAME ; #<TI>#
-	_ZTV31BTRFCOMMServerConnectionFactory @ 49 NONAME ; #<VT>#
-	_ZTVN4java9bluetooth22RFCOMMServerConnectionE @ 50 NONAME ; #<VT>#
-	_ZTVN4java9bluetooth26RFCOMMPushServerConnectionE @ 51 NONAME ; #<VT>#
+	_ZTI31BTRFCOMMServerConnectionFactory @ 46 NONAME
+	_ZTIN4java9bluetooth22RFCOMMServerConnectionE @ 47 NONAME
+	_ZTIN4java9bluetooth26RFCOMMPushServerConnectionE @ 48 NONAME
+	_ZTV31BTRFCOMMServerConnectionFactory @ 49 NONAME
+	_ZTVN4java9bluetooth22RFCOMMServerConnectionE @ 50 NONAME
+	_ZTVN4java9bluetooth26RFCOMMPushServerConnectionE @ 51 NONAME
 

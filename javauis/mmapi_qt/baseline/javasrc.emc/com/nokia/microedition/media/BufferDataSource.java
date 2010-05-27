@@ -154,14 +154,12 @@ public class BufferDataSource extends DataSource
     {
         return iDataSource.getControl(aControlType);
     }
-    /**
-     * @author d35kumar
-     * @return
-     */
-    public DataSource getDataSource(){
-    	return iDataSource;
+
+    public DataSource getDataSource()
+    {
+        return iDataSource;
     }
-    
+
 }
 // End of File
 

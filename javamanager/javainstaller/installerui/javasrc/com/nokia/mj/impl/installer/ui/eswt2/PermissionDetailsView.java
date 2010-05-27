@@ -73,7 +73,7 @@ public class PermissionDetailsView extends ConfirmationViewBase
             for (int i = 0; i < permNames.length; i++)
             {
                 Label permLabel = createLabel(
-                                      permNames[i], horizontalSpan, labelStyle);
+                    permNames[i], horizontalSpan, labelStyle);
             }
         }
 

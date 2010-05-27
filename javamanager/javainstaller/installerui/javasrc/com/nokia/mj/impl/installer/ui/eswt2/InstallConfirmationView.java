@@ -59,7 +59,7 @@ public class InstallConfirmationView extends ConfirmationViewBase
         InstallerUiEswt aInstallerUi, Composite aParent)
     {
         super(aInstallerUi, aParent, 8);
-        setTitle(InstallerUiTexts.get(InstallerUiTexts.INSTALL));
+        setTitle(InstallerUiTexts.get(InstallerUiTexts.INSTALLING));
         setCommands(InstallerUiTexts.get(InstallerUiTexts.OK),
                     InstallerUiTexts.get(InstallerUiTexts.CANCEL));
     }
@@ -107,12 +107,12 @@ public class InstallConfirmationView extends ConfirmationViewBase
     protected void createView()
     {
         // Add header.
-        String title = "Install?";
+        String title = InstallerUiTexts.get(InstallerUiTexts.INSTALL_QUERY);
         if (iInstallInfo != null)
         {
             if (iInstallInfo.getOldVersion() != null)
             {
-                title = "Update?";
+                title = InstallerUiTexts.get(InstallerUiTexts.UPDATE_QUERY);
             }
         }
         addHeader(title, iInstallInfo, null);
@@ -126,9 +126,6 @@ public class InstallConfirmationView extends ConfirmationViewBase
         if (driveIds != null && driveIds.length > 0)
         {
             // Add installation drive selector.
-            //Label drivesLabel = createLabel(
-            //                        InstallerUiTexts.get(InstallerUiTexts.INSTALL_TO_DRIVE),
-            //                        horizontalSpan, labelStyle);
             iDriveSelector = new Combo(getComposite(), SWT.READ_ONLY);
             gridData = new GridData(GridData.FILL_HORIZONTAL);
             gridData.horizontalSpan = horizontalSpan;

@@ -63,7 +63,7 @@ public class PermissionConfirmationView extends ConfirmationViewBase
         InstallerUiEswt aInstallerUi, Composite aParent)
     {
         super(aInstallerUi, aParent, 8, true);
-        setTitle(InstallerUiTexts.get(InstallerUiTexts.INSTALL));
+        setTitle(InstallerUiTexts.get(InstallerUiTexts.INSTALLING));
         setCommands(null, null);
     }
 
@@ -94,12 +94,14 @@ public class PermissionConfirmationView extends ConfirmationViewBase
     {
         // Add header.
         String title = "Install?";
+        String appName = "";
         if (iInstallInfo != null)
         {
             if (iInstallInfo.getOldVersion() != null)
             {
                 title = "Update?";
             }
+            appName = iInstallInfo.getName();
         }
         addHeader(title, iInstallInfo, null);
 
@@ -109,8 +111,9 @@ public class PermissionConfirmationView extends ConfirmationViewBase
 
         // Add permission query label.
         Label domainLabel = createLabel(
-                                InstallerUiTexts.get(InstallerUiTexts.PERM_QUERY),
-                                horizontalSpan, labelStyle);
+            InstallerUiTexts.get(InstallerUiTexts.PERM_QUERY,
+                                 new String[] { appName }),
+            horizontalSpan, labelStyle);
 
         // Add link for permission details.
         if (iPermissionInfo != null &&
@@ -205,7 +208,7 @@ public class PermissionConfirmationView extends ConfirmationViewBase
 
         // Add cancel button.
         iCancelButton = new Button(getComposite(), SWT.NONE);
-        iCancelButton.setText(InstallerUiTexts.get(InstallerUiTexts.CANCEL));
+        iCancelButton.setText(InstallerUiTexts.get(InstallerUiTexts.PERM_CANCEL));
         iCancelButton.addListener(SWT.Selection, new Listener()
         {
             public void handleEvent(Event aEvent)

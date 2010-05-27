@@ -446,7 +446,8 @@ CMMAImageSettings* TMMAParameterValidator::ValidateImagePropertiesL(const TDesC&
     TPtrC encoding;
     if (properties->Compare(KPropertyEncoding, KFormatPng) ||
             properties->Compare(KPropertyEncoding, KContentTypePng))
-    { //PNG
+    {
+        //PNG
         settings->iMimeType = CreateHBufC8FromUnicodeL(KContentTypePng);
         TPngEncodeData* imageData = new(ELeave)TPngEncodeData();
         imageData->iBitsPerPixel = KDefaultBpp;
@@ -496,7 +497,8 @@ CMMAImageSettings* TMMAParameterValidator::ValidateImagePropertiesL(const TDesC&
     else if (properties->Compare(KPropertyEncoding, KFormatJpg) ||
              properties->Compare(KPropertyEncoding, KContentTypeJpg) ||
              properties->Compare(KPropertyEncoding, KContentTypeJpg2))
-    { // JPG
+    {
+        // JPG
         settings->iMimeType = CreateHBufC8FromUnicodeL(KContentTypeJpg);
         if (properties->Compare(KPropertyType, KPropertyJfif()))
         {
@@ -535,7 +537,8 @@ CMMAImageSettings* TMMAParameterValidator::ValidateImagePropertiesL(const TDesC&
     }
     else if (properties->Compare(KPropertyEncoding, KFormatGif) ||
              properties->Compare(KPropertyEncoding, KContentTypeGif))
-    {//GIF
+    {
+        //GIF
         settings->iMimeType = CreateHBufC8FromUnicodeL(KContentTypeGif);
         TPtrC tmp;
         // gif encoder is not configurable
@@ -548,7 +551,8 @@ CMMAImageSettings* TMMAParameterValidator::ValidateImagePropertiesL(const TDesC&
     }
     else if (properties->Compare(KPropertyEncoding, KFormatBmp) ||
              properties->Compare(KPropertyEncoding, KContentTypeBmp))
-    {//BMP
+    {
+        //BMP
         settings->iMimeType = CreateHBufC8FromUnicodeL(KContentTypeBmp);
         TBmpImageData* imageData = new(ELeave)TBmpImageData();
         CleanupStack::PushL(imageData);
@@ -582,7 +586,8 @@ CMMAImageSettings* TMMAParameterValidator::ValidateImagePropertiesL(const TDesC&
         }
     }
     else if (properties->GetProperty(KPropertyEncoding, encoding))
-    { // OTHER POSSIBLE TYPE
+    {
+        // OTHER POSSIBLE TYPE
         // trying to create encoder with only content/mime-type
         settings->iMimeType = CreateHBufC8FromUnicodeL(encoding);
 

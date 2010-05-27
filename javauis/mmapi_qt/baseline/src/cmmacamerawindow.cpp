@@ -41,7 +41,7 @@ const TInt KStarterTimeout = 100000; //100 msecs
 const TInt KErrorIconMargin = 5; //5 pixels
 
 
-_LIT(KCameraAppBitmapFile, "z:\\resource\\apps\\cameraapp.mif");
+//_LIT(KCameraAppBitmapFile, "z:\\resource\\apps\\cameraapp.mif");
 
 
 // ---------------------------------------------------------------------------
@@ -99,16 +99,16 @@ void CMMACameraWindow::SetStarted(TBool aStarted)
     {
         if (iStarted)
         {
-          //  iDisplay->UIGetCallback(
-          //      *this, CMMACameraWindow::EShowViewFinder);
+            //  iDisplay->UIGetCallback(
+            //      *this, CMMACameraWindow::EShowViewFinder);
             LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetStarted : before GetCallbackInUiThread + EShowViewFinder");
             iDisplay->GetCallbackInUiThread((TInt)CMMACameraWindow::EShowViewFinder);
             LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetStarted : before GetCallbackInUiThread  - EShowViewFinder");
         }
         else
         {
-         //   iDisplay->UIGetCallback(
-         //       *this, CMMACameraWindow::EHideViewFinder);
+            //   iDisplay->UIGetCallback(
+            //       *this, CMMACameraWindow::EHideViewFinder);
             LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetStarted : before GetCallbackInUiThread + EHideViewFinder");
             iDisplay->GetCallbackInUiThread((TInt)CMMACameraWindow::EHideViewFinder);
             LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetStarted : before GetCallbackInUiThread  - EHideViewFinder");
@@ -147,10 +147,10 @@ void CMMACameraWindow::SetDisplay(MMMADisplay *aDisplay)
                                          "()I");
 
              iJni->CallIntMethod(iJavaDisplayObject,releaseUiResourceID);*/
-             //MMAPI UI 3.x req.
-			       LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetDisplay : before GetCallbackInUiThread +");
-             iDisplay->GetCallbackInUiThread((TInt)CMMACameraWindow::EDeleteViewFinder);
-             LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetDisplay : before GetCallbackInUiThread  -");
+            //MMAPI UI 3.x req.
+            LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetDisplay : before GetCallbackInUiThread +");
+            iDisplay->GetCallbackInUiThread((TInt)CMMACameraWindow::EDeleteViewFinder);
+            LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetDisplay : before GetCallbackInUiThread  -");
         }
 
         // Set the new Display
@@ -159,7 +159,7 @@ void CMMACameraWindow::SetDisplay(MMMADisplay *aDisplay)
         if (iDisplay)
         {
             // Get a DSA resources for the new Display
-        //    iDisplay->UIGetDSAResources(*this, MMMADisplay::EMmaThread);
+            //    iDisplay->UIGetDSAResources(*this, MMMADisplay::EMmaThread);
 
         }
     }
@@ -201,9 +201,9 @@ void CMMACameraWindow::SetDrawRect(const TRect& aRect)
 {
     // MMAPI thread
     LOG2(EJavaMMAPI,EInfo,"MMA::CMMACameraWindow::SetDrawRect TL:%d,%d",
-               aRect.iTl.iX, aRect.iTl.iY);
+         aRect.iTl.iX, aRect.iTl.iY);
     LOG2(EJavaMMAPI,EInfo,"MMA::CMMACameraWindow::SetDrawRect BR:%d,%d",
-               aRect.iBr.iX, aRect.iBr.iY);
+         aRect.iBr.iX, aRect.iBr.iY);
 
     iDrawRect = aRect;
 
@@ -226,10 +226,10 @@ void CMMACameraWindow::SetDrawRect(const TRect& aRect)
 //
 void CMMACameraWindow::SetDrawRectThread(const TRect& aRect)
 {
-    LOG2( EJavaMMAPI, EInfo, "MMA::CMMACameraWindow::SetDrawRectThread TL:%d,%d",
-               aRect.iTl.iX, aRect.iTl.iY);
-    LOG2( EJavaMMAPI, EInfo, "MMA::CMMACameraWindow::SetDrawRectThread BR:%d,%d",
-               aRect.iBr.iX, aRect.iBr.iY);
+    LOG2(EJavaMMAPI, EInfo, "MMA::CMMACameraWindow::SetDrawRectThread TL:%d,%d",
+         aRect.iTl.iX, aRect.iTl.iY);
+    LOG2(EJavaMMAPI, EInfo, "MMA::CMMACameraWindow::SetDrawRectThread BR:%d,%d",
+         aRect.iBr.iX, aRect.iBr.iY);
 
     // Note: Runs in UI thread only
 
@@ -304,7 +304,7 @@ void CMMACameraWindow::SetVisible(TBool aVisible, TBool aUseEventServer)
         {
             if (aVisible)
             {
-               // iDisplay->UIGetCallback(
+                // iDisplay->UIGetCallback(
                 //    *this, CMMACameraWindow::EShowViewFinder);
                 LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetVisible : before GetCallbackInUiThread - EShowViewFinder");
                 iDisplay->GetCallbackInUiThread((TInt)CMMACameraWindow::EShowViewFinder);
@@ -312,8 +312,8 @@ void CMMACameraWindow::SetVisible(TBool aVisible, TBool aUseEventServer)
             }
             else
             {
-               // iDisplay->UIGetCallback(
-               //     *this, CMMACameraWindow::EHideViewFinder);
+                // iDisplay->UIGetCallback(
+                //     *this, CMMACameraWindow::EHideViewFinder);
                 LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetVisible : before GetCallbackInUiThread - EHideViewFinder");
                 iDisplay->GetCallbackInUiThread((TInt)CMMACameraWindow::EHideViewFinder);
                 LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetVisible : before GetCallbackInUiThread  - EHideViewFinder");
@@ -333,10 +333,10 @@ void CMMACameraWindow::SetWindowRect(
     const TRect& aRect,
     MMMADisplay::TThreadType aThreadType)
 {
-    LOG2( EJavaMMAPI, EInfo, "MMA::CMMACameraWindow::SetWindowRect TL:%d,%d",
-               aRect.iTl.iX, aRect.iTl.iY);
-    LOG2( EJavaMMAPI, EInfo, "MMA::CMMACameraWindow::SetWindowRect BR:%d,%d",
-               aRect.iBr.iX, aRect.iBr.iY);
+    LOG2(EJavaMMAPI, EInfo, "MMA::CMMACameraWindow::SetWindowRect TL:%d,%d",
+         aRect.iTl.iX, aRect.iTl.iY);
+    LOG2(EJavaMMAPI, EInfo, "MMA::CMMACameraWindow::SetWindowRect BR:%d,%d",
+         aRect.iBr.iX, aRect.iBr.iY);
 
     if (iClientRect != aRect)
     {
@@ -348,8 +348,8 @@ void CMMACameraWindow::SetWindowRect(
         }
         else
         {
-          //  iDisplay->UIGetCallback(
-          //      *this, CMMACameraWindow::EResetViewFinder);
+            //  iDisplay->UIGetCallback(
+            //      *this, CMMACameraWindow::EResetViewFinder);
             LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetWindowRect : before GetCallbackInUiThread + EResetViewFinder");
             iDisplay->GetCallbackInUiThread((TInt)CMMACameraWindow::EHideViewFinder);
             LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetWindowRect : before GetCallbackInUiThread  - EResetViewFinder");
@@ -413,7 +413,7 @@ void CMMACameraWindow::ContainerSet()
     if (!iUICamera && iDisplay)
     {
         // Get a DSA stuff for the new Display
-       // iDisplay->UIGetDSAResources(*this, MMMADisplay::EUiThread);
+        // iDisplay->UIGetDSAResources(*this, MMMADisplay::EUiThread);
     }
 }
 
@@ -457,7 +457,7 @@ void CMMACameraWindow::ReserveComplete(TInt aError)
 //
 void CMMACameraWindow::PowerOnComplete(TInt aError)
 {
-    ELOG1( EJavaMMAPI, "MMA::CMMACameraWindow::PowerOnComplete %d", aError);
+    ELOG1(EJavaMMAPI, "MMA::CMMACameraWindow::PowerOnComplete %d", aError);
 
     if (aError == KErrNone)
     {
@@ -582,9 +582,9 @@ void CMMACameraWindow::UIStartViewFinder(
         TRAPD(error, iUICamera =
                   CCamera::NewDuplicateL(*this, iCameraHandle));
 
-        ELOG1( EJavaMMAPI, 
-            "MMA::CMMACameraWindow::UIStartViewFinder - NewDuplicateL %d",
-            error);
+        ELOG1(EJavaMMAPI,
+              "MMA::CMMACameraWindow::UIStartViewFinder - NewDuplicateL %d",
+              error);
 
         if (error == KErrNone)
         {
@@ -602,8 +602,8 @@ void CMMACameraWindow::UIStartViewFinder(
 //
 void CMMACameraWindow::SetViewFinderVisibility(TBool aVisible)
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMACameraWindow::SetViewFinderVisibility - %d",
-              aVisible);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMACameraWindow::SetViewFinderVisibility - %d",
+         aVisible);
 
     if (!iUICamera || !iCameraPowerOn || iViewFinderVisible == aVisible)
     {
@@ -629,9 +629,9 @@ void CMMACameraWindow::SetViewFinderVisibility(TBool aVisible)
 
             if (timerErr != KErrNone)
             {
-             ELOG1( EJavaMMAPI, 
-            "MMA::CMMACameraWindow::SetViewFinderVisibility - timer error = %d",
-            timerErr);	
+                ELOG1(EJavaMMAPI,
+                      "MMA::CMMACameraWindow::SetViewFinderVisibility - timer error = %d",
+                      timerErr);
                 __ASSERT_DEBUG(EFalse, User::Invariant());
             }
         }
@@ -696,12 +696,12 @@ TInt CMMACameraWindow::StarterTimerCallback(TAny* aThis)
 void CMMACameraWindow::SetRWindowRect(const TRect& aRect,
                                       MMMADisplay::TThreadType aThreadType)
 {
-    ELOG2( EJavaMMAPI, 
-            "MID::CMMACameraWindow::SetRWindowRect TL %d %d",
-               aRect.iTl.iX, aRect.iTl.iY);
-	ELOG2( EJavaMMAPI, 
-            "MID::CMMACameraWindow::SetRWindowRect BR %d %d",
-               aRect.iBr.iX, aRect.iBr.iY);	   	
+    ELOG2(EJavaMMAPI,
+          "MID::CMMACameraWindow::SetRWindowRect TL %d %d",
+          aRect.iTl.iX, aRect.iTl.iY);
+    ELOG2(EJavaMMAPI,
+          "MID::CMMACameraWindow::SetRWindowRect BR %d %d",
+          aRect.iBr.iX, aRect.iBr.iY);
     iRWindowRect = aRect;
 
     if (MMMADisplay::EMmaThread == aThreadType)
@@ -709,7 +709,7 @@ void CMMACameraWindow::SetRWindowRect(const TRect& aRect,
         if (iDisplay)
         {
             //iDisplay->UIGetCallback(*this,
-           //                         CMMACameraWindow::EResetViewFinder);
+            //                         CMMACameraWindow::EResetViewFinder);
         }
     }
     else if (MMMADisplay::EUiThread == aThreadType)
@@ -744,14 +744,14 @@ void CMMACameraWindow::StartViewFinder()
     TRect drawRect(iDrawRect);
     drawRect.Move(relativeClientRect.iTl);
 
-    LOG2( EJavaMMAPI, EInfo, 
-        "MMA::CMMACameraWindow::StartViewFinder - Starting VF TL:%d,%d",
-        drawRect.iTl.iX,
-        drawRect.iTl.iY);
-    LOG2( EJavaMMAPI, EInfo, 
-        "MMA::CMMACameraWindow::StartViewFinder - Starting VF BR:%d,%d",
-        drawRect.iBr.iX,
-        drawRect.iBr.iY);
+    LOG2(EJavaMMAPI, EInfo,
+         "MMA::CMMACameraWindow::StartViewFinder - Starting VF TL:%d,%d",
+         drawRect.iTl.iX,
+         drawRect.iTl.iY);
+    LOG2(EJavaMMAPI, EInfo,
+         "MMA::CMMACameraWindow::StartViewFinder - Starting VF BR:%d,%d",
+         drawRect.iBr.iX,
+         drawRect.iBr.iY);
 
     TRAPD(vfError, iUICamera->StartViewFinderDirectL(
               *iWs, *iScreenDevice, *iWindow, drawRect));
@@ -762,8 +762,8 @@ void CMMACameraWindow::StartViewFinder()
     }
     else
     {
-        LOG1( EJavaMMAPI, EInfo, 
-            "MMA::CMMACameraWindow::StartViewFinder()  - \
+        LOG1(EJavaMMAPI, EInfo,
+             "MMA::CMMACameraWindow::StartViewFinder()  - \
 StartViewFinderDirectL error=%d", vfError);
 
         TRAP_IGNORE(DrawViewFinderErrorL(vfError, drawRect));
@@ -820,17 +820,17 @@ void CMMACameraWindow::DrawViewFinderErrorL(
                 delete iErrorIconMaskBitmap;
                 iErrorIconMaskBitmap = NULL;
             }
-/*
-            AknsUtils::CreateIconL(
-                AknsUtils::SkinInstance(),
-                KAknsIIDQgnIndiCam4Camera,
-                iErrorIconBitmap,
-                iErrorIconMaskBitmap,
-                KCameraAppBitmapFile,
-                EMbmCameraappQgn_indi_cam4_camera,
-                EMbmCameraappQgn_indi_cam4_camera_mask
-            );
-            */
+            /*
+                        AknsUtils::CreateIconL(
+                            AknsUtils::SkinInstance(),
+                            KAknsIIDQgnIndiCam4Camera,
+                            iErrorIconBitmap,
+                            iErrorIconMaskBitmap,
+                            KCameraAppBitmapFile,
+                            EMbmCameraappQgn_indi_cam4_camera,
+                            EMbmCameraappQgn_indi_cam4_camera_mask
+                        );
+                        */
         }
 
         //TRect iconRect

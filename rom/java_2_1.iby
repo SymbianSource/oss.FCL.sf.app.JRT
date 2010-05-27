@@ -241,7 +241,7 @@ data=JAVA_POLICY_BLD\all.ser                                                JAVA
 
 
 // Java environment info
-file=ABI_DIR\BUILD_DIR\javaenv.dll                                          SHARED_LIB_DIR\javaenv.dll
+file=ABI_DIR\BUILD_DIR\javaenvinfo.dll                                      SHARED_LIB_DIR\javaenvinfo.dll
 data=ABI_DIR\BUILD_DIR\Z\Resource\versions\java.txt                         RESOURCE_FILES_DIR\versions\java.txt
 
 // Storage
@@ -354,5 +354,8 @@ data=JAVA_VM_RES_BLD\resources.jar                                          JAVA
 data=ZRESOURCE\java\midpOdcList                                             JAVA_RES_IMG\midpodclist
 data=ZRESOURCE\java\installerOdcList                                        JAVA_RES_IMG\installerodclist
 data=ZRESOURCE\java\tckRunnerOdcList                                        JAVA_RES_IMG\tckrunnerodclist
+
+// trust roots list
+data=ZRESOURCE\java\security\trustroots\midprootslist                       JAVA_RES_IMG\security\trustroots\midprootslist
 
 #endif

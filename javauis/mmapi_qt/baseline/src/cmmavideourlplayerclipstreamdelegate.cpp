@@ -62,8 +62,8 @@ void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerClipStreamDelegate::GetMediaTime(TInt
 
 void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerClipStreamDelegate::HandleEvent(const TMMFEvent& aEvent)
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Clip stream: HandleEvent %d", aEvent.iEventType.iUid);
-    ELOG1( EJavaMMAPI, "MMA:CMMAVideoUrlPlayer: Clip stream: HandleEvent error code: %d", aEvent.iErrorCode);
+    LOG1(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer: Clip stream: HandleEvent %d", aEvent.iEventType.iUid);
+    ELOG1(EJavaMMAPI, "MMA:CMMAVideoUrlPlayer: Clip stream: HandleEvent error code: %d", aEvent.iErrorCode);
 
     TInt err = aEvent.iErrorCode;
 

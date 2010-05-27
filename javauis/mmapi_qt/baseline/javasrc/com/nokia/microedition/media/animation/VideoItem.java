@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description: 
+* Description: VideoItem
 *
 */
+
 package com.nokia.microedition.media.animation;
 
 import javax.microedition.lcdui.CustomItem;
@@ -22,14 +23,7 @@ import javax.microedition.media.Player;
 import javax.microedition.media.PlayerListener;
 import org.eclipse.swt.graphics.Point;
 
-
-/**
- * 
- */
-/**
- * @author d35kumar
- *
- */
+import com.nokia.mj.impl.utils.Logger;
 
 public class VideoItem extends CustomItem implements PlayerListener {
 	
@@ -109,7 +103,7 @@ public class VideoItem extends CustomItem implements PlayerListener {
 	 * Whenever player will be resized this function will be invoked and it will call the invalidate method of custom item 
 	 */
 	public void playerUpdate(Player aPlayer, String aEvent, Object aEventData) {
-		System.out.println("VideoItem::playerUpdate() Event is "+aEvent+"Event Data is "+aEventData);
+		Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"VideoItem::playerUpdate() Event is "+aEvent+"Event Data is "+aEventData);
 		if (aEvent == SIZE_CHANGED) {
 			invalidate();
 		}
