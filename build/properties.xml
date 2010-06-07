@@ -27,6 +27,14 @@
   <!--The environment properties -->
   <property environment="env"/>
 
+    <!-- Set internal epoc root -->
+	<condition property="epocroot"
+               value="${env.EPOCROOT}"
+               else="">
+      <isset property="env.EPOCROOT"/>
+	</condition>
+
+
   <!--The root of the source files -->
   <property name="java.src.root" location="${ant.file.Properties}/../../"/>
 
@@ -42,9 +50,9 @@
   <property name="platform.utilities.xml.file" value="utilities.fake.xml"/>
 
   <!--The cldc/cdc class file locations -->
-  <property name="bootclasspath.cldc" location="${java.src.root}/inc/classes.cldc.zip"/>
-  <property name="bootclasspath.cdc"  location="${java.src.root}/inc/classes.cdc.zip"/>
-  <property name="bootclasspath.fp"   location="${java.src.root}/inc/classes.fp.zip"/>
+  <property name="bootclasspath.cldc" location="${java.src.root}/inc/classes.cldc.zip:${epocroot}epoc32/jrt/classes.cldc.zip"/>
+  <property name="bootclasspath.cdc"  location="${java.src.root}/inc/classes.cdc.zip:${epocroot}epoc32/jrt/classes.cdc.zip"/>
+  <property name="bootclasspath.fp"   location="${java.src.root}/inc/classes.fp.zip:${epocroot}epoc32/jrt/classes.fp.zip"/>
   
   
   
@@ -58,13 +66,6 @@
                value="udeb"
                else="urel">
       <equals arg1="${target.cfg}" arg2="debug"/>
-	</condition>
-
-    <!-- Set internal epoc root -->
-	<condition property="epocroot"
-               value="${env.EPOCROOT}"
-               else="">
-      <isset property="env.EPOCROOT"/>
 	</condition>
 
     <!--Location of eswt.jar. This is not needed in S60 Avkon, 
