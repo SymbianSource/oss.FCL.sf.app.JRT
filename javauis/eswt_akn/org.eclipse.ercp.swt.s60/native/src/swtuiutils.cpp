@@ -24,6 +24,10 @@
 #include <AknUtils.h>
 #include <AknsDrawUtils.h>
 #include <AknTextDecorationMetrics.h>
+#ifdef RD_JAVA_S60_RELEASE_9_2
+#include <AknPriv.hrh>
+#include <aknappui.h>
+#endif
 #include <coreuiavkoneswt.h>
 #include <swtlaffacade.h>
 #include "eswtmobileextensions.h"
@@ -350,32 +354,6 @@ void CSwtUiUtils::ShellActivabilityChanged(MSwtShell& aShell)
     }
 }
 
-
-// ---------------------------------------------------------------------------
-// CSwtUiUtils::SetPointerCaptureControl
-// ---------------------------------------------------------------------------
-//
-void CSwtUiUtils::SetPointerCaptureControl(MSwtControl* aControl)
-{
-    if (aControl)
-    {
-        iPointerCaptureControl = aControl;
-    }
-    else
-    {
-        iPointerCaptureControl = NULL;
-    }
-}
-
-// ---------------------------------------------------------------------------
-// CSwtUiUtils::PointerCaptureControl
-// ---------------------------------------------------------------------------
-//
-MSwtControl* CSwtUiUtils::PointerCaptureControl()
-{
-    return iPointerCaptureControl;
-}
-
 // ---------------------------------------------------------------------------
 // CSwtUiUtils::SetNextFocusedControl
 // ---------------------------------------------------------------------------
@@ -559,6 +537,7 @@ void CSwtUiUtils::ConstructL()
     }
 
     // Title pane priority.
+    ctrl = NULL;
     TRAP_IGNORE(ctrl = iStatusPane->ContainerControlL(
                            TUid::Uid(EEikStatusPaneUidTitle)));
     if (ctrl)
@@ -573,6 +552,7 @@ void CSwtUiUtils::ConstructL()
     }
 
     // Navi pane priority.
+    ctrl = NULL;
     TRAP_IGNORE(ctrl = iStatusPane->ContainerControlL(
                            TUid::Uid(EEikStatusPaneUidNavi)));
     if (ctrl)
@@ -587,6 +567,7 @@ void CSwtUiUtils::ConstructL()
     }
 
     // Empty pane priority.
+    ctrl = NULL;
     TRAP_IGNORE(ctrl = iStatusPane->ContainerControlL(
                            TUid::Uid(EEikStatusPaneUidEmpty)));
     if (ctrl)
@@ -601,6 +582,7 @@ void CSwtUiUtils::ConstructL()
     }
 
     // Indi pane priority.
+    ctrl = NULL;
     TRAP_IGNORE(ctrl = iStatusPane->ContainerControlL(
                            TUid::Uid(EEikStatusPaneUidIndic)));
     if (ctrl)
@@ -615,6 +597,7 @@ void CSwtUiUtils::ConstructL()
     }
 
     // Clock pane priority.
+    ctrl = NULL;
     TRAP_IGNORE(ctrl = iStatusPane->ContainerControlL(
                            TUid::Uid(EEikStatusPaneUidClock)));
     if (ctrl)
@@ -629,6 +612,7 @@ void CSwtUiUtils::ConstructL()
     }
 
     // Digital clock pane priority.
+    ctrl = NULL;
     TRAP_IGNORE(ctrl = iStatusPane->ContainerControlL(
                            TUid::Uid(EEikStatusPaneUidDigitalClock)));
     if (ctrl)
@@ -643,6 +627,7 @@ void CSwtUiUtils::ConstructL()
     }
 
     // Signal pane priority.
+    ctrl = NULL;
     TRAP_IGNORE(ctrl = iStatusPane->ContainerControlL(
                            TUid::Uid(EEikStatusPaneUidSignal)));
     if (ctrl)
@@ -657,6 +642,7 @@ void CSwtUiUtils::ConstructL()
     }
 
     // Battery pane priority.
+    ctrl = NULL;
     TRAP_IGNORE(ctrl = iStatusPane->ContainerControlL(
                            TUid::Uid(EEikStatusPaneUidBattery)));
     if (ctrl)
@@ -847,6 +833,10 @@ const CFont& CSwtUiUtils::InlineReferenceFont() const
     return *iInlineFont;
 }
 
+// ---------------------------------------------------------------------------
+// CSwtUiUtils::HideIndicator
+// ---------------------------------------------------------------------------
+//
 void CSwtUiUtils::HideIndicator(TInt aId)
 {
     TUid uid = TUid::Uid(aId);
@@ -862,6 +852,10 @@ void CSwtUiUtils::HideIndicator(TInt aId)
     }
 }
 
+// ---------------------------------------------------------------------------
+// CSwtUiUtils::HideIndicators
+// ---------------------------------------------------------------------------
+//
 void CSwtUiUtils::HideIndicators()
 {
     if (!iStatusPane)
@@ -873,6 +867,52 @@ void CSwtUiUtils::HideIndicators()
     HideIndicator(EEikStatusPaneUidMessage);
     HideIndicator(EEikStatusPaneUidClock);
     HideIndicator(EEikStatusPaneUidDigitalClock);
+}
+
+// ---------------------------------------------------------------------------
+// CSwtUiUtils::DoSetSplitInputShellPos
+// ---------------------------------------------------------------------------
+//
+void CSwtUiUtils::DoSetSplitInputShellPos(const TPoint& aPos)
+{
+    MSwtShell& shell = iSplitInputView->GetShell();
+    MSwtControl* temp = iSplitInputView;
+    iSplitInputView = 0; // stop recursion.
+    shell.DoSetLocation(aPos);
+    iSplitInputView = temp;
+}
+
+// ---------------------------------------------------------------------------
+// CSwtUiUtils::DoSetSplitInputViewSize
+// ---------------------------------------------------------------------------
+//
+void CSwtUiUtils::DoSetSplitInputViewSize(const TSize& aSize)
+{
+    MSwtControl* temp = iSplitInputView;
+    iSplitInputView = 0; // stop recursion.
+    temp->SetWidgetSize(aSize);
+    iSplitInputView = temp;
+}
+
+// ---------------------------------------------------------------------------
+// CSwtUiUtils::ScrolledCompositeAncestor
+// ---------------------------------------------------------------------------
+//
+MSwtControl* CSwtUiUtils::ScrolledCompositeAncestor(const MSwtControl& aControl) const
+{
+    MSwtComposite* parent = aControl.GetParent();
+    const MSwtControl* control = &aControl;
+    while (parent)
+    {
+        if (parent->ScrolledCompositeContent() == control)
+        {
+            return parent->Control();
+        }
+        control = parent->Control();
+        parent = parent->Control()->GetParent();
+    }
+
+    return 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -1149,10 +1189,19 @@ void CSwtUiUtils::UpdateStatusPaneL()
     MSwtShell* topShell = TopMostTopShell();
     if (!topShell || topShell->FullScreenMode())
     {
-        if (iStatusPane->IsVisible())
+        if (iSplitInputEditor)
         {
-            iStatusPane->SetObserver(NULL);
-            iStatusPane->MakeVisible(EFalse);
+            // Split input editing is ongoing and the status pane is hidden.
+            // Cache the new status pane visibility for when the split input ends.
+            iSplitInputSPVisible = EFalse;
+        }
+        else
+        {
+            if (iStatusPane->IsVisible())
+            {
+                iStatusPane->SetObserver(NULL);
+                iStatusPane->MakeVisible(EFalse);
+            }
         }
         return;
     }
@@ -1261,7 +1310,16 @@ void CSwtUiUtils::UpdateStatusPaneL()
     iStatusPane->SetObserver(NULL);
     if (!topShell || style == MSwtShell::EStyleNoStatusPane)
     {
-        iStatusPane->MakeVisible(EFalse);
+        if (iSplitInputEditor)
+        {
+            // Split input editing is ongoing and the status pane is hidden.
+            // Cache the new status pane visibility for when the split input ends.
+            iSplitInputSPVisible = EFalse;
+        }
+        else
+        {
+            iStatusPane->MakeVisible(EFalse);
+        }
     }
     else
     {
@@ -1273,22 +1331,35 @@ void CSwtUiUtils::UpdateStatusPaneL()
         {
             iStatusPane->SwitchLayoutL(R_AVKON_STATUS_PANE_LAYOUT_SMALL_WITH_SIGNAL_PANE);
         }
-        iStatusPane->MakeVisible(ETrue);
 
-        java::ui::CoreUiAvkonAppUi* appUi = java::ui::CoreUiAvkonEswt::getInstance().getJavaUiAppUi();
-        if (appUi && appUi->hidesIndicators())
+        if (iSplitInputEditor)
         {
-            HideIndicators();
+            // Split input editing is ongoing and the status pane is hidden.
+            // Cache the new status pane visibility for when the split input ends.
+            iSplitInputSPVisible = ETrue;
         }
+        else
+        {
+            iStatusPane->MakeVisible(ETrue);
 
-        // The above relies on DrawDeferred which is too slow for some cases.
-        // For instance, the pane must draw immediately when the app draws the
-        // first time otherwise the startup screenshot will miss the pane.
-        iStatusPane->DrawNow();
+            java::ui::CoreUiAvkonAppUi* appUi = java::ui::CoreUiAvkonEswt::getInstance().getJavaUiAppUi();
+            if (appUi && appUi->hidesIndicators())
+            {
+                HideIndicators();
+            }
+
+            // The above relies on DrawDeferred which is too slow for some cases.
+            // For instance, the pane must draw immediately when the app draws the
+            // first time otherwise the startup screenshot will miss the pane.
+            iStatusPane->DrawNow();
+        }
     }
 
     // This will cause HandleStatusPaneSizeChange notifications again
-    iStatusPane->SetObserver(this);
+    if (!iSplitInputEditor)
+    {
+        iStatusPane->SetObserver(this);
+    }
 
     // Shells are trusted to have the correct size already.
 }
@@ -1544,6 +1615,12 @@ void CSwtUiUtils::HandleResourceChangedL(TInt aType)
             shell->Control()->CoeControl().HandleResourceChange(aType);
         }
     }
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    if (aType == KAknSplitInputDisabled)
+    {
+        SetSplitInputEditor(0);
+    }
+#endif
 }
 
 // ---------------------------------------------------------------------------
@@ -1676,6 +1753,215 @@ TRect CSwtUiUtils::TaskTipRect() const
 }
 
 // ---------------------------------------------------------------------------
+// CSwtUiUtils::SetPointerCaptureControl
+// From MSwtUtils
+// ---------------------------------------------------------------------------
+//
+void CSwtUiUtils::SetPointerCaptureControl(MSwtControl* aControl)
+{
+    if (aControl)
+    {
+        iPointerCaptureControl = aControl;
+    }
+    else
+    {
+        iPointerCaptureControl = NULL;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// CSwtUiUtils::PointerCaptureControl
+// From MSwtUtils
+// ---------------------------------------------------------------------------
+//
+MSwtControl* CSwtUiUtils::PointerCaptureControl()
+{
+    return iPointerCaptureControl;
+}
+
+// ---------------------------------------------------------------------------
+// CSwtUiUtils::SetSplitInputEditor
+// From MSwtUtils
+// ---------------------------------------------------------------------------
+//
+void CSwtUiUtils::SetSplitInputEditor(MSwtControl* aEditor)
+{
+    if (iSplitInputEditor == aEditor)
+    {
+        // This can happen when pressing Enter in a multi line editor.
+        return;
+    }
+
+    CAknAppUi* appUi = (CAknAppUi*)iDisplay.CoeEnv()->EikAppUi();
+
+    if (aEditor)
+    {
+        MSwtShell& shell = aEditor->GetShell();
+        MSwtControl* view = ScrolledCompositeAncestor(*aEditor);
+        TBool editorSwitch(iSplitInputEditor != 0);
+        TBool keepView(view && view == iSplitInputView);
+        TBool keepShell(editorSwitch && ((&iSplitInputEditor->GetShell()) == (&shell)));
+
+        if (editorSwitch)
+        {
+            if (!keepShell)
+            {
+                // Move back the previous split input Shell keeping the SP hidden.
+                DoSetSplitInputShellPos(iSplitInputShellPos);
+            }
+            // Otherwise no need for the shell to restore its original
+            // position as it is going to be moved again right after this.
+
+            if (!keepView)
+            {
+                // Resize back the previous split input view
+                DoSetSplitInputViewSize(iSplitInputViewSize);
+            }
+        }
+
+        iSplitInputEditor = aEditor;
+        iSplitInputView = view;
+        if (!iSplitInputView)
+        {
+            iSplitInputView = iSplitInputEditor;
+        }
+
+        if (!editorSwitch || !keepShell)
+        {
+            iSplitInputShellPos = shell.Control()->GetLocation();
+        }
+
+        if (!editorSwitch)
+        {
+            iSplitInputSPVisible = iStatusPane->IsVisible();
+        }
+
+        if (iStatusPane->IsVisible())
+        {
+            // Hide the SP. The observer must be cleared before so that
+            // HandleStatusPaneSizeChange is not called on the Shell.
+            iStatusPane->SetObserver(NULL);
+            iStatusPane->MakeVisible(EFalse);
+        }
+
+        if (!keepView)
+        {
+            iSplitInputViewSize = TSize(0, 0);
+            SetSplitInputViewSize(iSplitInputView->GetWidgetSize());
+        }
+
+        if (!editorSwitch && view)
+        {
+            TRAP_IGNORE(iDisplay.PostShowFocusedControlEventL(view->JavaPeer()));
+        }
+    }
+    else
+    {
+        ASSERT(iSplitInputEditor);
+        if (iSplitInputSPVisible)
+        {
+            iStatusPane->MakeVisible(ETrue);
+            iStatusPane->SetObserver(this);
+        }
+        DoSetSplitInputShellPos(iSplitInputShellPos);
+        DoSetSplitInputViewSize(iSplitInputViewSize);
+        iSplitInputEditor = 0;
+        iSplitInputView = 0;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// CSwtUiUtils::SetSplitInputEditor
+// From MSwtUtils
+// ---------------------------------------------------------------------------
+//
+MSwtControl* CSwtUiUtils::SplitInputEditor() const
+{
+    return iSplitInputEditor;
+}
+
+// ---------------------------------------------------------------------------
+// CSwtUiUtils::SetSplitInputEditor
+// From MSwtUtils
+// ---------------------------------------------------------------------------
+//
+MSwtControl* CSwtUiUtils::SplitInputView() const
+{
+    return iSplitInputView;
+}
+
+// ---------------------------------------------------------------------------
+// CSwtUiUtils::SetSplitInputShellPos
+// From MSwtUtils
+// ---------------------------------------------------------------------------
+//
+void CSwtUiUtils::SetSplitInputShellPos(const TPoint& aOriginalPos)
+{
+    iSplitInputShellPos = aOriginalPos;
+}
+
+// ---------------------------------------------------------------------------
+// CSwtUiUtils::SetSplitInputViewSize
+// From MSwtUtils
+// ---------------------------------------------------------------------------
+//
+void CSwtUiUtils::SetSplitInputViewSize(const TSize& aOriginalSize)
+{
+    if (aOriginalSize == iSplitInputViewSize)
+    {
+        return;
+    }
+
+    // Remember the size of the editor and resize it if needed
+    // to fit into remaining space above the vkb.
+    iSplitInputViewSize = aOriginalSize;
+    CAknAppUi* appUi = (CAknAppUi*)iDisplay.CoeEnv()->EikAppUi();
+    TRect appUiRect(appUi->ClientRect());
+    TSize size(iSplitInputViewSize);
+    if (size.iHeight > appUiRect.Height())
+    {
+        size.iHeight = appUiRect.Height();
+    }
+    DoSetSplitInputViewSize(size);
+    AdjustSplitInputShellPos();
+}
+
+// ---------------------------------------------------------------------------
+// CSwtUiUtils::AdjustSplitInputShellPos
+// From MSwtUtils
+// ---------------------------------------------------------------------------
+//
+void CSwtUiUtils::AdjustSplitInputShellPos()
+{
+    if (!iSplitInputView)
+    {
+        return;
+    }
+
+    CAknAppUi *appUi = (CAknAppUi*)(iDisplay.CoeEnv()->EikAppUi());
+    TInt appUiHeight(appUi->ClientRect().Height());
+    MSwtShell & shell = iSplitInputView->GetShell();
+    TInt shellHeight(shell.Control()->GetWidgetSize().iHeight);
+    TRect rect(iSplitInputView->VisibleRect());
+    TInt y(-rect.iTl.iY + (appUiHeight - rect.Height()) / 2);
+    if (y < (appUiHeight - shellHeight))
+        y = appUiHeight - shellHeight;
+
+    if (!shell.GetParentShell())
+    {
+        if (y > 0)
+            y = 0;
+    }
+    else
+    {
+        if (y > iSplitInputShellPos.iY)
+            y = iSplitInputShellPos.iY;
+
+    }
+    DoSetSplitInputShellPos(TPoint(iSplitInputShellPos.iX, y));
+}
+
+// ---------------------------------------------------------------------------
 // CSwtUiUtils::HandleFreeRamEventL
 // From MSwtUiUtils
 // ---------------------------------------------------------------------------
@@ -1777,6 +2063,10 @@ CCoeControl* CSwtUiUtils::FadedComponent(TInt aIndex)
     return NULL;
 }
 
+// ---------------------------------------------------------------------------
+// CSwtUiUtils::SetShellFade
+// ---------------------------------------------------------------------------
+//
 void CSwtUiUtils::SetShellFade(MSwtShell* aShell, TBool aStatus)
 {
     if (CanBeFaded(aShell))
@@ -1793,7 +2083,12 @@ void CSwtUiUtils::SetShellFade(MSwtShell* aShell, TBool aStatus)
     }
 }
 
+// ---------------------------------------------------------------------------
+// CSwtUiUtils::CanBeFaded
+// ---------------------------------------------------------------------------
+//
 TBool CSwtUiUtils::CanBeFaded(MSwtShell* aShell) const
 {
     return (aShell && aShell->GetParentShell() && IsApplicationModal(*aShell));
 }
+

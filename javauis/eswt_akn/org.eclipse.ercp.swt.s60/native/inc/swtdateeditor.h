@@ -158,6 +158,9 @@ public:
     void  SetBackgroundL(const MSwtColor* aColor);
     void  SetForegroundL(const MSwtColor* aColor);
     TBool IsKeyUsed(TUint aKeyCode) const;
+    void SetBounds(const TRect& aRect);
+    void SetWidgetSize(const TSize& aSize);
+    TSwtPeer Dispose();
 
 // From ASwtControlBase
 protected:

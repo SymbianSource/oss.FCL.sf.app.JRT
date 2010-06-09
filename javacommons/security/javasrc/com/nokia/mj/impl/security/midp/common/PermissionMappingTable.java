@@ -228,6 +228,12 @@ public class PermissionMappingTable
        PERMISSION_MAPPING_TABLE.put(
             "javax.microedition.midlet.AutoStartPermission", new MIDPPermission(
                 "com.nokia.mj.impl.installer.utils.AutoStartPermission", null));
+       PERMISSION_MAPPING_TABLE.put(
+            "javax.microedition.midlet.CmdLineArgsPermission", new MIDPPermission(
+                "com.nokia.mj.impl.rt.utils.CmdLineArgsPermission", null));
+       PERMISSION_MAPPING_TABLE.put(
+            "com.nokia.webstart", new MIDPPermission(
+                "com.nokia.mj.impl.rt.utils.CmdLineArgsPermission", null));
     }
 
     /**

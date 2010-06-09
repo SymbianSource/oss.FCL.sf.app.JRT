@@ -187,6 +187,11 @@ private:
 
     void HideIndicator(TInt aId);
     void HideIndicators();
+    
+    void DoSetSplitInputShellPos(const TPoint& aPos);
+    void DoSetSplitInputViewSize(const TSize& aSize);
+    
+    MSwtControl* ScrolledCompositeAncestor(const MSwtControl& aControl) const;
 
 // From MSwtUiUtils
 public:
@@ -229,7 +234,13 @@ public:
     TRect TaskTipRect() const;
     void SetPointerCaptureControl(MSwtControl* aControl);
     MSwtControl* PointerCaptureControl();
-
+    void SetSplitInputEditor(MSwtControl *aEditor);
+    MSwtControl* SplitInputEditor() const;
+    MSwtControl* SplitInputView() const;
+    void SetSplitInputShellPos(const TPoint& aOriginalPos);
+    void SetSplitInputViewSize(const TSize& aOriginalSize);
+    void AdjustSplitInputShellPos();
+    
 protected:
     void HandleFreeRamEventL(TInt aEventType);
 
@@ -389,6 +400,15 @@ private:
      * Key input flag.
      */
     TBool iNaviKeyInput;
+    
+    /**
+     * Split input data.
+     */
+    MSwtControl* iSplitInputEditor;
+    MSwtControl* iSplitInputView;
+    TSize iSplitInputViewSize;
+    TPoint iSplitInputShellPos;
+    TBool iSplitInputSPVisible;
 };
 
 /**

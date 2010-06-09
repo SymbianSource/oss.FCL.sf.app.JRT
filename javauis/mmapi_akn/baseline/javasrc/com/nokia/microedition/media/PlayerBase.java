@@ -124,7 +124,7 @@ public abstract class PlayerBase implements InternalPlayer
      * From Player
      * @see Player
      */
-    public void realize() throws MediaException
+    synchronized public void realize() throws MediaException
     {
         closeCheck();
         int state = getState();
@@ -149,7 +149,7 @@ public abstract class PlayerBase implements InternalPlayer
      * From Player
      * @see Player
      */
-    public void prefetch() throws MediaException
+    synchronized public void prefetch() throws MediaException
     {
         realize();
 
@@ -170,7 +170,7 @@ public abstract class PlayerBase implements InternalPlayer
      * interface Player
      * @see Player
      */
-    public void deallocate()
+    synchronized public void deallocate()
     {
         try
         {
@@ -197,7 +197,7 @@ public abstract class PlayerBase implements InternalPlayer
      * interface Player
      * @see Player
      */
-    public void stop() throws MediaException
+    synchronized public void stop() throws MediaException
     {
         closeCheck();
         if (getState() == STARTED)
@@ -215,7 +215,7 @@ public abstract class PlayerBase implements InternalPlayer
      * interface Player
      * @see Player
      */
-    public void close()
+    synchronized public void close()
     {
         /*
         Releases all resources and cease all activity.

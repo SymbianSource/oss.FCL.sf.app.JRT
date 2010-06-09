@@ -129,8 +129,7 @@ TBool CMIDPhysicsWrapper::StartFlick(const TPoint& aLength, TTime aDuration)
     if (iPhysics)
     {
         TPoint drag(aLength);
-        iPhysics->StartPhysics(drag, aDuration);
-        return ETrue;
+        return iPhysics->StartPhysics(drag, aDuration);
     }
 
     PhysicEmulationEnded();

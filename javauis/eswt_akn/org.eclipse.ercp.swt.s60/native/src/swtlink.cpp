@@ -1198,6 +1198,8 @@ void CSwtLink::HandlePointerEventL(const TPointerEvent& aPointerEvent)
         break;
     }
     }
+
+    PostMouseEventL(aPointerEvent);
 }
 
 // ---------------------------------------------------------------------------

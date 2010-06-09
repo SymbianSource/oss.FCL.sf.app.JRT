@@ -705,6 +705,12 @@ void ASwtDisplayBase::PostCloseEventL(TSwtPeer aPeer, TBool& aDispatched)
     iEventQueue->PushL(new(ELeave) CSwtCloseEvent(aPeer, aDispatched));
 }
 
+void ASwtDisplayBase::PostShowFocusedControlEventL(TSwtPeer aPeer)
+{
+    ASSERT_NATIVEUITHREAD();
+    iEventQueue->PushL(new(ELeave) CSwtShowFocusedControlEvent(aPeer));
+}
+
 TInt ASwtDisplayBase::ApplicationUid()
 {
     return iApplicationUid;
@@ -1148,7 +1154,20 @@ void ASwtDisplayBase::HandlePopupMenuClosedL()
         // Forward delayed pointer event
         TPointerEvent event(iLongTapPointerEvent);
         event.iType = TPointerEvent::EButton1Up;
-        iLongTapControl->HandlePointerEventL(event); // revert
+
+        MSwtShell* shell = iLongTapControl->ShellInterface();
+        if (shell)
+        {
+            // The Shells do not process (forward event to children
+            // or send mouse event to Java) the pointer if revert is on.
+            // Therefore reset early to let Shell send the mouse event.
+            CancelLongTapAnimation();
+            shell->Control()->HandlePointerEventL(event); // revert
+        }
+        else
+        {
+            iLongTapControl->HandlePointerEventL(event); // revert
+        }
     }
 
     // Just to clear the flags.

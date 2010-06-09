@@ -734,7 +734,10 @@ public class ScrolledComposite extends Composite
         if (control == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
         if (control.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
         if (!contains(control)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+        doShowControl(control, false);
+    }
 
+    private void doShowControl(Control control, boolean center) {
         Rectangle itemRect = getDisplay().map(control.getParent(), this, control.getBounds());
         Rectangle area = getClientArea();
         Point origin = getOrigin();
@@ -746,13 +749,21 @@ public class ScrolledComposite extends Composite
         {
             if (area.width < itemRect.x + itemRect.width) origin.x = Math.max(0, origin.x + itemRect.x + Math.min(itemRect.width, area.width) - area.width);
         }
-        if (itemRect.y < 0)
+        
+        if (center && itemRect.height <= area.height)
         {
-            origin.y = Math.max(0, origin.y + itemRect.y);
+            origin.y = origin.y + itemRect.y - (area.height - itemRect.height) / 2;
         }
         else
         {
-            if (area.height < itemRect.y + itemRect.height) origin.y = Math.max(0, origin.y + itemRect.y + Math.min(itemRect.height, area.height) - area.height);
+            if (itemRect.y < 0)
+            {
+                origin.y = Math.max(0, origin.y + itemRect.y);
+            }
+            else
+            {
+                if (area.height < itemRect.y + itemRect.height) origin.y = Math.max(0, origin.y + itemRect.y + Math.min(itemRect.height, area.height) - area.height);
+            }
         }
         setOrigin(origin);
     }
@@ -764,5 +775,11 @@ public class ScrolledComposite extends Composite
         ScrollBar vBar = getVerticalBar();
         int vSelection = vBar.getSelection();
         content.setLocation(location.x, -vSelection);
+    }
+    
+    void handleShowFocusedControlEvent()
+    {
+        Control control = getDisplay().getFocusControl();
+        if (contains(control)) doShowControl(control, true);
     }
 }

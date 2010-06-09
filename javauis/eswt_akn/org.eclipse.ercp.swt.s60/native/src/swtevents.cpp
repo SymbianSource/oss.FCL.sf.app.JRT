@@ -1384,3 +1384,30 @@ void CSwtTextSelectionEvent::DoDispatch(JNIEnv* aJniEnv)
                        "(ILjava/lang/String;)V", static_cast<jint>(Type()), selectedText);
 }
 
+// -----------------------------------------------------------------------------
+// CSwtShowFocusedControlEvent::CSwtShowFocusedControlEvent
+// -----------------------------------------------------------------------------
+//
+CSwtShowFocusedControlEvent::CSwtShowFocusedControlEvent(TSwtPeer aPeer)
+        : CSwtEvent(aPeer)
+{
+}
+
+// -----------------------------------------------------------------------------
+// CSwtShowFocusedControlEvent::Type
+// -----------------------------------------------------------------------------
+//
+TSwtEventType CSwtShowFocusedControlEvent::Type() const
+{
+    return ESwtEventShowFocusedControl;
+}
+
+// -----------------------------------------------------------------------------
+// CSwtShowFocusedControlEvent::DoDispatch
+// -----------------------------------------------------------------------------
+//
+void CSwtShowFocusedControlEvent::DoDispatch(JNIEnv* aJniEnv)
+{
+    TBool failed;
+    CallVoidJavaMethod(failed, aJniEnv, Peer(), "handleShowFocusedControlEvent", "()V");
+}

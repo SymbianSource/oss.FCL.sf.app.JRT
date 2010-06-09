@@ -668,8 +668,34 @@ void CSwtTableListBox::HandlePointerEventL(const TPointerEvent& aPointerEvent)
     // Deliver event to scrollbar
     if (iVScrollBarGrabsPointerEvents && vsb)
     {
-        vsb->HandlePointerEventL(aPointerEvent);
+        if (!iFlickScrollingOngoing
+                && aPointerEvent.iType == TPointerEvent::EButton1Down)
+        {
+            // Scrollbar was tapped after scrolling stopped
+            // by itself, so no need to redirect events
+            iScrollbarPointerEventToListbox = EFalse;
+        }
+
+        if (iScrollbarPointerEventToListbox)
+        {
+            // Stops kinetic scrolling when scrollbar is tapped
+            CEikTextListBox::HandlePointerEventL(aPointerEvent);
+            // Continue delivering events until button up appears to prevent
+            // some unexpected behavior in both scrollbar and listbox
+            switch (aPointerEvent.iType)
+            {
+            case TPointerEvent::EButton1Up:
+                iScrollbarPointerEventToListbox = EFalse;
+                break;
+            }
+        }
+        else
+        {
+            // Handles scrollbar behavior
+            vsb->HandlePointerEventL(aPointerEvent);
+        }
     }
+
     if (iHScrollBarGrabsPointerEvents && hsb)
     {
         hsb->HandlePointerEventL(aPointerEvent);
@@ -868,6 +894,8 @@ void CSwtTableListBox::HandleListBoxEventL(CEikListBox* aListBox, TListBoxEvent 
     {
         return;
     }
+
+    UpdateFlickScrollingState(aEventType);
 
     switch (aEventType)
     {
@@ -1130,7 +1158,9 @@ CListBoxView* CSwtTableListBox::MakeViewClassInstanceL()
 
 CSwtTableListBox::CSwtTableListBox(MSwtDisplay& aDisplay, CSwtTable &aTable)
         : iDisplay(aDisplay),
-        iTable(aTable)
+        iTable(aTable),
+        iFlickScrollingOngoing(EFalse)
+
 {
 }
 
@@ -1189,4 +1219,23 @@ TInt CSwtTableListBox::HorizontalScrollPixelsPerArrowEvent()
 TInt CSwtTableListBox::HorizontalScrollPixelsPerPageEvent()
 {
     return iTable.ClientRect().Width();
+}
+
+// ---------------------------------------------------------------------------
+// CSwtTableListBox::UpdateFlickScrollingState
+// Updates flick scrolling status based on received listbox event.
+// ---------------------------------------------------------------------------
+//
+void CSwtTableListBox::UpdateFlickScrollingState(TListBoxEvent aEventType)
+{
+    switch (aEventType)
+    {
+    case EEventFlickStarted:
+        iFlickScrollingOngoing = ETrue;
+        iScrollbarPointerEventToListbox = ETrue;
+        break;
+    case EEventFlickStopped:
+        iFlickScrollingOngoing = EFalse;
+        break;
+    }
 }

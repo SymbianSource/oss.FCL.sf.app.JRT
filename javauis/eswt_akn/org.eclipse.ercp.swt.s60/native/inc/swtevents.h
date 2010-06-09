@@ -1155,4 +1155,22 @@ private:
     HBufC* iSelectedText;
 };
 
+/**
+ * CSwtShowFocusedControlEvent
+ * @lib eswt
+ */
+NONSHARABLE_CLASS(CSwtShowFocusedControlEvent)
+        : public CSwtEvent
+{
+// Own methods
+public:
+    CSwtShowFocusedControlEvent(TSwtPeer aPeer);
+
+// From CSwtEvent
+public:
+    TSwtEventType Type() const;
+
+protected:
+    void DoDispatch(JNIEnv* aJniEnv);
+};
 #endif // SWTEVENTS_H

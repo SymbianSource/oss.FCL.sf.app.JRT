@@ -126,6 +126,9 @@ public:
     void            HandlePointerEventL(const TPointerEvent& aPointerEvent);
     const MSwtMenu* GetStylusPopupControlMenu() const;
 #endif
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    void            EnableFocusHighlight(TBool aEnable);
+#endif //RD_JAVA_S60_RELEASE_9_2
 
 // From MEikCommandObserver
 public:
@@ -154,7 +157,9 @@ private:
     CAknGridView*   GetGridView() const;
     CGulIcon*       CreateIconL(const MSwtImage* aIcon) const;
     void            DoGridCellLayoutL(const TSwtListViewDensity& aDensity);
-    void            LoadLayouts(const TSwtListViewDensity& aDensity, TSize& aCellSize, TRect& aIconRect, TRect& aSelRect, TRect& aTextRect, TInt& aTextCellFontId);
+    void            LoadLayouts(const TSwtListViewDensity& aDensity, TSize& aCellSize,
+                                TRect& aIconRect, TRect& aSelRect, TRect& aTextRect,
+                                TInt& aTextCellFontId);
     void            CalcRowsColumns(const TSize& aCellSize, TInt& aXCells, TInt& aYCells) const;
     void            AddTextL(const TDesC& aPtr, const TInt& aPos);
     void            AddIconL(const MSwtImage* aImage, const TInt& aPos);
@@ -200,6 +205,7 @@ private:
     ) const;
     void            CoerceCellRect(const TSwtListViewDensity& aDensity,
                                    TRect& aCellRect) const;
+    void            UpdateFlickScrollingState(TListBoxEvent aEventType);
 
 #ifdef RD_JAVA_ADVANCED_TACTILE_FEEDBACK
 public:
@@ -337,6 +343,16 @@ private: // data
      * View visible rect at last draw
      */
     mutable TRect iLastViewVisibleRect;
+
+    /**
+     * True when list is flick scrolling
+     */
+    TBool iFlickScrollingOngoing;
+
+    /**
+     * True when pointer events on scrollbar should be delivered to listbox
+     */
+    TBool iScrollbarPointerEventToListbox;
 };
 
 

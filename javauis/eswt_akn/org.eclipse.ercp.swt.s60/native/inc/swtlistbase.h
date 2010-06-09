@@ -242,6 +242,12 @@ private:
      */
     void GetUserSelectionL(CArrayFix<TInt>* aCurrSelItems);
 
+    /**
+     * Updates flick scrolling status.
+     * @param aEventType CEikListbox event type.
+     */
+    void UpdateFlickScrollingState(TListBoxEvent aEventType);
+
 // From CCoeControl
 public:
     TInt CountComponentControls() const;
@@ -280,6 +286,9 @@ public:
     void SetForegroundL(const MSwtColor* aColor);
     void SetBackgroundL(const MSwtColor* aColor);
     TBool IsLongTapAnimationCandidate(const TPointerEvent& aPointerEvent) const;
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    void EnableFocusHighlight(TBool aEnable);
+#endif //RD_JAVA_S60_RELEASE_9_2
 
 // From ASwtScrollableBase
 protected:
@@ -368,6 +377,16 @@ protected:
      * View visible rect at last draw
      */
     mutable TRect iLastViewVisibleRect;
+
+    /**
+     * True when list is flick scrolling
+     */
+    TBool iFlickScrollingOngoing;
+
+    /**
+     * True when pointer events on scrollbar should be delivered to listbox
+     */
+    TBool iScrollbarPointerEventToListbox;
 };
 
 

@@ -620,23 +620,9 @@ void CSwtDecorations::SetImageL(const MSwtImage* aImage)
 // CSwtDecorations::SetMaximized
 // ---------------------------------------------------------------------------
 //
-void CSwtDecorations::SetMaximized(TBool aMaximized)
+void CSwtDecorations::SetMaximized(TBool /*aMaximized*/)
 {
-    ASSERT(aMaximized != iIsMaximized);
-
-    if (aMaximized)
-    {
-        // Set bounds so as to cover the parent's client area
-        iNormalBounds = GetBounds();
-        TRect newBounds(iParent->Control()->ClientRect().Size());
-        SetBounds(newBounds);
-    }
-    else
-    {
-        SetBounds(iNormalBounds);
-    }
-
-    iIsMaximized = aMaximized;
+    // Nothing to do, unsupported feature
 }
 
 // ---------------------------------------------------------------------------

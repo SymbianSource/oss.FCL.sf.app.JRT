@@ -34,11 +34,18 @@ _LIT(KRVMimeType3, "video/vnd.rn-realvideo");
 
 CMMAEMCResolver* CMMAEMCResolver::NewLC()
 {
-    DEBUG("MMA:CMMAEMCResolver :: NewLC ++");
+    DEBUG("MMA:CMMAEMCResolver :: NewLC +");
     CMMAEMCResolver* self = new(ELeave)CMMAEMCResolver();
     CleanupStack::PushL(self);
-    DEBUG("MMA:CMMAEMCResolver :: NewLC --");
+    self->ConstructL();
+    DEBUG("MMA:CMMAEMCResolver :: NewLC -");
     return self;
+}
+
+void CMMAEMCResolver::ConstructL()
+{
+    iContentType = HBufC::NewL(KContentTypeMaxLength);
+    iMimeType = HBufC8::NewL(KContentTypeMaxLength);
 }
 
 CMMAEMCResolver::~CMMAEMCResolver()
@@ -52,19 +59,19 @@ CMMAEMCResolver::~CMMAEMCResolver()
 
 HBufC* CMMAEMCResolver::ContentTypeOwnership()
 {
-    DEBUG("MMA:CMMAEMCResolver :: ContentTypeOwnership ++");
+    DEBUG("MMA:CMMAEMCResolver :: ContentTypeOwnership +");
     HBufC* ct = iContentType;
     iContentType = NULL;
-    DEBUG("MMA:CMMAEMCResolver :: ContentTypeOwnership --");
+    DEBUG("MMA:CMMAEMCResolver :: ContentTypeOwnership -");
     return ct;
 }
 
 HBufC8* CMMAEMCResolver::MimeTypeOwnership()
 {
-    DEBUG("MMA:CMMAEMCResolver :: MimeTypeOwnership ++");
+    DEBUG("MMA:CMMAEMCResolver :: MimeTypeOwnership +");
     HBufC8* mt = iMimeType;
     iMimeType = NULL;
-    DEBUG("MMA:CMMAEMCResolver :: MimeTypeOwnership --");
+    DEBUG("MMA:CMMAEMCResolver :: MimeTypeOwnership -");
     return mt;
 }
 
@@ -75,7 +82,7 @@ HBufC* CMMAEMCResolver::ContentType()
 
 void CMMAEMCResolver::SetFileNameL(const TDesC* aFileName)
 {
-    DEBUG("MMA:CMMAEMCResolver :: SetFileNameL ++");
+    DEBUG("MMA:CMMAEMCResolver :: SetFileNameL +");
     HBufC* fn = NULL;
     if (aFileName)
     {
@@ -83,53 +90,21 @@ void CMMAEMCResolver::SetFileNameL(const TDesC* aFileName)
     }
     delete iFileName;
     iFileName = fn;
-    DEBUG("MMA:CMMAEMCResolver :: SetFileNameL --");
+    DEBUG("MMA:CMMAEMCResolver :: SetFileNameL -");
 }
 
 HBufC* CMMAEMCResolver::FileNameOwnership()
 {
-    DEBUG("MMA:CMMAEMCResolver :: FileNameOwnership ++");
+    DEBUG("MMA:CMMAEMCResolver :: FileNameOwnership +");
     HBufC* fn = iFileName;
     iFileName = NULL;
-    DEBUG("MMA:CMMAEMCResolver :: FileNameOwnership --");
+    DEBUG("MMA:CMMAEMCResolver :: FileNameOwnership -");
     return fn;
-}
-
-void CMMAEMCResolver::SetMimeTypeL(const TDesC* aFileName)
-{
-    DEBUG("MMA:CMMAEMCResolver :: SetMimeTypeL +");
-    if (iContentType)
-    {
-        delete iContentType;
-        iContentType = NULL;
-    }
-    iContentType = HBufC::NewL(KContentTypeMaxLength);
-    TBuf8<KContentTypeMaxLength> mimeType;
-    ResolveContentTypeL(*aFileName,mimeType);
-    iContentType->Des().Copy(mimeType);
-    iMimeType = HBufC8::NewL(mimeType.Length());        //8 bit Descriptor of iContentType
-    iMimeType->Des().Copy(mimeType);
-
-    DEBUG("MMA:CMMAEMCResolver :: SetMimeTypeL -");
 }
 
 void CMMAEMCResolver::ResolveContentTypeL()
 {
     DEBUG("MMA:CMMAEMCResolver::ResolveContentTypeL +");
-
-    if (iContentType)
-    {
-        delete iContentType;
-        iContentType = NULL;
-    }
-    if (iMimeType)
-    {
-        delete iMimeType;
-        iMimeType = NULL;
-    }
-
-    iContentType = HBufC::NewL(KContentTypeMaxLength);
-    iMimeType = HBufC8::NewL(KContentTypeMaxLength);
 
     if (iFileName->Right(4).Compare(KAacFileExtension()) == 0)
     {
@@ -249,7 +224,6 @@ void CMMAEMCResolver::GetSupportedContentTypesL(CDesC16Array& aMimeTypeArray)
     DEBUG("MMA:CMMAEMCResolver :: GetSupportedContentTypesL -");
 }
 
-// EMC - II
 void CMMAEMCResolver::SetSourceInfoL(const HBufC8* aHeaderData)
 {
     iHeaderData = aHeaderData;
@@ -325,5 +299,5 @@ TBool CMMAEMCResolver::IsRealMimeTypeSupported(const TDesC& aMimeType)
 
     return match;
 }
-//
+
 //  END OF FILE

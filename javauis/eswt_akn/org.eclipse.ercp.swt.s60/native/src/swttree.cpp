@@ -417,6 +417,8 @@ void CSwtTree::HandlePointerEventL(const TPointerEvent& aPointerEvent)
         feedback->EnableFeedbackForControl(iTree, ETrue);
     }
 #endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
+
+    // The mouse event is posted to Java from CSwtComposite
 }
 
 MSwtComposite* CSwtTree::Composite()

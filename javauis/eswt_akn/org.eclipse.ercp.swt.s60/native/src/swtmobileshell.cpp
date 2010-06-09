@@ -216,7 +216,7 @@ void CSwtMobileShell::ChangeTrimL(TInt aStyle, TInt aStatusStyle)
         utils.UpdateStatusPaneL();
     }
 
-    CCoeControl::SetRect(DefaultBounds());
+    DoSetRect(DefaultBounds());
 }
 
 // ---------------------------------------------------------------------------

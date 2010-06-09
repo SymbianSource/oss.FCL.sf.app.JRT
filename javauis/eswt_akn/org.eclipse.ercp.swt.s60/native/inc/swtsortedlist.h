@@ -160,6 +160,9 @@ public:
     TRect ClientRect() const;
     TSize ComputeSizeL(TInt aWHint, TInt aHHint);
     void ProcessKeyEventL(const TKeyEvent& aKeyEvent, TEventCode aType);
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    void EnableFocusHighlight(TBool aEnable);
+#endif //RD_JAVA_S60_RELEASE_9_2
 protected:
     void DoPaint(const TRect& aRect) const;
 

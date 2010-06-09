@@ -472,7 +472,7 @@ void CMIDItemLabel::ConstructL()
     if (skin)
     {
         AknsUtils::GetCachedColor(skin, iDefaultColor, KAknsIIDQsnTextColors,
-                                  EAknsCIQsnTextColorsCG8);
+                                  EAknsCIQsnTextColorsCG6);
         iColor = iDefaultColor;
     }
 

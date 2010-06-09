@@ -108,6 +108,7 @@ const TInt KPhoneScreen = 0;
 // mixing 3D & 2D rendering
 #define KTransparentClearColor TRgb(0x000000, 0x0)
 #define KOpaqueClearColor      TRgb(0xFFFFFF, 0xFF)
+#define KOpaqueBlackColor      TRgb(0x000000, 255)
 
 #ifdef _DEBUG
 #define ASSERT_GL() AssertGL()
@@ -859,7 +860,8 @@ TBool CMIDCanvas::ProcessL(
             {
                 CreatePBufferSurfaceL();
             }
-            // Draw all framebuffer content to EGL surface.
+            // Draw the whole framebuffer content (as a texture) on top of
+            // the EGL window surface.
             iUpperUpdateRect = TRect(Size());
             UpdateEglContent();
         }
@@ -1068,7 +1070,22 @@ void CMIDCanvas::MdcAddContent(MDirectContent* aContent)
     iEnv.ToLcduiObserver().RegisterControl(*this, this);
 #else
     iEnv.ToLcduiObserver().RegisterControl(*this);
-#endif
+#endif // RD_JAVA_NGA_ENABLED
+
+#ifdef RD_JAVA_NGA_ENABLED
+    if (iFirstPaintState != EFirstPaintOccurred &&
+        iDirectContents.Count() == 1)
+    {
+        // The first canvas paint using NGA might be interrupted
+        // by addition of the direct content.
+        // Invoking repaint event to restore the first paint.
+        TInt posPacked  = (iViewRect.iTl.iX << 16) | (iViewRect.iTl.iY);
+        TSize size = iViewRect.Size();
+        TInt sizePacked = (size.iWidth << 16) | (size.iHeight);
+        
+        PostEvent(EPaint, posPacked, sizePacked);
+    }
+#endif // RD_JAVA_NGA_ENABLED
 }
 
 
@@ -1541,8 +1558,7 @@ void CMIDCanvas::UpdateL(const TRect& aRect)
     {
         // In case direct content content was removed
         // from canvas, recreate pixel source here
-        if (!iAlfCompositionPixelSource &&
-                !IsEglAvailable())
+        if (!iAlfCompositionPixelSource && !IsEglAvailable())
         {
             InitPixelSourceL();
         }
@@ -1558,6 +1574,22 @@ void CMIDCanvas::UpdateL(const TRect& aRect)
         else
         {
             DrawNow(aRect);
+        }
+#ifdef RD_JAVA_NGA_ENABLED
+        iCoeEnv->WsSession().Finish();
+#endif
+        
+        if (iFirstPaintState == EFirstPaintInitiated ||
+            iFirstPaintState == EFirstPaintPrepared)
+        {
+            // NGA is not used, StartScreen can be informed now
+            if (iForeground)
+            {
+                // The canvas is current, therefore we can flush
+                // the graphics and take the start screen snapshot.
+                iFirstPaintState = EFirstPaintOccurred;
+                java::ui::CoreUiAvkonLcdui::getInstance().getJavaUiAppUi()->stopStartScreen();
+            }
         }
     }
 
@@ -1792,50 +1824,44 @@ void CMIDCanvas::DrawWindow(const TRect& aRect) const
         DEBUG("DrawWindow - Not scaled - BitBlt");
         gc.BitBlt(windowRect.iTl, iFrameBuffer, windowRect);
     }
-    else
+
 #ifdef RD_JAVA_NGA_ENABLED
-        if (IsDownScaling(iContentSize, iViewRect, iM3GContent))
+    else if (IsDownScaling(iContentSize, iViewRect, iM3GContent))
 #else
-        if (IsDownScaling(iContentSize, iViewRect))
+    else if (IsDownScaling(iContentSize, iViewRect))
 #endif //RD_JAVA_NGA_ENABLED
-        {
-            DEBUG("DrawWindow - Downscaling - BitBlt");
-            gc.BitBlt(windowRect.iTl, iFrameBuffer, windowRect.Size());
-        }
+    {
+        DEBUG("DrawWindow - Downscaling - BitBlt");
+        gc.BitBlt(windowRect.iTl, iFrameBuffer, windowRect.Size());
+    }
     // Upscaling
-        else if (iScaler)
+    else if (iScaler)
+    {
+        iFrameBuffer->LockHeap();
+        TUint32* pixelData = iFrameBuffer->DataAddress();
+        // Scale the framebuffer content.
+        CFbsBitmap* map = iScaler->Process(
+                              iFrameBuffer->DisplayMode(),
+                              pixelData,
+                              iContentSize.iWidth,
+                              iContentSize.iHeight,
+                              iFrameBuffer->SizeInPixels().iWidth - iContentSize.iWidth,
+                              iViewRect.Width(),
+                              iViewRect.Height());
+
+        iFrameBuffer->UnlockHeap();
+
+        if (map)
         {
-            iFrameBuffer->LockHeap();
-            TUint32* pixelData = iFrameBuffer->DataAddress();
-
-            // Scale the framebuffer content.
-            CFbsBitmap* map = iScaler->Process(
-                                  iFrameBuffer->DisplayMode(),
-                                  pixelData,
-                                  iContentSize.iWidth,
-                                  iContentSize.iHeight,
-                                  iFrameBuffer->SizeInPixels().iWidth - iContentSize.iWidth,
-                                  iViewRect.Width(),
-                                  iViewRect.Height());
-
-            iFrameBuffer->UnlockHeap();
-
-            if (map)
-            {
-                DEBUG("DrawWindow - Upscaling - BitBlt - map ok");
-                gc.BitBlt(windowRect.iTl, map, windowRect.Size());
-            }
-            else
-            {
-                DEBUG("DrawWindow - Upscaling - DrawBitmap - no map");
-                gc.DrawBitmap(windowRect, iFrameBuffer, iContentSize);
-            }
+            DEBUG("DrawWindow - Upscaling - BitBlt - map ok");
+            gc.BitBlt(windowRect.iTl, map, windowRect.Size());
         }
-
-#ifdef RD_JAVA_NGA_ENABLED
-    iCoeEnv->WsSession().Finish();
-#endif
-
+        else
+        {
+            DEBUG("DrawWindow - Upscaling - DrawBitmap - no map");
+            gc.DrawBitmap(windowRect, iFrameBuffer, iContentSize);
+        }
+    }
     DEBUG("CMIDCanvas::DrawWindow --");
 }
 #endif // CANVAS_DOUBLE_BUFFER
@@ -2383,8 +2409,6 @@ void CMIDCanvas::FocusChanged(TDrawNow /* aDrawNow */)
             CustomComponentControl(KComponentMainControl)->
             SetFocus(ETrue);
         }
-        // Redraw the canvas after unfading
-        DrawDeferred();
 
 #ifdef RD_JAVA_NGA_ENABLED
         // To avoid situation when Canvas is redrawn but black area remains
@@ -2396,6 +2420,14 @@ void CMIDCanvas::FocusChanged(TDrawNow /* aDrawNow */)
                 DEBUG_INT("CMIDCanvas::FocusChanged - ActivatePixelSourceL error %d", err);
             }
         }
+        else
+        {
+            // Redraw the canvas after unfading
+            DrawDeferred();
+        }
+#else // !RD_JAVA_NGA_ENABLED
+        // Redraw the canvas after unfading
+        DrawDeferred();
 #endif // RD_JAVA_NGA_ENABLED
 
     }
@@ -2539,7 +2571,7 @@ void CMIDCanvas::Draw(const TRect& aRect) const
     // This is needed to avoid artifacting after orientation switch.
     TBool landscape = Layout_Meta_Data::IsLandscapeOrientation();
 
-    if (iLandscape != landscape)
+    if (iLandscape != landscape && !iAlfCompositionPixelSource)
     {
         iLandscape = landscape;
         iWndUpdate = ETrue;
@@ -2554,10 +2586,14 @@ void CMIDCanvas::Draw(const TRect& aRect) const
         {
             DrawWindow(aRect);
         }
-        else if (iAlfCompositionPixelSource)
+        else
         {
             CMIDCanvas* myself = const_cast<CMIDCanvas*>(this);
-            TRAP_IGNORE(myself->ActivatePixelSourceL());
+            myself->ClearUiSurface(ETrue);
+            if (iAlfCompositionPixelSource)
+            {
+                TRAP_IGNORE(myself->ActivatePixelSourceL());
+            }
         }
         iWndUpdate = EFalse;
     }
@@ -2659,23 +2695,24 @@ CMIDCanvas::CMIDCanvas(
     TBool aUpdateRequired
 #endif // CANVAS_DIRECT_ACCESS
 ) :
-    CCoeControl()
-    ,iEnv(aEnv)
+        CCoeControl()
+        ,iEnv(aEnv)
 #ifdef CANVAS_DOUBLE_BUFFER
-    ,iFrameBuffer(NULL)
+        ,iFrameBuffer(NULL)
 #endif // CANVAS_DOUBLE_BUFFER
-    ,iIsGameCanvas((
-                       aComponentType == MMIDComponent::EGameCanvas ? ETrue : EFalse))
-    ,iFlags(EPostKeyEvents)
-    ,iFullScreen(EFalse)
-    ,iScalingOn(EFalse)
-    ,iS60SelectionKeyCompatibility(EFalse)
-    ,iRestoreContentWhenUnfaded(EFalse)
-    ,iLastFadeMessage(0)
+        ,iIsGameCanvas((
+                           aComponentType == MMIDComponent::EGameCanvas ? ETrue : EFalse))
+        ,iFlags(EPostKeyEvents)
+        ,iFullScreen(EFalse)
+        ,iScalingOn(EFalse)
+        ,iS60SelectionKeyCompatibility(EFalse)
+        ,iRestoreContentWhenUnfaded(EFalse)
+        ,iLastFadeMessage(0)
 #ifdef CANVAS_DIRECT_ACCESS
-    ,iDcDsaToStart(EFalse)
+        ,iDcDsaToStart(EFalse)
 #endif // CANVAS_DIRECT_ACCESS
-    ,iDragEventsStartedInside(EFalse)
+        ,iDragEventsStartedInside(EFalse)
+        ,iFirstPaintState(EFirstPaintNeverOccurred)
 {
     DEBUG("+ CMIDCanvas::CMIDCanvas - EDirectEnabled");
 
@@ -3552,6 +3589,7 @@ void CMIDCanvas::ActivatePixelSourceL()
 
     if (iPixelSourceSuspended)
     {
+        ClearUiSurface(EFalse);
         iPixelSourceSuspended = EFalse;
         if (iFullScreen && iScalingOn)
         {
@@ -3561,13 +3599,35 @@ void CMIDCanvas::ActivatePixelSourceL()
 }
 
 // ---------------------------------------------------------------------------
+// CMIDCanvas::ClearUiSurface
+// ---------------------------------------------------------------------------
+//
+void CMIDCanvas::ClearUiSurface(TBool aDrawing)
+{
+    if (!aDrawing)
+    {
+        Window().BeginRedraw();
+        ActivateGc();
+    }
+    CWindowGc& gc = SystemGc();
+    gc.SetBrushColor(KTransparentClearColor);
+    gc.SetDrawMode(CGraphicsContext::EDrawModeWriteAlpha);
+    gc.Clear();
+    if (!aDrawing)
+    {
+        DeactivateGc();
+        Window().EndRedraw();
+    }
+    iCoeEnv->WsSession().Finish();
+}
+
 // CMIDCanvas::SuspendPixelSource
 // ---------------------------------------------------------------------------
 //
 void CMIDCanvas::SuspendPixelSource()
 {
     NotifyMonitor();
-    if (iAlfCompositionPixelSource)
+    if (iAlfCompositionPixelSource && !iPixelSourceSuspended)
     {
         iAlfCompositionPixelSource->Suspend();
         iPixelSourceSuspended = ETrue;
@@ -4151,11 +4211,11 @@ void CMIDCanvas::UpdateOffScreenBitmapL(TBool aForced)
             User::Leave(KErrUnknown);
         }
 
-        // Make framebuffer opaque
-        iFrameContext->SetBrushColor(KOpaqueClearColor);
+        // Clear with opaque black so that EDrawModeOR can be used in BitBlt()
+        iFrameContext->SetBrushColor(KOpaqueBlackColor);
         iFrameContext->SetDrawMode(CGraphicsContext::EDrawModeWriteAlpha);
         iFrameContext->Clear();
-
+        iFrameContext->SetDrawMode(CGraphicsContext::EDrawModeOR);
         iFrameContext->BitBlt(TPoint(), bitmap);
         CleanupStack::PopAndDestroy();
         SetCurrentEglType(current);

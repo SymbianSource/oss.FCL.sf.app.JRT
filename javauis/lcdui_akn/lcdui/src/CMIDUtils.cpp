@@ -838,14 +838,14 @@ void CMIDUtils::HandleForegroundL(TBool aForeground)
 // ---------------------------------------------------------------------------
 //
 CMIDUtils::CMIDUtils(MMIDEnv& aEnv, CMIDUIManager* aUIManager)
-    : iEnv(&aEnv)
-    , iUIManager(aUIManager)
-    , iScalingData()
-    , iQwertyMode(EFalse)
-    , iStickyKey(0)
-    , iLastScanCode(0)
-    , iModifier(0)
-    , iScalingDataInitialized(EFalse)
+        : iEnv(&aEnv)
+        , iUIManager(aUIManager)
+        , iScalingData()
+        , iQwertyMode(EFalse)
+        , iStickyKey(0)
+        , iLastScanCode(0)
+        , iModifier(0)
+        , iScalingDataInitialized(EFalse)
 {}
 
 CMIDUtils::~CMIDUtils()
@@ -1202,7 +1202,7 @@ TSize CMIDUtils::DoDescaling(TSize aNonScaled)
 
 CMIDUtils::TScalingData CMIDUtils::GetScalingData()
 {
-	UpdateScalingData();
+    UpdateScalingData();
     return iScalingData;
 }
 
@@ -1215,7 +1215,13 @@ void CMIDUtils::UpdateScalingData()
     iScalingDataInitialized = ETrue;
 
     // Get actual rect of screen without with eventual OSK.
-    TRect screenRect =iEnv->Current()->GetCanvasRectFromLaf();
+    // Empty rect is OK.
+    MMIDDisplayable* current = iEnv->Current();
+    TRect screenRect;
+    if (current)
+    {
+        screenRect = current->GetCanvasRectFromLaf();
+    }
 
     // Traslate of rect of screen into size
     data.iScreenSize = screenRect.Size();

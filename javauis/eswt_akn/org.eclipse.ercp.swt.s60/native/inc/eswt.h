@@ -305,7 +305,8 @@ enum TSwtEventType
     ESwtEventForeground       = 1006,
     ESwtEventDialogStringResult = 1007,
     ESwtEventDialogIntegerResult = 1008,
-    ESwtEventDialogRgbResult = 1009
+    ESwtEventDialogRgbResult  = 1009,
+    ESwtEventShowFocusedControl = 1010
 };
 
 
@@ -1062,7 +1063,12 @@ public:
      * @return void
      */
     virtual void PostTitleEventL(TSwtPeer aPeer, const TDesC& aTitle) = 0;
-
+    
+    /**
+     * Posts a show focused control to a ScrolledComposite.
+     */
+    virtual void PostShowFocusedControlEventL(TSwtPeer aPeer) =0;
+    
     /**
      * Get eSWT Java application allocated id
      * @return Java application allocated id

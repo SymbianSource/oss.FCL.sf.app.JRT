@@ -503,6 +503,10 @@ void CSwtSortedList::HandlePointerEventL(const TPointerEvent& aPointerEvent)
     {
         CSwtListBase::HandlePointerEventL(aPointerEvent);
     }
+    else
+    {
+        PostMouseEventL(aPointerEvent);
+    }
 }
 #endif //RD_SCALABLE_UI_V2
 
@@ -531,6 +535,9 @@ void CSwtSortedList::FocusChanged(TDrawNow aDrawNow)
     TBool isFocused = IsFocused();
     if (iList)
     {
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        EnableFocusHighlight(isFocused);
+#endif //RD_JAVA_S60_RELEASE_9_2
         iList->SetFocus(isFocused, aDrawNow);
         if (iSearchField)
         {
@@ -594,6 +601,22 @@ void CSwtSortedList::ProcessKeyEventL(
 
     CSwtListBase::ProcessKeyEventL(aKeyEvent, aType);
 }
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+// ---------------------------------------------------------------------------
+// CSwtSortedList::EnableFocusHighlight
+// From MSwtControl
+// ---------------------------------------------------------------------------
+//
+void CSwtSortedList::EnableFocusHighlight(TBool aEnable)
+{
+    ASSERT(iList);
+    ASSERT(iList->View());
+
+    CSwtListBoxLists::EnableFocusHighlight(iList->View()->ItemDrawer(),
+                                           aEnable);
+}
+#endif //RD_JAVA_S60_RELEASE_9_2
 
 // ---------------------------------------------------------------------------
 // CSwtSortedList::DoPaint
@@ -924,8 +947,8 @@ void CSwtSortedList::SetModeStyleL(TInt aModeStyle)
         iSearchField->SetComponentsToInheritVisibility(ETrue);
 
         // Set search field to use only second column to get
-        // item text. Items use \t as column separators, see method 
-        // CSwtListBase::CreateItemTextLC() for details. 
+        // item text. Items use \t as column separators, see method
+        // CSwtListBase::CreateItemTextLC() for details.
         const int KItemTextColumnFlag = 2;
         iSearchField->SetListColumnFilterFlags(KItemTextColumnFlag);
 

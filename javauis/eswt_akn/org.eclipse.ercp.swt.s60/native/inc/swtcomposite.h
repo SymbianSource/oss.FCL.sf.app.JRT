@@ -91,6 +91,8 @@ public:
     void ComputeTabListL(RSwtControlArray& aList);
     void UpdateDoNotDrawFlag();
     void Update() const;
+    void SetBounds(const TRect& aRect);
+    void SetWidgetSize(const TSize& aSize);
 
 // From ASwtScrollableBase
 protected:

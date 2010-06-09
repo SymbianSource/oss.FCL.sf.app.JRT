@@ -262,7 +262,7 @@ void CMMAAudioPlayer::HandleEvent(const TMMFEvent& aEvent)
         }
     }
 
-    if (err ==  KErrDied && aEvent.iEventType == KMMFEventCategoryPlaybackComplete)
+    if (err ==  KErrDied && aEvent.iEventType == KMMFEventCategoryPlaybackComplete && err == KErrInUse)
     {
 
         // basically pausing the playback
@@ -282,7 +282,7 @@ void CMMAAudioPlayer::HandleEvent(const TMMFEvent& aEvent)
         }
     }
 
-    if (err != KErrNone && err != KErrDied)
+    if (err != KErrNone && err != KErrDied && err != KErrInUse)
     {
         ErrorPlaybackComplete(err);
     }

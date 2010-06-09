@@ -1170,9 +1170,12 @@ void CMIDChoiceGroupControl::DrawText(const TDesC& aText) const
 {
     if (aText.Length())
     {
+        // Get color from skin
         TRgb rgb = AKN_LAF_COLOR(215);
+        TInt textColor = IsFocused() ? EAknsCIQsnTextColorsCG8 : EAknsCIQsnTextColorsCG6;
+
         AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
-                                  rgb,KAknsIIDQsnTextColors, EAknsCIQsnTextColorsCG8);
+                                  rgb,KAknsIIDQsnTextColors, textColor);
         iPopupTextLayout.DrawText(SystemGc(), aText, ETrue, rgb);
     }
 }

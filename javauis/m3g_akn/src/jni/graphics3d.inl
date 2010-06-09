@@ -773,6 +773,22 @@ JNIEXPORT void JNICALL Java_javax_microedition_m3g_Graphics3D__1updateEglContent
     eventSource->ExecuteV(&UpdateEglContent, cmidGraphics);
 }
 
+static void freeGLESResources(M3GRenderContext aHContext)
+{
+    m3gFreeGLESResources(aHContext);
+    eglReleaseThread();
+}
+
+JNIEXPORT void JNICALL Java_javax_microedition_m3g_Graphics3D__1freeGLESResources
+(JNIEnv* aEnv, jclass, jint aEventSourceHandle, jint aHCtx)
+{
+    M3G_DO_LOCK
+    CJavaM3GEventSource* eventSource =
+        JavaUnhand<CJavaM3GEventSource>(aEventSourceHandle);
+    eventSource->ExecuteV(&freeGLESResources, (M3GRenderContext)aHCtx);
+    M3G_DO_UNLOCK(aEnv)
+}
+
 #else // !RD_JAVA_NGA_ENABLED 
 
 JNIEXPORT jint JNICALL Java_javax_microedition_m3g_Graphics3D__1getTargetHeight
@@ -792,4 +808,9 @@ JNIEXPORT void JNICALL Java_javax_microedition_m3g_Graphics3D__1updateEglContent
 {
 }  
   
+JNIEXPORT void JNICALL Java_javax_microedition_m3g_Graphics3D__1freeGLESResources
+(JNIEnv*, jclass, jint, jint)
+{
+}
+
 #endif // RD_JAVA_NGA_ENABLED

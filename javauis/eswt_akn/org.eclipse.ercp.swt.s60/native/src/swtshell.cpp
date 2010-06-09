@@ -29,10 +29,7 @@ static const TInt KSwtMainPainVarietyClassic = 3;
 static const TInt KSwtMainPainVarietySmallSpLandscape = 9;
 static const TInt KSwtMainPainVarietySmallSpLandscapePen = 4;
 
-// Area bottom pane varieties
-static const TInt KSwtAreaBottomPaneVarietyPortrait = 0;
 #ifdef RD_JAVA_S60_RELEASE_9_2
-static const TInt KSwtAreaBottomPaneVarietyLandscape = 2;
 static const TInt KSwtRoundCornerBgColorDiff = 50;
 #endif // RD_JAVA_S60_RELEASE_9_2
 
@@ -134,7 +131,7 @@ void CSwtShell::ConstructL()
     window.SetPointerGrab(ETrue);
 #endif //RD_SCALABLE_UI_V2
 
-    CCoeControl::SetRect(DefaultBounds());
+    DoSetRect(DefaultBounds());
     SetMinimumSize(TSize());
     UiUtils().RegisterShellL(*this);
 
@@ -209,6 +206,28 @@ void CSwtShell::RemoveAndRememberFocus()
 }
 
 // ---------------------------------------------------------------------------
+// CSwtShell::DoSetRect
+// Note that calling SetRect on the Shell does not cause a PositionChanged!
+// ---------------------------------------------------------------------------
+//
+void CSwtShell::DoSetRect(const TRect& aRect)
+{
+    // Divert the job to UiUtils if this is the Shell of an editor open for
+    // split view editing.
+    MSwtUiUtils& utils = iDisplay.UiUtils();
+    MSwtControl* splitInputView = utils.SplitInputView();
+    if (splitInputView && (&(splitInputView->GetShell())) == this)
+    {
+        utils.SetSplitInputShellPos(aRect.iTl);
+        CCoeControl::SetSize(aRect.Size());
+    }
+    else
+    {
+        CCoeControl::SetRect(aRect);
+    }
+}
+
+// ---------------------------------------------------------------------------
 // CSwtShell::SwtHandleResourceChangeL
 // From CSwtComposite
 // ---------------------------------------------------------------------------
@@ -225,7 +244,7 @@ void CSwtShell::SwtHandleResourceChangeL(TInt aType)
             {
                 bg->SetRect(iDisplay.Device().Bounds());
             }
-            CCoeControl::SetRect(DefaultBounds());
+            DoSetRect(DefaultBounds());
         }
     }
 
@@ -394,26 +413,14 @@ void CSwtShell::HandlePointerEventL(const TPointerEvent& aPointerEvent)
             capturingControl->SetSwtFocus(KSwtFocusByPointer);
         }
         capturingControl->HandlePointerEventL(aPointerEvent);
-        capturingControl->PostMouseEventL(aPointerEvent);
         iDisplay.TryDetectLongTapL(aPointerEvent);
         return;
     }
-
-    MSwtControl* ctrl = NULL;
-
-    if (aPointerEvent.iType == TPointerEvent::EButton1Up)
-        ctrl = iDisplay.UiUtils().GetPointerGrabbingControl();
 
     if (!iDisplay.RevertPointerEvent())
     {
         CSwtComposite::HandlePointerEventL(aPointerEvent);
     }
-
-    if (aPointerEvent.iType != TPointerEvent::EButton1Up)
-        ctrl = iDisplay.UiUtils().GetPointerGrabbingControl();
-
-    if (ctrl)
-        ctrl->PostMouseEventL(aPointerEvent);
 
     iDisplay.TryDetectLongTapL(aPointerEvent);
 }
@@ -590,6 +597,17 @@ void CSwtShell::Draw(const TRect& aRect) const
     }
 }
 
+void CSwtShell::SizeChanged()
+{
+    CSwtDecorations::SizeChanged();
+    MSwtUiUtils& utils = iDisplay.UiUtils();
+    MSwtControl* splitInputView = utils.SplitInputView();
+    if (splitInputView && (&(splitInputView->GetShell())) == this)
+    {
+        utils.AdjustSplitInputShellPos();
+    }
+}
+
 // ---------------------------------------------------------------------------
 // CSwtShell::Draw
 // From MCoeControlBackground
@@ -626,7 +644,7 @@ TBool CSwtShell::IsFocusable(TInt /*aReason*/) const
 }
 
 // ---------------------------------------------------------------------------
-// CSwtShell::DoSetFocus
+// CSwtShell::SetSwtFocus
 // From MSwtControl
 // ---------------------------------------------------------------------------
 //
@@ -710,22 +728,7 @@ void CSwtShell::SetLocation(const TPoint& aPoint)
         return;
     }
 
-    TPoint originalLocation(GetLocation());
-    iPosition = aPoint;
-
-    Window().SetPosition(aPoint);
-
-    // Post the MoveEvent if the location changed.
-    if (GetLocation() != originalLocation)
-    {
-        PositionChanged();
-    }
-
-    // Drawing after everything else.
-    if (!(iStyle & KSwtStyleNoRedrawResize))
-    {
-        Redraw();
-    }
+    DoSetLocation(aPoint);
 }
 
 // ---------------------------------------------------------------------------
@@ -743,12 +746,16 @@ void CSwtShell::SetWidgetSize(const TSize& aSize)
 
     TSize checkedSize(Max(aSize.iWidth, iMinSize.iWidth),
                       Max(aSize.iHeight, iMinSize.iHeight));
-    SetSize(checkedSize);
 
-    // Drawing only after everything else.
-    if (!(iStyle & KSwtStyleNoRedrawResize))
+    if (Size() != checkedSize)
     {
-        Redraw();
+        SetSize(checkedSize);
+
+        // Drawing only after everything else.
+        if (!(iStyle & KSwtStyleNoRedrawResize))
+        {
+            Redraw();
+        }
     }
 }
 
@@ -765,22 +772,38 @@ void CSwtShell::SetBounds(const TRect& aRect)
         return;
     }
 
+    TBool changed = EFalse;
     TSize checkedSize(Max(aRect.Size().iWidth, iMinSize.iWidth),
                       Max(aRect.Size().iHeight, iMinSize.iHeight));
-    SetSize(checkedSize);
-
-    TPoint originalLocation(GetLocation());
-    iPosition = aRect.iTl;
-    Window().SetPosition(aRect.iTl);
-    if (GetLocation() != originalLocation)
+    if (Size() != checkedSize)
     {
-        PositionChanged();
+        SetSize(checkedSize);
+        changed = ETrue;
     }
 
-    // No need to recurse on the children, their positions within the
-    // window do not change
+    // Divert the job to UiUtils if this is the Shell of an editor open for
+    // split view editing.
+    MSwtUiUtils& utils = iDisplay.UiUtils();
+    MSwtControl* splitInputView = utils.SplitInputView();
+    if (splitInputView && (&(splitInputView->GetShell())) == this)
+    {
+        utils.SetSplitInputShellPos(aRect.iTl);
+    }
+    else
+    {
+        if (aRect.iTl != iPosition)
+        {
+            iPosition = aRect.iTl;
+            Window().SetPosition(aRect.iTl);
+            PositionChanged();
+            changed = ETrue;
+        }
 
-    if (!(iStyle & KSwtStyleNoRedrawResize))
+        // No need to recurse on the children, their positions within the
+        // window do not change
+    }
+
+    if (changed && !(iStyle & KSwtStyleNoRedrawResize))
     {
         Redraw();
     }
@@ -976,26 +999,22 @@ void CSwtShell::SetMaximized(TBool aMaximized)
     TRect newRect(TRect::EUninitialized);
     if (aMaximized)
     {
-        // Set bounds so as to cover the whole application area
-        RRegion clientRegion;
-        clientRegion.AddRect(iEikonEnv->EikAppUi()->ClientRect());
-        if (!IsMobileShell())
+        TRect screenRect;
+        AknLayoutUtils::LayoutMetricsRect(AknLayoutUtils::EScreen, screenRect);
+        TInt variety(0);
+        if (CSwtLafFacade::IsLandscapeOrientation())
         {
-            TInt variety(KSwtAreaBottomPaneVarietyPortrait);
-#ifdef RD_JAVA_S60_RELEASE_9_2
-            if (CSwtLafFacade::IsLandscapeOrientation())
-            {
-                variety = KSwtAreaBottomPaneVarietyLandscape;
-            }
-#endif // RD_JAVA_S60_RELEASE_9_2
-
-            clientRegion.SubRect(CSwtLafFacade::GetLayoutRect(
-                                     CSwtLafFacade::EAreaBottomPane,
-                                     iDisplay.Device().Bounds(),
-                                     variety).Rect());
+            variety = AknLayoutUtils::PenEnabled() ?
+                      KSwtMainPainVarietySmallSpLandscapePen :
+                      KSwtMainPainVarietySmallSpLandscape;
         }
-        newRect = clientRegion.BoundingRect();
-        clientRegion.Close();
+        else
+        {
+            variety = KSwtMainPainVarietyClassic;
+        }
+        TAknLayoutRect layoutRect = CSwtLafFacade::GetComposeAndLayoutRect(
+                                        CSwtLafFacade::EMainPaneCompose, screenRect, variety);
+        newRect = layoutRect.Rect();
         iNormalBounds.SetRect(iPosition, iSize);
     }
     else
@@ -1003,9 +1022,7 @@ void CSwtShell::SetMaximized(TBool aMaximized)
         newRect = iNormalBounds;
     }
 
-    SetPosition(newRect.iTl);
-    SetSize(newRect.Size());
-
+    SetBounds(newRect);
     iIsMaximized = aMaximized;
     Redraw();
 }
@@ -1806,7 +1823,7 @@ void CSwtShell::SetFullScreen(TBool aFullScreen)
         TRAP_IGNORE(utils.UpdateStatusPaneL());
     }
 
-    CCoeControl::SetRect(DefaultBounds());
+    DoSetRect(DefaultBounds());
 
     SetRedraw(ETrue);
 }
@@ -2090,6 +2107,42 @@ TBool CSwtShell::IsTaskTip() const
 }
 
 // ---------------------------------------------------------------------------
+// CSwtShell::DoSetLocation
+// From MSwtShell
+// ---------------------------------------------------------------------------
+//
+void CSwtShell::DoSetLocation(const TPoint& aPoint)
+{
+    if (aPoint == iPosition)
+    {
+        return;
+    }
+
+    // Divert the job to UiUtils if this is the Shell of an editor open for
+    // split view editing.
+    MSwtUiUtils& utils = iDisplay.UiUtils();
+    MSwtControl* splitInputView = utils.SplitInputView();
+    if (splitInputView && (&(splitInputView->GetShell())) == this)
+    {
+        utils.SetSplitInputShellPos(aPoint);
+        return;
+    }
+
+    iPosition = aPoint;
+    Window().SetPosition(aPoint);
+
+    // Post the MoveEvent if the location changed.
+    PositionChanged();
+
+    // Drawing after everything else.
+    if (!(iStyle & KSwtStyleNoRedrawResize))
+    {
+        Redraw();
+    }
+}
+
+
+// ---------------------------------------------------------------------------
 // CSwtShell::HandleStatusPaneSizeChange
 // From MEikStatusPaneObserver
 // ---------------------------------------------------------------------------
@@ -2098,7 +2151,7 @@ void CSwtShell::HandleStatusPaneSizeChange()
 {
     if (iIsMaximized  && (!iParent))
     {
-        CCoeControl::SetRect(DefaultBounds());
+        DoSetRect(DefaultBounds());
     }
 }
 

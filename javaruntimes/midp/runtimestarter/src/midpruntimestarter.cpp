@@ -165,6 +165,14 @@ int MidpRuntimeStarter::start(int argc, char *argv[])
 
         // Starting with lower old space in pre warm case.
         jvm->overrideOldHeapSize(36);
+
+        // In the pre-warm start we need to add something into class path.
+        // Otherwise the VM puts class path to point MIDP private data cage.
+#ifdef RD_JAVA_SYMBIAN_TARGET
+        jvm->appendClassPath(L"z:/private/ignore.jar");
+#else // RD_JAVA_SYMBIAN_TARGET
+        jvm->appendClassPath(L"./ignore.jar");
+#endif // RD_JAVA_SYMBIAN_TARGET
     }
 
     // If the requested to go to back ground, pass the info to Java peer.

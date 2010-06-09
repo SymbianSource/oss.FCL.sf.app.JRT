@@ -70,6 +70,13 @@ public:
     void SetItemDrawerClippingRect(const TRect& aRect);
 
     /**
+     * Forwards pointer event directly to CEikListbox's HandlePointerEventL.
+     * This method is used to handle scrollbar pointer events delivered while
+     * kinetic scrolling is ongoing.
+     */
+    void ForwardPointerEventL(const TPointerEvent& aPointerEvent);
+
+    /**
      * Wrapper for protected member function HandleScrollEventL of CAknGrid.
      */
 #if defined( RD_SCALABLE_UI_V2)

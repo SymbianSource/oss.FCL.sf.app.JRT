@@ -87,4 +87,6 @@ EXPORTS
 	?RegisterWithParentL@ASwtControlBase@@IAEXXZ @ 86 NONAME ; void ASwtControlBase::RegisterWithParentL(void)
 	?DrawBorder@ASwtControlBase@@MBEXABVTRect@@@Z @ 87 NONAME ; void ASwtControlBase::DrawBorder(class TRect const &) const
 	?ComputeTabListL@ASwtControlBase@@UAEXAAV?$RPointerArray@VMSwtControl@@@@@Z @ 88 NONAME ; void ASwtControlBase::ComputeTabListL(class RPointerArray<class MSwtControl> &)
+	?VisibleRect@ASwtControlBase@@UBE?AVTRect@@H@Z @ 89 NONAME ; class TRect ASwtControlBase::VisibleRect(int) const
+	?EnableFocusHighlight@ASwtControlBase@@UAEXH@Z @ 90 NONAME ; void ASwtControlBase::EnableFocusHighlight(int)
 

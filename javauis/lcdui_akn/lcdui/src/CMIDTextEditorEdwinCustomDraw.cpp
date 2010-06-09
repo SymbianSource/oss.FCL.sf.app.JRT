@@ -31,8 +31,8 @@ CMIDTextEditorEdwinCustomDraw::CMIDTextEditorEdwinCustomDraw(
     const MLafEnv& aLafEnv,
     const MFormCustomDraw& aParentDraw,
     const CMIDTextEditorEdwin& aEdwin) :
-    CLafEdwinCustomDrawBase(aLafEnv, aEdwin),
-    iEdwin(aEdwin), iParentDraw(aParentDraw)
+        CLafEdwinCustomDrawBase(aLafEnv, aEdwin),
+        iEdwin(aEdwin), iParentDraw(aParentDraw)
 {
     DEBUG("CMIDTextEditorEdwinCustomDraw::CMIDTextEditorEdwinCustomDraw");
 }
@@ -76,7 +76,8 @@ void CMIDTextEditorEdwinCustomDraw::DrawBackground(
         // Only drawing otherwise.
         if (iEdwin.IsScalingOn())
         {
-            aParam.iGc.SetClippingRect(iEdwin.GetOnScreenCanvasRect());
+
+            aParam.iGc.SetClippingRect(GetClippingRectForScaling());
 
             iParentDraw.DrawBackground(aParam, aBackground, aDrawn);
 
@@ -103,7 +104,8 @@ void CMIDTextEditorEdwinCustomDraw::DrawLineGraphics(
     // Only drawing otherwise.
     if (iEdwin.IsScalingOn())
     {
-        aParam.iGc.SetClippingRect(iEdwin.GetOnScreenCanvasRect());
+
+        aParam.iGc.SetClippingRect(GetClippingRectForScaling());
 
         iParentDraw.DrawLineGraphics(aParam, aLineInfo);
 
@@ -146,7 +148,7 @@ void CMIDTextEditorEdwinCustomDraw::DrawText(
     // Only drawing otherwise.
     if (iEdwin.IsScalingOn())
     {
-        aParam.iGc.SetClippingRect(iEdwin.GetOnScreenCanvasRect());
+        aParam.iGc.SetClippingRect(GetClippingRectForScaling());
 
         iParentDraw.DrawText(
             aParam,
@@ -204,7 +206,8 @@ void CMIDTextEditorEdwinCustomDraw::DrawText(
     // Only drawing otherwise.
     if (iEdwin.IsScalingOn())
     {
-        aParam.iGc.SetClippingRect(iEdwin.GetOnScreenCanvasRect());
+
+        aParam.iGc.SetClippingRect(GetClippingRectForScaling());
 
         iParentDraw.DrawText(
             aParam,
@@ -256,6 +259,19 @@ TRgb CMIDTextEditorEdwinCustomDraw::SystemColor(
     }
 
     return ret;
+}
+
+// ---------------------------------------------------------------------------
+// CMIDTextEditorEdwinCustomDraw::GetClippingRectForScaling()
+// (other items were commented in the header file)
+// ---------------------------------------------------------------------------
+//
+const TRect CMIDTextEditorEdwinCustomDraw::GetClippingRectForScaling() const
+{
+    // It gets intersection of editor and canvas rectangles.
+    TRect rect = iEdwin.GetOnScreenCanvasRect();
+    rect.Intersection(iEdwin.Rect());
+    return rect;
 }
 
 // End of file

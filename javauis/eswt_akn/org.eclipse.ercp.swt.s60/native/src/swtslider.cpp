@@ -589,6 +589,8 @@ void CSwtSlider::HandlePointerEventL(const TPointerEvent& aPointerEvent)
         iFeedback->InstantFeedback(ETouchFeedbackSlider);
     }
 #endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
+
+    PostMouseEventL(aPointerEvent);
 }
 
 TInt CSwtSlider::CalcAlignedValue(const TPoint& aPoint)

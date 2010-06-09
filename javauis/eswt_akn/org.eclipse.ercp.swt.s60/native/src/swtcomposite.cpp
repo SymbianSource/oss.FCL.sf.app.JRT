@@ -451,9 +451,17 @@ void CSwtComposite::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 
                         // Unfocus
                         MSwtControl* ctrl = GetShell().FocusControl();
-                        if (ctrl && ctrl != iPhysicsFocusedCtrl)
+                        if (ctrl)
                         {
-                            ctrl->CoeControl().SetFocus(EFalse);
+#ifdef RD_JAVA_S60_RELEASE_9_2
+                            // While panning there should be no focus highlight
+                            // Highlight is enabled after pressing any key
+                            ctrl->EnableFocusHighlight(EFalse);
+#endif //RD_JAVA_S60_RELEASE_9_2
+                            if (ctrl != iPhysicsFocusedCtrl)
+                            {
+                                ctrl->CoeControl().SetFocus(EFalse);
+                            }
                         }
 
                         // Revert
@@ -528,6 +536,7 @@ void CSwtComposite::ProcessCompositePointerEventL(const TPointerEvent& aPointerE
         // CSwtTable::CountComponentControls(), etc.
         CAknControl::HandlePointerEventL(aPointerEvent);
     }
+    PostMouseEventL(aPointerEvent);
 }
 
 void CSwtComposite::HandleScrollEventL(CEikScrollBar* aScrollBar, TEikScrollEvent aEventType)
@@ -933,6 +942,37 @@ void CSwtComposite::UpdateDoNotDrawFlag()
     for (TInt i = 0; i < iChildren.Count(); ++i)
     {
         iChildren[i]->UpdateDoNotDrawFlag();
+    }
+}
+
+void CSwtComposite::SetBounds(const TRect& aRect)
+{
+    // Divert the job to UiUtils if this is a parent to an editor
+    // open for split view editing.
+    MSwtUiUtils& utils = iDisplay.UiUtils();
+    if (utils.SplitInputView() == this)
+    {
+        utils.SetSplitInputViewSize(aRect.Size());
+        SetLocation(aRect.iTl);
+    }
+    else
+    {
+        ASwtScrollableBase::SetBounds(aRect);
+    }
+}
+
+void CSwtComposite::SetWidgetSize(const TSize& aSize)
+{
+    // Divert the job to UiUtils if this is a parent to an editor
+    // open for split view editing.
+    MSwtUiUtils& utils = iDisplay.UiUtils();
+    if (utils.SplitInputView() == this)
+    {
+        utils.SetSplitInputViewSize(aSize);
+    }
+    else
+    {
+        ASwtScrollableBase::SetWidgetSize(aSize);
     }
 }
 

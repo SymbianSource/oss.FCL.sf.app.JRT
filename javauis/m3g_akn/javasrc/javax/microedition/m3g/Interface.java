@@ -20,7 +20,7 @@ package javax.microedition.m3g;
 import java.lang.ref.WeakReference;
 import java.util.Hashtable;
 import com.nokia.mj.impl.rt.legacy.ToolkitInvoker;
-import com.nokia.mj.impl.rt.legacy.ToolkitObserver;
+import com.nokia.mj.impl.rt.legacy.ToolkitObserverNGAExtension;
 import com.nokia.mj.impl.rt.support.Finalizer;
 import com.nokia.mj.impl.rt.legacy.MemoryUtil;
 
@@ -29,7 +29,7 @@ import com.nokia.mj.impl.rt.legacy.MemoryUtil;
  * each MIDlet using the 3D API to keep track of Java-side object
  * lifetimes etc.
  */
-class Interface implements ToolkitObserver
+class Interface implements ToolkitObserverNGAExtension
 {
     //------------------------------------------------------------------
     // Static data
@@ -426,6 +426,17 @@ class Interface implements ToolkitObserver
             eventSrcHandle = 0;
         }
         MemoryUtil.freeNativeMemory();
+    }
+    
+    /*
+     * @see ToolkitObserverNGAExtension#foregroundEvent(boolean)
+     */
+    public void foregroundEvent(boolean foreground)
+    {
+        if (graphics3D != null)
+        {
+            graphics3D.setForeground(foreground);
+        }
     }
 
     // Native constructor

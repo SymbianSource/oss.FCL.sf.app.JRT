@@ -293,7 +293,11 @@ void CSwtCombo::HandlePointerEventL(const TPointerEvent& aPointerEvent)
     }
 
     if (pressed != iPressed)
+    {
         Redraw();
+    }
+
+    PostMouseEventL(aPointerEvent);
 }
 #endif //RD_SCALABLE_UI_V2
 
@@ -314,7 +318,23 @@ void CSwtCombo::HandleResourceChange(TInt aType)
 //
 void CSwtCombo::Draw(const TRect& /*aRect*/) const
 {
-    DrawContainedComboBorder();
+    CWindowGc& gc = SystemGc();
+    TRect rect(iCombo->Rect());
+    TAknLayoutRect topLeft = CSwtLafFacade::GetLayoutRect(
+                                 CSwtLafFacade::EListHighlightSkinPlacingGeneralLine2, rect);
+
+    TAknLayoutRect bottomRight = CSwtLafFacade::GetLayoutRect(
+                                     CSwtLafFacade::EListHighlightSkinPlacingGeneralLine5, rect);
+
+    TRect innerRect(topLeft.Rect().iBr, bottomRight.Rect().iTl);
+
+    // "Connect" the label and the button with a toolbar frame.
+    AknsDrawUtils::DrawFrame(AknsUtils::SkinInstance(),
+                             gc,
+                             rect,
+                             innerRect,
+                             iPressed || iOpen ? KAknsIIDQsnFrButtonTbPressed : KAknsIIDQsnFrButtonTb,
+                             iPressed || iOpen ? KAknsIIDQsnFrButtonTbCenterPressed : KAknsIIDQsnFrButtonTbCenter);
 }
 
 // ---------------------------------------------------------------------------
@@ -1450,19 +1470,5 @@ void CSwtCombo::UpdateTouchFeedbackRect() const
         }
     }
 #endif //RD_TACTILE_FEEDBACK
-}
-
-// ---------------------------------------------------------------------------
-// CSwtCombo::DrawContainedComboBorder()
-// ---------------------------------------------------------------------------
-//
-void CSwtCombo::DrawContainedComboBorder() const
-{
-    CWindowGc& gc = SystemGc();
-    gc.SetBrushStyle(CGraphicsContext::ENullBrush);
-    gc.SetPenColor(iDisplay.UiUtils().GetSystemColor(ESwtColorWidgetBorder));
-    gc.SetPenStyle(CGraphicsContext::ESolidPen);
-    gc.SetPenSize(TSize(1, 1));
-    gc.DrawRect(iCombo->Rect());
 }
 

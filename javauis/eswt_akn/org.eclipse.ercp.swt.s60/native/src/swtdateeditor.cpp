@@ -17,6 +17,9 @@
 #include <avkon.rsg>
 #include <AknUtils.h>
 #include <AknDef.h>
+#ifdef RD_JAVA_S60_RELEASE_9_2
+#include <AknPriv.hrh>
+#endif
 #include <swtlaffacade.h>
 #if defined( RD_SCALABLE_UI_V2 )
 #include <swtbuttonproxy.h>
@@ -202,17 +205,10 @@ CCoeControl* CSwtDateEditor::ComponentControl(TInt aIndex) const
 // ---------------------------------------------------------------------------------------------
 //
 void CSwtDateEditor::FocusChanged(TDrawNow aDrawNow)
-{    
+{
     if (iEditor)
     {
         TRAP_IGNORE(PrepareForFocusChangeL());
-        
-        // Aparenlty this is the only way of forcing the VKB to close.
-        if (iEditor->IsFocused() && !IsFocused())
-        {
-            iDisplay.CoeEnv()->Fep()->HandleDestructionOfFocusedItem();
-        }
-        
         iEditor->SetFocus(IsFocused());
     }
 
@@ -225,6 +221,15 @@ void CSwtDateEditor::FocusChanged(TDrawNow aDrawNow)
 //
 void CSwtDateEditor::MakeVisible(TBool aVisible)
 {
+    // Close VKB. Do it here instead of FocusChange to avoid split input flicker.
+    if (iEditor->IsFocused() && !aVisible)
+    {
+        CCoeFep* fep = iDisplay.CoeEnv()->Fep();
+        if (fep)
+        {
+            fep->HandleDestructionOfFocusedItem();
+        }
+    }
     CCoeControl::MakeVisible(aVisible);
     FocusabilityChanged();
 }
@@ -534,9 +539,19 @@ TBool CSwtDateEditor::IsFieldOffsetStyleField(TInt fieldIndex) const
 void CSwtDateEditor::SetDimmed(TBool aDimmed)
 {
     ASSERT(iEditor);
+
+    // Close VKB. Do it here instead of FocusChange to avoid split input flicker.
+    if (iEditor->IsFocused() && aDimmed)
+    {
+        CCoeFep* fep = iDisplay.CoeEnv()->Fep();
+        if (fep)
+        {
+            fep->HandleDestructionOfFocusedItem();
+        }
+    }
+
     CCoeControl::SetDimmed(aDimmed);
     iEditor->SetDimmed(aDimmed);
-
     FocusabilityChanged();
 }
 
@@ -570,6 +585,16 @@ void CSwtDateEditor::SwtHandleResourceChangeL(TInt aType)
         }
         SizeChanged();
     }
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    else if (aType == KAknSplitInputEnabled)
+    {
+        const MSwtShell* activeShell = iDisplay.UiUtils().GetActiveShell();
+        if (activeShell && activeShell->FocusControl() == this)
+        {
+            iDisplay.UiUtils().SetSplitInputEditor(this);
+        }
+    }
+#endif
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -661,6 +686,12 @@ void CSwtDateEditor::SizeChanged()
 void CSwtDateEditor::PositionChanged()
 {
     HandlePositionChanged();
+    // Notify change to UiUtils if this is an editor open for split view editing.
+    MSwtUiUtils& utils = iDisplay.UiUtils();
+    if (utils.SplitInputView() == this)
+    {
+        utils.AdjustSplitInputShellPos();
+    }
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -983,6 +1014,13 @@ void CSwtDateEditor::SetDateEditorStyleL(TInt aDateEditorStyle)
         iEditor->SetDimmed(IsDimmed());
         RetrieveDefaultFontL();
         iEditor->SetSkinTextColorL(EAknsCIQsnTextColorsCG6);
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        if (iEditor->SupportsFeature(CEikMfne::EPartialScreenInput))
+        {
+            iEditor->SetFeature(CEikMfne::EPartialScreenInput, ETrue);
+        }
+#endif
     }
     ActivateL();
 }
@@ -1106,6 +1144,51 @@ TBool CSwtDateEditor::IsKeyUsed(TUint aKeyCode) const
     return EFalse;
 }
 
+
+void CSwtDateEditor::SetBounds(const TRect& aRect)
+{
+    // Divert the job to UiUtils if this is an editor open for split view editing.
+    MSwtUiUtils& utils = iDisplay.UiUtils();
+    if (utils.SplitInputView() == this)
+    {
+        utils.SetSplitInputViewSize(aRect.Size());
+        SetLocation(aRect.iTl);
+    }
+    else
+    {
+        ASwtControlBase::SetBounds(aRect);
+    }
+}
+
+void CSwtDateEditor::SetWidgetSize(const TSize& aSize)
+{
+    // Divert the job to UiUtils if this is an editor open for split view editing.
+    MSwtUiUtils& utils = iDisplay.UiUtils();
+    if (utils.SplitInputView() == this)
+    {
+        utils.SetSplitInputViewSize(aSize);
+    }
+    else
+    {
+        ASwtControlBase::SetWidgetSize(aSize);
+    }
+}
+
+TSwtPeer CSwtDateEditor::Dispose()
+{
+    // Close VKB.
+    if (iEditor->IsFocused())
+    {
+        CCoeFep* fep = iDisplay.CoeEnv()->Fep();
+        if (fep)
+        {
+            fep->HandleDestructionOfFocusedItem();
+        }
+    }
+    return ASwtControlBase::Dispose();
+}
+
+
 // ---------------------------------------------------------------------------------------------
 // CSwtDateEditor::HandlePointerEventL
 // ---------------------------------------------------------------------------------------------
@@ -1116,15 +1199,16 @@ void CSwtDateEditor::HandlePointerEventL(const TPointerEvent& aPointerEvent)
     TBool hit = ETrue;
 
 #ifdef RD_JAVA_S60_RELEASE_9_2
+    TBool isActiveSplitEditor = iDisplay.UiUtils().SplitInputEditor() == this;
     TBool pressed = iPressed;
     hit = Rect().Contains(aPointerEvent.iPosition);
 
     if (aPointerEvent.iType == TPointerEvent::EButton1Down)
-        iPressed = ETrue;
+        iPressed = !isActiveSplitEditor;
     else if (aPointerEvent.iType == TPointerEvent::EButton1Up)
         iPressed = EFalse;
     else if (aPointerEvent.iType == TPointerEvent::EDrag)
-        iPressed = hit;
+        iPressed = hit && !isActiveSplitEditor;
 #endif
 
     if (!(aPointerEvent.iType == TPointerEvent::EButton1Up
@@ -1153,6 +1237,8 @@ void CSwtDateEditor::HandlePointerEventL(const TPointerEvent& aPointerEvent)
     if (pressed != iPressed)
         Redraw();
 #endif
+
+    PostMouseEventL(aPointerEvent);
 }
 
 // ---------------------------------------------------------------------------------------------

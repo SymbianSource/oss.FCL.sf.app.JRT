@@ -143,7 +143,9 @@ CSwtListView::CSwtListView(MSwtDisplay& aDisplay, TSwtPeer aPeer,
         iWidthOfSpaceBetweenItems(0),
         iHeightOfSpaceBetweenItems(0),
         iDensity(EMediumListViewDensity),   // must match Java-side default
-        iIsGridCellLayoutNeeded(EFalse)
+        iIsGridCellLayoutNeeded(EFalse),
+        iFlickScrollingOngoing(EFalse)
+
 {
     // Default to horizontal layout orientation (vertical scrollbar)
     //if( iStyle & KSwtStyleVertical )
@@ -1620,8 +1622,11 @@ void CSwtListView::HandleResourceChange(TInt aType)
 //
 void CSwtListView::FocusChanged(TDrawNow aDrawNow)
 {
-    TBool focused = IsFocused();
-    iGrid->SetFocus(focused);
+    TBool isFocused = IsFocused();
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    EnableFocusHighlight(isFocused);
+#endif //RD_JAVA_S60_RELEASE_9_2
+    iGrid->SetFocus(isFocused);
     HandleFocusChanged(aDrawNow);
 }
 
@@ -2653,6 +2658,14 @@ const CCoeControl& CSwtListView::CoeControl() const
 //
 void CSwtListView::ProcessKeyEventL(const TKeyEvent& aKeyEvent, TEventCode aType)
 {
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    if (aType == EEventKeyDown)
+    {
+        // After panning focus highlight was disabled, so enabling again
+        EnableFocusHighlight(ETrue);
+    }
+#endif //RD_JAVA_S60_RELEASE_9_2
+
     if (GetItemCount() == 0)
     {
         iGrid->OfferKeyEventL(aKeyEvent, aType);
@@ -3039,6 +3052,8 @@ void CSwtListView::HandleListBoxEventL(CEikListBox* aListBox, TListBoxEvent aEve
     {
         return;
     }
+
+    UpdateFlickScrollingState(aEventType);
 
     switch (aEventType)
     {
@@ -3492,7 +3507,32 @@ void CSwtListView::HandlePointerEventL(const TPointerEvent& aPointerEvent)
     // Deliver event to scrollbar
     if (iVScrollBarGrabsPointerEvents && vsb)
     {
-        vsb->HandlePointerEventL(aPointerEvent);
+        if (!iFlickScrollingOngoing
+                && aPointerEvent.iType == TPointerEvent::EButton1Down)
+        {
+            // Scrollbar was tapped after scrolling stopped
+            // by itself, so no need to redirect events
+            iScrollbarPointerEventToListbox = EFalse;
+        }
+
+        if (iScrollbarPointerEventToListbox)
+        {
+            // Stops kinetic scrolling when scrollbar is tapped
+            iGrid->ForwardPointerEventL(aPointerEvent);
+            // Continue delivering events until button up appears to prevent
+            // some unexpected behavior in both scrollbar and listbox
+            switch (aPointerEvent.iType)
+            {
+            case TPointerEvent::EButton1Up:
+                iScrollbarPointerEventToListbox = EFalse;
+                break;
+            }
+        }
+        else
+        {
+            // Handles scrollbar behavior
+            vsb->HandlePointerEventL(aPointerEvent);
+        }
     }
 
     // Deliver event to list
@@ -3574,6 +3614,8 @@ void CSwtListView::HandlePointerEventL(const TPointerEvent& aPointerEvent)
     {
         iVScrollBarGrabsPointerEvents = EFalse;
     }
+
+    PostMouseEventL(aPointerEvent);
 }
 
 // ---------------------------------------------------------------------------
@@ -3586,6 +3628,36 @@ const MSwtMenu* CSwtListView::GetStylusPopupControlMenu() const
     return iStylusPopupMenu;
 }
 #endif // RD_SCALABLE_UI_V2
+
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+// ---------------------------------------------------------------------------
+// CSwtListView::EnableFocusHighlight
+// From MSwtControl
+// ---------------------------------------------------------------------------
+//
+void CSwtListView::EnableFocusHighlight(TBool aEnable)
+{
+    ASSERT(iGrid);
+    ASSERT(iGrid->View());
+
+    CListItemDrawer* itemDrawer = iGrid->View()->ItemDrawer();
+    if (itemDrawer)
+    {
+        TInt disabledHighlight =
+            itemDrawer->Flags() & CListItemDrawer::EDisableHighlight;
+
+        if (aEnable && disabledHighlight)
+        {
+            itemDrawer->ClearFlags(CListItemDrawer::EDisableHighlight);
+        }
+        else if (!aEnable && !disabledHighlight)
+        {
+            itemDrawer->SetFlags(CListItemDrawer::EDisableHighlight);
+        }
+    }
+}
+#endif //RD_JAVA_S60_RELEASE_9_2
 
 #ifdef RD_JAVA_ADVANCED_TACTILE_FEEDBACK
 void CSwtListView::DoControlSpecificFeedback(
@@ -3609,3 +3681,21 @@ void CSwtListView::DoControlSpecificFeedback(
 }
 #endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
 
+// ---------------------------------------------------------------------------
+// CSwtTableListBox::UpdateFlickScrollingState
+// Updates flick scrolling status based on received listbox event.
+// ---------------------------------------------------------------------------
+//
+void CSwtListView::UpdateFlickScrollingState(TListBoxEvent aEventType)
+{
+    switch (aEventType)
+    {
+    case EEventFlickStarted:
+        iFlickScrollingOngoing = ETrue;
+        iScrollbarPointerEventToListbox = ETrue;
+        break;
+    case EEventFlickStopped:
+        iFlickScrollingOngoing = EFalse;
+        break;
+    }
+}

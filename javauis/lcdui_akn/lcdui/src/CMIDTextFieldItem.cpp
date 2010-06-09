@@ -342,7 +342,9 @@ void CMIDTextFieldItem::FocusChanged(TDrawNow aDrawNow)
         iTextField->SetFocus(EFalse);
     }
 
-    CMIDControlItem::FocusChanged(aDrawNow);
+    CMIDControlItem::FocusChanged(aDrawNow);    
+    // DoLayout and change text color when focused
+    SizeChanged();
 }
 
 void CMIDTextFieldItem::HandleCurrentL(TBool aCurrent)

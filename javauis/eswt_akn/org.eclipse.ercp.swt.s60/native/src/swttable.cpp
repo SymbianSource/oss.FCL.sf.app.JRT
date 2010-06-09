@@ -441,7 +441,11 @@ TKeyResponse CSwtTable::OfferKeyEventL(const TKeyEvent& aKeyEvent,TEventCode aTy
 //
 void CSwtTable::FocusChanged(TDrawNow aDrawNow)
 {
-    iTableListBox->SetFocus(IsFocusControl());
+    TBool isFocused = IsFocusControl();
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    EnableFocusHighlight(isFocused);
+#endif //RD_JAVA_S60_RELEASE_9_2
+    iTableListBox->SetFocus(isFocused);
     HandleFocusChanged(aDrawNow);
 }
 
@@ -1739,9 +1743,9 @@ void CSwtTable::UpdateItemHeight(const TInt& aChangedFontHeight)
         TRAP_IGNORE
         (
             for (TInt i = 0; i < colCount; ++i)
-            {
-                PostColumnResizeEventL(iTableColumns[ i ]->JavaPeer());
-            }
+    {
+        PostColumnResizeEventL(iTableColumns[ i ]->JavaPeer());
+        }
         );
         Redraw();
     }
@@ -1976,6 +1980,13 @@ TRect CSwtTable::ClientRect() const
 //
 void CSwtTable::ProcessKeyEventL(const TKeyEvent& aKeyEvent, TEventCode aType)
 {
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    if (aType == EEventKeyDown)
+    {
+        // After panning focus highlight was disabled, so enabling again
+        EnableFocusHighlight(ETrue);
+    }
+#endif //RD_JAVA_S60_RELEASE_9_2
     iTableListBox->ProcessKeyEventL(aKeyEvent, aType);
 }
 
@@ -2156,6 +2167,36 @@ void CSwtTable::UpdateDoNotDrawFlag()
         UpdateMSKLabelL();
     );
 }
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+// ---------------------------------------------------------------------------
+// CSwtTable::EnableFocusHighlight
+// From MSwtControl
+// ---------------------------------------------------------------------------
+//
+void CSwtTable::EnableFocusHighlight(TBool aEnable)
+{
+    ASSERT(iTableListBox);
+    ASSERT(iTableListBox->View());
+
+    CListItemDrawer* itemDrawer = iTableListBox->View()->ItemDrawer();
+    if (itemDrawer)
+    {
+        TInt disabledHighlight =
+            itemDrawer->Flags() & CListItemDrawer::EDisableHighlight;
+
+        if (aEnable && disabledHighlight)
+        {
+            itemDrawer->ClearFlags(CListItemDrawer::EDisableHighlight);
+        }
+        else if (!aEnable && !disabledHighlight)
+        {
+            itemDrawer->SetFlags(CListItemDrawer::EDisableHighlight);
+        }
+    }
+}
+#endif //RD_JAVA_S60_RELEASE_9_2
+
 
 // ---------------------------------------------------------------------------
 // From ASwtScrollableBase

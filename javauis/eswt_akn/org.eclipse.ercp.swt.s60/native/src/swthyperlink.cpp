@@ -486,6 +486,8 @@ void CSwtHyperLink::HandlePointerEventL(const TPointerEvent& aPointerEvent)
     default:
         break;
     }
+
+    PostMouseEventL(aPointerEvent);
 }
 
 // ---------------------------------------------------------------------------

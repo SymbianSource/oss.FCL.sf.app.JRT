@@ -36,6 +36,11 @@ protected:
     void ConstructL();
     MSwtShell& GetTopShell() const;
     void RemoveAndRememberFocus();
+    
+    // Relocating an editor's Shell must be delegated to UiUtils 
+    // while split editing is on (@see SetSplitInputShellPos)
+    // CCoeControl::SetRect must not be called directly.
+    void DoSetRect(const TRect& aRect);
 
 // From CSwtComposite
 protected:
@@ -57,6 +62,7 @@ public:
 protected:
     void FocusChanged(TDrawNow aDrawNow);
     void Draw(const TRect& aRect) const;
+    void SizeChanged();
 
 // From MCoeControlBackground
 public:
@@ -150,6 +156,7 @@ public:
     TBool HasCba() const;
     void SetTaskTip();
     TBool IsTaskTip() const;
+    void DoSetLocation(const TPoint& aPoint);
 
 // From MEikStatusPaneObserver
 public:

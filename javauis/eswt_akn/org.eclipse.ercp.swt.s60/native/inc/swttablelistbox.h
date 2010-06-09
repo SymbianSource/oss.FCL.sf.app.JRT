@@ -254,6 +254,12 @@ private:
     TInt HorizontalScrollPixelsPerArrowEvent();
     TInt HorizontalScrollPixelsPerPageEvent();
 
+    /**
+     * Updates flick scrolling status.
+     * @param aEventType CEikListbox event type.
+     */
+    void UpdateFlickScrollingState(TListBoxEvent aEventType);
+
 private: // data
 
     /**
@@ -299,6 +305,16 @@ private: // data
      * Used to implement horizontal panning.
      */
     TPoint iDragPos;
+
+    /**
+     * True when list is flick scrolling
+     */
+    TBool iFlickScrollingOngoing;
+
+    /**
+     * True when pointer events on scrollbar should be delivered to listbox
+     */
+    TBool iScrollbarPointerEventToListbox;
 };
 
 #endif // SWTTABLELISTBOX_H

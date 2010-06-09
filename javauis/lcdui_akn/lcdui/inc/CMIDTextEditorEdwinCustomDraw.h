@@ -112,7 +112,7 @@ public: // From CLafEdwinCustomDrawBase
         const TDesC& aText,
         const TPoint& aTextOrigin,
         TInt aExtraPixels) const;
-    
+
 #ifdef RD_JAVA_S60_RELEASE_9_2
     /**
      * Called by the editor FW in order to draw the the content of
@@ -124,8 +124,8 @@ public: // From CLafEdwinCustomDrawBase
      * @param aLineInfo The line information.
      * @param aFormat The current character format.
      * @param aText The content to draw.
-     * @param aStart 
-     * @param aEnd 
+     * @param aStart
+     * @param aEnd
      * @param aTextOrigin The origin of the text.
      * @param aExtraPixels The amount of extra pixels.
      * @since S60 5.0
@@ -140,7 +140,7 @@ public: // From CLafEdwinCustomDrawBase
         const TPoint& aTextOrigin,
         TInt aExtraPixels) const;
 #endif
-    
+
     /**
      * Retrieves the system color for the specified color index.
      *
@@ -153,6 +153,16 @@ public: // From CLafEdwinCustomDrawBase
     TRgb SystemColor(
         TUint aColorIndex,
         TRgb aDefaultColor) const;
+
+private: // Own functions
+    /**
+     * Gets proper clipping rect used during scaling. Returned rect is
+     * intersection of canvas rect and iEditorRect.
+     *
+     * @return The proper clipping rect during scaling
+     * @since S60 5.0
+     */
+    const TRect GetClippingRectForScaling() const;
 
 private: // Data
 

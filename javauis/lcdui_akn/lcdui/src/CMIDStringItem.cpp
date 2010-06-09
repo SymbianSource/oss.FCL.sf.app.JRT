@@ -678,7 +678,7 @@ void CMIDStringItem::SetColorL()
         // Same color - no matter if focused or not
         AknsUtils::GetCachedColor(
             AknsUtils::SkinInstance(), color,
-            KAknsIIDQsnTextColors, EAknsCIQsnTextColorsCG8);
+            KAknsIIDQsnTextColors, EAknsCIQsnTextColorsCG6);
         labelColor = color;
         contentColor = color;
     }
@@ -717,7 +717,7 @@ void CMIDStringItem::SetColorL()
             // Item is not focused
             AknsUtils::GetCachedColor(
                 AknsUtils::SkinInstance(), labelColor,
-                KAknsIIDQsnTextColors, EAknsCIQsnTextColorsCG8);
+                KAknsIIDQsnTextColors, EAknsCIQsnTextColorsCG6);
             AknsUtils::GetCachedColor(
                 AknsUtils::SkinInstance(), contentColor,
                 KAknsIIDQsnHighlightColors, EAknsCIQsnHighlightColorsCG3);
@@ -743,7 +743,7 @@ void CMIDStringItem::SetColorL()
         if (iButton)
         {
             iButton->SetTextColorIds(
-                KAknsIIDQsnTextColors, EAknsCIQsnTextColorsCG8);
+                KAknsIIDQsnTextColors, EAknsCIQsnTextColorsCG6);
         }
     }
 

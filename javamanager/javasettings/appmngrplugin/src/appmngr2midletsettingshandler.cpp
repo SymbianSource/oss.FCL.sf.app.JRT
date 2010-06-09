@@ -140,14 +140,23 @@ CAppMngr2SuiteSnapItem* CAppMngr2MidletSettingsHandler::GetSnapL()
     }
     default:
     {
-        RCmManagerExt manager;
-        manager.OpenLC();
-        RCmDestinationExt destination = manager.DestinationL(apnId);
-        CleanupClosePushL(destination);
-        name = destination.NameLC();
-        CleanupStack::Pop(name);
-        CleanupStack::PopAndDestroy(&destination);
-        CleanupStack::PopAndDestroy(&manager);
+        TRAPD(err,
+            RCmManagerExt manager;
+            manager.OpenLC();
+            RCmDestinationExt destination = manager.DestinationL(apnId);
+            CleanupClosePushL(destination);
+            name = destination.NameLC();
+            CleanupStack::Pop(name);
+            CleanupStack::PopAndDestroy(&destination);
+            CleanupStack::PopAndDestroy(&manager);
+        );
+        if (err != KErrNone)
+        {
+            // reset it back to default
+            snap->iId = (TUint)KDefaultConnection;
+            name = StringLoader::LoadL(R_JAVA_CONSET_SETT_DEFAULT_CONNECTION);
+            ConnectionManager::setDestinationNetworkIdL(iMidletSuiteUid, snap->iId);
+        }
     }
     }
     if (resourceOffset > 0)

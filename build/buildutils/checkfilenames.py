@@ -42,7 +42,7 @@ known_exts = [
     ".cvsignore", ".dat", ".dcf", ".def", ".defs", ".dll", ".der", ".doc",
     ".dr", ".dso", ".dsp", ".dsw", ".dtd",
     ".emx", ".exe", ".flm", ".gcfml", ".gif",
-    ".h", ".hrh", ".html", ".iby", ".inf", ".ini", ".inl",
+    ".h", ".hrh", ".htm", ".html", ".iby", ".inf", ".ini", ".inl",
     ".jad", ".jar", ".java", ".javaversion", ".jpeg", ".jpg", ".js", ".jsp", ".jupiter",
     ".key", ".ks", ".launch", ".lib", ".loc", ".log",
     ".mak", ".make", "makefile", "makefile_akn", "makefile_qt",  "manifest", ".mbm", ".mdl",

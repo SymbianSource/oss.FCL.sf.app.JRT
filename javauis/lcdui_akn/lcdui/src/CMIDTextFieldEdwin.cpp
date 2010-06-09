@@ -123,7 +123,7 @@ void CMIDTextFieldEdwin::DoLayout(const TRect& aRect)
     }
     else
     { // skinning colour groups for editable text
-        skinTextColor = EAknsCIQsnTextColorsCG8;
+        skinTextColor = IsFocused() ? EAknsCIQsnTextColorsCG8 : EAknsCIQsnTextColorsCG6;
     }
 
     TRect parentRect = aRect;

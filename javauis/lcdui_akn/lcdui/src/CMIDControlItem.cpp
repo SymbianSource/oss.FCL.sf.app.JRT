@@ -249,9 +249,14 @@ void CMIDControlItem::GetCaptionForFep(TDes& aCaption) const
 void CMIDControlItem::SetLabelColor(CMIDItemLabel* aLabelControl)
 {
     TRgb color;
+        
+    TInt labelColor = (IsFocused() && 
+                       Type() != MMIDComponent::ECustomItem &&
+                       Type() != MMIDComponent::EImageItem) ? EAknsCIQsnTextColorsCG8 : EAknsCIQsnTextColorsCG6;
 
+    // Get color from skin
     if ((AknsUtils::GetCachedColor(AknsUtils::SkinInstance(), color,
-                                   KAknsIIDQsnTextColors, EAknsCIQsnTextColorsCG8) == KErrNone) && iLabelControl)
+                                   KAknsIIDQsnTextColors, labelColor) == KErrNone) && iLabelControl)
     {//data entry text color
         TRAP_IGNORE(aLabelControl->SetColorL(color));
     }

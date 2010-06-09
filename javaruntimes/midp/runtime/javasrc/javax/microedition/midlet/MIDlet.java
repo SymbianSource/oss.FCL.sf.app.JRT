@@ -312,6 +312,8 @@ public abstract class MIDlet
             mNetworkPromptSchemes = new Hashtable();
             mNetworkPromptSchemes.put("http:","javax.microedition.io.Connector.http");
             mNetworkPromptSchemes.put("https:","javax.microedition.io.Connector.https");
+            mNetworkPromptSchemes.put("rtsp:","javax.microedition.io.Connector.rtsp");
+            mNetworkPromptSchemes.put("mms:","javax.microedition.io.Connector.rtsp");
         }
         if (mNoPromptSchemes == null)
         {

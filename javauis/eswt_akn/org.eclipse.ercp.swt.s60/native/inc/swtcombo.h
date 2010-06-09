@@ -188,11 +188,6 @@ private:
     void DoSelectItemL(TInt aIdx);
 
     /**
-     * Fixed border for the contained combo.
-     */
-    void DrawContainedComboBorder() const;
-
-    /**
      * Position the contained combo in the middle of the compound control.
      */
     void CenterContainedCombo();
@@ -241,6 +236,12 @@ private:
      * Not own.
      */
     MTouchFeedback* iFeedback;
+    
+    /**
+     * True for as long as pressed by pointer.
+     * Eclipses ASwtControlBase::iPressed!
+     */
+    TBool iPressed;
 };
 
 

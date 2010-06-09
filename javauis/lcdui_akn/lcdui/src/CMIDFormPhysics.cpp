@@ -141,8 +141,7 @@ TBool CMIDFormPhysics::StartFlick(const TPoint& aLength, TTime aDuration)
     if (iPhysics)
     {
         TPoint drag(aLength);
-        iPhysics->StartFlick(drag, aDuration);
-        return ETrue;
+        return iPhysics->StartFlick(drag, aDuration);
     }
 
     PhysicEmulationEnded();

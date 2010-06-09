@@ -89,6 +89,7 @@ public class SecurityPolicyModuleTests extends TestCase implements InstallerMain
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.publicinfo","read",null),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.cellid","read",null),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.midlet.AutoStartPermission"),null,null,null),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.midlet.CmdLineArgsPermission"),null,null,null),
     };
     static final SecurityPolicyPermission[] OPERATOR_PERMS =
     {
@@ -142,6 +143,7 @@ public class SecurityPolicyModuleTests extends TestCase implements InstallerMain
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.publicinfo","read",null),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.cellid","read",null),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.midlet.AutoStartPermission"),null,null,null),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.midlet.CmdLineArgsPermission"),null,null,null),
     };
     static final SecurityPolicyPermission[] IDENTIFIED_THIRD_PARTY_PERMS =
     {
@@ -265,6 +267,9 @@ public class SecurityPolicyModuleTests extends TestCase implements InstallerMain
                                                                           new int[]{UserSecuritySettings.BLANKET_INTERACTION_MODE,UserSecuritySettings.ONESHOT_INTERACTION_MODE,UserSecuritySettings.NO_INTERACTION_MODE,UserSecuritySettings.SESSION_INTERACTION_MODE})),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.publicinfo","read",null),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.cellid","read",null),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.midlet.CmdLineArgsPermission"),null, null,
+                                     new SecurityPolicyPermissionSettings("Url start",UserSecuritySettings.SESSION_INTERACTION_MODE,
+                                                                          new int[]{UserSecuritySettings.ONESHOT_INTERACTION_MODE,UserSecuritySettings.NO_INTERACTION_MODE,UserSecuritySettings.SESSION_INTERACTION_MODE})),
     };
     static final SecurityPolicyPermission[] UNIDENTIFIED_THIRD_PARTY_PERMS =
     {

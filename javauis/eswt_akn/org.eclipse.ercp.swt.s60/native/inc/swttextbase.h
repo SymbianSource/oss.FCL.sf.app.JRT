@@ -18,7 +18,7 @@
 #include "swtscrollablebase.h"
 #include "swteditindicator.h"
 
-#if defined( RD_SCALABLE_UI_V2)
+#ifdef RD_SCALABLE_UI_V2
 #include <fepbase.h>
 #endif //RD_SCALABLE_UI_V2
 
@@ -32,7 +32,7 @@ class CEikEdwin;
 NONSHARABLE_CLASS(CSwtTextBase)
         : public CAknControl
         , public ASwtScrollableBase
-#if defined( RD_SCALABLE_UI_V2)
+#ifdef RD_SCALABLE_UI_V2
         , public MCoeCaptionRetrieverForFep
 #endif //RD_SCALABLE_UI_V2
 {
@@ -192,6 +192,9 @@ public:
     TBool CanDrawOutsideRect() const;
     void SetBackgroundL(const MSwtColor* aColor);
     void SetForegroundL(const MSwtColor* aColor);
+    void SetBounds(const TRect& aRect);
+    void SetWidgetSize(const TSize& aSize);
+    TSwtPeer Dispose();
 
 // From ASwtControlBase
 protected:

@@ -535,8 +535,9 @@ CSwtListBase::CSwtListBase(
     MSwtDisplay& aDisplay,
     TSwtPeer aPeer,
     MSwtComposite& aParent,
-    TInt aStyle) :
-        ASwtScrollableBase(aDisplay, aPeer, &aParent, aStyle)
+    TInt aStyle)
+        : ASwtScrollableBase(aDisplay, aPeer, &aParent, aStyle)
+        , iFlickScrollingOngoing(EFalse)
 {
 }
 
@@ -958,7 +959,32 @@ void CSwtListBase::HandlePointerEventL(const TPointerEvent& aPointerEvent)
     // Deliver event to scrollbar
     if (iVScrollBarGrabsPointerEvents && vsb)
     {
-        vsb->HandlePointerEventL(aPointerEvent);
+        if (!iFlickScrollingOngoing
+                && aPointerEvent.iType == TPointerEvent::EButton1Down)
+        {
+            // Scrollbar was tapped after scrolling stopped
+            // by itself, so no need to redirect events
+            iScrollbarPointerEventToListbox = EFalse;
+        }
+
+        if (iScrollbarPointerEventToListbox)
+        {
+            // Stops kinetic scrolling when scrollbar is tapped
+            iList->HandlePointerEventL(aPointerEvent);
+            // Continue delivering events until button up appears to prevent
+            // some unexpected behavior in both scrollbar and listbox
+            switch (aPointerEvent.iType)
+            {
+            case TPointerEvent::EButton1Up:
+                iScrollbarPointerEventToListbox = EFalse;
+                break;
+            }
+        }
+        else
+        {
+            // Handles scrollbar behavior
+            vsb->HandlePointerEventL(aPointerEvent);
+        }
     }
 
     // Deliver event to list
@@ -1030,6 +1056,8 @@ void CSwtListBase::HandlePointerEventL(const TPointerEvent& aPointerEvent)
     {
         iVScrollBarGrabsPointerEvents = EFalse;
     }
+
+    PostMouseEventL(aPointerEvent);
 }
 #else //RD_SCALABLE_UI_V2
 void CSwtListBase::HandlePointerEventL(
@@ -1069,6 +1097,9 @@ void CSwtListBase::FocusChanged(TDrawNow aDrawNow)
     ASSERT(iList);
 
     TBool isFocused = IsFocusControl();
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    EnableFocusHighlight(isFocused);
+#endif //RD_JAVA_S60_RELEASE_9_2
     iList->SetFocus(isFocused, aDrawNow);
     HandleFocusChanged(aDrawNow);
 }
@@ -1207,6 +1238,14 @@ const CCoeControl& CSwtListBase::CoeControl() const
 //
 void CSwtListBase::ProcessKeyEventL(const TKeyEvent& aKeyEvent, TEventCode aType)
 {
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    if (aType == EEventKeyDown)
+    {
+        // After panning focus highlight was disabled, so enabling again
+        EnableFocusHighlight(ETrue);
+    }
+#endif //RD_JAVA_S60_RELEASE_9_2
+
     // No items or not a normal key event
     if (iList->Model()->NumberOfItems() == 0 || aType != EEventKey)
     {
@@ -1370,6 +1409,22 @@ TBool CSwtListBase::IsLongTapAnimationCandidate(const TPointerEvent& /*aPointerE
 }
 #endif
 
+#ifdef RD_JAVA_S60_RELEASE_9_2
+// ---------------------------------------------------------------------------
+// CSwtListBase::EnableFocusHighlight
+// From MSwtControl
+// ---------------------------------------------------------------------------
+//
+void CSwtListBase::EnableFocusHighlight(TBool aEnable)
+{
+    ASSERT(iList);
+    ASSERT(iList->View());
+
+    CSwtListBoxLists::EnableFocusHighlight(iList->View()->ItemDrawer(),
+                                           aEnable);
+}
+#endif //RD_JAVA_S60_RELEASE_9_2
+
 // ---------------------------------------------------------------------------
 // CSwtListBase::SbFrame
 // From ASwtScrollableBase
@@ -1525,6 +1580,8 @@ void CSwtListBase::HandleListBoxEventL(CEikListBox* aListBox, TListBoxEvent aEve
         return;
     }
 
+    UpdateFlickScrollingState(aEventType);
+
     switch (aEventType)
     {
         // On 5.0, drawing trough Java gives simply a better fps.
@@ -1558,3 +1615,21 @@ void CSwtListBase::HandleListBoxEventL(CEikListBox*, TListBoxEvent)
 }
 #endif //RD_SCALABLE_UI_V2
 
+// ---------------------------------------------------------------------------
+// CSwtListBase::UpdateFlickScrollingState
+// Updates flick scrolling status based on received listbox event.
+// ---------------------------------------------------------------------------
+//
+void CSwtListBase::UpdateFlickScrollingState(TListBoxEvent aEventType)
+{
+    switch (aEventType)
+    {
+    case EEventFlickStarted:
+        iFlickScrollingOngoing = ETrue;
+        iScrollbarPointerEventToListbox = ETrue;
+        break;
+    case EEventFlickStopped:
+        iFlickScrollingOngoing = EFalse;
+        break;
+    }
+}

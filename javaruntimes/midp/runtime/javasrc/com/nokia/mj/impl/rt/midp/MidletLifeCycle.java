@@ -25,15 +25,17 @@ import java.util.Hashtable;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import java.security.AccessControlException;
+
 import com.nokia.mj.impl.rt.utils.ExtensionUtil;
+import com.nokia.mj.impl.rt.utils.CmdLineArgsPermission;
 
 import com.nokia.mj.impl.rt.support.Jvm;
 import com.nokia.mj.impl.rt.support.JvmInternal;
 import com.nokia.mj.impl.rt.support.ThreadEventListener;
+import com.nokia.mj.impl.rt.support.ApplicationUtils;
 
 import com.nokia.mj.impl.rt.legacy.LegacySupport;
-
-import com.nokia.mj.impl.gcf.PushSecurityUtils;
 
 import com.nokia.mj.impl.security.packageprotection.PackageProtector;
 import com.nokia.mj.impl.security.common.RuntimeSecurityException;
@@ -620,7 +622,7 @@ final class MidletLifeCycle
     {
         if (Log.mOn) Log.logI("MidletLifeCycle.handleStartRequest(), subTask: "
                                   + subTask);
-        if ((mState == POST_INIT_DONE && subTask != LifeCycleTask.PRE_WARM_START) || 
+        if ((mState == POST_INIT_DONE && subTask != LifeCycleTask.PRE_WARM_START) ||
             (mState == PRE_INIT_DONE && subTask == LifeCycleTask.PRE_WARM_START))
         {
             if (subTask == LifeCycleTask.NORMAL_START)
@@ -879,7 +881,7 @@ final class MidletLifeCycle
             t = encodedArgs.charAt(idx);
             if (t < 'a')
             {
-                if (idx + 4 >= len)
+                if (idx + 3 >= len)
                     break;
                 // decode one 16-bit char
                 char a = (char)(t - 'A');
@@ -892,7 +894,7 @@ final class MidletLifeCycle
             }
             else
             {
-                if (idx + 2 >= len)
+                if (idx + 1 >= len)
                     break;
                 // decode one 8-bit char
                 char a = (char)(t - 'a');
@@ -960,7 +962,7 @@ final class MidletLifeCycle
         // If system property com.nokia.mid.cmdline has value, it contains
         // the arguments for the current MIDlet.
         setMidletArguments();
-    
+
         if (mPrewarmStart)
         {
             // Get the recorded heap size from previous run.
@@ -995,23 +997,23 @@ final class MidletLifeCycle
         if ((mMainArgs.findArgument("-autoinvocation") != null) ||
                 mAutoinvocationFromUrl)
         {
+            if (Log.mOn) Log.logI("Ensuring autoinvocation.");
+            String pushAdditionalInfo =
+                mMainArgs.findArgument("-autoInvocationAdditional");
+            if (Log.mOn) Log.logI("  addInfo: '" + pushAdditionalInfo + "'");
+
+            // ensure security
             try
             {
-                if (Log.mOn) Log.logI("Ensuring autoinvocation.");
-                String pushAdditionalInfo =
-                    mMainArgs.findArgument("-autoInvocationAdditional");
-                if (Log.mOn) Log.logI("  addInfo: '" + pushAdditionalInfo + "'");
-                PushSecurityUtils.ensurePermission("autoinvocation",
-                                                   pushAdditionalInfo);
-
+                ApplicationUtils appUtils = ApplicationUtils.getInstance();
+                CmdLineArgsPermission cmdLineArgsPermission = 
+                    new CmdLineArgsPermission();
+                appUtils.checkPermission(cmdLineArgsPermission);
                 if (Log.mOn) Log.logI("Autoinvocation allowed.");
-            }
-            catch (SecurityException se)
+            }catch(AccessControlException e)
             {
-                // The user didn't allow starting. Throw StartupException and
-                // mark it as non fatal.
-                if (Log.mOn) Log.logI("Autoinvocation NOT allowed.");
-                throw new StartupException("Auto invocation not allowed.",
+                if (Log.mOn) Log.logI("Autoinvocation NOT allowed.");                
+                throw new StartupException(e.toString(),
                                            false);
             }
         }
@@ -1169,7 +1171,7 @@ final class MidletLifeCycle
             if (mAcceptedUserProperties == null)
             {
                 // Doing intialization only once.
-                String launchParams = 
+                String launchParams =
                   ApplicationInfoImpl.getMidletInfo().getAttribute("Nokia-MIDlet-Launch-Params");
                 mAcceptedUserProperties = split(launchParams, ",");
             }

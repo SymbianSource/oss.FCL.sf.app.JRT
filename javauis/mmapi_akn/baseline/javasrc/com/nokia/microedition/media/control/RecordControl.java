@@ -158,7 +158,7 @@ public class RecordControl extends ControlImpl
      * <code>stream</code> is null.
      *
      */
-    public void setRecordStream(OutputStream aStream)
+    synchronized public void setRecordStream(OutputStream aStream)
     {
         checkState();
         if (null == aStream)
@@ -236,7 +236,7 @@ public class RecordControl extends ControlImpl
      * @exception SecurityException Thrown if the caller does not
      * have security permission to set the record location.
      */
-    public void setRecordLocation(String aLocator)
+    synchronized public void setRecordLocation(String aLocator)
     throws IOException, MediaException
     {
         checkState();
@@ -307,7 +307,7 @@ public class RecordControl extends ControlImpl
      *
      * @return The content type of the media.
      */
-    public String getContentType()
+    synchronized public String getContentType()
     {
         checkState();
         return _getContentType(iEventSource, iControlHandle);
@@ -346,7 +346,7 @@ public class RecordControl extends ControlImpl
      * has not been called.
      * </ul>
      */
-    public void startRecord()
+    synchronized public void startRecord()
     {
         checkState();
         // Ignore if startRecord is called when the recording has already started
@@ -390,7 +390,7 @@ public class RecordControl extends ControlImpl
      * and a <i>RECORD_STOPPED</i> event will be delivered through the
      * <code>PlayerListener</code>.
      */
-    public void stopRecord()
+    synchronized public void stopRecord()
     {
         checkState();
         // If stopRecord is called when the recording has already stopped,
@@ -522,7 +522,7 @@ public class RecordControl extends ControlImpl
      * @exception MediaException Thrown if setting the record
      * size limit is not supported.
      */
-    public int setRecordSizeLimit(int aSize) throws MediaException
+    synchronized public int setRecordSizeLimit(int aSize) throws MediaException
     {
         checkState();
         if (aSize <= 0)
@@ -589,7 +589,7 @@ public class RecordControl extends ControlImpl
      * <code>setRecordStream</code> must be called.
      *
      */
-    public void reset() throws IOException
+    synchronized public void reset() throws IOException
     {
         checkState();
         if (null == iOutputStreamWriter)

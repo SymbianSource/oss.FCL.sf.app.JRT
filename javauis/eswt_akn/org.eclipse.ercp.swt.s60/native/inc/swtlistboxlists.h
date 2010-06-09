@@ -267,6 +267,15 @@ public:
         TInt aListType,
         CEikTextListBox* aList,
         TBool aEnabled);
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    /**
+     * Enabling focus highlight for lists
+     */
+    static void EnableFocusHighlight(
+        CListItemDrawer* aItemDrawer,
+        TBool aEnable);
+#endif //RD_JAVA_S60_RELEASE_9_2
 };
 
 #endif // SWTLISTBOXLISTS_H

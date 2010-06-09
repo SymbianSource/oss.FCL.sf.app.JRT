@@ -90,7 +90,16 @@ void CSwtCaptionedControl::CControlProxy::SizeChanged()
 
     if (iChild)
     {
-        iChild->CoeControl().SetSize(iSize);
+        // Divert the job to UiUtils if this is an editor open for split view editing.
+        MSwtUiUtils& utils = iChild->GetShell().Display().UiUtils();
+        if (utils.SplitInputView() == iChild)
+        {
+            utils.SetSplitInputViewSize(iSize);
+        }
+        else
+        {
+            iChild->CoeControl().SetSize(iSize);
+        }
     }
 }
 
@@ -674,6 +683,7 @@ void CSwtCaptionedControl::HandlePointerEventL(const TPointerEvent& aPointerEven
     {
         iPointerGrabbingControl = NULL;
         ASwtControlBase::SetSwtFocus(KSwtFocusByPointer);
+        PostMouseEventL(aPointerEvent);
     }
 }
 #endif // RD_SCALABLE_UI_V2

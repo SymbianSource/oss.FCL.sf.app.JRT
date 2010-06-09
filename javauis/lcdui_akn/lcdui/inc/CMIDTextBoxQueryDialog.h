@@ -283,6 +283,14 @@ private:
     TBool IsNumberConversionNeeded();
 
     void HandleMinusCharEventL(MEikEdwinObserver::TEdwinEvent aEventType);
+
+    /**
+     * Prevents changes that would result in an illegal string
+     *
+     * @param TEdwinEvent aEventType
+     */
+    void HandleTextUpdateL(TEdwinEvent aEventType);
+
     TPtrC Read() const;
 
     void CreateNonMidletCommandsL();
@@ -394,6 +402,12 @@ private:
      * Rect of Editor
      */
     TRect iEditorRect;
+
+    /**
+     * Used when ConstraintsValidForText decide
+     * whatever to test text using stric options or not
+     */
+    TBool iStrict;
 };
 
 

@@ -1222,7 +1222,8 @@ void CSwtMenuArranger::ProcessCommandL(TInt aCommandId)
 {
     if (aCommandId == EAknSoftkeyOptions
             && IsOptionsCommandAdded()
-            && !EikMenuBar()->IsDisplayed())
+            && !EikMenuBar()->IsDisplayed()
+            && !iDisplay.UiUtils().SplitInputView())
     {
         TryDisplayMenuBarL(EFalse);
     }

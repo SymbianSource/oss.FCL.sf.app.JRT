@@ -213,12 +213,18 @@ void CSwtButton::CreateButtonL(const TDesC& aText)
     iButton->SetBackground(this);   // Back will be drawn by ASwtControlBase::Draw
 
     // Set default color
-    TRgb color;
+    TRgb colorNormal;
     AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
-                              color,
+                              colorNormal,
                               KAknsIIDQsnTextColors,
-                              EAknsCIQsnTextColorsCG63); // Messaging touch buttons
-    iButton->OverrideColorL(EColorButtonText, color);
+                              EAknsCIQsnTextColorsCG13); // SK
+    TRgb colorPressed;
+    AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
+                              colorPressed,
+                              KAknsIIDQsnTextColors,
+                              EAknsCIQsnTextColorsCG69); // pressed SK
+    iButton->OverrideColorL(EColorButtonText, colorNormal);
+    iButton->OverrideColorL(EColorButtonTextPressed, colorPressed);
 }
 
 // ---------------------------------------------------------------------------
@@ -641,10 +647,12 @@ void CSwtButton::SetForegroundL(const MSwtColor* aColor)
     else
     {
         // Reset to default color
+        TRgb colorNormal;
         AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
-                                  color,
+                                  colorNormal,
                                   KAknsIIDQsnTextColors,
-                                  EAknsCIQsnTextColorsCG63); // Messaging touch buttons
+                                  EAknsCIQsnTextColorsCG13); // SK
+        iButton->OverrideColorL(EColorButtonText, colorNormal);
     }
 
     if (iButton)
@@ -1182,6 +1190,8 @@ void CSwtButton::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 #endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
         iButton->HandlePointerEventL(aPointerEvent);
     }
+
+    PostMouseEventL(aPointerEvent);
 }
 #endif // RD_SCALABLE_UI_V2
 

@@ -382,6 +382,10 @@ int AppMngr2MidletSettingsUtil::getSettingsDisplayIndex(std::wstring aSettingsNa
     {
         return NFC_WRITE_ACCESS_SETTINGS_DISPLAY_INDEX;
     }
+    if (aSettingsName == URL_START_SETTINGS)
+    {
+        return URL_START_SETTINGS_DISPLAY_INDEX;
+    }
     return LAST_SETTINGS_DISPLAY_INDEX;
 }
 
@@ -472,99 +476,106 @@ TInt AppMngr2MidletSettingsUtil::GetLocalizedSettingsName(wstring aSettingsName)
     {
         return R_JAVA_SETTING_NFC_WRITE_ACCESS_PAGE;
     }
+    if (aSettingsName == URL_START_SETTINGS)
+    {
+        return R_JAVA_SETTING_URL_START_PAGE;
+    }
     return R_JAVA_SETTING_DEFAULT_PAGE;
 
 }
 
 const wstring AppMngr2MidletSettingsUtil::getLocalizedSettingsName(wstring aSettingsName)
 {
-    HBufC* localizedName = NULL;
-    if (aSettingsName == ACCESS_POINT_SETTINGS)
-    {
-        localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_NETWORK_DESTINATION);
-    }
-    else if (aSettingsName == ON_SCREEN_KEYPAD_SETTINGS)
-    {
-        localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_KEYPAD);
-    }
-    else if (aSettingsName == SECURITY_WARNINGS_SETTINGS)
-    {
-        localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_SECURITY_WARNINGS);
-    }
-    else if (aSettingsName == NET_ACCESS_SETTINGS)
-    {
-        localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_NET_ACCESS);
-    }
-    else if (aSettingsName == LOW_LEVEL_NET_ACCESS_SETTINGS)
-    {
-        localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_LOW_LEVEL_NET_ACCESS);
-    }
-    else if (aSettingsName == CALL_CONTROL_SETTINGS)
-    {
-        localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_RESTRICTED_CALL_CONTROL);
-    }
-    else if (aSettingsName == MESSAGING_SETTINGS)
-    {
-        localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_MESSAGING);
-    }
-    else if (aSettingsName == RESTRICTED_MESSAGING_SETTINGS)
-    {
-        localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_RESTRICTED_MESSAGING);
-    }
-    else if (aSettingsName == APPLICATION_AUTO_INVOCATION_SETTINGS)
-    {
-        localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_APP_AUTO_INVOCAT);
-    }
-    else if (aSettingsName == LOCAL_CONNECTIVITY_SETTINGS)
-    {
-        localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_LOCAL_CONN);
-    }
-    else if (aSettingsName == MULTIMEDIA_RECORDING_SETTINGS)
-    {
-        localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_MM_RECORD);
-    }
-    else if (aSettingsName == READ_USER_DATA_ACCESS_SETTINGS)
-    {
-        localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_READ_DATA);
-    }
-    else if (aSettingsName == WRITE_USER_DATA_ACCESS_SETTINGS)
-    {
-        localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_WRITE_DATA);
-    }
-    else if (aSettingsName == LOCATION_SETTINGS)
-    {
-        localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_LOCATION);
-    }
-    else if (aSettingsName == LANDMARK_SETTINGS)
-    {
-        localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_LANDMARKS);
-    }
-    else if (aSettingsName == AUTHENTICATION_SETTINGS)
-    {
-        localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_AUT);
-    }
-    else if (aSettingsName == SMART_CARD_COMMUNICATION_SETTINGS)
-    {
-        localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_SMARTCARD);
-    }
-    else if (aSettingsName == BROADCAST_SETTINGS)
-    {
-        localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_BROADCAST);
-    }
-    else if (aSettingsName == NFC_WRITE_ACCESS_SETTINGS)
-    {
-        localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_NFC_WRITE_ACCESS);
-    }
-    if (localizedName != NULL)
-    {
-        wstring ret = wstring((const wchar_t*)localizedName->Ptr(), localizedName->Length());
-        CleanupStack::PopAndDestroy(localizedName);
-        return ret;
-    }
-    else
-    {
-        return aSettingsName;
-    }
+    wstring ret = aSettingsName;
+    TRAP_IGNORE(
+        HBufC* localizedName = NULL;
+        if (aSettingsName == ACCESS_POINT_SETTINGS)
+        {
+            localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_NETWORK_DESTINATION);
+        }
+        else if (aSettingsName == ON_SCREEN_KEYPAD_SETTINGS)
+        {
+            localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_KEYPAD);
+        }
+        else if (aSettingsName == SECURITY_WARNINGS_SETTINGS)
+        {
+            localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_SECURITY_WARNINGS);
+        }
+        else if (aSettingsName == NET_ACCESS_SETTINGS)
+        {
+            localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_NET_ACCESS);
+        }
+        else if (aSettingsName == LOW_LEVEL_NET_ACCESS_SETTINGS)
+        {
+            localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_LOW_LEVEL_NET_ACCESS);
+        }
+        else if (aSettingsName == CALL_CONTROL_SETTINGS)
+        {
+            localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_RESTRICTED_CALL_CONTROL);
+        }
+        else if (aSettingsName == MESSAGING_SETTINGS)
+        {
+            localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_MESSAGING);
+        }
+        else if (aSettingsName == RESTRICTED_MESSAGING_SETTINGS)
+        {
+            localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_RESTRICTED_MESSAGING);
+        }
+        else if (aSettingsName == APPLICATION_AUTO_INVOCATION_SETTINGS)
+        {
+            localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_APP_AUTO_INVOCAT);
+        }
+        else if (aSettingsName == LOCAL_CONNECTIVITY_SETTINGS)
+        {
+            localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_LOCAL_CONN);
+        }
+        else if (aSettingsName == MULTIMEDIA_RECORDING_SETTINGS)
+        {
+            localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_MM_RECORD);
+        }
+        else if (aSettingsName == READ_USER_DATA_ACCESS_SETTINGS)
+        {
+            localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_READ_DATA);
+        }
+        else if (aSettingsName == WRITE_USER_DATA_ACCESS_SETTINGS)
+        {
+            localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_WRITE_DATA);
+        }
+        else if (aSettingsName == LOCATION_SETTINGS)
+        {
+            localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_LOCATION);
+        }
+        else if (aSettingsName == LANDMARK_SETTINGS)
+        {
+            localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_LANDMARKS);
+        }
+        else if (aSettingsName == AUTHENTICATION_SETTINGS)
+        {
+            localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_AUT);
+        }
+        else if (aSettingsName == SMART_CARD_COMMUNICATION_SETTINGS)
+        {
+            localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_SMARTCARD);
+        }
+        else if (aSettingsName == BROADCAST_SETTINGS)
+        {
+            localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_BROADCAST);
+        }
+        else if (aSettingsName == NFC_WRITE_ACCESS_SETTINGS)
+        {
+            localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_NFC_WRITE_ACCESS);
+        }
+        else if (aSettingsName == URL_START_SETTINGS)
+        {
+            localizedName = StringLoader::LoadLC(R_JAVA_SETTING_NAME_URL_START);
+        }
+        if (localizedName != NULL)
+        {
+            ret = wstring((const wchar_t*)localizedName->Ptr(), localizedName->Length());
+            CleanupStack::PopAndDestroy(localizedName);
+        }
+    );
+    return ret;
 }
 
 const wstring AppMngr2MidletSettingsUtil::getLocalizedSettingsInteractionMode(int aInteractionMode)

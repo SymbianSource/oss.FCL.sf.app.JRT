@@ -30,6 +30,7 @@ grant allowed {
     permission javax.microedition.media.control.VideoControl.getSnapshot "*" "snapshot";
     permission javax.microedition.io.Connector.rtsp "*";
     permission javax.microedition.PropertyPermission "mobinfo.imsi" "read";
+    permission javax.microedition.midlet.CmdLineArgsPermission;
 }
 
 grant assigned {

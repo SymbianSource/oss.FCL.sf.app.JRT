@@ -663,6 +663,7 @@ ENDIF
 "\epoc32\data\z\resource\plugins\LCDC64K.rsc"-"c:\resource\plugins\LCDC64K.rsc"
 "\epoc32\release\armv5\urel\lcdgdrv.dll"-"c:\sys\bin\lcdgdrv.dll"
 "\epoc32\release\armv5\urel\lcdgdrvi.dll"-"c:\sys\bin\lcdgdrvi.dll"
+"\epoc32\release\armv5\urel\lcduiphysicswrap.dll"-"c:\sys\bin\lcduiphysicswrap.dll"
 #ifdef RD_JAVA_S60_RELEASE_5_0_IAD
 "\epoc32\release\armv5\urel\midp2permissiondb.dll"-"c:\sys\bin\midp2permissiondb.dll"
 "\epoc32\release\armv5\urel\midp2userpreferences.dll"-"c:\sys\bin\midp2userpreferences.dll"

@@ -29,6 +29,7 @@ import com.nokia.mj.impl.rt.legacy.LegacySupport;
 import com.nokia.mj.impl.rt.legacy.MIDEventServer;
 import com.nokia.mj.impl.rt.legacy.NativeError;
 import com.nokia.mj.impl.rt.legacy.ToolkitObserver;
+import com.nokia.mj.impl.rt.legacy.ToolkitObserverNGAExtension;
 
 import com.nokia.mj.impl.rt.support.ApplicationUtils;
 import com.nokia.mj.impl.rt.support.ApplicationInfo;
@@ -553,9 +554,11 @@ final class Toolkit
                     break;
                 case EVENT_FOREGROUND:
                     iDisplay.handleForeground(true);
+                    notifyForeground(true);
                     break;
                 case EVENT_BACKGROUND:
                     iDisplay.handleForeground(false);
+                    notifyForeground(false);
                     break;
                 case EVENT_SET_CURRENT:
                     iDisplay.switchCurrent();
@@ -565,6 +568,23 @@ final class Toolkit
                     break;
                 default:
                     throw new IllegalArgumentException();
+                }
+            }
+        }
+    }
+
+    private synchronized void notifyForeground(boolean foreground)
+    {
+        if (null != iObservers)
+        {
+            final int lastIndex = iObservers.size() - 1;
+            for (int ii=lastIndex; ii>=0; ii--)
+            {
+                if (iObservers.elementAt(ii) instanceof ToolkitObserverNGAExtension)
+                {
+                    final ToolkitObserverNGAExtension observer = 
+                                (ToolkitObserverNGAExtension)iObservers.elementAt(ii);
+                    observer.foregroundEvent(foreground);
                 }
             }
         }

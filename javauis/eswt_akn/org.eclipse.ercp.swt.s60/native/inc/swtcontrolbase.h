@@ -57,16 +57,6 @@ protected:
 // Own methods
 public:
     /**
-     * Get the visible rectangle of this control.
-     * Window coordinates.
-     * The clipping take in account the parent, but not the brother.
-     * To take in account the brother use VisibleRegion() method.
-     * @param aVisibleBounds If true return the visible rectangle of the control,
-     *        else return visible client rectangle of the control.
-     */
-    TRect VisibleRect(TBool aVisibleBounds = EFalse) const;
-
-    /**
      * Clips given rectangle to rectangle which can be fully visible in
      * its parent. Other controls in the same parent are not taken
      * into account.
@@ -74,18 +64,6 @@ public:
      * @return Clipped rectangle
      */
     TRect ClipToVisibleRect(const TRect& aRect) const;
-
-// Hurts the performance of non overlapping drawing when there are a lot
-// of control sibblings and does not really work for overlapping drawing
-#if 0
-    /**
-     * Get the visible region of the Control.
-     * Screen coordinates.
-     * @param If true return the visible region of the control,
-     *        else return visible client region of the control.
-     */
-    void VisibleRegion(RRegion& aRegion, TBool aVisibleBounds = EFalse) const;
-#endif
 
     /**
      * Provide the Skin background.
@@ -397,6 +375,8 @@ public:
     IMPORT_C void DoControlSpecificFeedback(const TBool& aFirstTap,
                                             const TBool& aTappedToChildRect, const TPointerEvent& aPointerEvent) const;
     IMPORT_C void PostMouseEventL(const TPointerEvent& aPointerEvent);
+    IMPORT_C void EnableFocusHighlight(TBool aEnable);
+    IMPORT_C TRect VisibleRect(TBool aVisibleBounds = EFalse) const;
 
 protected:
     MSwtDisplay& iDisplay;
@@ -413,7 +393,6 @@ protected:
     CAknsFrameBackgroundControlContext* iFocusFrame; // Frame context used to draw focus highlight background.
     TBool iTraverse;                // True when a keypress causes traversing
     TPoint iPrevSwtPos;             // Used by HandleSizeChanged and HandlePositionChanged only
-    TSize  iPrevSwtSize;            // Used by HandleSizeChanged and HandlePositionChanged only
     TPoint iPrevCoePos;             // Used by HandleSizeChanged and HandlePositionChanged only
     TSize  iPrevCoeSize;            // Used by HandleSizeChanged and HandlePositionChanged only
 

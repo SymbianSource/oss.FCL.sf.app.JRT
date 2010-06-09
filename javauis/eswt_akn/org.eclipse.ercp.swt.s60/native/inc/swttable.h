@@ -280,6 +280,9 @@ public:
     TBool               IsKeyUsed(TUint aKeyCode) const;
     TBool               MSKSelCmdEnabled() const;
     void                UpdateDoNotDrawFlag();
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    void                EnableFocusHighlight(TBool aEnable);
+#endif //RD_JAVA_S60_RELEASE_9_2
 
 // from base class ASwtScrollableBase
 

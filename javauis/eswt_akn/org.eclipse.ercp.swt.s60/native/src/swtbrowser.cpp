@@ -419,6 +419,8 @@ void CSwtBrowser::HandlePointerEventL(const TPointerEvent& aPointerEvent)
     }
 
     iHandlingPointerEv = EFalse;
+
+    PostMouseEventL(aPointerEvent);
 }
 #endif
 

@@ -88,6 +88,8 @@ void CMIDTextBoxQueryDialog::ConstructL(TInt aConstraints,
 
     iConstraints = aConstraints;
     iLastCountLine = 0;
+    iStrict = ETrue;
+
     // if text is invalid according to constraints, throw IllegalArgumentException,
     // except for a PHONENUMBER which only has the invalid characters removed
     if ((iConstraints & MMIDTextField::EConstraintMask) != MMIDTextField::EPhoneNumber
@@ -221,11 +223,11 @@ void CMIDTextBoxQueryDialog::SetTextL(const TDesC& aText)
     if ((iConstraints & MMIDTextField::EConstraintMask) == MMIDTextField::EPhoneNumber)
     {
     }
-    else if (!iEdwinUtils->ConstraintsValidForText(aText, iConstraints, ETrue))
+    else if (!iEdwinUtils->ConstraintsValidForText(aText, iConstraints, (iStrict ? ETrue : EFalse)))
     {
         User::Leave(KErrArgument);
     }
-    //
+    iStrict = ETrue;
 
     HBufC* buf = iEdwinUtils->ConvertToLocalizedLC(aText, iConstraints);
 
@@ -289,7 +291,6 @@ void CMIDTextBoxQueryDialog::InsertTextL(const TDesC& aText,TInt aPosition)
     }
 
     temp = iEdwinUtils->ConvertToLocalizedLC(aText, iConstraints);
-
 
     if (IsNumberConversionNeeded())
     {
@@ -455,7 +456,6 @@ TSize CMIDTextBoxQueryDialog::ContentSize() const
 void CMIDTextBoxQueryDialog::FocusChanged(TDrawNow aDrawNow)
 {
     CAknTextQueryDialog::FocusChanged(aDrawNow);
-    TBool isFocused = IsFocused();
     SetRightScrollBarPosition();
 }
 //
@@ -604,19 +604,13 @@ TKeyResponse CMIDTextBoxQueryDialog::OfferKeyEventL(const TKeyEvent& aKeyEvent,T
     //  End Enter Key
     //
 
-
     // msk: this is needed if MSK is not enabled on the device
     if ((aType == EEventKey) && (aKeyEvent.iScanCode == EStdKeyDevice3))
     {
-        iDisplayable->ShowOkOptionsMenuL();
-        return EKeyWasConsumed;
-    }
-
-
-    // msk: this is needed if MSK is not enabled on the device
-    if ((aType == EEventKey) && (aKeyEvent.iScanCode == EStdKeyDevice3))
-    {
-        iDisplayable->ShowOkOptionsMenuL();
+        if (iDisplayable && iDisplayable->ShowOkOptionsMenuL())
+        {
+            SetFocus(EFalse);
+        }
         return EKeyWasConsumed;
     }
 
@@ -684,11 +678,11 @@ TKeyResponse CMIDTextBoxQueryDialog::OfferKeyEventL(const TKeyEvent& aKeyEvent,T
     {
         CPlainText* res = iEditor->Text();
         TInt textLength = Size();
-        if (scanCode == EStdKeyMinus)
+        if (scanCode == EStdKeyMinus && textLength < iMaxSize)
         {
             res->InsertL(GetCaretPosition(), KMinusChar);
         }
-        else if (scanCode == EStdKeyFullStop)
+        else if (scanCode == EStdKeyFullStop && textLength < iMaxSize)
         {
             res->InsertL(GetCaretPosition(), KFullStopChar);
         }
@@ -699,6 +693,8 @@ TKeyResponse CMIDTextBoxQueryDialog::OfferKeyEventL(const TKeyEvent& aKeyEvent,T
         {
             SetCursorPositionL(GetCaretPosition() + 1);
         }
+
+        HandleTextUpdateL(MEikEdwinObserver::EEventTextUpdate);
     }
     //Error tone playing case1:
     //Play error tone if TextBox/TextField is read-only or maximum length has been reached.
@@ -767,64 +763,97 @@ TKeyResponse CMIDTextBoxQueryDialog::OfferKeyEventL(const TKeyEvent& aKeyEvent,T
 
 
     TKeyResponse response = EKeyWasNotConsumed;
+    TBool isFocused = IsFocused();
 
-    //Error tone playing case2:
-    //Play error tone if TextBox/TextField is read-only or maximum length has been reached.
-    //Here is handling of full keyboard keys(NOT 0...9) and all virtual keyboard keys.
-    //(Note: Virtual keyboard sends only EEventKey type events, not up or down events)
-    //(Note: Error tone is played when there is no text to be replaced i.e. no text has been painted)
-    if (!iEdwinUtils->IsNavigationKey(aKeyEvent) && !iEdwinUtils->IsHotKeyL(aKeyEvent, iCoeEnv) && !aKeyEvent.iCode == EKeyYes &&
-            (!iKeyEventsPending || (scanCode < KKeyQwerty0  || scanCode > KKeyQwerty9)))
+    // If there is no focus textbox should not consume keys
+    if (isFocused)
     {
-        if (iEditor->IsReadOnly() || (Size() >= iMaxSize && aKeyEvent.iCode != EKeyBackspace))
+        //Error tone playing case2:
+        //Play error tone if TextBox/TextField is read-only or maximum length has been reached.
+        //Here is handling of full keyboard keys(NOT 0...9) and all virtual keyboard keys.
+        //(Note: Virtual keyboard sends only EEventKey type events, not up or down events)
+        //(Note: Error tone is played when there is no text to be replaced i.e. no text has been painted)
+        if (!iEdwinUtils->IsNavigationKey(aKeyEvent) && !iEdwinUtils->IsHotKeyL(aKeyEvent, iCoeEnv) && !aKeyEvent.iCode == EKeyYes &&
+                (!iKeyEventsPending || (scanCode < KKeyQwerty0  || scanCode > KKeyQwerty9)))
         {
-            //SelectionLength() > 0 if text has been selected/painted
-            if (iEditor->SelectionLength() == 0)
+            if (iEditor->IsReadOnly() || (Size() >= iMaxSize && aKeyEvent.iCode != EKeyBackspace))
             {
-                iAvkonAppUi->KeySounds()->PlaySound(EAvkonSIDErrorTone);
+                //SelectionLength() > 0 if text has been selected/painted
+                if (iEditor->SelectionLength() == 0)
+                {
+                    iAvkonAppUi->KeySounds()->PlaySound(EAvkonSIDErrorTone);
+                }
+                response = iEditor->OfferKeyEventL(aKeyEvent,aType);
+                return response;
             }
-            response = iEditor->OfferKeyEventL(aKeyEvent,aType);
+        }
+
+        TBool valid = EFalse;
+
+        if (iEdwinUtils->IsNavigationKey(aKeyEvent) || iEdwinUtils->IsHotKeyL(aKeyEvent, iCoeEnv))
+        {
+            HBufC* oldText = GetTextL();
+            CleanupStack::PushL(oldText);
+            TCursorSelection sel = iEditor->Selection();
+
+            response = CAknTextQueryDialog::OfferKeyEventL(aKeyEvent,aType);
+            valid = iEdwinUtils->ConstraintsValidForText(iEditor->Text()?Read():TPtrC(),iConstraints,EFalse);
+
+            if (!valid)
+            {
+                SetTextL(*oldText);
+                iEditor->HandleTextChangedL();
+                iEditor->SetSelectionL(sel.iCursorPos,sel.iAnchorPos);
+                response = EKeyWasConsumed;
+            }
+            CleanupStack::PopAndDestroy(oldText);
+
+            return response;
+        }
+        else
+        {
+            TBuf<1> key;
+            key.Append(TChar(aKeyEvent.iCode));
+            valid = iEdwinUtils->ConstraintsValidForInsertedTextL(iEditor->Text()?Read():TPtrC(),
+                    key,
+                    GetCaretPosition(),
+                    iConstraints,
+                    EFalse);
+            if (valid)
+            {
+                response = iEditor->OfferKeyEventL(aKeyEvent,aType);
+            }
+            else
+            {
+                // If minus char was entered in full querty editor mode
+                if (IsConstraintSet(MMIDTextField::EDecimal) &&
+                        (aType == EEventKey) && iEditor && !iEditor->IsReadOnly() &&
+                        (TChar(aKeyEvent.iCode) == TChar('-') && scanCode != EStdKeyMinus))
+                {
+                    CPlainText* res = iEditor->Text();
+
+                    if (res && TChar(aKeyEvent.iCode) == TChar('-') &&
+                            Size() < iMaxSize)
+                    {
+                        res->InsertL(GetCaretPosition(), KMinusChar);
+                        // notify editor about the text changes
+                        iEditor->HandleTextChangedL();
+
+                        if (Size() < iMaxSize)
+                        {
+                            SetCursorPositionL(GetCaretPosition() + 1);
+                        }
+
+                        //Prevent changes that would result in an illegal string
+                        HandleTextUpdateL(MEikEdwinObserver::EEventTextUpdate);
+                    }
+                }
+
+            }
             return response;
         }
     }
-
-    TBool valid = EFalse;
-
-    if (iEdwinUtils->IsNavigationKey(aKeyEvent) || iEdwinUtils->IsHotKeyL(aKeyEvent, iCoeEnv))
-    {
-        HBufC* oldText = GetTextL();
-        CleanupStack::PushL(oldText);
-        TCursorSelection sel = iEditor->Selection();
-
-        response = CAknTextQueryDialog::OfferKeyEventL(aKeyEvent,aType);
-        valid = iEdwinUtils->ConstraintsValidForText(iEditor->Text()?Read():TPtrC(),iConstraints,EFalse);
-
-        if (!valid)
-        {
-            SetTextL(*oldText);
-            iEditor->HandleTextChangedL();
-            iEditor->SetSelectionL(sel.iCursorPos,sel.iAnchorPos);
-            response = EKeyWasConsumed;
-        }
-        CleanupStack::PopAndDestroy(oldText);
-
-        return response;
-    }
-    else
-    {
-        TBuf<1> key;
-        key.Append(TChar(aKeyEvent.iCode));
-        valid = iEdwinUtils->ConstraintsValidForInsertedTextL(iEditor->Text()?Read():TPtrC(),
-                key,
-                GetCaretPosition(),
-                iConstraints,
-                EFalse);
-        if (valid)
-        {
-            response = iEditor->OfferKeyEventL(aKeyEvent,aType);
-        }
-        return response;
-    }
+    return response;
 }
 
 #ifdef RD_SCALABLE_UI_V2
@@ -869,6 +898,23 @@ void CMIDTextBoxQueryDialog::HandleEdwinEventL(CEikEdwin* aEdwin, TEdwinEvent aE
             iLastMultitapKey = 0;
         }
 
+        HandleTextUpdateL(MEikEdwinObserver::EEventTextUpdate);
+
+        if (iEditor && iEditor->TextLayout())
+        {
+            if (iLastCountLine != iEditor->TextLayout()->GetLineNumber(iEditor->TextLength() - 1))
+            {
+                iLastCountLine = iEditor->TextLayout()->GetLineNumber(iEditor->TextLength() - 1);
+                SetRightScrollBarPosition();
+            }
+        }
+    }
+}
+
+void CMIDTextBoxQueryDialog::HandleTextUpdateL(TEdwinEvent aEventType)
+{
+    if (aEventType == MEikEdwinObserver::EEventTextUpdate)
+    {
         TBool textChanged = EFalse;
         HBufC* res = NULL;
         TRAPD(err, { res = GetTextL();});
@@ -888,6 +934,7 @@ void CMIDTextBoxQueryDialog::HandleEdwinEventL(CEikEdwin* aEdwin, TEdwinEvent aE
             TInt illegalCharPos = -1;
             TPtr16 ptr = res->Des();
             TInt minusPos = ptr.LocateReverse(TChar('-'));
+            iStrict = EFalse;
 
             // check if minus sign is inserted on incorrect place
             // (not at the beginning)
@@ -959,14 +1006,6 @@ void CMIDTextBoxQueryDialog::HandleEdwinEventL(CEikEdwin* aEdwin, TEdwinEvent aE
         if (textChanged)
         {
             iEditor->HandleTextChangedL();
-        }
-        if (iEditor && iEditor->TextLayout())
-        {
-            if (iLastCountLine != iEditor->TextLayout()->GetLineNumber(iEditor->TextLength() - 1))
-            {
-                iLastCountLine = iEditor->TextLayout()->GetLineNumber(iEditor->TextLength() - 1);
-                SetRightScrollBarPosition();
-            }
         }
     }
 }
@@ -1491,7 +1530,8 @@ void CMIDTextBoxQueryDialog::HandleResourceChange(TInt aType)
 
 void CMIDTextBoxQueryDialog::SetRightScrollBarPosition()
 {
-    if (iEditor)
+    // Editor Rect should not be set with empty values
+    if (iEditor && iEditorRect.Height() != 0 && iEditorRect.Width() != 0)
     {
         iEditor->SetRect(iEditorRect);
     }

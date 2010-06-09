@@ -243,8 +243,9 @@ void CMIDDateFieldItem::SetInputModeL(MMIDDateField::TInputMode aInputMode)
     {
         iInitialised = EFalse;
     }
+
     // Text colour from skin
-    iEditor->SetSkinTextColorL(EAknsCIQsnTextColorsCG8);
+    iEditor->SetSkinTextColorL(EAknsCIQsnTextColorsCG6);
 }
 
 void CMIDDateFieldItem::SetInitialized(TInt aSetCurrentTime /* = ETrue */)
@@ -813,15 +814,18 @@ void CMIDDateFieldItem::FocusChanged(TDrawNow aDrawNow)
 {
     TBool focus = IsFocused();
 
-
     iEditor->SetFocus(focus);
     if (focus)
     {
+        // Text colour from skin - focused
+        iEditor->SetSkinTextColorL(EAknsCIQsnTextColorsCG8);
         TRAP_IGNORE(iUIManager->OpenNaviPaneControllerL()->PauseTickerL(
                         TICKER_PAUSE_INTERVAL, this));
     }
     else
     {
+        // Text colour from skin - unfocused
+        iEditor->SetSkinTextColorL(EAknsCIQsnTextColorsCG6);
         TRAP_IGNORE(iUIManager->OpenNaviPaneControllerL()->PauseTickerL(
                         0, this));
 #ifdef RD_SCALABLE_UI_V2

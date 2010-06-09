@@ -176,6 +176,9 @@ public:
     void SetForegroundL(const MSwtColor* aColor);
     void SetBackgroundL(const MSwtColor* aColor);
     TBool IsLongTapAnimationCandidate(const TPointerEvent& aPointerEvent) const;
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    void EnableFocusHighlight(TBool aEnable);
+#endif //RD_JAVA_S60_RELEASE_9_2
 
 // From MSwtListBox
 public:
@@ -398,6 +401,12 @@ private:
      */
     void RemoveSubRefs();
 
+    /**
+     * Updates flick scrolling status.
+     * @param aEventType CEikListbox event type.
+     */
+    void UpdateFlickScrollingState(TListBoxEvent aEventType);
+
 #ifdef RD_JAVA_ADVANCED_TACTILE_FEEDBACK
 public:
     void DoControlSpecificFeedback(
@@ -485,6 +494,16 @@ private:
      * View visible rect at last draw
      */
     mutable TRect iLastViewVisibleRect;
+
+    /**
+     * True when list is flick scrolling
+     */
+    TBool iFlickScrollingOngoing;
+
+    /**
+     * True when pointer events on scrollbar should be delivered to listbox
+     */
+    TBool iScrollbarPointerEventToListbox;
 };
 
 #endif // SWTLISTBOX_H

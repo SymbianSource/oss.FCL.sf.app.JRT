@@ -418,6 +418,12 @@ EXPORT_C void ASwtControlBase::PostMouseEventL(const TPointerEvent& aPointerEven
     iDisplay.PostMouseEventL(iPeer, type, button, pos, stateMask);
 }
 
+EXPORT_C void ASwtControlBase::EnableFocusHighlight(TBool /*aEnable*/)
+{
+    // Method is used only on 9.2 for list controls (Lists, ListView,
+    // ListBox and Table)
+}
+
 TPoint ASwtControlBase::ComputeLocationToSet(const TPoint& aLocation)
 {
     ASSERT(!IsShell());
@@ -505,7 +511,7 @@ EXPORT_C void ASwtControlBase::DoDelete()
     delete this;
 }
 
-TRect ASwtControlBase::VisibleRect(TBool aVisibleBounds) const
+EXPORT_C TRect ASwtControlBase::VisibleRect(TBool aVisibleBounds) const
 {
     // WINDOW COORDINATES!
     if (!CoeControl().IsVisible())
@@ -1213,20 +1219,15 @@ void ASwtControlBase::HandleRectChanged()
 
 EXPORT_C void ASwtControlBase::HandleSizeChanged()
 {
-    if (iPrevSwtSize == GetWidgetSize() && iPrevCoeSize == CoeControl().Size())
+    if (iPrevCoeSize == CoeControl().Size())
     {
         return;
-    }
-
-    if (iPrevSwtSize != GetWidgetSize())
-    {
-        iPrevSwtSize = GetWidgetSize();
-        TRAP_IGNORE(iDisplay.PostResizeEventL(iPeer));
     }
 
     if (iPrevCoeSize != CoeControl().Size())
     {
         iPrevCoeSize = CoeControl().Size();
+        TRAP_IGNORE(iDisplay.PostResizeEventL(iPeer));
         HandleRectChanged();
     }
 }
@@ -1904,13 +1905,13 @@ EXPORT_C TSize ASwtControlBase::GetWidgetSize() const
     return CoeControl().Size();
 }
 
-EXPORT_C void ASwtControlBase::SetWidgetSize(const TSize& aNewSize)
+EXPORT_C void ASwtControlBase::SetWidgetSize(const TSize& aSize)
 {
     ASSERT(!IsShell());
 
     CCoeControl& coeCtrl = CoeControl();
     TRect oldRect(coeCtrl.Rect());
-    TRect newRect(coeCtrl.Position(), aNewSize);
+    TRect newRect(coeCtrl.Position(), aSize);
 
     if (newRect == oldRect)
     {
@@ -1963,7 +1964,7 @@ EXPORT_C void ASwtControlBase::SetWidgetSize(const TSize& aNewSize)
     }
 
     // Set and redraw new rect
-    coeCtrl.SetSize(aNewSize);
+    coeCtrl.SetSize(aSize);
     if (!(iStyle & KSwtStyleNoRedrawResize))
     {
         if (urgent)
@@ -2562,6 +2563,7 @@ EXPORT_C TBool ASwtControlBase::IsOnControlStack() const
 EXPORT_C void ASwtControlBase::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 {
     CoeControl().HandlePointerEventL(aPointerEvent);
+    PostMouseEventL(aPointerEvent);
 }
 #else
 EXPORT_C void ASwtControlBase::HandlePointerEventL(const TPointerEvent& /*aPointerEvent*/)

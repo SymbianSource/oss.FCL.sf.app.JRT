@@ -626,6 +626,14 @@ void CHttpTransactionClient::MHFRunL(RHTTPTransaction aTransaction, const THTTPE
             iStatus = CHttpTransactionClient::ERequestNextBodayData;
             break;
         }
+        
+        case THTTPEvent::EReceiveTimeOut:
+        {
+        	  ELOG(ESOCKET,"MHFRunL EReceiveTimeOut");
+        	  NotifyErrorL(KErrTimedOut);  // send timeout error to java
+        	  break;
+        	
+        }        
         /*
         * -j2me expects the http stack to be able to post body data with no content type
         *   the native stack default validation filter does not allow this.
@@ -694,7 +702,6 @@ void CHttpTransactionClient::NotifyErrorL(TInt aErrorCode)
         iTransaction.Cancel();
         iHttpSession.RestartConnection();
 
-
     }
     if (iJavaWaitingOnCallBack)
     {
@@ -707,7 +714,7 @@ void CHttpTransactionClient::NotifyErrorL(TInt aErrorCode)
         LOG(ESOCKET,EInfo,"Notifiy Read EOF / Cancel");
         iJavaWaitingOnCallBack=EFalse;
         //Notify Java of error if it is waiting for a read
-        iObserver->DataReadyForRead(-1);
+        iObserver->DataReadyForRead(aErrorCode);
     }
 
 }

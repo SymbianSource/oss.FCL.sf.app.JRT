@@ -70,13 +70,6 @@ public: // New methods.
     void SetFileNameL(const TDesC* aFileName);
 
     /**
-     * Sets Mime Type
-     * @param aFileName File name to be set or NULL
-     */
-
-    void SetMimeTypeL(const TDesC* aFileName);
-
-    /**
      * Returns possible filename or NULL if not set
      * Ownership is transfered.
      * @return Content type or NULL if type is not available.
@@ -100,6 +93,8 @@ private:
 
 private:
     ~CMMAEMCResolver();
+
+    void ConstructL();
 
 private:
 

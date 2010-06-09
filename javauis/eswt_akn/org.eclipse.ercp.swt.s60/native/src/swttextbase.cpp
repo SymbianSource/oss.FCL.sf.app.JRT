@@ -17,6 +17,11 @@
 #include <swtlaffacade.h>
 #include <AknUtils.h>
 #include <AknDef.h>
+#ifdef RD_JAVA_S60_RELEASE_9_2
+#include <AknPriv.hrh>
+#endif
+#include <aknappui.h>
+#include <akntouchpane.h>
 #include "swtscrollbar.h"
 #include "swtfont.h"
 #include "swttextbase.h"
@@ -295,6 +300,49 @@ void CSwtTextBase::SetForegroundL(const MSwtColor* aColor)
         iTextColor = ETrue;
     }
     Redraw();
+}
+
+void CSwtTextBase::SetBounds(const TRect& aRect)
+{
+    // Divert the job to UiUtils if this is an editor open for split view editing.
+    MSwtUiUtils& utils = iDisplay.UiUtils();
+    if (utils.SplitInputView() == this)
+    {
+        utils.SetSplitInputViewSize(aRect.Size());
+        SetLocation(aRect.iTl);
+    }
+    else
+    {
+        ASwtScrollableBase::SetBounds(aRect);
+    }
+}
+
+void CSwtTextBase::SetWidgetSize(const TSize& aSize)
+{
+    // Divert the job to UiUtils if this is an editor open for split view editing.
+    MSwtUiUtils& utils = iDisplay.UiUtils();
+    if (utils.SplitInputView() == this)
+    {
+        utils.SetSplitInputViewSize(aSize);
+    }
+    else
+    {
+        ASwtScrollableBase::SetWidgetSize(aSize);
+    }
+}
+
+TSwtPeer CSwtTextBase::Dispose()
+{
+    // Close VKB.
+    if (iEditor->IsFocused())
+    {
+        CCoeFep* fep = iDisplay.CoeEnv()->Fep();
+        if (fep)
+        {
+            fep->HandleDestructionOfFocusedItem();
+        }
+    }
+    return ASwtScrollableBase::Dispose();
 }
 
 // ---------------------------------------------------------------------------
@@ -710,6 +758,16 @@ void CSwtTextBase::MakeVisible(TBool aVisible)
         return;
     }
 
+    // Close VKB. Do it here instead of FocusChange to avoid split input flicker.
+    if (iEditor->IsFocused() && !aVisible)
+    {
+        CCoeFep* fep = iDisplay.CoeEnv()->Fep();
+        if (fep)
+        {
+            fep->HandleDestructionOfFocusedItem();
+        }
+    }
+
     CCoeControl::MakeVisible(aVisible);
     if (iEditor)
     {
@@ -728,6 +786,7 @@ void CSwtTextBase::MakeVisible(TBool aVisible)
             }
         }
     }
+
     FocusabilityChanged();
 }
 
@@ -738,6 +797,16 @@ void CSwtTextBase::MakeVisible(TBool aVisible)
 //
 void CSwtTextBase::SetDimmed(TBool aDimmed)
 {
+    // Close VKB. Do it here instead of FocusChange to avoid split input flicker.
+    if (iEditor->IsFocused() && aDimmed)
+    {
+        CCoeFep* fep = iDisplay.CoeEnv()->Fep();
+        if (fep)
+        {
+            fep->HandleDestructionOfFocusedItem();
+        }
+    }
+
     CCoeControl::SetDimmed(aDimmed);
     if (iEditor)
     {
@@ -775,6 +844,16 @@ void CSwtTextBase::SwtHandleResourceChangeL(TInt aType)
             ProcessFontUpdateL();
         }
     }
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    else if (aType == KAknSplitInputEnabled)
+    {
+        const MSwtShell* activeShell = iDisplay.UiUtils().GetActiveShell();
+        if (activeShell && activeShell->FocusControl() == this)
+        {
+            iDisplay.UiUtils().SetSplitInputEditor(this);
+        }
+    }
+#endif
 }
 
 // ---------------------------------------------------------------------------
@@ -801,6 +880,7 @@ void CSwtTextBase::HandlePointerEventL(const TPointerEvent& aPointerEvent)
     TBool hit = ETrue;
 
 #ifdef RD_JAVA_S60_RELEASE_9_2
+    TBool isActiveSplitEditor = iDisplay.UiUtils().SplitInputEditor() == this;
     hit = Rect().Contains(aPointerEvent.iPosition);
     TBool pressed = iPressed;
 #endif
@@ -815,7 +895,7 @@ void CSwtTextBase::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 #ifdef RD_JAVA_S60_RELEASE_9_2
         else
         {
-            iPressed = ETrue;
+            iPressed = !isActiveSplitEditor;
         }
 #endif
     }
@@ -883,7 +963,7 @@ void CSwtTextBase::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 #ifdef RD_JAVA_S60_RELEASE_9_2
     else if (aPointerEvent.iType == TPointerEvent::EDrag)
     {
-        iPressed = hit;
+        iPressed = hit && !iVScrollBarGrabsPointerEvents && !isActiveSplitEditor;
     }
 
     if (pressed != iPressed)
@@ -894,6 +974,8 @@ void CSwtTextBase::HandlePointerEventL(const TPointerEvent& aPointerEvent)
     // We got a pointer event, so any subsequent events should not be ignored.
     iIgnorePointerDown = EFalse;
 #endif // RD_JAVA_S60_RELEASE_9_2
+
+    PostMouseEventL(aPointerEvent);
 }
 #else //RD_SCALABLE_UI_V2
 void CSwtTextBase::HandlePointerEventL(
@@ -921,13 +1003,7 @@ void CSwtTextBase::FocusChanged(TDrawNow aDrawNow)
             if (!IsFocused())
                 iIndicator->SetState(EStateNone);
         }
-        
-        // Aparenlty this is the only way of forcing the VKB to close.
-        if (iEditor->IsFocused() && !IsFocused())
-        {
-            iDisplay.CoeEnv()->Fep()->HandleDestructionOfFocusedItem();
-        }
-        
+
         iEditor->SetFocus(IsFocused());
     }
 
@@ -988,6 +1064,13 @@ void CSwtTextBase::PositionChanged()
 
     iEditor->SetRect(editorRect);
     HandlePositionChanged();
+
+    // Notify change to UiUtils if this is an editor open for split view editing.
+    MSwtUiUtils& utils = iDisplay.UiUtils();
+    if (utils.SplitInputView() == this)
+    {
+        utils.AdjustSplitInputShellPos();
+    }
 }
 
 // ---------------------------------------------------------------------------

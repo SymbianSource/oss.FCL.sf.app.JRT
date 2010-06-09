@@ -97,4 +97,6 @@ EXPORTS
 	_ZTV15ASwtControlBase @ 96 NONAME
 	_ZTV22CSwtBrowserPreferences @ 97 NONAME
 	_ZThn4_NK15ASwtControlBase4DrawER9CWindowGcRK11CCoeControlRK5TRect @ 98 NONAME
+	_ZNK15ASwtControlBase11VisibleRectEi @ 99 NONAME
+	_ZN15ASwtControlBase20EnableFocusHighlightEi @ 100 NONAME
 

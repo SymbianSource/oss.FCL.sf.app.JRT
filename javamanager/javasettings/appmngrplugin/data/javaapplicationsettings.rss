@@ -432,6 +432,21 @@ RESOURCE AVKON_SETTING_PAGE r_java_setting_nfc_write_access_page
     editor_resource_id = r_java__sec_lbx_resource;
     }
 
+//----------------------------------------------------------
+//
+// r_java_setting_url_start_page
+// Setting page for url start security permission
+//
+//----------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_java_setting_url_start_page
+	{
+	label = qtn_java_setting_url_start;
+	softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+	type = EAknSetListBox;
+	editor_resource_id = r_java__sec_lbx_resource;
+	}
+	
 // ------------------------------------------------------
 // Misc strings
 // ------------------------------------------------------
@@ -463,6 +478,7 @@ RESOURCE TBUF r_java_setting_name_keypad { buf=qtn_java_setting_on_screen_keypad
 RESOURCE TBUF r_java_setting_name_network_destination { buf=qtn_netw_conset_sett_destination; }
 RESOURCE TBUF r_java_setting_name_broadcast { buf=qtn_java_setting_broadcast; }
 RESOURCE TBUF r_java_setting_name_nfc_write_access { buf=qtn_java_setting_nfc_write_access; }
+RESOURCE TBUF r_java_setting_name_url_start { buf=qtn_java_setting_url_start; }
 RESOURCE TBUF r_java_setting_name_security_warnings { buf=qtn_java_setting_security_level; }
 RESOURCE TBUF r_java_setting_value_no { buf=qtn_java_setting_value_no; }
 RESOURCE TBUF r_java_setting_value_oneshot { buf=qtn_java_setting_value_oneshot; }

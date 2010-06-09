@@ -107,6 +107,7 @@ public class Graphics3D
     private Rect viewport;
     private Rect clip;
     private boolean ngaEnabled = false;
+    private boolean foreground;
 
 
     //------------------------------------------------------------------
@@ -127,7 +128,9 @@ public class Graphics3D
             }
             if (instance.graphics3D == null)
             {
+                // graphics3D must be assigned to interface before asking foreground status
                 instance.graphics3D = new Graphics3D();
+                instance.graphics3D.foreground = ToolkitInvoker.getToolkitInvoker().isForeground();
             }
             return instance.graphics3D;
         }
@@ -154,8 +157,8 @@ public class Graphics3D
         this.viewport = new Rect();
         this.clip = new Rect();
         // Initializes NGA status - enabled or disabled
-        this.ngaEnabled = ToolkitInvoker.getToolkitInvoker().isNgaEnabled();
-    }
+        ngaEnabled = invoker.isNgaEnabled();
+     }
 
     /**
      *
@@ -182,99 +185,102 @@ public class Graphics3D
      */
     public void bindTarget(java.lang.Object target, boolean depth, int flags)
     {
-        integrityCheck();
-        int eventSrcHandle = 0;
-        if (currentTarget != null)
+        synchronized (Interface.getInstance()) 
         {
-            throw new IllegalStateException();
-        }
-
-        if (target == null)
-        {
-            throw new NullPointerException();
-        }
-        try
-        {
-            // Bind event source. This need to be released.
-            eventSrcHandle = Interface.bindEventSource();
-            if (target instanceof Graphics)
+            integrityCheck();
+            int eventSrcHandle = 0;
+            if (currentTarget != null)
             {
-                Graphics g = (Graphics) target;
-                Platform.sync(g);
+                throw new IllegalStateException();
+            }
 
-                if (g.getClipWidth() > Defs.MAX_VIEWPORT_WIDTH ||
-                        g.getClipHeight() > Defs.MAX_VIEWPORT_HEIGHT)
+            if (target == null)
+            {
+                throw new NullPointerException();
+            }
+            try
+            {
+                // Bind event source. This need to be released.
+                eventSrcHandle = Interface.bindEventSource();
+                if (target instanceof Graphics)
                 {
-                    throw new IllegalArgumentException();
+                    Graphics g = (Graphics) target;
+                    Platform.sync(g);
+
+                    if (g.getClipWidth() > Defs.MAX_VIEWPORT_WIDTH ||
+                            g.getClipHeight() > Defs.MAX_VIEWPORT_HEIGHT)
+                    {
+                        throw new IllegalArgumentException();
+                    }
+
+                    offsetX = g.getTranslateX();
+                    offsetY = g.getTranslateY();
+
+                    ToolkitInvoker invoker = ToolkitInvoker.getToolkitInvoker();
+
+                    // NGA specific change.
+                    if (ngaEnabled)
+                    {
+                        // If overwrite is set, there is no need
+                        // to update EGL surface with 2D content
+                        eglContentValid = (flags & OVERWRITE) > 0;
+
+                        // Clip and viewport are stored for later
+                        // checks regarding Background clear
+                        clip.x = g.getClipX() + offsetX;
+                        clip.y = g.getClipY() + offsetY;
+                        clip.width = g.getClipWidth();
+                        clip.height = g.getClipHeight();
+
+                        viewport.x = clip.x;
+                        viewport.y = clip.y;
+                        viewport.width = clip.width;
+                        viewport.height = clip.height;
+
+                        isImageTarget = _bindGraphics(
+                                            eventSrcHandle,
+                                            handle,
+                                            invoker.graphicsGetHandle(g),
+                                            clip.x, clip.y,
+                                            clip.width, clip.height,
+                                            depth, flags,
+                                            isProperRenderer);
+                    }
+                    else
+                    {
+                        isImageTarget = _bindGraphics(
+                                            eventSrcHandle,
+                                            handle,
+                                            invoker.graphicsGetHandle(g),
+                                            g.getClipX() + offsetX, g.getClipY() + offsetY,
+                                            g.getClipWidth(), g.getClipHeight(),
+                                            depth, flags,
+                                            isProperRenderer);
+                    }
+                    currentTarget = g;
                 }
-
-                offsetX = g.getTranslateX();
-                offsetY = g.getTranslateY();
-
-                ToolkitInvoker invoker = ToolkitInvoker.getToolkitInvoker();
-
-                // NGA specific change.
-                if (ngaEnabled)
+                else if (target instanceof Image2D)
                 {
-                    // If overwrite is set, there is no need
-                    // to update EGL surface with 2D content
-                    eglContentValid = (flags & OVERWRITE) > 0;
+                    Image2D img = (Image2D) target;
 
-                    // Clip and viewport are stored for later
-                    // checks regarding Background clear
-                    clip.x = g.getClipX() + offsetX;
-                    clip.y = g.getClipY() + offsetY;
-                    clip.width = g.getClipWidth();
-                    clip.height = g.getClipHeight();
+                    offsetX = offsetY = 0;
 
-                    viewport.x = clip.x;
-                    viewport.y = clip.y;
-                    viewport.width = clip.width;
-                    viewport.height = clip.height;
-
-                    isImageTarget = _bindGraphics(
-                                        eventSrcHandle,
-                                        handle,
-                                        invoker.graphicsGetHandle(g),
-                                        clip.x, clip.y,
-                                        clip.width, clip.height,
-                                        depth, flags,
-                                        isProperRenderer);
+                    _bindImage(eventSrcHandle, handle, img.handle, depth, flags);
+                    currentTarget = img;
                 }
                 else
                 {
-                    isImageTarget = _bindGraphics(
-                                        eventSrcHandle,
-                                        handle,
-                                        invoker.graphicsGetHandle(g),
-                                        g.getClipX() + offsetX, g.getClipY() + offsetY,
-                                        g.getClipWidth(), g.getClipHeight(),
-                                        depth, flags,
-                                        isProperRenderer);
+                    throw new IllegalArgumentException();
                 }
-                currentTarget = g;
             }
-            else if (target instanceof Image2D)
+            finally
             {
-                Image2D img = (Image2D) target;
-
-                offsetX = offsetY = 0;
-
-                _bindImage(eventSrcHandle, handle, img.handle, depth, flags);
-                currentTarget = img;
+                // Release event source
+                Interface.releaseEventSource();
             }
-            else
-            {
-                throw new IllegalArgumentException();
-            }
+            hints = flags;
+            depthEnabled = depth;
         }
-        finally
-        {
-            // Release event source
-            Interface.releaseEventSource();
-        }
-        hints = flags;
-        depthEnabled = depth;
     }
 
     /**
@@ -282,43 +288,55 @@ public class Graphics3D
      */
     public void releaseTarget()
     {
-        integrityCheck();
-        if (currentTarget == null)
+        synchronized (Interface.getInstance()) 
         {
-            return;
-        }
-        try
-        {
-            // Bind event source
-            int eventSrcHandle = Interface.bindEventSource();
-            if (currentTarget instanceof Graphics)
+            integrityCheck();
+            if (currentTarget == null)
             {
-                Graphics g = (Graphics) currentTarget;
-
-                ToolkitInvoker invoker = ToolkitInvoker.getToolkitInvoker();
-
-                // NGA specific change.
-                if (ngaEnabled)
+                return;
+            }
+        
+            int eventSrcHandle = 0;
+        
+            try
+            {
+                // Bind event source
+                eventSrcHandle = Interface.bindEventSource();
+                if (currentTarget instanceof Graphics)
                 {
-                    updateEglContent();
+                    Graphics g = (Graphics) currentTarget;
+
+                    ToolkitInvoker invoker = ToolkitInvoker.getToolkitInvoker();
+
+                    // NGA specific change.
+                    if (ngaEnabled)
+                    {
+                        updateEglContent();
+                    }
+                    _releaseGraphics(eventSrcHandle, handle,
+                                     invoker.graphicsGetHandle(g), isImageTarget, isProperRenderer);
                 }
-                _releaseGraphics(eventSrcHandle, handle,
-                                 invoker.graphicsGetHandle(g), isImageTarget, isProperRenderer);
+                else if (currentTarget instanceof Image2D)
+                {
+                    _releaseImage(eventSrcHandle, handle);
+                }
+                else
+                {
+                    throw new Error();
+                }
             }
-            else if (currentTarget instanceof Image2D)
+            finally
             {
-                _releaseImage(eventSrcHandle, handle);
+                currentTarget = null;
+                        
+                if (ngaEnabled && !foreground && eventSrcHandle != 0)
+                {
+                    _freeGLESResources(eventSrcHandle, handle);
+                }
+
+                // Release event source
+                Interface.releaseEventSource();
             }
-            else
-            {
-                throw new Error();
-            }
-        }
-        finally
-        {
-            currentTarget = null;
-            // Release event source
-            Interface.releaseEventSource();
         }
     }
 
@@ -730,6 +748,27 @@ public class Graphics3D
         }
     }
 
+    void setForeground(boolean foreground) 
+    {
+        synchronized (Interface.getInstance())
+        {
+            this.foreground = foreground;
+            if (ngaEnabled &&
+                !foreground && 
+                currentTarget == null)
+            {
+                try 
+                {
+                    _freeGLESResources(Interface.bindEventSource(), handle);
+                }
+                finally
+                {
+                    Interface.releaseEventSource();
+                }
+            }
+        }
+    }
+    
     private native static int _ctor(int hInterface);
     private native static void _addRef(int hObject);
 
@@ -811,4 +850,6 @@ public class Graphics3D
     private native static int _getTargetWidth(int graphicsHandle);
     private native static void _updateEglContent(int eventSourceHandle,
             int graphicsHandle);
+    private native static void _freeGLESResources(int eventSourceHandle, 
+            int handle);
 }

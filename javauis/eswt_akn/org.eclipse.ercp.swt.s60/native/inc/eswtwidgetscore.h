@@ -765,6 +765,23 @@ public:
                                            const TPointerEvent& aPointerEvent) const = 0;
 
     virtual void PostMouseEventL(const TPointerEvent& aPointerEvent) = 0;
+
+    /**
+     * Enables or disables focus highlight for controls
+     * Used only for list controls (Lists, ListView, ListBox and Table)
+     * Only for 9.2
+     */
+    virtual void EnableFocusHighlight(TBool aEnable) = 0;
+    
+    /**
+     * Get the visible rectangle of this control.
+     * Window coordinates.
+     * The clipping take in account the parent, but not the brother.
+     * To take in account the sibblings use VisibleRegion() method.
+     * @param aVisibleBounds If true return the visible rectangle of the control,
+     *        else return visible client rectangle of the control.
+     */
+    virtual TRect VisibleRect(TBool aVisibleBounds = EFalse) const = 0;
 };
 
 
@@ -1408,6 +1425,11 @@ public:
      */
     virtual void SetTaskTip() = 0;
     virtual TBool IsTaskTip() const = 0;
+    
+    /**
+     * Sets the location even if top shell.
+     */
+    virtual void DoSetLocation(const TPoint& aPoint) = 0;
 };
 
 /**
@@ -2838,6 +2860,60 @@ public:
      * Returns the current control that is grabbing the pointer events.
      */
     virtual MSwtControl* PointerCaptureControl() = 0;
+    
+    /**
+     * Rearranges the application layout (status pane, Shell position, split 
+     * input view size) for best editing experience. There can be only one 
+     * editor in split view mode at a time. Setting 0 clears the split view 
+     * and restores the layout.
+     * 
+     * Following actions must be delegated to UiUtils while split editing is on:
+     * - Relocating the split input Shell (@see SetSplitInputShellPos)
+     * - Resizing the split input view. (@see SetSplitInputViewSize)
+     * 
+     * Following actions must be notified to UiUtils while split editing is on:
+     * - Resizing the split input shell. (@see AdjustSplitInputShellPos)
+     * - Relocating the split input view. (@see AdjustSplitInputShellPos)
+     */
+    virtual void SetSplitInputEditor(MSwtControl* aEditor) = 0;
+    
+    /**
+     * The currently active(focused) split input editor.
+     * Can be any Text, TextExtension, ConstrainedText or DateEditor.
+     */
+    virtual MSwtControl* SplitInputEditor() const = 0;
+    
+    /**
+     * The currently active split input editor or a parent ScrolledComposite.
+     * The view is getting resized automatically to fit in the available space
+     * above the VKB.
+     */
+    virtual MSwtControl* SplitInputView() const = 0;
+    
+    /**
+     * The parent shell of the active split input editor is temporarily
+     * moved vertically during split input editing therefore setting a new
+     * location must be diverted trough UiUtils.
+     * @param aOriginalPos - The real position of the Shell, which will be 
+     *                       applied when VKB closes.
+     */
+    virtual void SetSplitInputShellPos(const TPoint& aOriginalPos) = 0;
+    
+    /**
+     * The active split input editor or its ScrolledComposite ancestor 
+     * is temporarily resized vertically during split input editing 
+     * therefore setting a new size must be diverted trough UiUtils.
+     * @param aOriginalSize - The real size of the control, which will be 
+     *                        applied when VKB closes.
+     */
+    virtual void SetSplitInputViewSize(const TSize& aOriginalSize) = 0;
+    
+    /**
+     * The split input shell resized during split editing or
+     * the split input view relocated during split editing.
+     * The vertical position of the shell will be readjusted.
+     */
+    virtual void AdjustSplitInputShellPos() = 0;
 };
 
 

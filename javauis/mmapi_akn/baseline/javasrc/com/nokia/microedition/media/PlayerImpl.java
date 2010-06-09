@@ -261,7 +261,7 @@ public class PlayerImpl extends PlayerBase
      * From Player.
      * @see Player
      */
-    public void start() throws MediaException
+    synchronized public void start() throws MediaException
     {
         prefetch();
 

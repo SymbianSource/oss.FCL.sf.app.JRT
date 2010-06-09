@@ -549,7 +549,11 @@ void CSwtText::ConstructL()
     }
 #ifdef RD_SCALABLE_UI_V2
     aknFlags |= EAknEditorFlagDeliverVirtualKeyEventsToApplication;
-#endif // RD_SCALABLE_UI_V2 
+#endif // RD_SCALABLE_UI_V2
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    aknFlags |= EAknEditorFlagEnablePartialScreen;
+#endif
 
     editor->SetAknEditorFlags(aknFlags);
 

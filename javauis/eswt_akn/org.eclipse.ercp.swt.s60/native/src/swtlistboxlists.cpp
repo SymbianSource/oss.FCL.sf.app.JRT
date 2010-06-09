@@ -505,6 +505,31 @@ void CSwtListBoxLists::EnableStretching(TInt aListType, CEikTextListBox* aList,
     }
 }
 
+#ifdef RD_JAVA_S60_RELEASE_9_2
+// ---------------------------------------------------------------------------
+// CSwtListBoxLists::EnableFocusHighlight
+// ---------------------------------------------------------------------------
+//
+void CSwtListBoxLists::EnableFocusHighlight(CListItemDrawer* aItemDrawer,
+        TBool aEnable)
+{
+    if (aItemDrawer)
+    {
+        TInt disabledHighlight =
+            aItemDrawer->Flags() & CListItemDrawer::EDisableHighlight;
+
+        if (aEnable && disabledHighlight)
+        {
+            aItemDrawer->ClearFlags(CListItemDrawer::EDisableHighlight);
+        }
+        else if (!aEnable && !disabledHighlight)
+        {
+            aItemDrawer->SetFlags(CListItemDrawer::EDisableHighlight);
+        }
+    }
+}
+#endif //RD_JAVA_S60_RELEASE_9_2
+
 // The compiler does not automatically instantiate templates defined in other
 // files. Because of this, code written will often produce undefined symbol
 // errors when compiled with the compiler. You need to tell the compiler which

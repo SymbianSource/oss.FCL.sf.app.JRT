@@ -116,7 +116,7 @@ public class SourcePlayer extends PlayerImpl
      * interface Player
      * @see Player
      */
-    public void close()
+    synchronized public void close()
     {
         super.close();
         // close threads from SourceStreamReaders

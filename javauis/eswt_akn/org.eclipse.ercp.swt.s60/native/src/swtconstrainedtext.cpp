@@ -655,51 +655,53 @@ void CSwtConstrainedText::SetConstraintL(TConstraint aConstraint)
     {
     case ENumeric:
     {
-        CSwtIntegerEdwin* ed = new(ELeave)CSwtIntegerEdwin;
-        editor = ed;
+        editor = new(ELeave)CSwtIntegerEdwin;
         SetEditor(editor);
-        ed->ConstructL(-KMaxTInt, KMaxTInt, iTextLimit);
-        Editor().SetTextLimit(iTextLimit);
-        Editor().SetAknEditorCase(EAknSCTNumeric);
-        Editor().SetAknEditorAllowedInputModes(EAknEditorNumericInputMode);
-        Editor().SetAknEditorInputMode(EAknEditorNumericInputMode);
-        Editor().SetAknEditorCurrentInputMode(EAknEditorNumericInputMode);
-        Editor().SetAknEditorFlags(EAknEditorFlagFixedCase | EAknEditorFlagNoT9);
-        Editor().SetAknEditorNumericKeymap(EAknEditorPlainNumberModeKeymap);
-#ifdef RD_SCALABLE_UI_V2
-        Editor().SetAknEditorFlags(EAknEditorFlagUseSCTNumericCharmap
-                                   | EAknEditorFlagDeliverVirtualKeyEventsToApplication);
-#else
-        Editor().SetAknEditorFlags(EAknEditorFlagUseSCTNumericCharmap);
-#endif // RD_SCALABLE_UI_V2 
-        Editor().SetAknEditorSpecialCharacterTable(R_ESWT_CONSTRAINEDTEXT_NUMERIC_MODE_DIALOG);
+        editor->ConstructL(-KMaxTInt, KMaxTInt, iTextLimit);
+        editor->SetTextLimit(iTextLimit);
+        editor->SetAknEditorCase(EAknSCTNumeric);
+        editor->SetAknEditorAllowedInputModes(EAknEditorNumericInputMode);
+        editor->SetAknEditorInputMode(EAknEditorNumericInputMode);
+        editor->SetAknEditorCurrentInputMode(EAknEditorNumericInputMode);
+        editor->SetAknEditorNumericKeymap(EAknEditorPlainNumberModeKeymap);
+        editor->SetAknEditorFlags(EAknEditorFlagFixedCase
+                                  | EAknEditorFlagNoT9
+                                  | EAknEditorFlagUseSCTNumericCharmap
+                                  | EAknEditorFlagDeliverVirtualKeyEventsToApplication
+#ifdef RD_JAVA_S60_RELEASE_9_2
+                                  | EAknEditorFlagEnablePartialScreen
+#endif // RD_JAVA_S60_RELEASE_9_2                           
+                                 );
+        editor->SetAknEditorSpecialCharacterTable(R_ESWT_CONSTRAINEDTEXT_NUMERIC_MODE_DIALOG);
     }
     break;
     case EDecimal:
     {
-        CSwtFloatingPointEdwin* fpe = new(ELeave) CSwtFloatingPointEdwin;
-        editor = fpe;
+        editor = new(ELeave) CSwtFloatingPointEdwin;
         SetEditor(editor);
-        fpe->ConstructL(-KMaxTInt, KMaxTInt, iTextLimit);
-        Editor().SetAknEditorCase(EAknSCTNumeric);
-        Editor().SetAknEditorAllowedInputModes(EAknEditorNumericInputMode);
-        Editor().SetAknEditorInputMode(EAknEditorNumericInputMode);
-        Editor().SetAknEditorCurrentInputMode(EAknEditorNumericInputMode);
-        Editor().SetAknEditorFlags(EAknEditorFlagFixedCase | EAknEditorFlagNoT9);
-        Editor().SetAknEditorNumericKeymap(EAknEditorPlainNumberModeKeymap);
-#ifdef RD_SCALABLE_UI_V2
-        Editor().SetAknEditorFlags(EAknEditorFlagUseSCTNumericCharmap
-                                   | EAknEditorFlagDeliverVirtualKeyEventsToApplication);
-#else
-        Editor().SetAknEditorFlags(EAknEditorFlagUseSCTNumericCharmap);
-#endif // RD_SCALABLE_UI_V2 
+        editor->ConstructL(-KMaxTInt, KMaxTInt, iTextLimit);
+        editor->SetAknEditorCase(EAknSCTNumeric);
+        editor->SetAknEditorAllowedInputModes(EAknEditorNumericInputMode);
+        editor->SetAknEditorInputMode(EAknEditorNumericInputMode);
+        editor->SetAknEditorCurrentInputMode(EAknEditorNumericInputMode);
+        editor->SetAknEditorNumericKeymap(EAknEditorPlainNumberModeKeymap);
+
+        editor->SetAknEditorFlags(EAknEditorFlagFixedCase
+                                  | EAknEditorFlagNoT9
+                                  | EAknEditorFlagUseSCTNumericCharmap
+                                  | EAknEditorFlagDeliverVirtualKeyEventsToApplication
+#ifdef RD_JAVA_S60_RELEASE_9_2
+                                  | EAknEditorFlagEnablePartialScreen
+#endif // RD_JAVA_S60_RELEASE_9_2                           
+                                 );
+
         if (iDecimalSeparator == ',')
         {
-            Editor().SetAknEditorSpecialCharacterTable(R_ESWT_CONSTRAINEDTEXT_DECIMAL_MODE_WITH_COMMA_DIALOG);
+            editor->SetAknEditorSpecialCharacterTable(R_ESWT_CONSTRAINEDTEXT_DECIMAL_MODE_WITH_COMMA_DIALOG);
         }
         else
         {
-            Editor().SetAknEditorSpecialCharacterTable(R_ESWT_CONSTRAINEDTEXT_DECIMAL_MODE_DIALOG);
+            editor->SetAknEditorSpecialCharacterTable(R_ESWT_CONSTRAINEDTEXT_DECIMAL_MODE_DIALOG);
         }
     }
     break;
@@ -716,12 +718,12 @@ void CSwtConstrainedText::SetConstraintL(TConstraint aConstraint)
         editor->SetAknEditorAllowedInputModes(EAknEditorNumericInputMode);
         editor->SetAknEditorInputMode(EAknEditorNumericInputMode);
         editor->SetAknEditorNumericKeymap(EAknEditorAlphanumericNumberModeKeymap);
-#ifdef RD_SCALABLE_UI_V2
         editor->SetAknEditorFlags(EAknEditorFlagUseSCTNumericCharmap
-                                  | EAknEditorFlagDeliverVirtualKeyEventsToApplication);
-#else
-        editor->SetAknEditorFlags(EAknEditorFlagUseSCTNumericCharmap);
-#endif // RD_SCALABLE_UI_V2            
+                                  | EAknEditorFlagDeliverVirtualKeyEventsToApplication
+#ifdef RD_JAVA_S60_RELEASE_9_2
+                                  | EAknEditorFlagEnablePartialScreen
+#endif // RD_JAVA_S60_RELEASE_9_2                          
+                                 );
         editor->SetAknEditorSpecialCharacterTable(R_ESWT_CONSTRAINEDTEXT_PHONENUMBER_MODE_DIALOG);
     }
     break;

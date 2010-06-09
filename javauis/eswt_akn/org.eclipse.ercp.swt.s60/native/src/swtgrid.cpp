@@ -258,6 +258,14 @@ void CSwtGrid::CreateItemDrawerL()
     CleanupStack::Pop();
 }
 
+// ---------------------------------------------------------------------------
+// CSwtGrid::ForwardPointerEvent
+// ---------------------------------------------------------------------------
+//
+void CSwtGrid::ForwardPointerEventL(const TPointerEvent& aPointerEvent)
+{
+    CEikListBox::HandlePointerEventL(aPointerEvent);
+}
 
 // ---------------------------------------------------------------------------
 // CSwtGrid::DoHandleScrollEventL

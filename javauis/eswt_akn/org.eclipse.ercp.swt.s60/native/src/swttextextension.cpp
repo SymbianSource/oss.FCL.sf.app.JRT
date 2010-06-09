@@ -154,18 +154,19 @@ void CSwtTextExtension::SetTypeStyleL(TInt aTypeStyle)
 
     TInt sct = R_AVKON_URL_SPECIAL_CHARACTER_TABLE_DIALOG;
     TUint flags = 0;
+    CEikEdwin& edwin = Editor();
     if (iTypeStyle & EEmailAddress)
     {
         iMenu = CSwtControlMenu::NewL(iDisplay, NULL, 0);
         iMenu->SetObserver(this);
         iMenuItem = CSwtMenuItem::NewL(iDisplay, NULL, *iMenu, 0, 0, ESwtFetchEmail);
         // Email style implementation
-        Editor().SetMaxLength(KSWTTEXTEXTENSION_EMAIL_LENGTH);
-        Editor().SetAknEditorAllowedInputModes(EAknEditorAllInputModes);
-        Editor().SetAknEditorCurrentInputMode(EAknEditorAlphaInputMode);
-        Editor().SetAknEditorPermittedCaseModes(EAknEditorAllCaseModes);
-        Editor().SetAknEditorCase(EAknEditorLowerCase);
-        Editor().SetAknEditorCurrentCase(EAknEditorLowerCase);
+        edwin.SetMaxLength(KSWTTEXTEXTENSION_EMAIL_LENGTH);
+        edwin.SetAknEditorAllowedInputModes(EAknEditorAllInputModes);
+        edwin.SetAknEditorCurrentInputMode(EAknEditorAlphaInputMode);
+        edwin.SetAknEditorPermittedCaseModes(EAknEditorAllCaseModes);
+        edwin.SetAknEditorCase(EAknEditorLowerCase);
+        edwin.SetAknEditorCurrentCase(EAknEditorLowerCase);
         sct =  R_AVKON_EMAIL_ADDR_SPECIAL_CHARACTER_TABLE_DIALOG;
         flags |= EEikEdwinNoLineOrParaBreaks|EAknEditorFlagNoT9;
         //Adding Non Midlet Commands
@@ -180,12 +181,12 @@ void CSwtTextExtension::SetTypeStyleL(TInt aTypeStyle)
         iMenu->SetObserver(this);
         iMenuItem = CSwtMenuItem::NewL(iDisplay, NULL, *iMenu, 0, 0, ESwtFetchUrl);
         // Url type implementation
-        Editor().SetMaxLength(KSWTTEXTEXTENSION_URL_LENGTH);
-        Editor().SetAknEditorAllowedInputModes(EAknEditorAllInputModes);
-        Editor().SetAknEditorCurrentInputMode(EAknEditorAlphaInputMode);
-        Editor().SetAknEditorPermittedCaseModes(EAknEditorAllCaseModes);
-        Editor().SetAknEditorCase(EAknEditorLowerCase);
-        Editor().SetAknEditorCurrentCase(EAknEditorLowerCase);
+        edwin.SetMaxLength(KSWTTEXTEXTENSION_URL_LENGTH);
+        edwin.SetAknEditorAllowedInputModes(EAknEditorAllInputModes);
+        edwin.SetAknEditorCurrentInputMode(EAknEditorAlphaInputMode);
+        edwin.SetAknEditorPermittedCaseModes(EAknEditorAllCaseModes);
+        edwin.SetAknEditorCase(EAknEditorLowerCase);
+        edwin.SetAknEditorCurrentCase(EAknEditorLowerCase);
         sct = R_AVKON_URL_SPECIAL_CHARACTER_TABLE_DIALOG;
         flags |= EEikEdwinNoLineOrParaBreaks|EAknEditorFlagNoT9;
         //Adding Non Midlet Commands
@@ -206,13 +207,19 @@ void CSwtTextExtension::SetTypeStyleL(TInt aTypeStyle)
         //NonPredictive type implementation
         flags |= EAknEditorFlagNoT9;
     }
+
 #ifdef RD_SCALABLE_UI_V2
     flags |= EAknEditorFlagDeliverVirtualKeyEventsToApplication;
 #endif // RD_SCALABLE_UI_V2 
-    Editor().SetAknEditorFlags(flags);
-    Editor().SetAknEditorSpecialCharacterTable(sct);
-    // make changes take effect
-    TRAP_IGNORE(Editor().NotifyEditorStateObserverOfStateChangeL());
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    flags |= EAknEditorFlagEnablePartialScreen;
+#endif
+
+    edwin.SetAknEditorFlags(flags);
+    edwin.SetAknEditorSpecialCharacterTable(sct);
+
+    TRAP_IGNORE(edwin.NotifyEditorStateObserverOfStateChangeL());
 }
 
 

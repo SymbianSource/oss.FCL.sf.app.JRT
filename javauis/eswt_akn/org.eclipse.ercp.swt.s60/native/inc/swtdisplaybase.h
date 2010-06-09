@@ -149,6 +149,7 @@ public:
     void PostDialogResultEventL(CSwtDialogBroker* aBroker, TSwtPeer aPeer, TInt aDialogResult);
     void PostDialogResultEventL(CSwtDialogBroker* aBroker, TSwtPeer aPeer, TInt aDialogResult1, TInt aDialogResult2, TInt aDialogResult3);
     void PostCloseEventL(TSwtPeer aPeer, TBool& aDispatched);
+    void PostShowFocusedControlEventL(TSwtPeer aPeer);
     TInt ApplicationUid();
     void SetMobileDevice(MSwtMobileDevice* aMobileDevice);
     MSwtMobileDevice* MobileDevice();
