@@ -58,8 +58,7 @@ ifeq ($(BUILDENV),symbian)
     ifneq ($(wildcard $(addsuffix Series60v5.0.sis,$(S60_STUBSIS_DIRS))),)
       RD_JAVA_S60_RELEASE = 5.0
     else
-      # $(error Cannot determine S60 release, no known stub files in $(S60_STUBSIS_DIRS))
-      RD_JAVA_S60_RELEASE = 9.2
+      $(error Cannot determine S60 release, no known stub files in $(S60_STUBSIS_DIRS))
     endif
     endif
     endif
