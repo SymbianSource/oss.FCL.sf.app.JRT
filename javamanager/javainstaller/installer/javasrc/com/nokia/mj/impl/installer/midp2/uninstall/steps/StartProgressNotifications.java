@@ -91,8 +91,16 @@ public class StartProgressNotifications extends ExeStep
         catch (Throwable t)
         {
             Log.logError("StartProgressNotifications: SifNotifier.notifyStart failed", t);
+            try
+            {
+                ball.iSifNotifier.destroy();
+            }
+            catch (Throwable t2)
+            {
+                Log.logError("StartProgressNotifications: SifNotifier.destroy failed", t2);
+            }
+            ball.iSifNotifier = null;
         }
-
         // Set SifNotifier for the listeners that should use it.
         ball.iInstallationNotifier.setSifNotifier(ball.iSifNotifier);
     }

@@ -278,8 +278,6 @@ public class InstallationNotifier implements ExeProgressListener
             }
             if (iSifNotifier != null)
             {
-                Log.log("InstallationNotifier.set: update SifNotifier to " +
-                        currentPercentage);
                 try
                 {
                     iSifNotifier.notifyProgress(

@@ -113,7 +113,7 @@ public class Display extends Device {
 static int handle;
 
 /* QApplication event filter */
-int eventFilterHandle;
+static int eventFilterHandle;
 
 static final String SWT_OBJECT_INDEX = "swt_obj_idx";
 static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget";
@@ -121,32 +121,30 @@ static final String REMOVE_WIDGET_KEY = "org.eclipse.swt.internal.removeWidget";
 static final String IMAGE_LOAD_SIZE_KEY = "org.eclipse.swt.internal.image.loadSize";
 static final String SWT_EVENT_FILTER = "swt_event_filter";
 
-public CommandArranger commandArranger;
+static CommandArranger commandArranger;
 
-Event[] eventQueue;
-EventTable eventTable, filterTable;
+static Event[] eventQueue;
+static EventTable eventTable, filterTable;
 
-// Note that this won't work with multiple displays in the same process.
-// All the displays will have the same appname.
 static String APP_NAME;
 
 /* Widget Table */
-int[] indexTable;
-int freeSlot;
-int lastHandle;
-Widget lastWidget;
-Widget[] widgetTable;
+static int[] indexTable;
+static int freeSlot;
+static int lastHandle;
+static Widget lastWidget;
+static Widget[] widgetTable;
 final static int GROW_SIZE = 64;
 
-MobileDevice mobileDevice;
-int mobileDeviceHandle;
+static MobileDevice mobileDevice;
+static int mobileDeviceHandle;
 
 /* Modality */
-Shell [] modalShells;
-Dialog modalDialog;
+static Shell [] modalShells;
+static Dialog modalDialog;
 
 /* Sync/Async Widget Communication */
-Synchronizer synchronizer = new Synchronizer (this);
+static Synchronizer synchronizer;
 Thread thread;
 
 static Thread fixedUiThread;
@@ -155,29 +153,29 @@ static Thread fixedUiThread;
 Runnable [] disposeList;
 
 /* System Tray */
-Tray tray;
+static Tray tray;
 
 /* Timers */
-int [] timerHandles;
-Runnable [] timerRunnables;
+static int [] timerHandles;
+static Runnable [] timerRunnables;
 
 /* Timestamp of the Last Received Event */
-int lastEventTime;
+static int lastEventTime;
 
 /* If not to interrupt event processing after every event */
-boolean noInterrupt;
+static boolean noInterrupt;
 
 /* Used to block one type of events temporarily */
-int blockedQtEventType;
+static int blockedQtEventType;
 
 /* Default orientation for Controls when style is not specified */
-int defaultOrientation;
-boolean defaultOrientationIsSysLangDirection;
+static int defaultOrientation;
+static boolean defaultOrientationIsSysLangDirection;
 
 // The next Image loaded by Image class constructors will be scaled to
 // this size. Can be set using Display.setData([key], Point). Useful
 // for SVG images. 
-private Point imageLoadSize;
+static private Point imageLoadSize;
 
 /* Key Mappings */
 static final int [] [] KeyTable = {
@@ -287,6 +285,7 @@ static final int SYMBIAN_FN_RIGHT    = 0x19;    // EStdKeyRightFunc
 
 /* Multiple Displays. */
 static Display Default;
+static Display Internal;
 static Display [] Displays = new Display [4];
 
 /* Package name */
@@ -299,48 +298,24 @@ static final String ERCP_MOBILE_PACKAGE_PREFIX = "org.eclipse.ercp.swt.mobile.";
 static final String INTERNAL_EXTENSION_PACKAGE_PREFIX = "org.eclipse.swt.internal.extension.";
 
 /* Display Data */
-Object data;
-String [] keys;
-Object [] values;
+static Object data;
+static String [] keys;
+static Object [] values;
 
 /* Last ShortcutOverride event parameters */
-int shortcutOverrideKey;
-int shortcutOverrideModifier;
-int shortcutOverrideCharacter;
+static int shortcutOverrideKey;
+static int shortcutOverrideModifier;
+static int shortcutOverrideCharacter;
 
 /* Last control that had a mnemonic hit i.e. shortcut event*/
-Control mnemonicControl;
+static Control mnemonicControl;
 
 /* It is stored here if we are currently in a focus event */
-int focusEvent;
+static int focusEvent;
 
 /* Settings event specific variables */
 static final int SETTINGS_DELAY = 2000;
-Runnable settingsRunnable;
-
-/*
-* TEMPORARY CODE.  Install the runnable that
-* gets the current display. This code will
-* be removed in the future.
-*/
-static {
-    DeviceFinder = new Runnable () {
-        public void run () {
-            Device device = getCurrent ();
-            if (device == null) {
-                device = getDefault ();
-            }
-            setDevice (device);
-        }
-    };
-}
-
-/*
-* TEMPORARY CODE.
-*/
-static void setDevice (Device device) {
-    CurrentDevice = device;
-}
+static Runnable settingsRunnable;
 
 /**
  * Constructs a new instance of this class.
@@ -372,6 +347,17 @@ public Display () {
  */
 public Display (DeviceData data) {
     super(data);
+}
+
+private Display(DeviceData data, boolean internal) {
+	super(data, internal);
+}
+
+static Display internalInstance() {
+	if(Internal == null) {
+		Internal = new Display(null, true);
+	}
+	return Internal;
 }
 
 /**
@@ -448,7 +434,7 @@ public void addListener (int eventType, Listener listener) {
     eventTable.hook (eventType, listener);
 }
 
-void addWidget (int handle, Widget widget) {
+static void addWidget (int handle, Widget widget) {
     if (handle == 0) return;
     if (freeSlot == -1) {
         int length = (freeSlot = indexTable.length) + GROW_SIZE;
@@ -514,7 +500,7 @@ public void beep () {
     OS.QApplication_beep();
 }
 
-private void checkDefaultOrientation(int sysLangDirection) {
+private static void checkDefaultOrientation(int sysLangDirection) {
     defaultOrientation = SWT.LEFT_TO_RIGHT;
     String s = System.getProperty("org.eclipse.ercp.swt.defaultOrientation");
     if (s != null) {
@@ -533,12 +519,14 @@ protected void checkDevice () {
     if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 }
 
-static void checkDisplay (Thread thread, boolean multiple) {
+final void checkDisplay (Thread thread, boolean multiple) {
     synchronized (Device.class) {
         for (int i=0; i<Displays.length; i++) {
             if (Displays [i] != null) {
-                if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED, null, " [multiple displays]");
-                if (Displays [i].thread == thread) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+            	if(Internal_GfxPackageSupport.internal(this) == Internal_GfxPackageSupport.internal(Displays[i])) {
+            		if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED, null, " [multiple displays]");
+                    if (Displays [i].thread == thread) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+            	}
             }
         }
         // On some platforms it's not supported to dispose the Display and
@@ -550,11 +538,11 @@ static void checkDisplay (Thread thread, boolean multiple) {
     }
 }
 
-void checkSubclass () {
+final void checkSubclass () {
     if (!isValidClass (getClass ())) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-void clearModal (Shell shell) {
+final void clearModal (Shell shell) {
     if (modalShells == null) return;
     int index = 0, length = modalShells.length;
     while (index < length) {
@@ -590,7 +578,7 @@ public void close () {
     if (event.doit) dispose ();
 }
 
-void createDisplay() {
+static void createDisplay() {
     // It's possible that there's already a QApplication from an old Display
     // that has been disposed in an event listener but we were unable to delete
     // the QApplication there. If we are creating this Display from an event
@@ -603,7 +591,7 @@ void createDisplay() {
 
     // Create the object that manages the JNI activity. It's only possible when
     // this object exists.
-    JniUtils.handle = OS.JniUtils_new(this);
+    JniUtils.handle = OS.JniUtils_new();
 
     handle = OS.QApplication_swt_new(JniUtils.handle);
     if(handle == 0) SWT.error(SWT.ERROR_UNSPECIFIED);
@@ -645,11 +633,24 @@ static void deregister (Display display) {
  * @see #release
  */
 protected void destroy () {
-    if (this == Default) Default = null;
+    boolean notifyExit;
+	if (notifyExit = (this == Default)) {
+    	Default = null;    	
+    } else if(this == Internal) {
+    	Internal = null;
+    }
     deregister (this);
-    GraphicsContext sharedGc = SharedGCWrapper.getSharedGC();
-    if(sharedGc != null && !sharedGc.isDisposed()) sharedGc.dispose();
-    destroyDisplay ();
+    if(Default == null && Internal == null) {
+	    GraphicsContext sharedGc = SharedGCWrapper.getSharedGC();
+	    if(sharedGc != null && !sharedGc.isDisposed()) sharedGc.dispose();
+	    destroyDisplay ();
+	    super.destroy();
+    }
+    if(notifyExit) {
+        // Notify MIDP runtime to watch that the MIDlet exits. 
+        // For other runtime environments this does nothing. 
+        ExitNotificationWrapper.notifyExit();
+    }
 }
 
 void destroyDisplay () {
@@ -657,10 +658,16 @@ void destroyDisplay () {
     OS.EventHandler_destroy(eventFilterHandle);
     OS.QApplication_syncX();
     tryDestroy();
+}
 
-    // Notify MIDP runtime to watch that the MIDlet exits. 
-    // For other runtime environments this does nothing. 
-    ExitNotificationWrapper.notifyExit();
+int displayCount() {
+    int res = 0;
+    for (int i = 0; i < Displays.length; i++) {
+        if (Displays[i] != null && !Displays[i].isDisposed()) {
+            res++;
+        }
+    }
+    return res;
 }
 
 /**
@@ -706,7 +713,7 @@ void error (int code) {
 /*
  * This is the main event handler that is called by native code.
  */
-final boolean eventProcess(int widgetHandle, int eventType, int time,
+static boolean eventProcess(int widgetHandle, int eventType, int time,
         int arg1, int arg2, int arg3, int arg4, int arg5, String arg6) {
     // Silently let blocked events through
     if(blockedQtEventType == eventType) return false;
@@ -717,7 +724,7 @@ final boolean eventProcess(int widgetHandle, int eventType, int time,
     // Get target widget or null if not found or is the Display
     Widget widget = ((widgetHandle == handle) ? null : getWidget ( widgetHandle ));
 
-    if(!noInterrupt && !isDisposed()) {
+    if(!noInterrupt) {
         interrupt();
     }
     
@@ -733,17 +740,17 @@ final boolean eventProcess(int widgetHandle, int eventType, int time,
     }
 }
 
-boolean filterEvent (Event event) {
+static boolean filterEvent (Event event) {
     if (filterTable != null) filterTable.sendEvent (event);
     return false;
 }
 
-boolean filters (int eventType) {
+static boolean filters (int eventType) {
     if (filterTable == null) return false;
     return filterTable.hooks (eventType);
 }
 
-Control findControl (int handle) {
+static Control findControl (int handle) {
     if (handle == 0) return null;
     do {
         Widget widget = getWidget (handle);
@@ -767,7 +774,7 @@ public static Display findDisplay (Thread thread) {
     synchronized (Device.class) {
         for (int i=0; i<Displays.length; i++) {
             Display display = Displays [i];
-            if (display != null && display.thread == thread) {
+            if (display != null && display.thread == thread && !Internal_GfxPackageSupport.internal(display)) {
                 return display;
             }
         }
@@ -836,7 +843,7 @@ public Rectangle getClientArea () {
     return OS.QDesktopWidget_availableGeometry(OS.QApplication_desktop(), -1);
 }
 
-Control[] getControls()
+static Control[] getControls()
 {
     // Create a table of all Controls, no duplicates
     Control controlTable[] = new Control[widgetTable.length];
@@ -1007,7 +1014,7 @@ public Control getFocusControl () {
     return _getFocusControl ();
 }
 
-Control _getFocusControl () {
+static Control _getFocusControl () {
     return findControl( OS.QApplication_focusWidget() );
 }
 
@@ -1029,19 +1036,19 @@ public int getIconDepth () {
     return super.getDepth();
 }
 
-int getLastEventTime () {
+static int getLastEventTime () {
     return lastEventTime;
 }
 
-int getMessageCount () {
+static int getMessageCount () {
     return synchronizer.getMessageCount ();
 }
 
-Dialog getModalDialog () {
+static Dialog getModalDialog () {
     return modalDialog;
 }
 
-Menu[] getMenus()
+static Menu[] getMenus()
 {
     // Create a table of all Menus, no duplicates
     Menu menuTable[] = new Menu[widgetTable.length];
@@ -1080,6 +1087,10 @@ Menu[] getMenus()
  */
 public Shell [] getShells () {
     checkDevice ();
+    return getShells_();
+}
+
+static Shell[] getShells_() {
     int index = 0;
     Shell [] result = new Shell [16];
     for (int i = 0; i < widgetTable.length; i++) {
@@ -1103,7 +1114,7 @@ public Shell [] getShells () {
     if (index == result.length) return result;
     Shell [] newResult = new Shell [index];
     System.arraycopy (result, 0, newResult, 0, index);
-    return newResult;
+    return newResult;	
 }
 
 /**
@@ -1163,7 +1174,7 @@ public Thread getThread () {
     }
 }
 
-private final int getTimerHandleIndex(int timerHandle) {
+private static int getTimerHandleIndex(int timerHandle) {
     if(timerHandles == null) return -1;
     int index;
     for(index = 0; index < timerHandles.length; ++index) {
@@ -1174,7 +1185,7 @@ private final int getTimerHandleIndex(int timerHandle) {
     return -1;
 }
 
-Widget getWidget (int handle) {
+static Widget getWidget (int handle) {
     if (handle == 0) return null;
     if (lastWidget != null && lastHandle == handle) return lastWidget;
     int index = OS.QObject_property( handle, SWT_OBJECT_INDEX) - 1;
@@ -1185,7 +1196,7 @@ Widget getWidget (int handle) {
     return null;
 }
 
-final private boolean handleNativeSwtEvent(Widget widget, int widgetHandle,
+static private boolean handleNativeSwtEvent(Widget widget, int widgetHandle,
         int eventType, int time, int arg1, int arg2, int arg3, int arg4,
         int arg5) {
 
@@ -1250,15 +1261,17 @@ final private boolean handleNativeSwtEvent(Widget widget, int widgetHandle,
     }
 }
 
-final private boolean handleQtEvent(Widget widget, int widgetHandle, int eventType,
+static private boolean handleQtEvent(Widget widget, int widgetHandle, int eventType,
         int arg1, int arg2, int arg3, int arg4, int arg5) {
 
     // These events are coming from an application event filter of QApplication.
     // The return value of this method will be returned by the filter.
+	
     if (eventType == OS.QEVENT_KEYPRESS && arg1 == OS.QT_KEY_NO) {
-        qt_key_event_endKeyPressed();
+    	qt_key_event_endKeyPressed();
         return false;
     }
+    
     if (widget == null) {
         return false;
     }
@@ -1331,7 +1344,7 @@ final private boolean handleQtEvent(Widget widget, int widgetHandle, int eventTy
     }
 }
 
-final private boolean handleQtSignal(Widget widget, int widgetHandle,
+static private boolean handleQtSignal(Widget widget, int widgetHandle,
         int eventType, int arg1, int arg2, int arg3, int arg4, int arg5,
         String arg6) {
 
@@ -1525,8 +1538,8 @@ final private boolean handleQtSignal(Widget widget, int widgetHandle,
     }
 }
 
-void hookEvents() {
-    int focusSignalProxy = OS.SignalHandler_new(handle, this, OS.QSIGNAL_QAPPLICATION_FOCUSCHANGED);
+static void hookEvents() {
+    int focusSignalProxy = OS.SignalHandler_new(handle, OS.QSIGNAL_QAPPLICATION_FOCUSCHANGED);
     OS.QObject_connectOrThrow(handle, "focusChanged(QWidget*, QWidget*)", focusSignalProxy,
             "widgetSignal(QWidget*, QWidget*)", OS.QT_AUTOCONNECTION);
 }
@@ -1534,16 +1547,21 @@ void hookEvents() {
 protected void init () {
     checkSubclass ();
     checkDisplay(thread = Thread.currentThread (), false);
-    createDisplay();
-    commandArranger = new CommandArranger();
+    if(!Internal_GfxPackageSupport.initialized()) {
+    	createDisplay();
+	    synchronizer = new Synchronizer (this);
+	    commandArranger = new CommandArranger(this);
+    }
     register (this);
-    if (Default == null) Default = this;
+    if (Default == null && !Internal_GfxPackageSupport.internal(this)) Default = this;
     
     super.init ();
-    initializeWidgetTable ();
+    if(!Internal_GfxPackageSupport.initialized()) {
+    	initializeWidgetTable ();
+    }
 }
 
-void initializeWidgetTable () {
+static void initializeWidgetTable () {
     indexTable = new int [GROW_SIZE];
     widgetTable = new Widget [GROW_SIZE];
     for (int i=0; i<GROW_SIZE-1; i++) indexTable [i] = i + 1;
@@ -1607,7 +1625,7 @@ public int internal_new_GC (GCData data) {
     return data.internalGc.getHandle();
 }
 
-void interrupt() {
+static void interrupt() {
     /*
      * Try to interrupt to make the native event processing methods return. By
      * default Qt processes all available events in one iteration. This is
@@ -1617,9 +1635,12 @@ void interrupt() {
      * event loop iterations and in each iteration several QEvents can get
      * dispatched.
      */
-    int threadHandle = OS.QObject_thread( Display.handle );
-    int dispatcher = OS.QAbstractEventDispatcher_instance( threadHandle );
-    OS.QAbstractEventDispatcher_interrupt( dispatcher );
+	synchronized(Device.class) {
+		if(handle == 0) return;
+	}
+    int threadHandle = OS.QObject_thread(handle);
+    int dispatcher = OS.QAbstractEventDispatcher_instance(threadHandle);
+    OS.QAbstractEventDispatcher_interrupt(dispatcher);
 }
 
 static boolean isValidClass (Class clazz) {
@@ -1972,7 +1993,7 @@ public boolean post (Event event) {
     return false;
 }
 
-void postEvent (Event event) {
+static void postEvent (Event event) {
     /*
     * Place the event at the end of the event queue.
     * This code is always called in the Display's
@@ -1994,7 +2015,7 @@ void postEvent (Event event) {
     eventQueue [index] = event;
 }
 
-void qt_signal_qapplication_focusChanged(int old, int now) {
+static void qt_signal_qapplication_focusChanged(int old, int now) {
     Widget oldWidget = null, nowWidget = null;
 
     if(old != 0) oldWidget = getWidget(old);
@@ -2015,7 +2036,7 @@ void qt_signal_qapplication_focusChanged(int old, int now) {
     }
 }
 
-void qt_signal_timer (int timerHandleIndex) {
+static void qt_signal_timer (int timerHandleIndex) {
     if (timerRunnables == null || timerHandles == null) return;
 
     Runnable runnable = timerRunnables [timerHandleIndex];
@@ -2031,18 +2052,21 @@ void qt_signal_timer (int timerHandleIndex) {
     if (runnable != null) runnable.run ();
 }
 
-
-void qt_key_event_endKeyPressed(){
-    close();
+static void qt_key_event_endKeyPressed() {
+    Event event = new Event ();
+    sendEvent (SWT.Close, event);
+    if (event.doit) {
+    	if(Default != null) {
+    		Default.dispose ();
+    	}
+    }
 }
 
-
-void qt_swt_event_systemShutdown(){
+static void qt_swt_event_systemShutdown(){
     Event event = new Event ();
     sendEvent (SWT.Close, event);
     ExitNotificationWrapper.notifyExit();
 }
-
 
 /**
  * Reads an event from the operating system's event queue,
@@ -2091,10 +2115,10 @@ public boolean readAndDispatch() {
     return asyncRetVal;
 }
 
-Point readAndClearImageLoadSize() {
-	Point imageLoadSize = this.imageLoadSize;
-	this.imageLoadSize = null;
-	return imageLoadSize;
+static Point readAndClearImageLoadSize() {
+	Point ilSize = Display.imageLoadSize;
+	Display.imageLoadSize = null;
+	return ilSize;
 }
 
 static void register (Display display) {
@@ -2143,22 +2167,27 @@ protected void release () {
         Shell shell = shells [i];
         if (!shell.isDisposed ())  shell.dispose ();
     }
-    commandArranger.dispose();
-    if (tray != null) tray.dispose ();
-    tray = null;
+    final boolean lastDisplay = (displayCount() == 1);
+    if(lastDisplay) {
+	    commandArranger.dispose();
+	    if (tray != null) tray.dispose ();
+	    tray = null;
+    }
     while (readAndDispatch ()) {}
     if (disposeList != null) {
         for (int i=0; i<disposeList.length; i++) {
             if (disposeList [i] != null) disposeList [i].run ();
         }
     }
-    disposeList = null;
-    synchronizer.releaseSynchronizer ();
-    synchronizer = null;
+    if(lastDisplay) {
+	    synchronizer.releaseSynchronizer ();
+	    synchronizer = null;
+	    lastWidget = null;
+	    indexTable = null;
+	    widgetTable = null;
+    }
     thread = null;
-    lastWidget = null;
-    indexTable = null;
-    widgetTable = null;
+    disposeList = null;
     super.release ();
 }
 
@@ -2222,7 +2251,7 @@ public void removeListener (int eventType, Listener listener) {
     eventTable.unhook (eventType, listener);
 }
 
-Widget removeWidget (int handle) {
+static Widget removeWidget (int handle) {
     if (handle == 0) return null;
     lastWidget = null;
     Widget widget = null;
@@ -2248,11 +2277,11 @@ final private boolean repostFailedQEvents() {
     return disposed;
 }
 
-boolean runAsyncMessages (boolean all) {
+static boolean runAsyncMessages (boolean all) {
     return synchronizer.runAsyncMessages (all);
 }
 
-boolean runDeferredEvents () {
+static boolean runDeferredEvents () {
     /*
     * Run deferred events.  This code is always
     * called in the Display's thread so it must
@@ -2288,7 +2317,7 @@ boolean runDeferredEvents () {
     return true;
 }
 
-void runSettings () {
+static void runSettings () {
     Control[] controls = getControls();
     updateImages(controls);
     updateLayoutDirections(controls);
@@ -2296,7 +2325,7 @@ void runSettings () {
     for(int i = 0; i < controls.length; i++) {
         controls[i].doRedraw();
     }
-    Shell [] shells = getShells ();
+    Shell [] shells = getShells_();
     for(int i = 0; i < shells.length; i++) {
         Shell shell = shells [i];
         if(!shell.isDisposed ()) {
@@ -2316,12 +2345,12 @@ final private boolean sendDeferredDeletionQEvents() {
     return disposed;
 }
 
-void sendEvent (int eventType, Event event) {
+static void sendEvent (int eventType, Event event) {
     if (eventTable == null && filterTable == null) {
         return;
     }
     if (event == null) event = new Event ();
-    event.display = this;
+    event.display = Default;
     event.type = eventType;
     if (event.time == 0) event.time = getLastEventTime ();
     if (!filterEvent (event)) {
@@ -2350,13 +2379,13 @@ final private boolean sendQEvents() {
     return disposed;
 }
 
-final private void sendSettings()
-{
-    if(settingsRunnable != null) {
+static private void sendSettings() {
+    Display instance = Default != null ? Default : Internal;
+	if(settingsRunnable != null) {
         // Cancel the existing timer
-        timerExec(-1, settingsRunnable);
+        instance.timerExec(-1, settingsRunnable);
     }
-    timerExec(SETTINGS_DELAY, settingsRunnable = new Runnable() {
+    instance.timerExec(SETTINGS_DELAY, settingsRunnable = new Runnable() {
         public void run() {
             runSettings();
             settingsRunnable = null;
@@ -2374,7 +2403,7 @@ final private void sendSettings()
  */
 public static void setAppName (String name) {
     APP_NAME = name;
-    if (Display.getCurrent() != null) {
+    if (Display.handle != 0 && (!Default.disposed || !Internal.disposed)) {
         OS.QCoreApplication_setApplicationName(handle, name);
         OS.setSymbianAppName(name);
     }
@@ -2500,22 +2529,22 @@ public void setData (String key, Object value) {
  */
 public void setData (Object data) {
     checkDevice ();
-    this.data = data;
+    Display.data = data;
 }
 
-void setScreenPaintingAttributes(boolean on) {
+static void setScreenPaintingAttributes(boolean on) {
     OS.QWidget_setAttribute(OS.QApplication_desktop(), OS.QT_WA_PAINTOUTSIDEPAINTEVENT, on);
     OS.QWidget_setAttribute(OS.QApplication_desktop(), OS.QT_WA_PAINTONSCREEN, on);
     OS.QWidget_setAttribute(OS.QApplication_desktop(), OS.QT_WA_PAINTUNCLIPPED, on);
 }
 
-void setModalDialog (Dialog modalDialog) {
-    this.modalDialog = modalDialog;
-    Shell [] shells = getShells ();
+static void setModalDialog (Dialog modalDialog) {
+    Display.modalDialog = modalDialog;
+    Shell [] shells = getShells_();
     for (int i=0; i<shells.length; i++) shells [i].updateModal ();
 }
 
-void setModalShell (Shell shell) {
+static void setModalShell (Shell shell) {
     if (modalShells == null) modalShells = new Shell [4];
     int index = 0, length = modalShells.length;
     while (index < length) {
@@ -2529,7 +2558,7 @@ void setModalShell (Shell shell) {
         modalShells = newModalShells;
     }
     modalShells [index] = shell;
-    Shell [] shells = getShells ();
+    Shell [] shells = getShells_();
     for (int i=0; i<shells.length; i++) shells [i].updateModal ();
 }
 
@@ -2551,11 +2580,11 @@ void setModalShell (Shell shell) {
 public void setSynchronizer (Synchronizer synchronizer) {
     checkDevice ();
     if (synchronizer == null) error (SWT.ERROR_NULL_ARGUMENT);
-    if (synchronizer == this.synchronizer) return;
+    if (synchronizer == Display.synchronizer) return;
     Synchronizer oldSynchronizer;
     synchronized (Device.class) {
-        oldSynchronizer = this.synchronizer;
-        this.synchronizer = synchronizer;
+        oldSynchronizer = Display.synchronizer;
+        Display.synchronizer = synchronizer;
     }
     if (oldSynchronizer != null) {
         oldSynchronizer.runAsyncMessages(true);
@@ -2611,7 +2640,7 @@ public void syncExec (Runnable runnable) {
     Synchronizer synchronizer;
     synchronized (Device.class) {
         if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-        synchronizer = this.synchronizer;
+        synchronizer = Display.synchronizer;
     }
     synchronizer.syncExec (runnable);
 }
@@ -2687,7 +2716,7 @@ public void timerExec (int milliseconds, Runnable runnable) {
     if (timerHandle != 0) {
         OS.QObject_setParent(timerHandle, handle); // QTimer is a child of QApplication
         OS.QTimer_setSingleShot(timerHandle, true);
-        int signalProxy = OS.SignalHandler_new(timerHandle, this, OS.QSIGNAL_TIMEOUT);
+        int signalProxy = OS.SignalHandler_new(timerHandle, OS.QSIGNAL_TIMEOUT);
         OS.QObject_connectOrThrow(timerHandle, "timeout()", signalProxy, "widgetSignal()", OS.QT_AUTOCONNECTION);
         OS.QTimer_start(timerHandle, milliseconds);
         timerHandles [index] = timerHandle;
@@ -2697,7 +2726,7 @@ public void timerExec (int milliseconds, Runnable runnable) {
 
 // Converts single mouse button from Qt to SWT for the MouseEvent.button
 // field which takes integers, 1, 2, 3, ...
-static final int translateButton(int nativeButton) {
+static int translateButton(int nativeButton) {
     switch(nativeButton) {
     case OS.QT_LEFTBUTTON:
         return 1;
@@ -2711,7 +2740,7 @@ static final int translateButton(int nativeButton) {
 }
 
 // Converts a mask of buttons from Qt to SWT
-static final int translateButtons(int buttons) {
+static int translateButtons(int buttons) {
     int state = 0;
     if((buttons & OS.QT_LEFTBUTTON) != 0) state |= SWT.BUTTON1;
     if((buttons & OS.QT_MIDBUTTON) != 0) state |= SWT.BUTTON2;
@@ -2720,7 +2749,7 @@ static final int translateButtons(int buttons) {
 }
 
 // Converts keys from Qt to SWT
-static final int translateKey (int key, boolean keypad ) {
+static int translateKey (int key, boolean keypad ) {
     if( keypad ){
         for (int i=0; i<KeyPadKeyTable.length; i++) {
             if (KeyPadKeyTable [i] [0] == key) return KeyPadKeyTable [i] [1];
@@ -2733,7 +2762,7 @@ static final int translateKey (int key, boolean keypad ) {
 }
 
 // Converts modifiers from Qt to SWT
-static final int translateModifiers(int nativeModifiers) {
+static int translateModifiers(int nativeModifiers) {
     int modifiers = 0;
     if ((nativeModifiers & OS.QT_ALTMODIFIER) != 0) modifiers |= SWT.ALT;
     if ((nativeModifiers & OS.QT_SHIFTMODIFIER) != 0) modifiers |= SWT.SHIFT;
@@ -2741,7 +2770,7 @@ static final int translateModifiers(int nativeModifiers) {
     return modifiers;
 }
 
-static final int translateDirection(int orientation) {
+static int translateDirection(int orientation) {
     if(orientation ==  OS.QT_RIGHTTOLEFT) {
         return SWT.RIGHT_TO_LEFT;
     } else {
@@ -2750,7 +2779,7 @@ static final int translateDirection(int orientation) {
 }
 
 // Converts native scan code to key location (left/right) for CTRL/ALT/SHIFT/etc
-static final int translateKeyLocation(int nativeScanCode) {
+static int translateKeyLocation(int nativeScanCode) {
     
     if(OS.windowServer == OS.WS_SYMBIAN_S60) {
         switch (nativeScanCode) {
@@ -2787,7 +2816,13 @@ static final int translateKeyLocation(int nativeScanCode) {
     return 0;
 }
 
-private final void tryDestroy() {
+private static void tryDestroy() {
+	// Do nothing if there are Displays that have not been disposed
+	if((Default != null && !Default.disposed) || 
+			(Internal != null && !Internal.disposed)) {
+		return;
+	}
+	
     // Destroy the QApplication only when all event loops have exited.
     if(handle != 0 && OS.SwtApplication_javaCallbackCount() == 0) {
         
@@ -2815,7 +2850,7 @@ private final void tryDestroy() {
 }
 
 // Converts mouse buttons from SWT to Qt
-static final int unTranslateButton(int button) {
+static int unTranslateButton(int button) {
     switch(button) {
     case 1:
         return OS.QT_LEFTBUTTON;
@@ -2829,7 +2864,7 @@ static final int unTranslateButton(int button) {
 }
 
 // Converts event types from SWT to Qt
-static final int unTranslateEventType(int type) {
+static int unTranslateEventType(int type) {
     switch (type) {
     case SWT.KeyDown:
         return OS.QEVENT_KEYPRESS;
@@ -2849,7 +2884,7 @@ static final int unTranslateEventType(int type) {
 }
 
 // Converts keys from SWT to Qt
-public final static int untranslateKey (int key) {
+static int untranslateKey (int key) {
     for (int i=0; i<KeyTable.length; i++) {
         if (KeyTable [i] [1] == key) return KeyTable [i] [0];
     }
@@ -2860,7 +2895,7 @@ public final static int untranslateKey (int key) {
 }
 
 // Converts modifiers from SWT to Qt
-static final int unTranslateModifiers(int modifiers) {
+static int unTranslateModifiers(int modifiers) {
     int nativeModifiers = 0;
     if ((modifiers & SWT.ALT) != 0) nativeModifiers |= OS.QT_ALTMODIFIER;
     if ((modifiers & SWT.SHIFT) != 0) nativeModifiers |= OS.QT_SHIFTMODIFIER;
@@ -2886,13 +2921,13 @@ public void update () {
     }
 }
 
-void updateImages (Control[] controls) {
+static void updateImages (Control[] controls) {
     for(int i = 0; i < controls.length; ++i) {
         controls[i].updateImages();
     }
 }
 
-void updateLayoutDirection(Widget widget) {
+static void updateLayoutDirection(Widget widget) {
     // If the widget doesn't follow system language direction then leave it
     if((widget.state & WidgetState.FOLLOWS_SYSLANG_DIRECTION) != 0) {
         // Update the style flags. We already know LEFT_TO_RIGHT flag is not 
@@ -2913,7 +2948,7 @@ void updateLayoutDirection(Widget widget) {
     }
 }
 
-void updateLayoutDirections(Control[] controls) {
+static void updateLayoutDirections(Control[] controls) {
     if(!defaultOrientationIsSysLangDirection) return;
     
     // Update the default orientation
@@ -2949,13 +2984,13 @@ public void wake () {
     }
 }
 
-void wakeThread () {
+static void wakeThread () {
     int threadHandle = OS.QObject_thread( Display.handle );
     int dispatcher = OS.QAbstractEventDispatcher_instance( threadHandle );
     OS.QAbstractEventDispatcher_wakeup( dispatcher );
 }
 
-int initializeMobileDevice(){
+static int initializeMobileDevice(){
 	if(mobileDeviceHandle == 0){
 		mobileDeviceHandle = OS.MobileDevice_new();
 	}

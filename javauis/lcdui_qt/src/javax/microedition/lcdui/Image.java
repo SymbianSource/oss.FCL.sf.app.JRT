@@ -43,6 +43,10 @@ public class Image
     // buffer has package visibility so that it can be used as
     // a lock in other classes
     ImageBuffer graphicsBuffer;
+    
+    // Graphics for transferring instance
+    // between application and UI thread
+    Graphics tempGraphics;
 
     /**
      * Constructor.
@@ -647,14 +651,33 @@ public class Image
     }
 
     /**
-     * Synchronizes any pending draw commands to this image
+     * Synchronizes any pending draw commands to this image. The buffer sync 
+     * must be executed in UI thread and if this method is not requested to switch to
+     * UI thread, the caller must take care of serializing the call over the graphicsBuffer
+     * of this instance.
+     * 
+     * @param switchToUIThread If true the sync is run in UI thread, oherwise
+     *        caller must take care of switching to UI thread
      */
-    void sync()
+    void sync(boolean switchToUIThread)
     {
-        synchronized(graphicsBuffer)
-        {
-            graphicsBuffer.sync();
-        }
+    	if(switchToUIThread) 
+		{
+    	    synchronized(graphicsBuffer)
+            {
+                ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                    public void run()
+                    {
+                        graphicsBuffer.sync();
+                    }
+                });
+            }
+         } 
+    	else 
+    	{
+    		graphicsBuffer.sync();
+    	}
     }
 
     /**
@@ -762,7 +785,6 @@ public class Image
 
         synchronized(graphicsBuffer)
         {
-            graphicsBuffer.sync();
             final int[] localRgbData = rgbData;
             final int localOffset = offset;
             final int localLength = length;
@@ -774,6 +796,7 @@ public class Image
             {
                 public void run()
                 {
+                	graphicsBuffer.sync();
                     org.eclipse.swt.internal.qt.graphics.Image cgImage = Internal_GfxPackageSupport.getImage(eswtImage);
                     cgImage.getRGB(localRgbData, localOffset, localLength,
                                    localX, localY, localW, localH);
@@ -791,8 +814,16 @@ public class Image
     public Graphics getGraphics()
     {
         if(mutable)
-        {
-            return graphicsBuffer.getGraphics();
+        {	
+        	tempGraphics = null;
+        	ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
+        	        tempGraphics =  graphicsBuffer.getGraphics();
+                }
+            });
+            return tempGraphics;
         }
         throw new IllegalStateException(MsgRepository.IMAGE_EXCEPTION_IMMUTABLE);
     }

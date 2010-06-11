@@ -181,7 +181,7 @@ public class Slider extends Control {
     }
 
     void hookEvents_pp() {
-        int signalProxy = OS.SignalHandler_new(handle, display,
+        int signalProxy = OS.SignalHandler_new(handle, 
                 OS.QSIGNAL_SLIDER_CHANGED);
         OS.QObject_connectOrThrow(handle, "valueChanged(int)", signalProxy,
                 "widgetSignal(int)", OS.QT_AUTOCONNECTION);

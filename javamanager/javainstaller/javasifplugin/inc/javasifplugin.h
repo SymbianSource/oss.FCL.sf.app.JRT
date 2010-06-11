@@ -221,6 +221,24 @@ private:
      */
     void CopyFilesIfNeededL(TFileName &aFileName);
 
+    /**
+     * If Java Installer is already running, set error category EInstallerBusy etc
+     * to aResults, set aStatus to KErrAlreadyExists and return ETrue
+     * @param[in][out] aResults
+     * @param[in][out] aStatus
+     * @return ETrue if Java Installer is running
+     */
+    TBool ExitIfJavaInstallerRunning(
+        COpaqueNamedParams& aResults,
+        TRequestStatus& aStatus);
+
+    /**
+     * If Java Installer is already running,
+     * set aStatus to KErrAlreadyExists and return ETrue
+     * @param[in][out] aStatus
+     * @return ETrue if Java Installer is running
+     */
+    TBool ExitIfJavaInstallerRunning(TRequestStatus& aStatus);
 
 private: //  Data
 

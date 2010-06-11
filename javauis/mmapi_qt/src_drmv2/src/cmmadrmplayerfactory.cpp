@@ -19,9 +19,10 @@
 //  INCLUDE FILES
 #include <logger.h>
 
+#include <caf/cafplatform.h>
+#include <caf/stringattributeset.h>
 #include <DRMCommon.h>
 #include <DRMHelper.h>
-#include <caf/stringattributeset.h>
 
 #include "cmmadrmplayerfactory.h"
 #include "cmmadrmaudioplayer.h"

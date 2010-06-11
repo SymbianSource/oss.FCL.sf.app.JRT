@@ -847,7 +847,7 @@ public boolean forceFocus() {
 }
 
 boolean forceFocus(int focusReason) {
-    if (display.focusEvent == SWT.FocusOut) return false;
+    if (Display.focusEvent == SWT.FocusOut) return false;
     Decorations shell = menuShell();
     shell.setSavedFocus(this);
     if (!isEnabled() || !isVisible() || !isActive())
@@ -1424,7 +1424,7 @@ public int internal_new_GC(GCData data) {
 }
 
 boolean isActive() {
-    Dialog dialog = display.getModalDialog();
+    Dialog dialog = Display.getModalDialog();
     if (dialog != null) {
         Shell dialogShell = dialog.parent;
         if (dialogShell != null && !dialogShell.isDisposed()) {
@@ -1433,7 +1433,7 @@ boolean isActive() {
         }
     }
     Shell shell = null;
-    Shell[] modalShells = display.modalShells;
+    Shell[] modalShells = Display.modalShells;
     if (modalShells != null) {
         int bits = SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
         int index = modalShells.length;
@@ -1735,7 +1735,7 @@ public void moveAbove(Control control) {
                 continue;
             }
             if (next) {
-                Widget widget = display.getWidget(children[iChild]);
+                Widget widget = Display.getWidget(children[iChild]);
                 if (widget != null && widget != this) {
                     if (widget instanceof org.eclipse.swt.widgets.Control) {
                         controlAbove = (Control) widget;
@@ -1985,7 +1985,7 @@ void qt_swt_event_widgetResized_pp(int widgetHandle, int oldWidth, int oldHeight
 }
 
 boolean qt_event_shortcut(int key, int modifier, int character) {
-    display.mnemonicControl = this;
+    Display.mnemonicControl = this;
     Control shortcutHandler = getShortcutHandler();
     if (shortcutHandler == null) {
         // If there's no shortcut handler then just activate the shortcut.
@@ -2001,24 +2001,24 @@ void qt_swt_event_bufferFlush() {
 
 void qt_swt_event_focusWasGained() {
     try {
-        display.focusEvent = SWT.FocusIn;
+        Display.focusEvent = SWT.FocusIn;
         sendEvent(SWT.FocusIn);
     } finally {
         if(display != null && !display.isDisposed()) {
-            display.focusEvent = SWT.None;
+            Display.focusEvent = SWT.None;
         }
     }
     if(display != null && !display.isDisposed()) {
-        display.commandArranger.focusedControlChanged();
+        Display.commandArranger.focusedControlChanged();
     }
 }
 void qt_swt_event_focusWasLost() {
     try {
-        display.focusEvent = SWT.FocusOut;
+        Display.focusEvent = SWT.FocusOut;
         sendEvent(SWT.FocusOut);
     } finally {
         if(display != null && !display.isDisposed()) {
-            display.focusEvent = SWT.None;
+            Display.focusEvent = SWT.None;
         }
     }
 }
@@ -2614,10 +2614,10 @@ int setBounds(int x, int y, int width, int height, boolean move,
         if (oldSize.x != width || oldSize.y != height) {
             if(isParentMirrored()) {
                 try {
-                    display.blockedQtEventType = OS.QSWTEVENT_WIDGETMOVED;
+                    Display.blockedQtEventType = OS.QSWTEVENT_WIDGETMOVED;
                     OS.QWidget_move(topHandle, oldPos.x - (width - oldSize.x), oldPos.y);
                 } finally {
-                    display.blockedQtEventType = OS.QEVENT_NONE;
+                    Display.blockedQtEventType = OS.QEVENT_NONE;
                 }
             }
             // This will send a resize event
@@ -2715,7 +2715,7 @@ public void setEnabled(boolean enabled) {
     Control control = null;
     boolean fixFocus = false;
     if (!enabled) {
-        if (display.focusEvent != SWT.FocusOut) {
+        if (Display.focusEvent != SWT.FocusOut) {
             control = display.getFocusControl ();
             fixFocus = isFocusAncestor (control);
         }
@@ -3238,7 +3238,7 @@ public void setVisible(boolean visible) {
     Control control = null;
     boolean fixFocus = false;
     if (!visible) {
-        if (display.focusEvent != SWT.FocusOut) {
+        if (Display.focusEvent != SWT.FocusOut) {
             control = display.getFocusControl ();
             fixFocus = isFocusAncestor (control);
         }
@@ -3396,7 +3396,7 @@ public boolean traverse(int traversal) {
     // but if it's done then traversal is attempted relative to this control.
     // Normally it would be done relative to the control that had the
     // shortcut event.
-    display.mnemonicControl = this;
+    Display.mnemonicControl = this;
 
     return doTraversal(event);
 }
@@ -3479,9 +3479,9 @@ boolean traverseMnemonic(char key) {
 
     // SWT checks for mnemonic hit here
 
-    if (display.mnemonicControl == null)
+    if (Display.mnemonicControl == null)
         return false;
-    Control nextControl = display.mnemonicControl.findNextControl(false);
+    Control nextControl = Display.mnemonicControl.findNextControl(false);
     if (nextControl != null) {
         nextControl.setFocus(OS.QT_TABFOCUSREASON);
         return true;
@@ -3576,9 +3576,9 @@ void waitXRequestComplete() {
     // one event we are waiting for.
     OS.QApplication_syncX();
     // Make Qt process all XEvents.
-    display.noInterrupt = true;
+    Display.noInterrupt = true;
     OS.QCoreApplication_processEvents(Display.handle,
             OS.QEVENTLOOP_EXCLUDEUSERINPUTEVENTS);
-    display.noInterrupt = false;
+    Display.noInterrupt = false;
 }
 }

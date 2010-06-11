@@ -17,7 +17,6 @@
 #include "eventcallback.h"
 #include "swtlog.h"
 #include "jniutils.h"
-#include "swt.h"
 #include "swtapplication.h"
 
 using namespace Java::eSWT;

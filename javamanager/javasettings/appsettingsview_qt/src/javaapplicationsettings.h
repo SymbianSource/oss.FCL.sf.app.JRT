@@ -22,6 +22,7 @@
 #include <QString>
 #include <QStringList>
 #include <hbdataformmodelitem.h>
+#include <cmapplsettingsui.h>
 
 class JavaApplicationSettings
 {
@@ -31,6 +32,7 @@ public:
         {
         QString name;
         uint id;
+        CmApplSettingsUi::SelectionType type;
         };
         
     JavaApplicationSettings(const QString&,
@@ -71,6 +73,10 @@ public:
     const std::vector<std::wstring>& getStorageValues();
     void setStorageValuesFilter(const std::wstring&);
     const std::wstring& getStorageValuesFilter();
+    void connectToUi();
+    void disconnectFromUi();
+    bool isConnectedToUi();
+        
 private:
     QString iName;
     QStringList iValues;
@@ -85,6 +91,7 @@ private:
     std::wstring iValuesColumnName;
     std::wstring iFilterColumnName;
     std::wstring iFilterColumnValue;
+    bool connectedToUi;
 };
 
 #endif // JAVAAPPLICATIONSETTINGS_H

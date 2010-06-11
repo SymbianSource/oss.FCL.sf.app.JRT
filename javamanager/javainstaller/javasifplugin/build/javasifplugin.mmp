@@ -53,6 +53,7 @@ USERINCLUDE     ../inc
 USERINCLUDE     ../../../../inc
 
 SYSTEMINCLUDE   ../../../../inc
+SYSTEMINCLUDE   /epoc32/include/mw/usif
 
 // Libraries
 LIBRARY         apgrfx.lib

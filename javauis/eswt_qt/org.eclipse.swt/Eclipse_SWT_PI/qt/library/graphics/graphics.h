@@ -153,8 +153,9 @@ enum WindowSurfaceType
 {
     WsTypeUnknown       = 0x0000,  // unknonwn or uninitialized type
     WsTypeQtImage       = 0x0001,  // QImage
-    WsTypeSymbianBitmap = 0x0002,  // CFbsBitmap
-    WsTypeEglSurface    = 0x0004   // EGL surface
+    WsTypeQtPixmap      = 0x0002,  // QPixmap
+    WsTypeSymbianBitmap = 0x0004,  // CFbsBitmap
+    WsTypeEglSurface    = 0x0016   // EGL surface
 };
 
 
@@ -628,6 +629,17 @@ public:
         const unsigned short* aText, int aX, int aY, int aWidth, int aHeight,
         int aLength, int aAlignments, int aFlags, bool aIsTransparent) = 0;
 
+    /**
+     * Draws given window surface to current target.
+     * 
+     * @param aSurface The WindowSurface to draw
+     * @param aX The x-coordinate of the area to draw
+     * @param aY The y-coordinate of the area to draw
+     * @param aWidth The width of the area to draw
+     * @param aHeigth The height of the area to draw
+     */
+    virtual void drawWindowSurface(WindowSurface* aSurface, int aX, int aY, int aWidth, int aHeight) = 0;
+	
     /**
      * Fill interior of circular or elliptical arc within specified rectangular area.
      *

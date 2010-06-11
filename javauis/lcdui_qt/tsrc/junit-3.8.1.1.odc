@@ -1,0 +1,13 @@
+[container]
+name=junit-3.8.1.1
+type=JXESL
+
+[packages]
+junit/awtui
+junit/extensions
+junit/framework
+junit/runner
+junit/swingui
+junit/textui
+
+[properties]

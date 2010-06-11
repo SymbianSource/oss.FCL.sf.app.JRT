@@ -35,7 +35,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
@@ -106,10 +105,11 @@ public class PermissionConfirmationView extends ConfirmationViewBase
         addHeader(title, iInstallInfo, null);
 
         GridData gridData = null;
-        int horizontalSpan = getColumns();
         int labelStyle = SWT.WRAP;
 
         // Add permission query label.
+        int detailsColumns = 2;
+        int horizontalSpan = getColumns() - detailsColumns;
         Label domainLabel = createLabel(
             InstallerUiTexts.get(InstallerUiTexts.PERM_QUERY,
                                  new String[] { appName }),
@@ -120,12 +120,11 @@ public class PermissionConfirmationView extends ConfirmationViewBase
                 iPermissionInfo.getPermissionNames() != null &&
                 iPermissionInfo.getPermissionNames().length > 0)
         {
-            Link detailsLink = new Link(getComposite(), SWT.NONE);
-            detailsLink.setText(
-                "<a>" +
-                InstallerUiTexts.get(InstallerUiTexts.PERM_VIEW_DETAILS) +
-                "</a>");
-            detailsLink.addListener(SWT.Selection, new Listener()
+            horizontalSpan = detailsColumns;
+            Button detailsButton = new Button(getComposite(), SWT.NONE);
+            detailsButton.setText(
+                InstallerUiTexts.get(InstallerUiTexts.PERM_VIEW_DETAILS));
+            detailsButton.addListener(SWT.Selection, new Listener()
             {
                 public void handleEvent(Event aEvent)
                 {
@@ -134,9 +133,11 @@ public class PermissionConfirmationView extends ConfirmationViewBase
             });
             gridData = new GridData(GridData.FILL_HORIZONTAL);
             gridData.horizontalSpan = horizontalSpan;
-            detailsLink.setLayoutData(gridData);
-            addSoftKeyListenerFor(detailsLink);
+            detailsButton.setLayoutData(gridData);
+            addSoftKeyListenerFor(detailsButton);
         }
+
+        horizontalSpan = getColumns();
 
         // Number of pixels on top of the buttons.
         int verticalIndent = 5;
@@ -235,6 +236,10 @@ public class PermissionConfirmationView extends ConfirmationViewBase
         gridData.verticalIndent = verticalIndent;
         iCancelButton.setLayoutData(gridData);
         addSoftKeyListenerFor(iCancelButton);
+
+        // After other widgets have been added, add content to
+        // application info Composite.
+        addAppInfo(iInstallInfo, false);
     }
 
     /**

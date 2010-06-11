@@ -423,23 +423,37 @@ class CustomItemLayouter extends ItemLayouter
 
         public void paintControl(PaintEvent pe)
         {
-            // Native toolkit is requesting an update of an area that has
-            // become invalid. Can't do anything here because the contents
-            // need to be queried from the MIDlet in another thread by
-            // a paint callback. For this a paint callback event is posted.
-            // For a moment the native toolkit thinks that the area has
-            // been validated when in truth it will be painted later after
-            // the paint callback has been executed.
-            EventDispatcher eventDispatcher = EventDispatcher.instance();
-            LCDUIEvent event = eventDispatcher.newEvent(
-                                   LCDUIEvent.CUSTOMITEM_PAINT_NATIVE_REQUEST, dfi.getForm());
-            event.x = pe.x;
-            event.y = pe.y;
-            event.width = pe.width;
-            event.height = pe.height;
-            event.widget = pe.widget;
-            event.item = customItem;
-            eventDispatcher.postEvent(event);
+        	// graphicsBuffer may be null when control
+        	// is brought to foreground the first time
+        	if(customItem.graphicsBuffer != null)
+        	{
+        		// If we have initiated a synchronous paint event 
+        		// draw the buffer to display here
+        	    if(customItem.graphicsBuffer.isPaintingActive()) 
+        	    {
+        		    customItem.graphicsBuffer.blitToDisplay(pe.gc.getGCData().internalGc, null);
+        	    }
+        	}
+        	else 
+        	{
+        	    // Native toolkit is requesting an update of an area that has
+                // become invalid. Can't do anything here because the contents
+                // need to be queried from the MIDlet in another thread by
+                // a paint callback. For this a paint callback event is posted.
+        	    // For a moment the native toolkit thinks that the area has
+                // been validated when in truth it will be painted later after
+                // the paint callback has been executed.
+                EventDispatcher eventDispatcher = EventDispatcher.instance();
+                LCDUIEvent event = eventDispatcher.newEvent(
+                                       LCDUIEvent.CUSTOMITEM_PAINT_NATIVE_REQUEST, dfi.getForm());
+                event.x = pe.x;
+                event.y = pe.y;
+                event.width = pe.width;
+                event.height = pe.height;
+                event.widget = pe.widget;
+                event.item = customItem;
+                eventDispatcher.postEvent(event);
+        	}
         }
     }
 

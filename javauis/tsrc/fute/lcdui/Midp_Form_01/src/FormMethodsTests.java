@@ -56,7 +56,7 @@ public class FormMethodsTests extends List implements CommandListener, ItemState
 
     private final String imgStr = "ImageItem";
 
-    private final String spacerStr = "Spacer";
+    private final String spacerStr = "Spacer (100x100)";
 
     private ChoiceGroup cg = null;
 
@@ -324,7 +324,7 @@ public class FormMethodsTests extends List implements CommandListener, ItemState
             else if (item.equals(imgStr))
                 addImageItem();
             else if (item.equals(spacerStr))
-                addSpacer(10,10);
+                addSpacer(100,100);
             else if (item.equals(tfStr))
             {
                 addTextField("ANY", TextField.ANY);

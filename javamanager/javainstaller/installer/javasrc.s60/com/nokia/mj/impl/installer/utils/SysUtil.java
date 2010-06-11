@@ -441,6 +441,44 @@ public final class SysUtil
         return ret;
     }
 
+    /**
+     * Maps given ISO language/country code to Symbian TLanguage.
+     *
+     * @param aLocale ISO language/country code
+     * @return Symbian TLanguage value, or -1 if no matching language is found.
+     */
+    public static int isoToLang(String aLocale)
+    {
+        // Replace possible dash with underscore.
+        aLocale = aLocale.replace('-', '_');
+        // Get language and country parts.
+        String lang = aLocale.toLowerCase();
+        String country = null;
+        int sepIndex = aLocale.indexOf("_");
+        if (sepIndex >= 0)
+        {
+            lang = aLocale.substring(0, sepIndex).toLowerCase();
+            country = aLocale.substring(sepIndex + 1).toUpperCase();
+        }
+        // Map locale to Symbian TLanguage using native service.
+        int result = -1;
+        if (country == null)
+        {
+            result = _isoToLang(lang);
+        }
+        else
+        {
+            result = _isoToLang(lang + "_" + country);
+            if (result == -1)
+            {
+                // No result for language and country, try using language only.
+                result = _isoToLang(lang);
+            }
+        }
+        //Log.log("SysUtil.isoToLang: " + aLocale + " ==> " + result);
+        return result;
+    }
+
     /*** ---------------------------- PROTECTED --------------------------- */
     /*** ----------------------------- PACKAGE ---------------------------- */
     /*** ----------------------------- PRIVATE ---------------------------- */
@@ -646,6 +684,14 @@ public final class SysUtil
      * (negative number) in case of an error
      */
     private static native int _getScreenHeight();
+
+    /**
+     * Maps given ISO language/country code to Symbian TLanguage.
+     *
+     * @param aLocale ISO language/country code
+     * @return Symbian TLanguage value, or -1 if no matching language is found.
+     */
+    private static native int _isoToLang(String aLocale);
 
     /**
      * Class for holding return value from native side.

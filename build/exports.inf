@@ -40,6 +40,10 @@ PRJ_EXPORTS
 ../rom/tckrunnerodclist30 /epoc32/release/winscw/urel/z/resource/java/tckrunnerodclist
 ../rom/tckrunnerodclist30 /epoc32/data/z/resource/java/tckrunnerodclist
 
+../rom/javacontrolpanelodclist30 /epoc32/release/winscw/udeb/z/resource/java/javacontrolpanelodclist
+../rom/javacontrolpanelodclist30 /epoc32/release/winscw/urel/z/resource/java/javacontrolpanelodclist
+../rom/javacontrolpanelodclist30 /epoc32/data/z/resource/java/javacontrolpanelodclist
+
 ../rom/javalocalization_3_1.iby        LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(javalocalization.iby)
 
 #else // RD_JAVA_UI_QT
@@ -58,6 +62,10 @@ PRJ_EXPORTS
 ../rom/tckrunnerodclist /epoc32/release/winscw/udeb/z/resource/java/tckrunnerodclist
 ../rom/tckrunnerodclist /epoc32/release/winscw/urel/z/resource/java/tckrunnerodclist
 ../rom/tckrunnerodclist /epoc32/data/z/resource/java/tckrunnerodclist
+
+../rom/javacontrolpanelodclist /epoc32/release/winscw/udeb/z/resource/java/javacontrolpanelodclist
+../rom/javacontrolpanelodclist /epoc32/release/winscw/urel/z/resource/java/javacontrolpanelodclist
+../rom/javacontrolpanelodclist /epoc32/data/z/resource/java/javacontrolpanelodclist
 
 ../rom/javalocalization_2_1.iby        LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(javalocalization.iby)
 

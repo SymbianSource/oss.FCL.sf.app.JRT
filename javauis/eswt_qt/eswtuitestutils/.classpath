@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="javasrc"/>
+	<classpathentry kind="var" path="CLDC_JAR"/>
+	<classpathentry kind="var" path="CDC_CLASSES"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

@@ -84,11 +84,17 @@ public class Graphics
 
     static final int COMPONENT_MASK = 0xFF;
 
+    /**
+     * Constants for sync strategy
+     */
+    static final int SYNC_LEAVE_SURFACE_SESSION_CLOSED = 10;
+    static final int SYNC_LEAVE_SURFACE_SESSION_OPEN = 11;
+    
+    // Set default sync strategy as closed
+    private int syncStrategy = SYNC_LEAVE_SURFACE_SESSION_CLOSED; 
+    
     private DirectGraphics directGraphics;
     private Buffer graphicsBuffer;
-
-    // Off-screen buffer.
-    //private org.eclipse.swt.internal.qt.graphics.Image frameBuffer;
 
     // Current font for rendering texts.
     Font currentFont;
@@ -96,16 +102,12 @@ public class Graphics
     int translateX;
     int translateY;
     int[] currentClip = new int[4];
-    int currentStrokeSyle;
+    int currentStrokeStyle;
 
     private com.nokia.mj.impl.rt.support.Finalizer finalizer;
-    // serialization lock for command buffering and flush
-    private final Object flushLock = new Object();
-    private Canvas canvasParent;
-    private CustomItem customItemParent;
 
     //Constructor
-    Graphics(Buffer buffer)
+    Graphics(Buffer buffer, Rectangle clipRect)
     {
         finalizer = ((finalizer != null) ? finalizer
                      : new com.nokia.mj.impl.rt.support.Finalizer()
@@ -129,6 +131,10 @@ public class Graphics
                 }
             }
         });
+        currentClip[0] = clipRect.x;
+        currentClip[1] = clipRect.y;
+        currentClip[2] = clipRect.width;
+        currentClip[3] = clipRect.height;
         graphicsBuffer = buffer;
         reset();
     }
@@ -151,11 +157,11 @@ public class Graphics
      */
     void reset()
     {
-        setColor(0, 0, 0);
-        setFont(Font.getDefaultFont());
-        setStrokeStyle(Graphics.SOLID);
-        this.translateX = 0;
-        this.translateY = 0;
+        currentFont = Buffer.defaultFont;
+        currentColor = Buffer.defaultColor;
+        currentStrokeStyle = Buffer.defaultStrokeStyle;
+        translateX = Buffer.defaultTranslateX;
+        translateY = Buffer.defaultTranslateY;
     }
 
     /**
@@ -180,7 +186,19 @@ public class Graphics
         setColor(savedColor);
     }
 
-
+    /**
+     * Sets the sync strategy for this instance.
+     * This affects on the behavior of the sync method of this class
+     * which is called via LCDUIInvoker
+     */
+    void setSyncStrategy(int strategy)
+    {
+    	if((strategy != SYNC_LEAVE_SURFACE_SESSION_CLOSED) && (strategy != SYNC_LEAVE_SURFACE_SESSION_OPEN)) 
+    	{
+    		throw new IllegalArgumentException("Internal: Invalid strategy value");
+    	}
+    	syncStrategy = strategy;
+    }
 
     /**
      * Sets coordinate translation. Translations are cumulative.
@@ -855,8 +873,22 @@ public class Graphics
 
             synchronized(image.graphicsBuffer)
             {
-                image.sync();
-                graphicsBuffer.drawImage(Internal_GfxPackageSupport.getImage(Image.getESWTImage(image)), x, y, this);
+                final Image localLcduiImage = image;
+                final org.eclipse.swt.internal.qt.graphics.Image localCgfxImage = 
+                	Internal_GfxPackageSupport.getImage(Image.getESWTImage(image));
+                final int localX = x;
+                final int localY = y;
+                final Graphics self = this;
+                
+                ESWTUIThreadRunner.safeSyncExec(new Runnable() 
+    			{
+    				public void run()
+    				{
+    					localLcduiImage.sync(false);
+    					graphicsBuffer.drawImage(localCgfxImage, localX, localY, self);
+    				}
+    			});
+                
             }
         }
     }
@@ -910,7 +942,7 @@ public class Graphics
      */
     public void setStrokeStyle(int newStyle)
     {
-        if(newStyle == currentStrokeSyle)
+        if(newStyle == currentStrokeStyle)
         {
             return;
         }
@@ -923,7 +955,7 @@ public class Graphics
                     MsgRepository.GRAPHICS_EXCEPTION_ILLEGAL_STROKE_STYLE);
             }
             graphicsBuffer.setStrokeStyle(styleToApply, newStyle, this);
-            currentStrokeSyle = newStyle;
+            currentStrokeStyle = newStyle;
         }
     }
 
@@ -936,7 +968,7 @@ public class Graphics
     {
         synchronized(graphicsBuffer)
         {
-            return currentStrokeSyle;
+            return currentStrokeStyle;
         }
     }
 
@@ -1150,13 +1182,54 @@ public class Graphics
             final int gcTransform = Image.getCgTransformValue(transform);
             synchronized(srcImage.graphicsBuffer)
             {
-                srcImage.sync();
-                graphicsBuffer.drawImage(Internal_GfxPackageSupport.getImage(Image.getESWTImage(srcImage)),
-                                         x, y, width, height, xSrc, ySrc, width, height, gcTransform, this);
+            	final Image localLcduiSrcImage = srcImage;
+            	final org.eclipse.swt.internal.qt.graphics.Image localCgfxImage = 
+                	Internal_GfxPackageSupport.getImage(Image.getESWTImage(srcImage));
+            	final int localX = x;
+            	final int localY = y;
+            	final int localW = width;
+            	final int localH = height;
+            	final int localXSrc = xSrc;
+            	final int localYSrc = ySrc;
+            	final int localGcTransform = gcTransform;
+            	final Graphics self = this;
+            	ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                    public void run()
+                    {
+                    	localLcduiSrcImage.sync(false);
+                        graphicsBuffer.drawImage(localCgfxImage,
+                        		localX, localY, localW, localH, localXSrc, localYSrc, localW, localH, localGcTransform, self);
+                    }
+                });
             }
         }
     }
 
+    /**
+     * Performs synchronization on the graphics buffer, i.e.
+     * the buffered draw commands are rasterized to the surface.
+     */
+    void sync()
+    {
+    	synchronized(graphicsBuffer) 
+    	{
+    		if(syncStrategy == SYNC_LEAVE_SURFACE_SESSION_OPEN)
+    		{
+    			// This instance is used only with paint callbacks, thus  
+    			// sync is called with the indication that surface paint  
+    			// session can be left open as it will be closed when the 
+    			// callback returns.
+    		    graphicsBuffer.sync(false);
+    		}
+    		else 
+    		{
+    			graphicsBuffer.sync(true);
+    		} 
+    	}
+    }
+    
+    
     /**
      * Return DirectGraphics associated with this instance.
      */
@@ -1169,6 +1242,15 @@ public class Graphics
         return directGraphics;
     }
 
+    /**
+	 * Getter for graphics buffer.
+	 * @return The Buffer.
+	 */
+    Buffer getGraphicsBuffer()
+    {
+        return graphicsBuffer;
+    }
+	
     /**
      * Maps stroke style constant from values used by
      * Graphics to values defined in GraphicsContext

@@ -81,7 +81,7 @@ public class SecurityPromptHandler
         }
     }
 
-    public UserSecuritySettings handleUserPermission(
+    public synchronized UserSecuritySettings handleUserPermission(
         UserPermission userPermission, boolean blanketPromptShown)
     {
         UserSecuritySettings settings = userPermission
@@ -219,7 +219,7 @@ public class SecurityPromptHandler
             }
             else
             {
-                RuntimeUi ui = getUiInstance();
+                getUiInstance();
                 boolean responseAvailable = ui.confirm(
                                                 appName,
                                                 cData);
@@ -329,13 +329,12 @@ public class SecurityPromptHandler
         }
     }
 
-    private RuntimeUi getUiInstance()
+    private void getUiInstance()
     {
         if (ui == null)
         {
             ui = RuntimeUiFactory.getRuntimeUi();
         }
-        return ui;
     }
 
     private UserSecuritySettings handleDenyAnswer(UserSecuritySettings settings)

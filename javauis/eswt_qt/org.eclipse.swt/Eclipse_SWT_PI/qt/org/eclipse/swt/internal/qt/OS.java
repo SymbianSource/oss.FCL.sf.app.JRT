@@ -167,7 +167,6 @@ public final class OS {
     // QInputContextFactory key
     public static final String  QINPUTCONTEXT_COEFEP = "coefep";
     
-    
     // CntServicesContact actions
     public static final String CNT_ACTIONALL = "all";
     public static final String CNT_ACTIONCALL ="call";
@@ -177,9 +176,6 @@ public final class OS {
     // CntServicesContact filters
     public static final String  CNT_DISPLAYALL = "all";
     public static final String  CNT_FILTERDISPLAYFAVORITES = "favorites";
-
-    
-
 
     // Implementation specific codes for the signals emitted by the Qt widgets
     public static final int QSIGNAL_ID_RANGE_FIRST = 1000;
@@ -1502,23 +1498,6 @@ public final class OS {
             int max, int defaultValue, String dialogId, int layoutDirection);
 
     //
-    // QWebView
-    //
-    public static final native int QWebView_new();
-    public static final native void QWebView_back(int handle);
-    public static final native void QWebView_forward(int handle);
-    public static final native void QWebView_reload(int handle);
-    public static final native void QWebView_setHtml(int handle, String html);
-    public static final native void QWebView_setUrl(int handle, String url);
-    public static final native void QWebView_stop(int handle);
-    public static final native String QWebView_swt_backUrl(int handle);
-    public static final native boolean QWebView_swt_canGoBack(int handle);
-    public static final native boolean QWebView_swt_canGoForward(int handle);
-    public static final native boolean QWebView_swt_evaluateJavaScript(int handle, String script);
-    public static final native String QWebView_swt_forwardUrl(int handle);
-    public static final native String QWebView_url(int handle);
-
-    //
     // QSystemTrayIcon
     //
     public static final native boolean QSystemTrayIcon_isSystemTrayAvailable();
@@ -1727,22 +1706,32 @@ public final class OS {
     // Other
     //
     public static final native int EventHandler_new( );
-    public static final native void EventHandler_destroy( int handle );
+    public static final native void EventHandler_destroy(int handle);
+    
     /**
-     * Creates a QObject which implements slots to receive the signals and passes
-     * them to Java along with signal parameters and the signal id.
+     * Creates a QObject which implements slots to receive signals and passes
+     * them to the Display along with the signal parameters and the signal id. 
      * @param widget The handle of the widget which will send the signal.
-     * @param peer The peer Java object where signal is delivered to (The Display)
      * @param signalId The id that can be used to identify the signal.
-     * @return handle of the slot object, owned by the widget
+     * @return Handle of the slot object, owned by the widget that was passed as the first parameter. 
      */
-    public static final native int SignalHandler_new( int widget, Object peer, int signalId );
+    public static final native int SignalHandler_new(int widget, int signalId);
+    
+    /**
+     * Creates a QObject which implements slots to receive signals and forwards
+     * them to the given Object along with the signal parameters and the signal id. 
+     * @param widget The handle of the widget which will send the signal.
+     * @param peer The peer Java object where the signal is delivered to. 
+     * @param signalId The id that can be used to identify the signal.
+     * @return Handle of the slot object, owned by the widget that was passed as the first parameter. 
+     */
+    public static final native int SignalForwarder_new(int widget, Object peer, int signalId);
+    
     /**
      * Creates the JNI utility used for all JNI activity.
-     * @param display The Display
      * @return handle or 0 in case of failure, doesn't throw an exception
      */
-    public static final native int JniUtils_new(Object display);
+    public static final native int JniUtils_new();
 
     /**
      * Performs a check if the QObject can be safely deleted immediately. If not
@@ -1750,6 +1739,7 @@ public final class OS {
      * be deleted safely e.g. when inside an event listener of the object.
      */
     public static final native boolean JniUtils_safeToDelete(int handle, int qObjectHandle);
+    
     private static final native int windowServer();
 
     /**
@@ -1759,6 +1749,7 @@ public final class OS {
      * @return 0 in case of success, non-zero in case of failure.
      */
     public static final native int initUiThread(int uid);
+    
     /**
      * Some platforms require initialization before Qt-APIs can be used
      * and cleaning up after the application is done with them. This method will
@@ -1766,10 +1757,7 @@ public final class OS {
      */
     public static final native void cleanUpUiThread();
 
-    // Add new stuff above Other, Other is the last category
-
-
     public static final native void setSymbianAppName(String name);
 
-
+    // Add new stuff above the category "Other", that is the last category
 }

@@ -466,8 +466,30 @@ public class ManagerImpl implements PlugIn
         {
             throw new IllegalArgumentException("Locator is null.");
         }
-        InternalPlayer player = iProtocolFactory.createPlayer(
-                                    new Locator(aLocator));
+        InternalPlayer player =null;
+        /// Implementation done for java ui 3.x req
+        // in case of AnimationPlayer, we won't be using the ProtocolFactory class.
+        //
+        Enumeration plugins = iPlugIns.elements();
+        AnimationPlayerFactory apf=null;
+        while (plugins.hasMoreElements() && (player == null))
+        {
+            PlugIn temp = (PlugIn) plugins.nextElement();
+            if (temp instanceof AnimationPlayerFactory)
+            {
+                apf = (AnimationPlayerFactory) temp;
+                break;
+            }
+        }
+        if (apf!=null)
+        {
+            player=apf.createPlayer(aLocator);
+        }
+        ////////////////////////////////////////////////////////
+        // if player is still null, try to create the native player
+        if (player==null)
+            player =iProtocolFactory.createPlayer(
+                        new Locator(aLocator));
         if (player == null)
         {
             throw new MediaException("Locator not supported: " +

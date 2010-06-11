@@ -55,7 +55,7 @@
 "\epoc32\data\z\resource\java\midpodclist"-"c:\resource\java\midpodclist"
 "\epoc32\data\z\resource\java\tckrunnerodclist"-"c:\resource\java\tckrunnerodclist"
 "\epoc32\data\z\resource\java\installerodclist"-"c:\resource\java\installerodclist"
-
+"\epoc32\data\z\resource\java\javacontrolpanelodclist"-"c:\resource\java\javacontrolpanelodclist"
 
 ; Dlls containing java byte code and their odc files
 "\epoc32\release\armv5\urel\javabluecove.dll"-"c:\sys\bin\javabluecove.dll"
@@ -158,12 +158,12 @@
 "\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javawmamms.odc"-"c:\resource\java\jvm\lib\jrt\javawmamms.odc"
 
 "\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\tckrunner.odc"-"c:\resource\java\jvm\lib\jrt\tckrunner.odc"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javacontrolpanel.odc"-"c:\resource\java\jvm\lib\jrt\javacontrolpanel.odc"
 
 
 
 ; Misc dlls
 
-"\epoc32\release\armv5\urel\ifeui.dll"-"c:\sys\bin\ifeui.dll"
 "\epoc32\release\armv5\urel\javaappschemeplugin.dll"-"c:\sys\bin\javaappschemeplugin.dll"
 "\epoc32\release\armv5\urel\javabtl2capscplugin.dll"-"c:\sys\bin\javabtl2capscplugin.dll"
 "\epoc32\release\armv5\urel\javabtsppscplugin.dll"-"c:\sys\bin\javabtsppscplugin.dll"
@@ -203,6 +203,7 @@
 "\epoc32\release\armv5\urel\javacaptain_ext_pushregistryplugin.dll"     -"c:\sys\bin\javacaptain_ext_pushregistryplugin.dll"
 "\epoc32\release\armv5\urel\javacaptain_ext_storageserverplugin.dll"    -"c:\sys\bin\javacaptain_ext_storageserverplugin.dll"
 "\epoc32\release\armv5\urel\javacaptain_ext_btdeviceclassmanager.dll"   -"c:\sys\bin\javacaptain_ext_btdeviceclassmanager.dll"
+"\epoc32\release\armv5\urel\javacaptain_ext_autostarter.dll"            -"c:\sys\bin\javacaptain_ext_autostarter.dll"
 ; PLUGIN_ID_JAVA_CERT_STORE_EXTENSION_C = 7
 "\epoc32\release\armv5\urel\javacaptain_ext_ondemand_7.dll"             -"c:\sys\bin\javacaptain_ext_ondemand_7.dll"
 #ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
@@ -213,7 +214,6 @@
 #endif
 
 ; resources
-"\epoc32\data\z\resource\plugins\ifeui.rsc"                   -"c:\resource\plugins\ifeui.rsc"
 "\epoc32\data\z\resource\plugins\javaappschemeplugin.rsc"     -"c:\resource\plugins\javaappschemeplugin.rsc"
 "\epoc32\winscw\c\private\102033E6\installer\inst_plugins.cfg"-"c:\private\102033E6\installer\inst_plugins.cfg"
 "\epoc32\data\Z\Resource\versions\java.txt"-"c:\resource\versions\java.txt"
@@ -332,8 +332,8 @@
 ;"\epoc32\release\armv5\urel\javam3g.dll"-"c:\sys\bin\javam3g.dll"
 ;"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javam3g.odc"-"c:\resource\java\jvm\lib\jrt\javam3g.odc"
 
-;"\epoc32\release\armv5\urel\javanokiasound.dll"-"c:\sys\bin\javanokiasound.dll"
-;"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javanokiasound.odc"-"c:\resource\java\jvm\lib\jrt\javanokiasound.odc"
+"\epoc32\release\armv5\urel\javanokiasound.dll"-"c:\sys\bin\javanokiasound.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javanokiasound.odc"-"c:\resource\java\jvm\lib\jrt\javanokiasound.odc"
 
 ;"\epoc32\release\armv5\urel\javasoftnotification.dll"-"c:\sys\bin\javasoftnotification.dll"
 ;"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javasoftnotification.odc"-"c:\resource\java\jvm\lib\jrt\javasoftnotification.odc"

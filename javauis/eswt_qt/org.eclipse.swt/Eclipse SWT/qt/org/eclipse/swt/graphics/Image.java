@@ -160,7 +160,6 @@ public final class Image implements Drawable {
      * @param device Device
      */
     Image(Device device) {
-        if (device == null) device = Device.getDevice();
         if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
         this.device = device;
     }
@@ -450,7 +449,7 @@ public final class Image implements Drawable {
 
         if (device == null) return;
         if (device.isDisposed()) return;
-        if (device.tracking) device.dispose_Object(this);
+        if (Device.tracking) device.dispose_Object(this);
         device = null;
     }
 
@@ -820,6 +819,6 @@ public final class Image implements Drawable {
      * Call this only after dealing with all exceptions!
      */
     private void track() {
-        if (device.tracking) device.new_Object(this);
+        if (Device.tracking) device.new_Object(this);
     }
 }

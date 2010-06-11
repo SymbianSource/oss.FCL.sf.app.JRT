@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2009 - 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -24,6 +24,7 @@
 #include <e32property.h>
 #include <charconv.h>
 #include <data_caging_path_literals.hrh>
+#include <usiferror.h>
 
 #include "comms.h"
 #include "commsmessage.h"
@@ -43,9 +44,14 @@ using namespace java::comms;
 
 _LIT(KPrivateDataCage, "\\private\\");
 _LIT(KInboxDataCage, "\\private\\1000484b\\");
+_LIT(KJavaInstallerProcess, "Installer");
 _LIT(KJavaInstallerDataCage, "\\private\\102033e6\\");
 _LIT(KJavaInstallerTmp, "\\private\\102033E6\\installer\\tmp\\");
 _LIT(KAnyExtension, ".*");
+
+// Java Installer is executed with same Uid as Java Runtime
+_LIT_SECURE_ID(KJavaInstallerSecureID, KJavaMidpSecureId);
+
 
 
 // ============================ MEMBER FUNCTIONS ===============================
@@ -122,6 +128,11 @@ void CJavaSifPlugin::GetComponentInfo(
     CComponentInfo& aComponentInfo,
     TRequestStatus& aStatus)
 {
+    if (ExitIfJavaInstallerRunning(aStatus))
+    {
+        return;
+    }
+
     RProcess rJavaInstaller;
     TFileName fileName;
     TBuf<1536> commandLine;
@@ -273,6 +284,11 @@ void CJavaSifPlugin::Install(
     COpaqueNamedParams& aResults,
     TRequestStatus& aStatus)
 {
+    if (ExitIfJavaInstallerRunning(aResults, aStatus))
+    {
+        return;
+    }
+
     RProcess rJavaInstaller;
     TFileName fileName;
     // Max two path names and some options -> 1536 is enough
@@ -370,6 +386,26 @@ void CJavaSifPlugin::Install(
         }
         // AskUser is not supported
     }
+
+
+    // TODO: activate this code block when KSifInParam_UpgradeData has been
+    // defined in sifcommon.h
+/*
+    // KSifInParam_UpgradeData Yes/No/AskUser -> -upgrade_data=yes|no
+    TRAP_IGNORE(paramFound = aArguments.GetIntByNameL(KSifInParam_UpgradeData, intValue));
+    if (paramFound)
+    {
+        if (intValue == 0) // Yes
+        {
+            commandLine.Append(_L(" -upgrade_data=yes"));
+        }
+        else if (intValue == 1) // No
+        {
+            commandLine.Append(_L(" -upgrade_data=no"));
+        }
+        // AskUser is not supported
+    }
+*/
 
     // KSifInParam_AllowUntrusted Yes/No/AskUser -> -untrusted=yes|no
     TRAP_IGNORE(paramFound = aArguments.GetIntByNameL(KSifInParam_AllowUntrusted, intValue));
@@ -571,9 +607,14 @@ void CJavaSifPlugin::Uninstall(
     TComponentId aComponentId,
     const TSecurityContext& aSecurityContext,
     const COpaqueNamedParams& aArguments,
-    COpaqueNamedParams& /* aResults */,
+    COpaqueNamedParams& aResults,
     TRequestStatus& aStatus)
 {
+    if (ExitIfJavaInstallerRunning(aResults, aStatus))
+    {
+        return;
+    }
+
     RProcess rJavaInstaller;
     TFileName fileName;
     // Max one uid and some options -> 256 is enough
@@ -793,6 +834,107 @@ void CJavaSifPlugin::CopyFilesIfNeededL(TFileName &aFileName)
     }
 
     return;
+}
+
+TBool CJavaSifPlugin::ExitIfJavaInstallerRunning(
+    COpaqueNamedParams& aResults,
+    TRequestStatus& aStatus)
+{
+    // If Java Installer is already running, set error category EInstallerBusy etc
+    // to aResults and return
+
+    TInt err(KErrNone);
+    RProcess proc;
+    TFindProcess finder(KJavaInstallerProcess);
+    TFullName procName;
+
+    // Java Installer process SID is 0x102033E6 and name is "Installer"
+    while (finder.Next(procName) == KErrNone)
+    {
+        if (proc.Open(finder) != KErrNone)
+        {
+            continue;
+        }
+        if (proc.SecureId() == KJavaInstallerSecureID)
+        {
+            if (proc.ExitType() == EExitPending)
+            {
+                // Java Installer process is already running
+                proc.Close();
+
+                // return error information
+                TRAP(err, aResults.AddIntL(KSifOutParam_ErrCategory, EInstallerBusy));
+                if (KErrNone != err)
+                {
+                    ELOG1(EJavaInstaller,
+                        "CJavaSifPlugin::ExitIfJavaInstallerRunning aResults.AddIntL "
+                        "ErrCategory err %d", err);
+                }
+
+                TRAP(err, aResults.AddIntL(KSifOutParam_ErrCode, KErrInUse));
+                if (KErrNone != err)
+                {
+                    ELOG1(EJavaInstaller,
+                        "CJavaSifPlugin::ExitIfJavaInstallerRunning aResults.AddIntL "
+                        "ErrCode err %d", err);
+                }
+
+                TRAP(err, aResults.AddIntL(KSifOutParam_ExtendedErrCode, 0));
+                if (KErrNone != err)
+                {
+                    ELOG1(EJavaInstaller,
+                        "CJavaSifPlugin::ExitIfJavaInstallerRunning aResults.AddIntL "
+                        "ExtendedErrCode err %d", err);
+                }
+
+                // TODO: return also localized error message from usif
+                // common localization file after the localized strings are available
+
+                TRequestStatus *statusPtr(&aStatus);
+                User::RequestComplete(statusPtr, KErrInUse);
+                return ETrue;
+            }
+       }
+       proc.Close();
+    }
+
+    return EFalse;
+}
+
+
+TBool CJavaSifPlugin::ExitIfJavaInstallerRunning(TRequestStatus& aStatus)
+{
+    // If Java Installer is already running, set aStatus to KErrInUse
+    // and return ETrue
+
+    RProcess proc;
+    TFindProcess finder(KJavaInstallerProcess);
+    TFullName procName;
+
+    // Java Installer process SID is 0x102033E6 and name is "Installer"
+    while (finder.Next(procName) == KErrNone)
+    {
+        if (proc.Open(finder) != KErrNone)
+        {
+            continue;
+        }
+        if (proc.SecureId() == KJavaInstallerSecureID)
+        {
+            if (proc.ExitType() == EExitPending)
+            {
+                // Java Installer process is already running
+                proc.Close();
+
+                // return error information
+                TRequestStatus *statusPtr(&aStatus);
+                User::RequestComplete(statusPtr, KErrInUse);
+                return ETrue;
+            }
+       }
+       proc.Close();
+    }
+
+    return EFalse;
 }
 
 //  End of File

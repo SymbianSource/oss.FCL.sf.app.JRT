@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -375,8 +375,8 @@ public class SysUtilTest extends TestCase implements InstallerMain
             Uid uid = SysUtil.REPO_ID_JAVA_INST_VARIATION;
             long key = SysUtil.REPO_KEY_JAVA_INST_SHELL_FOLDER_VALUE;
             String value = SysUtil.getRepositoryStringValue(uid, key);
-            //assertTrue("Unexpected value: " + value, "Games,Applications".equals(value));
-            assertTrue("Unexpected value: " + value, "".equals(value));
+            assertTrue("Unexpected value: " + value, "Games,Applications".equals(value));
+            //assertTrue("Unexpected value: " + value, "".equals(value));
         }
         catch (InstallerException ie)
         {

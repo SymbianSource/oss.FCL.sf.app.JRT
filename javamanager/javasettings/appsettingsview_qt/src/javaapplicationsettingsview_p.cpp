@@ -27,6 +27,7 @@
 #include <QTranslator>
 #include <qnetworkconfigmanager.h>
 #include <qnetworkconfiguration.h>
+#include <algorithm>
 
 #include "javaapplicationsettings.h"
 #include "javaapplicationsettingsview.h"
@@ -48,11 +49,8 @@ const wchar_t ON_SCREEN_KEYPAD_VALUE_GAMEACTIONS[] = L"1";
 const wchar_t ON_SCREEN_KEYPAD_VALUE_NAVIGATION[] = L"2";
 
 JavaApplicationSettingsViewPrivate::JavaApplicationSettingsViewPrivate(const QString& aJavaAppUid):
-        mainForm(0), model(0), generalSettingsGroup(0), securitySettingsGroup(0)
+        mainForm(0), model(0), generalSettingsGroup(0), securitySettingsGroup(0), netConnSettingsUi(0), asyncToSyncCallEventLoop(0), secWarningAccepted(false), defaultConnId(0)
 {
-    // init access point settings ui
-    netConnSettingsUi = new CmApplSettingsUi(this);
-    
     // init storage
     iStorage.reset(JavaStorage::createInstance());
     try
@@ -61,91 +59,104 @@ JavaApplicationSettingsViewPrivate::JavaApplicationSettingsViewPrivate(const QSt
     }
     catch (JavaStorageException& aJse) {}
     
-    // init the suite UID from the application UID
-    readSuiteUid(aJavaAppUid);
-    if (iSuiteUid.size() <= 0)
-    {
-        // TODO: display a no settings available message
-        return;
-    }
     QTranslator translator;
     // load the correct translation of the localized strings for the cmmanager. 
     // Load this one first since it contains the smallest amount of strings 
     // (so it's ok to be searched last)
-    if (translator.load("z:/resource/qt/translations/cmapplsettingsui_" + QLocale::system().name()))
-    {
-        qApp->installTranslator(&translator);
-    }
-    if (translator.load("z:/resource/qt/translations/cmmanager_" + QLocale::system().name()))
-    {
-        qApp->installTranslator(&translator);
-    }
+    installTranslator("cmapplsettingsui");
+    installTranslator("cmmanager");
     // load the correct translation of the localized strings for the java settings
     // Current solution reads it from Z only (this does not work with IAD)
     // -> check if translator can handle path without drive letter (e.g. the resource
     // is loaded from the same drive where the DLL is loaded)
-    if (translator.load("z:/resource/qt/translations/javaruntimeapplicationsettings_" + QLocale::system().name()))
-    {
-        qApp->installTranslator(&translator);
-    }
+    installTranslator("javaruntimeapplicationsettings");
     // init strings
-    BLANKET = hbTrId("txt_java_sett_setlabel_permission_val_blanket");
-    SESSION = hbTrId("txt_java_sett_setlabel_permission_val_session");
-    ONESHOT = hbTrId("txt_java_sett_setlabel_permission_val_oneshot");
-    DENIED = hbTrId("txt_java_sett_setlabel_permission_val_no");
-    SECURITY_LEVEL = hbTrId("txt_java_sett_setlabel_security_level");
-    USER_DEFINED = hbTrId("txt_java_sett_setlabel_security_level_val_user_defined");
-    SENSITIVE_SETTINGS = hbTrId("txt_java_sett_info_query_perm_sec");
-    SENSITIVE_SETTINGS_NET_USAGE = hbTrId("txt_java_sett_info_query_perm_net");
-    MUTUALLY_EXCLUSIVE_SETTINGS = hbTrId("txt_java_sett_info_query_perm_warn");
-    OK = hbTrId("txt_java_sett_button_settings_ok");
-    CANCEL = hbTrId("txt_java_sett_button_settings_cancel");
-    SECURITY_WARNING_TITLE = hbTrId("txt_java_sett_title_note_security_warn");
-    NET_ACCESS = hbTrId("txt_java_sett_setlabel_net_access");
-    LOW_LEVEL_NET_ACCESS = hbTrId("txt_java_sett_setlabel_low_level_net_access");
-    NETWORK_CONNECTION = hbTrId("txt_occ_title_network_connection");
+    BLANKET = QString(hbTrId("txt_java_sett_setlabel_permission_val_blanket"));
+    SESSION = QString(hbTrId("txt_java_sett_setlabel_permission_val_session"));
+    ONESHOT = QString(hbTrId("txt_java_sett_setlabel_permission_val_oneshot"));
+    DENIED = QString(hbTrId("txt_java_sett_setlabel_permission_val_no"));
+    SECURITY_LEVEL = QString(hbTrId("txt_java_sett_setlabel_security_level"));
+    USER_DEFINED = QString(hbTrId("txt_java_sett_setlabel_security_level_val_user_defined"));
+    SENSITIVE_SETTINGS = QString(hbTrId("txt_java_sett_info_query_perm_sec"));
+    SENSITIVE_SETTINGS_NET_USAGE = QString(hbTrId("txt_java_sett_info_query_perm_net"));
+    MUTUALLY_EXCLUSIVE_SETTINGS = QString(hbTrId("txt_java_sett_info_query_perm_warn"));
+    OK = QString(hbTrId("txt_java_sett_button_settings_ok"));
+    CANCEL = QString(hbTrId("txt_java_sett_button_settings_cancel"));
+    SECURITY_WARNING_TITLE = QString(hbTrId("txt_java_sett_title_note_security_warn"));
+    NET_ACCESS = QString(hbTrId("txt_java_sett_setlabel_net_access"));
+    LOW_LEVEL_NET_ACCESS = QString(hbTrId("txt_java_sett_setlabel_low_level_net_access"));
+    NETWORK_CONNECTION = QString(hbTrId("txt_occ_title_network_connection"));
+    SETTINGS_TITLE = QString(hbTrId("txt_java_sett_title_settings"));
+    SETTINGS_NOT_AVAILABLE = QString(hbTrId("txt_java_sett_info_settings_not_available"));
 
+    // init the suite UID from the application UID
+    readSuiteUid(aJavaAppUid);
+    if (iSuiteUid.size() <= 0)
+    {
+        return;
+    }
+    
+    // init access point settings ui
+    netConnSettingsUi = new CmApplSettingsUi(this);
+    asyncToSyncCallEventLoop = new QEventLoop();
+    
     // read all settings
     readAllSettings();
 
     // init form
     mainForm = new HbDataForm();
-    mainForm->setHeading(hbTrId("txt_java_sett_title_settings"));
+    mainForm->setHeading(QString::fromStdWString(readFromStorage(PACKAGE_NAME, L"", L"", APPLICATION_PACKAGE_TABLE)));
     model = new HbDataFormModel();
 
     // init settings
     generalSettingsGroup = model->appendDataFormGroup(
-                               hbTrId("txt_java_sett_subtitle_general"), model->invisibleRootItem());
+        QString(hbTrId("txt_java_sett_subtitle_general")), model->invisibleRootItem());
     initSettings(generalSettings, generalSettingsGroup);
-    securitySettingsGroup = model->appendDataFormGroup(
-                                hbTrId("txt_java_sett_subtitle_security"), model->invisibleRootItem());
-    initSettings(securitySettings, securitySettingsGroup);
-
-    // if security warnings is user defined -> add the extra settings, expand
-    if (securitySettings[0].getCurrentValue() == 1)
+    // append the security settings only if there are any user settings
+    if (extraSettings.size() > 0)
     {
-        securityWarningsChanged(USER_DEFINED);
+        securitySettingsGroup = model->appendDataFormGroup(
+            QString(hbTrId("txt_java_sett_subtitle_security")), model->invisibleRootItem());
+        initSettings(securitySettings, securitySettingsGroup);
+
+        // if security warnings is user defined -> add the extra settings, expand
+        if (securitySettings[0].getCurrentValue() == 1)
+        {
+            securityWarningsChanged(USER_DEFINED);
+        }
     }
 
     // link form and model
     mainForm->setModel(model);
     mainForm->setExpanded(model->indexFromItem(generalSettingsGroup), true);
-    mainForm->setExpanded(model->indexFromItem(securitySettingsGroup), (securitySettings[0].getCurrentValue() == 1));
+    if (extraSettings.size() > 0)
+    {
+        mainForm->setExpanded(model->indexFromItem(securitySettingsGroup), (securitySettings[0].getCurrentValue() == 1));
+    }
 }
 
 void JavaApplicationSettingsViewPrivate::init(JavaApplicationSettingsView* aPublicView)
 {
     iPublicView = aPublicView;
 
-    // do the connect for the main form
-    iPublicView->connect(mainForm, SIGNAL(activated(const QModelIndex)),
-                         iPublicView, SLOT(_q_dataItemDisplayed(const QModelIndex)));
-
-    // set the form as view's widget
-    iPublicView->setWidget(mainForm);
+    if (mainForm)
+    {        
+        // do the connect for the main form
+        iPublicView->connect(mainForm, SIGNAL(activated(const QModelIndex)),
+                             iPublicView, SLOT(_q_dataItemDisplayed(const QModelIndex)));
+    
+        // set the form as view's widget
+        iPublicView->setWidget(mainForm);
+    }
+    else
+    {
+        // no settings available
+        HbLabel* label = new HbLabel(SETTINGS_NOT_AVAILABLE, iPublicView);
+        label->setAlignment(Qt::AlignVCenter);
+    }        
 
     // set title
-    iPublicView->setTitle(QString::fromStdWString(readFromStorage(PACKAGE_NAME, L"", L"", APPLICATION_PACKAGE_TABLE)));
+    iPublicView->setTitle(SETTINGS_TITLE);
 }
 
 JavaApplicationSettingsViewPrivate::~JavaApplicationSettingsViewPrivate()
@@ -153,6 +164,12 @@ JavaApplicationSettingsViewPrivate::~JavaApplicationSettingsViewPrivate()
     delete mainForm;
     delete model;
     delete netConnSettingsUi;
+    delete asyncToSyncCallEventLoop;
+    foreach (QTranslator *translator, translators) {
+        qApp->removeTranslator(translator);
+    }    
+    qDeleteAll(translators);
+    translators.clear();
 }
 
 void JavaApplicationSettingsViewPrivate::readAllSettings()
@@ -165,16 +182,15 @@ void JavaApplicationSettingsViewPrivate::readAllSettings()
         // if the on screen keypad is predefined, it should not be changable by user
         // -> right now it is not added to settings list. It should be changed so that
         // the setting should not be editable by user
-        settingsValues<<hbTrId("txt_java_sett_setlabel_osk_val_no")<<hbTrId("txt_java_sett_setlabel_osk_val_game")<<hbTrId("txt_java_sett_setlabel_osk_val_navigation");
+        settingsValues<<QString(hbTrId("txt_java_sett_setlabel_osk_val_no"))<<QString(hbTrId("txt_java_sett_setlabel_osk_val_game"))<<QString(hbTrId("txt_java_sett_setlabel_osk_val_navigation"));
         storageValues.push_back(ON_SCREEN_KEYPAD_VALUE_NO);
         storageValues.push_back(ON_SCREEN_KEYPAD_VALUE_GAMEACTIONS);
         storageValues.push_back(ON_SCREEN_KEYPAD_VALUE_NAVIGATION);
-        generalSettings.append(JavaApplicationSettings(hbTrId("txt_java_sett_setlabel_osk"), settingsValues, ON_SCREEN_KEYPAD, MIDP_PACKAGE_TABLE, storageValues));
+        generalSettings.append(JavaApplicationSettings(QString(hbTrId("txt_java_sett_setlabel_osk")), settingsValues, ON_SCREEN_KEYPAD, MIDP_PACKAGE_TABLE, storageValues));
         readFromStorage(generalSettings[0]);
     }
     settingsValues = QStringList();
-    netConn.id = ConnectionManager::getDestinationNetworkIdL(iSuiteUid);
-    readNetworkConnectionName();
+    initNetworkConnection();
     settingsValues<<netConn.name;
     generalSettings.append(JavaApplicationSettings(NETWORK_CONNECTION, settingsValues));
     netSettIndex = generalSettings.size() - 1;
@@ -182,14 +198,13 @@ void JavaApplicationSettingsViewPrivate::readAllSettings()
     // security settings
     settingsValues = QStringList();
     storageValues.clear();
-    settingsValues<<hbTrId("txt_java_sett_setlabel_security_level_val_default")<<USER_DEFINED;
+    settingsValues<<QString(hbTrId("txt_java_sett_setlabel_security_level_val_default"))<<USER_DEFINED;
     storageValues.push_back(SECURITY_WARNINGS_DEFAULT_MODE);
     storageValues.push_back(SECURITY_WARNINGS_USER_DEFINED_MODE);
     securitySettings.append(JavaApplicationSettings(SECURITY_LEVEL, settingsValues, SECURITY_WARNINGS, MIDP_PACKAGE_TABLE, storageValues));
     readFromStorage(securitySettings[0]);
 
     // extra settings
-    int i=0;
     settingsValues = QStringList();
     storageValues.clear();
     settingsValues<<ONESHOT<<SESSION<<BLANKET<<DENIED;
@@ -197,92 +212,98 @@ void JavaApplicationSettingsViewPrivate::readAllSettings()
     storageValues.push_back(SESSION_INTERACTION_MODE);
     storageValues.push_back(BLANKET_INTERACTION_MODE);
     storageValues.push_back(DENIED_INTERACTION_MODE);
-    extraSettings.append(JavaApplicationSettings(NET_ACCESS, settingsValues, CURRENT_SETTING, MIDP_FUNC_GRP_SETTINGS_TABLE, storageValues, FUNCTION_GROUP, NET_ACCESS_SETTINGS, ALLOWED_SETTINGS));
-    readFromStorage(extraSettings[i]);
-    i++;
-    extraSettings.append(JavaApplicationSettings(LOW_LEVEL_NET_ACCESS, settingsValues, CURRENT_SETTING, MIDP_FUNC_GRP_SETTINGS_TABLE, storageValues, FUNCTION_GROUP, LOW_LEVEL_NET_ACCESS_SETTINGS, ALLOWED_SETTINGS));
-    readFromStorage(extraSettings[i]);
-    i++;
-    extraSettings.append(JavaApplicationSettings(hbTrId("txt_java_sett_setlabel_messaging"), settingsValues, CURRENT_SETTING, MIDP_FUNC_GRP_SETTINGS_TABLE, storageValues, FUNCTION_GROUP, MESSAGING_SETTINGS, ALLOWED_SETTINGS));
-    readFromStorage(extraSettings[i]);
-    i++;
-    extraSettings.append(JavaApplicationSettings(hbTrId("txt_java_sett_setlabel_restricted_messaging"), settingsValues, CURRENT_SETTING, MIDP_FUNC_GRP_SETTINGS_TABLE, storageValues, FUNCTION_GROUP, RESTRICTED_MESSAGING_SETTINGS, ALLOWED_SETTINGS));
-    readFromStorage(extraSettings[i]);
-    i++;
-    extraSettings.append(JavaApplicationSettings(hbTrId("txt_java_sett_setlabel_call_control"), settingsValues, CURRENT_SETTING, MIDP_FUNC_GRP_SETTINGS_TABLE, storageValues, FUNCTION_GROUP, CALL_CONTROL_SETTINGS, ALLOWED_SETTINGS));
-    readFromStorage(extraSettings[i]);
-    i++;
-    extraSettings.append(JavaApplicationSettings(hbTrId("txt_java_sett_setlabel_local_conn"), settingsValues, CURRENT_SETTING, MIDP_FUNC_GRP_SETTINGS_TABLE, storageValues, FUNCTION_GROUP, LOCAL_CONNECTIVITY_SETTINGS, ALLOWED_SETTINGS));
-    readFromStorage(extraSettings[i]);
-    i++;
-    extraSettings.append(JavaApplicationSettings(hbTrId("txt_java_sett_setlabel_mm_record"), settingsValues, CURRENT_SETTING, MIDP_FUNC_GRP_SETTINGS_TABLE, storageValues, FUNCTION_GROUP, MULTIMEDIA_RECORDING_SETTINGS, ALLOWED_SETTINGS));
-    readFromStorage(extraSettings[i]);
-    i++;
-    extraSettings.append(JavaApplicationSettings(hbTrId("txt_java_sett_setlabel_write_data"), settingsValues, CURRENT_SETTING, MIDP_FUNC_GRP_SETTINGS_TABLE, storageValues, FUNCTION_GROUP, WRITE_USER_DATA_ACCESS_SETTINGS, ALLOWED_SETTINGS));
-    readFromStorage(extraSettings[i]);
-    i++;
-    extraSettings.append(JavaApplicationSettings(hbTrId("txt_java_sett_setlabel_read_data"), settingsValues, CURRENT_SETTING, MIDP_FUNC_GRP_SETTINGS_TABLE, storageValues, FUNCTION_GROUP, READ_USER_DATA_ACCESS_SETTINGS, ALLOWED_SETTINGS));
-    readFromStorage(extraSettings[i]);
-    i++;
-    extraSettings.append(JavaApplicationSettings(hbTrId("txt_java_sett_setlabel_location"), settingsValues, CURRENT_SETTING, MIDP_FUNC_GRP_SETTINGS_TABLE, storageValues, FUNCTION_GROUP, LOCATION_SETTINGS, ALLOWED_SETTINGS));
-    readFromStorage(extraSettings[i]);
-    i++;
-    extraSettings.append(JavaApplicationSettings(hbTrId("txt_java_sett_setlabel_landmarks"), settingsValues, CURRENT_SETTING, MIDP_FUNC_GRP_SETTINGS_TABLE, storageValues, FUNCTION_GROUP, LANDMARK_SETTINGS, ALLOWED_SETTINGS));
-    readFromStorage(extraSettings[i]);
-    i++;
-    extraSettings.append(JavaApplicationSettings(hbTrId("txt_java_sett_setlabel_auth"), settingsValues, CURRENT_SETTING, MIDP_FUNC_GRP_SETTINGS_TABLE, storageValues, FUNCTION_GROUP, AUTHENTICATION_SETTINGS, ALLOWED_SETTINGS));
-    readFromStorage(extraSettings[i]);
-    i++;
-    extraSettings.append(JavaApplicationSettings(hbTrId("txt_java_sett_setlabel_smartcard"), settingsValues, CURRENT_SETTING, MIDP_FUNC_GRP_SETTINGS_TABLE, storageValues, FUNCTION_GROUP, SMART_CARD_COMMUNICATION_SETTINGS, ALLOWED_SETTINGS));
-    readFromStorage(extraSettings[i]);
-    i++;
-    extraSettings.append(JavaApplicationSettings(hbTrId("txt_java_sett_setlabel_app_auto_invoc"), settingsValues, CURRENT_SETTING, MIDP_FUNC_GRP_SETTINGS_TABLE, storageValues, FUNCTION_GROUP, APPLICATION_AUTO_INVOCATION_SETTINGS, ALLOWED_SETTINGS));
-    readFromStorage(extraSettings[i]);
-    i++;
-    extraSettings.append(JavaApplicationSettings(hbTrId("txt_java_sett_setlabel_broadcast"), settingsValues, CURRENT_SETTING, MIDP_FUNC_GRP_SETTINGS_TABLE, storageValues, FUNCTION_GROUP, BROADCAST_SETTINGS, ALLOWED_SETTINGS));
-    readFromStorage(extraSettings[i]);
-    i++;
-    extraSettings.append(JavaApplicationSettings(hbTrId("txt_java_sett_setlabel_nfc_write_access"), settingsValues, CURRENT_SETTING, MIDP_FUNC_GRP_SETTINGS_TABLE, storageValues, FUNCTION_GROUP, NFC_WRITE_ACCESS_SETTINGS, ALLOWED_SETTINGS));
-    readFromStorage(extraSettings[i]);
-    i++;
+    // init the known localized settings names
+    QHash<QString, QString> localizedSettingsNames;
+    localizedSettingsNames[QString::fromStdWString(NET_ACCESS_SETTINGS)] = NET_ACCESS; 
+    localizedSettingsNames[QString::fromStdWString(LOW_LEVEL_NET_ACCESS_SETTINGS)] = LOW_LEVEL_NET_ACCESS;
+    localizedSettingsNames[QString::fromStdWString(MESSAGING_SETTINGS)] = QString(hbTrId("txt_java_sett_setlabel_messaging"));
+    localizedSettingsNames[QString::fromStdWString(RESTRICTED_MESSAGING_SETTINGS)] = QString(hbTrId("txt_java_sett_setlabel_restricted_messaging"));
+    localizedSettingsNames[QString::fromStdWString(CALL_CONTROL_SETTINGS)] = QString(hbTrId("txt_java_sett_setlabel_call_control"));
+    localizedSettingsNames[QString::fromStdWString(LOCAL_CONNECTIVITY_SETTINGS)] = QString(hbTrId("txt_java_sett_setlabel_local_conn"));
+    localizedSettingsNames[QString::fromStdWString(MULTIMEDIA_RECORDING_SETTINGS)] = QString(hbTrId("txt_java_sett_setlabel_mm_record"));
+    localizedSettingsNames[QString::fromStdWString(WRITE_USER_DATA_ACCESS_SETTINGS)] = QString(hbTrId("txt_java_sett_setlabel_write_data"));
+    localizedSettingsNames[QString::fromStdWString(READ_USER_DATA_ACCESS_SETTINGS)] = QString(hbTrId("txt_java_sett_setlabel_read_data"));
+    localizedSettingsNames[QString::fromStdWString(LOCATION_SETTINGS)] = QString(hbTrId("txt_java_sett_setlabel_location"));
+    localizedSettingsNames[QString::fromStdWString(LANDMARK_SETTINGS)] = QString(hbTrId("txt_java_sett_setlabel_landmarks"));
+    localizedSettingsNames[QString::fromStdWString(AUTHENTICATION_SETTINGS)] = QString(hbTrId("txt_java_sett_setlabel_auth"));
+    localizedSettingsNames[QString::fromStdWString(SMART_CARD_COMMUNICATION_SETTINGS)] = QString(hbTrId("txt_java_sett_setlabel_smartcard"));
+    localizedSettingsNames[QString::fromStdWString(APPLICATION_AUTO_INVOCATION_SETTINGS)] = QString(hbTrId("txt_java_sett_setlabel_app_auto_invoc"));
+    localizedSettingsNames[QString::fromStdWString(BROADCAST_SETTINGS)] = QString(hbTrId("txt_java_sett_setlabel_broadcast"));
+    localizedSettingsNames[QString::fromStdWString(NFC_WRITE_ACCESS_SETTINGS)] = QString(hbTrId("txt_java_sett_setlabel_nfc_write_access"));
+    localizedSettingsNames[QString::fromStdWString(URL_START_SETTINGS)] = QString(hbTrId("txt_java_sett_setlabel_url_start"));
+    vector<IndexedSettingsName> allSecuritySettings = readFromStorage(FUNCTION_GROUP, MIDP_FUNC_GRP_SETTINGS_TABLE);
+    // sort the security settings according to how they should be displayed
+    std::sort(allSecuritySettings.begin(), allSecuritySettings.end(), AscendingSort());
+    QHash<QString, int> settingsIndexes;
+    for(int i=0; i<allSecuritySettings.size(); i++)
+    {
+        QString rawSettingsName = QString::fromStdWString(allSecuritySettings[i].name);
+        QString localizedSettingsName = rawSettingsName;
+        if (localizedSettingsNames.contains(rawSettingsName))
+            localizedSettingsName = localizedSettingsNames.value(rawSettingsName);
+        extraSettings.append(JavaApplicationSettings(
+            localizedSettingsName, settingsValues, CURRENT_SETTING, 
+            MIDP_FUNC_GRP_SETTINGS_TABLE, storageValues, FUNCTION_GROUP, 
+            allSecuritySettings[i].name, ALLOWED_SETTINGS));
+        readFromStorage(extraSettings[i]);
+        settingsIndexes[rawSettingsName] = i;
+    }
 
     // configure the high risk lists
     QList<JavaApplicationSettings*> highRiskList;
+    QStringList highRiskSettingsNames;
+    highRiskSettingsNames
+        <<QString::fromStdWString(MULTIMEDIA_RECORDING_SETTINGS)
+        <<QString::fromStdWString(READ_USER_DATA_ACCESS_SETTINGS);
+    configureList(highRiskList, highRiskSettingsNames, settingsIndexes);
     // net access with multimedia and read user data
-    highRiskList << &(extraSettings[6]) << &(extraSettings[8]);
-    extraSettings[0].setHighRiskList(highRiskList);
+    attachList(QString::fromStdWString(NET_ACCESS_SETTINGS),highRiskList, settingsIndexes);
     // low level net access with multimedia and read user data
-    extraSettings[1].setHighRiskList(highRiskList);
+    attachList(QString::fromStdWString(LOW_LEVEL_NET_ACCESS_SETTINGS),highRiskList, settingsIndexes);
     // messaging with multimedia and read user data
-    extraSettings[2].setHighRiskList(highRiskList);
+    attachList(QString::fromStdWString(MESSAGING_SETTINGS),highRiskList, settingsIndexes);
     // restricted messaging with multimedia and read user data
-    extraSettings[3].setHighRiskList(highRiskList);
+    attachList(QString::fromStdWString(RESTRICTED_MESSAGING_SETTINGS),highRiskList, settingsIndexes);
     // call control with multimedia and read user data
-    extraSettings[4].setHighRiskList(highRiskList);
+    attachList(QString::fromStdWString(CALL_CONTROL_SETTINGS),highRiskList, settingsIndexes);
     // local connectivity with multimedia and read user data
-    extraSettings[5].setHighRiskList(highRiskList);
+    attachList(QString::fromStdWString(LOCAL_CONNECTIVITY_SETTINGS),highRiskList, settingsIndexes);
     // multimedia with net access, low level net access, messaging,
     // restricted messaging, call control and local connectivity
     highRiskList.clear();
-    highRiskList << &(extraSettings[0]) << &(extraSettings[1])
-    << &(extraSettings[2]) << &(extraSettings[3])
-    << &(extraSettings[4]) << &(extraSettings[5]);
-    extraSettings[6].setHighRiskList(highRiskList);
+    highRiskSettingsNames.clear();
+    highRiskSettingsNames
+        <<QString::fromStdWString(NET_ACCESS_SETTINGS)
+        <<QString::fromStdWString(LOW_LEVEL_NET_ACCESS_SETTINGS)
+        <<QString::fromStdWString(MESSAGING_SETTINGS)
+        <<QString::fromStdWString(RESTRICTED_MESSAGING_SETTINGS)
+        <<QString::fromStdWString(CALL_CONTROL_SETTINGS)
+        <<QString::fromStdWString(LOCAL_CONNECTIVITY_SETTINGS)
+        <<QString::fromStdWString(MULTIMEDIA_RECORDING_SETTINGS);
+    configureList(highRiskList, highRiskSettingsNames, settingsIndexes);
+    attachList(QString::fromStdWString(MULTIMEDIA_RECORDING_SETTINGS),highRiskList, settingsIndexes);
     // read user data with net access, low level net access, messaging,
     // restricted messaging, call control and local connectivity
-    extraSettings[8].setHighRiskList(highRiskList);
+    attachList(QString::fromStdWString(READ_USER_DATA_ACCESS_SETTINGS),highRiskList, settingsIndexes);
 
     // configure the mutually exclusive list
     QList<JavaApplicationSettings*> mutuallyExclusiveList;
+    QStringList mutuallyExclusiveSettingsNames;
+    mutuallyExclusiveSettingsNames
+        <<QString::fromStdWString(APPLICATION_AUTO_INVOCATION_SETTINGS);
+    configureList(mutuallyExclusiveList, mutuallyExclusiveSettingsNames, settingsIndexes);
     //net access with application auto invocation
-    mutuallyExclusiveList << &(extraSettings[13]);
-    extraSettings[0].setMutuallyExclusiveList(mutuallyExclusiveList);
+    attachList(QString::fromStdWString(NET_ACCESS_SETTINGS),mutuallyExclusiveList, settingsIndexes, false /* is high risk list */);
     //low level net access with application auto invocation
-    extraSettings[1].setMutuallyExclusiveList(mutuallyExclusiveList);
+    attachList(QString::fromStdWString(LOW_LEVEL_NET_ACCESS_SETTINGS),mutuallyExclusiveList, settingsIndexes, false /* is high risk list */);
     //application auto invocation with net access and low level net access
     mutuallyExclusiveList.clear();
-    mutuallyExclusiveList << &(extraSettings[0]) << &(extraSettings[1]);
-    extraSettings[13].setMutuallyExclusiveList(mutuallyExclusiveList);
+    mutuallyExclusiveSettingsNames.clear();
+    mutuallyExclusiveSettingsNames
+        <<QString::fromStdWString(NET_ACCESS_SETTINGS)
+        <<QString::fromStdWString(LOW_LEVEL_NET_ACCESS_SETTINGS);
+    configureList(mutuallyExclusiveList, mutuallyExclusiveSettingsNames, settingsIndexes);
+    attachList(QString::fromStdWString(APPLICATION_AUTO_INVOCATION_SETTINGS),mutuallyExclusiveList, settingsIndexes, false /* is high risk list */);
 }
 
 void JavaApplicationSettingsViewPrivate::initSettings(QVector<JavaApplicationSettings>& settings, HbDataFormModelItem * parent)
@@ -290,8 +311,7 @@ void JavaApplicationSettingsViewPrivate::initSettings(QVector<JavaApplicationSet
     for (int i=0; i<settings.size(); i++)
     {
         HbDataFormModelItem * appSettings = NULL;
-        int storageValue = 0;
-        int currentValue = 0;        
+        int currentValue = 0;  
         switch(settings[i].getValues().size())
         {
             case 1:
@@ -305,13 +325,13 @@ void JavaApplicationSettingsViewPrivate::initSettings(QVector<JavaApplicationSet
                 appSettings  = model->appendDataFormItem(
                         HbDataFormModelItem::ToggleValueItem,
                         settings[i].getName(), parent);
-                storageValue = readFromStorage(settings[i]);
-                if (storageValue >= 0)
+                currentValue = settings[i].getCurrentValue();
+                if (currentValue < 0)
                 {
-                    currentValue = storageValue;
+                    currentValue = 0;
                 }
                 // make it a toogle button (-> get rid of the "pressed" ui effect)
-                appSettings->setContentWidgetData(QString("text"), settings[i].getValues()[settings[i].getCurrentValue()]);
+                appSettings->setContentWidgetData(QString("text"), settings[i].getValues()[currentValue]);
                 appSettings->setContentWidgetData(QString("additionalText"),settings[i].getValues()[1 - currentValue]);
                 break;
             default:
@@ -516,6 +536,7 @@ void JavaApplicationSettingsViewPrivate::securityWarningsChanged(const QString &
                     iPublicView->disconnect(extraSettingsId, 0, 0, 0);
                     model->removeItem(model->indexFromItem(extraSettings[i].getId()));
                     extraSettings[i].setId(0);
+                    extraSettings[i].disconnectFromUi();
                 }
             }
         }
@@ -532,7 +553,7 @@ void JavaApplicationSettingsViewPrivate::handleNetworkSettings()
     // empty filter -> all bearer types included
     QSet<CmApplSettingsUi::BearerTypeFilter> filter;
     // reset the result
-    netConnSelection.result = CmApplSettingsUi::SelectionTypeDestination;       
+    netConnSelection.result = netConn.type;       
     netConnSelection.id = netConn.id;
     // init settings ui with destinations, filter and initial selection
     netConnSettingsUi->setOptions(listItems, filter);
@@ -549,22 +570,26 @@ void JavaApplicationSettingsViewPrivate::_q_dataItemDisplayed(const QModelIndex 
                                     mainForm->model())->itemFromIndex(dataItemIndex);
     int itemType = item->data(HbDataFormModelItem::ItemTypeRole).toInt();
     HbComboBox * comboBox = NULL;
-    HbPushButton * pushButton = NULL;    
+    HbPushButton * pushButton = NULL;
+    HbWidget * widget = (qobject_cast<HbDataFormViewItem *> 
+        (mainForm->itemByIndex(dataItemIndex)))->dataItemContentWidget();
+    JavaApplicationSettings* settings = findSettings(widget);
+    if (settings == NULL || settings->isConnectedToUi())
+    {
+        return;
+    }
+    settings->connectToUi();
     switch(HbDataFormModelItem::DataItemType(itemType))
     {
         case HbDataFormModelItem::ComboBoxItem:
-            comboBox = static_cast<HbComboBox*>(
-                (qobject_cast<HbDataFormViewItem *> 
-                (mainForm->itemByIndex(dataItemIndex)))->dataItemContentWidget());
+            comboBox = static_cast<HbComboBox*>(widget);
             iPublicView->connect(comboBox,
                                  SIGNAL(currentIndexChanged(const QString &)),
                                  iPublicView, SLOT(_q_settingsChanged(const QString &)),
                                  Qt::UniqueConnection);
             break;
         case HbDataFormModelItem::ToggleValueItem:
-            pushButton = static_cast< HbPushButton*>(
-                (qobject_cast<HbDataFormViewItem *> 
-                (mainForm->itemByIndex(dataItemIndex)))->dataItemContentWidget());
+            pushButton = static_cast< HbPushButton*>(widget);
             iPublicView->connect(pushButton,
                                  SIGNAL(clicked(bool)),
                                  iPublicView, SLOT(_q_settingsChanged(bool)),
@@ -579,34 +604,70 @@ void JavaApplicationSettingsViewPrivate::netConnSelected(uint netConnSelectionSt
     {    
         netConnSelection = netConnSettingsUi->selection();
         // store the selection
-        if (netConnSelection.id != netConn.id)
+        if (netConnSelection.id != netConn.id 
+            && netConnSelection.id != defaultConnId)
         {
-            ConnectionManager::setDestinationNetworkIdL(iSuiteUid, netConnSelection.id);
-            netConn.id = netConnSelection.id;
-            readNetworkConnectionName();
-            generalSettings[netSettIndex].getId()->setContentWidgetData(QString("text"), netConn.name);
-            generalSettings[netSettIndex].getId()->setContentWidgetData(QString("additionalText"), netConn.name);
+            TRAPD(err, 
+                switch(netConnSelection.result)
+                {
+                    case CmApplSettingsUi::SelectionTypeDestination:
+                        ConnectionManager::setDestinationNetworkIdL(iSuiteUid, netConnSelection.id);
+                        break;
+                    case CmApplSettingsUi::SelectionTypeConnectionMethod:
+                        ConnectionManager::setApnIdL(iSuiteUid, netConnSelection.id);
+                        break;
+                }                
+            );
+            if (err == KErrNone)
+            {
+                netConn.id = netConnSelection.id;
+                netConn.type = netConnSelection.result;
+                readNetworkConnectionName();
+                generalSettings[netSettIndex].getId()->setContentWidgetData(QString("text"), netConn.name);
+                generalSettings[netSettIndex].getId()->setContentWidgetData(QString("additionalText"), netConn.name);
+            }
         }
     }
+}
+
+void JavaApplicationSettingsViewPrivate::securityWarningDismissed(HbAction* action)
+{
+    HbMessageBox *dlg = static_cast<HbMessageBox*>(sender());
+    secWarningAccepted = (action == dlg->actions().at(0));
+    asyncToSyncCallEventLoop->exit();
+}
+
+void JavaApplicationSettingsViewPrivate::initNetworkConnection()
+{
+    TRAP_IGNORE(
+        netConn.id = ConnectionManager::getDestinationNetworkIdL(iSuiteUid);
+        if (netConn.id == (uint)KJavaNetworkAccessNotSpecified)
+        {
+            netConn.id = ConnectionManager::getApnIdL(iSuiteUid);
+        }
+    );
+    QNetworkConfigurationManager manager;
+    QNetworkConfiguration defaultCfg = manager.defaultConfiguration();
+    defaultConnId = defaultCfg.identifier().toInt();
+    QNetworkConfiguration cfg = manager.configurationFromIdentifier(
+        QString::number(netConn.id));
+    if (!cfg.isValid())
+    {
+        cfg = defaultCfg;
+    }
+    netConn.name = QString(hbTrId(cfg.name().toUtf8()));
 }
 
 void JavaApplicationSettingsViewPrivate::readNetworkConnectionName()
 {
     QNetworkConfigurationManager manager;
-    QNetworkConfiguration cfg;    
-    if (netConn.id == 0)
+    QNetworkConfiguration cfg = manager.configurationFromIdentifier(
+        QString::number(netConn.id));
+    if (!cfg.isValid())
     {
-        // figure out the default configuration
         cfg = manager.defaultConfiguration();
     }
-    else
-    {
-        cfg = manager.configurationFromIdentifier(QString::number(netConn.id));
-    }
-    if (cfg.isValid())
-    {
-        netConn.name = hbTrId(cfg.name().toUtf8());
-    }
+    netConn.name = QString(hbTrId(cfg.name().toUtf8()));
 }
 
 JavaApplicationSettings* JavaApplicationSettingsViewPrivate::findSettings(HbWidget* id)
@@ -648,8 +709,7 @@ HbWidget * JavaApplicationSettingsViewPrivate::itemToWidget(const HbDataFormMode
 
 bool JavaApplicationSettingsViewPrivate::securityWarningAccepted(const QString& text, const QString& acceptActionLabel, const QString& rejectActionLabel, const QString& headingText)
 {
-    return true;
-/*    HbMessageBox securityWarning(HbMessageBox::MessageTypeQuestion);
+    HbMessageBox securityWarning(HbMessageBox::MessageTypeQuestion);
     securityWarning.setDismissPolicy(HbDialog::NoDismiss);
     securityWarning.setTimeout(HbDialog::NoTimeout);
     securityWarning.setIconVisible(false);
@@ -657,15 +717,62 @@ bool JavaApplicationSettingsViewPrivate::securityWarningAccepted(const QString& 
     securityWarning.addAction(new HbAction(
             acceptActionLabel, &securityWarning));
     securityWarning.addAction(new HbAction(
-           rejectActionLabel, &securityWarning));
-   securityWarning.setHeadingWidget(new HbLabel(headingText));
-   HbAction *selected = securityWarning.exec();
-   return (selected == securityWarning.primaryAction());*/
+            rejectActionLabel, &securityWarning));
+    securityWarning.setHeadingWidget(new HbLabel(headingText));
+    securityWarning.open(this, SLOT(securityWarningDismissed(HbAction*)));
+    asyncToSyncCallEventLoop->exec();
+    return secWarningAccepted;
 }
 
-int JavaApplicationSettingsViewPrivate::readFromStorage(JavaApplicationSettings& settings)
+void JavaApplicationSettingsViewPrivate::configureList(QList<JavaApplicationSettings*>& list, const QStringList& settingsNames,  const QHash<QString, int>& settingsIndexes)
 {
-    int currentValue = -1;
+    for(int i=0; i<settingsNames.size(); i++)
+    {
+        if (settingsIndexes.contains(settingsNames[i]))
+        {
+            list << &(extraSettings[settingsIndexes.value(settingsNames[i])]);
+        }
+    }
+}
+
+void JavaApplicationSettingsViewPrivate::attachList(const QString& settingsName, const QList<JavaApplicationSettings*>& list, const QHash<QString, int>& settingsIndexes, bool isHighRiskList)
+{
+    if (settingsIndexes.contains(settingsName))
+    {
+        if (isHighRiskList)
+        {
+            extraSettings[settingsIndexes.value(settingsName)].setHighRiskList(list);
+        }
+        else
+        {
+            extraSettings[settingsIndexes.value(settingsName)].setMutuallyExclusiveList(list);
+        }
+    }
+}
+
+void JavaApplicationSettingsViewPrivate::installTranslator(const QString& translationFileName)
+{
+    QTranslator* translator = new QTranslator;
+
+    // load the correct translation of the localized strings for the java settings
+    // Current solution reads it from Z only (this does not work with IAD)
+    // -> check if translator can handle path without drive letter (e.g. the resource
+    // is loaded from the same drive where the DLL is loaded)
+    if (translator->load("z:/resource/qt/translations/" 
+        + translationFileName + "_" + QLocale::system().name()))
+    {
+        translators.append(translator); 
+        qApp->installTranslator(translator);
+    } 
+    else 
+    {
+        delete translator; 
+        translator = NULL;
+    }
+}
+
+void JavaApplicationSettingsViewPrivate::readFromStorage(JavaApplicationSettings& settings)
+{
     if (settings.getColumnName().size() > 0 
             && settings.getTableName().size() > 0)
     {
@@ -718,15 +825,12 @@ int JavaApplicationSettingsViewPrivate::readFromStorage(JavaApplicationSettings&
             {
                 if (storageValues[i] == value)
                 {
-                    currentValue = i;
+                    settings.setCurrentValue(i);
                     break;
                 }
             }
         }
     }
-
-    settings.setCurrentValue(currentValue);
-    return currentValue;
 }
 
 void JavaApplicationSettingsViewPrivate::filterSecuritySettings(JavaApplicationSettings& settings)
@@ -859,6 +963,79 @@ wstring JavaApplicationSettingsViewPrivate::readFromStorage(const std::wstring& 
     findEntry(queryResult, aColumnName, value);
 
     return value;
+}
+
+vector<IndexedSettingsName> JavaApplicationSettingsViewPrivate::readFromStorage(const std::wstring& aColumnName, const std::string& aTableName)
+{
+    vector<IndexedSettingsName> values;
+    
+    // hash for associating settings names with display indexes: 
+    // a settings with lower index is shown before a settings 
+    // with a higher index
+    QHash<QString, int> settingsNamesIndexes;
+    settingsNamesIndexes[QString::fromStdWString(NET_ACCESS_SETTINGS)] = 0; 
+    settingsNamesIndexes[QString::fromStdWString(LOW_LEVEL_NET_ACCESS_SETTINGS)] = 1;
+    settingsNamesIndexes[QString::fromStdWString(MESSAGING_SETTINGS)] = 2;
+    settingsNamesIndexes[QString::fromStdWString(RESTRICTED_MESSAGING_SETTINGS)] = 3;
+    settingsNamesIndexes[QString::fromStdWString(CALL_CONTROL_SETTINGS)] = 4;
+    settingsNamesIndexes[QString::fromStdWString(LOCAL_CONNECTIVITY_SETTINGS)] = 5;
+    settingsNamesIndexes[QString::fromStdWString(MULTIMEDIA_RECORDING_SETTINGS)] = 6;
+    settingsNamesIndexes[QString::fromStdWString(WRITE_USER_DATA_ACCESS_SETTINGS)] = 7;
+    settingsNamesIndexes[QString::fromStdWString(READ_USER_DATA_ACCESS_SETTINGS)] = 8;
+    settingsNamesIndexes[QString::fromStdWString(LOCATION_SETTINGS)] = 9;
+    settingsNamesIndexes[QString::fromStdWString(LANDMARK_SETTINGS)] = 10;
+    settingsNamesIndexes[QString::fromStdWString(AUTHENTICATION_SETTINGS)] = 11;
+    settingsNamesIndexes[QString::fromStdWString(SMART_CARD_COMMUNICATION_SETTINGS)] = 12;
+    settingsNamesIndexes[QString::fromStdWString(APPLICATION_AUTO_INVOCATION_SETTINGS)] = 13;
+    settingsNamesIndexes[QString::fromStdWString(BROADCAST_SETTINGS)] = 14;
+    settingsNamesIndexes[QString::fromStdWString(NFC_WRITE_ACCESS_SETTINGS)] = 15;
+    settingsNamesIndexes[QString::fromStdWString(URL_START_SETTINGS)] = 16;
+    int last_index = 16;
+
+    JavaStorageApplicationEntry_t query;
+    JavaStorageApplicationList_t queryResult;
+    JavaStorageEntry attr;
+    attr.setEntry(ID, iSuiteUid);
+    query.insert(attr);
+    attr.setEntry(aColumnName, L"");
+    query.insert(attr);
+
+    try
+    {
+        iStorage->search(aTableName, query, queryResult);
+        JavaStorageApplicationList_t::const_iterator iterator;
+        for (iterator = queryResult.begin(); iterator != queryResult.end(); iterator++)
+        {
+            std::wstring name = L"";
+            JavaStorageApplicationEntry_t entry = (*iterator);
+            JavaStorageEntry findPattern;
+            findPattern.setEntry(aColumnName, L"");
+            JavaStorageApplicationEntry_t::const_iterator findIterator =
+                entry.find(findPattern);
+            if (findIterator != entry.end())
+            {
+                name = findIterator->entryValue();
+            }
+            
+            if (name.size() > 0)
+            {
+                IndexedSettingsName value;
+                value.name = name;
+                value.index = last_index + 1;
+                if (settingsNamesIndexes.contains(QString::fromStdWString(name)))
+                {
+                    value.index = settingsNamesIndexes.value(QString::fromStdWString(name));
+                }
+                values.push_back(value);
+            }
+        }
+    }
+    catch (JavaStorageException& aJse)
+    {
+        // Don't leave. Set defaults.
+    }
+
+    return values;
 }
 
 void JavaApplicationSettingsViewPrivate::readSuiteUid(const QString& aAppUid)

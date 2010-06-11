@@ -205,6 +205,15 @@ final class LCDUIInvokerImpl extends LCDUIInvoker
         return ((Canvas) canvas).getGameBufferGraphics();
     }
 
+    protected org.eclipse.swt.internal.qt.graphics.WindowSurface doGetWindowSurface( Graphics g )
+    {
+        if( g != null )
+        {
+            return g.getGraphicsBuffer().getWindowSurface();
+        }
+        return null;
+    }
+    
     protected Object doGetFlushLock(Object graphics)
     {
         //return ((Graphics) graphics).graphicsBuffer;
@@ -227,6 +236,26 @@ final class LCDUIInvokerImpl extends LCDUIInvoker
         ((Canvas) canvas).flushGameBuffer(x, y, width, height);
     }
 
+    protected void doSync(Object graphics) 
+    {
+    	((Graphics)graphics).sync();
+    } 
+    
+    protected void doStartExternalRendering(Graphics g)
+    {
+        // Flush any pending 2D graphics.
+        g.sync();
+        g.getGraphicsBuffer().startFrame( g.getClipX(),
+                                          g.getClipY(),
+                                          g.getClipWidth(),
+                                          g.getClipHeight() );
+    }
+    
+    protected void doEndExternalRendering(Graphics g)
+    {
+        g.getGraphicsBuffer().endFrame();
+    }
+    
     protected String doGetDynamicProperty(String key)
     {
         if("com.nokia.key.scancode".equals(key))

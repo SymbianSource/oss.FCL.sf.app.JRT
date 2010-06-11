@@ -140,7 +140,7 @@ void releaseChildren_pp (boolean destroy) {
 
 void releaseParent_pp () {
 	super.releaseParent_pp ();
-	if (display.tray == this) display.tray = null;
+	if (Display.tray == this) Display.tray = null;
 }
 
 }

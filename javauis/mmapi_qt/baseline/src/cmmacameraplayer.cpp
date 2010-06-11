@@ -19,6 +19,7 @@
 //  INCLUDE FILES
 #include <logger.h>
 #include <fbs.h>
+#include <e32svr.h>
 #include "cmmacameraplayer.h"
 #include "tmmaparametervalidator.h"
 #include "mmmadisplay.h"

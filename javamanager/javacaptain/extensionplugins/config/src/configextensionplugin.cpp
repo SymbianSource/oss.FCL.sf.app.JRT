@@ -74,6 +74,9 @@ void ConfigExtensionPlugin::loadExtensionPlugins()
 #ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
     mCore->loadExtensionPlugin("scrupdater");
 #endif // SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
+    // This plugin implements support for auto-starting 
+    // Java applications
+    mCore->loadExtensionPlugin("autostarter");
 #endif // __SYMBIAN32__
     mCore->loadExtensionPlugin("boot");
     mCore->loadExtensionPlugin("mmc");

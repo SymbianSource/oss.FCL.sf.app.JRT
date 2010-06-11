@@ -67,7 +67,7 @@ public abstract class CustomItem extends Item
     private com.nokia.mj.impl.rt.support.Finalizer finalizer;
 
     // Graphics command buffer for this instance
-    CustomItemBuffer graphicsBuffer;
+    Buffer graphicsBuffer;
     Graphics CustomItemGraphics;
 
     CustomItemLayouter layouter;
@@ -552,8 +552,9 @@ public abstract class CustomItem extends Item
                 }
                 if(CustomItemGraphics == null)
                 {
-                    graphicsBuffer = new CustomItemBuffer(self, (Control)event.widget);
+                    graphicsBuffer = Buffer.createInstance(self, (Control)event.widget);
                     CustomItemGraphics = graphicsBuffer.getGraphics();
+                    CustomItemGraphics.setSyncStrategy(Graphics.SYNC_LEAVE_SURFACE_SESSION_OPEN);
                 }
                 else
                 {
@@ -604,31 +605,8 @@ public abstract class CustomItem extends Item
                 {
                     return;
                 }
-                // Transform invalid area to Display coordinates
-                // as the CustomItem is rendered directly to the
-                // window surface
-                Point topleft = ((Control)event.widget).toDisplay(redrawNowX, redrawNowY);
-
-                synchronized(graphicsBuffer)
-                {
-                    flushGraphicsBuffer(topleft.x, topleft.y, redrawNowW, redrawNowH);
-                }
-            }
-        });
-    }
-
-    private void flushGraphicsBuffer(final int redrawNowX, final int redrawNowY, final int redrawNowW, final int redrawNowH)
-    {
-        ESWTUIThreadRunner.safeSyncExec(new Runnable()
-        {
-            public void run()
-            {
-                graphicsBuffer.setupWindowSurface();
-                Rectangle rect = graphicsBuffer.toWindowCoordinates(redrawNowX, redrawNowY, redrawNowW, redrawNowH);
-                graphicsBuffer.windowSurface.beginPaint(rect.x, rect.y, rect.width, rect.height);
                 graphicsBuffer.sync();
-                graphicsBuffer.windowSurface.endPaint();
-                graphicsBuffer.windowSurface.flush();
+                graphicsBuffer.blitToDisplay(null, event.widget);
             }
         });
     }

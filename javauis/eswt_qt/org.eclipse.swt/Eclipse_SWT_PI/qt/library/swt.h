@@ -12,49 +12,37 @@
 #ifndef _SWT_H_
 #define _SWT_H_
 
-namespace Java { namespace eSWT {
+#include "swterror.h"
 
-enum SwtError
-    {
-    ESwtErrorNone                =  0,
-    ESwtErrorUnspecified         =  1,
-    ESwtErrorNoHandles           =  2,
-    ESwtErrorNoMoreCallbacks     =  3,
-    ESwtErrorNullArgument        =  4,
-    ESwtErrorInvalidArgument     =  5,
-    ESwtErrorInvalidRange        =  6,
-    ESwtErrorCannotBeZero        =  7,
-    ESwtErrorCannotGetItem       =  8,
-    ESwtErrorCannotGetSelection  =  9,
-    ESwtErrorCannotGetItemHeight = 11,
-    ESwtErrorCannotGetText       = 12,
-    ESwtErrorCannotSetText       = 13,
-    ESwtErrorItemNotAdded        = 14,
-    ESwtErrorItemNotRemoved      = 15,
-    ESwtErrorNotImplemented      = 20,
-    ESwtErrorMenuNotDropDown     = 21,
-    ESwtErrorThreadInvalidAccess = 22,
-    ESwtErrorWidgetDisposed      = 24,
-    ESwtErrorMenuItemNotCascade  = 27,
-    ESwtErrorCannotSetSelection  = 28,
-    ESwtErrorCannotSetMenu       = 29,
-    ESwtErrorCannotSetEnabled    = 30,
-    ESwtErrorCannotGetEnabled    = 31,
-    ESwtErrorInvalidParent       = 32,
-    ESwtErrorMenuNotBar          = 33,
-    ESwtErrorCannotGetCount      = 36,
-    ESwtErrorMenuNotPopUp        = 37,
-    ESwtErrorUnsupportedDepth    = 38,
-    ESwtErrorIO                  = 39,
-    ESwtErrorInvalidImage        = 40,
-    ESwtErrorUnsupportedFormat   = 42,
-    ESwtErrorInvalidSubclass     = 43,
-    ESwtErrorGraphicDisposed     = 44,
-    ESwtErrorDeviceDisposed      = 45,
-    ESwtErrorFailedExec          = 46,
-    ESwtErrorFailedLoadLibrary   = 47
-    };
+// Pointer-handle conversion macros
 
-}}
+#define POINTER_TO_HANDLE(pointer) reinterpret_cast<jint>(static_cast<QObject*>(pointer))
+#define HANDLE_TO_POINTER(type, variable, handle) type variable = qobject_cast<type>(static_cast<type>(reinterpret_cast<QObject*>( handle )))
+
+#define QCOLOR_TO_HANDLE(pointer) reinterpret_cast<jint>(static_cast<QColor*>(pointer))
+#define HANDLE_TO_QCOLOR(variable, handle) QColor* variable = static_cast<QColor*>(reinterpret_cast<QColor*>( handle ))
+
+#define QTABLEWIDGETITEM_TO_HANDLE(pointer) reinterpret_cast<jint>(static_cast<QTableWidgetItem*>(pointer))
+#define HANDLE_TO_QTABLEWIDGETITEM(variable, handle) QTableWidgetItem* variable = static_cast<QTableWidgetItem*>(reinterpret_cast<QTableWidgetItem*>( handle ))
+#define QTREEWIDGETITEM_TO_HANDLE(pointer) reinterpret_cast<jint>(static_cast<QTreeWidgetItem*>(pointer))
+#define HANDLE_TO_QTREEWIDGETITEM(variable, handle) QTreeWidgetItem* variable = static_cast<QTreeWidgetItem*>(reinterpret_cast<QTreeWidgetItem*>( handle ))
+
+// Try-catch macros for to be used in the JNI functions
+
+#define SWT_TRY try
+#define SWT_CATCH \
+catch(std::bad_alloc const&)\
+    {\
+    swtApp->jniUtils().Throw( aJniEnv, ESwtErrorNoHandles );\
+    }\
+catch(std::exception const&)\
+    {\
+    swtApp->jniUtils().Throw( aJniEnv, ESwtErrorUnspecified );\
+    }
+#define SWT_CATCH_1(err) \
+catch(std::exception const&)\
+    {\
+    swtApp->jniUtils().Throw( aJniEnv, err );\
+    }
 
 #endif // _SWT_H_

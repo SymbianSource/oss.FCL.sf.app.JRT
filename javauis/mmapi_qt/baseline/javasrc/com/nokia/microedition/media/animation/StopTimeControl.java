@@ -28,17 +28,19 @@ import com.nokia.microedition.media.control.ControlImpl;
  * <p>
  */
 public class StopTimeControl extends ControlImpl implements
-		javax.microedition.media.control.StopTimeControl {
+        javax.microedition.media.control.StopTimeControl
+{
 
-	private long iStopTime=RESET;
-	/**
-	 * 
-	 */
-	public StopTimeControl(Player aPlayer) {
-		this.iPlayer=aPlayer;
-	}
+    private long iStopTime=RESET;
+    /**
+     *
+     */
+    public StopTimeControl(Player aPlayer)
+    {
+        this.iPlayer=aPlayer;
+    }
 
-	/**
+    /**
      * Gets the last value successfully set by <CODE>setStopTime</CODE>.
      *
      * Returns the constant <CODE>RESET</CODE> if no stop time is set.
@@ -47,12 +49,13 @@ public class StopTimeControl extends ControlImpl implements
      * @return The current stop time in microseconds.
      * @see #setStopTime
      */
-	public long getStopTime() {
-		 checkState();
-		return iStopTime;
-	}
+    public long getStopTime()
+    {
+        checkState();
+        return iStopTime;
+    }
 
-	 /**
+    /**
     *
     * Sets the <i>media time</i> at which you want the <code>Player</code>
     * to stop.
@@ -89,13 +92,15 @@ public class StopTimeControl extends ControlImpl implements
     * <i>media stop-time</i> has already been set.
     * @see #getStopTime
     */
-	public void setStopTime(long aStopTime) {
-		checkState();
-		if (iPlayer.getState() == Player.STARTED && getStopTime() != RESET) {
-			throw new IllegalStateException(
-					"Player is STARTED or setStopTime() is already called successfully");
-		}
-		iStopTime = aStopTime;
-		((AnimationPlayer)iPlayer).setiStopTime(iStopTime);
-	}
+    public void setStopTime(long aStopTime)
+    {
+        checkState();
+        if (iPlayer.getState() == Player.STARTED && getStopTime() != RESET)
+        {
+            throw new IllegalStateException(
+                "Player is STARTED or setStopTime() is already called successfully");
+        }
+        iStopTime = aStopTime;
+        ((AnimationPlayer)iPlayer).setiStopTime(iStopTime);
+    }
 }

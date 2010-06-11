@@ -212,7 +212,7 @@ TInt startJavaCaptain()
 #endif
 
         // Wait 3 seconds so that Java Captain has time to start
-        User::After(3000000);
+        User::After(3000000); // codescanner::userafter
     }
     else
     {

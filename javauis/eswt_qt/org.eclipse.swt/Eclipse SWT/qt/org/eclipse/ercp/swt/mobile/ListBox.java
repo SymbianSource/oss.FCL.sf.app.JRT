@@ -547,8 +547,7 @@ public class ListBox extends Scrollable {
 
     void hookEvents() {
         if (selectionModelHandle != 0) {
-            int signalProxy = OS.SignalHandler_new(topHandle(),
-                    Internal_PackageSupport.display(this), OS.QSIGNAL_SELECTIONCHANGED);
+            int signalProxy = OS.SignalHandler_new(topHandle(), OS.QSIGNAL_SELECTIONCHANGED);
             OS.QObject_connectOrThrow(
                     selectionModelHandle,
                     "selectionChanged( const QItemSelection&, const QItemSelection& )",
@@ -556,8 +555,7 @@ public class ListBox extends Scrollable {
                     "widgetSignal( const QItemSelection&, const QItemSelection& )",
                     OS.QT_AUTOCONNECTION);
 
-            int itemActivatedSignalProxy = OS.SignalHandler_new(topHandle(),
-                    Internal_PackageSupport.display(this), OS.QSIGNAL_ABSTRACTITEMVIEW_ACTIVATED);
+            int itemActivatedSignalProxy = OS.SignalHandler_new(topHandle(), OS.QSIGNAL_ABSTRACTITEMVIEW_ACTIVATED);
             OS.QObject_connectOrThrow(topHandle(),
                     "activated(const QModelIndex& )", itemActivatedSignalProxy,
                     "widgetSignal(const QModelIndex&)", OS.QT_AUTOCONNECTION);

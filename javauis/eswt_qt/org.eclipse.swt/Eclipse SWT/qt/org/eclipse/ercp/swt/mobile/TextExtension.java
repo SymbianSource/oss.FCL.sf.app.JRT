@@ -351,7 +351,7 @@ String fetchEmail() {
                     SWT.getMessage("fetch_email"), OS.CNT_ACTIONALL,
                     OS.CNT_DISPLAYALL);
     Display display = Internal_PackageSupport.display(this);
-    int handler = OS.SignalHandler_new(topHandle(), display,
+    int handler = OS.SignalHandler_new(topHandle(), 
             OS.QSIGNAL_REQUESTCOMPLETED);
 
     OS.QObject_connectOrThrow(serviceRequest, "requestCompleted(QVariant)",
@@ -389,7 +389,7 @@ String getPhoneNumber() {
                     SWT.getMessage("fetch_phonenumber"), OS.CNT_ACTIONALL,
                     OS.CNT_DISPLAYALL);
     Display display = Internal_PackageSupport.display(this);
-    int handler = OS.SignalHandler_new(topHandle(), display,
+    int handler = OS.SignalHandler_new(topHandle(), 
             OS.QSIGNAL_REQUESTCOMPLETED);
 
     OS.QObject_connectOrThrow(serviceRequest, "requestCompleted(QVariant)",
@@ -458,7 +458,7 @@ void hookEvents () {
     Internal_PackageSupport.hookEvents(this);
     if(isExtended()) {
         Display display = Internal_PackageSupport.display(this);
-        int handler1 = OS.SignalHandler_new(topHandle(), display, OS.QSIGNAL_TEXT_CURSORPOSITIONCHANGED);
+        int handler1 = OS.SignalHandler_new(topHandle(), OS.QSIGNAL_TEXT_CURSORPOSITIONCHANGED);
         String s;
         if(Internal_PackageSupport.variant(this) == TextUtils.LINE_EDIT) {
         	s = "cursorPositionChanged(int, int)";         	
@@ -467,7 +467,7 @@ void hookEvents () {
         }
         OS.QObject_connectOrThrow(topHandle(), s,
             handler1, "widgetSignal()", OS.QT_AUTOCONNECTION);
-        int handler2 = OS.SignalHandler_new(topHandle(), display, OS.QSIGNAL_TEXT_SELECTIONCHANGED);
+        int handler2 = OS.SignalHandler_new(topHandle(), OS.QSIGNAL_TEXT_SELECTIONCHANGED);
         OS.QObject_connectOrThrow(topHandle(), "selectionChanged()",
             handler2, "widgetSignal()", OS.QT_AUTOCONNECTION);
     }

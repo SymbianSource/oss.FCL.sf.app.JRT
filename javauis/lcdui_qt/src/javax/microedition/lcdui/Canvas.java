@@ -158,8 +158,12 @@ public abstract class Canvas extends Displayable
     // Canvas Graphics object passed to paint(Graphics g)
     private Graphics canvasGraphics;
 
+    // Graphics object for transferring return values
+    // from UI thread
+    private Graphics tempGraphics;
+    
     // Graphics command buffer for this instance
-	CanvasBuffer graphicsBuffer;
+	Buffer graphicsBuffer;
 	
     //On Screen Keypad
     //private Composite keypadComposite;
@@ -209,7 +213,6 @@ public abstract class Canvas extends Displayable
         cleanupLock = new Object();
         construct();
         keysPressed = new Vector();
-        graphicsBuffer = new CanvasBuffer(this, getContentComp());
     }
 
     /* (non-Javadoc)
@@ -301,6 +304,8 @@ public abstract class Canvas extends Displayable
             onScreenkeypad = new CanvasKeypad(this, canvasComp, oskAttr);
         }
 
+        // create graphics buffer
+        graphicsBuffer = Buffer.createInstance(this, canvasComp);
 
         return canvasComp;
     }
@@ -622,7 +627,15 @@ public abstract class Canvas extends Displayable
      */
     final Graphics getGameBufferGraphics()
     {
-        return graphicsBuffer.getGraphics();
+    	tempGraphics = null;
+   		ESWTUIThreadRunner.safeSyncExec(new Runnable() 
+		{
+			public void run()
+			{
+				tempGraphics =  graphicsBuffer.getGraphics();
+			}
+		});
+    	return tempGraphics;
     }
 
     CanvasKeypad getCanvasKeypad()
@@ -666,11 +679,18 @@ public abstract class Canvas extends Displayable
     void flushGameBuffer(final int x, final int y, final int width,
                          final int height)
     {
-        synchronized(graphicsBuffer)
+    	synchronized(graphicsBuffer)
         {
-            flushGraphicsBuffer(x, y, width, height);
+    		ESWTUIThreadRunner.safeSyncExec(new Runnable() 
+			{
+				public void run()
+				{
+					graphicsBuffer.sync();
+					graphicsBuffer.blitToDisplay(null, getContentComp());
+				}
+            });
         }
-    }
+    }	
 
     /**
      * Called by ShellListener when shell gets activated.
@@ -708,10 +728,9 @@ public abstract class Canvas extends Displayable
     {
         super.eswtHandleResizeEvent(width, height);
         // update new bounds to graphicsBuffer
-        synchronized(graphicsBuffer)
-        {
-            graphicsBuffer.setControlBounds(getContentComp());
-        }
+        // this call must not be synchronized as we 
+        // cannot use locking in UI thread
+        graphicsBuffer.setControlBounds(getContentComp());
         synchronized(cleanupLock)
         {
             cleanupNeeded = true;
@@ -739,26 +758,33 @@ public abstract class Canvas extends Displayable
      */
     class CanvasShellPaintListener implements PaintListener
     {
-
         public void paintControl(PaintEvent pe)
         {
-            // Native toolkit is requesting an update of an area that has
-            // become invalid. Can't do anything here because the contents
-            // need to be queried from the MIDlet in another thread by
-            // a paint callback. For this a paint callback event is posted.
-            // For a moment the native toolkit thinks that the area has
-            // been validated when in truth it will be painted later after
-            // the paint callback has been executed.
-            EventDispatcher eventDispatcher = EventDispatcher.instance();
-            LCDUIEvent event = eventDispatcher.newEvent(
-                                   LCDUIEvent.CANVAS_PAINT_NATIVE_REQUEST,
-                                   javax.microedition.lcdui.Canvas.this);
-            event.x = pe.x;
-            event.y = pe.y;
-            event.width = pe.width;
-            event.height = pe.height;
-            event.widget = pe.widget;
-            eventDispatcher.postEvent(event);
+            // Check if we got here from buffer flush
+        	if(graphicsBuffer.isPaintingActive()) 
+        	{
+        	    graphicsBuffer.blitToDisplay(pe.gc.getGCData().internalGc, null);
+        	}
+        	else
+        	{
+                // Native toolkit is requesting an update of an area that has
+                // become invalid. Can't do anything here because the contents
+                // need to be queried from the MIDlet in another thread by
+                // a paint callback. For this a paint callback event is posted.
+                // For a moment the native toolkit thinks that the area has
+                // been validated when in truth it will be painted later after
+                // the paint callback has been executed.
+                EventDispatcher eventDispatcher = EventDispatcher.instance();
+                LCDUIEvent event = eventDispatcher.newEvent(
+                                       LCDUIEvent.CANVAS_PAINT_NATIVE_REQUEST,
+                                       javax.microedition.lcdui.Canvas.this);
+                event.x = pe.x;
+                event.y = pe.y;
+                event.width = pe.width;
+                event.height = pe.height;
+                event.widget = pe.widget;
+                eventDispatcher.postEvent(event);
+        	}
         }
     }
 
@@ -851,7 +877,14 @@ public abstract class Canvas extends Displayable
         // Create instance of Graphics if not created yet
         if(canvasGraphics == null)
         {
-            canvasGraphics = graphicsBuffer.getGraphics();
+        	 ESWTUIThreadRunner.safeSyncExec(new Runnable() 
+             {
+          	    public void run()
+         	    {
+                    canvasGraphics = graphicsBuffer.getGraphics();
+                    canvasGraphics.setSyncStrategy(Graphics.SYNC_LEAVE_SURFACE_SESSION_OPEN);
+         	    }
+             });
         }
 
         // Clean the background if dirty, buffer the operations.
@@ -877,29 +910,22 @@ public abstract class Canvas extends Displayable
         // The callback
         paint(canvasGraphics);
 
-
-        // Flush drawn graphics to display
-        synchronized(graphicsBuffer)
+        // Blit frame to display
+        synchronized(graphicsBuffer) 
         {
-            flushGraphicsBuffer(redrawNowX, redrawNowY, redrawNowW, redrawNowH);
-        }
-    }
-
-    private void flushGraphicsBuffer(final int redrawNowX, final int redrawNowY, final int redrawNowW, final int redrawNowH)
-    {
-        ESWTUIThreadRunner.safeSyncExec(new Runnable()
-        {
-            public void run()
+            ESWTUIThreadRunner.safeSyncExec(new Runnable() 
             {
-                graphicsBuffer.setupWindowSurface();
-                Rectangle rect = graphicsBuffer.toWindowCoordinates(redrawNowX, redrawNowY, redrawNowW, redrawNowH);
-                graphicsBuffer.windowSurface.beginPaint(rect.x, rect.y, rect.width, rect.height);
-                graphicsBuffer.sync();
-                graphicsBuffer.windowSurface.endPaint();
-                graphicsBuffer.windowSurface.flush();
-            }
-
-        });
+         	    public void run()
+        	    {
+        		    if(event.widget.isDisposed())
+        		    {
+        			    return;
+        		    }
+        		    graphicsBuffer.sync();
+        		    graphicsBuffer.blitToDisplay(null, event.widget);
+                }
+            });
+        }
     }
 
     /*

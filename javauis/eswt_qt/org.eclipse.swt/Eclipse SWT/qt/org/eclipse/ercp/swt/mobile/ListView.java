@@ -1504,11 +1504,11 @@ void createHandle(int index) {
 void hookEvents () {
     Internal_PackageSupport.hookEvents(this);
     int handle = topHandle();
-    int signalProxySel = OS.SignalHandler_new(handle, Internal_PackageSupport.display(this), 
+    int signalProxySel = OS.SignalHandler_new(handle, 
             OS.QSIGNAL_LIST_ITEMSELECTION_CHANGED);
     OS.QObject_connectOrThrow(handle, "itemSelectionChanged()", 
             signalProxySel, "widgetSignal()", OS.QT_AUTOCONNECTION);
-    int signalProxyDefSel = OS.SignalHandler_new(handle, Internal_PackageSupport.display(this), 
+    int signalProxyDefSel = OS.SignalHandler_new(handle, 
             OS.QSIGNAL_LIST_ITEM_DOUBLECLICKED);
     OS.QObject_connectOrThrow(handle, "itemDoubleClicked(QListWidgetItem*)", 
             signalProxyDefSel, "widgetSignal(QListWidgetItem*)", OS.QT_AUTOCONNECTION);

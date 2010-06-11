@@ -88,7 +88,7 @@ public class InstallerUiTexts
     public static final String DRIVE_TYPE_INTERNAL_MASS_STORAGE_MB = "%U: Internal Mass Storage (%N MB)";
     public static final String DRIVE_TYPE_INTERNAL_MASS_STORAGE_GB = "%U: Internal Mass Storage (%N GB)";
     // Texts for permission confirmation view.
-    public static final String PERM_QUERY = "Application %U asks permissions to access protected device functionality.";
+    public static final String PERM_QUERY = "Access for protected functionality needed.";
     public static final String PERM_VIEW_DETAILS = "Details";
     public static final String PERM_ALLOW_ALWAYS = "Allow always";
     public static final String PERM_ASK_ME_LATER = "Ask me later";

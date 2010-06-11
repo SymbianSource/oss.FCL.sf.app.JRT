@@ -16,7 +16,8 @@
 TEMPLATE = subdirs
 SUBDIRS += tckrunner/starter/build/tckrunner.pro 
 SUBDIRS += tckrunner/runner/build/tckrunner.pro 
+SUBDIRS += javacontrolpanel/starter/build/javacontrolpanel.pro 
+SUBDIRS += javacontrolpanel/controlpanel/build/javacontrolpanel.pro 
 SUBDIRS += javasecuritycustomization/build/javasecuritycustomization.pro 
-BLD_INF_RULES.prj_extensions += "$${LITERAL_HASH}include \"javacaptain_app/build/bld.inf\""  
 BLD_INF_RULES.prj_extensions += "$${LITERAL_HASH}include \"testcerts/bld.inf\""  
 BLD_INF_RULES.prj_extensions += "prj_extensions" 

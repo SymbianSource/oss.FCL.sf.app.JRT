@@ -45,7 +45,7 @@ public class Protocol
         String urls = null;
         int apnid = -1;
         int index = -1;
-        int responsetimeout = -1;
+        int responsetimeout = 180;  // default timeout of 3 minutes
         ConnectionManager cminstance = null;
         AccessPoint apn = null;
         iFullUrl = "http:" + aUri;

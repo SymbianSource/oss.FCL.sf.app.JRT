@@ -21,9 +21,9 @@
 #include "QListWidgetItem"
 
 #include "slotcallback.h"
-#include "swt.h"
 #include "jniutils.h"
 #include "swtapplication.h"
+#include "swtlog.h"
 
 using namespace Java::eSWT;
 
@@ -38,7 +38,7 @@ SlotCallback::SlotCallback(JNIEnv* aJniEnv, jobject aPeer, QObject* aParent, con
 
     // If Java peer is not Display then jobject ref and methodID are needed.
     // Otherwise they are managed by JniUtils.
-    if (!swtApp->jniUtils().isDisplay(aPeer))
+    if (aPeer != NULL)
     {
         mPeer = aJniEnv->NewGlobalRef(aPeer);
         if(!mPeer)
@@ -70,7 +70,7 @@ void SlotCallback::callJava(const int& a1, const int& a2, const int& a3,
     if (mPeer)
     {
         // Call non-Display peer using our own jobject ref and jmethodID
-        jniUtils.eventProcess(mPeer, mJmethod, reinterpret_cast<int>(parent()), mSignalId, a1, a2, a3, a4, a5, aString);
+        jniUtils.eventProcess(mPeer, mJmethod, parent(), mSignalId, a1, a2, a3, a4, a5, aString);
     }
     else
     {

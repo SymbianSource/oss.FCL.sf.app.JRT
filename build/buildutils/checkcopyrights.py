@@ -13,48 +13,54 @@
 # Contributors:
 #
 # Description:
-#   Checks that all the source files have a proper copyright header. 
+#   Checks that all the source files have a proper EPL copyright header.
 #   Ignores number of known 3rd party source files and directories.
 #
-#    Run this script on a clean workarea in order to avoid warnings
-#    about exported files and qmake generated files.
+#   Run this script on a clean workarea in order to avoid warnings
+#   about exported files and qmake generated files.
 #
-#    The excluded directories should be checked every now and then
-#    so that there won't be other problems (like files without any
-#    header).
+#   The excluded directories should be checked every now and then
+#   so that there won't be other problems (like files without any header).
 
 import sys, os, re
 
 # Specify here the file types to be checked
 checkedFileTypes = [".cpp", ".h", ".java", ".py", ".mk"]
 
-# Include here the directories to be ignored
-ignoredDirectories = [
-    "javaextensions\\bluetooth\\bluecove",  # Bluecove
-    "javacommons\\jvms\\j9\\s60\\inc",      # IBM J9
-    "javauis\\eswt_akn",                    # eSWT checked separately
-    "javauis\\eswt_qt",                     # eSWT checked separately
-    "javauis\\tsrc\\fute\\eswt\\",          # eSWT checked separately
-    "javaextensions\\webservices",          # Webservices not delivered
-    "jrt\\tools",                           # Tools not delivered
-    "\\internal"                            # Internal directories not delivered
-    ]
 
-# Include here any individual files to be ignored
-ignoredFiles = [
-    "javacommons\\jvms\\cldc_1.1.1\\javasrc\\java\\util\\Timer.java",       # Apache license
-    "javacommons\\jvms\\cldc_1.1.1\\javasrc\\java\\util\\TimerTask.java",   # Apache license
-    "javacommons\\jvms\\cldc_1.1.1\\tsrc\\javasrc\\com\\nokia\\mj\\test\\java\\util\\TimerTaskTest.java",   # Apache license
-    "javacommons\\jvms\\cldc_1.1.1\\tsrc\\javasrc\\com\\nokia\\mj\\test\\java\\util\\TimerTest.java",       # Apache license
-    "javacommons\\utils\\inc\\convertutf.h",                                # Unicode Inc.
-    "javacommons\\utils\\src\\convertutf.cpp"                               # Unicode Inc.
-]
-
-# The copyright text to be checked
-copyrightText = "Nokia Corporation and/or its subsidiary(-ies)"
+# The copyright texts to be searched for
+copyrightText1 = "Nokia Corporation and/or its subsidiary(-ies)"
+copyrightText2 = "Eclipse Public License v1.0"
 
 
 def main():
+
+    root = sys.argv[1]
+    if root[-1] != '\\':
+        root = root + '\\'
+
+    # Include here the directories to be ignored
+    ignoredDirectories = [
+        root + "javaextensions\\bluetooth\\bluecove",  # Bluecove
+        root + "javacommons\\jvms\\j9\\s60\\inc",      # IBM J9
+        root + "javauis\\eswt_akn",                    # eSWT checked separately
+        root + "javauis\\eswt_qt",                     # eSWT checked separately
+        root + "javauis\\tsrc\\fute\\eswt\\",          # eSWT checked separately
+        root + "javaextensions\\webservices",          # Webservices not delivered
+        root + "tools",                                # Tools not delivered
+        "\\internal"                                   # Internal directories not delivered
+        ]
+     
+    # Include here any individual files to be ignored
+    ignoredFiles = [
+        root + "javacommons\\jvms\\cldc_1.1.1\\javasrc\\java\\util\\Timer.java",       # Apache license
+        root + "javacommons\\jvms\\cldc_1.1.1\\javasrc\\java\\util\\TimerTask.java",   # Apache license
+        root + "javacommons\\jvms\\cldc_1.1.1\\tsrc\\javasrc\\com\\nokia\\mj\\test\\java\\util\\TimerTaskTest.java",   # Apache license
+        root + "javacommons\\jvms\\cldc_1.1.1\\tsrc\\javasrc\\com\\nokia\\mj\\test\\java\\util\\TimerTest.java",       # Apache license
+        root + "javacommons\\utils\\inc\\convertutf.h",                                # Unicode Inc.
+        root + "javacommons\\utils\\src\\convertutf.cpp"                               # Unicode Inc.
+    ]
+
     
     def visitFun(arg, dirname, names):
 
@@ -94,16 +100,29 @@ def main():
                 # print "Ignoring file", f
                 continue
 
-            # Check if the file contains the copyright text
+            # Check if the file contains the copyright texts
             try:                       
                 file = open(fname)
+                
+                # Search for the first text
                 found = False
                 line = file.readline()
                 while line != "":
-                    if copyrightText in line:
+                    if copyrightText1 in line:
                         found = True
                         break;
-                    line = file.readline()                
+                    line = file.readline()
+                
+                # Search the second copyright text as well
+                if found:
+                    found = False
+                    line = file.readline()
+                    while line != "":
+                        if copyrightText2 in line:
+                            found = True
+                            break;
+                        line = file.readline()
+
                 file.close()
                                     
             except IOError:
@@ -112,8 +131,8 @@ def main():
             if not found:
                 print fname
                 continue
-                
-    os.path.walk(sys.argv[1], visitFun, None)
+    
+    os.path.walk(root, visitFun, None)
 
 
 if __name__ == "__main__":

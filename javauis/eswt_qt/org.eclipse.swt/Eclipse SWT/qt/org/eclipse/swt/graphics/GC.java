@@ -322,9 +322,12 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
  *                that created the drawable</li>
  */
 public void dispose() {
+	final Display display = (Display)data.device; 
+	if(display.getThread() != Thread.currentThread()) {
+		SWT.error(SWT.ERROR_THREAD_INVALID_ACCESS);
+	}
     if (drawable != null && handle != 0) {
         if (data.buffered && (drawable instanceof Control)) {
-            final Display display = Display.getDefault();
             display.syncExec(new Runnable() {
                 public void run() {
                     ((Control) drawable).redraw();

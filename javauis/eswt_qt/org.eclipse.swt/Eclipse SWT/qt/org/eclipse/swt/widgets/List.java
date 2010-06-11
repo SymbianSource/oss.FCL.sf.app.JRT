@@ -195,14 +195,14 @@ public class List extends Scrollable {
         super.hookEvents_pp();
 
         int selectionSignalProxy = OS.SignalHandler_new(topHandle,
-                display, OS.QSIGNAL_LIST_ITEMSELECTION_CHANGED);
+                OS.QSIGNAL_LIST_ITEMSELECTION_CHANGED);
 
         OS.QObject_connectOrThrow(topHandle,
                 "itemSelectionChanged()", selectionSignalProxy,
                 "widgetSignal()", OS.QT_AUTOCONNECTION);
 
         int itemActivatedSignalProxy = OS.SignalHandler_new(topHandle,
-              display, OS.QSIGNAL_LIST_ITEM_ACTIVATED);
+              OS.QSIGNAL_LIST_ITEM_ACTIVATED);
 
         OS.QObject_connectOrThrow(topHandle,
               "itemActivated(QListWidgetItem* )", itemActivatedSignalProxy,

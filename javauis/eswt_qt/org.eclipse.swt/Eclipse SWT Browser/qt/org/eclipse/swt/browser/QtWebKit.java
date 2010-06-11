@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008, 2010 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved. This program and the accompanying materials 
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@ package org.eclipse.swt.browser;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.internal.qt.OS;
+import org.eclipse.swt.internal.qt.webkit.OS_webkit;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -38,7 +39,7 @@ public void create(Composite parent, int style) {
     // At this point, browser.handle is the view port of QScrollArea, set by Composite
     int scrollAreaHandle = Internal_PackageSupport.topHandle(browser);
     int viewPortHandle = Internal_PackageSupport.handle(browser);
-    webViewHandle = OS.QWebView_new();
+    webViewHandle = OS_webkit.QWebView_new();
     OS.QWidget_setParent(webViewHandle, scrollAreaHandle);
     
     int layout = OS.QVBoxLayout_new(0);
@@ -83,25 +84,25 @@ public void create(Composite parent, int style) {
     browser.setData(SET_NO_MOUSE_PROPAGATE_STATE_KEY, new Boolean(true));
     browser.setData(SET_EMBEDDED_SCROLLBARS_STATE_KEY, new Boolean(true));
     
-    int handler1 = OS.SignalHandler_new(webViewHandle, this, OS.QSIGNAL_WEBVIEW_LOADFINISHED);
+    int handler1 = OS.SignalForwarder_new(webViewHandle, this, OS.QSIGNAL_WEBVIEW_LOADFINISHED);
     OS.QObject_connectOrThrow(webViewHandle, "loadFinished(bool)", 
         handler1, "widgetSignal(bool)", OS.QT_AUTOCONNECTION);
-    int handler2 = OS.SignalHandler_new(webViewHandle, this, OS.QSIGNAL_WEBVIEW_LOADPROGRESS);
+    int handler2 = OS.SignalForwarder_new(webViewHandle, this, OS.QSIGNAL_WEBVIEW_LOADPROGRESS);
     OS.QObject_connectOrThrow(webViewHandle, "loadProgress(int)", 
         handler2, "widgetSignal(int)", OS.QT_AUTOCONNECTION);
-    int handler3 = OS.SignalHandler_new(webViewHandle, this, OS.QSIGNAL_WEBVIEW_LOADSTARTED);
+    int handler3 = OS.SignalForwarder_new(webViewHandle, this, OS.QSIGNAL_WEBVIEW_LOADSTARTED);
     OS.QObject_connectOrThrow(webViewHandle, "loadStarted()", 
         handler3, "widgetSignal()", OS.QT_AUTOCONNECTION);
-    int handler4 = OS.SignalHandler_new(webViewHandle, this, OS.QSIGNAL_WEBVIEW_STATUSBARMESSAGE);
+    int handler4 = OS.SignalForwarder_new(webViewHandle, this, OS.QSIGNAL_WEBVIEW_STATUSBARMESSAGE);
     OS.QObject_connectOrThrow(webViewHandle, "statusBarMessage(const QString&)", 
         handler4, "widgetSignal(const QString&)", OS.QT_AUTOCONNECTION);
-    int handler5 = OS.SignalHandler_new(webViewHandle, this, OS.QSIGNAL_WEBVIEW_TITLECHANGED);
+    int handler5 = OS.SignalForwarder_new(webViewHandle, this, OS.QSIGNAL_WEBVIEW_TITLECHANGED);
     OS.QObject_connectOrThrow(webViewHandle, "titleChanged(const QString&)", 
         handler5, "widgetSignal(const QString&)", OS.QT_AUTOCONNECTION);
-    int handler6 = OS.SignalHandler_new(webViewHandle, this, OS.QSIGNAL_WEBVIEW_URLCHANGED);
+    int handler6 = OS.SignalForwarder_new(webViewHandle, this, OS.QSIGNAL_WEBVIEW_URLCHANGED);
     OS.QObject_connectOrThrow(webViewHandle, "urlChanged(const QUrl&)", 
         handler6, "widgetSignal(const QUrl&)", OS.QT_AUTOCONNECTION);
-    int handler7 = OS.SignalHandler_new(webViewHandle, this, OS.QSIGNAL_WEBVIEW_LINKCLICKED);
+    int handler7 = OS.SignalForwarder_new(webViewHandle, this, OS.QSIGNAL_WEBVIEW_LINKCLICKED);
     OS.QObject_connectOrThrow(webViewHandle, "linkClicked(const QUrl&)", 
         handler7, "widgetSignal(const QUrl&)", OS.QT_AUTOCONNECTION);
 }
@@ -110,10 +111,10 @@ public void create(Composite parent, int style) {
  * @see WebBrowser
  */
 public boolean back() {
-    if (OS.QWebView_swt_canGoBack(webViewHandle)) {
+    if (OS_webkit.QWebView_swt_canGoBack(webViewHandle)) {
         if (sendLocationEventChanging((int)System.currentTimeMillis(), 
-            OS.QWebView_swt_backUrl(webViewHandle))) {
-            OS.QWebView_back(webViewHandle);
+            OS_webkit.QWebView_swt_backUrl(webViewHandle))) {
+            OS_webkit.QWebView_back(webViewHandle);
             return true;
         }
     }
@@ -124,17 +125,17 @@ public boolean back() {
  * @see WebBrowser
  */
 public boolean execute(String script) {
-    return OS.QWebView_swt_evaluateJavaScript(webViewHandle, script);
+    return OS_webkit.QWebView_swt_evaluateJavaScript(webViewHandle, script);
 }
 
 /**
  * @see WebBrowser
  */
 public boolean forward() {
-    if (OS.QWebView_swt_canGoForward(webViewHandle)) {
+    if (OS_webkit.QWebView_swt_canGoForward(webViewHandle)) {
         if (sendLocationEventChanging((int)System.currentTimeMillis(), 
-            OS.QWebView_swt_forwardUrl(webViewHandle))) {
-            OS.QWebView_forward(webViewHandle);
+            OS_webkit.QWebView_swt_forwardUrl(webViewHandle))) {
+            OS_webkit.QWebView_forward(webViewHandle);
             return true;
         }
     }
@@ -159,21 +160,21 @@ public String getText() { // Not eSWT API
  * @see WebBrowser
  */
 public String getUrl() {
-    return OS.QWebView_url(webViewHandle);
+    return OS_webkit.QWebView_url(webViewHandle);
 }
 
 /**
  * @see WebBrowser
  */
 public boolean isBackEnabled() {
-    return OS.QWebView_swt_canGoBack(webViewHandle);
+    return OS_webkit.QWebView_swt_canGoBack(webViewHandle);
 }
 
 /**
  * @see WebBrowser
  */
 public boolean isForwardEnabled() {
-    return OS.QWebView_swt_canGoForward(webViewHandle);
+    return OS_webkit.QWebView_swt_canGoForward(webViewHandle);
 }
 
 /**
@@ -181,8 +182,8 @@ public boolean isForwardEnabled() {
  */
 public void refresh() {
     if (sendLocationEventChanging((int)System.currentTimeMillis(), 
-        OS.QWebView_url(webViewHandle))) {
-        OS.QWebView_reload(webViewHandle);
+        OS_webkit.QWebView_url(webViewHandle))) {
+        OS_webkit.QWebView_reload(webViewHandle);
     }
 }
 
@@ -191,7 +192,7 @@ public void refresh() {
  */
 public boolean setText(String html) {
     if (sendLocationEventChanging((int)System.currentTimeMillis(), "about:blank")) {
-        OS.QWebView_setHtml(webViewHandle, html);
+        OS_webkit.QWebView_setHtml(webViewHandle, html);
         return true;
     }
     else {
@@ -204,7 +205,7 @@ public boolean setText(String html) {
  */
 public boolean setUrl(String url) {
     if (sendLocationEventChanging((int)System.currentTimeMillis(), url)) {
-        OS.QWebView_setUrl(webViewHandle, url);
+        OS_webkit.QWebView_setUrl(webViewHandle, url);
         return true;
     }
     else {
@@ -216,7 +217,7 @@ public boolean setUrl(String url) {
  * @see WebBrowser
  */
 public void stop() {
-    OS.QWebView_stop(webViewHandle);
+    OS_webkit.QWebView_stop(webViewHandle);
 }
 
 final boolean eventProcess( int widgetHandle, int eventType, int time, 

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009,2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -14,11 +14,14 @@
 * Description:
 *
 */
+
 package javax.microedition.lcdui;
 
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Widget;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.qt.OS;
 import org.eclipse.swt.internal.qt.graphics.GraphicsContext;
 import org.eclipse.swt.internal.qt.graphics.JavaCommandBuffer;
 import org.eclipse.swt.internal.qt.graphics.WindowSurface;
@@ -39,6 +42,13 @@ import org.eclipse.swt.internal.qt.graphics.WindowSurface;
 
 abstract class Buffer
 {
+
+    // Default values for Graphics 
+    final static Font defaultFont = Font.getDefaultFont();
+    final static int defaultColor = 0xff000000;
+    final static int defaultStrokeStyle = Graphics.SOLID;
+    final static int defaultTranslateX = 0;
+    final static int defaultTranslateY = 0;
 
     // Constants for buffer host types
     final static int HOST_TYPE_IMAGE = 1;
@@ -68,12 +78,10 @@ abstract class Buffer
     private JavaCommandBuffer commandBuffer;
     private Rectangle hostBounds;
     private Graphics currentClient;
-    private boolean started;
+    private boolean isInitialized;
     private int clientCount;
-
-    // The target window surface where this
-    // instance flushes draw primitives
-    WindowSurface windowSurface;
+    
+    private boolean isSurfaceSessionOpen;
 
     /**
      * Constructor
@@ -90,16 +98,57 @@ abstract class Buffer
     }
 
     /**
+     * Creates Buffer instance based on the type of given host object 
+     * and the platform (symbian/linux) currently running on.
+     * 
+     * @param host The host target where pixels are drawn. Given object must be Canvas, CustomItem or Image.
+     * @param control The eSWT control associated with the target, or null if the host is Image
+     * @return New buffer instance
+     */
+    static Buffer createInstance(Object host, Control control)
+    {
+    	if(host instanceof Canvas) 
+    	{
+    		if(OS.windowServer == OS.WS_SYMBIAN_S60)
+    		{	
+    		    return new CanvasBufferSymbian((Canvas) host, control);
+    		}
+    		else if(OS.windowServer == OS.WS_X11)
+    		{
+    			return new CanvasBufferLinux((Canvas) host, control);
+    		}
+  			return null;
+    	} 
+    	else if(host instanceof CustomItem)
+    	{
+    		if(OS.windowServer == OS.WS_SYMBIAN_S60)
+    		{	
+    		    return new CustomItemBufferSymbian((CustomItem) host, control);
+    		}
+    		else if(OS.windowServer == OS.WS_X11)
+    		{
+    			return new CustomItemBufferLinux((CustomItem) host, control);
+    		}
+  			return null;
+    	} 
+    	else if(host instanceof Image) 
+    	{
+    	    return new ImageBuffer((Image) host);	
+    	}
+    	return null;
+    }
+    
+    /**
      * Initializes data, called once
      */
-    void init()
+    protected void init()
     {
         clientCount = 0;
         gc = new GraphicsContext();
         commandBuffer = new JavaCommandBuffer();
         gc.bindTarget(commandBuffer);
         writeControlBoundsToBuffer(false);
-        started = true;
+        isInitialized = true;
     }
 
     /**
@@ -113,86 +162,182 @@ abstract class Buffer
      */
     void setControlBounds(final Control control)
     {
-        ESWTUIThreadRunner.safeSyncExec(new Runnable()
-        {
-            public void run()
-            {
-                // This implementation is based on the fact that
-                // the QWindowSurface has the size of the shell active area
-                // not the whole display, thus Shell clientArea equals QWindowSurface.
-                // This might change in future if/when Qt starts
-                // rendering e.g. the status pane i.e. the whole display
-                // to window surface
-                Point controlLoc = control.toDisplay(0,0);
-                Point shellLoc = control.getShell().toDisplay(0,0);
-                hostBounds.x = controlLoc.x - shellLoc.x;
-                hostBounds.y = controlLoc.y - shellLoc.y;
-                hostBounds.width = control.getBounds().width;
-                hostBounds.height = control.getBounds().height;
-            }
-        });
+        // This implementation is based on the fact that
+        // the QWindowSurface has the size of the shell active area
+        // not the whole display, thus Shell clientArea equals QWindowSurface.
+        // This might change in future if/when Qt starts
+        // rendering e.g. the status pane i.e. the whole display
+        // to window surface
+        Point controlLoc = control.toDisplay(0,0);
+        Point shellLoc = control.getShell().toDisplay(0,0);
+        hostBounds.x = controlLoc.x - shellLoc.x;
+        hostBounds.y = controlLoc.y - shellLoc.y;
+        hostBounds.width = control.getBounds().width;
+        hostBounds.height = control.getBounds().height;
     }
 
     /**
-     * Performs binding to target in host specific way
+     * Prepares surface for a new frame and starts paint session. 
+     * Must be called in UI thread (sync calls this automatically)
+     * and at the start of new frame. The rectangle provided as 
+     * arguments are in control coordinates.
+     * 
+     * @param x The x-coordinate of the area to be painted
+     * @param y The y-coordinate of the area to be painted
+     * @param w The width of the area to be painted
+     * @param h The height of the area to be painted
+     */
+    void startFrame(int x, int y, int w, int h)
+    {
+    	if(!isSurfaceSessionOpen)
+    	{
+    	    beginPaint(x, y, w, h);
+    	    isSurfaceSessionOpen = true;
+    	}
+    }
+    
+    /**
+     * Ends frame painting session. Must be called in UI thread and
+     * at the end of the frame. BlitToDisplay calls this automatically.
+     */
+    void endFrame()
+    {
+    	if(isSurfaceSessionOpen)
+    	{
+    		endPaint();
+    	    isSurfaceSessionOpen = false;
+    	}
+    }
+    
+    /**
+     * Transfers the result of rendering to display.
+     * @param gc The graphics context used for blit, may be null in some cases
+     * @param widget The widget that is the target 
+     */
+    void blitToDisplay(GraphicsContext gc, Widget widget)
+    {
+  	    endFrame();
+    	blit(gc, widget);
+    }
+    
+    /** 
+     * Prepares surface for painting, implemented by
+     * child implementation.
+     * @param x The x-coordinate of the area to be painted
+     * @param y The y-coordinate of the area to be painted
+     * @param w The width of the area to be painted
+     * @param h The height of the area to be painted
+     */
+    abstract void beginPaint(int x, int y, int w, int h);
+    
+    /**
+     * Ends frame painting session. Must be called in UI thread and
+     * at the end of the frame. Implemented by
+     * child implementation.
+     */
+    abstract void endPaint();
+    
+    /**
+     * Performs binding to target in host specific way. Implemented by
+     * child implementation.
      */
     abstract void bindToHost(GraphicsContext gc);
-
+    
+    /** 
+     * Performs the actual blit operation in child class implementation.
+     * @param gc The graphics context used for blit, may be null in some cases
+     * @param widget The widget that is the target 
+     */
+    abstract void blit(GraphicsContext gc, Widget widget);
+    
     /**
-     * Getter for the host of the buffer
+     * Getter for the host of the buffer, implemented by
+     * child implementation.
      * @return The host
      */
     abstract Object getHost();
 
     /**
-     * Getter for the host type
+     * Getter for the host type,implemented by
+     * child implementation.
      * @return One of host types defined in this class
      */
     abstract int getHostType();
 
     /**
-     *  Setups the window surface if not setup already.
-     *  This method must be called before flushing buffer to
-     *  window surface
-     *  Note. must be called in UI thread
+     * Status checker that indicates if this instance has requested a synchronous paint event, 
+     * implemented by child implementation.
+     * @return True if this instance has requested a redraw paint event, otherwise false
      */
-    abstract void setupWindowSurface();
-
+    abstract boolean isPaintingActive(); 
+    
     /**
      * Creates and returns new Graphics instance
      * @return new Graphics instance
      */
     Graphics getGraphics()
     {
-        if(!started)
+        if(!isInitialized)
         {
             init();
         }
         clientCount++;
-        return new Graphics(this);
+        // In case this is the first Graphics instance
+        // write the default values to the buffer
+        if(clientCount == 1) 
+        {
+            writeDefaultValuesToBuffer();	
+        }
+        return new Graphics(this, hostBounds );
     }
 
     /**
      * Synchronizes this buffer with the actual target
      * must be called in UI thread. If no Graphics instances
-     * are creates, sync has no effect
+     * are created, sync has no effect. This variant always closes 
+     * the surface session unconditionally
      */
-    void sync()
+    void sync() 
     {
-        if(!started)
+    	sync(true);
+    }
+    
+    /**
+     * Synchronizes this buffer with the actual target
+     * must be called in UI thread. If no Graphics instances
+     * are created, sync has no effect
+     * 
+     * @param closeSurfaceSession If true the endFrame is called after sync has been 
+     *                            performed closing the surface session, otherwise
+     *                            endFrame is performed and surface session is left open
+     */
+    void sync(boolean closeSurfaceSession)
+    {
+        if(!isInitialized)
         {
             return;
         }
+        
         // if there's nothing to flush return
         if(!commandBuffer.containsDrawnPrimitives())
         {
             return;
         }
+        
+        // Start surface session if not started yet
+       	startFrame(hostBounds.x, hostBounds.y , hostBounds.width , hostBounds.height);
+        
         doRelease();
         bindToHost(gc);
         gc.render(commandBuffer);
         doRelease();
 
+        // Close surface session
+        if(closeSurfaceSession)
+        {
+            endFrame();
+        }
+        
         // Reset commands
         commandBuffer.reset();
 
@@ -220,9 +365,12 @@ abstract class Buffer
      */
     void dispose()
     {
-        doRelease();
-        gc.dispose();
-        gc = null;
+    	if(gc != null) 
+    	{
+            doRelease();
+            gc.dispose();
+            gc = null;
+    	}
         commandBuffer = null;
     }
 
@@ -501,6 +649,16 @@ abstract class Buffer
 
 
     /**
+     * Returns the WindowSurface that relates to this Buffer
+     *
+     * @return WindowSurface owned by this Buffer
+     */
+    WindowSurface getWindowSurface()
+    {
+        return null;
+    }
+    
+    /**
      * Translates given rectangle to display/window surface coordinates
      * and outlines the clip inside the control bounds.
      *
@@ -607,10 +765,10 @@ abstract class Buffer
         }
         if((STROKESTYLE & flags) != 0)
         {
-            if(bufferStrokeStyle != client.currentStrokeSyle)
+            if(bufferStrokeStyle != client.currentStrokeStyle)
             {
-                gc.setStrokeStyle(Graphics.mapStrokeStyle(client.currentStrokeSyle));
-                bufferStrokeStyle = client.currentStrokeSyle;
+                gc.setStrokeStyle(Graphics.mapStrokeStyle(client.currentStrokeStyle));
+                bufferStrokeStyle = client.currentStrokeStyle;
             }
         }
     }
@@ -655,6 +813,24 @@ abstract class Buffer
         }
     }
 
+   /**
+    * Writes Graphics default values to buffer
+    */
+    private void writeDefaultValuesToBuffer()
+    {
+        int handle = Font.getESWTFont(defaultFont).handle;
+        gc.setFont(handle);
+        bufferFontHandle = handle;
+        gc.setBackgroundColor(defaultColor, true);
+        gc.setForegroundColor(defaultColor, true);
+        bufferColor = defaultColor;
+        gc.setStrokeStyle(Graphics.mapStrokeStyle(defaultStrokeStyle));
+        bufferStrokeStyle = defaultStrokeStyle;
+        gc.resetTransform();
+        bufferTranslateX = defaultTranslateX;
+        bufferTranslateY = defaultTranslateY;
+    }
+    
     private void doRelease()
     {
         gc.releaseTarget();

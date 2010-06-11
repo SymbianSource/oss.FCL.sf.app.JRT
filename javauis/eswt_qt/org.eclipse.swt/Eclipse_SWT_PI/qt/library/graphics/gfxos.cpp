@@ -388,6 +388,19 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1drawS
     GFX_CATCH
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1drawWindowSurface
+  (JNIEnv* aJniEnv, jclass, jint aHandle, jint aSurfaceHandle, jint aX, jint aY, jint aWidth, jint aHeight) 
+{
+    GFX_TRY
+    {
+        GFX_LOG_JNI_CALL();
+        HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
+        HANDLE_TO_POINTER(WindowSurface*, surface, aSurfaceHandle);
+        gc->drawWindowSurface(surface, aX, aY, aWidth, aHeight);
+    }
+    GFX_CATCH
+}
+
 void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1fillArc
   (JNIEnv* aJniEnv , jclass, jint aHandle, jint aX, jint aY, jint aWidth, jint aHeight, jint aStartAngle, jint aArcAngle)
 {

@@ -1255,23 +1255,23 @@ public class Table extends Composite {
         super.hookEvents_pp ();
         
         if(!((style & SWT.SINGLE) != 0 && (style & SWT.RADIO) != 0 )){
-            int itemSelectionChangedProxy = OS.SignalHandler_new(topHandle, display,
+            int itemSelectionChangedProxy = OS.SignalHandler_new(topHandle, 
                 OS.QSIGNAL_TABLE_ITEMSELECTION_CHANGED);
             OS.QObject_connectOrThrow(topHandle, "itemSelectionChanged()", itemSelectionChangedProxy,
                 "widgetSignal()", OS.QT_AUTOCONNECTION);
         }
         
-        int currentCellChangedProxy = OS.SignalHandler_new(topHandle, display,
+        int currentCellChangedProxy = OS.SignalHandler_new(topHandle, 
                 OS.QSIGNAL_TABLE_CURRENTCELL_CHANGED);
         OS.QObject_connectOrThrow(topHandle, "currentCellChanged(int,int,int,int)", currentCellChangedProxy,
                 "widgetSignal(int,int,int,int)", OS.QT_AUTOCONNECTION);
         
-        int cellChangedProxy = OS.SignalHandler_new(topHandle, display,
+        int cellChangedProxy = OS.SignalHandler_new(topHandle, 
                 OS.QSIGNAL_TABLE_CELL_CHANGED);
         OS.QObject_connectOrThrow(topHandle, "cellChanged(int,int)", cellChangedProxy,
                 "widgetSignal(int,int)", OS.QT_AUTOCONNECTION);
         
-        int cellActivatedProxy = OS.SignalHandler_new(topHandle, display,
+        int cellActivatedProxy = OS.SignalHandler_new(topHandle, 
                 OS.QSIGNAL_TABLE_CELL_ACTIVATED);
         OS.QObject_connectOrThrow(topHandle, "cellActivated(int,int)", cellActivatedProxy,
                 "widgetSignal(int,int)", OS.QT_AUTOCONNECTION);

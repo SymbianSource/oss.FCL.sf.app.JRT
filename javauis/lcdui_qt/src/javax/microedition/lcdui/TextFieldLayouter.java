@@ -16,14 +16,13 @@
 */
 package javax.microedition.lcdui;
 
-import org.eclipse.ercp.swt.mobile.ConstrainedText;
 import org.eclipse.ercp.swt.mobile.TextExtension;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-
+import org.eclipse.swt.internal.extension.TextExtensionExtension;
 /**
  * Responsible for correct layout of TextField in a Form.
  */
@@ -54,12 +53,6 @@ class TextFieldLayouter extends ItemLayouter
 
     // private static Control[] staticControls = new Control[6];
 
-    private static TextExtension any;
-    private static ConstrainedText numeric;
-    private static ConstrainedText phonenr;
-    private static ConstrainedText decimal;
-    private static TextExtension   email;
-    private static TextExtension   url;
     private static boolean isCorrectText;
 
     /**
@@ -91,45 +84,23 @@ class TextFieldLayouter extends ItemLayouter
         }
         */
 
-        if(constraint == TextField.NUMERIC)
-        {
-            if(numeric == null)
-            {
-                numeric = new ConstrainedText(eswtGetStaticShell(), SWT.SINGLE,
-                                              ConstrainedText.NUMERIC);
-            }
-            ret = numeric;
+        if (constraint == TextField.NUMERIC) {
+            constraint = TextExtensionExtension.NUMERIC;
         }
-        else if(constraint == TextField.DECIMAL)
-        {
-            if(decimal == null)
-            {
-                decimal = new ConstrainedText(eswtGetStaticShell(), SWT.SINGLE,
-                                              ConstrainedText.DECIMAL);
-            }
-            ret = decimal;
+        else if (constraint == TextField.DECIMAL) {
+            constraint = TextExtensionExtension.DECIMAL;
         }
-        else if(constraint == TextField.PHONENUMBER)
-        {
-            if(phonenr == null)
-            {
-                phonenr = new ConstrainedText(eswtGetStaticShell(), SWT.SINGLE,
-                                              ConstrainedText.PHONENUMBER);
-            }
-            ret = phonenr;
+        else if (constraint == TextField.PHONENUMBER) {
+            constraint = TextExtensionExtension.PHONENUMBER;
         }
         else
         {
             // TODO: eSWT support required - text validation on EMAIL and URL constraints
             // default
-            if(any == null)
-            {
-                any = new TextExtension(eswtGetStaticShell(), SWT.MULTI | SWT.WRAP);
-            }
-            ret = any;
+            constraint = 0;
         }
 
-        return ret;
+        return new TextExtensionExtension(eswtGetStaticShell(), SWT.MULTI | SWT.WRAP,constraint);
     }
 
     /**
@@ -194,8 +165,7 @@ class TextFieldLayouter extends ItemLayouter
      */
     boolean eswtIsSpecificControl(Item item, Control control)
     {
-        return (control instanceof TextExtension
-                || control instanceof ConstrainedText);
+        return (control instanceof TextExtension);
     }
 
     /**

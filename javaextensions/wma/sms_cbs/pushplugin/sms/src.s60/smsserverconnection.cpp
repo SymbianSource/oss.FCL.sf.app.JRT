@@ -72,7 +72,7 @@ OS_EXPORT SmsServerConnection::~SmsServerConnection()
     delete mOpenMonitor;
 }
 
-void SmsServerConnection::open(ConnectionListener* aListener,
+OS_EXPORT void SmsServerConnection::open(ConnectionListener* aListener,
                                bool aIsAppLaunched)
 {
     JELOG2(EWMA);
@@ -299,7 +299,7 @@ void SmsServerConnection::getSocketServerL()
 }
 
 
-void SmsServerConnection::close()
+OS_EXPORT void SmsServerConnection::close()
 {
     JELOG2(EWMA);
     // the close and RunL are synchronized to make it SMP safe.

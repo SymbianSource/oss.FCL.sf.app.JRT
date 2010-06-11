@@ -94,6 +94,16 @@ public abstract class LCDUIInvoker
     }
 
     /**
+     * Returns the WindowSurface where g will be drawing.
+     * @param g The graphics object
+     * @return WindowSurface where g will be drawing.
+     */
+    public static org.eclipse.swt.internal.qt.graphics.WindowSurface getWindowSurface(Graphics g)
+    {
+        return invokerInstance.doGetWindowSurface(g);
+    }
+    
+    /**
      * Creates LCDUI Image from an eSWT Image. The returned object is a new
      * LCDUI Image object created from the eSWT Image, so this method is not
      * as efficient as getEswtImage.
@@ -202,6 +212,47 @@ public abstract class LCDUIInvoker
     }
 
     /**
+     * Synchronizes any pending buffered draw commands to the target of the 
+     * graphics object.
+     *
+     * Must be called from UI-thread.
+     *
+     * @param graphics The object to synchronize
+     */
+    public static void sync(Object graphics)
+    {
+    	invokerInstance.doSync(graphics);
+    }
+    
+    /**
+     * Begins an external renderer session to given Graphics. An external renderer
+     * could be, for example,  M3G renderer. The opened rendering session must be
+     * ended by calling the endExternalRendering().
+     *
+     * This function must be called from UI-thread only.
+     *
+     * @param g Graphics where the rendering session starts.
+     */
+    public static void startExternalRendering(Graphics g)
+    {
+        invokerInstance.doStartExternalRendering(g);
+    }
+    
+    /**
+     * Ends the external rendering session on given Graphics that was started
+     * by calling startExternalRendering().
+     *
+     * This function must be called from UI-thread only.
+     *
+     * @param g The Graphics instance.
+     */
+    public static void endExternalRendering(Graphics g)
+    {
+        invokerInstance.doEndExternalRendering(g);
+    }
+     
+    
+    /**
      * Returns the dynamic property value.
      *
      * @param key property key
@@ -240,6 +291,8 @@ public abstract class LCDUIInvoker
 
     protected abstract void doSetItemControlStateChangeListener(ItemControlStateChangeListener listener,Item item);
 
+    protected abstract org.eclipse.swt.internal.qt.graphics.WindowSurface doGetWindowSurface( Graphics g );
+    
     // DirectGraphics support
 
     protected abstract DirectGraphics doGetDirectGraphics(Graphics g);
@@ -264,6 +317,12 @@ public abstract class LCDUIInvoker
     protected abstract void doFlushGraphics(Object canvas,
                                             int x, int y, int width, int height);
 
+    protected abstract void doSync(Object graphics);
+    
+    protected abstract void doStartExternalRendering(Graphics g);
+    
+    protected abstract void doEndExternalRendering(Graphics g);
+    
     protected abstract String doGetDynamicProperty(String key);
 
     protected abstract boolean doDetectCollision(Image image1, int transform1, int p1x, int p1y,

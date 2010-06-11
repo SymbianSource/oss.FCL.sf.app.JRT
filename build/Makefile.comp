@@ -179,11 +179,11 @@ export:
 
 build_native:
 	$(PHASEINFO)
-	$(SBS) -c $(PLATFORM)_$(CFG) BUILD
+	$(SBS) -c $(PLATFORM)_$(CFG)
 
-fastbuild: export java
+fastbuild: java
 	$(PHASEINFO)
-	$(SBS) -c $(PLATFORM)_$(CFG) TARGET
+	$(SBS) -c $(PLATFORM)_$(CFG)
 
 build_clean_native:
 	$(PHASEINFO)

@@ -853,18 +853,18 @@ void createHandle (int index) {
 void hookEvents () {  
     Internal_PackageSupport.hookEvents(this);
     int handle = handle();
-    int handler = OS.SignalHandler_new(handle, Internal_PackageSupport.display(this), OS.QSIGNAL_TEXT_CHANGED);
+    int handler = OS.SignalHandler_new(handle, OS.QSIGNAL_TEXT_CHANGED);
     OS.QObject_connectOrThrow(handle, "textChanged(const QString&)",
         handler, "widgetSignal(const QString&)", OS.QT_AUTOCONNECTION);
-    handler = OS.SignalHandler_new(handle, Internal_PackageSupport.display(this), OS.QSIGNAL_RETURN_PRESSED);
+    handler = OS.SignalHandler_new(handle, OS.QSIGNAL_RETURN_PRESSED);
     OS.QObject_connectOrThrow(handle, "returnPressed()",
         handler, "widgetSignal()", OS.QT_AUTOCONNECTION);
 
     if(isExtended()) {
-        handler = OS.SignalHandler_new(handle, Internal_PackageSupport.display(this), OS.QSIGNAL_TEXT_CURSORPOSITIONCHANGED);
+        handler = OS.SignalHandler_new(handle, OS.QSIGNAL_TEXT_CURSORPOSITIONCHANGED);
         OS.QObject_connectOrThrow(handle, "cursorPositionChanged(int, int)",
             handler, "widgetSignal(int, int)", OS.QT_AUTOCONNECTION);
-        handler = OS.SignalHandler_new(handle, Internal_PackageSupport.display(this), OS.QSIGNAL_TEXT_SELECTIONCHANGED);
+        handler = OS.SignalHandler_new(handle, OS.QSIGNAL_TEXT_SELECTIONCHANGED);
         OS.QObject_connectOrThrow(handle, "selectionChanged()",
             handler, "widgetSignal()", OS.QT_AUTOCONNECTION);
     }

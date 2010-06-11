@@ -354,6 +354,7 @@ data=JAVA_VM_RES_BLD\resources.jar                                          JAVA
 data=ZRESOURCE\java\midpOdcList                                             JAVA_RES_IMG\midpodclist
 data=ZRESOURCE\java\installerOdcList                                        JAVA_RES_IMG\installerodclist
 data=ZRESOURCE\java\tckRunnerOdcList                                        JAVA_RES_IMG\tckrunnerodclist
+data=ZRESOURCE\java\javacontrolpanelodclist                                 JAVA_RES_IMG\javacontrolpanelodclist
 
 // trust roots list
 data=ZRESOURCE\java\security\trustroots\midprootslist                       JAVA_RES_IMG\security\trustroots\midprootslist

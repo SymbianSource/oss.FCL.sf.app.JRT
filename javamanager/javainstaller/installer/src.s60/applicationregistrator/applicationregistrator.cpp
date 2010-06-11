@@ -129,7 +129,6 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_A
         return err;
     }
 
-//#if 1
 #ifndef RD_JAVA_USIF_APP_REG
     // Delete any pending (un)registrations (possible if
     // e.g. device rebooted before commit).
@@ -169,7 +168,6 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_A
  * @param[in] aBackground
  * @return 0 if registration succeeded or Symbian error code
  */
-//#if 0
 #ifdef RD_JAVA_USIF_APP_REG
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_ApplicationRegistrator__1registerApplication
 (JNIEnv */*aEnv*/, jclass /*aClass*/, jint /*aSessionHandle*/, jint /*aUid*/, jstring /*aGroupName*/,
@@ -486,7 +484,6 @@ jint registerApplicationL(
  * @param[in] aUid The Uid of the application to be unregistered..
  * @return 0 if unregistration succeeded or Symbian error code
  */
-//#if 0
 #ifdef RD_JAVA_USIF_APP_REG
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_ApplicationRegistrator__1unregisterApplication
 (JNIEnv *, jclass, jint /*aSessionHandle*/, jint /*aUid*/)
@@ -527,7 +524,6 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_A
 
     TInt err = KErrNone;
 
-//#if 1
 #ifndef RD_JAVA_USIF_APP_REG
     if (aSynchronous)
     {
@@ -586,7 +582,6 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_A
         reinterpret_cast<RApaLsSession*>(aSessionHandle<<2);
 
     TInt err = KErrNone;
-//#if 1
 #ifndef RD_JAVA_USIF_APP_REG
     err = pApaSession->RollbackNonNativeApplicationsUpdates();
 #endif // RD_JAVA_USIF_APP_REG

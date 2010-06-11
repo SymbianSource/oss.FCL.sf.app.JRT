@@ -14,10 +14,12 @@
 * Description:
 *
 */
+
 package javax.microedition.lcdui;
 
 import org.eclipse.swt.graphics.Internal_GfxPackageSupport;
 import org.eclipse.swt.internal.qt.graphics.GraphicsContext;
+import org.eclipse.swt.widgets.Widget;
 
 final class ImageBuffer extends Buffer
 {
@@ -34,11 +36,6 @@ final class ImageBuffer extends Buffer
         return HOST_TYPE_IMAGE;
     }
 
-    void setupWindowSurface()
-    {
-        // nothing to do here
-    }
-
     Object getHost()
     {
         return host;
@@ -48,5 +45,21 @@ final class ImageBuffer extends Buffer
     {
         gc.bindTarget(Internal_GfxPackageSupport.getImage(Image.getESWTImage(host)));
     }
+
+    void blit(GraphicsContext gc, Widget widget) {
+		// nothing to do 
+	}
+
+    void endPaint() {
+		// nothing to do 
+	}
+
+	boolean isPaintingActive() {
+		return false;
+	}
+
+	void beginPaint(int x, int y, int w, int h) {
+		// nothing to do 
+	}
 
 }

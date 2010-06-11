@@ -13,9 +13,9 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.ercp.swt.mobile.Command;
 import org.eclipse.ercp.swt.mobile.MobileDevice;
-import org.eclipse.ercp.swt.mobile.TextExtension;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.internal.qt.CommandArranger;
 import org.eclipse.swt.internal.qt.graphics.WindowSurface;
 
 /**
@@ -348,17 +348,29 @@ public static void setVariant(Text t, int variant) {
 public static Display getDisplayInstance() {
     return Display.Default;
 }
+public static Display getInternalDisplayInstance() {
+    return Display.Internal;	
+}
+public static Display internalInstance() {
+	return Display.internalInstance();
+}
 public static Widget getDWidget(Display display, int widgetHandle) {
-    return display.getWidget(widgetHandle);
+    return Display.getWidget(widgetHandle);
 }
 public static int initializeMobileDevice(Display display) {
-    return display.initializeMobileDevice();
+    return Display.initializeMobileDevice();
 }
 public static int handle(Display d) {
-    return d.handle;
+    return Display.handle;
 }
 public static Point readAndClearImageLoadSize(Display d) {
-	return d.readAndClearImageLoadSize();
+	return Display.readAndClearImageLoadSize();
+}
+public static CommandArranger commandArranger() {
+	return Display.commandArranger;
+}
+public static int untranslateKey (int key) {
+	return Display.untranslateKey(key);
 }
 /*
  * From the class Label
@@ -368,7 +380,7 @@ public static void setStandardIcon(Label l, int iconType, int iconWidth, int ico
 }
 
 public static void setMobileDevice(Display display, MobileDevice mobileDevice){
-	display.mobileDevice = mobileDevice;
+	Display.mobileDevice = mobileDevice;
 }
 
 }

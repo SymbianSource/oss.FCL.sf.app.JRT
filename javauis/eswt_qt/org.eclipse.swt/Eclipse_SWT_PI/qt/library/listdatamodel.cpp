@@ -27,7 +27,6 @@
  * list type
  */
 const static int LISTTYPE_SORTEDLIST = 0x2;
-const static int LISTTYPE_LISTVIEW = 0x4;
 const static int LISTTYPE_LISTBOX = 0x8;
 
 /**

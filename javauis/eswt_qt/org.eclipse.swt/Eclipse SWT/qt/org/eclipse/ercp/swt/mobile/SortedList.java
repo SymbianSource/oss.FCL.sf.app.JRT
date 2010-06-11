@@ -15,7 +15,6 @@
 package org.eclipse.ercp.swt.mobile;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Internal_PackageSupport;
 import org.eclipse.swt.widgets.Scrollable;
 import org.eclipse.swt.widgets.Composite;
@@ -628,23 +627,22 @@ void createHandle(int index) {
 
 void hookEvents () {
     Internal_PackageSupport.hookEvents(this);
-    Display display = Internal_PackageSupport.display(this);
     int scrollAreaHandle = scrollAreaHandle();
-    int signalProxy1 = OS.SignalHandler_new(scrollAreaHandle, display, 
+    int signalProxy1 = OS.SignalHandler_new(scrollAreaHandle, 
         OS.QSIGNAL_LIST_ITEMSELECTION_CHANGED);
     OS.QObject_connectOrThrow(scrollAreaHandle, "itemSelectionChanged()", 
         signalProxy1, "widgetSignal()", OS.QT_AUTOCONNECTION);
-    int signalProxy2 = OS.SignalHandler_new(scrollAreaHandle, display, 
+    int signalProxy2 = OS.SignalHandler_new(scrollAreaHandle, 
         OS.QSIGNAL_LIST_ITEM_DOUBLECLICKED);
     OS.QObject_connectOrThrow(scrollAreaHandle, "itemDoubleClicked(QListWidgetItem*)", 
         signalProxy2, "widgetSignal(QListWidgetItem*)", OS.QT_AUTOCONNECTION);
     int signalProxy3 = OS.SignalHandler_new(Internal_PackageSupport.topHandle(this),
-        display, OS.QSIGNAL_LIST_ITEM_ACTIVATED);
+        OS.QSIGNAL_LIST_ITEM_ACTIVATED);
     OS.QObject_connectOrThrow(scrollAreaHandle,
         "itemActivated(QListWidgetItem* )", signalProxy3,
         "widgetSignal(QListWidgetItem* )", OS.QT_AUTOCONNECTION);
     if (editorHandle != 0) {
-        int signalProxy4 = OS.SignalHandler_new(editorHandle, display, OS.QSIGNAL_TEXT_CHANGED);
+        int signalProxy4 = OS.SignalHandler_new(editorHandle, OS.QSIGNAL_TEXT_CHANGED);
         OS.QObject_connectOrThrow(editorHandle, "textChanged(const QString&)",
             signalProxy4, "widgetSignal(const QString&)", OS.QT_AUTOCONNECTION);
     }

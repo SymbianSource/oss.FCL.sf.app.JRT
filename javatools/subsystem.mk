@@ -19,7 +19,9 @@ include $(JAVA_SRC_ROOT)/build/Makefile.defs
 # Common
 COMPONENTS = \
 	tckrunner/starter/build \
-	tckrunner/runner/build
+	tckrunner/runner/build \
+	javacontrolpanel/starter/build \
+	javacontrolpanel/controlpanel/build \
 
 # Platform specific
 ifeq ($(BUILDENV),symbian)
@@ -43,7 +45,6 @@ COMPONENTS += \
 endif
 
 NONQTSUBSYSTEMS += \
-	javacaptain_app/build \
 	testcerts
 
 endif

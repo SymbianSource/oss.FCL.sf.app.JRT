@@ -39,6 +39,7 @@ final class OS {
     static final native void graphicsContext_drawRoundRect(int handle,int x,int y,int width,int height,int arcWidth,int arcHeight);
     static final native void graphicsContext_drawString(int handle, String string, int x, int y, int width, int height, 
                                                         int alignments, int flags, boolean isTransparent);
+    static final native void graphicsContext_drawWindowSurface(int handle, int surfaceHandle, int x, int y, int width, int height);
     static final native void graphicsContext_fillArc(int handle, int x, int y, int width, int height, int startAngle, int arcAngle);
     static final native void graphicsContext_fillEllipse(int handle, int x, int y, int width, int height);
     static final native void graphicsContext_fillGradientRect(int handle, int x, int y, int width, int height, boolean vertical, boolean swapColors);

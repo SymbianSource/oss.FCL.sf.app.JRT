@@ -915,6 +915,22 @@ void GraphicsContextImpl::drawString(
     mPainter->restore();
 }
 
+void GraphicsContextImpl::drawWindowSurface(WindowSurface* aSurface, int aX, int aY, int aWidth, int aHeight)
+{
+    GFX_LOG_FUNC_CALL();
+    QRect area(aX, aY, aWidth, aHeight);
+    switch(aSurface->getType())
+    {
+        case WsTypeQtImage:
+        {  
+            mPainter->drawImage(area, *aSurface->getQtImage(), area);
+            break;
+        }
+        default:
+            return;   
+    }
+}
+
 void GraphicsContextImpl::fillArc(int aX, int aY, int aWidth, int aHeight, int aStartAngle, int aArcAngle)
 {
     GFX_LOG_FUNC_CALL();

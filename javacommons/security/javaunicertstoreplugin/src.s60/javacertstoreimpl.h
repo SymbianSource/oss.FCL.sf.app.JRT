@@ -68,8 +68,7 @@ private:
 };
 
 class CJavaCertStoreImpl: public CActive, public MCTWritableCertStore,
-        public java::comms::CommsListener,
-        public java::comms::CommsClientEndpoint
+        public java::comms::CommsListener
 {
 public:
 

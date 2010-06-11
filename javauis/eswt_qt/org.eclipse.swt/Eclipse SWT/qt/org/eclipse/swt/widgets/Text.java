@@ -423,7 +423,7 @@ public void cut () {
 void deregister_pp () {  
     super.deregister_pp ();
     if (variant == TextUtils.TEXT_EDIT) {
-        display.removeWidget(scrollAreaHandle);
+        Display.removeWidget(scrollAreaHandle);
     }
 }
 
@@ -903,13 +903,13 @@ public int getTopPixel () {
 
 void hookEvents_pp () {  
     super.hookEvents_pp();
-    int textChangedProxy = OS.SignalHandler_new(topHandle, display, OS.QSIGNAL_TEXT_CHANGED);
+    int textChangedProxy = OS.SignalHandler_new(topHandle, OS.QSIGNAL_TEXT_CHANGED);
     
     if (variant == TextUtils.LINE_EDIT) {
         OS.QObject_connectOrThrow(topHandle, "textChanged(const QString&)",
                 textChangedProxy, "widgetSignal(const QString&)", OS.QT_AUTOCONNECTION);
 
-        int returnPressedProxy = OS.SignalHandler_new(topHandle, display, OS.QSIGNAL_RETURN_PRESSED);
+        int returnPressedProxy = OS.SignalHandler_new(topHandle, OS.QSIGNAL_RETURN_PRESSED);
         OS.QObject_connectOrThrow(topHandle, "returnPressed()",
                 returnPressedProxy, "widgetSignal()", OS.QT_AUTOCONNECTION);
     } else {

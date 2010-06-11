@@ -118,6 +118,12 @@ OS_EXPORT jobjectArray S60CommonUtils::NativeToJavaStringArray(JNIEnv& aJni,
 
     for (int i = 0; i< count; i++)
     {
+         if( !aNativeArray[ i ] )
+         {
+             // Skip null elements since already initialized
+             continue;
+         }
+    	
         //TPtr16 temp =  aNativeArray[i]->Des();
         jstring javaString = S60CommonUtils::NativeToJavaString(aJni, *aNativeArray[i]);
         if (javaString == NULL)

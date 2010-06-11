@@ -36,11 +36,9 @@ define JAVA_POLICY_IMG     RESOURCE_FILES_DIR\java\security\policies
 // stub sis
 data=ZSYSTEM\install\java.sis    System\Install\java.sis
 
-#ifdef RD_JAVA_APPLICATION_SETTINGS_QT
 // Application settings
-//file=ABI_DIR\BUILD_DIR\javaapplicationsettingsview.dll             SHARED_LIB_DIR\javaapplicationsettingsview.dll
-//data=DATAZ_\resource\qt\plugins\appsettings\javaapplicationsettingsview.qtplugin 													resource\qt\plugins\appsettings\javaapplicationsettingsview.qtplugin
-#endif
+file=ABI_DIR\BUILD_DIR\javaapplicationsettingsview.dll                              SHARED_LIB_DIR\javaapplicationsettingsview.dll
+data=DATAZ_\resource\qt\plugins\appsettings\javaapplicationsettingsview.qtplugin 		resource\qt\plugins\appsettings\javaapplicationsettingsview.qtplugin
 
 // Captain
 file=ABI_DIR\BUILD_DIR\javacaptain_ext_btdeviceclassmanager.dll             SHARED_LIB_DIR\javacaptain_ext_btdeviceclassmanager.dll
@@ -61,8 +59,6 @@ file=ABI_DIR\BUILD_DIR\javasizehelperclient.dll                             SHAR
 file=ABI_DIR\BUILD_DIR\javasizehelperserver.dll                             SHARED_LIB_DIR\javasizehelperserver.dll
 
 // Installer
-ECOM_PLUGIN(ifeui.dll,ifeui.rsc)
-data=ZRESOURCE\plugins\ifeui.rsc                                            ECOM_RESOURCE_DIR\ifeui.rsc
 data=ZPRIVATE\10003a3f\apps\javainstaller_reg.rsc                           \private\10003a3f\import\apps\javainstaller_reg.rsc
 data=ZRESOURCE\apps\javainstaller_loc.rsc                                   APP_RESOURCE_DIR\javainstaller_loc.rsc
 data=ZRESOURCE\apps\javainstaller_icon.mif                                  APP_BITMAP_DIR\javainstaller_icon.mif
@@ -117,6 +113,8 @@ SCALABLE_IMAGE(APP_BITMAP_DIR,APP_BITMAP_DIR,javastartscreen)
 // eSWT
 file=ABI_DIR\BUILD_DIR\eswtqt.dll                                             SHARED_LIB_DIR\eswtqt.dll
 data=JAVA_VM_RES_BLD\eswtqt.odc                                               JAVA_VM_RES_IMG\eswtqt.odc
+file=ABI_DIR\BUILD_DIR\eswtqtwebkit.dll                                       SHARED_LIB_DIR\eswtqtwebkit.dll
+data=JAVA_VM_RES_BLD\eswtqtwebkit.odc                                         JAVA_VM_RES_IMG\eswtqtwebkit.odc
 
 // LCDUI
 file=ABI_DIR\BUILD_DIR\openlcdui.dll                                        SHARED_LIB_DIR\openlcdui.dll
@@ -146,22 +144,21 @@ data=JAVA_VM_RES_BLD\javaglobalindicators.odc                               JAVA
 data=JAVA_VM_RES_BLD\javasoftnotification.odc                               JAVA_VM_RES_IMG\javasoftnotification.odc
 */
 
-// 2G API
+// M2G API
 /*file=ABI_DIR\BUILD_DIR\javam2g.dll                                          SHARED_LIB_DIR\javam2g.dll
 data=JAVA_VM_RES_BLD\javam2g.odc                                            JAVA_VM_RES_IMG\javam2g.odc
 */
-// 3G API
-/*file=ABI_DIR\BUILD_DIR\javam3g.dll                                          SHARED_LIB_DIR\javam3g.dll
+// M3G API
+file=ABI_DIR\BUILD_DIR\javam3g.dll                                          SHARED_LIB_DIR\javam3g.dll
 data=JAVA_VM_RES_BLD\javam3g.odc                                            JAVA_VM_RES_IMG\javam3g.odc
-*/
+
 // Nokia UI API
 file=ABI_DIR\BUILD_DIR\javanokiaui.dll                                     SHARED_LIB_DIR\javanokiaui.dll
 data=JAVA_VM_RES_BLD\javanokiaui.odc                                       JAVA_VM_RES_IMG\javanokiaui.odc
 
 // Nokia Sound API
-/*file=ABI_DIR\BUILD_DIR\javanokiasound.dll                                   SHARED_LIB_DIR\javanokiasound.dll
+file=ABI_DIR\BUILD_DIR\javanokiasound.dll                                   SHARED_LIB_DIR\javanokiasound.dll
 data=JAVA_VM_RES_BLD\javanokiasound.odc                                     JAVA_VM_RES_IMG\javanokiasound.odc
-*/
 
 // Remote Connection Observer
 /*file=ABI_DIR\BUILD_DIR\javaremconobserver.dll                               SHARED_LIB_DIR\javaremconobserver.dll
@@ -356,6 +353,7 @@ data=JAVA_VM_RES_BLD\resources.jar                                          JAVA
 data=ZRESOURCE\java\midpOdcList                                             JAVA_RES_IMG\midpodclist
 data=ZRESOURCE\java\installerOdcList                                        JAVA_RES_IMG\installerodclist
 data=ZRESOURCE\java\tckRunnerOdcList                                        JAVA_RES_IMG\tckrunnerodclist
+data=ZRESOURCE\java\javacontrolpanelodclist                                 JAVA_RES_IMG\javacontrolpanelodclist
 
 // trust roots list
 data=ZRESOURCE\java\security\trustroots\midprootslist                       JAVA_RES_IMG\security\trustroots\midprootslist

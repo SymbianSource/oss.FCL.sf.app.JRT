@@ -336,7 +336,7 @@ public class Installer
 
         if (iThreadDumper != null)
         {
-            iThreadDumper.startTimer(10*60*1000); // 10 mins
+            iThreadDumper.startTimer(5*60*1000); // 5 mins
         }
 
         try
@@ -538,9 +538,9 @@ public class Installer
         table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
                   GetFromStorage());
         table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
-                  StartProgressNotifications());
-        table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
                   SelectUids()); // Select suite uid and application uids.
+        table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
+                  StartProgressNotifications());
         table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
                   AuthenticateJad()); // This must be the first security
         // related step.

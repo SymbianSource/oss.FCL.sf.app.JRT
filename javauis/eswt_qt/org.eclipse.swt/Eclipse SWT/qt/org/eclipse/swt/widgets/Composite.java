@@ -326,7 +326,7 @@ Control [] _getChildren() {
     for(int i = 0; i < count; ++i) {
         int handle = list[i];
         if (handle != 0) {
-            Widget widget = display.getWidget (handle);
+            Widget widget = Display.getWidget (handle);
             if (widget != null && widget != this) {
                 if (widget instanceof Control && !(widget instanceof Shell)) {
                     children [childControls++] = (Control) widget;
@@ -519,7 +519,7 @@ void qt_swt_event_widgetResized_pp(int widgetHandle, int oldWidth, int oldHeight
         if(dx != 0) {
             Control[] children =_getChildren();
             try {
-                display.blockedQtEventType = OS.QSWTEVENT_WIDGETMOVED;
+                Display.blockedQtEventType = OS.QSWTEVENT_WIDGETMOVED;
                 for (int i = 0; i < children.length; ++i) {
                     Control child = children[i];
                     if (!child.isDisposed()) {
@@ -529,7 +529,7 @@ void qt_swt_event_widgetResized_pp(int widgetHandle, int oldWidth, int oldHeight
                     }
                 }
             } finally {
-                display.blockedQtEventType = OS.QEVENT_NONE;
+                Display.blockedQtEventType = OS.QEVENT_NONE;
             }
         }
     }

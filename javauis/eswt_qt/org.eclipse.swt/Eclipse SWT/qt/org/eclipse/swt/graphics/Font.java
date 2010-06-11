@@ -173,7 +173,7 @@ public final class Font extends Object {
             OS.QFont_delete(handle);
         }
         handle = 0;
-		if (device.tracking)
+		if (Device.tracking)
 			device.dispose_Object(this);
 		device = null;
 	}
@@ -260,8 +260,6 @@ public final class Font extends Object {
 		extraFontStyle = false;
 		xlfd = null;
 		if (device == null)
-			device = Device.getDevice();
-		if (device == null)
 			SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		this.device = device;
 		if (name == null)
@@ -270,7 +268,7 @@ public final class Font extends Object {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 
 		// Keep this after dealing with all exceptions!
-		if (device.tracking)
+		if (Device.tracking)
 			device.new_Object(this);
 
 		boolean italic = (style & SWT.ITALIC) != 0;
@@ -351,8 +349,6 @@ public final class Font extends Object {
 	static Font qt_new(Device device, int handle) {
 		if (handle <= 0)
 			return null;
-		if (device == null)
-			device = Device.getDevice();
 		if (device == null)
 			SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		Font font = new Font();

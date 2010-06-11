@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+# Copyright (c) 2009, 2010 Nokia Corporation and/or its subsidiary(-ies).
 # All rights reserved.
 # This component and the accompanying materials are made available
 # under the terms of "Eclipse Public License v1.0"
@@ -14,6 +14,10 @@
 # Description: Makefile for Qt based components and subsystems
 #
 
-COMPONENTS   += eswt_qt/build lcdui_qt/build runtimeui_qt/build nokiauiapi_qt/build mmapi_qt/build amms_qt/build
+SUBSYSTEMS   += eswt_qt/build
+COMPONENTS   += lcdui_qt/build runtimeui_qt/build nokiauiapi_qt/build mmapi_qt/build amms_qt/build m3g_qt/build
 
 SYMBIAN_ONLY += mmapi_qt/build amms_qt/build m3g_qt/build
+
+# Build order dependency
+lcdui_qt/build runtimeui_qt/build nokiauiapi_qt/build mmapi_qt/build amms_qt/build m3g_qt/build: eswt_qt/build

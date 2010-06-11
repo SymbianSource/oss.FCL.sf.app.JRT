@@ -31,13 +31,12 @@
 // SCR usage is enabled if this macro has been defined.
 #ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 
-#include <qservicemanager.h>
-#include <qurl.h>
 #include <usif/scr/scr.h>
 #include <usif/scr/screntries.h>
 #ifdef RD_JAVA_USIF_APP_REG
 #include <usif/scr/appreginfo.h>
 #endif // RD_JAVA_USIF_APP_REG
+#include <xqappmgr.h>
 
 // Helper macro for logging a TDesC.
 #define LOG_TDESC_L(compIdParam, logLevelParam, msgParam, tdescParam) \
@@ -50,17 +49,10 @@
     }
 
 // NAMESPACE DECLARATION
-QTM_USE_NAMESPACE
 using namespace java;
 using namespace Usif;
 
 IMPORT_C HBufC* CreateHBufCFromJavaStringLC(JNIEnv* aEnv, jstring aString);
-
-// Java MIME types.
-_LIT(KMimeTypeAppDescriptor, "text/vnd.sun.j2me.app-descriptor");
-_LIT(KMimeTypeJava, "application/java");
-_LIT(KMimeTypeJavaArchive, "application/java-archive");
-_LIT(KMimeTypeXJavaArchive, "application/x-java-archive");
 
 // Properties registered to SCR.
 _LIT(KMIDletName, "MIDlet-Name");
@@ -254,86 +246,40 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
 {
     TInt err = KErrNone;
 
-    QServiceManager serviceManager;
-    QObject* activityManager =
-        serviceManager.loadInterface("com.nokia.qt.activities.ActivityManager");
-    if (!activityManager)
+    CActiveScheduler* newScheduler = 0;
+    if (0 == CActiveScheduler::Current())
     {
-        err = serviceManager.error();
-        ELOG1(EJavaInstaller,
-              "launchAppView: loading ActivityManager failed, error %d", err);
-        return KErrCouldNotConnect;
-    }
-    // URL for launching AppLib.
-    QUrl url(QString("appto://20022F35?activityname=AppLibRecentView"));
-    QMetaObject::invokeMethod(activityManager, "launchActivity",
-                              Q_ARG(QString, url.toString()));
-    err = serviceManager.error();
-    delete activityManager;
-    if (QServiceManager::NoError != err)
-    {
-        ELOG1(EJavaInstaller,
-              "launchAppView: launching AppLib activity failed, error %d",
-              err);
-        return KErrCouldNotConnect;
+        // Create ActiveScheduler as it does not yet exist.
+        newScheduler = new CActiveScheduler;
+        CActiveScheduler::Install(newScheduler);
     }
 
-    // Start AppLib and bring it to foreground.
-    const TUid KAppLibUid = { 0x20022F35 };
-    TRAP(err, StartAppL(KAppLibUid));
-    return err;
-}
+    QUrl openRecentView("appto://20022F35?activityname=AppLibRecentView");
+    XQApplicationManager applicationManager;
+    XQAiwRequest *request = applicationManager.create(openRecentView);
+    if (request) {
+        bool result = request->send();
+        if (!result) {
+            int error = request->lastError();
+            ELOG1(EJavaInstaller,
+                  "launchAppView: launching AppLib failed, error %d", error);
+            err = KErrGeneral;
+        }
+        delete request;
+    }
 
-/**
- * See JNI method __1registerJavaSoftwareType.
- * This method makes calls that may leave (the actual registering).
- */
-void RegisterJavaSoftwareTypeL(RSoftwareComponentRegistry *aScr, TBool aRegister = ETrue)
-{
-    RPointerArray<HBufC> javaMimeTypes;
-    CleanupResetAndDestroyPushL(javaMimeTypes);
-    javaMimeTypes.AppendL(KMimeTypeAppDescriptor().AllocL());
-    javaMimeTypes.AppendL(KMimeTypeJava().AllocL());
-    javaMimeTypes.AppendL(KMimeTypeJavaArchive().AllocL());
-    javaMimeTypes.AppendL(KMimeTypeXJavaArchive().AllocL());
-    if (aRegister)
+    if (newScheduler)
     {
-        TUid javaSifPluginUid = TUid::Uid(0x2002bc70);
-        _LIT_SECURE_ID(KJavaInstallerSid, 0x102033E6);
-        aScr->AddSoftwareTypeL(
-            Usif::KSoftwareTypeJava, javaSifPluginUid,
-            KJavaInstallerSid, KJavaInstallerSid, javaMimeTypes);
+        delete newScheduler;
+        newScheduler = 0;
     }
-    else
-    {
-        aScr->DeleteSoftwareTypeL(Usif::KSoftwareTypeJava, javaMimeTypes);
-    }
-    CleanupStack::PopAndDestroy(&javaMimeTypes);
-}
 
-/*
- * Class:     com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator
- * Method:    _registerJavaSoftwareType
- * Signature: (Z)I
- */
-JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1registerJavaSoftwareType
-(JNIEnv *, jclass, jboolean aRegister)
-{
-    RSoftwareComponentRegistry *pScr = NULL;
-    TRAPD(err, pScr = CreateScrL());
-    if (KErrNone != err)
+    if (KErrNone == err)
     {
-        return err;
+        // Start AppLib and bring it to foreground.
+        const TUid KAppLibUid = { 0x20022F35 };
+        TRAP(err, StartAppL(KAppLibUid));
     }
-    TRAP(err, RegisterJavaSoftwareTypeL(pScr, aRegister));
-    if (KErrNone != err)
-    {
-        ELOG1(EJavaInstaller,
-              "registerJavaSoftwareType: registration failed, error %d",
-              err);
-    }
-    pScr->Close();
-    delete pScr;
     return err;
 }
 
@@ -538,7 +484,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
  jint aMediaId, jstring aMidletInfoUrl, jstring aMidletDescription,
  jstring aDownloadUrl, jobject aComponentId)
 {
-    //__UHEAP_MARK;
+    __UHEAP_MARK;
     RSoftwareComponentRegistry *pScr =
         reinterpret_cast<RSoftwareComponentRegistry*>(aSessionHandle<<2);
     TComponentId componentId = -1;
@@ -547,7 +493,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
                                  aComponentFiles, aComponentSize, aIsRemovable,
                                  aIsDrmProtected, aIsOriginVerified, aIsUpdate, aMediaId,
                                  aMidletInfoUrl, aMidletDescription, aDownloadUrl));
-    //__UHEAP_MARKEND;
+    __UHEAP_MARKEND;
     if (KErrNone == err)
     {
         jclass clazz = aEnv->GetObjectClass(aComponentId);
@@ -565,7 +511,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1unregisterComponent
 (JNIEnv *, jclass, jint aSessionHandle, jint aComponentId)
 {
-    //__UHEAP_MARK;
+    __UHEAP_MARK;
     RSoftwareComponentRegistry *pScr =
         reinterpret_cast<RSoftwareComponentRegistry*>(aSessionHandle<<2);
     TInt err = KErrNone;
@@ -576,7 +522,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
     {
         TRAP(err, pScr->DeleteComponentL(aComponentId));
     }
-    //__UHEAP_MARKEND;
+    __UHEAP_MARKEND;
     return err;
 }
 
@@ -1085,11 +1031,11 @@ void LogComponentL(JNIEnv *aEnv, RSoftwareComponentRegistry *aScr, jstring aGlob
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1logComponent
 (JNIEnv *aEnv, jclass, jint aSessionHandle, jstring aGlobalId)
 {
-    __UHEAP_MARK;
+    //__UHEAP_MARK;
     RSoftwareComponentRegistry *pScr =
         reinterpret_cast<RSoftwareComponentRegistry*>(aSessionHandle<<2);
     TRAPD(err, LogComponentL(aEnv, pScr, aGlobalId));
-    __UHEAP_MARKEND;
+    //__UHEAP_MARKEND;
     return err;
 }
 
@@ -1128,17 +1074,6 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
  */
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1launchAppView
 (JNIEnv *, jclass)
-{
-    return KErrNone;
-}
-
-/*
- * Class:     com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator
- * Method:    _registerJavaSoftwareType
- * Signature: (Z)I
- */
-JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1registerJavaSoftwareType
-(JNIEnv *, jclass, jboolean)
 {
     return KErrNone;
 }

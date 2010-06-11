@@ -16,66 +16,85 @@
 */
 #include "javaapplicationsettings.h"
 
-JavaApplicationSettings::JavaApplicationSettings()
+JavaApplicationSettings::JavaApplicationSettings():
+    iName(QString("")), 
+    iValues(QStringList()), 
+    iId(0), iCurrentValue(0), 
+    iColumnName(L""), 
+    iTableName(""), 
+    iStorageValuesFilter(L""), 
+    iValuesColumnName(L""), 
+    iFilterColumnName(L""), 
+    iFilterColumnValue(L""), 
+    connectedToUi(false)
 {
-    iId = 0;
-    iName = "";
-    iCurrentValue = 0;
-    iColumnName = L"";
-    iTableName = "";
-    iFilterColumnName = L"";
-    iFilterColumnValue = L"";
-    iStorageValuesFilter = L"";
-    iValuesColumnName = L"";
 }
 
 JavaApplicationSettings::JavaApplicationSettings(const QString& aName, const QStringList& aValues):
-        iValues(aValues)
+        iName(aName), 
+        iValues(aValues),
+        iId(0), 
+        iCurrentValue(0), 
+        iColumnName(L""), 
+        iTableName(""), 
+        iStorageValuesFilter(L""), 
+        iValuesColumnName(L""), 
+        iFilterColumnName(L""), 
+        iFilterColumnValue(L""), 
+        connectedToUi(false)
 {
-    iName = aName;
-    iId = 0;
-    iCurrentValue = 0;
-    iColumnName = L"";
-    iTableName = "";
-    iFilterColumnName = L"";
-    iFilterColumnValue = L"";
-    iStorageValuesFilter = L"";
-    iValuesColumnName = L"";
 }
 
 JavaApplicationSettings::JavaApplicationSettings(const QString& aName, const QStringList& aValues, const std::wstring& aColumnName, const std::string& aTableName, const std::vector<std::wstring>& aStorageValues):
-        iValues(aValues)
+        iName(aName), 
+        iValues(aValues), 
+        iId(0), 
+        iCurrentValue(0), 
+        iColumnName(aColumnName), 
+        iTableName(aTableName), 
+        iStorageValues(aStorageValues), 
+        iStorageValuesFilter(L""), 
+        iValuesColumnName(L""), 
+        iFilterColumnName(L""), 
+        iFilterColumnValue(L""), 
+        connectedToUi(false)
 {
-    iName = aName;
-    iId = 0;
-    iCurrentValue = 0;
-    iColumnName = aColumnName;
-    iTableName = aTableName;
-    iStorageValues = aStorageValues;
-    iFilterColumnName = L"";
-    iFilterColumnValue = L"";
-    iStorageValuesFilter = L"";
-    iValuesColumnName = L"";
 }
 
 JavaApplicationSettings::JavaApplicationSettings(const QString& aName, const QStringList& aValues, const std::wstring& aColumnName, const std::string& aTableName, const std::vector<std::wstring>& aStorageValues, const std::wstring& aFilterColumnName, const std::wstring& aFilterColumnValue,  const std::wstring& aValuesColumnName):
-        iValues(aValues)
+        iName(aName), 
+        iValues(aValues), 
+        iId(0), 
+        iCurrentValue(0), 
+        iColumnName(aColumnName), 
+        iTableName(aTableName), 
+        iStorageValues(aStorageValues), 
+        iStorageValuesFilter(L""), 
+        iValuesColumnName(aValuesColumnName), 
+        iFilterColumnName(aFilterColumnName), 
+        iFilterColumnValue(aFilterColumnValue), 
+        connectedToUi(false)
 {
-    iName = aName;
-    iId = 0;
-    iCurrentValue = 0;
-    iColumnName = aColumnName;
-    iTableName = aTableName;
-    iStorageValues = aStorageValues;
-    iFilterColumnName = aFilterColumnName;
-    iFilterColumnValue = aFilterColumnValue;
-    iStorageValuesFilter = L"";
-    iValuesColumnName = aValuesColumnName;
 }
 
 void JavaApplicationSettings::setCurrentValue(int aCurrentValue)
 {
     iCurrentValue = aCurrentValue;
+}
+
+void JavaApplicationSettings::connectToUi()
+{
+    connectedToUi = true;
+}
+
+void JavaApplicationSettings::disconnectFromUi()
+{
+    connectedToUi = false;
+}
+
+bool JavaApplicationSettings::isConnectedToUi()
+{
+    return connectedToUi;
 }
 
 int JavaApplicationSettings::getCurrentValue()

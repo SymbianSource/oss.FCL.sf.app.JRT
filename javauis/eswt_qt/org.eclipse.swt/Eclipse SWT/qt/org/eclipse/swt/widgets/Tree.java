@@ -648,14 +648,14 @@ public class Tree extends Composite {
         super.hookEvents_pp();
 
         int selectionSignalProxy = OS.SignalHandler_new(topHandle,
-                display, OS.QSIGNAL_TREE_ITEMSELECTION_CHANGED);
+                OS.QSIGNAL_TREE_ITEMSELECTION_CHANGED);
 
         OS.QObject_connectOrThrow(topHandle,
                 "itemSelectionChanged()", selectionSignalProxy,
                 "widgetSignal()", OS.QT_AUTOCONNECTION);
 
         int itemActivatedSignalProxy = OS.SignalHandler_new(
-                topHandle, display, OS.QSIGNAL_TREE_ITEM_ACTIVATED);
+                topHandle, OS.QSIGNAL_TREE_ITEM_ACTIVATED);
 
         OS.QObject_connectOrThrow(topHandle,
                 "itemActivated(QTreeWidgetItem*,int)",
@@ -663,14 +663,14 @@ public class Tree extends Composite {
                 OS.QT_AUTOCONNECTION);
 
         int itemExpandedSignalProxy = OS.SignalHandler_new(
-                topHandle, display, OS.QSIGNAL_TREE_ITEM_EXPANDED);
+                topHandle, OS.QSIGNAL_TREE_ITEM_EXPANDED);
 
         OS.QObject_connectOrThrow(topHandle,
                 "itemExpanded(QTreeWidgetItem*)", itemExpandedSignalProxy,
                 "widgetSignal(QTreeWidgetItem*)", OS.QT_AUTOCONNECTION);
 
         int itemCollapsedSignalProxy = OS.SignalHandler_new(
-                topHandle, display, OS.QSIGNAL_TREE_ITEM_COLLAPSED);
+                topHandle, OS.QSIGNAL_TREE_ITEM_COLLAPSED);
 
         OS.QObject_connectOrThrow(topHandle,
                 "itemCollapsed(QTreeWidgetItem*)", itemCollapsedSignalProxy,

@@ -1136,6 +1136,28 @@ public final class GraphicsContext {
     }
 
     /**
+     * Draws given WindowSurface. Supported only when WindowSurface
+     * uses local off-screen image as draw surface.
+     * The defined rectangular area is drawn to the same x and y position in the 
+     * target as the given arguments x and y specify.
+     * 
+     * @param surface The WindowSurface to draw
+     * @param x The x-coordinate of the source area to draw
+     * @param y The y-coordinate of the source area to draw
+     * @param width The width of the source area to draw
+     * @param height The height of the source area to draw
+     * @throws NullPointerException if surface is null
+     */
+    public void drawWindowSurface(WindowSurface surface, int x, int y, int width, int height) {
+    	if(surface == null) 
+    	{
+    	    throw new NullPointerException("surface is null");
+    	}
+    	OS.graphicsContext_drawWindowSurface(handle, surface.handle, x, y, width, height);
+    }
+    
+    
+    /**
      * Fill interior of circular or elliptical arc within specified rectangular area, using background color.
      *
      * @param x The x coordinate of top left corner of arc rectangle

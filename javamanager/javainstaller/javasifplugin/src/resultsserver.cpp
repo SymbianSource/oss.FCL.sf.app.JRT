@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <unistd.h>
+#include <usiferror.h>
 
 #include "comms.h"
 #include "javasymbianoslayer.h"
@@ -44,6 +45,33 @@ ResultsServer::~ResultsServer()
 
 int ResultsServer::start()
 {
+    // Write reasonable error codes to iResults that can be used if
+    // Java Installer never returns InstallerResultMessage.
+    // If InstallerResultMessage is received the values will be overwritten.
+    TRAPD(err, iResults.AddIntL(KSifOutParam_ErrCategory, EUnexpectedError));
+    if (KErrNone != err)
+    {
+        ELOG1(EJavaInstaller,
+            "ResultsServer::start iResults.AddIntL ErrCategory err %d", err);
+    }
+
+    TRAP(err, iResults.AddIntL(KSifOutParam_ErrCode, KErrUnknown));
+    if (KErrNone != err)
+    {
+        ELOG1(EJavaInstaller,
+            "ResultsServer::start iResults.AddIntL ErrCode err %d", err);
+    }
+
+    TRAP(err, iResults.AddIntL(KSifOutParam_ExtendedErrCode, 0));
+    if (KErrNone != err)
+    {
+        ELOG1(EJavaInstaller,
+            "ResultsServer::start iResults.AddIntL ExtendedErrCode err %d", err);
+    }
+
+    // TODO: return also localized error message from usif
+    // common localization file after the localized strings are available
+
     iRunning = 1;
     iComms.registerDefaultListener(this);
     return iComms.start(IPC_ADDRESS_JAVA_SIF_PLUGIN_C);
@@ -118,14 +146,6 @@ void ResultsServer::processMessage(CommsMessage& aMessage)
             if (KErrNone != result)
             {
                 // return common error information
-                TRAP(err, iResults.AddIntL(KSifOutParam_ExtendedErrCode, result));
-                if (KErrNone != err)
-                {
-                    ELOG1(EJavaInstaller,
-                        "ResultsServer::processMessage iResults.AddIntL ExtendedErrCode err %d",
-                        err);
-                }
-
                 TRAP(err, iResults.AddIntL(KSifOutParam_ErrCode, result));
                 if (KErrNone != err)
                 {
@@ -197,7 +217,24 @@ void ResultsServer::processMessage(CommsMessage& aMessage)
             }
             else
             {
-                // operation succeeded
+                // Operation succeeded
+
+                // Overwrite (reset) the default error values set for the case where no
+                // InstallerResultMessage is never received
+                TRAPD(err, iResults.AddIntL(KSifOutParam_ErrCategory, 0));
+                if (KErrNone != err)
+                {
+                    ELOG1(EJavaInstaller,
+                        "ResultsServer::processMessage iResults.AddIntL ErrCategory err %d", err);
+                }
+
+                TRAP(err, iResults.AddIntL(KSifOutParam_ErrCode, 0));
+                if (KErrNone != err)
+                {
+                    ELOG1(EJavaInstaller,
+                        "ResultsServer::processMessage iResults.AddIntL ErrCode err %d", err);
+                }
+
 
                 if (INSTALL_OPERATION == operation)
                 {

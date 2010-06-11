@@ -42,9 +42,10 @@ CSwtMobileDevice* CSwtMobileDevice::NewL()
 // ---------------------------------------------------------------------------
 //
 CSwtMobileDevice::CSwtMobileDevice()
-    :iSupportedLights(CHWRMLight::ENoTarget),
-    iLightLevel(KErrNotFound),
-    iHWRMLight(NULL), iVibra(NULL)
+    : iVibra(NULL),
+      iHWRMLight(NULL),
+      iSupportedLights(CHWRMLight::ENoTarget),
+      iLightLevel(KErrNotFound)
     {
     }
 

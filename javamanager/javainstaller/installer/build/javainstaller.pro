@@ -60,7 +60,8 @@ symbian {
     }
 
     contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_10_1_ONWARDS) {
-        LIBS += -lQtServiceFramework
+        CONFIG += hb
+        LIBS += -lxqservice
     }
 
     contains(PROJECT_DEFINES,RD_JAVA_USIF_NOTIFY_PROGRESS) {

@@ -75,7 +75,6 @@ CJavaCertStoreImpl::~CJavaCertStoreImpl()
         Cancel();
     }
 
-    mComms.unregisterListener(PLUGIN_ID_JAVA_CERT_STORE_ECOM_C,this);
     mComms.unregisterDefaultListener(this);
     mComms.disconnect();
     mCertsData.ResetAndDestroy();
@@ -388,7 +387,7 @@ void CJavaCertStoreImpl::List(RMPointerArray<CCTCertInfo>& aCerts,
     TBool validRequest = validateCertAttrFilter(aFilter);
     if (!validRequest)
     {
-        ELOG(EJavaSecurity,"No certificates matching the filter supplied");
+        LOG(EJavaSecurity, EInfo, "No certificates matching the filter supplied");
         User::RequestComplete(pRequestStatus,KErrNone);
         return;
     }

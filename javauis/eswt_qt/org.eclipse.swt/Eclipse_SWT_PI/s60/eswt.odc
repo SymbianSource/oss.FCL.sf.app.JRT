@@ -8,7 +8,9 @@ org/eclipse/swt/events
 org/eclipse/swt/graphics
 org/eclipse/swt/internal
 org/eclipse/swt/internal/qt
+org/eclipse/swt/internal/qt/midp
 org/eclipse/swt/internal/qt/graphics
+org/eclipse/swt/internal/qt/webkit
 org/eclipse/swt/internal/image
 org/eclipse/swt/internal/extension
 org/eclipse/swt/layout

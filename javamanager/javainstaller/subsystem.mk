@@ -20,17 +20,14 @@ COMPONENTS = \
 	installerui/build \
 	installer/build \
 
-NONQTSUBSYSTEMS = \
-	appinstuiplugin/build
-
-SYMBIAN_ONLY = \
-	appinstuiplugin/build
-
-ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK    
-    NONQTSUBSYSTEMS += javasifplugin/build
-    SYMBIAN_ONLY += javasifplugin/build
+ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
+    NONQTSUBSYSTEMS = javasifplugin/build
+    SYMBIAN_ONLY = javasifplugin/build
+else
+    NONQTSUBSYSTEMS = appinstuiplugin/build
+    SYMBIAN_ONLY = appinstuiplugin/build
 endif
-    
+
 LINUX_ONLY =
 
 include ${JAVA_SRC_ROOT}/build/Makefile.subsystem

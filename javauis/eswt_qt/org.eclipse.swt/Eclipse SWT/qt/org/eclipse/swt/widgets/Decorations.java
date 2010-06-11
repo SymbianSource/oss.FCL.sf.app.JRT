@@ -681,7 +681,7 @@ public void setMenuBar (Menu menu) {
         menuBar = menu;
         ownMenuBar = 0;
         //Inform CommandArranger
-        display.commandArranger.menuBarChanged( this );
+        Display.commandArranger.menuBarChanged( this );
     }
 }
 
@@ -767,7 +767,7 @@ boolean invokeDefaultButton() {
 }
 
 void saveFocus () {
-    Control control = display._getFocusControl ();
+    Control control = Display._getFocusControl ();
     if (control != null && control != this && this == control.menuShell ()) {
         setSavedFocus (control);
     }

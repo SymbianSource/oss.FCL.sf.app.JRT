@@ -24,7 +24,7 @@ export.release     : Export all release binaries
 export.lib         : Export native libraries
 export.lib.debug   : Export debug native libraries
 export.lib.release : Export release native libraries
-run.tests		   : Run JUnit and MT tests
+run.tests          : Run JUnit and MT tests
         </echo>
     </target>
 
@@ -38,8 +38,8 @@ run.tests		   : Run JUnit and MT tests
         <property name="lib.path" value = "${plugin.dir}/Eclipse_SWT_PI/qt/library"/>
         <property name="lib.gfx.path" value = "${plugin.dir}/Eclipse_SWT_PI/qt/library/graphics"/>
         <property name="odc.location" value = "${plugin.dir}/Eclipse_SWT_PI/s60"/>
-    	<mkdir dir="${lib.path}/${generated.native.dir}"/>
-        <!-- Platform Specific properties -->
+        <mkdir dir="${lib.path}/${generated.native.dir}"/>
+        <mkdir dir="${lib.path}/${generated.native.dir.webkit}"/>
    </target>
 
     <target name="init.env">
@@ -66,13 +66,13 @@ run.tests		   : Run JUnit and MT tests
         <property name="export.lib.debug.path" value = "${env.JAVA_BIN_ROOT}/lib"/>
         <property name="export.lib.release.path" value = "${env.JAVA_BIN_ROOT}/lib"/>
     </target>
-	
+
     <target name="download" depends="init">
         <delete dir="${temp.dir}"/>
         <mkdir dir="${temp.dir}/swtdownload/"/>
         <antcall target="build.jar"/>
         <jar jarfile="${build.result.dir}/${jar.filename}" basedir="${basedir}/release/" 
-        	update="true" includes="eswt*.dll,libeswt*.so"/>
+        update="true" includes="eswt*.dll,libeswt*.so"/>
         <copy file="${build.result.dir}/${jar.filename}" todir="${temp.dir}/swtdownload"/>
         <antcall target="src.zip"/>
         <copy file="${build.result.dir}/src.zip" todir="${temp.dir}/swtdownload"/>
@@ -100,6 +100,8 @@ run.tests		   : Run JUnit and MT tests
             <fileset dir="${plugin.dir}/Eclipse_SWT_PI/qt/library/"/>
             <fileset dir="${plugin.dir}/Eclipse_SWT_PI/qt/graphics_library/"/>
             <fileset dir="${plugin.dir}/Eclipse_SWT_PI/qt/" includes="**/*.java" excludes=""/>
+            <fileset dir="${plugin.dir}/Eclipse_SWT_PI/linux/" includes="**/*.java" excludes=""/>
+            <fileset dir="${plugin.dir}/Eclipse_SWT_PI/webkit/" includes="**/*.java" excludes=""/>
         	<fileset dir="${plugin.dir}/../com.nokia.swt.extensions/extensions/" includes="**/*.java" excludes=""/>
             <fileset dir="${plugin.dir}/Eclipse SWT/common_j2${java.edition}/" includes="**/*.properties" excludes=""/>
             <fileset dir="${plugin.dir}/Eclipse SWT/common/" includes="**/version.txt" excludes=""/>
@@ -125,6 +127,8 @@ run.tests		   : Run JUnit and MT tests
             <fileset dir="${plugin.dir}/Eclipse SWT Drag and Drop/qt/" includes="**/*.java" excludes=""/>
             <fileset dir="${plugin.dir}/Eclipse_SWT_PI/common_j2${java.edition}/" includes="**/*.java" excludes=""/>
             <fileset dir="${plugin.dir}/Eclipse_SWT_PI/qt/" includes="**/*.java" excludes=""/>
+            <fileset dir="${plugin.dir}/Eclipse_SWT_PI/linux/" includes="**/*.java" excludes=""/>
+            <fileset dir="${plugin.dir}/Eclipse_SWT_PI/webkit/" includes="**/*.java" excludes=""/>
             <fileset dir="${plugin.dir}/Eclipse_SWT_PI/qt/library/"/>
             <fileset dir="${plugin.dir}/Eclipse_SWT_PI/qt/graphics_library/"/>
             <fileset dir="${plugin.dir}/../com.nokia.swt.extensions/extensions/" includes="**/*.java" excludes=""/>
@@ -189,11 +193,11 @@ run.tests		   : Run JUnit and MT tests
             <src path="${plugin.dir}/Eclipse SWT Browser/qt/"/>
             <src path="${plugin.dir}/Eclipse SWT Drag and Drop/qt/"/>
             <src path="${plugin.dir}/Eclipse_SWT_PI/common_j2${java.edition}/"/>
-            <!-- Use S60 CommandPresentationStrategy also for Linux J2ME target -->
-            <src path="${plugin.dir}/Eclipse_SWT_PI/s60/"/>
             <src path="${plugin.dir}/Eclipse_SWT_PI/qt/"/>
+            <src path="${plugin.dir}/Eclipse_SWT_PI/linux/"/>
+            <src path="${plugin.dir}/Eclipse_SWT_PI/webkit/"/>
             <src path="${plugin.dir}/../com.nokia.swt.extensions/extensions/"/>
-            <src path="${plugin.dir}/../com.nokia.swt.extensions/midp_common/"/>
+            <src path="${plugin.dir}/../com.nokia.swt.extensions/midp/"/>
             <classpath>
                 <pathelement location="./java_signature_test.jar"/>
                 <pathelement location="${plugin.dir}/extra_jars/cdc-compilation-support.jar"/>
@@ -221,10 +225,16 @@ run.tests		   : Run JUnit and MT tests
         <antcall target="build.lib.common">
             <param name="build.lib.common.config" value="debug"/>
         </antcall>
+        <antcall target="build.lib.common.webkit">
+            <param name="build.lib.common.config" value="debug"/>
+        </antcall>
     </target>
 
     <target name="build.lib.release" depends="init">
         <antcall target="build.lib.common">
+            <param name="build.lib.common.config" value="release"/>
+        </antcall>
+        <antcall target="build.lib.common.webkit">
             <param name="build.lib.common.config" value="release"/>
         </antcall>
     </target>
@@ -251,16 +261,36 @@ run.tests		   : Run JUnit and MT tests
             tofile="${build.result.dir}/${build.lib.common.config}/${lib.filename}" overwrite="true" verbose="true"/>
     </target>
 
+    <target name="build.lib.common.webkit" depends="init" description="params: config">
+        <javah destdir="${lib.path}/${generated.native.dir.webkit}/" classpath="${plugin.dir}/bin" verbose="yes">
+            <class name="org.eclipse.swt.internal.qt.webkit.OS_webkit"/>
+        </javah>
+        <antcall target="qmake">
+            <param name="qmake.dir" value="${lib.path}/webkit"/>
+            <param name="qmake.target" value="${build.lib.common.config}"/>
+            <param name="qmake.spec" value="${lib.spec}"/>
+            <param name="qmake.file" value="${lib.makefile}.${build.lib.common.config}"/>
+        </antcall>
+        <antcall target="make">
+            <param name="make.dir" value="${lib.path}/webkit"/>
+            <param name="make.file" value="${lib.makefile}.${build.lib.common.config}"/>
+            <param name="make.target" value="all"/>
+        </antcall>
+        <mkdir dir="${build.result.dir}/${build.lib.common.config}/"/>
+        <copy file="${lib.path}/webkit/${build.lib.common.config}/${lib.filename.webkit}" 
+            tofile="${build.result.dir}/${build.lib.common.config}/${lib.filename.webkit}" overwrite="true" verbose="true"/>
+    </target>
+
     <target name="clean">
         <antcall target="clean.jar"/>
         <antcall target="clean.lib"/>
     </target>
-	
+        
     <target name="clean.jar" depends="init" description="">
         <delete dir="${plugin.dir}/bin"/>
         <delete file="${build.result.dir}/${jar.filename}" verbose="true"/>
         <delete file="${export.jar.debug.path}/${jar.filename}" verbose="true"/>
-    	<delete file="${export.jar.release.path}/${jar.filename}" verbose="true"/>
+        <delete file="${export.jar.release.path}/${jar.filename}" verbose="true"/>
     </target>
 
     <target name="clean.lib">
@@ -289,7 +319,8 @@ run.tests		   : Run JUnit and MT tests
         </antcall>
         <delete file="${lib.path}/${lib.makefile}.${clean.lib.common.config}" verbose="true"/>
         <delete dir="${lib.path}/${generated.native.dir}" verbose="true"/>
-    	<delete dir="${lib.path}/${clean.lib.common.config}" verbose="true"/>
+        <delete dir="${lib.path}/${generated.native.dir.webkit}" verbose="true"/>
+        <delete dir="${lib.path}/${clean.lib.common.config}" verbose="true"/>
         <delete file="${build.result.dir}/${clean.lib.common.config}/${lib.filename}" verbose="true"/>
         <condition property="clean.lib.common.export.path" value="${export.lib.debug.path}" else="${export.lib.release.path}">
             <equals arg1="${clean.lib.common.config}" arg2="debug"/>
@@ -364,20 +395,21 @@ run.tests		   : Run JUnit and MT tests
             <arg value="OBJECTS_DIR=${qmake.target}/${qmake.spec}/build"/>
         </exec>
     </target>
-	
+
     <target name="build.tests" depends="init,build.release">
-    	<mkdir dir="${tests.utils.dir}/java/bin"/>
-    	<mkdir dir="${tests.junit.dir}/bin"/>
-    	<mkdir dir="${tests.mt.dir}/bin"/>
+        <mkdir dir="${tests.utils.dir}/java/bin"/>
+        <mkdir dir="${tests.junit.dir}/bin"/>
+        <mkdir dir="${tests.mt.dir}/bin"/>
+        
         <javac destdir="${tests.utils.dir}/java/bin" source="${javac.source}" target="${javac.target}" 
-        	debug="${javac.debug}" debuglevel="lines,vars,source" verbose="true" failonerror="true">
-        	<src path="${tests.utils.dir}/java/src/"/>
-	        <classpath>
-            	<pathelement path="${plugin.dir}/bin/"/>
-	        </classpath>
+                debug="${javac.debug}" debuglevel="lines,vars,source" verbose="true" failonerror="true">
+                <src path="${tests.utils.dir}/java/src/"/>
+            <classpath>
+                <pathelement path="${plugin.dir}/bin/"/>
+            </classpath>
         </javac>
         
-		<javah outputfile="${tests.utils.dir}/native/os.h" classpath="${tests.utils.dir}/java/bin" verbose="yes">
+        <javah outputfile="${tests.utils.dir}/native/os.h" classpath="${tests.utils.dir}/java/bin" verbose="yes">
             <class name="com.nokia.mj.impl.uitestutils.XlibUtils"/>
         </javah>
         <antcall target="qmake">

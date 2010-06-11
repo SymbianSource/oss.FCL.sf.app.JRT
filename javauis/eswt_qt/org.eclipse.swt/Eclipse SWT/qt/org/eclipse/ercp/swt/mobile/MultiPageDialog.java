@@ -177,7 +177,7 @@ public class MultiPageDialog extends Dialog {
         
         void hookEvents() {
             Internal_PackageSupport.hookEvents(this);
-            int signalProxy = OS.SignalHandler_new(handle(), Internal_PackageSupport.display(this),
+            int signalProxy = OS.SignalHandler_new(handle(), 
                     OS.QSIGNAL_CURRENT_TAB_CHANGED);
             OS.QObject_connectOrThrow(handle(), "currentChanged(int)", signalProxy,
                     "widgetSignal(int)", OS.QT_AUTOCONNECTION);

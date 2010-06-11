@@ -63,6 +63,10 @@ grant user "Authentication" session,blanket,oneshot,no {
     permission javax.microedition.securityservice.CMSMessageSignatureService "pki://*" "authenticate";
 }
 
+grant user "Url start" session,oneshot,no {
+    permission javax.microedition.midlet.CmdLineArgsPermission;
+}
+
 grant allowed {
     permission javax.microedition.io.Connector.sms "sms://*" "open,receive";
     permission javax.microedition.io.Connector.mms "mms://*" "open,receive";

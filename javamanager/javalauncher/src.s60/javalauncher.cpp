@@ -672,8 +672,8 @@ TInt startJavaCaptain()
         LOG(EJavaCaptain, EInfo, "javalauncher: startJavaCaptain javacaptain.exe was started ok");
 #endif
 
-        // Wait 3 seconds so that Java Captain has time to start
-        User::After(3000000);
+        // Wait 3 seconds so that Java Captain has time to start and get read to answer Comms
+        User::After(3000000); // codescanner::userafter
     }
     else
     {

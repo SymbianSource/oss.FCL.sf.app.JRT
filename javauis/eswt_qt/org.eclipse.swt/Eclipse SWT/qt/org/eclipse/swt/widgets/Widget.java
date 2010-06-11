@@ -185,7 +185,7 @@ void _addListener (int eventType, Listener listener) {
 }
 
 final void addWidget (int handle) {
-    display.addWidget(handle, this);
+    Display.addWidget(handle, this);
 }
 
 final void checkOrientation (Widget parent) {
@@ -204,14 +204,14 @@ final void checkOrientation (Widget parent) {
         } else {
             // Use the default determined by a system property. 
             // Setting RIGHT_TO_LEFT flag triggers the coordinate mirroring. 
-            if(display.defaultOrientation != SWT.LEFT_TO_RIGHT) {
-                style |= display.defaultOrientation;
+            if(Display.defaultOrientation != SWT.LEFT_TO_RIGHT) {
+                style |= Display.defaultOrientation;
             }
             
             // If there's no parent this widget follows the system language 
             // direction if that's the default behavior configured by a system 
             // property. 
-            if(display.defaultOrientationIsSysLangDirection)
+            if(Display.defaultOrientationIsSysLangDirection)
                 state |= WidgetState.FOLLOWS_SYSLANG_DIRECTION;
         }
     }
@@ -328,7 +328,7 @@ void createWidget (int index) {
 }
 
 void deregister_pp () {
-    if (handle != 0) display.removeWidget (handle);
+    if (handle != 0) Display.removeWidget (handle);
 }
 
 void destroyWidget () {
@@ -377,7 +377,7 @@ final void error (int code) {
 }
 
 final boolean filters (int eventType) {
-    return display.filters (eventType);
+    return Display.filters (eventType);
 }
 
 static final Command[] getCommands(Control control) {
@@ -874,7 +874,7 @@ void qt_swt_event_widgetResized_pp(int widgetHandle, int oldWidth, int oldHeight
 
 void register_pp () {
     if (handle == 0) return;
-    if ((state & WidgetState.HANDLE) != 0) display.addWidget (handle, this);
+    if ((state & WidgetState.HANDLE) != 0) Display.addWidget (handle, this);
 }
 
 void release (boolean destroy) {
@@ -1019,12 +1019,12 @@ protected void removeListener (int eventType, SWTEventListener handler) {
 }
 
 final Widget removeWidget (int handle) {
-    return display.removeWidget(handle);
+    return Display.removeWidget(handle);
 }
 
 final void sendEvent (Event event) {
     Display display = event.display;
-    if (!display.filterEvent (event)) {
+    if (!Display.filterEvent (event)) {
         if (eventTable != null) eventTable.sendEvent (event);
     }
 }
@@ -1038,7 +1038,7 @@ final void sendEvent (int eventType, Event event) {
 }
 
 final void sendEvent (int eventType, Event event, boolean send) {
-    if (eventTable == null && !display.filters (eventType)) {
+    if (eventTable == null && !Display.filters (eventType)) {
         return;
     }
     if (event == null) event = new Event ();
@@ -1046,12 +1046,12 @@ final void sendEvent (int eventType, Event event, boolean send) {
     event.display = display;
     event.widget = this;
     if (event.time == 0) {
-        event.time = display.getLastEventTime ();
+        event.time = Display.getLastEventTime ();
     }
     if (send) {
         sendEvent (event);
     } else {
-        display.postEvent (event);
+        Display.postEvent (event);
     }
 }
 

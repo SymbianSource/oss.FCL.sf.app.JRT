@@ -1,6 +1,2 @@
 # Set Java version (must be dot separated, without spaces)
-ifdef RD_JAVA_S60_RELEASE_5_0_IAD
-  JAVA_VERSION = 2.1.26
-else 
-  JAVA_VERSION = 2.1.26
-endif
+JAVA_VERSION = 2.2.1

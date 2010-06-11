@@ -66,7 +66,7 @@ void CReceiver::RunL()
         // buffer was not big enough for the message so reallocate buffer with correct size
         mBuffer.Close();
         mBuffer.ReAllocL(mRequiredLength());
-        WLOG2(EJavaComms, "%s: increasing buffer size to %d", __PRETTY_FUNCTION__, mRequiredLength());
+        LOG2(EJavaComms, EInfo, "%s: increasing buffer size to %d", __PRETTY_FUNCTION__, mRequiredLength());
         Receive();
     }
     break;

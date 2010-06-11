@@ -16,8 +16,8 @@
 */
 package javax.microedition.lcdui;
 
-import org.eclipse.ercp.swt.mobile.ConstrainedText;
 import org.eclipse.ercp.swt.mobile.TextExtension;
+import org.eclipse.swt.internal.extension.TextExtensionExtension;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionListener;
@@ -326,7 +326,6 @@ class TextWrapper
                     {
                         retTopPixel = ((TextExtension) control).getTopPixel();
                     }
-                    // ConstrainedText does not scroll -> value is 0
                 }
             });
         }
@@ -837,10 +836,6 @@ class TextWrapper
             {
                 ((TextExtension) control).addModifyListener(ltnr);
             }
-            else
-            {
-                ((ConstrainedText) control).addModifyListener(ltnr);
-            }
         }
     }
 
@@ -858,10 +853,6 @@ class TextWrapper
             {
                 ((TextExtension) control).addSelectionListener(ltnr);
             }
-            else
-            {
-                ((ConstrainedText) control).addSelectionListener(ltnr);
-            }
         }
     }
 
@@ -875,7 +866,6 @@ class TextWrapper
      */
     static Control eswtConstructText(Composite parent, int aStyle, int aConstraints)
     {
-        Control ret = null;
 
         int style = aStyle;
         int extractedFlag = aConstraints & ~TextField.CONSTRAINT_MASK;
@@ -884,6 +874,7 @@ class TextWrapper
         if((extractedFlag & TextField.PASSWORD) == TextField.PASSWORD)
         {
             // Text class will remove incompatible flags for SINGLE
+            style &= ~SWT.MULTI;
             style |= SWT.SINGLE | SWT.PASSWORD;
         }
         if((extractedFlag & TextField.UNEDITABLE) == TextField.UNEDITABLE)
@@ -893,27 +884,20 @@ class TextWrapper
 
         if(extractedConstraint == TextField.NUMERIC)
         {
-            ret = new ConstrainedText(parent, style, ConstrainedText.NUMERIC);
+            extractedConstraint = TextExtensionExtension.NUMERIC;
         }
         else if(extractedConstraint == TextField.DECIMAL)
         {
-            ret = new ConstrainedText(parent, style, ConstrainedText.DECIMAL);
+            extractedConstraint = TextExtensionExtension.DECIMAL;
         }
         else if(extractedConstraint == TextField.PHONENUMBER)
         {
-            ret = new ConstrainedText(parent, style, ConstrainedText.PHONENUMBER);
-        }
-        else if(extractedConstraint == TextField.NON_PREDICTIVE
-                || extractedConstraint == TextField.SENSITIVE)
-        {
-            // We treat non-predictive and sensitive to be equal
-            ret = new TextExtension(parent, style, TextExtension.NON_PREDICTIVE);
-        }
-        else
-        {
-            ret = new TextExtension(parent, style);
-        }
-        return ret;
+            extractedConstraint = TextExtensionExtension.PHONENUMBER;
+       }
+       else {
+            extractedConstraint = 0;
+       }
+        return new TextExtensionExtension(parent, style,extractedConstraint);
     }
 
     /**
@@ -929,10 +913,6 @@ class TextWrapper
             if(control instanceof TextExtension)
             {
                 ret = ((TextExtension) control).getCaretPosition();
-            }
-            else
-            {
-                ret = ((ConstrainedText) control).getCaretPosition();
             }
         }
         return ret;
@@ -970,10 +950,6 @@ class TextWrapper
             {
                 ret = ((TextExtension) control).getText();
             }
-            else
-            {
-                ret = ((ConstrainedText) control).getText();
-            }
         }
         return ret;
     }
@@ -1010,10 +986,6 @@ class TextWrapper
             {
                 ret = ((TextExtension) control).getLineHeight();
             }
-            else
-            {
-                ret = ((ConstrainedText) control).getSize().y;
-            }
         }
         return ret;
     }
@@ -1031,10 +1003,6 @@ class TextWrapper
             if(control instanceof TextExtension)
             {
                 ret = ((TextExtension) control).getTextLimit();
-            }
-            else
-            {
-                ret = ((ConstrainedText) control).getTextLimit();
             }
         }
         return ret;
@@ -1054,11 +1022,6 @@ class TextWrapper
             {
                 ret = ((TextExtension) control).getSelectionText();
             }
-            else
-            {
-                // TODO: eSWT support required - get selection in ConstrainedText
-                ret = ((ConstrainedText) control).getText();
-            }
         }
         return ret;
     }
@@ -1076,10 +1039,6 @@ class TextWrapper
             if(control instanceof TextExtension)
             {
                 ret = ((TextExtension) control).getCharCount();
-            }
-            else
-            {
-                ret = ((ConstrainedText) control).getCharCount();
             }
         }
         return ret;
@@ -1099,10 +1058,6 @@ class TextWrapper
             {
                 ((TextExtension) control).removeModifyListener(ltnr);
             }
-            else
-            {
-                ((ConstrainedText) control).removeModifyListener(ltnr);
-            }
         }
     }
 
@@ -1120,10 +1075,6 @@ class TextWrapper
             {
                 ((TextExtension) control).removeSelectionListener(ltnr);
             }
-            else
-            {
-                ((ConstrainedText) control).removeSelectionListener(ltnr);
-            }
         }
     }
 
@@ -1140,10 +1091,6 @@ class TextWrapper
             if(control instanceof TextExtension)
             {
                 ((TextExtension) control).setText(text);
-            }
-            else
-            {
-                ((ConstrainedText) control).setText(text);
             }
         }
     }
@@ -1233,10 +1180,6 @@ class TextWrapper
             {
                 ((TextExtension) control).setTextLimit(maxSize);
             }
-            else
-            {
-                ((ConstrainedText) control).setTextLimit(maxSize);
-            }
         }
     }
 
@@ -1254,10 +1197,6 @@ class TextWrapper
             if(control instanceof TextExtension)
             {
                 ((TextExtension) control).setSelection(sta, end);
-            }
-            else
-            {
-                ((ConstrainedText) control).setSelection(sta, end);
             }
         }
     }

@@ -109,19 +109,27 @@ public final class NetworkStatus {
 		handleCallInformationChanged();
 	}
 	
+	private static Display getDisplay() {
+		Display display;
+		display = Internal_PackageSupport.getInternalDisplayInstance();
+		if(display == null) {
+			display = Internal_PackageSupport.getDisplayInstance();
+		}
+		return display;
+	}
+	
 	private static void addDisposeListener() {
-		Display display = Internal_PackageSupport.getDisplayInstance();
 		disposeListener = new Listener() {
 			public void handleEvent(Event event) {
 				destroy();
 			}
 		};
-		display.addListener(SWT.Dispose, disposeListener);
+		getDisplay().addListener(SWT.Dispose, disposeListener);
 	}
 	
 	private static void removeDisposeListener() {
 		if(disposeListener != null) {
-			Display display = Internal_PackageSupport.getDisplayInstance();
+			Display display = getDisplay();
 			if(display != null && !display.isDisposed()) {
 				display.removeListener(SWT.Dispose, disposeListener);
 				disposeListener = null;
@@ -130,7 +138,7 @@ public final class NetworkStatus {
 	}
 	
 	private static void checkThread() {
-		Display display = Internal_PackageSupport.getDisplayInstance();
+		Display display = getDisplay();
 		if(display == null) {
 			throw new RuntimeException("Display doesn't exist");
 		}
@@ -207,7 +215,7 @@ public final class NetworkStatus {
     	if(notifiedStates != 0) {
     	    final NetworkStatusListener asyncNofityListener = listener; 
     	    final int asyncNotifyStates = notifiedStates;
-    		Internal_PackageSupport.getDisplayInstance().asyncExec(new Runnable() {
+    	    getDisplay().asyncExec(new Runnable() {
 				public void run() {
 					asyncNofityListener.stateChanged(asyncNotifyStates);
 				}
@@ -255,7 +263,7 @@ public final class NetworkStatus {
 	private void hookEvents() {
 		// Packet data connections
 		if(qNetworkConfigurationManagerHandle != 0) {
-	        int signalProxy = org.eclipse.swt.internal.qt.OS.SignalHandler_new(
+	        int signalProxy = org.eclipse.swt.internal.qt.OS.SignalForwarder_new(
 	        		qNetworkConfigurationManagerHandle, this, OS.QSIGNAL_NETWORKCONFIGURATIONCHANGED);
 	        org.eclipse.swt.internal.qt.OS.QObject_connectOrThrow(
 	        		qNetworkConfigurationManagerHandle, 
@@ -276,7 +284,7 @@ public final class NetworkStatus {
 		
         // Voice calls
         if(xqCallInfoHandle != 0) {
-	        int signalProxy = org.eclipse.swt.internal.qt.OS.SignalHandler_new(
+	        int signalProxy = org.eclipse.swt.internal.qt.OS.SignalForwarder_new(
 	        		xqCallInfoHandle, this, OS.QSIGNAL_CALLINFORMATIONCHANGED);
 	        org.eclipse.swt.internal.qt.OS.QObject_connectOrThrow(
 	        		xqCallInfoHandle, 

@@ -128,13 +128,13 @@ private:
         QEvent* mEvent;
         };
     
-    QTime mStartTime;
-    QPointer<JniUtils> mJniUtils;
-    SwtFontCache* mFontCache;
     QVector<SwtDeferredQEvent*> mDeferredEvents;
 #ifdef __SYMBIAN32__
     CSwtMobileDevice* iMobileDevice;
 #endif
+    QPointer<JniUtils> mJniUtils;
+    SwtFontCache* mFontCache;
+    QTime mStartTime;
 };
 
 }

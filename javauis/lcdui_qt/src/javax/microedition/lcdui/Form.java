@@ -250,7 +250,7 @@ public class Form extends Screen
             throw new IllegalStateException(
                 MsgRepository.FORM_EXCEPTION_ITEM_OWNED_BY_CONTAINER);
         }
-        if((position < 0) || (position > (items.size() - 1)))
+        if ((position < 0) || (position > items.size() )) 
         {
             throw new IndexOutOfBoundsException(
                 MsgRepository.FORM_EXCEPTION_INVALID_ITEM_INDEX);

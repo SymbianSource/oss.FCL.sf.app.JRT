@@ -162,7 +162,7 @@ public class Button extends Control {
     }
 
     void hookEvents_pp () {
-        int signalProxy = OS.SignalHandler_new(handle, display, OS.QSIGNAL_CLICKED);
+        int signalProxy = OS.SignalHandler_new(handle, OS.QSIGNAL_CLICKED);
         OS.QObject_connectOrThrow(handle, "clicked()", signalProxy, "widgetSignal()", OS.QT_AUTOCONNECTION);
     }
 

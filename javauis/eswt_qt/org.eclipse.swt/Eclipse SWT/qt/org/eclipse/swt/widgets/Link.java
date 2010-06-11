@@ -200,7 +200,7 @@ public class Link extends org.eclipse.swt.widgets.Control {
     
     void hookEvents_pp() {
         super.hookEvents_pp();
-        int signalProxy = OS.SignalHandler_new(handle, display,
+        int signalProxy = OS.SignalHandler_new(handle, 
                 OS.QSIGNAL_LINKACTIVATED);
         OS.QObject_connectOrThrow(handle, "linkActivated(const QString&)",
                 signalProxy, "widgetSignal(const QString&)",

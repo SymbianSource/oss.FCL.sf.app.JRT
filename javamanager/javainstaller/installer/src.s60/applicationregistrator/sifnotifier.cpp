@@ -161,7 +161,7 @@ void NotifyEndL(
     jstring aGlobalComponentId, jint aErrCategory, jint aErrCode,
     jstring aErrMsg, jstring aErrMsgDetails)
 {
-    __UHEAP_MARK;
+    //__UHEAP_MARK;
     HBufC *globalComponentId = CreateHBufCFromJavaStringLC(aEnv, aGlobalComponentId);
     HBufC *errMsg = NULL;
     if (NULL != aErrMsg)
@@ -174,24 +174,29 @@ void NotifyEndL(
         errMsgDetails = CreateHBufCFromJavaStringLC(aEnv, aErrMsgDetails);
     }
 
-    CSifOperationEndData *endData = CSifOperationEndData::NewLC(
-                                        *globalComponentId, (TErrorCategory)aErrCategory, aErrCode,
-                                        *errMsg, *errMsgDetails);
+    CSifOperationEndData *endData =
+        CSifOperationEndData::NewLC(
+            *globalComponentId, (TErrorCategory)aErrCategory, aErrCode,
+            (NULL != errMsg? *errMsg: KNullDesC()),
+            (NULL != errMsgDetails? *errMsgDetails: KNullDesC()));
 
+    // Do not use UHEAP macros around PublishCompletionL() because it
+    // creates a timer object which gets deleted only when the notifier
+    // object is deleted.
     aNotifier->PublishCompletionL(*endData);
 
     CleanupStack::PopAndDestroy(endData);
 
-    if (NULL != aErrMsg)
-    {
-        CleanupStack::PopAndDestroy(errMsg);
-    }
-    if (NULL != aErrMsgDetails)
+    if (NULL != errMsgDetails)
     {
         CleanupStack::PopAndDestroy(errMsgDetails);
     }
+    if (NULL != errMsg)
+    {
+        CleanupStack::PopAndDestroy(errMsg);
+    }
     CleanupStack::PopAndDestroy(globalComponentId);
-    __UHEAP_MARKEND;
+    //__UHEAP_MARKEND;
 }
 
 /*
@@ -203,10 +208,25 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
 (JNIEnv *aEnv, jclass, jint aHandle, jstring aGlobalComponentId,
  jint aErrCategory, jint aErrCode, jstring aErrMsg, jstring aErrMsgDetails)
 {
+    CActiveScheduler* newScheduler = 0;
+    if (0 == CActiveScheduler::Current())
+    {
+        // Create ActiveScheduler as it does not yet exist.
+        newScheduler = new CActiveScheduler;
+        CActiveScheduler::Install(newScheduler);
+    }
+
     CPublishSifOperationInfo *pNotifier =
         reinterpret_cast<CPublishSifOperationInfo*>(aHandle<<2);
     TRAPD(err, NotifyEndL(aEnv, pNotifier, aGlobalComponentId,
                           aErrCategory, aErrCode, aErrMsg, aErrMsgDetails));
+
+    if (newScheduler)
+    {
+        delete newScheduler;
+        newScheduler = 0;
+    }
+
     return err;
 }
 
