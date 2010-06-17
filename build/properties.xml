@@ -50,9 +50,9 @@
   <property name="platform.utilities.xml.file" value="utilities.fake.xml"/>
 
   <!--The cldc/cdc class file locations -->
-  <property name="bootclasspath.cldc" location="${java.src.root}/inc/classes.cldc.zip:${epocroot}epoc32/jrt/classes.cldc.zip"/>
-  <property name="bootclasspath.cdc"  location="${java.src.root}/inc/classes.cdc.zip:${epocroot}epoc32/jrt/classes.cdc.zip"/>
-  <property name="bootclasspath.fp"   location="${java.src.root}/inc/classes.fp.zip:${epocroot}epoc32/jrt/classes.fp.zip"/>
+  <property name="bootclasspath.cldc" location="${java.src.root}/inc/classes.cldc.zip;${epocroot}epoc32/jrt/classes.cldc.zip"/>
+  <property name="bootclasspath.cdc"  location="${java.src.root}/inc/classes.cdc.zip;${epocroot}epoc32/jrt/classes.cdc.zip"/>
+  <property name="bootclasspath.fp"   location="${java.src.root}/inc/classes.fp.zip;${epocroot}epoc32/jrt/classes.fp.zip"/>
   
   
   
