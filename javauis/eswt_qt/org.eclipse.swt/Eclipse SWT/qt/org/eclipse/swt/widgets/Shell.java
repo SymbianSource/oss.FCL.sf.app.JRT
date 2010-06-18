@@ -132,6 +132,8 @@ int dialogWindowHandle;
 
 Rectangle defBounds;
 
+Point oldSize;
+
 /**
  * The WindowSurface wrapper for top level shells. Window surface
  * provides access for Qt created draw surface.
@@ -602,9 +604,9 @@ void register_pp () {
     // Viewport & scroll area
     super.register_pp ();
     // Main window, if top-level
-    if(mainWindowHandle != 0) display.addWidget (mainWindowHandle, this);    
+    if(mainWindowHandle != 0) Display.addWidget (mainWindowHandle, this);    
     // Dialog window, if a dialog Shell
-    if(dialogWindowHandle != 0) display.addWidget (dialogWindowHandle, this);    
+    if(dialogWindowHandle != 0) Display.addWidget (dialogWindowHandle, this);    
 }
 
 void releaseParent_pp () {
@@ -830,6 +832,20 @@ public Rectangle getBounds() {
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
     // On Symbian platform top-level Shells are forced to maximized
     if(OS.windowServer == OS.WS_SYMBIAN_S60 && parent == null) {
+    	//for updating the layout when shell.pack is called after shell open.
+    	// or aligning with other platform which has resizable top shell
+    	if(resize) {
+    		Point newSize = new Point(width, height);
+    		if(oldSize == null || !oldSize.equals(newSize)) {
+    			sendEvent(SWT.Resize);
+    			// Activate layout
+    			if (layout != null) {
+    				markLayout (false, false);
+    				updateLayout (false);
+    			}
+    			oldSize = newSize; 
+    		}
+    	}    
         return 0;
     }
     
@@ -895,7 +911,7 @@ public void setEnabled (boolean enabled) {
 }
 
 void enableWidget(boolean enabled) {
-    Control oldFocus = display._getFocusControl();
+    Control oldFocus = Display._getFocusControl();
     super.enableWidget(enabled);
     if(!enabled) {
         // All children were looped through and disabled by QWidget unless they
@@ -953,11 +969,11 @@ public void setVisible (boolean visible) {
    int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
     if ((style & mask) != 0) {
         if (visible) {
-            display.setModalShell (this);
+            Display.setModalShell (this);
             if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-                display.setModalDialog (null);
+                Display.setModalDialog (null);
             }
-            Control control = display._getFocusControl();
+            Control control = Display._getFocusControl();
             if (control != null && !control.isActive()) {
                 bringToTop(false);
                 if (isDisposed()) return;
@@ -1013,10 +1029,10 @@ void updateModal () {
 void deregister_pp () {
     super.deregister_pp ();
     if(mainWindowHandle != 0) {
-        display.removeWidget(mainWindowHandle);
+        Display.removeWidget(mainWindowHandle);
     }
     if(dialogWindowHandle != 0) {
-        display.removeWidget(dialogWindowHandle);
+        Display.removeWidget(dialogWindowHandle);
     }
 }
 

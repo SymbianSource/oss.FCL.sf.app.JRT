@@ -54,15 +54,13 @@ CPIMAgnListAdapter::CPIMAgnListAdapter(java::util::FunctionServer* aFuncServer)
 // -----------------------------------------------------------------------------
 //
 void CPIMAgnListAdapter::ConstructL(
-
-    MCalChangeCallBack::TChangeEntryType aEntryType,
-    CCalSession* aCalSession)
-    {
+    MCalChangeCallBack::TChangeEntryType aEntryType)
+{
     JELOG2(EPim);
-    
-    iServerWait = CPIMAgnServerWait::NewL();      
-    iCalSession = aCalSession;    
-    iCalEntryView = CCalEntryView::NewL(*iCalSession, *iServerWait);    	
+    iServerWait = CPIMAgnServerWait::NewL();
+    iCalSession = CCalSession::NewL();
+    iCalSession->OpenL(iCalSession->DefaultFileNameL());
+    iCalEntryView = CCalEntryView::NewL(*iCalSession, *iServerWait);
     iServerWait->WaitCompleteL(KServerMaxWait);
 
     iCalSession->StartChangeNotification(this, aEntryType, ETrue, // include undated ToDos, if ToDos are observed
@@ -287,9 +285,10 @@ CCalEntry* CPIMAgnListAdapter::FetchNativeEntryL(TPIMItemID aItemId,
 void CPIMAgnListAdapter::CloseAgendaSession()
 {
     JELOG2(EPim);
-    iCalSession->StopChangeNotification();
     delete iCalEntryView;
-    iCalEntryView = NULL;   
+    iCalEntryView = NULL;
+
+    delete iCalSession;
     iCalSession = NULL;
 
     iChangesRead = ETrue;

@@ -56,8 +56,8 @@ CMMAPlayer* CMMAEMCPlayerFactory::CreatePlayerL(const TDesC& aProtocol,
         const TDesC& aMiddlePart,
         const TDesC&)
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerFactory::CreatePlayerL aMiddlePart = %S",
-              aMiddlePart.Ptr());
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerFactory::CreatePlayerL aMiddlePart = %S",
+         aMiddlePart.Ptr());
     CMMAEMCResolver* emcresolver =
         CMMAEMCResolver::NewLC();
 
@@ -84,7 +84,7 @@ CMMAPlayer* CMMAEMCPlayerFactory::CreatePlayerL(const TDesC& aProtocol,
     }
 
     CleanupStack::PopAndDestroy(emcresolver);
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerFactory::CreatePlayerL aMiddlePart ok");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerFactory::CreatePlayerL aMiddlePart ok");
     return player;
 }
 
@@ -116,7 +116,7 @@ CMMAPlayer* CMMAEMCPlayerFactory::TryOpenDRMFileL(const TDesC& aFileName)
 
 CMMAPlayer* CMMAEMCPlayerFactory::CreatePlayerL(const TDesC8& /*aHeaderData*/)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerFactory::CreatePlayerL header data +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerFactory::CreatePlayerL header data +");
 
     return (CMMAPlayer*)NULL;
 }

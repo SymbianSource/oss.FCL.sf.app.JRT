@@ -25,7 +25,7 @@
 
 CMMAAnimationStopTimeControl* CMMAAnimationStopTimeControl::NewL(CMMAAnimationPlayer* aPlayer)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAAnimationStopTimeControl::NewL");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAAnimationStopTimeControl::NewL");
     CMMAAnimationStopTimeControl* control =
         new(ELeave) CMMAAnimationStopTimeControl(aPlayer);
     aPlayer->SetAnimationObserver(control);
@@ -45,13 +45,13 @@ CMMAAnimationStopTimeControl::CMMAAnimationStopTimeControl(CMMAAnimationPlayer* 
 
 void CMMAAnimationStopTimeControl::SetStopTimeL(const TInt64& aTime)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAAnimationStopTimeControl::SetStopTimeL");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAAnimationStopTimeControl::SetStopTimeL");
     iStopTime = aTime;
 }
 
 void CMMAAnimationStopTimeControl::AnimationAdvancedL(TInt /*aFrame*/, TInt64 aMediaTime)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAAnimationStopTimeControl::AnimationAdvancedL");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAAnimationStopTimeControl::AnimationAdvancedL");
     if (aMediaTime > iStopTime)
     {
         iPlayer->StopL(EFalse);

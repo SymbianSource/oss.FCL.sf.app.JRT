@@ -58,7 +58,7 @@ CMMASourceStream* CMMASourceStream::NewLC(JNIEnv* aJNIEnv,
 
 CMMASourceStream::~CMMASourceStream()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMASourceStream::~");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMASourceStream::~");
     delete iData;
     delete iReadEvent;
 }
@@ -86,8 +86,8 @@ void CMMASourceStream::ConstructL(JNIEnv* aJNIEnv,
     {
         User::Leave(KErrNoMemory);
     }
-	LOG( EJavaMMAPI, EInfo, "CMMASourceStream::ConstructL , jmethodId found");  
-	jobject apeer =  aJNIEnv->NewGlobalRef(aJavaSourceStream);  
+    LOG(EJavaMMAPI, EInfo, "CMMASourceStream::ConstructL , jmethodId found");
+    jobject apeer =  aJNIEnv->NewGlobalRef(aJavaSourceStream);
     iReadEvent = new(ELeave) CMMASourceStreamEvent(classMethodID,
             apeer);
 }
@@ -97,10 +97,10 @@ void CMMASourceStream::WriteL(const TUint8* aData,
                               TInt aLength,
                               TInt aState)
 {
-	  LOG1( EJavaMMAPI, EInfo, "MMA::CMMASourceStream::WriteL() %d",aState);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMASourceStream::WriteL() %d",aState);
     if (aState < KErrNone)
     {
-    	LOG( EJavaMMAPI, EInfo, "MMA::CMMASourceStream::WriteL  : 1");
+        LOG(EJavaMMAPI, EInfo, "MMA::CMMASourceStream::WriteL  : 1");
         // Inform listener on error case
         iListener->ReadCompletedL(aState, KNullDesC8());
         return;
@@ -157,12 +157,12 @@ void CMMASourceStream::WriteL(const TUint8* aData,
 
     }
 
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMASourceStream::WriteL completed");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMASourceStream::WriteL completed");
 }
 
 void CMMASourceStream::ReadL(TInt aLength)
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMASourceStream::ReadL(%d)", aLength);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMASourceStream::ReadL(%d)", aLength);
 
     __ASSERT_DEBUG(iData != NULL, User::Invariant());
 
@@ -183,13 +183,13 @@ void CMMASourceStream::ReadAllL()
     // not reading again if iData already has data
     if (iData == NULL)
     {
-        LOG( EJavaMMAPI, EInfo, "CMMASourceStream::ReadAllL: Buffer empty, reading from java");
+        LOG(EJavaMMAPI, EInfo, "CMMASourceStream::ReadAllL: Buffer empty, reading from java");
         CreateDataBufferL(KBufferSize);
         ReadL(KMMAReadAllData);
     }
     else
     {
-        LOG( EJavaMMAPI, EInfo, "CMMASourceStream::ReadAllL: Buffer not empty, ->ReadCompleteL");
+        LOG(EJavaMMAPI, EInfo, "CMMASourceStream::ReadAllL: Buffer not empty, ->ReadCompleteL");
         iListener->ReadCompletedL(ECompleted, *iData);
     }
 }
@@ -206,7 +206,7 @@ void CMMASourceStream::ResetData()
 
 void CMMASourceStream::CreateDataBufferL(TInt aBufferSize)
 {
-    LOG( EJavaMMAPI, EInfo, "CMMASourceStream::CreateDataBufferL +");
+    LOG(EJavaMMAPI, EInfo, "CMMASourceStream::CreateDataBufferL +");
     __ASSERT_DEBUG(iData == NULL, User::Invariant());
 
     iData = HBufC8::NewL(aBufferSize);

@@ -39,11 +39,28 @@ public static int getImageHandle(Image i) {
 public static int getPixmapHandle(Image i) {
     return i.getPixmapHandle();
 }
+/*
+ * From the class Device
+ */
+public static boolean internal(Device d) {
+	return d.internal;
+}
+public static boolean initialized() {
+	return Device.initialized;
+}
 
 public static Color newColor(Device device, int handle) {
     return Color.qt_new(device, handle);
 }
 public static Font newFont(Device device, int handle) {
     return Font.qt_new(device, handle);
+}
+
+/*
+ * From the class Image
+ */
+public static Image createImageWithoutSecurityCheck(Device device,
+        String filename) {
+    return Image.createImageWithoutSecurityCheck(device, filename);
 }
 }

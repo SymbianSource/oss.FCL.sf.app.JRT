@@ -16,6 +16,8 @@
 */
 
 #include <platform_paths.hrh>
+#include <../../../inc/project_defines.hrh>
+#include <../../../inc/build_defines.hrh>
 
 TARGET      javaappschemeplugin.dll
 TARGETTYPE  plugin

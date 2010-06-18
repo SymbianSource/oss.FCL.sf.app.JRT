@@ -26,7 +26,6 @@
 // FORWARD DECLARATIONS
 class MPIMLocalizationManager;
 class MPIMLocalizationData;
-class CCalSession;
 
 // CLASS DECLARATION
 /**
@@ -64,14 +63,12 @@ public: // MPIMAdapterAccess
         MPIMLocalizationData** aRetLocalizationData);
 
     TBool OpenEventListL(
-        CCalSession* aCalSession,
         const TDesC* aListName,
         MPIMEventAdapterManager** aRetAdapterManager,
         MPIMEventListAdapter** aRetListAdapter,
         MPIMLocalizationData** aRetLocalizationData);
 
     TBool OpenToDoListL(
-        CCalSession* aCalSession,
         const TDesC* aListName,
         MPIMToDoAdapterManager** aRetAdapterManager,
         MPIMToDoListAdapter** aRetListAdapter,

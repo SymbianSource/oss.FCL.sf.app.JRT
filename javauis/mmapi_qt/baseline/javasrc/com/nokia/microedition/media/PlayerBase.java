@@ -126,7 +126,7 @@ public abstract class PlayerBase implements InternalPlayer
      */
     public void realize() throws MediaException
     {
-		Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"+ PlayerBase.realize() ");
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"+ PlayerBase.realize() ");
         closeCheck();
         int state = getState();
         Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"+ PlayerBase.realize() after getstate() ");

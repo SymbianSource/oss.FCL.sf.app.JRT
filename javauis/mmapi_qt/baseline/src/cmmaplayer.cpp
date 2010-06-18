@@ -34,7 +34,7 @@ _LIT(KPanicMethod, "method not found");
 
 CMMAPlayer::~CMMAPlayer()
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAPlayer::~CMMAPlayer()");
+    LOG(EJavaMMAPI, EInfo, "CMMAPlayer::~CMMAPlayer()");
 
     iSourceStreams.ResetAndDestroy();
     if (iControls.Count() > 0)
@@ -59,9 +59,9 @@ CMMAPlayer::CMMAPlayer():
 
 void CMMAPlayer::ConstructL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::ConstructL + ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::ConstructL + ");
     iDurationUpdater = CMMADurationUpdater::NewL(*this);
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::ConstructL - ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::ConstructL - ");
 }
 
 
@@ -71,64 +71,64 @@ void CMMAPlayer::StaticAddSourceStreamL(JNIEnv* aJniEnv,
                                         jobject aReader,
                                         CMMASourceStream** aSourceStream)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::StaticAddSourceStreamL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::StaticAddSourceStreamL +");
 
     // JNI interface pointer can't be passed to different thread, so
     // it is needed to get valid JNI interface pointer for Event Server thread
-     aJniEnv = aEventSource-> getValidJniEnv();
+    aJniEnv = aEventSource-> getValidJniEnv();
 
     *aSourceStream = aPlayer->AddSourceStreamL(aJniEnv,
                      aEventSource,
                      aReader);
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::StaticAddSourceStreamL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::StaticAddSourceStreamL -");
 }
 
 
 
 void CMMAPlayer::StaticSetPlayerListenerObjectL(CMMAPlayer* aPlayer,
-		MMAFunctionServer* aEventsource,
+        MMAFunctionServer* aEventsource,
         jobject aListenerObject,
         JNIEnv* aJni,
         MMMAEventPoster* aPoster)
 {
 
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::StaticSetPlayerListenerObjectL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::StaticSetPlayerListenerObjectL +");
 
     // JNI interface pointer can't be passed to different thread, so
     // it is needed to get valid JNI interface pointer for Event Server thread
-     aJni = aEventsource-> getValidJniEnv();
+    aJni = aEventsource-> getValidJniEnv();
 
     aPlayer->SetPlayerListenerObjectL(aListenerObject, aJni, aPoster);
 
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::StaticSetPlayerListenerObjectL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::StaticSetPlayerListenerObjectL -");
 }
 
 
 void CMMAPlayer::StaticInitPlayerL(CMMAPlayer* aPlayer,
-								   MMAFunctionServer* aEventsource,
+                                   MMAFunctionServer* aEventsource,
                                    jobject aPlayerObject,
                                    JNIEnv* aJni)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::StaticInitPlayerL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::StaticInitPlayerL +");
 
     // JNI interface pointer can't be passed to different thread, so
     // it is needed to get valid JNI interface pointer for Event Server thread
- 	aJni = aEventsource-> getValidJniEnv();
+    aJni = aEventsource-> getValidJniEnv();
 
     jmethodID actionCompletedMethod = aJni->GetMethodID(
                                           aJni->GetObjectClass(aPlayerObject),
                                           "actionCompleted",
                                           "(I)V");
-                                          
+
     jmethodID actionCompletedFileMethod = aJni->GetMethodID(
-                                          aJni->GetObjectClass(aPlayerObject),
-                                          "actionCompletedFile",
-                                          "()V");    
-                                          
+                                              aJni->GetObjectClass(aPlayerObject),
+                                              "actionCompletedFile",
+                                              "()V");
+
     jmethodID actionCompletedStartMethod = aJni->GetMethodID(
-                                          aJni->GetObjectClass(aPlayerObject),
-                                          "actionCompletedStart",
-                                          "()V");                                                                                 
+                                               aJni->GetObjectClass(aPlayerObject),
+                                               "actionCompletedStart",
+                                               "()V");
 
     // Sanity Check, something is really wrong if methods cannot be found
     __ASSERT_DEBUG(actionCompletedMethod,
@@ -138,23 +138,23 @@ void CMMAPlayer::StaticInitPlayerL(CMMAPlayer* aPlayer,
         aPlayerObject,
         actionCompletedMethod,
         CMMAEvent::EReusableEvent);
-            
+
     aPlayer->iActionCompletedFileEvent = new(ELeave) CMMAEvent(
         aPlayerObject,
         actionCompletedFileMethod,
-        CMMAEvent::EReusableEvent);     
-            
+        CMMAEvent::EReusableEvent);
+
     aPlayer->iActionCompletedStartEvent = new(ELeave) CMMAEvent(
         aPlayerObject,
         actionCompletedStartMethod,
         CMMAEvent::EReusableEvent);
 
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::StaticInitPlayerL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::StaticInitPlayerL -");
 }
 
 CMMAControl* CMMAPlayer::StaticControl(CMMAPlayer* aPlayer, TInt aIndex)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::StaticControl +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::StaticControl +");
     return aPlayer->Control(aIndex);
 
 }
@@ -162,7 +162,7 @@ CMMAControl* CMMAPlayer::StaticControl(CMMAPlayer* aPlayer, TInt aIndex)
 
 void CMMAPlayer::RealizeL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::RealizeL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::RealizeL +");
     ChangeState(ERealized);
 
 }
@@ -170,35 +170,35 @@ void CMMAPlayer::RealizeL()
 
 void CMMAPlayer::CloseL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::CloseL ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::CloseL ");
     ChangeState(EClosed);
-    PostObjectEvent(CMMAPlayerEvent::EClosed, NULL);   
+    PostObjectEvent(CMMAPlayerEvent::EClosed, NULL);
 }
 
 
 void CMMAPlayer::GetDuration(TInt64* aDuration)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::GetDuration ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::GetDuration ");
     *aDuration = iDuration;
 }
 
 
 void CMMAPlayer::SetMediaTimeL(TInt64* aTime)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::SetMediaTimeL ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::SetMediaTimeL ");
     *aTime = KErrNotSupported;
 }
 
 void CMMAPlayer::GetMediaTime(TInt64* aMediaTime)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::GetMediaTime ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::GetMediaTime ");
     *aMediaTime = KErrNotSupported;
 }
 
 
 EXPORT_C void CMMAPlayer::SetLoopCount(TInt aCount)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::SetLoopCount ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::SetLoopCount ");
     iRepeatForever = (aCount == KJavaRepeatForever);
     iRepeatNumberOfTimes = aCount;
     iRepeatCount = 0;
@@ -206,7 +206,7 @@ EXPORT_C void CMMAPlayer::SetLoopCount(TInt aCount)
 
 HBufC* CMMAPlayer::ContentType() const
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::ContentType ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::ContentType ");
     return iContentType;
 }
 
@@ -214,7 +214,7 @@ void CMMAPlayer::SetPlayerListenerObjectL(jobject aListenerObject,
         JNIEnv* aJni,
         MMMAEventPoster* aEventPoster)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::SetPlayerListenerObjectL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::SetPlayerListenerObjectL +");
     iListenerObject = aListenerObject;
     iEventPoster = aEventPoster;
 
@@ -256,7 +256,7 @@ void CMMAPlayer::SetPlayerListenerObjectL(jobject aListenerObject,
     iOOMErrorEvent->SetStringEventL(CMMAPlayerEvent::EError,
                                     KPanicOutOfMem);
 
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::SetPlayerListenerObjectL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::SetPlayerListenerObjectL -");
 }
 
 
@@ -284,10 +284,10 @@ void CMMAPlayer::RefreshControls()
 
 EXPORT_C  void CMMAPlayer::AddStateListenerL(MMMAPlayerStateListener* aListener)
 {
-	LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::AddStateListenerL +");
-	TInt err = iStateListeners.Append(aListener);
-	LOG1( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::AddStateListenerL - err = %d ",err);
-		User::LeaveIfError(err);
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::AddStateListenerL +");
+    TInt err = iStateListeners.Append(aListener);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::AddStateListenerL - err = %d ",err);
+    User::LeaveIfError(err);
     //User::LeaveIfError(iStateListeners.Append(aListener));
 
 }
@@ -320,13 +320,13 @@ void CMMAPlayer::SetContentType(HBufC* aContentType)
 
 void CMMAPlayer::ResetSourceStreams()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::ResetSourceStreams +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::ResetSourceStreams +");
     int sourceStreamsCount = iSourceStreams.Count();
     for (int i = 0; i < sourceStreamsCount; i++)
     {
         iSourceStreams[ i ]->ResetData();
     }
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::ResetSourceStreams -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::ResetSourceStreams -");
 }
 
 EXPORT_C void CMMAPlayer::AddControlL(CMMAControl* aControl)
@@ -339,10 +339,10 @@ EXPORT_C void CMMAPlayer::AddControlL(CMMAControl* aControl)
 void CMMAPlayer::PostLongEvent(CMMAPlayerEvent::TEventType aEventType,
                                const TInt64& aLongEventData)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::PostLongEvent ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::PostLongEvent ");
     if (!iListenerObject || !iEventPoster)
     {
-        LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::PostLongEvent No listener");
+        LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::PostLongEvent No listener");
         // return since player is not ready for posting any events and is not initialized
         return;
     }
@@ -365,10 +365,10 @@ void CMMAPlayer::PostLongEvent(CMMAPlayerEvent::TEventType aEventType,
 EXPORT_C void CMMAPlayer::PostStringEvent(CMMAPlayerEvent::TEventType aEventType,
         const TDesC& aStringEventData)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::PostStringEvent ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::PostStringEvent ");
     if (!iListenerObject || !iEventPoster)
     {
-        LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::PostStringEvent No listener");
+        LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::PostStringEvent No listener");
         // return since player is not ready for posting any events and is not initialized
         return;
     }
@@ -398,11 +398,11 @@ EXPORT_C void CMMAPlayer::PostStringEvent(CMMAPlayerEvent::TEventType aEventType
 EXPORT_C void CMMAPlayer::PostObjectEvent(CMMAPlayerEvent::TEventType aEventType,
         const jobject aEventData)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::PostObjectEvent ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::PostObjectEvent ");
 
     if (!iListenerObject || !iEventPoster)
     {
-        LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::PostObjectEvent No listener");
+        LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::PostObjectEvent No listener");
         // return since player is not ready for posting any events and is not initialized
         return;
     }
@@ -433,7 +433,7 @@ EXPORT_C CMMASourceStream* CMMAPlayer::AddSourceStreamL(JNIEnv* aJNIEnv,
         MMAFunctionServer* aEventSource,
         jobject aReader)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::AddSourceStreamL ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::AddSourceStreamL ");
     CMMASourceStream* sourceStream = CMMASourceStream::NewL(aJNIEnv,
                                      aEventSource,
                                      aReader,
@@ -448,7 +448,7 @@ EXPORT_C CMMASourceStream* CMMAPlayer::AddSourceStreamL(JNIEnv* aJNIEnv,
 
 void CMMAPlayer::PostActionCompleted(TInt aError)
 {
-	LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::PostActionCompleted ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::PostActionCompleted ");
     iActionCompletedEvent->SetEventData(aError);
     iEventPoster->PostEvent(iActionCompletedEvent,
                             CMMAEvent::ENotifyPriority);
@@ -456,8 +456,8 @@ void CMMAPlayer::PostActionCompleted(TInt aError)
 
 void CMMAPlayer::PostActionCompletedFile()
 {
-	LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::PostActionCompleted ");
-   // iActionCompletedFileEvent->SetEventData(aError);
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::PostActionCompletedFile ");
+    // iActionCompletedFileEvent->SetEventData(aError);
     iEventPoster->PostEvent(iActionCompletedFileEvent,
                             CMMAEvent::ENotifyPriority);
 }
@@ -465,7 +465,7 @@ void CMMAPlayer::PostActionCompletedFile()
 
 void CMMAPlayer::PostActionCompletedStart()
 {
-	   LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::PostActionCompleted ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::PostActionCompletedStart ");
     iEventPoster->PostEvent(iActionCompletedStartEvent,
                             CMMAEvent::ENotifyPriority);
 }
@@ -473,18 +473,18 @@ void CMMAPlayer::PostActionCompletedStart()
 void CMMAPlayer::ChangeState(TPlayerState aState)
 {
     iState = aState;
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::ChangeState - iStateListeners count is %d", iStateListeners.Count());
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::ChangeState - iStateListeners count is %d", iStateListeners.Count());
     for (TInt i(0); i<iStateListeners.Count(); i++)
     {
         iStateListeners[ i ]->StateChanged(aState);
     }
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::ChangeState - State changed to %d", iState);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::ChangeState - State changed to %d", iState);
 }
 
 void CMMAPlayer::ReadCompletedL(TInt /*aStatus*/, const TDesC8& /*aData*/)
 {
     // empty implementation
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAPlayer::ReadCompletedL ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::ReadCompletedL ");
 }
 void CMMAPlayer:: DeleteControls()
 {

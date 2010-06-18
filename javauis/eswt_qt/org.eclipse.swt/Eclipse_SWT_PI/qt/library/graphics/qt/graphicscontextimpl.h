@@ -65,6 +65,7 @@ public:
     virtual void drawString(
         const unsigned short* aText, int aX, int aY, int aWidth, int aHeight,
         int aLength, int aAlignments, int aFlags, bool aIsTransparent);
+    virtual void drawWindowSurface(WindowSurface* aSurface, int aX, int aY, int aWidth, int aHeight);
     virtual void fillArc(int aX, int aY, int aWidth, int aHeight, int aStartAngle, int aArcAngle);
     virtual void fillEllipse(int aX, int aY, int aWidth, int aHeight);
     virtual void fillGradientRect(int aX, int aY, int aWidth, int aHeight, bool aVertical, bool aSwapColors);

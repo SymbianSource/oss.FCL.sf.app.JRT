@@ -93,8 +93,14 @@ public class CertificateDetailsView extends ConfirmationViewBase
         createLabel("", horizontalSpan, labelStyle);
 
         // Add warning label.
+        String appName = "";
+        if (iInstallerUi.getInstallInfo() != null)
+        {
+            appName = iInstallerUi.getInstallInfo().getName();
+        }
         Label warningLabel = createLabel(
-                                 InstallerUiTexts.get(InstallerUiTexts.NOT_CERTIFIED_WARNING),
+                                 InstallerUiTexts.get(InstallerUiTexts.NOT_CERTIFIED_INFO,
+                                                      new String[] { appName }),
                                  horizontalSpan, labelStyle);
 
     }
@@ -110,7 +116,7 @@ public class CertificateDetailsView extends ConfirmationViewBase
         // Add title label.
         Label detailsLabel = createLabel
                              (InstallerUiTexts.get
-                              (InstallerUiTexts.CERTIFICATE_INFO_FOR_APP),
+                              (InstallerUiTexts.CERTIFICATE_TITLE),
                               horizontalSpan, labelStyle);
         detailsLabel.setFont(iInstallerUi.getBoldFont());
 
@@ -132,6 +138,12 @@ public class CertificateDetailsView extends ConfirmationViewBase
                              (InstallerUiTexts.get
                               (InstallerUiTexts.SUBJECT,
                                new String[] { certificate.getFormattedSubject() }),
+                              horizontalSpan, labelStyle);
+
+        Label organizationLabel = createLabel
+                             (InstallerUiTexts.get
+                              (InstallerUiTexts.ORGANIZATION,
+                               new String[] { certificate.getOrganization() }),
                               horizontalSpan, labelStyle);
 
         Label validFromLabel = createLabel

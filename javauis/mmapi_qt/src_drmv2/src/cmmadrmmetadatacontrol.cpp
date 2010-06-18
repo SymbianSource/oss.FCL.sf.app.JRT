@@ -26,7 +26,7 @@ CMMADRMMetaDataControl::CMMADRMMetaDataControl(
     CMMADRMAudioPlayer* aPlayer)
         : iPlayer(aPlayer)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMADRMMetaDataControl constructor called.");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMADRMMetaDataControl constructor called.");
 }
 
 TInt CMMADRMMetaDataControl::KeyCountL()
@@ -38,7 +38,7 @@ TInt CMMADRMMetaDataControl::KeyCountL()
 
 HBufC* CMMADRMMetaDataControl::KeyL(TInt aIndex)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMADRMMetaDataControl::KeyL");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMADRMMetaDataControl::KeyL");
     CMMFMetaDataEntry* currEntry =
         iPlayer->DRMUtility()->GetMetaDataEntryL(aIndex);
     CleanupStack::PushL(currEntry);
@@ -54,7 +54,7 @@ HBufC* CMMADRMMetaDataControl::KeyL(TInt aIndex)
  */
 HBufC* CMMADRMMetaDataControl::KeyValueL(const TDesC& aKey)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMADRMMetaDataControl::KeyValueL");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMADRMMetaDataControl::KeyValueL");
 
     HBufC* retVal = NULL;
     CMMFMetaDataEntry* currEntry = NULL;

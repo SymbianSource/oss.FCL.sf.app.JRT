@@ -84,6 +84,8 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_VideoItem__1get
  jint /*aTentative*/)  // tentative value is ignored because current
 // implementation returns always -1
 {
+    LOG(EJavaMMAPI,EInfo,"Java_com_nokia_microedition_media_control_VideoItem__1getPrefContentHeight +");
+
     CMMAItemDisplay* itemDisplay = reinterpret_cast< CMMAItemDisplay* >(aDisplayHandle);
     MMAFunctionServer* eventSource = reinterpret_cast< MMAFunctionServer *>(aEventSourceHandle);
 
@@ -91,6 +93,9 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_VideoItem__1get
     eventSource->ExecuteV(CMMAItemDisplay::StaticSourceSize,
                           itemDisplay,
                           (TSize*)&size);
+
+    LOG1(EJavaMMAPI,EInfo,"Java_com_nokia_microedition_media_control_VideoItem__1getPrefContentHeight - height = %d",size.iHeight);
+
     return size.iHeight;
 }
 
@@ -101,6 +106,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_VideoItem__1get
  jint /*aTentative*/)  // tentative value is ignored because current
 // implementation returns always -1
 {
+    LOG(EJavaMMAPI,EInfo,"Java_com_nokia_microedition_media_control_VideoItem__1getPrefContentWidth +");
     CMMAItemDisplay* itemDisplay = reinterpret_cast< CMMAItemDisplay *>(aDisplayHandle);
     MMAFunctionServer* eventSource = reinterpret_cast< MMAFunctionServer* >(aEventSourceHandle);
 
@@ -108,6 +114,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_VideoItem__1get
     eventSource->ExecuteV(CMMAItemDisplay::StaticSourceSize,
                           itemDisplay,
                           (TSize*)&size);
+    LOG1(EJavaMMAPI,EInfo,"Java_com_nokia_microedition_media_control_VideoItem__1getPrefContentWidth - widht = %d",size.iWidth);
     return size.iWidth;
 }
 

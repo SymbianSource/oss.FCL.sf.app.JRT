@@ -250,7 +250,7 @@ void fixMenus (Decorations newParent) {
 public MenuItem getDefaultItem () {
     checkWidget();
     int actionHandle = OS.QMenu_defaultAction( handle );
-    Widget widget = display.getWidget( actionHandle );
+    Widget widget = Display.getWidget( actionHandle );
     if( widget != null){
         if (MenuItem.class.isInstance( widget ))
             return (MenuItem)widget;
@@ -300,7 +300,7 @@ public MenuItem getItem (int index) {
     int indexOfLastMenuItem = -1;
     MenuItem itemAtIndex = null;
     for(int i = 0; i < actions.length; ++i) {
-    	Widget widget = display.getWidget(actions[i]);
+    	Widget widget = Display.getWidget(actions[i]);
     	if(widget != null && widget instanceof MenuItem) {
     		if(++indexOfLastMenuItem == index) {
     			itemAtIndex = (MenuItem)widget;
@@ -355,7 +355,7 @@ public MenuItem [] getItems () {
     for( int i = 0; i < count; ++i) {
         int handle = handles[i];
         if (handle != 0) {
-            Widget widget = display.getWidget (handle);
+            Widget widget = Display.getWidget (handle);
             if (widget != null && widget != this) {
                 if (widget instanceof MenuItem) {
                     children [items++] = (MenuItem) widget;
@@ -487,9 +487,9 @@ void qt_signal_aboutToShow() {
 void hookEvents_pp () {
     super.hookEvents_pp ();
     if ((style & SWT.BAR) == 0) {
-        int aboutToHideProxy = OS.SignalHandler_new(handle, display, OS.QSIGNAL_ABOUTTOHIDE);
+        int aboutToHideProxy = OS.SignalHandler_new(handle, OS.QSIGNAL_ABOUTTOHIDE);
         OS.QObject_connectOrThrow(handle, "aboutToHide()", aboutToHideProxy, "widgetSignal()", OS.QT_AUTOCONNECTION);
-        int aboutToShowProxy = OS.SignalHandler_new(handle, display, OS.QSIGNAL_ABOUTTOSHOW);
+        int aboutToShowProxy = OS.SignalHandler_new(handle, OS.QSIGNAL_ABOUTTOSHOW);
         OS.QObject_connectOrThrow(handle, "aboutToShow()", aboutToShowProxy, "widgetSignal()", OS.QT_AUTOCONNECTION);
     }
 }

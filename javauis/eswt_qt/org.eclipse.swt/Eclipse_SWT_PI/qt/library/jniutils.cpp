@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2009, 2010 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -45,22 +45,14 @@ typedef enum
     POINT,
     SWT,
     STRING,
+    DISPLAY,
 
     NUM_SWT_JCLASSES
 } SwtJClass;
 
-JniUtils::JniUtils(JNIEnv* aEnv, jobject aDisplay) :
-    mUIThreadJniEnv(aEnv)
+JniUtils::JniUtils(JNIEnv* aEnv) : mUIThreadJniEnv(aEnv)
 {
     SWT_LOG_FUNC_CALL();
-
-    // Create global ref to Display
-    jobject display = mUIThreadJniEnv->NewGlobalRef( aDisplay );
-    if( !display )
-    {
-        throw std::bad_alloc();
-    }
-    mDisplay = display;
 
     // Get local class refs. These classes are needed by Display so they should
     // be already loaded at this point. This doesn't cause any additional
@@ -71,6 +63,7 @@ JniUtils::JniUtils(JNIEnv* aEnv, jobject aDisplay) :
     mJclasses[POINT] = mUIThreadJniEnv->FindClass("org/eclipse/swt/graphics/Point");
     mJclasses[SWT] = mUIThreadJniEnv->FindClass("org/eclipse/swt/SWT");
     mJclasses[STRING] = mUIThreadJniEnv->FindClass("java/lang/String");
+    mJclasses[DISPLAY] = mUIThreadJniEnv->FindClass("org/eclipse/swt/widgets/Display");
 
     // Check that local class refs ok
     for (int i = 0; i < NUM_SWT_JCLASSES; ++i)
@@ -82,7 +75,8 @@ JniUtils::JniUtils(JNIEnv* aEnv, jobject aDisplay) :
     }
 
     // Create global class refs for caching. Global refs can be used across 
-    // threads. 
+    // threads. Keeping global class refs ensures that the classes won't get
+    // unloaded. 
     for (int i = 0; i < NUM_SWT_JCLASSES; ++i)
     {
         jclass globalRef = static_cast<jclass>(mUIThreadJniEnv->NewGlobalRef( mJclasses[i] ));
@@ -108,12 +102,12 @@ JniUtils::JniUtils(JNIEnv* aEnv, jobject aDisplay) :
         }
     }
 
-    // Compute methodIDs for caching, only Display instance and static methods.
-    // Other instance methods are not cached here. MethodIDs have the same 
-    // values for all threads so the cached values may be used by any thread. 
+    // Compute methodIDs for caching. MethodIDs have the same values for all 
+    // threads so the cached values may be used by any thread. MethodIDs are 
+    // valid until objects are garbage collected or classes unloaded. 
     mJmethodIds = new jmethodID[NUM_SWT_JMETHODIDS];
     ::memset( mJmethodIds, 0, sizeof(jmethodID)*NUM_SWT_JMETHODIDS );
-    mJmethodIds[DISPLAY_EVENTPROCESS_IIIIIIIISTRING_Z] = FindJavaMethodID(mUIThreadJniEnv, mDisplay, "eventProcess", "(IIIIIIIILjava/lang/String;)Z");
+    mJmethodIds[DISPLAY_EVENTPROCESS_IIIIIIIISTRING_Z] = mUIThreadJniEnv->GetStaticMethodID(mJclasses[DISPLAY], "eventProcess", "(IIIIIIIILjava/lang/String;)Z");
     mJmethodIds[RECTANGLE_INIT_IIII_V] = mUIThreadJniEnv->GetMethodID(mJclasses[RECTANGLE], "<init>", "(IIII)V");
     mJmethodIds[POINT_INIT_II_V] = mUIThreadJniEnv->GetMethodID(mJclasses[POINT], "<init>", "(II)V");
     mJmethodIds[SWT_ERROR_I_V] = mUIThreadJniEnv->GetStaticMethodID(mJclasses[SWT], "error", "(I)V");
@@ -145,8 +139,6 @@ JniUtils::~JniUtils()
 
     delete mJmethodIds;
     mJmethodIds = NULL;
-
-    mUIThreadJniEnv->DeleteGlobalRef(mDisplay);
 }
 
 bool JniUtils::eventProcess(const QObject* aQObject, const int& aQEventType,
@@ -155,12 +147,41 @@ bool JniUtils::eventProcess(const QObject* aQObject, const int& aQEventType,
                             const jstring aString)
 {
     SWT_LOG_FUNC_CALL();
-    return eventProcess(mDisplay,
-            mJmethodIds[DISPLAY_EVENTPROCESS_IIIIIIIISTRING_Z], reinterpret_cast<int>(aQObject),
+    return eventProcess(
+            NULL, 
+            mJclasses[DISPLAY], 
+            mJmethodIds[DISPLAY_EVENTPROCESS_IIIIIIIISTRING_Z], 
+            reinterpret_cast<int>(aQObject),
             aQEventType, a1, a2, a3, a4, a5, aString);
 }
 
 bool JniUtils::eventProcess(jobject aObject, const jmethodID aMethodID,
+        const QObject* aQObject, const int& aQEventType, const int& a1,
+        const int& a2, const int& a3, const int& a4, const int& a5,
+        const jstring aString)
+{
+    return eventProcess(
+            aObject, 
+            NULL, 
+            aMethodID, 
+            reinterpret_cast<int>(aQObject),
+            aQEventType, a1, a2, a3, a4, a5, aString);
+}
+
+bool JniUtils::eventProcess(jclass aClazz, const jmethodID aMethodID,
+        const QObject* aQObject, const int& aQEventType, const int& a1,
+        const int& a2, const int& a3, const int& a4, const int& a5,
+        const jstring aString)
+{
+    return eventProcess(
+            NULL, 
+            aClazz, 
+            aMethodID, 
+            reinterpret_cast<int>(aQObject),
+            aQEventType, a1, a2, a3, a4, a5, aString);
+}
+
+bool JniUtils::eventProcess(jobject aObject, jclass aClazz, const jmethodID aMethodID,
         const int& aQObject, const int& aQEventType, const int& a1,
         const int& a2, const int& a3, const int& a4, const int& a5,
         const jstring aString)
@@ -182,10 +203,20 @@ bool JniUtils::eventProcess(jobject aObject, const jmethodID aMethodID,
         // return back through the call stack. This list of objects can be used
         // to determine if deletion of an object is safe in these terms. 
         JavaCallbackCounter counter(mObjectsBeingHandled, reinterpret_cast<QObject*>(aQObject));
-        
+
+        jboolean result;
+
         // Callback Java
-        jboolean result = mUIThreadJniEnv->CallBooleanMethod(aObject, aMethodID,
-                aQObject, aQEventType, swtApp->eventTime(), a1, a2, a3, a4, a5, aString);
+        if(aObject == NULL)
+        {
+            result = mUIThreadJniEnv->CallStaticBooleanMethod(aClazz, aMethodID,
+                    aQObject, aQEventType, swtApp->eventTime(), a1, a2, a3, a4, a5, aString);        
+        }
+        else
+        {
+            result = mUIThreadJniEnv->CallBooleanMethod(aObject, aMethodID,
+                    aQObject, aQEventType, swtApp->eventTime(), a1, a2, a3, a4, a5, aString);
+        }
         
         // If an exception has occurred then any native eventloop we have
         // started, e.g. when opening a QDialog, must exit to allow Java stack
@@ -205,11 +236,6 @@ bool JniUtils::eventProcess(jobject aObject, const jmethodID aMethodID,
         return (result == JNI_TRUE ? true : false);
     }
     return false;
-}
-
-bool JniUtils::isDisplay(jobject aObject)
-{
-    return (mUIThreadJniEnv->IsSameObject(aObject, mDisplay) == JNI_TRUE);
 }
 
 void JniUtils::enterExec(QObject* aObject)
@@ -273,7 +299,7 @@ jobject JniUtils::NewJavaPoint(JNIEnv* aEnv, const QPoint& aPoint)
     return result;
 }
 
-QString JniUtils::JavaStringToQString(JNIEnv* aEnv, jstring aJavaString)
+SWTQT_EXPORT QString JniUtils::JavaStringToQString(JNIEnv* aEnv, jstring aJavaString)
 {
     SWT_LOG_FUNC_CALL();
     if (aJavaString == NULL)
@@ -296,7 +322,7 @@ QString JniUtils::JavaStringToQString(JNIEnv* aEnv, jstring aJavaString)
     }
  }
 
-jstring JniUtils::QStringToJavaString(JNIEnv* aEnv, const QString& aQString)
+SWTQT_EXPORT jstring JniUtils::QStringToJavaString(JNIEnv* aEnv, const QString& aQString)
 {
     SWT_LOG_FUNC_CALL();
 
@@ -417,7 +443,7 @@ QByteArray JniUtils::JavaByteArrayToQByteArray(JNIEnv* aEnv, jbyteArray aByteArr
     return result;
 }
 
-void JniUtils::Throw(JNIEnv* aEnv, const int& aError)
+SWTQT_EXPORT void JniUtils::Throw(JNIEnv* aEnv, const int& aError)
 {
     SWT_LOG_FUNC_CALL();
     aEnv->CallStaticVoidMethod(mJclasses[SWT], mJmethodIds[SWT_ERROR_I_V],

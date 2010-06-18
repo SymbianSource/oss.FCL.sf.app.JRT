@@ -78,12 +78,6 @@
 #include <QInputContextFactory>
 #include <QChar>
 
-#ifndef QT_NO_WEBKIT
-#include <QWebView>
-#include <QWebFrame>
-#include <QWebHistory>
-#endif
-
 #ifdef __SYMBIAN32__
 #include <xqservicerequest.h>
 #include <xqcallinfo.h>
@@ -99,6 +93,7 @@
 #include "jniutils.h"
 #include "swtfontcache.h"
 #include "swt.h"
+#include "swterror.h"
 #include "listdatamodel.h"
 #include "qcaptionedwidget.h"
 #include "qswttimeedit.h"
@@ -115,33 +110,6 @@
 using namespace Java::eSWT;
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_qt_OS_##func
-
-#define POINTER_TO_HANDLE(pointer) reinterpret_cast<jint>(static_cast<QObject*>(pointer))
-#define HANDLE_TO_POINTER(type, variable, handle) type variable = qobject_cast<type>(static_cast<type>(reinterpret_cast<QObject*>( handle )))
-
-#define QCOLOR_TO_HANDLE(pointer) reinterpret_cast<jint>(static_cast<QColor*>(pointer))
-#define HANDLE_TO_QCOLOR(variable, handle) QColor* variable = static_cast<QColor*>(reinterpret_cast<QColor*>( handle ))
-
-#define QTABLEWIDGETITEM_TO_HANDLE(pointer) reinterpret_cast<jint>(static_cast<QTableWidgetItem*>(pointer))
-#define HANDLE_TO_QTABLEWIDGETITEM(variable, handle) QTableWidgetItem* variable = static_cast<QTableWidgetItem*>(reinterpret_cast<QTableWidgetItem*>( handle ))
-#define QTREEWIDGETITEM_TO_HANDLE(pointer) reinterpret_cast<jint>(static_cast<QTreeWidgetItem*>(pointer))
-#define HANDLE_TO_QTREEWIDGETITEM(variable, handle) QTreeWidgetItem* variable = static_cast<QTreeWidgetItem*>(reinterpret_cast<QTreeWidgetItem*>( handle ))
-
-#define SWT_TRY try
-#define SWT_CATCH \
-catch(std::bad_alloc const&)\
-    {\
-    swtApp->jniUtils().Throw( aJniEnv, ESwtErrorNoHandles );\
-    }\
-catch(std::exception const&)\
-    {\
-    swtApp->jniUtils().Throw( aJniEnv, ESwtErrorUnspecified );\
-    }
-#define SWT_CATCH_1(err) \
-catch(std::exception const&)\
-    {\
-    swtApp->jniUtils().Throw( aJniEnv, err );\
-    }
 
 #ifdef Q_WS_X11
 void extern qt_x11_wait_for_window_manager(QWidget* widget);
@@ -5525,30 +5493,15 @@ JNIEXPORT void JNICALL OS_NATIVE( ListModel_1remove )
         }
     SWT_CATCH
     }
-
-JNIEXPORT void JNICALL OS_NATIVE( ListModel_1setItem__IILjava_lang_String_2 )
-( JNIEnv* aJniEnv , jclass, jint aHandle, jint aIndex, jstring aString )
+JNIEXPORT void JNICALL OS_NATIVE( ListModel_1setItemContentsToNull )
+( JNIEnv* aJniEnv , jclass, jint aHandle, jint aIndex )
     {
     SWT_TRY
         {
         SWT_LOG_JNI_CALL();
         SWT_LOG_DATA_2( "handle=%x index=%d ", aHandle, aIndex );
-        ListModel* dataModdel = reinterpret_cast< ListModel* > ( aHandle );
-        dataModdel->setItem(aIndex, swtApp->jniUtils().JavaStringToQString(aJniEnv, aString));
-        }
-    SWT_CATCH
-    }
-
-JNIEXPORT void JNICALL OS_NATIVE( ListModel_1setItem__IILjava_lang_String_2I )
-( JNIEnv* aJniEnv , jclass, jint aHandle, jint aIndex, jstring aString, jint aImageHandle )
-    {
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-        SWT_LOG_DATA_3( "handle=%x index=%d imageHandle=%x", aHandle, aIndex, aImageHandle );
-        ListModel* dataModdel = reinterpret_cast< ListModel* > ( aHandle );
-        QPixmap* pixmap = reinterpret_cast< QPixmap* >( aImageHandle );
-        dataModdel->setItem(aIndex, swtApp->jniUtils().JavaStringToQString(aJniEnv, aString), pixmap );
+        ListModel* dataModel = reinterpret_cast< ListModel* > ( aHandle );
+        dataModel->setItemContentsToNull( aIndex );
         }
     SWT_CATCH
     }
@@ -10026,41 +9979,37 @@ JNIEXPORT jstring JNICALL OS_NATIVE(QInputDialog_1swt_1getText)
     return text;
     }
 
-
-JNIEXPORT jstring JNICALL OS_NATIVE(QInputDialog_1swt_1getDouble)
-    (JNIEnv* aJniEnv , jclass, jint aParentHandle, jstring aTitle, jstring aLabel,
-    jdouble aMin, jdouble aMax, jdouble aDefaultValue, jint aDecimals, jstring aDialogId, jint aLayoutDirection)
+JNIEXPORT jstring JNICALL OS_NATIVE(QInputDialog_1swt_1getInteger)
+  (JNIEnv *aJniEnv, jclass, jint aParentHandle, jstring aTitle, jstring aLabel, 
+  jint aMin, jint aMax, jint aDefaultValue, jstring aDialogId, jint aLayoutDirection)
     {
-    jstring doubleString = NULL;
+    jstring integerString = NULL;
     SWT_TRY
         {
         SWT_LOG_JNI_CALL();
-        SWT_LOG_DATA_5("parent handle=%x min=%e, max=%e, default=%e, decimals=%d layoutDirection=%d",
-                        aParentHandle, aMin, aMax, aDefaultValue,  aDecimals);
+        SWT_LOG_DATA_5("parent handle=%x min=%d, max=%d, default=%d, layoutDirection=%d",
+                        aParentHandle, aMin, aMax, aDefaultValue, aLayoutDirection);
         HANDLE_TO_POINTER(QWidget*, parent, aParentHandle);
         QInputDialog dialog(parent);
         dialog.setObjectName(swtApp->jniUtils().JavaStringToQString(aJniEnv, aDialogId));
         dialog.setLayoutDirection( static_cast<Qt::LayoutDirection>(aLayoutDirection) );
-        dialog.setInputMode(QInputDialog::DoubleInput);
+        dialog.setInputMode(QInputDialog::IntInput);
         dialog.setWindowTitle(swtApp->jniUtils().JavaStringToQString(aJniEnv, aTitle));
         dialog.setLabelText(swtApp->jniUtils().JavaStringToQString(aJniEnv, aLabel));
-        dialog.setDoubleRange(aMin, aMax);
-        dialog.setDoubleDecimals(aDecimals);
+        dialog.setIntRange(aMin, aMax);
         // Order of this call matters, causes problems if done before setting range
-        dialog.setDoubleValue(aDefaultValue);
+        dialog.setIntValue(aDefaultValue);
         AutoPopExecStack stackExec(&dialog);
         int result = dialog.exec();
         if (result == QDialog::Accepted)
             {
-            QString str = QString("%1").arg(dialog.doubleValue(), 0 , 'f', aDecimals);
-            doubleString = swtApp->jniUtils().QStringToJavaString(aJniEnv, str);
+            QString str = QString("%1").arg(dialog.intValue());
+            integerString = swtApp->jniUtils().QStringToJavaString(aJniEnv, str);
             }
         }
     SWT_CATCH
-    return doubleString;
-    }
-
-
+    return integerString;
+}
 //
 // QVBoxLayout
 //
@@ -10212,297 +10161,6 @@ JNIEXPORT jboolean JNICALL OS_NATIVE( QDesktopServices_1openUrl )
 #endif
     return ( result ? JNI_TRUE : JNI_FALSE );
 }
-
-
-//
-// QWebView
-//
-JNIEXPORT jint JNICALL OS_NATIVE( QWebView_1new )
-    ( JNIEnv* aJniEnv , jclass )
-    {
-#ifndef QT_NO_WEBKIT
-    QWebView* browser = NULL;
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-        browser = new QWebView();
-        }
-    SWT_CATCH
-    return POINTER_TO_HANDLE( browser );
-#endif
-#ifdef QT_NO_WEBKIT
-    swtApp->jniUtils().Throw( aJniEnv, ESwtErrorNotImplemented );
-    return 0;
-#endif
-    }
-
-JNIEXPORT void JNICALL OS_NATIVE( QWebView_1back )
-    ( JNIEnv* aJniEnv , jclass, jint
-#ifndef QT_NO_WEBKIT
-aHandle
-#endif
-)
-    {
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-#ifndef QT_NO_WEBKIT
-        HANDLE_TO_POINTER( QWebView*, browser, aHandle );
-        browser->back();
-#endif
-        }
-    SWT_CATCH
-    }
-
-JNIEXPORT void JNICALL OS_NATIVE( QWebView_1forward )
-    ( JNIEnv* aJniEnv , jclass, jint
-#ifndef QT_NO_WEBKIT
-aHandle
-#endif
-)
-    {
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-#ifndef QT_NO_WEBKIT
-        HANDLE_TO_POINTER( QWebView*, browser, aHandle );
-        browser->forward();
-#endif
-        }
-    SWT_CATCH
-    }
-
-JNIEXPORT void JNICALL OS_NATIVE( QWebView_1reload )
-    ( JNIEnv* aJniEnv , jclass, jint
-#ifndef QT_NO_WEBKIT
-aHandle
-#endif
-)
-    {
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-#ifndef QT_NO_WEBKIT
-        HANDLE_TO_POINTER( QWebView*, browser, aHandle );
-        browser->reload();
-#endif
-        }
-    SWT_CATCH
-    }
-
-JNIEXPORT void JNICALL OS_NATIVE( QWebView_1setHtml )
-    ( JNIEnv* aJniEnv , jclass, jint
-#ifndef QT_NO_WEBKIT
-aHandle
-#endif
-, jstring
-#ifndef QT_NO_WEBKIT
-aText
-#endif
-)
-    {
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-#ifndef QT_NO_WEBKIT
-        HANDLE_TO_POINTER( QWebView*, browser, aHandle );
-        browser->setHtml( swtApp->jniUtils().JavaStringToQString( aJniEnv, aText ) );
-#endif
-        }
-    SWT_CATCH
-    }
-
-JNIEXPORT void JNICALL OS_NATIVE( QWebView_1setUrl )
-    ( JNIEnv* aJniEnv , jclass, jint
-#ifndef QT_NO_WEBKIT
-aHandle
-#endif
-, jstring
-#ifndef QT_NO_WEBKIT
-aText
-#endif
-)
-    {
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-#ifndef QT_NO_WEBKIT
-        HANDLE_TO_POINTER( QWebView*, browser, aHandle );
-        browser->setUrl( QUrl( swtApp->jniUtils().JavaStringToQString( aJniEnv, aText ) ) );
-#endif
-        }
-    SWT_CATCH
-    }
-
-JNIEXPORT void JNICALL OS_NATIVE( QWebView_1stop )
-    ( JNIEnv* aJniEnv , jclass, jint
-#ifndef QT_NO_WEBKIT
-aHandle
-#endif
-)
-    {
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-#ifndef QT_NO_WEBKIT
-        HANDLE_TO_POINTER( QWebView*, browser, aHandle );
-        browser->stop();
-#endif
-        }
-    SWT_CATCH
-    }
-
-JNIEXPORT jstring JNICALL OS_NATIVE( QWebView_1swt_1backUrl )
-    ( JNIEnv* aJniEnv , jclass, jint
-#ifndef QT_NO_WEBKIT
-aHandle
-#endif
-)
-    {
-    jstring res = NULL;
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-#ifndef QT_NO_WEBKIT
-        HANDLE_TO_POINTER( QWebView*, browser, aHandle );
-        QWebHistory* history = browser->history();
-        if ( history && history->canGoBack() )
-            {
-            res = swtApp->jniUtils().QStringToJavaString( aJniEnv, history->backItem().url().toString() );
-            }
-#endif
-        }
-    SWT_CATCH
-    return res;
-    }
-
-JNIEXPORT jboolean JNICALL OS_NATIVE( QWebView_1swt_1canGoBack )
-    ( JNIEnv* aJniEnv , jclass, jint
-#ifndef QT_NO_WEBKIT
-aHandle
-#endif
-)
-    {
-    jboolean res = false;
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-#ifndef QT_NO_WEBKIT
-        HANDLE_TO_POINTER( QWebView*, browser, aHandle );
-        QWebHistory* history = browser->history();
-        if ( history )
-            {
-            res = history->canGoBack();
-            }
-#endif
-        }
-    SWT_CATCH
-    return res;
-    }
-
-JNIEXPORT jboolean JNICALL OS_NATIVE( QWebView_1swt_1canGoForward )
-    ( JNIEnv* aJniEnv , jclass, jint
-#ifndef QT_NO_WEBKIT
-aHandle
-#endif
-)
-    {
-    jboolean res = false;
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-#ifndef QT_NO_WEBKIT
-        HANDLE_TO_POINTER( QWebView*, browser, aHandle );
-        QWebHistory* history = browser->history();
-        if ( history )
-            {
-            res = history->canGoForward();
-            }
-#endif
-        }
-    SWT_CATCH
-    return res;
-    }
-
-JNIEXPORT jboolean JNICALL OS_NATIVE( QWebView_1swt_1evaluateJavaScript )
-    ( JNIEnv* aJniEnv , jclass, jint
-#ifndef QT_NO_WEBKIT
-aHandle
-#endif
-, jstring
-#ifndef QT_NO_WEBKIT
-aText
-#endif
-)
-    {
-    jboolean res = false;
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-#ifndef QT_NO_WEBKIT
-        HANDLE_TO_POINTER( QWebView*, browser, aHandle );
-        QWebPage* page = browser->page();
-        if ( page )
-            {
-            QWebFrame* frame = page->currentFrame();
-            if ( !frame )
-                {
-                frame = page->mainFrame();
-                }
-            if ( frame )
-                {
-                res = ( frame->evaluateJavaScript( swtApp->jniUtils().JavaStringToQString( aJniEnv, aText ) ) ).toBool();
-                }
-            }
-#endif
-        }
-    SWT_CATCH
-    return res;
-    }
-
-JNIEXPORT jstring JNICALL OS_NATIVE( QWebView_1swt_1forwardUrl )
-    ( JNIEnv* aJniEnv , jclass, jint
-#ifndef QT_NO_WEBKIT
-aHandle
-#endif
-)
-    {
-    jstring res = NULL;
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-#ifndef QT_NO_WEBKIT
-        HANDLE_TO_POINTER( QWebView*, browser, aHandle );
-        QWebHistory* history = browser->history();
-        if ( history && history->canGoForward() )
-            {
-            res = swtApp->jniUtils().QStringToJavaString( aJniEnv, history->forwardItem().url().toString() );
-            }
-#endif
-        }
-    SWT_CATCH
-    return res;
-    }
-
-JNIEXPORT jstring JNICALL OS_NATIVE( QWebView_1url )
-    ( JNIEnv* aJniEnv , jclass, jint
-#ifndef QT_NO_WEBKIT
-aHandle
-#endif
-)
-    {
-    jstring res = NULL;
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-#ifndef QT_NO_WEBKIT
-        HANDLE_TO_POINTER( QWebView*, browser, aHandle );
-        res = swtApp->jniUtils().QStringToJavaString( aJniEnv, browser->url().toString() );
-#endif
-        }
-    SWT_CATCH
-    return res;
-    }
 
 //
 // Special purpose global functions exported by Qt
@@ -11749,7 +11407,6 @@ JNIEXPORT jboolean JNICALL OS_NATIVE( XQServiceRequest_1send )
     {
 #ifdef __SYMBIAN32__    
     bool result = false;
-    XQServiceRequest* client = NULL;
     SWT_TRY
         {
         SWT_LOG_JNI_CALL();
@@ -12129,6 +11786,24 @@ JNIEXPORT void JNICALL OS_NATIVE(EventHandler_1destroy)
     }
 
 JNIEXPORT jint JNICALL OS_NATIVE(SignalHandler_1new)
+  (JNIEnv* aJniEnv, jclass, jint aWidget, jint aSignalId )
+    {
+    SlotCallback* cb = NULL;
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        SWT_LOG_DATA_1("peer=%x", aPeer);
+
+        HANDLE_TO_POINTER( QObject*, widget, aWidget );
+
+        // Widget takes ownership of the signal handler instance
+        cb = new SlotCallback( aJniEnv, NULL, widget, aSignalId );
+        }
+    SWT_CATCH
+    return POINTER_TO_HANDLE( cb );
+    }
+
+JNIEXPORT jint JNICALL OS_NATIVE(SignalForwarder_1new)
   (JNIEnv* aJniEnv, jclass, jint aWidget, jobject aPeer, jint aSignalId )
     {
     SlotCallback* cb = NULL;
@@ -12147,12 +11822,12 @@ JNIEXPORT jint JNICALL OS_NATIVE(SignalHandler_1new)
     }
 
 JNIEXPORT jint JNICALL OS_NATIVE( JniUtils_1new )
-  (JNIEnv* aJniEnv, jclass, jobject aDisplay)
+  (JNIEnv* aJniEnv, jclass)
     {
     // Note that JNI callbacks are not possible before first successfully creating jniUtils
     JniUtils* jniUtils = NULL;
     try {
-        jniUtils = new JniUtils(aJniEnv, aDisplay);
+        jniUtils = new JniUtils(aJniEnv);
         }
     catch(...)
         {
@@ -12239,7 +11914,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_qt_s60_OS__1startUI
 (JNIEnv*, jclass, jobject, jint)
 #endif
     {
-    jint retVal = 0;
+    jint retVal = -1;
 #ifdef __SYMBIAN32__
     retVal = static_cast<jint>(SymbianUtils::startUI( aJniEnv, aRunner,  aUid));
 #endif

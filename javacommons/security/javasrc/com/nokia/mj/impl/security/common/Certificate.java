@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -318,8 +318,9 @@ public class Certificate implements javax.microedition.pki.Certificate
             {
                 Calendar cal = Calendar.getInstance();
                 cal.set(Calendar.YEAR, Integer.parseInt(str.substring(0,4)));
-                cal.set(Calendar.MONTH, Integer.parseInt(str.substring(4,6)));
-                cal.set(Calendar.DAY_OF_WEEK, Integer.parseInt(str.substring(6,8)));
+                // Calendar.MONTH begins from 0 (0=January, 1=Februrary, ...)
+                cal.set(Calendar.MONTH, Integer.parseInt(str.substring(4,6)) - 1);
+                cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(str.substring(6,8)));
                 cal.set(Calendar.HOUR, Integer.parseInt(str.substring(8,10)));
                 cal.set(Calendar.MINUTE, Integer.parseInt(str.substring(10,12)));
                 cal.set(Calendar.SECOND, Integer.parseInt(str.substring(12,14)));

@@ -51,12 +51,12 @@ CMMAMIDIPlayer::~CMMAMIDIPlayer()
     delete iActiveSchedulerWait;
     iObservers.Close();
 
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAMIDIPlayer::~CMMAMIDIPlayer");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAMIDIPlayer::~CMMAMIDIPlayer");
 }
 
 void CMMAMIDIPlayer::ConstructL(const TDesC& aContentType)
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAMIDIPlayer::ConstructL");
+    LOG(EJavaMMAPI, EInfo, "CMMAMIDIPlayer::ConstructL");
     iContentType = aContentType.AllocL();
     iActiveSchedulerWait = new(ELeave)CActiveSchedulerWait;
     iMidi = CMidiClientUtility::NewL(*this, KAudioPriorityRecording,
@@ -79,13 +79,13 @@ EXPORT_C CMidiClientUtility* CMMAMIDIPlayer::MidiClient() const
 
 void CMMAMIDIPlayer::RealizeL()
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAMIDIPlayer::RealizeL");
+    LOG(EJavaMMAPI, EInfo, "CMMAMIDIPlayer::RealizeL");
     CMMAPlayer::RealizeL();
 }
 
 void CMMAMIDIPlayer::PrefetchL()
 {
-    LOG1( EJavaMMAPI, EInfo, "CMMAMIDIPlayer::PrefetchL stream count %d", iSourceStreams.Count());
+    LOG1(EJavaMMAPI, EInfo, "CMMAMIDIPlayer::PrefetchL stream count %d", iSourceStreams.Count());
     if (iFileName != KNullDesC)
     {
         iMidi->OpenFile(iFileName);
@@ -135,14 +135,14 @@ void CMMAMIDIPlayer::ReadCompletedL(TInt aStatus, const TDesC8& aData)
 
 void CMMAMIDIPlayer::DeallocateL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMAMidiPlayer: DeallocateL +");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMAMidiPlayer: DeallocateL +");
     if (iState == EPrefetched)
     {
         CloseClientUtility();
         ResetSourceStreams();
         ChangeState(ERealized);
     }
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMAMidiPlayer: DeallocateL -");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMAMidiPlayer: DeallocateL -");
 }
 
 void CMMAMIDIPlayer::StartL()
@@ -175,7 +175,7 @@ void CMMAMIDIPlayer::StartL()
 
 void CMMAMIDIPlayer::StopL(TBool aPostEvent)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMAMidiPlayer::StopL");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMAMidiPlayer::StopL");
     if (iState == EStarted)
     {
         TInt64 time;
@@ -281,11 +281,11 @@ void CMMAMIDIPlayer::GetMediaTime(TInt64* aMediaTime)
 
 void CMMAMIDIPlayer::ReInitializeMidiEngineL(const TDesC8* aMidiSequence)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMAMIDIPlayer: ReInitializeMidiEngineL: + ");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMAMIDIPlayer: ReInitializeMidiEngineL: + ");
 
     CloseClientUtility();
 
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMAMidiPlayer: ReInitializeMidiEngineL: Opening descriptor");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMAMidiPlayer: ReInitializeMidiEngineL: Opening descriptor");
 
     iMidi->OpenDes(*aMidiSequence);
     // Wait until asynchronous OpenDes call has completed
@@ -294,7 +294,7 @@ void CMMAMIDIPlayer::ReInitializeMidiEngineL(const TDesC8* aMidiSequence)
         iActiveSchedulerWait->Start();
     }
     ChangeState(EPrefetched);
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMAMIDIPlayer: ReInitializeMidiEngineL: - ");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMAMIDIPlayer: ReInitializeMidiEngineL: - ");
 }
 
 void CMMAMIDIPlayer::addObserverL(MMidiClientUtilityObserver* aObserver)
@@ -315,8 +315,8 @@ const TDesC& CMMAMIDIPlayer::Type()
 
 void CMMAMIDIPlayer::PlayCompleteL(TInt aError)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMAMidiPlayer: PlayCompleteL +");
-    ELOG1( EJavaMMAPI, "MMA: CMMAMidiPlayer: PlayCompleteL: Error=%d", aError);
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMAMidiPlayer: PlayCompleteL +");
+    ELOG1(EJavaMMAPI, "MMA: CMMAMidiPlayer: PlayCompleteL: Error=%d", aError);
     TInt64 duration;
     GetDuration(&duration);
     iMediaTime = duration;
@@ -349,7 +349,7 @@ void CMMAMIDIPlayer::PlayCompleteL(TInt aError)
         // repeats for next start
         SetLoopCount(iRepeatNumberOfTimes);
     }
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMAMidiPlayer: PlayCompleteL -");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMAMidiPlayer: PlayCompleteL -");
 }
 
 void CMMAMIDIPlayer::MmcuoStateChanged(TMidiState aOldState,
@@ -359,10 +359,10 @@ void CMMAMIDIPlayer::MmcuoStateChanged(TMidiState aOldState,
 {
     TInt err = aError;
 
-    ELOG3( EJavaMMAPI, "MMA: CMMAMIDIPlayer: MmcuoStateChanged: Old=%d, New=%d, Error=%d",
-               aOldState,
-               aNewState,
-               err);
+    ELOG3(EJavaMMAPI, "MMA: CMMAMIDIPlayer: MmcuoStateChanged: Old=%d, New=%d, Error=%d",
+          aOldState,
+          aNewState,
+          err);
     // Closing the utility or reinitialising
 #ifdef RD_JAVA_TMIDISTATECHANGE
     if (iActiveSchedulerWait->IsStarted() &&
@@ -442,8 +442,8 @@ void CMMAMIDIPlayer::MmcuoStateChanged(TMidiState aOldState,
         iObservers[ i ]->MmcuoStateChanged(aOldState, aNewState, aTime, aError);
     }
 
-    LOG1( EJavaMMAPI, EInfo, "MMA: CMMAMIDIPlayer: MmcuoStateChanged: midi state %d",
-              iMidi->State());
+    LOG1(EJavaMMAPI, EInfo, "MMA: CMMAMIDIPlayer: MmcuoStateChanged: midi state %d",
+         iMidi->State());
 }
 
 void CMMAMIDIPlayer::MmcuoTempoChanged(TInt aMicroBeatsPerMinute)
@@ -528,7 +528,7 @@ void CMMAMIDIPlayer::MmcuoInstrumentChanged(TInt aChannel,TInt aBankId,TInt aIns
 
 void CMMAMIDIPlayer::CloseClientUtility()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMAMidiPlayer: CloseClientUtility +");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMAMidiPlayer: CloseClientUtility +");
     if (iMidi &&
             iActiveSchedulerWait &&
 #ifdef RD_JAVA_TMIDISTATECHANGE
@@ -564,7 +564,7 @@ void CMMAMIDIPlayer::CloseClientUtility()
                 iActiveSchedulerWait->Start();
             }
 
-            LOG1( EJavaMMAPI, EInfo, "State after Close: %d", iMidi->State());
+            LOG1(EJavaMMAPI, EInfo, "State after Close: %d", iMidi->State());
 
             // If not in EClosedDisengaged yet
 #ifdef RD_JAVA_TMIDISTATECHANGE
@@ -579,12 +579,12 @@ void CMMAMIDIPlayer::CloseClientUtility()
                 {
                     iActiveSchedulerWait->Start();
                 }
-                LOG1( EJavaMMAPI, EInfo, "State after Stop: %d", iMidi->State());
+                LOG1(EJavaMMAPI, EInfo, "State after Stop: %d", iMidi->State());
             }
         }
-        LOG1( EJavaMMAPI, EInfo, "MMA: CMMAMidiPlayer: CloseClientUtility: State after close: %d", iMidi->State());
+        LOG1(EJavaMMAPI, EInfo, "MMA: CMMAMidiPlayer: CloseClientUtility: State after close: %d", iMidi->State());
     }
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMAMidiPlayer: CloseClientUtility -");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMAMidiPlayer: CloseClientUtility -");
 }
 
 //  END OF FILE

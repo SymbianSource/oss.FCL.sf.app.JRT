@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2009 - 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -21,18 +21,21 @@ package com.nokia.mj.impl.rt.midp;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
+import java.util.Hashtable;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import java.security.AccessControlException;
+
 import com.nokia.mj.impl.rt.utils.ExtensionUtil;
+import com.nokia.mj.impl.rt.utils.CmdLineArgsPermission;
 
 import com.nokia.mj.impl.rt.support.Jvm;
 import com.nokia.mj.impl.rt.support.JvmInternal;
 import com.nokia.mj.impl.rt.support.ThreadEventListener;
+import com.nokia.mj.impl.rt.support.ApplicationUtils;
 
 import com.nokia.mj.impl.rt.legacy.LegacySupport;
-
-import com.nokia.mj.impl.gcf.PushSecurityUtils;
 
 import com.nokia.mj.impl.security.packageprotection.PackageProtector;
 import com.nokia.mj.impl.security.common.RuntimeSecurityException;
@@ -47,6 +50,7 @@ import com.nokia.mj.impl.utils.LineReader;
 import com.nokia.mj.impl.utils.TaskQueue;
 import com.nokia.mj.impl.utils.Uid;
 import com.nokia.mj.impl.utils.StartUpTrace;
+
 
 /**
  * A core of the MIDP life cycle. This class controls the life time of the
@@ -173,6 +177,12 @@ final class MidletLifeCycle
      * the url contains MIDlet argument 'PromptAppStartup'
      */
     private        boolean               mAutoinvocationFromUrl = false;
+
+    /**
+     * PropertyKeys that are not listed in the values of Jad / Manifest
+     * attribute Nokia-MIDlet-Launch-Params
+     */
+    private        Hashtable             mAcceptedUserProperties;
 
     /**
      * Flag for identifying whether the MIDlet is a standalone MIDlet.
@@ -370,8 +380,10 @@ final class MidletLifeCycle
         if (Log.mOn)
             Log.logI("MIDlet launch count is : " + Integer.toString(mRelaunchCount + 1));
 
-        // Update possible MIDlet arguments
-        setMidletArguments(applicationArgs);
+        if (applicationArgs != null)
+        {
+            JvmInternal.setSystemProperty("com.nokia.mid.cmdline", applicationArgs);
+        }
 
         if (mState == PRE_INIT_DONE)
         {
@@ -384,6 +396,8 @@ final class MidletLifeCycle
         }
         else
         {
+            // Update possible MIDlet arguments
+            setMidletArguments();
             // Bring the MIDlet to foreground
             CoreUi.foregroundRequest();
         }
@@ -608,7 +622,7 @@ final class MidletLifeCycle
     {
         if (Log.mOn) Log.logI("MidletLifeCycle.handleStartRequest(), subTask: "
                                   + subTask);
-        if ((mState == POST_INIT_DONE && subTask != LifeCycleTask.PRE_WARM_START) || 
+        if ((mState == POST_INIT_DONE && subTask != LifeCycleTask.PRE_WARM_START) ||
             (mState == PRE_INIT_DONE && subTask == LifeCycleTask.PRE_WARM_START))
         {
             if (subTask == LifeCycleTask.NORMAL_START)
@@ -794,8 +808,8 @@ final class MidletLifeCycle
             // Decode arguments
             String midletArgs = decodeArgs(encodedMidletArgs);
 
-            // Parse them
-            setMidletArguments(midletArgs);
+            // Resetting the system property after decoding.
+            JvmInternal.setSystemProperty("com.nokia.mid.cmdline", midletArgs);
         }
 
         // If the runtime is set to pre warmed state, then the
@@ -849,33 +863,47 @@ final class MidletLifeCycle
      * Native side function java::util::runtime::MidpRuntimeStarter::encodeArgs()
      * was used to encode the string
      *
-     * @param args original wstring
-     * @return encoded wstring
+     * @param encodedArgs encoded arguments
+     * @return decoded argument string
      */
     private String decodeArgs(String encodedArgs)
     {
         StringBuffer res = new StringBuffer();
-        int idx = encodedArgs.indexOf('%');
-        int cur = 0;
+        int  idx = 0;
+        int  len = encodedArgs.length();
+        char t;
 
-        while (idx != -1)
+        // Decoding is done in blocks of 4 or 2 characters.
+        // Possible extra chars are ignored
+
+        while (idx < len)
         {
-            // Add all characters up to but not including the '%' char
-            // to final result string
-            if ((idx - cur) > 0)
+            t = encodedArgs.charAt(idx);
+            if (t < 'a')
             {
-                res.append(encodedArgs.substring(cur, idx));
+                if (idx + 3 >= len)
+                    break;
+                // decode one 16-bit char
+                char a = (char)(t - 'A');
+                char b = (char)(encodedArgs.charAt(idx+1) - 'A');
+                char c = (char)(encodedArgs.charAt(idx+2) - 'A');
+                char d = (char)(encodedArgs.charAt(idx+3) - 'A');
+                char r = (char)(((a<<12)+(b<<8)+(c<<4)+d));
+                res.append(r);
+                idx = idx + 4;
             }
-
-            // Decode all special sequences 'X%' in same way.
-            // "X%" -> "X", so skip "%"
-            // Note that "%%" is decoded to "%"
-            cur = idx + 1;
-            idx = encodedArgs.indexOf('%', cur + 1);
+            else
+            {
+                if (idx + 1 >= len)
+                    break;
+                // decode one 8-bit char
+                char a = (char)(t - 'a');
+                char b = (char)(encodedArgs.charAt(idx+1) - 'a');
+                char r = (char)((a<<4)+b);
+                res.append(r);
+                idx = idx + 2;
+            }
         }
-
-        // Add characters after last special character if any
-        res.append(encodedArgs.substring(cur, encodedArgs.length()));
 
         return res.toString();
     }
@@ -931,6 +959,10 @@ final class MidletLifeCycle
         // from storage.
         setMidletInfo();
 
+        // If system property com.nokia.mid.cmdline has value, it contains
+        // the arguments for the current MIDlet.
+        setMidletArguments();
+
         if (mPrewarmStart)
         {
             // Get the recorded heap size from previous run.
@@ -965,23 +997,23 @@ final class MidletLifeCycle
         if ((mMainArgs.findArgument("-autoinvocation") != null) ||
                 mAutoinvocationFromUrl)
         {
+            if (Log.mOn) Log.logI("Ensuring autoinvocation.");
+            String pushAdditionalInfo =
+                mMainArgs.findArgument("-autoInvocationAdditional");
+            if (Log.mOn) Log.logI("  addInfo: '" + pushAdditionalInfo + "'");
+
+            // ensure security
             try
             {
-                if (Log.mOn) Log.logI("Ensuring autoinvocation.");
-                String pushAdditionalInfo =
-                    mMainArgs.findArgument("-autoInvocationAdditional");
-                if (Log.mOn) Log.logI("  addInfo: '" + pushAdditionalInfo + "'");
-                PushSecurityUtils.ensurePermission("autoinvocation",
-                                                   pushAdditionalInfo);
-
+                ApplicationUtils appUtils = ApplicationUtils.getInstance();
+                CmdLineArgsPermission cmdLineArgsPermission = 
+                    new CmdLineArgsPermission();
+                appUtils.checkPermission(cmdLineArgsPermission);
                 if (Log.mOn) Log.logI("Autoinvocation allowed.");
-            }
-            catch (SecurityException se)
+            }catch(AccessControlException e)
             {
-                // The user didn't allow starting. Throw StartupException and
-                // mark it as non fatal.
-                if (Log.mOn) Log.logI("Autoinvocation NOT allowed.");
-                throw new StartupException("Auto invocation not allowed.",
+                if (Log.mOn) Log.logI("Autoinvocation NOT allowed.");                
+                throw new StartupException(e.toString(),
                                            false);
             }
         }
@@ -1116,18 +1148,12 @@ final class MidletLifeCycle
     /**
      * Parse the MIDlet arguments given as parameter and set them
      * to system properties so that MIDlet can access them.
-     *
-     * @param applicationArgs the MIDlet arguments, can be empty
      */
-    private void setMidletArguments(String applicationArgs)
+    private void setMidletArguments()
     {
-        if (applicationArgs == null)
-        {
-            applicationArgs = "";
-        }
-        JvmInternal.setSystemProperty("com.nokia.mid.cmdline", applicationArgs);
+        String applicationArgs = System.getProperty("com.nokia.mid.cmdline");
 
-        if (applicationArgs.length() > 0)
+        if (applicationArgs != null && applicationArgs.length() > 0)
         {
             if (Log.mOn)
                 Log.logI("MIDlet arguments are : " + applicationArgs);
@@ -1142,6 +1168,13 @@ final class MidletLifeCycle
             String propertyKey;
             String propertyValue;
             mAutoinvocationFromUrl = false;
+            if (mAcceptedUserProperties == null)
+            {
+                // Doing intialization only once.
+                String launchParams =
+                  ApplicationInfoImpl.getMidletInfo().getAttribute("Nokia-MIDlet-Launch-Params");
+                mAcceptedUserProperties = split(launchParams, ",");
+            }
 
             do
             {
@@ -1155,7 +1188,6 @@ final class MidletLifeCycle
                     continue;
                 }
 
-                argBuf.append("com.nokia.mid.cmdline.param.");
                 if (idx != -1)
                 {
                     argBuf.append(applicationArgs.substring(cur, idx));
@@ -1183,19 +1215,61 @@ final class MidletLifeCycle
                     propertyValue = arg.substring(indEq + 1);
                 }
 
-                if (propertyKey.equals("com.nokia.mid.cmdline.param.PromptAppStartup"))
+                if (propertyKey.equals("PromptAppStartup"))
                 {
                     mAutoinvocationFromUrl = true;
                     if (Log.mOn)
                         Log.logI("MIDlet had argument PromptAppStartup");
                 }
 
-                JvmInternal.setSystemProperty(propertyKey, propertyValue);
+                if (mAcceptedUserProperties.get(propertyKey) != null)
+                {
+                    JvmInternal.setUserProperty(propertyKey, propertyValue);
+                }
 
                 cur = idx + 1;
             }
             while ((idx != -1) && (cur < applicationArgs.length()));
         }
+    }
+
+    /**
+     * Split a string into Hashtable. This util method splits the given
+     * string separated by given separator into Hashtable so that tokens
+     * are keys and values are just empty Strings. Before adding the tokens
+     * into hashtable those are trimmed.
+     *
+     * @str String to split.
+     * @separator A separator that separates the tokens.
+     */
+    static Hashtable split(String str, String separator)
+    {
+        Hashtable ht = new Hashtable();
+        if (separator != null)
+        {
+            int separatorLen = separator.length();
+            if (str != null && separatorLen > 0)
+            {
+                int index = str.indexOf(separator);
+                while (index != -1)
+                {
+                    String token = str.substring(0,index).trim();
+                    ht.put(token, "");
+                    str = str.substring(index + separatorLen);
+                    index = str.indexOf(separator);
+                }
+            }
+        }
+        if (str != null)
+        {
+            str = str.trim();
+            if (str.length() > 0)
+            {
+                // add token after last separator
+                ht.put(str, "");
+            }
+        }
+        return ht;
     }
 
     /**

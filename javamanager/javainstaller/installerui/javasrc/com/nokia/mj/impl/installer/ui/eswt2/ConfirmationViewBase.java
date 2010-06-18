@@ -90,8 +90,7 @@ abstract public class ConfirmationViewBase extends ViewBase
             return false;
         }
         // Open the dialog from the UI thread.
-        getComposite().getDisplay().syncExec
-        (new Runnable()
+        getComposite().getDisplay().syncExec(new Runnable()
         {
             public void run()
             {
@@ -102,6 +101,7 @@ abstract public class ConfirmationViewBase extends ViewBase
                     setDefaultCommand();
                 }
                 setVisible(true);
+                iInstallerUi.unhide();
             }
         });
         // The UI thread must not be blocked. Let's wait for the answer
@@ -123,8 +123,7 @@ abstract public class ConfirmationViewBase extends ViewBase
             return false;
         }
         // Hide the dialog.
-        getComposite().getDisplay().syncExec
-        (new Runnable()
+        getComposite().getDisplay().syncExec(new Runnable()
         {
             public void run()
             {

@@ -20,7 +20,7 @@
  * Must be executed in UI thread
  */
 JNIEXPORT jboolean JNICALL Java_javax_microedition_m3g_Graphics3D__1isProperRenderer
-(JNIEnv* aEnv, jclass)
+(JNIEnv* /*aEnv*/, jclass)
 {
     EGLContext ctx;
     EGLConfig config;
@@ -59,7 +59,7 @@ JNIEXPORT jboolean JNICALL Java_javax_microedition_m3g_Graphics3D__1isProperRend
     info = glGetString(GL_RENDERER);   // get the renderer string
 
     // check if "MBX" substring is found
-    if (strstr((const char *)info, "MBX"))
+    if ( !info ||  strstr((const char *)info, "MBX"))
     {
         // HW renderer detected.
         // If "MBX" HW is detected we must reset alpha for mutable off-screen
@@ -93,10 +93,8 @@ JNIEXPORT jboolean JNICALL Java_javax_microedition_m3g_Graphics3D__1bindGraphics
 
     // Fetch the native peer of our target object
     Java::GFX::WindowSurface* wsurf = reinterpret_cast<Java::GFX::WindowSurface*>(aSurfaceHandle);
-
-    int caps = Java::GFX::SwImage | Java::GFX::PBuffer;
-    QPaintDevice* surface = wsurf->bind(caps);
-
+    
+    wsurf->bind(Java::GFX::WsTypeQtImage | Java::GFX::WsTypeEglSurface);
     jboolean isImageTarget = false; /*cmidGraphics->IsImageTarget();*/
 
     M3G_DO_LOCK
@@ -120,11 +118,21 @@ JNIEXPORT jboolean JNICALL Java_javax_microedition_m3g_Graphics3D__1bindGraphics
 
         switch (wsurf->getType())
         {
-        case Java::GFX::SwImage:
+        case Java::GFX::WsTypeQtImage:
         {
-            QImage* bitmap = static_cast<QImage*>(surface);
+            QImage* bitmap = wsurf->getQtImage();
             M3GPixelFormat format  = mapQtPixelformat(bitmap->format());
             m3gBindMemoryTarget((M3GRenderContext)aCtx, bitmap->bits(), (M3Guint)bitmap->width(), (M3Guint)bitmap->height(), format, (M3Guint)(bitmap->width() * 4), NULL);
+            break;
+        }
+        case Java::GFX::WsTypeEglSurface:
+        {
+            if( eglQueryAPI() != EGL_OPENGL_ES_API )
+            {
+                eglMakeCurrent( EGL_DEFAULT_DISPLAY, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT );
+                eglBindAPI( EGL_OPENGL_ES_API );
+            }
+            m3gBindEGLSurfaceTarget((M3GRenderContext)aCtx, wsurf->getEglSurface() );
             break;
         }
         default:
@@ -212,7 +220,7 @@ static void releaseGraphicsTarget(M3GRenderContext aCtx, CMIDGraphics *aGraphics
 */
 JNIEXPORT void JNICALL Java_javax_microedition_m3g_Graphics3D__1releaseGraphics
 (JNIEnv* aEnv, jclass, jint aHandle,
- jint aSurfaceHandle, jboolean aIsImageTarget, jboolean aIsProperRenderer)
+ jint aSurfaceHandle, jboolean /*aIsImageTarget*/, jboolean /*aIsProperRenderer*/)
 {
     M3G_DO_LOCK
 
@@ -221,7 +229,7 @@ JNIEXPORT void JNICALL Java_javax_microedition_m3g_Graphics3D__1releaseGraphics
     // Release used target surface
     Java::GFX::WindowSurface* surf = reinterpret_cast<Java::GFX::WindowSurface*>(aSurfaceHandle);
     surf->release();
-
+    
     /*
     CMIDGraphics *cmidGraphics = MIDUnhandObject<CMIDGraphics>(aGraphicsHandle);
 
@@ -715,7 +723,7 @@ JNIEXPORT jint JNICALL Java_javax_microedition_m3g_Graphics3D__1getViewportHeigh
 }
 
 JNIEXPORT jboolean JNICALL Java_javax_microedition_m3g_Graphics3D__1isAASupported
-(JNIEnv* aEnv, jclass, jint aM3g)
+(JNIEnv* /*aEnv*/, jclass, jint aM3g)
 {
     M3Gbool aaSupport = M3G_FALSE;
 

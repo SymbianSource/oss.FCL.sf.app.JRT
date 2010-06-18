@@ -38,7 +38,7 @@ public final class BaseCSSEngine {
 	public BaseCSSEngine(Display display){
 		if (display == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		if (display.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-		if (Display.getCurrent() == null ) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+		if (display.getThread() != Thread.currentThread()) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 		this.parent = display;
 	}
 
@@ -145,12 +145,14 @@ public final class BaseCSSEngine {
 	 *
 	 */
 	public void dispose(){
-		if (Display.getCurrent() == null ) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
-		parent = null;
+		if(parent != null) {
+			if (parent.getThread() != Thread.currentThread()) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+			parent = null;
+		}
 	}
 
 	private void checkEngine(){
 		if ( parent == null || parent.isDisposed() ) SWT.error( SWT.ERROR_WIDGET_DISPOSED);
-	    if (Display.getCurrent() == null ) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	    if ( parent.getThread() != Thread.currentThread() ) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
 }

@@ -183,17 +183,23 @@ final class StorageAccessor
                     // Determine what is the <n> of this MIDlet,
                     // (which attribute "Nokia-MIDlet-Localized-<n>" contains the localized
                     // name of this MIDlet)
-                    if ((value.getValue().indexOf(midletInfo.getName()) > -1) &&
-                            name.getValue().startsWith("MIDlet-"))
+                    String valueStr = value.getValue();
+                    String nameStr = name.getValue();
+                    if ((valueStr.indexOf(midletInfo.getName()) > -1) &&
+                            nameStr.startsWith("MIDlet-") &&
+                            !nameStr.equals("MIDlet-Name")
+                            )
                     {
                         try
                         {
                             // Try to parse the rest of attribute name (after "MIDlet-")
-                            // into an int. If this throws exception, the attribute was
-                            // propably 'MIDlet-Name'
-                            midletN = Integer.parseInt(name.getValue().substring(7));
+                            // into an int.
+                            midletN = Integer.parseInt(nameStr.substring(7));
                         }
-                        catch (NumberFormatException ne) {};
+                        catch (NumberFormatException ne) 
+                        {
+                            Log.logW("Error in getting localized name: " + nameStr, ne);
+                        }
                     }
                 }
 

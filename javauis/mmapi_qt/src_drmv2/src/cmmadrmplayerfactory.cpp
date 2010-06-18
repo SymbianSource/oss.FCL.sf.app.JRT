@@ -19,9 +19,10 @@
 //  INCLUDE FILES
 #include <logger.h>
 
+#include <caf/cafplatform.h>
+#include <caf/stringattributeset.h>
 #include <DRMCommon.h>
 #include <DRMHelper.h>
-#include <caf/stringattributeset.h>
 
 #include "cmmadrmplayerfactory.h"
 #include "cmmadrmaudioplayer.h"
@@ -85,7 +86,7 @@ CMMAPlayer* CMMADRMPlayerFactory::CreatePlayerL(
     const TDesC& aMiddlePart,
     const TDesC& /*aProperties*/)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMADRMPlayerFactory::CreatePlayerL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMADRMPlayerFactory::CreatePlayerL +");
     CMMAPlayer* player = NULL;
     if (aProtocol == KMMAFileProtocol)
     {
@@ -99,7 +100,7 @@ CMMAPlayer* CMMADRMPlayerFactory::CreatePlayerL(
         TRAPD(openContentErr, dataObj = contentObj->OpenContentL(intent));
         CleanupStack::PushL(dataObj);
 
-        ELOG1( EJavaMMAPI, "MMA::CMMADRMPlayerFactory::CreatePlayerL openContentErr: %d", openContentErr);
+        ELOG1(EJavaMMAPI, "MMA::CMMADRMPlayerFactory::CreatePlayerL openContentErr: %d", openContentErr);
         if (KErrCA_LowerLimit <= openContentErr && openContentErr <= KErrCA_UpperLimit)
         {
             // handle error, possible update rights
@@ -121,7 +122,7 @@ CMMAPlayer* CMMADRMPlayerFactory::CreatePlayerL(
         TInt err = stringAttributeSet.GetValue(ContentAccess::EMimeType, mimeType);
         if (err == KErrNone)
         {
-            LOG1( EJavaMMAPI, EInfo, "MMA::CMMADRMPlayerFactory::CreatePlayerL, no err, mime type = %S", mimeType.PtrZ());
+            LOG1(EJavaMMAPI, EInfo, "MMA::CMMADRMPlayerFactory::CreatePlayerL, no err, mime type = %S", mimeType.PtrZ());
             // we use 16bit mimeType
             HBufC* mimeTypeBuf = HBufC::NewLC(mimeType.Length());
             mimeTypeBuf->Des().Copy(mimeType);
@@ -146,13 +147,13 @@ CMMAPlayer* CMMADRMPlayerFactory::CreatePlayerL(
         }
         else
         {
-            ELOG1( EJavaMMAPI, "MMA::CMMADRMPlayerFactory::CreatePlayerL get mime err: %d", err);
-            LOG1( EJavaMMAPI, EInfo, "MMA::CMMADRMPlayerFactory::CreatePlayerL mime type = %S", mimeType.PtrZ());
+            ELOG1(EJavaMMAPI, "MMA::CMMADRMPlayerFactory::CreatePlayerL get mime err: %d", err);
+            LOG1(EJavaMMAPI, EInfo, "MMA::CMMADRMPlayerFactory::CreatePlayerL mime type = %S", mimeType.PtrZ());
             User::Leave(err);
         }
         CleanupStack::PopAndDestroy(3); //dataObj, contentObj, stringAttributeSet
     }
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMADRMPlayerFactory::CreatePlayerL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMADRMPlayerFactory::CreatePlayerL -");
     return player;
 }
 
@@ -194,7 +195,7 @@ void CMMADRMPlayerFactory::GetSupportedProtocolsL(
 void CMMADRMPlayerFactory::UpdateRightsL(TInt aError,
         const TDesC& aFileName)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMADRMPlayerFactory::UpdateRightsL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMADRMPlayerFactory::UpdateRightsL +");
     CDRMHelper* helper = CDRMHelper::NewLC();
     TInt code = helper->HandleErrorL(aError, aFileName);
     if (code == 0)
@@ -211,7 +212,7 @@ void CMMADRMPlayerFactory::UpdateRightsL(TInt aError,
 CMMAPlayer* CMMADRMPlayerFactory::CreateAudioPlayerL(const TDesC& aContentType,
         const TDesC& aFileName)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMADRMPlayerFactory::CreateAudioPlayerL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMADRMPlayerFactory::CreateAudioPlayerL +");
     CMMADRMAudioPlayer* player = CMMADRMAudioPlayer::NewLC(aContentType,
                                  aFileName);
 
@@ -247,7 +248,7 @@ CMMAPlayer* CMMADRMPlayerFactory::CreateAudioPlayerL(const TDesC& aContentType,
 CMMAPlayer* CMMADRMPlayerFactory::CreateVideoPlayerL(const TDesC& aContentType,
         const TDesC& aFileName)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMADRMPlayerFactory::CreateVideoPlayerL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMADRMPlayerFactory::CreateVideoPlayerL +");
     CMMAPlayer* player =
         iVideoPlayerFactory->CreatePlayerWithFileL(aContentType, &aFileName);
 

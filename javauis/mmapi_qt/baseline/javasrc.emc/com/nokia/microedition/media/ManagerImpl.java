@@ -70,11 +70,11 @@ public class ManagerImpl implements PlugIn
     {
         return new Finalizer()
         {
-        public void finalizeImpl()
-        {
-            doFinalize();
-        }
-    };
+            public void finalizeImpl()
+            {
+                doFinalize();
+            }
+        };
     }
 
     // Play tone implementation
@@ -129,12 +129,12 @@ public class ManagerImpl implements PlugIn
             throw new OutOfMemoryError();
         }
         //Use ShutdownListener to get notification of exit and release the resource
-		//MMAPI UI 3.x work
+        //MMAPI UI 3.x work
 
-		setShutdownListener();
-		// support for gif animation player
-		iPlugIns
-				.addElement(new com.nokia.microedition.media.animation.AnimationPlayerFactory());
+        setShutdownListener();
+        // support for gif animation player
+        iPlugIns
+        .addElement(new com.nokia.microedition.media.animation.AnimationPlayerFactory());
 
         // ManagerImpl is also a PlugIn that getAllSupportedContentTypes,
         // getAllSupportedProtocols and createPlayer methods can be used
@@ -147,12 +147,12 @@ public class ManagerImpl implements PlugIn
 
         // Create foreground listener which listens the state of the midlet
         // This feature is a part of the media keys feature so it is flagged
-         Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"before constructing ForegroundListener....");
-         iForegroundListener = new ForegroundListener(iFunctionSourceHandle);
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"before constructing ForegroundListener....");
+        iForegroundListener = new ForegroundListener(iFunctionSourceHandle);
         iForegroundListener.init();
     }
-    
-    
+
+
     private void setShutdownListener()
     {
         // Get the insatnce of ApplicationUtils.
@@ -164,14 +164,14 @@ public class ManagerImpl implements PlugIn
             //The method that gets called when Application is shutting down
             public void shuttingDown()
             {
-               
+
                 doFinalize();
-              
-             
+
+
             }
         });
-        
-    }    
+
+    }
 
     /**
      * Returns MMA event source handle
@@ -213,8 +213,8 @@ public class ManagerImpl implements PlugIn
      */
     synchronized final void doFinalize()
     {
-	_dispose(iFunctionSourceHandle);
-	iFunctionSourceHandle = 0;
+        _dispose(iFunctionSourceHandle);
+        iFunctionSourceHandle = 0;
     }
 
     /**
@@ -224,7 +224,7 @@ public class ManagerImpl implements PlugIn
      */
     synchronized final void release()
     {
-     //   _release(iFunctionSourceHandle);
+        //   _release(iFunctionSourceHandle);
     }
 
     /**
@@ -434,8 +434,8 @@ public class ManagerImpl implements PlugIn
     private void pluginsPreparePlayer(InternalPlayer aPlayer)
     throws MediaException
     {
-    	
-    		
+
+
         // Call preparePlayer to all plugins
         Enumeration plugins = iPlugIns.elements();
         while (plugins.hasMoreElements())
@@ -466,8 +466,30 @@ public class ManagerImpl implements PlugIn
         {
             throw new IllegalArgumentException("Locator is null.");
         }
-        InternalPlayer player = iProtocolFactory.createPlayer(
-                                    new Locator(aLocator));
+        InternalPlayer player =null;
+        /// Implementation done for java ui 3.x req
+        // in case of AnimationPlayer, we won't be using the ProtocolFactory class.
+        //
+        Enumeration plugins = iPlugIns.elements();
+        AnimationPlayerFactory apf=null;
+        while (plugins.hasMoreElements() && (player == null))
+        {
+            PlugIn temp = (PlugIn) plugins.nextElement();
+            if (temp instanceof AnimationPlayerFactory)
+            {
+                apf = (AnimationPlayerFactory) temp;
+                break;
+            }
+        }
+        if (apf!=null)
+        {
+            player=apf.createPlayer(aLocator);
+        }
+        ////////////////////////////////////////////////////////
+        // if player is still null, try to create the native player
+        if (player==null)
+            player =iProtocolFactory.createPlayer(
+                        new Locator(aLocator));
         if (player == null)
         {
             throw new MediaException("Locator not supported: " +
@@ -636,14 +658,14 @@ public class ManagerImpl implements PlugIn
 
 
 // MMAPI UI 3.x req
-/**
- * get midlet state
- */
+    /**
+     * get midlet state
+     */
 
-	public boolean isForground()
-	{
-		return iForegroundListener.isForeground();
-	}
+    public boolean isForground()
+    {
+        return iForegroundListener.isForeground();
+    }
 
     private native int _createManager(int aEventSourceHandle,
                                       int aMIDletSuiteID);

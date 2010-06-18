@@ -34,10 +34,10 @@ _LIT(KRVMimeType3, "video/vnd.rn-realvideo");
 
 CMMAEMCResolver* CMMAEMCResolver::NewLC()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: NewLC ++");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: NewLC ++");
     CMMAEMCResolver* self = new(ELeave)CMMAEMCResolver();
     CleanupStack::PushL(self);
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: NewLC --");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: NewLC --");
     return self;
 }
 
@@ -52,19 +52,19 @@ CMMAEMCResolver::~CMMAEMCResolver()
 
 HBufC* CMMAEMCResolver::ContentTypeOwnership()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: ContentTypeOwnership ++");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: ContentTypeOwnership ++");
     HBufC* ct = iContentType;
     iContentType = NULL;
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: ContentTypeOwnership --");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: ContentTypeOwnership --");
     return ct;
 }
 
 HBufC8* CMMAEMCResolver::MimeTypeOwnership()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: MimeTypeOwnership ++");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: MimeTypeOwnership ++");
     HBufC8* mt = iMimeType;
     iMimeType = NULL;
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: MimeTypeOwnership --");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: MimeTypeOwnership --");
     return mt;
 }
 
@@ -75,7 +75,7 @@ HBufC* CMMAEMCResolver::ContentType()
 
 void CMMAEMCResolver::SetFileNameL(const TDesC* aFileName)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: SetFileNameL ++");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: SetFileNameL ++");
     HBufC* fn = NULL;
     if (aFileName)
     {
@@ -83,21 +83,21 @@ void CMMAEMCResolver::SetFileNameL(const TDesC* aFileName)
     }
     delete iFileName;
     iFileName = fn;
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: SetFileNameL --");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: SetFileNameL --");
 }
 
 HBufC* CMMAEMCResolver::FileNameOwnership()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: FileNameOwnership ++");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: FileNameOwnership ++");
     HBufC* fn = iFileName;
     iFileName = NULL;
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: FileNameOwnership --");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: FileNameOwnership --");
     return fn;
 }
 
 void CMMAEMCResolver::SetMimeTypeL(const TDesC* aFileName)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: SetMimeTypeL +");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: SetMimeTypeL +");
     if (iContentType)
     {
         delete iContentType;
@@ -110,12 +110,12 @@ void CMMAEMCResolver::SetMimeTypeL(const TDesC* aFileName)
     iMimeType = HBufC8::NewL(mimeType.Length());        //8 bit Descriptor of iContentType
     iMimeType->Des().Copy(mimeType);
 
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: SetMimeTypeL -");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: SetMimeTypeL -");
 }
 
 void CMMAEMCResolver::ResolveContentTypeL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver::ResolveContentTypeL +");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver::ResolveContentTypeL +");
 
     if (iContentType)
     {
@@ -206,18 +206,18 @@ void CMMAEMCResolver::ResolveContentTypeL()
         iMimeType->Des().Copy(KNullDesC8);
     }
 
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver::ResolveContentTypeL -");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver::ResolveContentTypeL -");
 }
 //
 
 void CMMAEMCResolver::ResolveContentTypeL(const TDesC& /*aFileName*/, TDes8& /*aMimeType*/)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: ResolveContentTypeL");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: ResolveContentTypeL");
 }
 
 void CMMAEMCResolver::GetSupportedContentTypesL(CDesC16Array& aMimeTypeArray)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: GetSupportedContentTypesL +");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: GetSupportedContentTypesL +");
     // All supported mimetypes are taken from "MimeTypes.h"
     TBuf16<KContentTypeMaxLength> tempBuf;
     tempBuf.Copy(KMimetype3GPP);
@@ -246,7 +246,7 @@ void CMMAEMCResolver::GetSupportedContentTypesL(CDesC16Array& aMimeTypeArray)
     tempBuf.Zero();
     tempBuf.Copy(KMimetypeRM);
     aMimeTypeArray.AppendL(tempBuf);
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: GetSupportedContentTypesL -");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAEMCResolver :: GetSupportedContentTypesL -");
 }
 
 // EMC - II
@@ -264,7 +264,7 @@ TBool CMMAEMCResolver::IsRealVideoTypeL(const TDesC8& aHeader)
     putil = CHXMetaDataUtility::NewL();
     CleanupStack::PushL(putil);
     TRAPD(err, putil->OpenDesL((TDesC8 &)aHeader));
-    ELOG1( EJavaMMAPI, "MMA:CMMAEMCResolver::IsRealVideoTypeL, err = %d", err);
+    ELOG1(EJavaMMAPI, "MMA:CMMAEMCResolver::IsRealVideoTypeL, err = %d", err);
 
     if (err != KErrNone)
     {

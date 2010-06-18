@@ -30,16 +30,16 @@ using multimedia::MStreamControlObserver;
 
 CMMAEMCPlayerBase::~CMMAEMCPlayerBase()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::~CMMAEMCPlayerBase +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::~CMMAEMCPlayerBase +");
 
     if (iMStreamControl)
     {
         iMStreamControl->RemoveObserver(*this);
         if (iMStreamControl->GetState() > 0)
         {
-            LOG1( EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::~CMMAEMCPlayerBase: iMStreamControl's state = %d",iMStreamControl->GetState());
+            LOG1(EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::~CMMAEMCPlayerBase: iMStreamControl's state = %d",iMStreamControl->GetState());
             TInt err = iMStreamControl->Close();
-            ELOG1( EJavaMMAPI, "MMA::CMMAEMCPlayerBase::~CMMAEMCPlayerBase: Close() err = %d",err);
+            ELOG1(EJavaMMAPI, "MMA::CMMAEMCPlayerBase::~CMMAEMCPlayerBase: Close() err = %d",err);
         }
     }
 
@@ -69,7 +69,7 @@ CMMAEMCPlayerBase::~CMMAEMCPlayerBase()
 
     delete iDescData;
 
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::~CMMAEMCPlayerBase -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::~CMMAEMCPlayerBase -");
 }
 
 
@@ -77,23 +77,23 @@ CMMAEMCPlayerBase::CMMAEMCPlayerBase(
     CMMAEMCResolver* aResolver) :
         iMediaTime(KTimeUnknown), iStartedEventTime(0)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase +");
     // content type ownership is transferred
     iDescData = NULL;
     iContentType = aResolver->ContentTypeOwnership();
     iMimeType = aResolver->MimeTypeOwnership();   // 8-bit version of iContentType
 
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::ContentType-- %S" ,iContentType->Des().PtrZ());
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::ContentType-- %S" ,iContentType->Des().PtrZ());
 
     // file name ownership is transferred
     iFileName = aResolver->FileNameOwnership();
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::FileName-- %S" ,iFileName->Des().PtrZ());
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase -");
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::FileName-- %S" ,iFileName->Des().PtrZ());
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase -");
 }
 
 void CMMAEMCPlayerBase::ConstructL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::ConstructL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::ConstructL +");
     CMMAPlayer::ConstructL();
     iSourceType = EDATABUFFERSOURCE;    //Currently it only support Http
 
@@ -101,12 +101,12 @@ void CMMAEMCPlayerBase::ConstructL()
     CreateStreamL();
     AddDataSourceToStreamL();
 
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::ConstructL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::ConstructL -");
 }
 
 void CMMAEMCPlayerBase::CreateStreamL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::CreateStreamL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::CreateStreamL +");
     if (iMStreamControl)
         User::Leave(KErrAlreadyExists);
     TInt err = iFactory->CreateStreamControl(KStreamControl,iMStreamControl);
@@ -120,12 +120,12 @@ void CMMAEMCPlayerBase::CreateStreamL()
     User::LeaveIfError(err);
     iMAudioSink = tempSinkCtrl;
     iMStreamControl->AddSink(*iMAudioSink);
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::CreateStreamL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::CreateStreamL -");
 }
 
 void CMMAEMCPlayerBase::AddDataSourceToStreamL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::AddDataSourceToStreamL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::AddDataSourceToStreamL +");
     if (iMStreamControl == NULL)
     {
         User::Leave(KErrNotReady);
@@ -182,12 +182,12 @@ void CMMAEMCPlayerBase::AddDataSourceToStreamL()
     }
 
     iMStreamControl->AddSource(*tempCtrl);
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::AddDataSourceToStreamL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::AddDataSourceToStreamL -");
 }
 
 void CMMAEMCPlayerBase::CleanupSource()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::CleanupSource +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::CleanupSource +");
     if (iMDataBufferSource)
     {
         iMDataBufferSource->RemoveObserver(*this);
@@ -197,7 +197,7 @@ void CMMAEMCPlayerBase::CleanupSource()
         iFactory->DeleteSourceControl(objPtr);
         iMDataBufferSource = NULL;
     }
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::CleanupSource -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::CleanupSource -");
 }
 
 EXPORT_C MStreamControl* CMMAEMCPlayerBase::StreamControl()
@@ -229,23 +229,23 @@ void CMMAEMCPlayerBase::StopL(TBool /*aPostEvent*/)
 
 void CMMAEMCPlayerBase::DeallocateL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::DeallocateL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::DeallocateL +");
     if (iState == EPrefetched)
     {
         // Change state first to enable AMMS to delete Effect API classes
         ChangeState(ERealized);
 
         TInt err = iMStreamControl->Stop();
-        ELOG1( EJavaMMAPI, "CMMAEMCPlayerBase::DeallocateL iMStreamControl->Stop = %d", err);
+        ELOG1(EJavaMMAPI, "CMMAEMCPlayerBase::DeallocateL iMStreamControl->Stop = %d", err);
         ResetSourceStreams();
     }
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::DeallocateL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::DeallocateL -");
 }
 
 
 void CMMAEMCPlayerBase::GetDuration(TInt64* aDuration)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::GetDuration +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::GetDuration +");
     if (iDuration == KTimeUnknown)
     {
         TInt64 duration(0);
@@ -256,12 +256,12 @@ void CMMAEMCPlayerBase::GetDuration(TInt64* aDuration)
         }
     }
     *aDuration = iDuration;
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::GetDuration -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAEMCPlayerBase::GetDuration -");
 }
 
 void CMMAEMCPlayerBase::SetMediaTimeL(TInt64* aTime)
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAEMCPlayerBase::SetMediaTimeL +");
+    LOG(EJavaMMAPI, EInfo, "CMMAEMCPlayerBase::SetMediaTimeL +");
 
     // Negative values are not checked here
     // because it's done already in Java side.
@@ -269,7 +269,7 @@ void CMMAEMCPlayerBase::SetMediaTimeL(TInt64* aTime)
     // Get clip duration
     TInt64 duration;
     User::LeaveIfError(iMStreamControl->GetDuration(duration));
-    LOG1( EJavaMMAPI, EInfo, "CMMAEMCPlayerBase::SetMediaTimeL iMStreamControl->GetDuration=%d", duration);
+    LOG1(EJavaMMAPI, EInfo, "CMMAEMCPlayerBase::SetMediaTimeL iMStreamControl->GetDuration=%d", duration);
 
     TInt64 position;
 
@@ -298,12 +298,12 @@ void CMMAEMCPlayerBase::SetMediaTimeL(TInt64* aTime)
     GetMediaTime(aTime);
 
     iStartedEventTime = iMediaTime;
-    LOG( EJavaMMAPI, EInfo, "CMMAEMCPlayerBase::SetMediaTimeL -");
+    LOG(EJavaMMAPI, EInfo, "CMMAEMCPlayerBase::SetMediaTimeL -");
 }
 
 void CMMAEMCPlayerBase::GetMediaTime(TInt64* aMediaTime)
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAEMCPlayerBase::GetMediaTimeL +");
+    LOG(EJavaMMAPI, EInfo, "CMMAEMCPlayerBase::GetMediaTimeL +");
     TInt64 position(0);
 
     if (iMediaTime == KTimeUnknown || iState == EStarted)
@@ -332,22 +332,22 @@ void CMMAEMCPlayerBase::GetMediaTime(TInt64* aMediaTime)
         }
         else
         {
-            ELOG1( EJavaMMAPI, "CMMAEMCPlayerBase::GetMediaTimeL: error=%d, returning TIME_UNKNOWN", error);
+            ELOG1(EJavaMMAPI, "CMMAEMCPlayerBase::GetMediaTimeL: error=%d, returning TIME_UNKNOWN", error);
             // cannot get media time
             iMediaTime = KTimeUnknown;
         }
     }
     *aMediaTime = iMediaTime;
-    LOG( EJavaMMAPI, EInfo, "CMMAEMCPlayerBase::GetMediaTimeL -");
+    LOG(EJavaMMAPI, EInfo, "CMMAEMCPlayerBase::GetMediaTimeL -");
 }
 
 void CMMAEMCPlayerBase::CloseL()
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAEMCPlayerBase::CloseL +");
+    LOG(EJavaMMAPI, EInfo, "CMMAEMCPlayerBase::CloseL +");
     CMMAPlayer::CloseL();
 
     iMStreamControl->Close();
-    LOG( EJavaMMAPI, EInfo, "CMMAEMCPlayerBase::CloseL -");
+    LOG(EJavaMMAPI, EInfo, "CMMAEMCPlayerBase::CloseL -");
 }
 
 void CMMAEMCPlayerBase::Event(MControl* /*aControl*/, TUint /*aEventType*/, TAny* /*aEventObject*/)

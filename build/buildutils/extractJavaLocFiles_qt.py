@@ -41,7 +41,11 @@ JAVA_LOC_FILES = [
     'javassl',
     'javausermessages',
     'javaapplicationsettings',
-    'javaruntimeapplicationsettings'
+    # loc files for qt
+    'javaapplicationinstaller',
+    'javaapplicationsecuritymessages',
+    'javaruntimeapplicationsettings',
+    'javaruntimecertificatemanagement'
     ]
 
 # Path for java loc files inside RESOURCES_FILE.
@@ -89,7 +93,7 @@ def main():
         shutil.rmtree(tmpDir)
 
     except:
-        print "Usage: %s <input_dir> <output_dir>" % sys.argv[0]
+        print "Usage: %s <input_dir> <output_dir> <resources_jar>" % sys.argv[0]
         traceback.print_exc()
         sys.exit(1)
 
@@ -109,6 +113,10 @@ def readTs(filename):
             text = lengthvariant.text
         else:
             text = translation.text
+
+        # If text is not found, this is unlocalised engineering English file
+        if text == None:
+            text = message.find("source").text
 
         # Sanity check - no newlines in text allowed
         if "\n" in text:

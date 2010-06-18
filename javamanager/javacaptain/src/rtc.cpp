@@ -748,6 +748,11 @@ void Rtc::launchPrewarm()
                          RTC_LAUNCH_RUNTIME_MIDP_C));
 }
 
+bool Rtc::isPrewarmSupported()
+{
+    return mSupportPreWarming;
+}
+
 void Rtc::deleteRuntime(const Uid& aUid)
 {
     JELOG4(EJavaCaptain, EInfoHeavyLoad);

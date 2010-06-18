@@ -29,7 +29,7 @@ CMMADataSourceStream* CMMADataSourceStream::NewLC(JNIEnv* aJNIEnv,
         jobject aJavaSourceStream,
         MMMASourceStreamListener* aListener,
         MMAFunctionServer* aEventSource
-		                                         )
+                                                 )
 {
     CMMADataSourceStream* self = new(ELeave) CMMADataSourceStream(aEventPoster,
             aListener);
@@ -41,7 +41,7 @@ CMMADataSourceStream* CMMADataSourceStream::NewLC(JNIEnv* aJNIEnv,
 
 CMMADataSourceStream::~CMMADataSourceStream()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMADataSourceStream::~");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMADataSourceStream::~");
 }
 
 
@@ -64,8 +64,8 @@ void CMMADataSourceStream::WriteL(const TUint8* aData,
                                   TInt aLength,
                                   TInt aState)
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMADataSourceStream::WriteL data length %d", aLength);
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMADataSourceStream::WriteL state %d", aState);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMADataSourceStream::WriteL data length %d", aLength);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMADataSourceStream::WriteL state %d", aState);
 
     if (!iRequest)
     {
@@ -100,12 +100,12 @@ void CMMADataSourceStream::WriteL(const TUint8* aData,
     CMMAStreamRequest* r = iRequest;
     iRequest = NULL;
     r->CompleteRead(aState);
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMADataSourceStream::WriteL completed");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMADataSourceStream::WriteL completed");
 }
 
 void CMMADataSourceStream::ResetData()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMADataSourceStream::ResetData");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMADataSourceStream::ResetData");
 }
 
 CMMAStreamRequest* CMMADataSourceStream::Request()

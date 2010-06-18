@@ -119,11 +119,7 @@ void CJavaAppHandler::HandleUrlEmbeddedL()
 //
 void CJavaAppHandler::HandleUrlStandaloneL()
 {
-#ifdef _DEBUG
-    // log that our plugin implementation has been called
-    TBuf<255> logBuf = mParsedUrl->Left(250);
-    LOG1WSTR("javaapphandler: command line starts with : %s", (TUint16 *)(logBuf.PtrZ()));
-#endif
+
 
     // Start javalauncher.exe and pass the Url to it
     _LIT(KJavaLauncherExe, "javalauncher.exe");

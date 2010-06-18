@@ -31,8 +31,11 @@ import java.util.Hashtable;
  * @version 1.0
  */
 
-public class SystemPropertyHashtable extends Hashtable
+public class SystemPropertyHashtable extends Hashtable implements DynamicProperty
 {
+    /** Storage place for user defined properties. */
+    private Hashtable mUserProperties = new Hashtable(); 
+
     public SystemPropertyHashtable(Hashtable originalProperties)
     {
         // Store the original properties
@@ -54,8 +57,29 @@ public class SystemPropertyHashtable extends Hashtable
      */
     public Object get(Object name)
     {
-        return SystemPropertyUtils.solvePropertyValue(name,
-                super.get(name),
-                this);
+        Object val = super.get(name);
+        if (val != null)
+        {
+            return SystemPropertyUtils.solvePropertyValue(name, val,this);
+        }
+        return mUserProperties.get(name);
+    }
+
+    /**
+     * Adds the defined system property to Hashtable containing all the system
+     * properties.
+     */
+    public Object setSystemProperty(Object key, Object value)
+    {
+        return super.put(key, value);
+    }
+
+    /**
+     * Adds the defined system property to Hashtable containing all the user
+     * properties.
+     */
+    public Object setUserProperty(Object key, Object value)
+    {
+        return mUserProperties.put(key, value);
     }
 }

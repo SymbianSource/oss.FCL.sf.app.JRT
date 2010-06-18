@@ -127,12 +127,12 @@ public class Combo extends Composite {
 
     void register_pp() {
         super.register_pp();
-        display.addWidget(comboTextHandle, this);
+        Display.addWidget(comboTextHandle, this);
     }
 
     void deregister_pp() {
         super.deregister_pp();
-        display.removeWidget(comboTextHandle);
+        Display.removeWidget(comboTextHandle);
     }
 
     void releaseHandle_pp() {
@@ -307,18 +307,18 @@ public class Combo extends Composite {
         super.hookEvents_pp();
 
         int selectionSignalProxy = OS.SignalHandler_new(topHandle,
-                display, OS.QSIGNAL_SELECTIONCHANGED);
+                OS.QSIGNAL_SELECTIONCHANGED);
         OS.QObject_connectOrThrow(topHandle,
                 "currentIndexChanged(const QString&)", selectionSignalProxy,
                 "widgetSignal(const QString&)", OS.QT_AUTOCONNECTION);
 
-        int returnPressedProxy = OS.SignalHandler_new(comboTextHandle, display,
+        int returnPressedProxy = OS.SignalHandler_new(comboTextHandle, 
                 OS.QSIGNAL_RETURN_PRESSED);
         OS.QObject_connectOrThrow(comboTextHandle, "returnPressed()",
                 returnPressedProxy, "widgetSignal()", OS.QT_AUTOCONNECTION);
 
         int modifySignalProxy = OS.SignalHandler_new(topHandle,
-                display, OS.QSIGNAL_TEXT_CHANGED);
+                OS.QSIGNAL_TEXT_CHANGED);
         OS.QObject_connectOrThrow(topHandle,
                 "editTextChanged(const QString&)", modifySignalProxy,
                 "widgetSignal(const QString&)", OS.QT_AUTOCONNECTION);

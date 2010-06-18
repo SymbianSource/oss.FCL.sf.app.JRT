@@ -302,11 +302,11 @@ public class FinalizeInstallation extends ExeStep
                     }
                 }
 
-                //if (ball.iSifRegistrator.getSifMode() > 0 && launchApp)
-                //{
-                //    ball.iSifRegistrator.launchAppView();
-                //}
-                //else
+                if (ball.iSifRegistrator.getSifMode() > 0 && launchApp)
+                {
+                    ball.iSifRegistrator.launchAppView();
+                }
+                else
                 if (ball.iCaptainMsgs && launchApp &&
                         launchAppInfo.getApplications() != null &&
                         launchAppInfo.getApplications().length > 0)

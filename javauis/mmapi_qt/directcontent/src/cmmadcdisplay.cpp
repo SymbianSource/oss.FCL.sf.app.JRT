@@ -79,8 +79,8 @@ void CMMADCDisplay::DrawFrameL(const CFbsBitmap* aBitmap)
 // interface MMMADisplay
 void CMMADCDisplay::SetDisplaySizeL(const TSize& aSize)
 {
-    LOG2( EJavaMMAPI, EInfo, "CMMADCDisplay::SetDisplaySizeL w %d h %d",
-               aSize.iWidth, aSize.iHeight);
+    LOG2(EJavaMMAPI, EInfo, "CMMADCDisplay::SetDisplaySizeL w %d h %d",
+         aSize.iWidth, aSize.iHeight);
     // user rect contains size set from java.
     iUserRect.SetSize(aSize);
 
@@ -95,7 +95,7 @@ void CMMADCDisplay::SetDisplaySizeL(const TSize& aSize)
 // interface MMMADisplay
 void CMMADCDisplay::SetDisplayLocationL(const TPoint& /*aPosition*/)
 {
-    LOG( EJavaMMAPI, EInfo, "CMMADCDisplay::SetDisplayLocationL");
+    LOG(EJavaMMAPI, EInfo, "CMMADCDisplay::SetDisplayLocationL");
     // This method only works when the USE_DIRECT_VIDEO mode is set.
     // In USE_GUI_PRIMITIVE mode, this call will be ignored.
 }
@@ -103,7 +103,7 @@ void CMMADCDisplay::SetDisplayLocationL(const TPoint& /*aPosition*/)
 // interface MMMADisplay
 TPoint CMMADCDisplay::DisplayLocation()
 {
-    LOG( EJavaMMAPI, EInfo, "CMMADCDisplay::DisplayLocation");
+    LOG(EJavaMMAPI, EInfo, "CMMADCDisplay::DisplayLocation");
     // This method returns always (0,0),
     // because SetDisplayLocationL call is ignored.
     return TPoint(0, 0);
@@ -112,7 +112,7 @@ TPoint CMMADCDisplay::DisplayLocation()
 // interface MMMADisplay
 void CMMADCDisplay::SetFullScreenL(TBool aFullScreen)
 {
-    LOG1( EJavaMMAPI, EInfo, "CMMADCDisplay::SetFullScreenL %d", aFullScreen);
+    LOG1(EJavaMMAPI, EInfo, "CMMADCDisplay::SetFullScreenL %d", aFullScreen);
     // This method tries to set eSWT Widget size to its parent size.
     // If real full screen mode is needed parent Composite must be in
     // fullscreen mode (for example with MobileShell's setFullScreenMode method).
@@ -127,15 +127,13 @@ void CMMADCDisplay::SetFullScreenL(TBool aFullScreen)
 // interface MMMADisplay
 void CMMADCDisplay::SourceSizeChanged(const TSize& aSourceSize)
 {
-    LOG2( EJavaMMAPI, EInfo, "CMMADCDisplay::SourceSizeChanged %d %d",
-               aSourceSize.iWidth,
-               aSourceSize.iHeight);
-
+    LOG2(EJavaMMAPI, EInfo, "CMMADCDisplay::SourceSizeChanged %d %d",
+         aSourceSize.iWidth,
+         aSourceSize.iHeight);
 #ifdef RD_JAVA_NGA_ENABLED
     if (iWindow)
     {
-        TPoint topLeft(0, 0);
-        iWindow->SetVideoCropRegion(TRect(topLeft,aSourceSize));
+        iWindow->SetVideoCropRegion(TRect(iUserRect.iTl, aSourceSize));
     }
 #endif
 
@@ -155,6 +153,9 @@ void CMMADCDisplay::SourceSizeChanged(const TSize& aSourceSize)
             }
         }
     }
+}
+void CMMADCDisplay::SourceSizeChanged(TInt /*aJavaControlWidth*/, TInt /*aJavaControlHeight*/,TInt /*x*/, TInt /*y*/, TRect /*aBoundsRect*/)
+{
 }
 
 // interface MMMADisplay
@@ -182,20 +183,20 @@ TBool CMMADCDisplay::HasContainer()
 // interface MMMADirectContent
 void CMMADCDisplay::MdcContainerVisibilityChanged(TBool aVisible)
 {
-    LOG1( EJavaMMAPI, EInfo, "CMMADCDisplay::MdcContainerVisibilityChanged aVisible %d",
-              aVisible);
+    LOG1(EJavaMMAPI, EInfo, "CMMADCDisplay::MdcContainerVisibilityChanged aVisible %d",
+         aVisible);
     if (iWindow)
     {
         iWindow->SetVisible(aVisible && iVisible);
     }
-    LOG( EJavaMMAPI, EInfo, "CMMADCDisplay::MdcContainerVisibilityChanged OK");
+    LOG(EJavaMMAPI, EInfo, "CMMADCDisplay::MdcContainerVisibilityChanged OK");
 }
 
 // interface MMMADirectContent
 void CMMADCDisplay::MdcContentRectChanged(const TRect& aContentRect,
         const TRect& aParentRect)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMADCDisplay::MdcContentRectChanged");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMADCDisplay::MdcContentRectChanged");
     if (iWindow)
     {
         TSize size = aContentRect.Size();
@@ -218,7 +219,7 @@ void CMMADCDisplay::MdcContainerWindowRectChanged(const TRect&
 #endif
                                                  )
 {
-	LOG( EJavaMMAPI, EInfo, "CMMADCDisplay::MdcContainerWindowRectChanged");
+    LOG(EJavaMMAPI, EInfo, "CMMADCDisplay::MdcContainerWindowRectChanged");
 
 #ifdef RD_JAVA_NGA_ENABLED
     if (iWindow)
@@ -231,7 +232,7 @@ void CMMADCDisplay::MdcContainerWindowRectChanged(const TRect&
 // interface MMMADirectContent
 void CMMADCDisplay::MdcContainerDestroyed()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMADCDisplay::MdcContainerDestroyed");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMADCDisplay::MdcContainerDestroyed");
     if (iContainer)
     {
         iContainer->MdcRemoveContent();
@@ -250,8 +251,8 @@ void CMMADCDisplay::MdcSetContainer(MMMAContainer* aContainer)
 {
     iContainer = aContainer;
     TSize sourceSize = iPlayer->SourceSize();
-    LOG2( EJavaMMAPI, EInfo, "CMMADCDisplay::MdcSetContainer source size %d %d",
-               sourceSize.iWidth, sourceSize.iHeight);
+    LOG2(EJavaMMAPI, EInfo, "CMMADCDisplay::MdcSetContainer source size %d %d",
+         sourceSize.iWidth, sourceSize.iHeight);
     aContainer->MdcInvalidate(sourceSize);
     if (iWindow)
     {
@@ -266,10 +267,10 @@ void CMMADCDisplay::MdcSetContainer(MMMAContainer* aContainer)
         iWindow->SetWindowRect(parentRect,MMMADisplay::EUiThread);
         iWindow->SetPosition(controlRect.iTl - parentRect.iTl);
 
-        LOG1( EJavaMMAPI, EInfo, "CMMADCDisplay::MdcSetContainer container visible %d",
-                  aContainer->MdcContainerVisibility());
-        LOG1( EJavaMMAPI, EInfo, "CMMADCDisplay::MdcSetContainer content visible %d",
-                  iVisible);
+        LOG1(EJavaMMAPI, EInfo, "CMMADCDisplay::MdcSetContainer container visible %d",
+             aContainer->MdcContainerVisibility());
+        LOG1(EJavaMMAPI, EInfo, "CMMADCDisplay::MdcSetContainer content visible %d",
+             iVisible);
 
         iWindow->SetVisible(aContainer->MdcContainerVisibility() &&
                             iVisible);

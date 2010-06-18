@@ -847,15 +847,15 @@ public class ScrollBar extends Widget {
 
     void hookEvents_pp() {
         super.hookEvents_pp();
-        int signalProxy = OS.SignalHandler_new(handle, display,
+        int signalProxy = OS.SignalHandler_new(handle, 
                 OS.QSIGNAL_SLIDER_CHANGED);
         OS.QObject_connectOrThrow(handle, "valueChanged(int)", signalProxy,
                 "widgetSignal(int)", OS.QT_AUTOCONNECTION);
-        signalProxy = OS.SignalHandler_new(handle, display,
+        signalProxy = OS.SignalHandler_new(handle, 
                 OS.QSIGNAL_SLIDER_ACTION_TRIGGERED);
         OS.QObject_connectOrThrow(handle, "actionTriggered(int)", signalProxy,
                 "widgetSignal(int)", OS.QT_AUTOCONNECTION);
-        signalProxy = OS.SignalHandler_new(handle, display,
+        signalProxy = OS.SignalHandler_new(handle, 
                 OS.QSIGNAL_SLIDER_RELEASED);
         OS.QObject_connectOrThrow(handle, "sliderReleased()", signalProxy,
                 "widgetSignal()", OS.QT_AUTOCONNECTION);

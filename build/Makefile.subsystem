@@ -100,6 +100,26 @@ clean_configure:
 	$(call RMFILES,$(COMPONENT_NAME).pro)
 
 
+# If REMOVE_NOTBUILT_EXCLUDING is defined, the remove_notbuilt removes all subdirectories
+# not participating in the built, except the ones listed
+DEFAULT_EXCLUDES = inc tsrc
+DIRECTORIES = $(foreach d,$(wildcard *),$(if $(wildcard $(d)/*),$(d),))
+BUILTDIRECTORIES = $(foreach t,$(REALTARGETS),$(firstword $(subst /, ,$(t))))
+REMOVEDIRECORIES = $(filter-out $(REMOVE_NOTBUILT_EXCLUDING) $(DEFAULT_EXCLUDES) $(BUILTDIRECTORIES),$(DIRECTORIES))
+remove_notbuilt:
+ifdef REMOVE_NOTBUILT_EXCLUDING
+ifdef SIMULATE
+	echo Remove not-built directories at $(CURDIR): $(REMOVEDIRECORIES)
+else
+ifneq ($(REMOVEDIRECORIES),)
+	echo Removing not-built directories at $(CURDIR): $(REMOVEDIRECORIES) \
+	$(foreach d,$(REMOVEDIRECORIES),&& $(call DELTREE,$(d)))
+endif
+endif
+endif	
+	$(MAKE) -f subsystem.mk TARGET_PHASE=$@ subtargets
+
+
 # Symbian ----------------------------------
 ifeq ($(BUILDENV),symbian)
 
@@ -186,7 +206,7 @@ native:
 	$(SBS) -c $(PLATFORM)_$(CFG)
 
 fastbuild: export java
-	$(SBS) -c $(PLATFORM)_$(CFG) TARGET
+	$(SBS) -c $(PLATFORM)_$(CFG)
 
 clean_native:
 	$(PHASEINFO)

@@ -207,7 +207,7 @@ void CMMAAudioRecorder::PrefetchL()
     User::LeaveIfError(iController.Prime());
     //PostActionCompleted(KErrNone);
     PostActionCompletedFile();
-    ChangeState(EPrefetched);    
+    ChangeState(EPrefetched);
 }
 
 void CMMAAudioRecorder::InitializeL(RFile* aFile,
@@ -220,14 +220,14 @@ void CMMAAudioRecorder::InitializeL(RFile* aFile,
 
 void CMMAAudioRecorder::Deinitialize()
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAAudioRecorder::Deinitialize++");
+    LOG(EJavaMMAPI, EInfo, "CMMAAudioRecorder::Deinitialize++");
     if (iEventMonitor)
     {
         iEventMonitor->Cancel();
     }
     iController.Close();
     iFile.Close();
-    LOG( EJavaMMAPI, EInfo, "CMMAAudioRecorder::Deinitialize--");
+    LOG(EJavaMMAPI, EInfo, "CMMAAudioRecorder::Deinitialize--");
 }
 
 const TDesC& CMMAAudioRecorder::Type()
@@ -240,16 +240,16 @@ void CMMAAudioRecorder::StartRecordL()
     if (iResetController)
     {
         iResetController = EFalse;
-        LOG( EJavaMMAPI, EInfo, "CMMAAudioRecorder::StartRecordL reopen controller");
+        LOG(EJavaMMAPI, EInfo, "CMMAAudioRecorder::StartRecordL reopen controller");
         DoOpenL();
-        LOG( EJavaMMAPI, EInfo, "CMMAAudioRecorder::StartRecordL reopen done");
+        LOG(EJavaMMAPI, EInfo, "CMMAAudioRecorder::StartRecordL reopen done");
     }
 
 
     User::LeaveIfError(
         iAudioRecordControllerCustomCommands.SetMaxFileSize(iRecordSizeLimit));
 
-    LOG1( EJavaMMAPI, EInfo, "CMMAAudioRecorder::StartRecordL Max File size set %d", iRecordSizeLimit);
+    LOG1(EJavaMMAPI, EInfo, "CMMAAudioRecorder::StartRecordL Max File size set %d", iRecordSizeLimit);
 
     User::LeaveIfError(iController.Prime());
     User::LeaveIfError(iController.Play());
@@ -260,21 +260,21 @@ void CMMAAudioRecorder::StopRecordL()
 {
     // ! here is the workaround for pause
     // Pause() doesn't work with all formats.
-    LOG( EJavaMMAPI, EInfo, "CMMAAudioRecorder::StopRecordL Stopping");
+    LOG(EJavaMMAPI, EInfo, "CMMAAudioRecorder::StopRecordL Stopping");
 
     TInt pauseError = iController.Pause();
- 		// if EOF is already reached return without
-		// doing any operation because controller is 
-		// already in Stopped state
-		if (iEOFReached && (KErrNotReady == pauseError))
-		{
-				LOG( EJavaMMAPI, EInfo, "CMMAAudioRecorder::StopRecordL, EOF reached already");
-				iEOFReached = EFalse;
-				return;
-		}
+    // if EOF is already reached return without
+    // doing any operation because controller is
+    // already in Stopped state
+    if (iEOFReached && (KErrNotReady == pauseError))
+    {
+        LOG(EJavaMMAPI, EInfo, "CMMAAudioRecorder::StopRecordL, EOF reached already");
+        iEOFReached = EFalse;
+        return;
+    }
     if (pauseError == KErrNotSupported)
     {
-        LOG( EJavaMMAPI, EInfo, "CMMAAudioRecorder::StopRecordL Stopped instead pause");
+        LOG(EJavaMMAPI, EInfo, "CMMAAudioRecorder::StopRecordL Stopped instead pause");
         User::LeaveIfError(iController.Stop());
     }
     else
@@ -282,7 +282,7 @@ void CMMAAudioRecorder::StopRecordL()
         User::LeaveIfError(pauseError);
 // wait only in HW
 #ifndef __WINS__
-        LOG( EJavaMMAPI, EInfo, "CMMAAudioRecorder::StopRecordL Stopped waiting");
+        LOG(EJavaMMAPI, EInfo, "CMMAAudioRecorder::StopRecordL Stopped waiting");
         // wait for playback complete event
         if (!iWait->IsStarted())
         {
@@ -341,7 +341,7 @@ TInt CMMAAudioRecorder::SetRecordSizeLimitL(TInt aSize)
     // Wav and AU controller (supplied from symbian) is recording in 4kb buffers
     // this controller does not record at all if size is smaller than 4kb and
     // goes even in wierd state.
-    LOG1( EJavaMMAPI, EInfo, "CMMAAudioRecorder::SetRecordSizeLimitL Supplier = %S", iSupplier.Ptr());
+    LOG1(EJavaMMAPI, EInfo, "CMMAAudioRecorder::SetRecordSizeLimitL Supplier = %S", iSupplier.Ptr());
     if ((iSupplier == KSymbian) &&
             (aSize < KMMASymbianControllerLimit))
     {
@@ -351,7 +351,7 @@ TInt CMMAAudioRecorder::SetRecordSizeLimitL(TInt aSize)
     // normal case is that recordsize is set just before starting
     if (iState == EStarted)
     {
-        LOG1( EJavaMMAPI, EInfo, "CMMAAudioRecorder::SetRecordSizeLimitL Setting while playing limit: %d", iRecordSizeLimit);
+        LOG1(EJavaMMAPI, EInfo, "CMMAAudioRecorder::SetRecordSizeLimitL Setting while playing limit: %d", iRecordSizeLimit);
         // trying to set max file size while recording
         User::LeaveIfError(
             iAudioRecordControllerCustomCommands.SetMaxFileSize(iRecordSizeLimit));
@@ -361,12 +361,12 @@ TInt CMMAAudioRecorder::SetRecordSizeLimitL(TInt aSize)
 
 void CMMAAudioRecorder::HandleEvent(const TMMFEvent& aEvent)
 {
-    ELOG1( EJavaMMAPI, "CMMAAudioRecorder::HandleEvent event error: %d", aEvent.iErrorCode);
-    
+    ELOG1(EJavaMMAPI, "CMMAAudioRecorder::HandleEvent event error: %d", aEvent.iErrorCode);
+
     if (KErrEof == aEvent.iErrorCode)
-    	{
-    	iEOFReached = ETrue;
-    	}
+    {
+        iEOFReached = ETrue;
+    }
     // if we are waiting event
     if (iWait->IsStarted())
     {

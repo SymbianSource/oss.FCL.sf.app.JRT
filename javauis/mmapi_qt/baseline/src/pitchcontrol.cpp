@@ -98,7 +98,7 @@ Java_com_nokia_microedition_media_control_PitchControl__1setPitch
                                      aPitch,
                                      &returnValue);
 
-    LOG1( EJavaMMAPI, EInfo, "PitchControl__1setPitch return value %d", returnValue);
+    LOG1(EJavaMMAPI, EInfo, "PitchControl__1setPitch return value %d", returnValue);
 
     return (error == KErrNone) ? (returnValue+KPitchOffset) : error;
 }
@@ -129,7 +129,7 @@ Java_com_nokia_microedition_media_control_PitchControl__1getMinPitch
                                      &CMMAMIDIPitchControl::MinPitchL,
                                      &returnValue);
 
-    LOG1( EJavaMMAPI, EInfo, "PitchControl__1setPitch return value %d", returnValue);
+    LOG1(EJavaMMAPI, EInfo, "PitchControl__1setPitch return value %d", returnValue);
 
     return (error == KErrNone) ? (returnValue+KPitchOffset) : error;
 }
@@ -150,7 +150,7 @@ Java_com_nokia_microedition_media_control_PitchControl__1getMaxPitch
         reinterpret_cast< MMAFunctionServer* >(aEventSourceHandle);
 
     CMMAMIDIPitchControl* PitchControl =
-        reinterpret_cast< CMMAMIDIPitchControl* >(aControlHandle);        
+        reinterpret_cast< CMMAMIDIPitchControl* >(aControlHandle);
 
     TInt returnValue = 0;
     TInt error;
@@ -159,7 +159,7 @@ Java_com_nokia_microedition_media_control_PitchControl__1getMaxPitch
                                      PitchControl,
                                      &CMMAMIDIPitchControl::MaxPitchL,
                                      &returnValue);
-    LOG1( EJavaMMAPI, EInfo, "PitchControl__1getMaxRate return value %d", returnValue);
+    LOG1(EJavaMMAPI, EInfo, "PitchControl__1getMaxRate return value %d", returnValue);
 
     return (error == KErrNone) ? (returnValue+KPitchOffset) : error;
 }
@@ -189,7 +189,7 @@ Java_com_nokia_microedition_media_control_PitchControl__1getPitch
                                      &CMMAMIDIPitchControl::PitchL,
                                      &returnValue);
 
-    LOG1( EJavaMMAPI, EInfo, "PitchControl__1getPitch return value %d", returnValue);
+    LOG1(EJavaMMAPI, EInfo, "PitchControl__1getPitch return value %d", returnValue);
 
     return (error == KErrNone) ? (returnValue+KPitchOffset) : error;
 }

@@ -15,3 +15,8 @@
 @rem
 rem Script for running JavaCommonUtils unit tests from S60 eshell
 javainstaller test -mainclass=com.nokia.mj.impl.utils.BufferedReaderTests
+javainstaller test -mainclass=com.nokia.mj.impl.utils.concurrent.ConcurrentTests
+javaunittester -conf=cldc -mainclass=com.nokia.mj.impl.rt.SystemPropertyTests
+javaunittester -conf=cdc -mainclass=com.nokia.mj.impl.rt.SystemPropertyTests
+javaunittester -conf=foundation -mainclass=com.nokia.mj.impl.rt.SystemPropertyTests
+

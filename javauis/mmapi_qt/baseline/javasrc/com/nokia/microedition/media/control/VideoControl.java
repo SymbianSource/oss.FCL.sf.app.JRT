@@ -22,6 +22,7 @@ import javax.microedition.media.MediaException;
 import javax.microedition.lcdui.Canvas;
 import javax.microedition.lcdui.Display;
 import javax.microedition.midlet.MIDlet;
+import javax.microedition.lcdui.Item;
 import com.nokia.microedition.media.NativeError;
 
 //import com.symbian.midp.runtime.MIDletExecutor;
@@ -40,6 +41,7 @@ import com.nokia.mj.impl.utils.Logger;
 
 // MMAPI 3.x UI req.
 import com.nokia.microedition.media.*;
+import com.nokia.microedition.media.control.ItemDisplay;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
@@ -107,8 +109,9 @@ public class VideoControl
 
     private VideoItem iVideoItem;
     private Canvas iVideoCanvas;
-    
-    BaseDisplay display;
+    private Item iItem ;
+
+    BaseDisplay iDisplay;
 //    private MIDletInstance iMIDletInstance;
 
     // error code used asynchronous native calls
@@ -116,7 +119,6 @@ public class VideoControl
 
     // used in asynchronous getSnapshot method
     private byte[] iImageData;
-    private int iToolkitHandle = 0;
 
     // toolkit, stored as object as we don't have access to Toolkit class.
     private Object iToolkit;
@@ -133,9 +135,9 @@ public class VideoControl
 
     public VideoControl()
     {
-       // iToolkitInvoker = com.symbian.midp.runtime.ToolkitInvoker.getToolkitInvoker();
+        // iToolkitInvoker = com.symbian.midp.runtime.ToolkitInvoker.getToolkitInvoker();
 //       lcduiinvoker = new com.nokia.microedition.volumekeys.MMAPILCDUIInvokerImpl();
-     //  eswtObserver = new MMAPIeSWTObserver();
+        //  eswtObserver = new MMAPIeSWTObserver();
     }
 
     private void doFinalize()
@@ -161,10 +163,8 @@ public class VideoControl
         iPlayer = aPlayer;
         iEventSource = aEventSource;
         iControlHandle = aControlHandle;
-        iToolkitHandle = 0;   // TODO: remove once implementation is done.
         int error = _construct(iControlHandle,
-                               aEventSource,
-                               iToolkitHandle);
+                               aEventSource);
 
         NativeError.check(error);
     }
@@ -175,8 +175,7 @@ public class VideoControl
      */
     public void setDisplaySize(int aWidth, int aHeight) throws MediaException
     {
-       // checkState();
-
+        checkState();
         if (iStatus == NOT_INITIALIZED)
         {
             throw new IllegalStateException(
@@ -190,13 +189,12 @@ public class VideoControl
 
 
 
-			System.out.println("before display.setDisplaySize()");
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside setDisplaySize()");
 
 
-				//canvasdisplay.setDisplaySize( aWidth, aHeight);
-			display.setDisplaySize( aWidth, aHeight);
-			
-			System.out.println("after display.setDisplaySize()");
+        //canvasdisplay.setDisplaySize( aWidth, aHeight);
+        iDisplay.setDisplaySize(aWidth, aHeight);
+
         /*
         int ret = setDisplayProperty(aWidth, aHeight, SET_DISPLAY_SIZE);
         if (ret < 0)
@@ -219,7 +217,7 @@ public class VideoControl
      */
     public void setDisplayFullScreen(boolean aFullScreenMode) throws MediaException
     {
-       // checkState();
+        // checkState();
         if (iStatus == NOT_INITIALIZED)
         {
             throw new IllegalStateException(
@@ -242,9 +240,9 @@ public class VideoControl
         }
 
         */
-		System.out.println("inside setDisplayFullScreen()");
-			//canvasdisplay.setDisplayFullScreen( aFullScreenMode);
-		display.setDisplayFullScreen( aFullScreenMode);
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside setDisplayFullScreen()");
+        //canvasdisplay.setDisplayFullScreen( aFullScreenMode);
+        iDisplay.setDisplayFullScreen(aFullScreenMode);
 
 
     }
@@ -255,8 +253,8 @@ public class VideoControl
      */
     public void setDisplayLocation(int aX, int aY)
     {
-       // checkState();
-         System.out.println("VideoControl.java :: setDisplayLocation x, y = " + aX + ","+ aY);
+        // checkState();
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"VideoControl.java :: setDisplayLocation x, y = " + aX + ","+ aY);
         if (iStatus == USE_GUI_PRIMITIVE)
         {
             // In USE_GUI_PRIMITIVE mode, this call will be ignored.
@@ -267,16 +265,16 @@ public class VideoControl
             // This method only works when the USE_DIRECT_VIDEO mode is set.
             throw new IllegalStateException();
         }
-	/*
-        // cannot fail -> ignore return value
-        setDisplayProperty(aX, aY, SET_DISPLAY_LOCATION);
-	*/
+        /*
+            // cannot fail -> ignore return value
+            setDisplayProperty(aX, aY, SET_DISPLAY_LOCATION);
+        */
 
-	System.out.println("inside setDisplayLocation()");
-	//canvasdisplay.setDisplayLocation( aX , aY);
-	display.setDisplayLocation( aX , aY);
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside setDisplayLocation()");
+        //canvasdisplay.setDisplayLocation( aX , aY);
+        iDisplay.setDisplayLocation(aX , aY);
 
-	 }
+    }
 
     /**
      * from Interface VideoControl
@@ -284,7 +282,7 @@ public class VideoControl
      */
     public void setVisible(boolean aVisible)
     {
-       // checkState();
+        // checkState();
         if (iStatus == NOT_INITIALIZED)
         {
             throw new IllegalStateException(
@@ -305,17 +303,13 @@ public class VideoControl
         }
         */
         Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,
-                           " before display.setVisible()");
-        System.out.println("inside setVisible()");
-        if(aVisible)
-        {
-        // set the Midlet BG/FG status to native	
-        updateForeground();
-      	}
-        display.setVisible( aVisible );
+                   " before iDisplay.setVisible()");
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside setVisible()");
+        // canvasdisplay.setVisible( aVisible );
+        iDisplay.setVisible(aVisible);
         Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,
-                           "after display.setVisible()");
-        
+                   "after iDisplay.setVisible()");
+
 
 
     }
@@ -325,18 +319,19 @@ public class VideoControl
      *
      */
     public int getDisplayWidth()
-    {/*
-        checkState();
-        if (iStatus == NOT_INITIALIZED)
-        {
-            throw new IllegalStateException(
-            "VideoControl.initDisplayMode() not called yet");
-        }
-        int width = getControlProperty(PROPERTY_DISPLAY_WIDTH);
-        return width;
-        */
-                //return  canvasdisplay.getDisplayWidth( );
-        return display.getDisplayWidth( );
+    {
+        /*
+           checkState();
+           if (iStatus == NOT_INITIALIZED)
+           {
+               throw new IllegalStateException(
+               "VideoControl.initDisplayMode() not called yet");
+           }
+           int width = getControlProperty(PROPERTY_DISPLAY_WIDTH);
+           return width;
+           */
+        //return  canvasdisplay.getDisplayWidth( );
+        return iDisplay.getDisplayWidth();
     }
 
     /**
@@ -345,17 +340,17 @@ public class VideoControl
      */
     public int getDisplayHeight()
     {
-       /* checkState();
-        if (iStatus == NOT_INITIALIZED)
-        {
-            throw new IllegalStateException(
-            "VideoControl.initDisplayMode() not called yet");
-        }
-        int height = getControlProperty(PROPERTY_DISPLAY_HEIGHT);
-        return height;
+        /* checkState();
+         if (iStatus == NOT_INITIALIZED)
+         {
+             throw new IllegalStateException(
+             "VideoControl.initDisplayMode() not called yet");
+         }
+         int height = getControlProperty(PROPERTY_DISPLAY_HEIGHT);
+         return height;
 
-        */
-        return  display.getDisplayHeight( );
+         */
+        return  iDisplay.getDisplayHeight();
     }
 
     /**
@@ -364,15 +359,15 @@ public class VideoControl
      */
     public int getDisplayX()
     {
-       /* checkState();
-        if (iStatus == NOT_INITIALIZED)
-        {
-            return UNDEFINED_RETURN_VALUE;
-        }
-        int x = getControlProperty(PROPERTY_DISPLAY_X);
-        return x;
-        */
-        return  display.getDisplayX( );
+        /* checkState();
+         if (iStatus == NOT_INITIALIZED)
+         {
+             return UNDEFINED_RETURN_VALUE;
+         }
+         int x = getControlProperty(PROPERTY_DISPLAY_X);
+         return x;
+         */
+        return  iDisplay.getDisplayX();
     }
 
     /**
@@ -381,7 +376,7 @@ public class VideoControl
      */
     public int getDisplayY()
     {
-		/*
+        /*
         checkState();
         if (iStatus == NOT_INITIALIZED)
         {
@@ -391,7 +386,7 @@ public class VideoControl
         return y;
 
         */
-          return  display.getDisplayY( );
+        return  iDisplay.getDisplayY();
     }
 
     /**
@@ -400,16 +395,16 @@ public class VideoControl
      */
     public int getSourceWidth()
     {
-       /* checkState();
-        int width = getControlProperty(PROPERTY_SOURCE_WIDTH);
-        if (width <= 0)
-        {
-            width = 1;
-        }
-        return width;
+        /* checkState();
+         int width = getControlProperty(PROPERTY_SOURCE_WIDTH);
+         if (width <= 0)
+         {
+             width = 1;
+         }
+         return width;
 
-        */
-        return  display.getSourceWidth( );
+         */
+        return  iDisplay.getSourceWidth();
     }
 
     /**
@@ -426,7 +421,7 @@ public class VideoControl
         }
         return height;
         */
-		return  display.getSourceHeight( );
+        return  iDisplay.getSourceHeight();
 
     }
 
@@ -516,6 +511,24 @@ public class VideoControl
                 }
             }
 
+            //iItem = (Item)aArg;
+
+            if (iVideoItem == null)
+                Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,
+                           "VideoControl : iVideoItem is null");
+            iDisplay = new ItemDisplay(iEventSource , iVideoItem);
+
+            Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,
+                       "VideoControl : creation of ItemDisplay");
+
+            int handle = initNativeDisplay(iVideoItem, iDisplay, true);
+            // here actual listener is added to iDisplay
+            iDisplay.setNativeHandle(handle);
+            iVideoItem.setNativeHandle(handle);
+            // Window resource initialization is done to the native video player
+            //iDisplay.setWindowResources();
+
+
             iStatus = USE_GUI_PRIMITIVE;
             return guiObject;
         }
@@ -535,57 +548,58 @@ public class VideoControl
                     "For USE_DIRECT_VIDEO mode argument should not be null");
             }
             iVideoCanvas = (Canvas)aArg;
-			// MMAPI UI 3.x req.
+            // MMAPI UI 3.x req.
 
-			display = new MMACanvasDisplay(iEventSource , iVideoCanvas);
+            iDisplay = new MMACanvasDisplay(iEventSource , iVideoCanvas);
 
-			System.out.println("VideoControl.java: after eswt control got from canvas has added observer");
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"VideoControl.java: after eswt control got from canvas has added observer");
 
-            int handle = initNativeDisplay(iVideoCanvas, display);
-            // here actual listener is added to display
-						display.setNativeHandle(handle);
-						// Window resource initialization is done to the native video player
-						display.setWindowResources();
+            int handle = initNativeDisplay(iVideoCanvas, iDisplay, false);
+            // here actual listener is added to iDisplay
+            iDisplay.setNativeHandle(handle);
+            // Window resource initialization is done to the native video player
+            iDisplay.setWindowResources(null);
             iStatus = USE_DIRECT_VIDEO;
 
-           /*( try
-            {
-                this.setVisible(false);
-            }
+            /*( try
+             {
+                 this.setVisible(false);
+             }
 
-            catch (IllegalStateException ex) { }
-					*/
+             catch (IllegalStateException ex) { }
+                 */
             return null;
         }
         else
         {
             // java.lang.IllegalArgumentException - Thrown if the mode is invalid.
             throw new java.lang.IllegalArgumentException(
-            "Mode not supported or invalid, " +
-            "valid modes are USE_DIRECT_VIDEO and USE_GUI_PRIMITIVE");
+                "Mode not supported or invalid, " +
+                "valid modes are USE_DIRECT_VIDEO and USE_GUI_PRIMITIVE");
         }
     }
-    
- 		/**
-     * Called from java for early initialization of native handle to java peer
-     * Because it will be used to make a jni call 
-     */   
-   public void setNativeDisplayHandleToJavaPeer(int handle)
-   {
-   	System.out.println("VideoControl.java: setNativeDisplayHandleToJavaPeer handle =" + handle);
-   	  display.setNativeHandle(handle);
-   }
+
+    /**
+         * Called from java for early initialization of native handle to java peer
+         * Because it will be used to make a jni call
+         */
+    public void setNativeDisplayHandleToJavaPeer(int handle)
+    {
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"VideoControl.java: setNativeDisplayHandleToJavaPeer handle =" + handle);
+        iDisplay.setNativeHandle(handle);
+    }
 
     /**
      * Initializes native display.
      *
      */
-    private int initNativeDisplay(Object aGuiObject, Object mmadisplay)
+    private int initNativeDisplay(Object aGuiObject, Object mmadisplay, boolean aGuiType)
     {
         int handle = _initDisplayMode(iControlHandle,
                                       iEventSource,
                                       mmadisplay,
-                                      aGuiObject);
+                                      aGuiObject,
+                                      aGuiType);
         NativeError.check(handle);
         return handle;
     }
@@ -695,7 +709,7 @@ public class VideoControl
         // initNativeDisplay return handle MMMADirectContainer, 0 parameter
         // indicates that dynamic display will be used
         // MMAPI UI 3.x req.
-      //  guiFactory.setContentHandle(initNativeDisplay(guiObject, 0));
+        //  guiFactory.setContentHandle(initNativeDisplay(guiObject, 0));
         return guiObject;
     }
 
@@ -705,14 +719,15 @@ public class VideoControl
      */
     private Object initLCDUI()
     {
-        iVideoItem = new VideoItem(iEventSource);
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"+ VideoControl.java : initLCDUI() ");
+        iVideoItem = new VideoItem(iEventSource,iPlayer);
         iPlayer.addPlayerListener(iVideoItem);
 
         // MMAPI UI 3.x req.
-       // int handle = initNativeDisplay(iVideoItem,
-       //                                1 /*iToolkitInvoker.itemGetHandle(iVideoItem)*/);
+        // int handle = initNativeDisplay(iVideoItem,
+        //                                1 /*iToolkitInvoker.itemGetHandle(iVideoItem)*/);
 
-       // iVideoItem.setNativeHandle(handle);
+        // iVideoItem.setNativeHandle(handle);
 
         iStatus = USE_GUI_PRIMITIVE;
         return iVideoItem;
@@ -790,70 +805,69 @@ public class VideoControl
     }
 
 
-  //  private int updateForeground()  // MMAPI UI 3.x changes
+    //  private int updateForeground()  // MMAPI UI 3.x changes
     private void updateForeground()
     {
 
         int isFG = 1;
-/*
-        // Check whether display is initialized
-        checkState();
-        if (iStatus == NOT_INITIALIZED)
-        {
-            return visible;
-        }
+        /*
+                // Check whether display is initialized
+                checkState();
+                if (iStatus == NOT_INITIALIZED)
+                {
+                    return visible;
+                }
 
-        iMIDletInstance = MIDletExecutor.getCurrentMIDlet();
-        MIDlet midlet = iMIDletInstance.getMIDlet();
-        //Displayable displayable;
-        if (midlet == null)
-        {
-            return visible;
-        }
-        else
-        {
-            Displayable displayable = Display.getDisplay(midlet).getCurrent();
+                iMIDletInstance = MIDletExecutor.getCurrentMIDlet();
+                MIDlet midlet = iMIDletInstance.getMIDlet();
+                //Displayable displayable;
+                if (midlet == null)
+                {
+                    return visible;
+                }
+                else
+                {
+                    Displayable displayable = Display.getDisplay(midlet).getCurrent();
 
-            if (displayable != null && displayable.isShown())
-            {
-                Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,
-                           "VideoControl.updateForeground isShown() = 1");
-                // visible
-            }
-            else
-            {
-                Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,
-                           "VideoControl.updateForeground isShown() = 0");
-                // not visible
-                visible = 0;
-            }
+                    if (displayable != null && displayable.isShown())
+                    {
+                        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,
+                                   "VideoControl.updateForeground isShown() = 1");
+                        // visible
+                    }
+                    else
+                    {
+                        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,
+                                   "VideoControl.updateForeground isShown() = 0");
+                        // not visible
+                        visible = 0;
+                    }
 
-            // Set the foreground state
-            _setForeground(iControlHandle,
-                           iEventSource,
-                           visible);
-        }
+                    // Set the foreground state
+                    _setForeground(iControlHandle,
+                                   iEventSource,
+                                   visible);
+                }
 
-        return visible;
-        */
+                return visible;
+                */
 
         // MMAPI UI 3.x req.
-		// Get the midlet position BG/FG
-		boolean visible = ManagerImpl.getInstance().isForground();
-		if(visible)
-		isFG = 1;
-		else
-		isFG = 0;
+        // Get the midlet position BG/FG
+        boolean visible = ManagerImpl.getInstance().isForground();
+        if (visible)
+            isFG = 1;
+        else
+            isFG = 0;
 
         _setForeground(iControlHandle,
-                           iEventSource,
-                           isFG);
-       // return visible;
+                       iEventSource,
+                       isFG);
+        // return visible;
     }
 
     private native int _construct(int aControlHandle,
-                                  int aEventSourceHandle,
-                                  int aToolkitHandle);
+                                  int aEventSourceHandle);
 
     private native int _getControlProperty(int aControlHandle,
                                            int aEventSourceHandle,
@@ -872,7 +886,8 @@ public class VideoControl
     private native int _initDisplayMode(int aControlHandle,
                                         int aEventSourceHandle,
                                         Object aJavaDisplay,
-                                        Object aJavaDisplayObject);
+                                        Object aJavaDisplayObject,
+                                        boolean aGuiTYpe);
     private native int _setForeground(int aControlHandle,
                                       int aEventSourceHandle,
                                       int aIsForeground);

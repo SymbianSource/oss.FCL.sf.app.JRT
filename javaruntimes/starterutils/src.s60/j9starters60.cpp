@@ -205,6 +205,10 @@ void J9StarterS60::setInternalOdcFiles()
     {
         pathType = BOOT_CLASSPATH_TCKRUNNER;
     }
+    else if (mIdentifier == L"JavaControlPanel")
+    {
+        pathType = BOOT_CLASSPATH_JAVACONTROLPANEL;
+    }
 
     std::list<std::wstring> odcFiles;
     std::list<std::wstring> bcpEntities;

@@ -432,7 +432,7 @@ public class Command extends Item {
     void hookEvents() {
         Internal_PackageSupport.hookEvents(this);
         if ( type == Command.COMMANDGROUP ) return;
-        int triggeredProxy = OS.SignalHandler_new(handle(), Internal_PackageSupport.display(this), OS.QSIGNAL_TRIGGERED);
+        int triggeredProxy = OS.SignalHandler_new(handle(), OS.QSIGNAL_TRIGGERED);
         OS.QObject_connectOrThrow(handle(), "triggered(bool)", triggeredProxy, "widgetSignal(bool)", OS.QT_AUTOCONNECTION);
     }
 
@@ -450,7 +450,7 @@ public class Command extends Item {
             parent.addCommand( this );
         }else{
             Internal_PackageSupport.addCommand( this.control, this );
-            Internal_PackageSupport.display(this).commandArranger.commandAdded( this );
+            Internal_PackageSupport.commandArranger().commandAdded( this );
         }
 
     }
@@ -571,7 +571,7 @@ public class Command extends Item {
      */
     public boolean isDefaultCommand() {
         checkWidget ();
-        return Internal_PackageSupport.display(this).commandArranger.getDefaultCommand() == this;
+        return Internal_PackageSupport.commandArranger().getDefaultCommand() == this;
     }
 
     /**
@@ -659,7 +659,7 @@ public class Command extends Item {
         if ((accelerator & SWT.SHIFT) != 0) mask |= OS.QT_SHIFTMODIFIER;
         if ((accelerator & SWT.CONTROL) != 0) mask |= OS.QT_CONTROLMODIFIER;
         int keysym = accelerator & SWT.KEY_MASK;
-        int newKey = Display.untranslateKey (keysym);
+        int newKey = Internal_PackageSupport.untranslateKey (keysym);
         if (newKey != 0) {
             keysym = newKey;
         }
@@ -677,7 +677,7 @@ public class Command extends Item {
         checkWidget ();
         //Commmands that are in a command group can not be default commands
         if(parent != null ) return;
-        Internal_PackageSupport.display(this).commandArranger.setDefaultCommand(this);
+        Internal_PackageSupport.commandArranger().setDefaultCommand(this);
     }
 
     /**
@@ -809,7 +809,7 @@ public class Command extends Item {
 
     void releaseWidget () {
         Internal_PackageSupport.releaseWidget(this);
-        if( parent == null ) Internal_PackageSupport.display(this).commandArranger.commandRemoved( this );
+        if( parent == null ) Internal_PackageSupport.commandArranger().commandRemoved( this );
         accelerator = 0;
         parent = null;
         children = null;

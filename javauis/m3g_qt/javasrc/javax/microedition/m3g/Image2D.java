@@ -22,6 +22,7 @@ import javax.microedition.lcdui.Image;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.qt.graphics.*;
 import com.nokia.mj.impl.nokialcdui.LCDUIInvoker;
+import org.eclipse.swt.widgets.Internal_PackageSupport;
 
 public class Image2D extends Object3D
 {
@@ -128,8 +129,8 @@ public class Image2D extends Object3D
         if (image instanceof org.eclipse.swt.graphics.Image)
         {
             // get internal image
-            final org.eclipse.swt.internal.qt.graphics.Image cgfxImage = ((org.eclipse.swt.graphics.Image)image).internal_getImage();
-
+            final org.eclipse.swt.internal.qt.graphics.Image cgfxImage = 
+                    Internal_GfxPackageSupport.getImage((org.eclipse.swt.graphics.Image)image);
             // excute in UI thread
             Platform.executeInUIThread(
                 new M3gRunnable()
@@ -142,7 +143,9 @@ public class Image2D extends Object3D
         }
         else if (image instanceof javax.microedition.lcdui.Image)
         {
-            final org.eclipse.swt.internal.qt.graphics.Image cgfxImage = LCDUIInvoker.getEswtImage((javax.microedition.lcdui.Image)image).internal_getImage();
+            final org.eclipse.swt.internal.qt.graphics.Image cgfxImage =
+                    Internal_GfxPackageSupport.getImage(
+                            LCDUIInvoker.getEswtImage( (javax.microedition.lcdui.Image)image ) );
 
             // excute in UI thread
             Platform.executeInUIThread(

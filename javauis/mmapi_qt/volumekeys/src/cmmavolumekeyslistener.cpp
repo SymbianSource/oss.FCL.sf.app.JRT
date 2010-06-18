@@ -45,30 +45,30 @@ CMMAVolumeKeysListener* CMMAVolumeKeysListener::NewL(MMMAVolumeKeysListener* aLi
 
 CMMAVolumeKeysListener::~CMMAVolumeKeysListener()
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAVolumeKeysListener::~CMMAVolumeKeysListener() +");
-   /* if ((NULL != iJavaRemConObserver) && (NULL != iJavaRemConManager))
-    {
-        iJavaRemConManager->RemoveObserver(*iJavaRemConObserver);
-    }
+    LOG(EJavaMMAPI, EInfo, "CMMAVolumeKeysListener::~CMMAVolumeKeysListener() +");
+    /* if ((NULL != iJavaRemConObserver) && (NULL != iJavaRemConManager))
+     {
+         iJavaRemConManager->RemoveObserver(*iJavaRemConObserver);
+     }
 
-    if (NULL != iJavaRemConObserver)
-    {
-        delete iJavaRemConObserver;
-        iJavaRemConObserver = NULL;
-    }
+     if (NULL != iJavaRemConObserver)
+     {
+         delete iJavaRemConObserver;
+         iJavaRemConObserver = NULL;
+     }
 
-    if (NULL != iJavaRemConManager)
-    {
-        delete iJavaRemConManager;
-        iJavaRemConManager = NULL;
-    }
-*/
+     if (NULL != iJavaRemConManager)
+     {
+         delete iJavaRemConManager;
+         iJavaRemConManager = NULL;
+     }
+    */
     if (NULL != iTimer)
     {
         iTimer->Cancel();
         delete iTimer;
     }
-    LOG( EJavaMMAPI, EInfo, "CMMAVolumeKeysListener::~CMMAVolumeKeysListener() -");
+    LOG(EJavaMMAPI, EInfo, "CMMAVolumeKeysListener::~CMMAVolumeKeysListener() -");
 }
 
 CMMAVolumeKeysListener::CMMAVolumeKeysListener()
@@ -77,16 +77,16 @@ CMMAVolumeKeysListener::CMMAVolumeKeysListener()
 
 void CMMAVolumeKeysListener::ConstructL(MMMAVolumeKeysListener* aListener)
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAVolumeKeysListener::ConstructL +");
+    LOG(EJavaMMAPI, EInfo, "CMMAVolumeKeysListener::ConstructL +");
     /*iJavaRemConObserver = CJavaRemConObserver::NewL(*this);
     iJavaRemConManager = CJavaRemConManager::NewL();
     iJavaRemConManager->SetObserverL(*iJavaRemConObserver);
-*/
+    */
     // Timer for implementing Pressed/Released/Clicked feature.
     iTimer = CPeriodic::NewL(CActive::EPriorityStandard);
 
     iListener = aListener;
-    LOG( EJavaMMAPI, EInfo, "CMMAVolumeKeysListener::ConstructL -");
+    LOG(EJavaMMAPI, EInfo, "CMMAVolumeKeysListener::ConstructL -");
 }
 
 /*
@@ -238,7 +238,7 @@ void CMMAVolumeKeysListener::MrccatoSelectAudioInputFunction(TUint8 aAudioInputS
 //
 void CMMAVolumeKeysListener::HandleTimerEvent()
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAVolumeKeysListener::HandleTimerEvent +");
+    LOG(EJavaMMAPI, EInfo, "CMMAVolumeKeysListener::HandleTimerEvent +");
     if (iUp)
     {
         iListener->VolumeUp();
@@ -247,7 +247,7 @@ void CMMAVolumeKeysListener::HandleTimerEvent()
     {
         iListener->VolumeDown();
     }
-    LOG( EJavaMMAPI, EInfo, "CMMAVolumeKeysListener::HandleTimerEvent -");
+    LOG(EJavaMMAPI, EInfo, "CMMAVolumeKeysListener::HandleTimerEvent -");
 }
 
 // -----------------------------------------------------------------------

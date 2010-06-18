@@ -103,8 +103,8 @@ void CMMAAudioPlayer::ConstructL()
 
 EXPORT_C void CMMAAudioPlayer::PrefetchDataL(const TDesC8& aData)
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAAudioPlayer::PrefetchDataL aData size %d",
-              aData.Size());
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAAudioPlayer::PrefetchDataL aData size %d",
+         aData.Size());
 
     // player priority settings
     TMMFPrioritySettings prioritySettings;
@@ -127,7 +127,7 @@ EXPORT_C void CMMAAudioPlayer::PrefetchDataL(const TDesC8& aData)
 
 EXPORT_C void CMMAAudioPlayer::PrefetchFileL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioPlayer::Prefetching from file");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioPlayer::Prefetching from file");
 
     // player priority settings
     TMMFPrioritySettings prioritySettings;
@@ -149,7 +149,7 @@ EXPORT_C void CMMAAudioPlayer::PrefetchFileL()
 
 EXPORT_C void CMMAAudioPlayer::PlayCompleteL(TInt aError)
 {
-	LOG( EJavaMMAPI, EInfo, "CMMAAudioPlayer::PlayCompleteL +");
+    LOG(EJavaMMAPI, EInfo, "CMMAAudioPlayer::PlayCompleteL +");
     TInt64 time;
     GetDuration(&time);
     iMediaTime = time;
@@ -185,12 +185,12 @@ EXPORT_C void CMMAAudioPlayer::PlayCompleteL(TInt aError)
         // repeats for next start
         SetLoopCount(iRepeatNumberOfTimes);
     }
-    	LOG( EJavaMMAPI, EInfo, "CMMAAudioPlayer::PlayCompleteL -");
+    LOG(EJavaMMAPI, EInfo, "CMMAAudioPlayer::PlayCompleteL -");
 }
 
 void CMMAAudioPlayer::RealizeL()
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAAudioPlayer::RealizeL");
+    LOG(EJavaMMAPI, EInfo, "CMMAAudioPlayer::RealizeL");
     // DataSource must have at least 1 stream or
     // we must have file to play
     if ((iSourceStreams.Count() == 0) && !iFileName)
@@ -203,7 +203,7 @@ void CMMAAudioPlayer::RealizeL()
 
 void CMMAAudioPlayer::PrefetchL()
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAAudioPlayer::PrefetchL");
+    LOG(EJavaMMAPI, EInfo, "CMMAAudioPlayer::PrefetchL");
     __ASSERT_DEBUG((iSourceStreams.Count() > 0) || iFileName, User::Invariant());
 
     if (iFileName)
@@ -234,7 +234,7 @@ const TDesC& CMMAAudioPlayer::Type()
 //
 void CMMAAudioPlayer::ReadCompletedL(TInt aStatus, const TDesC8& aData)
 {
-    LOG1( EJavaMMAPI, EInfo, "CMMAAudioPlayer::ReadCompletedL: status = %d", aStatus);
+    LOG1(EJavaMMAPI, EInfo, "CMMAAudioPlayer::ReadCompletedL: status = %d", aStatus);
     if (aStatus < KErrNone)
     {
         PostActionCompleted(aStatus);
@@ -253,7 +253,7 @@ void CMMAAudioPlayer::ReadCompletedL(TInt aStatus, const TDesC8& aData)
 
 void CMMAAudioPlayer::HandleEvent(const TMMFEvent& aEvent)
 {
-    LOG( EJavaMMAPI, EInfo, "MID::CMMAAudioPlayer::HandleEvent");
+    LOG(EJavaMMAPI, EInfo, "MID::CMMAAudioPlayer::HandleEvent");
     TInt err = aEvent.iErrorCode;
     if (iState == EStarted)
     {
@@ -278,7 +278,7 @@ void CMMAAudioPlayer::HandleEvent(const TMMFEvent& aEvent)
             TInt64 time;
             GetMediaTime(&time);
             iStartedEventTime = time;
-            LOG( EJavaMMAPI, EInfo, "MID::CMMAAudioPlayer::Going to ChangeState( EPrefetched );");
+            LOG(EJavaMMAPI, EInfo, "MID::CMMAAudioPlayer::Going to ChangeState( EPrefetched );");
 
             PostLongEvent(CMMAPlayerEvent::EStopped, time);
             ChangeState(EPrefetched);
@@ -298,7 +298,7 @@ EXPORT_C void CMMAAudioPlayer::HandlePlaybackCompleteL()
 
 EXPORT_C void CMMAAudioPlayer::ErrorPlaybackComplete(TInt aError)
 {
-    ELOG1( EJavaMMAPI, "MID::CMMAAudioPlayer::ErrorPlaybackComplete: aError = %d", aError);
+    ELOG1(EJavaMMAPI, "MID::CMMAAudioPlayer::ErrorPlaybackComplete: aError = %d", aError);
     TBuf<KErrorMessageSize> errorMessage;
     errorMessage.Format(KErrDefaultError, aError);
     PostStringEvent(CMMAPlayerEvent::EError, errorMessage);

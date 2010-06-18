@@ -200,7 +200,7 @@ public class ListBox extends Scrollable {
     private Font headingFont;
     private Image[][] detailImages;
     private Image[][] headingImages;
-
+    private ListBoxItem []items;
     /**
      * single line item, 1 column (default)
      */
@@ -547,8 +547,7 @@ public class ListBox extends Scrollable {
 
     void hookEvents() {
         if (selectionModelHandle != 0) {
-            int signalProxy = OS.SignalHandler_new(topHandle(),
-                    Internal_PackageSupport.display(this), OS.QSIGNAL_SELECTIONCHANGED);
+            int signalProxy = OS.SignalHandler_new(topHandle(), OS.QSIGNAL_SELECTIONCHANGED);
             OS.QObject_connectOrThrow(
                     selectionModelHandle,
                     "selectionChanged( const QItemSelection&, const QItemSelection& )",
@@ -556,8 +555,7 @@ public class ListBox extends Scrollable {
                     "widgetSignal( const QItemSelection&, const QItemSelection& )",
                     OS.QT_AUTOCONNECTION);
 
-            int itemActivatedSignalProxy = OS.SignalHandler_new(topHandle(),
-                    Internal_PackageSupport.display(this), OS.QSIGNAL_ABSTRACTITEMVIEW_ACTIVATED);
+            int itemActivatedSignalProxy = OS.SignalHandler_new(topHandle(), OS.QSIGNAL_ABSTRACTITEMVIEW_ACTIVATED);
             OS.QObject_connectOrThrow(topHandle(),
                     "activated(const QModelIndex& )", itemActivatedSignalProxy,
                     "widgetSignal(const QModelIndex&)", OS.QT_AUTOCONNECTION);
@@ -705,6 +703,9 @@ public class ListBox extends Scrollable {
         checkWidget();
         if (index < 0 || index >= listBase_getItemCount())
             SWT.error(SWT.ERROR_INVALID_RANGE);
+        if(items[index]==null){
+        	OS.ListModel_setItemContentsToNull(dataModelHandle, index);
+        }
         int indexHandle = OS.QAbstractItemModel_index(dataModelHandle, index,
                 0, 0);
         OS.QAbstractItemView_update(topHandle(), indexHandle);
@@ -1426,7 +1427,7 @@ public class ListBox extends Scrollable {
             detailImages = null;
             return;
         }
-
+        this.items = items;
         headingImages = new Image[count][];
         detailImages = new Image[count][];
         OS.ListModel_beginInsertRows(dataModelHandle, 0, 0, count - 1);
@@ -1434,7 +1435,7 @@ public class ListBox extends Scrollable {
         int[] headingImageHandles;
         int imageCount;
         for (int i = 0; i < count; i++) {
-            if (items[i].detailIcons != null) {
+            if (items[i]!=null && items[i].detailIcons != null) {
                 imageCount = items[i].detailIcons.length;
                 detailImageHandles = new int[imageCount];
                 for (int j = 0; j < imageCount; j++) {
@@ -1444,7 +1445,7 @@ public class ListBox extends Scrollable {
                 detailImageHandles = null;
             }
 
-            if (items[i].headingIcons != null) {
+            if ( items[i]!=null && items[i].headingIcons != null) {
                 imageCount = items[i].headingIcons.length;
                 headingImageHandles = new int[imageCount];
                 for (int j = 0; j < imageCount; j++) {
@@ -1453,14 +1454,22 @@ public class ListBox extends Scrollable {
             } else {
                 headingImageHandles = null;
             }
-            OS.ListModel_append(dataModelHandle, items[i].detailText,
+            if(items[i]!=null){
+            	OS.ListModel_append(dataModelHandle, items[i].detailText,
                     detailImageHandles,
                     detailImageHandles != null ? detailImageHandles.length : 0,
                     items[i].headingText, headingImageHandles,
                     headingImageHandles != null ? headingImageHandles.length
                             : 0);
-            headingImages[i] = items[i].getHeadingIcons();
-            detailImages[i] = items[i].getDetailIcons();
+            	headingImages[i] = items[i].getHeadingIcons();
+            	detailImages[i] = items[i].getDetailIcons();
+        	} else {
+        		OS.ListModel_append(dataModelHandle, null, detailImageHandles,
+                        detailImageHandles != null ? detailImageHandles.length : 0,
+                        null, headingImageHandles, headingImageHandles != null ? headingImageHandles.length : 0);
+        		headingImages[i] = null;
+            	detailImages[i] = null;
+        	}
         }
         OS.ListModel_endInsertRows(dataModelHandle);
     }

@@ -180,7 +180,7 @@ void qt_signal_tray_activated(int reason) {
 
 
 void hookEvents_pp () {
-    int activatedProxy = OS.SignalHandler_new(handle, display, OS.QSIGNAL_TRAY_ACTIVATED);
+    int activatedProxy = OS.SignalHandler_new(handle, OS.QSIGNAL_TRAY_ACTIVATED);
     OS.QObject_connectOrThrow(handle, "activated(QSystemTrayIcon::ActivationReason)", activatedProxy, "widgetSignal(QSystemTrayIcon::ActivationReason)", OS.QT_AUTOCONNECTION);
  }
 

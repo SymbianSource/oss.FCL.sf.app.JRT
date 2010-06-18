@@ -50,4 +50,8 @@ else
     COMPONENTS += midprms/build
 endif
 
+# Declare that release preparation removes subdirectories not in build, except
+# listed special cases
+REMOVE_NOTBUILT_EXCLUDING = inc
+
 include ${JAVA_SRC_ROOT}/build/Makefile.subsystem

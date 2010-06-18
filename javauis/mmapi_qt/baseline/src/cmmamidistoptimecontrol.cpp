@@ -47,7 +47,7 @@ CMMAMIDIStopTimeControl::CMMAMIDIStopTimeControl(CMMAPlayer* aPlayer)
 
 void CMMAMIDIStopTimeControl::StopAtTimeL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAMIDIStopTimeControl::StopAtTime");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAMIDIStopTimeControl::StopAtTime");
 
     // Stop the player only when it's playing
     if (iPlayer->State() == CMMAPlayer::EStarted)
@@ -56,8 +56,8 @@ void CMMAMIDIStopTimeControl::StopAtTimeL()
         iPlayer->GetMediaTime(&time);
         if (time >= 0 && time < iStopTime)
         {
-            LOG1( EJavaMMAPI, EInfo, "MMA:CMMAMIDIStopTimeControl::StopAtTime - Called %dms too early",
-                      I64INT((time - iStopTime)/1000));
+            LOG1(EJavaMMAPI, EInfo, "MMA:CMMAMIDIStopTimeControl::StopAtTime - Called %dms too early",
+                 I64INT((time - iStopTime)/1000));
             StartTimer(time);
             return;
         }

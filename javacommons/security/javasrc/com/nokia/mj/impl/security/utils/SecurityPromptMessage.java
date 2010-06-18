@@ -79,6 +79,7 @@ public class SecurityPromptMessage extends LocalizedTextProvider
     public static final String QUESTION_ID_PUSH_DYNAMIC_REGISTRATION = "push_registration_dynamic";
     public static final String QUESTION_ID_AUTO_INVOCATION = "auto_invocation";
     public static final String QUESTION_ID_NDEF_TAG_WRITE = "nfc_ndef_tag_write";
+    public static final String QUESTION_ID_APP_AUTO_LAUNCH = "url_start";
 
     // identifiers for the security prompt answer options
     public static final String ANSWER_ID_ALLOW = "prompt_allow";

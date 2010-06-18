@@ -270,7 +270,7 @@ OS_EXPORT wstring S60MmsServerConnection::getFilter() const
     return mFilter;
 }
 
-void S60MmsServerConnection::close()
+OS_EXPORT void S60MmsServerConnection::close()
 {
     JELOG2(EWMA);
     // the close and RunL are synchronized to make it SMP safe.

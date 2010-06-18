@@ -401,12 +401,12 @@ public abstract class Scrollable extends Control {
 
     void deregister_pp() {
         super.deregister_pp();
-        display.removeWidget(scrollAreaHandle);
+        Display.removeWidget(scrollAreaHandle);
     }
 
     void register_pp() {
         super.register_pp();
-        display.addWidget(scrollAreaHandle, this);
+        Display.addWidget(scrollAreaHandle, this);
     }
 
     void releaseHandle_pp() {

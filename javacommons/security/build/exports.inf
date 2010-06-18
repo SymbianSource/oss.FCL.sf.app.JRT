@@ -27,9 +27,15 @@ PRJ_EXPORTS
 
 #include <platform_paths.hrh>
 
-// Generic configuration interface for javasecurity cenrep settings  
-// javasecurity_2001B289.crml implementation specifics for cenrep data
-// javasecurity_2001B289.gcfml implementation specifics for genconf ml data
+// Configuration interface for javasecurity
+#ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS 
+// Public configuration interface is named as CI_javasecurity.confml
+// and it is located outside of jrt package. The name of private
+// configuration interface is javasecurity2.confml.
+../conf/javasecurity2.confml        APP_LAYER_CONFML(javasecurity.confml)
+#else
 ../conf/javasecurity.confml         APP_LAYER_CONFML(javasecurity.confml)
+#endif /* RD_JAVA_S60_RELEASE_10_1_ONWARDS */
+
 ../conf/javasecurity_2001B289.crml  APP_LAYER_CRML(javasecurity_2001B289.crml)
 #endif

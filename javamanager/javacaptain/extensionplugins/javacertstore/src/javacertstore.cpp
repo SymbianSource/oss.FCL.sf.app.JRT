@@ -280,8 +280,8 @@ void JavaCertStore::loadCertsMetadata()
     iCertsMetadataPath.append(KJavaCertsStateDir);
     iCertsMetadataPath.append(1, KFileSeparator);
     no_certs = 0;
-    loadCertsMetadata(iPrimaryCertsPath);
-    loadCertsMetadata(iSecondaryCertsPath);
+    loadCertsMetadata(iPrimaryCertsPath, true);
+    loadCertsMetadata(iSecondaryCertsPath, false);
 
     // loads the metadata of the smart card certificates
     vector<TrustedCertificate> trustedCerts;
@@ -334,7 +334,7 @@ void JavaCertStore::writeMetadataIntoFile(CERT_METADATA * metadata)
     }
 }
 
-bool JavaCertStore::readMetadataFromFiles(const std::string& cert_file_name, CERT_METADATA * metadata)
+bool JavaCertStore::readMetadataFromFiles(const std::string& aCertsLocation, const std::string& cert_file_name, CERT_METADATA * metadata)
 {
     // there are two types of metadata:
     // 1) read-only metadata (this metadata resides into file with the same name than
@@ -347,7 +347,7 @@ bool JavaCertStore::readMetadataFromFiles(const std::string& cert_file_name, CER
     {
         std::string file_name_without_extension = string(cert_file_name, 0, ext);
         // read-only metadata
-        std::string read_only_metadata_file_name = iPrimaryCertsPath
+        std::string read_only_metadata_file_name = aCertsLocation
                 + file_name_without_extension
                 + KMetadataSuffix;
         std::string read_write_metadata_file_name = iCertsMetadataPath
@@ -355,13 +355,6 @@ bool JavaCertStore::readMetadataFromFiles(const std::string& cert_file_name, CER
                 + KStateSuffix;
         // read the read-only metadata file */
         FILE * read_only_metadata_file = fopen(read_only_metadata_file_name.c_str(),"r");
-        if (read_only_metadata_file == NULL)
-        {
-            read_only_metadata_file_name = iSecondaryCertsPath
-                                           + file_name_without_extension
-                                           + KMetadataSuffix;
-            read_only_metadata_file = fopen(read_only_metadata_file_name.c_str(),"r");
-        }
         if (read_only_metadata_file != NULL)
         {
             // save the name of the metadata_file for later use
@@ -492,7 +485,9 @@ bool JavaCertStore::readMetadataFromFiles(const std::string& cert_file_name, CER
                     // create the file and initialize it with
                     metadata->state = STATE_ENABLED;
                     // create the directory (if it doesn't exist)
-                    if (mkDirAll(KJavaCertsStateDir))
+                    std::string certsStateBaseDir = "C";
+                    java::util::JavaOsLayer::getJavaCaptainRoot(certsStateBaseDir, true);
+                    if (mkDirAll(KJavaCertsStateDir, certsStateBaseDir))
                     {
                         // force the writing
                         metadata->changes = true;
@@ -700,27 +695,87 @@ void JavaCertStore::loadCertsMetadata(std::string aCertsLocation)
                     && strcmp(dirent->d_name,"..")
                     && cert_file)
             {
-                CERT_METADATA * metadata = new CERT_METADATA();
-                if (readMetadataFromFiles(dirent->d_name, metadata))
-                {
-                    int len = aCertsLocation.size() + strlen(dirent->d_name) + 1;
-                    metadata->full_path = aCertsLocation + string(dirent->d_name);
-                    metadata->data = readCert(metadata->full_path,
-                                              &(metadata->len));
-                    // if the cert already exists, overwrite it: since the primary location is Z and
-                    // the secondary is C, this is a way to update certificates
-                    addCertMetadataToCache(metadata, true /* overwrite*/);
-                }
-                else
-                {
-                    delete metadata;
-                    metadata = NULL;
-                }
+                readCert(aCertsLocation, dirent->d_name);
             }
         }
         closedir(dirp);
     }
 }
+
+void JavaCertStore::loadCertsMetadata(std::string aCertsLocation, bool primaryPath)
+{
+    if (primaryPath || no_certs == 0)
+    {
+        loadCertsMetadata(aCertsLocation);
+    }
+    else
+    {
+        // secondary path: read only the roots listed into the rootslist
+        std::string rootsListDir = "";
+        std::string rootsListName = "";
+        rootsListDir = "C";
+        java::util::JavaOsLayer::getResRoot(rootsListDir, true);
+        rootsListDir.append(KJavaRootsListDir);
+        rootsListDir.append(1, KFileSeparator);
+        rootsListName.append(KJavaRootsListName);
+        FILE * rootslist = fopen((rootsListDir + rootsListName).c_str(),"r");
+        if (rootslist != NULL)
+        {
+            // root_file_name
+            int root_file_name_index = 0;
+            char root_file_name[50];
+            int retval;
+            while ((int)(retval = getc(rootslist))!= EOF)
+            {
+                if (retval == 10 || retval == 13 /* CR or LF */)
+                {
+                    if (root_file_name_index > 0)
+                    {
+                        string rootFileName = string(root_file_name, root_file_name_index);
+                        // reset the root file name for the next iteration
+                        root_file_name_index  = 0;
+                        root_file_name[root_file_name_index] = '\0';
+                        readCert(rootsListDir, rootFileName);                
+                    }
+                }
+                else
+                {
+                    root_file_name[root_file_name_index] = (char)retval;
+                    root_file_name_index++;
+                    root_file_name[root_file_name_index] = '\0';
+                }
+            }
+            if (root_file_name_index > 0)
+            {
+                string rootFileName = string(root_file_name, root_file_name_index);
+                // read the root
+                readCert(rootsListDir, rootFileName);                
+            }
+            fclose(rootslist);
+        }
+    }
+}
+
+void JavaCertStore::readCert(const std::string& aCertsLocation, const std::string& aCertFileName)
+{
+    CERT_METADATA * metadata = new CERT_METADATA();
+    if (readMetadataFromFiles(aCertsLocation, aCertFileName, metadata))
+    {
+        int len = aCertsLocation.size() + aCertFileName.size() + 1;
+        metadata->full_path = aCertsLocation + aCertFileName;
+        metadata->data = readCert(metadata->full_path,
+                                &(metadata->len));
+        // if the cert already exists, overwrite it: since the primary location is Z and
+        // the secondary is C, this is a way to update certificates
+        addCertMetadataToCache(metadata, true /* overwrite*/);
+    }
+    else
+    {
+        delete metadata;
+        metadata = NULL;
+    }
+}
+
 
 void JavaCertStore::addCertMetadataToCache(CERT_METADATA* metadata, bool overwrite)
 {
@@ -755,7 +810,7 @@ void JavaCertStore::addCertMetadataToCache(CERT_METADATA* metadata, bool overwri
     }
 }
 
-bool JavaCertStore::mkDirAll(const char* aDirPath)
+bool JavaCertStore::mkDirAll(const char* aDirPath, const std::string& aBaseDir)
 {
     // split the path into single directories
     // (separated by file separator) and create
@@ -767,7 +822,7 @@ bool JavaCertStore::mkDirAll(const char* aDirPath)
     while (endPos > startPos)
     {
         currentDirPath += dirPath.substr(startPos, endPos - startPos) + KFileSeparator;
-        int mkdir_result = mkdir(currentDirPath.c_str(), 0666);
+        int mkdir_result = mkdir((aBaseDir + currentDirPath).c_str(), 0666);
         if (mkdir_result != 0 && errno != EEXIST)
         {
             return false;
@@ -777,7 +832,7 @@ bool JavaCertStore::mkDirAll(const char* aDirPath)
     }
     // the last round
     currentDirPath += dirPath.substr(startPos, dirPath.size() - startPos);
-    int mkdir_result = mkdir(currentDirPath.c_str(), 0666);
+    int mkdir_result = mkdir((aBaseDir + currentDirPath).c_str(), 0666);
     if (mkdir_result != 0 && errno != EEXIST)
     {
         return false;

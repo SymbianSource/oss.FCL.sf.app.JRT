@@ -90,11 +90,9 @@ static void SetPresetL(CAMMSEffectControlGroup* aControl, TDesC* aPreset)
  * Signature: (II)I
  */
 JNIEXPORT jint JNICALL Java_com_nokia_amms_control_EffectControl__1isEnabled(
-    JNIEnv*, jclass, jint aEventSource, jint aControl)
+    JNIEnv*, jclass, jint, jint aControl)
 {
-    /*MMAFunctionServer* eventSource =
-        reinterpret_cast< MMAFunctionServer *>(aEventSource);*/
-
+    
     CAMMSEffectControlGroup* control = static_cast<CAMMSEffectControlGroup*>(
                                            reinterpret_cast< CAMMSControlGroup* >(aControl));
 
@@ -107,11 +105,9 @@ JNIEXPORT jint JNICALL Java_com_nokia_amms_control_EffectControl__1isEnabled(
  * Signature: (II)I
  */
 JNIEXPORT jint JNICALL Java_com_nokia_amms_control_EffectControl__1isEnforced(
-    JNIEnv*, jclass, jint aEventSource, jint aControl)
+    JNIEnv*, jclass, jint, jint aControl)
 {
-   /* MMAFunctionServer* eventSource =
-        reinterpret_cast< MMAFunctionServer* >(aEventSource);*/
-
+  
     CAMMSEffectControlGroup* control = static_cast<CAMMSEffectControlGroup*>(
                                            reinterpret_cast< CAMMSControlGroup* >(aControl));
 
@@ -239,11 +235,8 @@ JNIEXPORT jint JNICALL Java_com_nokia_amms_control_EffectControl__1setEnabled(
  * Signature: (II)I
  */
 JNIEXPORT jint JNICALL Java_com_nokia_amms_control_EffectControl__1getScope(
-    JNIEnv*, jclass, jint aEventSource, jint aControl)
+    JNIEnv*, jclass, jint, jint aControl)
 {
-    /*MMAFunctionServer* eventSource =
-        reinterpret_cast< MMAFunctionServer* >(aEventSource);*/
-
     CAMMSEffectControlGroup* control = static_cast<CAMMSEffectControlGroup*>(
                                            reinterpret_cast< CAMMSControlGroup* >(aControl));
 

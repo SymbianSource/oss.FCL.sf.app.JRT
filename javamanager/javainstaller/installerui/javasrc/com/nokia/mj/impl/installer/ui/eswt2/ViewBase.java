@@ -50,6 +50,8 @@ abstract public class ViewBase
 {
     /** Maximum view height in percentage from display client area height. */
     protected static final int MAX_VIEW_HEIGHT = 80;
+    /** Maximum view width in percentage from display client area width. */
+    protected static final int MAX_VIEW_WIDTH = 90;
     /** Parent shell for this view. */
     protected Shell iParent = null;
     /** Container for the contents of the view */
@@ -341,12 +343,12 @@ abstract public class ViewBase
                     SWT.DEFAULT, SWT.DEFAULT));
         }
 
-        int contentWidth = iDefaultContentSize.x;
+        int contentWidth = iDefaultContentSize.x * MAX_VIEW_WIDTH / 100;
         if (aVerticalScrollBarVisible)
         {
             int verticalScrollBarWidth =
                 getScrolledComposite().getVerticalBar().getSize().x;
-            contentWidth = iDefaultContentSize.x - verticalScrollBarWidth;
+            contentWidth -= verticalScrollBarWidth;
         }
 
         // Recalculate the size of the content.
@@ -355,7 +357,7 @@ abstract public class ViewBase
         Point cmdContentSize = cmdComp.computeSize(iDefaultContentSize.x, SWT.DEFAULT);
         cmdComp.setSize(cmdContentSize);
 
-        // Adjust Shell height. The Shell never changes the x position, nor the width.
+        // Adjust Shell height and width.
         Rectangle dispRect = shell.getDisplay().getClientArea();
         int offset = iDefaultContentSize.y - contentSize.y - cmdContentSize.y;
 
@@ -368,18 +370,20 @@ abstract public class ViewBase
             offset -= maxHeight - newHeight;
             newHeight = maxHeight;
         }
+        int newWidth = defShellBounds.width;
+        int maxWidth = dispRect.width * MAX_VIEW_WIDTH / 100;
+        if (newWidth > maxWidth)
+        {
+            newWidth = maxWidth;
+        }
 
+        // Always center horizontally and vertically.
         Rectangle dispBounds = shell.getDisplay().getBounds();
+        int x = dispBounds.width - newWidth;
         int y = dispBounds.height - newHeight;
-        // Always center vertically.
+        x /= 2;
         y /= 2;
-        // For landscape orientation center vertically
-        //if (dispRect.width > dispRect.height)
-        //{
-        //    y /= 2;
-        //}
-        // Set bounds when command Buttons are in use.
-        shell.setBounds(defShellBounds.x, y, defShellBounds.width, newHeight);
+        shell.setBounds(x, y, newWidth, newHeight);
         Rectangle clientArea = shell.getClientArea();
         iContainer.setSize(clientArea.width, clientArea.height);
         iContainer.layout(true);
@@ -450,12 +454,12 @@ abstract public class ViewBase
         boolean aSecurityButton)
     {
         // Add title.
-        String title = "Install?";
+        String title = InstallerUiTexts.get(InstallerUiTexts.INSTALL_QUERY);
         if (aInstallInfo != null)
         {
             if (aInstallInfo.getOldVersion() != null)
             {
-                title = "Update?";
+                title = InstallerUiTexts.get(InstallerUiTexts.UPDATE_QUERY);
             }
             iCertificates = aInstallInfo.getCertificates();
         }
@@ -527,9 +531,25 @@ abstract public class ViewBase
             return;
         }
 
-        // Add suite name.
+        // Add suite name and version.
         createAppInfoLabel(
-            aInstallInfo.getName() + " " + aInstallInfo.getVersion());
+            InstallerUiTexts.get(
+                InstallerUiTexts.SUITE_NAME,
+                new String[] { aInstallInfo.getName(),
+                               aInstallInfo.getVersion() }));
+        if (aFull)
+        {
+            // Add vendor.
+            if (aInstallInfo.getCertificates() != null)
+            {
+                // Vendor information must be displayed only for
+                // identified applications.
+                createAppInfoLabel(
+                    InstallerUiTexts.get(
+                        InstallerUiTexts.SUITE_VENDOR,
+                        new String[] { aInstallInfo.getVendor() }));
+            }
+        }
         // Add size.
         long size = 0;
         if (aInstallInfo.getJarSize() > 0)
@@ -542,23 +562,23 @@ abstract public class ViewBase
         }
         if (size > 0)
         {
-            createAppInfoLabel(
-                InstallerUiTexts.get(
-                    InstallerUiTexts.SIZE,
-                    new String[] { Long.toString(1 + size/1024) }));
+            if (size > 1024*1024)
+            {
+                createAppInfoLabel(
+                    InstallerUiTexts.get(
+                        InstallerUiTexts.SIZE_MB,
+                        new String[] { Long.toString(1 + size/(1024*1024)) }));
+            }
+            else
+            {
+                createAppInfoLabel(
+                    InstallerUiTexts.get(
+                        InstallerUiTexts.SIZE_KB,
+                        new String[] { Long.toString(1 + size/1024) }));
+            }
         }
         if (aFull)
         {
-            // Add vendor.
-            if (aInstallInfo.getCertificates() != null)
-            {
-                // Vendor information must be displayed only for
-                // identified applications.
-                createAppInfoLabel(
-                    InstallerUiTexts.get(
-                        InstallerUiTexts.VENDOR,
-                        new String[] { aInstallInfo.getVendor() }));
-            }
             // Add application names.
             ApplicationInfo[] apps = aInstallInfo.getApplications();
             if (apps != null && apps.length > 0)
@@ -568,7 +588,10 @@ abstract public class ViewBase
                 {
                     for (int i = 0; i < apps.length; i++)
                     {
-                        createAppInfoLabel(apps[i].getName());
+                        createAppInfoLabel(
+                            InstallerUiTexts.get(
+                                InstallerUiTexts.APP_NAME,
+                                new String[] { apps[i].getName() }));
                     }
                 }
             }

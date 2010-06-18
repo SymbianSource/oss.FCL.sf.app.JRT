@@ -39,10 +39,13 @@ public class VideoItem extends CustomItem implements PlayerListener
 
     private int iEventSourceHandle;
 
-    public VideoItem(int aEventSourceHandle)
+    private Player iPlayer = null;
+
+    public VideoItem(int aEventSourceHandle, Player aPlayer)
     {
         super("");   // we don't have title
         iEventSourceHandle = aEventSourceHandle;
+        iPlayer = aPlayer;
     }
 
     // from PlayerListener
@@ -157,6 +160,28 @@ public class VideoItem extends CustomItem implements PlayerListener
     {
         iNativeHandle = aHandle;
     }
+
+    int[] getSourceSize()
+    {
+        int[] size = new int[2];
+
+        if (iPlayer.getState() >= iPlayer.PREFETCHED)
+        {
+            int width = _getMinContentWidth(iEventSourceHandle,
+                                            iNativeHandle);
+            int height = _getMinContentHeight(iEventSourceHandle,
+                                              iNativeHandle);
+            size[0] = width;
+            size[1] = height;
+        }
+        else
+        {
+            size[0] = 0;
+            size[1] = 0;
+        }
+        return size;
+    }
+
 
     // Native methods
 

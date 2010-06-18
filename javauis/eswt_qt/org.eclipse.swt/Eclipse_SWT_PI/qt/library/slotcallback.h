@@ -16,9 +16,7 @@
 #ifndef QT_NO_SYSTEMTRAYICON
 #include <QSystemTrayIcon>
 #endif
-#include "swtlog.h"
 #include "jni.h"
-#include "swt.h"
 
 class QPoint;
 class QItemSelection;
@@ -39,8 +37,10 @@ public:
      * Constructor.
      * @param aJniEnv JNIEnv pointer for the GUI thread.
      * @param aPeer Local ref to the peer jobject that signals are forwarded to
-     * @param aParent Source QObject of the signal
-     * @param aSignalId Signal ID that will be used to identify the signal in Java code
+     *              or NULL if forwarded to a class (static) method of the 
+     *              class Display. 
+     * @param aParent Source QObject of the signal. 
+     * @param aSignalId Signal ID that will be used to identify the signal in Java code. 
      */
     SlotCallback( JNIEnv* aJniEnv,
                   jobject aPeer,

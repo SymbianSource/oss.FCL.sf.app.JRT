@@ -43,10 +43,10 @@ EXPORTS
 	_ZN4java9bluetooth30BtL2CapServerConnectionFactoryD2Ev @ 42 NONAME
 	_ZNK4java9bluetooth25L2CapPushServerConnection6getUriEv @ 43 NONAME
 	_ZNK4java9bluetooth25L2CapPushServerConnection9getFilterEv @ 44 NONAME
-	_ZTIN4java9bluetooth21L2CAPServerConnectionE @ 45 NONAME ; #<TI>#
-	_ZTIN4java9bluetooth25L2CapPushServerConnectionE @ 46 NONAME ; #<TI>#
-	_ZTIN4java9bluetooth30BtL2CapServerConnectionFactoryE @ 47 NONAME ; #<TI>#
-	_ZTVN4java9bluetooth21L2CAPServerConnectionE @ 48 NONAME ; #<VT>#
-	_ZTVN4java9bluetooth25L2CapPushServerConnectionE @ 49 NONAME ; #<VT>#
-	_ZTVN4java9bluetooth30BtL2CapServerConnectionFactoryE @ 50 NONAME ; #<VT>#
+	_ZTIN4java9bluetooth21L2CAPServerConnectionE @ 45 NONAME
+	_ZTIN4java9bluetooth25L2CapPushServerConnectionE @ 46 NONAME
+	_ZTIN4java9bluetooth30BtL2CapServerConnectionFactoryE @ 47 NONAME
+	_ZTVN4java9bluetooth21L2CAPServerConnectionE @ 48 NONAME
+	_ZTVN4java9bluetooth25L2CapPushServerConnectionE @ 49 NONAME
+	_ZTVN4java9bluetooth30BtL2CapServerConnectionFactoryE @ 50 NONAME
 

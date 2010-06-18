@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.util.Hashtable;
 
+import org.eclipse.ercp.swt.midp.UIThreadSupport;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
@@ -52,7 +53,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-//import org.eclipse.swt.widgets.MessageBox;
 
 /**
  * JavaInstaller eSWT UI.
@@ -127,13 +127,13 @@ public class InstallerUiEswt extends InstallerUi
         iImageTable = new Hashtable();
         // Create a new thread to be the UI main thread.
         iUiThreadExists = true;
-        new Thread(new Runnable()
+        UIThreadSupport.startInUIThread(new Runnable()
         {
             public void run()
             {
                 uiMain();
             }
-        }, "InstallerUiMainThread").start();
+        });
         // To wait InstallerUi to be ready before installer main thread
         // continues, uncomment the following line.
         //waitForUi();

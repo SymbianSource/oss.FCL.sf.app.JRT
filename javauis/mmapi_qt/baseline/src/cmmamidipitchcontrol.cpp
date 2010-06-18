@@ -31,17 +31,17 @@ CMMAMIDIPitchControl* CMMAMIDIPitchControl::NewL(CMMAMIDIPlayer* aPlayer)
 CMMAMIDIPitchControl::CMMAMIDIPitchControl(CMMAMIDIPlayer* aPlayer)
 {
     iPlayer = aPlayer;
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAMIDIPitchControl::CMMAMIDIPitchControl");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAMIDIPitchControl::CMMAMIDIPitchControl");
 }
 
 CMMAMIDIPitchControl::~CMMAMIDIPitchControl()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAMIDIPitchControl::~CMMAMIDIPitchControl");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAMIDIPitchControl::~CMMAMIDIPitchControl");
 }
 
 const TDesC& CMMAMIDIPitchControl::ClassName() const
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAMIDIPitchControl::ClassName");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAMIDIPitchControl::ClassName");
     return KMIDIPitchControlName;
 }
 

@@ -29,12 +29,12 @@ using namespace java::util;
 const TInt KMMADefaultArrayGranularity = 8;
 
 JNIEXPORT void JNICALL Java_com_nokia_microedition_media_ManagerImpl__1dispose
-(JNIEnv* aJni, jobject, jint aEventSourceHandle)
+(JNIEnv* /*aJni*/, jobject, jint aEventSourceHandle)
 {
     LOG(EJavaMMAPI,EInfo,"MMA::ManagerImpl dispose");
     MMAFunctionServer* eventSource =
         reinterpret_cast< MMAFunctionServer* >(aEventSourceHandle);
-    delete eventSource; 
+    delete eventSource;
 }
 
 LOCAL_C void ReleaseEventSource(MMAFunctionServer* aEventSource)
@@ -45,7 +45,7 @@ LOCAL_C void ReleaseEventSource(MMAFunctionServer* aEventSource)
 JNIEXPORT void JNICALL Java_com_nokia_microedition_media_ManagerImpl__1release
 (JNIEnv*, jobject, jint aEventSourceHandle)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::ManagerImpl release");
+    LOG(EJavaMMAPI, EInfo, "MMA::ManagerImpl release");
     MMAFunctionServer* eventSource =
         reinterpret_cast< MMAFunctionServer* >(aEventSourceHandle);
     eventSource->ExecuteV(&ReleaseEventSource,
@@ -60,27 +60,27 @@ JNIEXPORT void JNICALL Java_com_nokia_microedition_media_ManagerImpl__1release
 JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_ManagerImpl__1createManager
 (JNIEnv*, jobject, jint aEventSourceHandle, jint aMIDletSuiteID)
 {
-	MMAFunctionServer* eventSource =  reinterpret_cast<MMAFunctionServer*>(aEventSourceHandle);
+    MMAFunctionServer* eventSource =  reinterpret_cast<MMAFunctionServer*>(aEventSourceHandle);
 
     CMMAManager* manager = NULL;
     TInt error = eventSource->ExecuteTrap(&CMMAManager::StaticCreateManagerL,
                                           &manager,
                                           aMIDletSuiteID);
-    ELOG1( EJavaMMAPI, "MMA::ManagerImpl createManager StaticCreateManagerL %d",
-              error);
+    ELOG1(EJavaMMAPI, "MMA::ManagerImpl createManager StaticCreateManagerL %d",
+          error);
     if (error != KErrNone)
     {
         return error;
     }
 
-    TInt managerHandle( reinterpret_cast<TInt>(manager));
+    TInt managerHandle(reinterpret_cast<TInt>(manager));
 
     error = eventSource->ExecuteTrap(MMAFunctionServer::StaticAddObjectFromHandleL,
                                      eventSource,
                                      managerHandle);
 
-    ELOG1( EJavaMMAPI, "MMA::ManagerImpl createManager StaticAddObjectFromHandleL %d",
-              error);
+    ELOG1(EJavaMMAPI, "MMA::ManagerImpl createManager StaticAddObjectFromHandleL %d",
+          error);
 
     if (error != KErrNone)
     {
@@ -90,8 +90,8 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_ManagerImpl__1createMan
         // Error code will be returned to java
         managerHandle = error;
     }
-    LOG1( EJavaMMAPI, EInfo, "MMA::ManagerImpl createManager %d",
-              managerHandle);
+    LOG1(EJavaMMAPI, EInfo, "MMA::ManagerImpl createManager %d",
+         managerHandle);
     return managerHandle;
 }
 
@@ -122,8 +122,8 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_ManagerImpl__1createEve
             eventSourceHandle = error;
         }
     }
-    LOG1( EJavaMMAPI, EInfo, "MMA::ManagerImpl createEventSource %d",
-              eventSourceHandle);
+    LOG1(EJavaMMAPI, EInfo, "MMA::ManagerImpl createEventSource %d",
+         eventSourceHandle);
     return eventSourceHandle;
 }
 
@@ -140,12 +140,12 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_ManagerImpl__1createEve
  * @param aParam Parameter that will be passed to aFuncL method.
  */
 LOCAL_C void GetObjectArrayL(MMAFunctionServer* aEventSource,
-    CMMAManager* aManager,
-    void (CMMAManager::*aFuncL)(const TDesC&,
-                                CDesC16Array&),
-    JNIEnv* aJni,
-    jobjectArray* aArray,
-    const TDesC* aParam)
+                             CMMAManager* aManager,
+                             void (CMMAManager::*aFuncL)(const TDesC&,
+                                                         CDesC16Array&),
+                             JNIEnv* aJni,
+                             jobjectArray* aArray,
+                             const TDesC* aParam)
 {
     // Temporary descriptor array to be copied to Java array.
     CDesC16ArrayFlat* values = new(ELeave) CDesC16ArrayFlat(
@@ -159,7 +159,7 @@ LOCAL_C void GetObjectArrayL(MMAFunctionServer* aEventSource,
 
     // JNI interface pointer can't be passed to different thread, so
     // it is needed to get valid JNI interface pointer for Event Server thread
-  	aJni =aEventSource->getValidJniEnv();
+    aJni =aEventSource->getValidJniEnv();
 
     // Create new java String array and copy values from the values array
     *aArray = MMAPIUtils::CopyToNewJavaStringArrayL(*aJni, *values);
@@ -196,7 +196,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_nokia_microedition_media_ManagerImpl__1g
 
     // Call manager->GetSupportedContentTypesL and create Java array.
     TInt err = eventSource->ExecuteTrap(&GetObjectArrayL,
-    																	  eventSource,
+                                        eventSource,
                                         manager,
                                         &CMMAManager::GetSupportedContentTypesL,
                                         aJni,
@@ -242,7 +242,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_nokia_microedition_media_ManagerImpl__1g
 
     // Call manager->GetSupportedProtocolsL and create Java array.
     TInt err = eventSource->ExecuteTrap(&GetObjectArrayL,
-    																		eventSource,
+                                        eventSource,
                                         manager,
                                         &CMMAManager::GetSupportedProtocolsL,
                                         aJni,

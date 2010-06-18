@@ -459,7 +459,14 @@ public final class Font
      */
     public int charsWidth(char[] c, int offset, int length)
     {
-        return stringWidth(new String(c, offset, length));
+        try 
+        {
+           final String string = new String(c, offset, length);
+           return stringWidth(string);
+        }catch (StringIndexOutOfBoundsException ex) 
+        {
+            throw new ArrayIndexOutOfBoundsException();
+        }
     }
 
     /**

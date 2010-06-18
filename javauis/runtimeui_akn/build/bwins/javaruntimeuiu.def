@@ -1,8 +1,0 @@
-EXPORTS
-	?jni_lookup@@YAP6AXXZPBD@Z @ 1 NONAME ; void (*)(void) jni_lookup(char const *)
-	?NewL@GlobalMsgObserver@runtimeui@java@@SAPAV123@XZ @ 2 NONAME ; class java::runtimeui::GlobalMsgObserver * java::runtimeui::GlobalMsgObserver::NewL(void)
-	?NewLC@GlobalMsgObserver@runtimeui@java@@SAPAV123@XZ @ 3 NONAME ; class java::runtimeui::GlobalMsgObserver * java::runtimeui::GlobalMsgObserver::NewLC(void)
-	?confirm@RuntimeUiAvkon@runtimeui@java@@SA_NABVTDesC16@@AAVConfirmData@23@_N@Z @ 4 NONAME ; bool java::runtimeui::RuntimeUiAvkon::confirm(class TDesC16 const &, class java::runtimeui::ConfirmData &, bool)
-	?error@RuntimeUiAvkon@runtimeui@java@@SAXABVTDesC16@@00@Z @ 5 NONAME ; void java::runtimeui::RuntimeUiAvkon::error(class TDesC16 const &, class TDesC16 const &, class TDesC16 const &)
-	?getAnswer@GlobalMsgObserver@runtimeui@java@@QAEHXZ @ 6 NONAME ; int java::runtimeui::GlobalMsgObserver::getAnswer(void)
-

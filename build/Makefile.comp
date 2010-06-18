@@ -98,6 +98,24 @@ ifdef TARGET_PRO
 	echo SUBDIRS += $(TARGET_SUB)/$(PRO_FILE) >> $(TARGET_PRO)
 endif
 
+# The remove_notbuilt removes platform specific subdirectories not
+# participating in the built of current environment
+ifeq ($(BUILDENV),symbian)
+REMOVEWILDCARD = *.linux
+else
+REMOVEWILDCARD = *.s60
+endif
+REMOVEDIRECORIES = $(call PATHFIX,$(wildcard ../$(REMOVEWILDCARD)))
+remove_notbuilt:
+ifneq ($(REMOVEDIRECORIES),)
+ifdef SIMULATE
+	echo Remove not-built directories at $(CURDIR): $(REMOVEDIRECORIES)
+else
+	echo Removing not-built directories at $(CURDIR): $(REMOVEDIRECORIES) \
+	$(foreach d,$(REMOVEDIRECORIES),&& $(call DELTREE,$(d)))
+endif
+endif
+
 # Symbian ----------------------------------
 ifeq ($(BUILDENV),symbian)
 
@@ -161,11 +179,11 @@ export:
 
 build_native:
 	$(PHASEINFO)
-	$(SBS) -c $(PLATFORM)_$(CFG) BUILD
+	$(SBS) -c $(PLATFORM)_$(CFG)
 
-fastbuild: export java
+fastbuild: java
 	$(PHASEINFO)
-	$(SBS) -c $(PLATFORM)_$(CFG) TARGET
+	$(SBS) -c $(PLATFORM)_$(CFG)
 
 build_clean_native:
 	$(PHASEINFO)

@@ -64,7 +64,6 @@ public class CommandArranger {
             Command[] newList = new Command[size];
             // find the insertion point so that the order is correct
             int insertPoint = 0;
-            Display display = Display.getCurrent();
             Shell activeShell = display.getActiveShell();
             Control ctrl = display.getFocusControl();
             while (ctrl != null && ctrl != activeShell) {
@@ -170,9 +169,11 @@ public class CommandArranger {
     private CommandCollection currentCommands;
     private CommandPresentationStrategy strategy;
     private Command defaultCommand;
+    private Display display;
 
-    public CommandArranger(){
+    public CommandArranger(Display display){
         super();
+        this.display = display;
         currentCommands = new CommandCollection();
         strategy = CommandPresentationStrategyWrapper.createStrategy();
     }
@@ -206,7 +207,6 @@ public class CommandArranger {
      * @see Control#qt_swt_event_focusWasGained()
      */
     public void focusedControlChanged(){
-        Display display = Display.getCurrent();
         Control focusControl = display.getFocusControl();
         if (focusControl == focusedControl) {
             return;
@@ -263,6 +263,7 @@ public class CommandArranger {
         strategy.dispose();
         strategy = null;
         currentCommands = null;
+        display = null;
     }
     /**
      * Called when a Command is set default

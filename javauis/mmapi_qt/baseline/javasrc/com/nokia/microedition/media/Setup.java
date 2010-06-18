@@ -28,7 +28,7 @@ public class Setup
     // Class names used to invoke external components.
     private static final String[] MMA_PLUGINS =
     {
-        //"com.nokia.amms.MMAInvokeListenerImpl"
+        "com.nokia.amms.MMAInvokeListenerImpl"
     };
 
     /**

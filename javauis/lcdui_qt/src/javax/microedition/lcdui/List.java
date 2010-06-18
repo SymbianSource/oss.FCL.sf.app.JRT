@@ -311,7 +311,11 @@ public class List extends Screen implements Choice
      */
     public void delete(int position)
     {
-//        choiceImpl.delete(position);
+        if (position < 0 || ( position >= size())) 
+        {
+            throw new IndexOutOfBoundsException(
+                    MsgRepository.CHOICE_EXCEPTION_INVALID_ITEM_INDEX);
+        }
         final int index = position; // index of changed element
         ESWTUIThreadRunner.syncExec(new Runnable()
         {

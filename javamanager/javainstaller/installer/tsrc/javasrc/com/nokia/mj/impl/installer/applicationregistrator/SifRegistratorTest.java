@@ -203,21 +203,22 @@ public class SifRegistratorTest extends TestCase implements InstallerMain
         {
             SuiteInfo si = getTestSuite();
             ComponentId cid = getComponentId(si.getGlobalId());
-            Uid uid = null;
-            //Uid uid = sifReg.getUid(cid.getId());
-            //assertTrue("Suite uid " + si.getUid() + " does not match" +
-            //           " to uid " + uid + " from SCR",
-            //           si.getUid().equals(uid));
-            Vector apps = si.getApplications();
-            for (int i = 0; i < apps.size(); i++)
-            {
-                cid = getComponentId(si.getGlobalId(i));
-                uid = sifReg.getUid(cid.getId());
-                assertTrue("Application uid " +
-                           ((ApplicationInfo)apps.elementAt(i)).getUid() +
-                           " does not match to uid " + uid + " from SCR",
-                           ((ApplicationInfo)apps.elementAt(i)).getUid().equals(uid));
-            }
+            // Check for USIF Phase 2 registration.
+            Uid uid = sifReg.getUid(cid.getId());
+            assertTrue("Suite uid " + si.getUid() + " does not match" +
+                       " to uid " + uid + " from SCR",
+                       si.getUid().equals(uid));
+            // Check for USIF Phase 1 registration.
+            //Vector apps = si.getApplications();
+            //for (int i = 0; i < apps.size(); i++)
+            //{
+            //    cid = getComponentId(si.getGlobalId(i));
+            //    uid = sifReg.getUid(cid.getId());
+            //    assertTrue("Application uid " +
+            //               ((ApplicationInfo)apps.elementAt(i)).getUid() +
+            //               " does not match to uid " + uid + " from SCR",
+            //               ((ApplicationInfo)apps.elementAt(i)).getUid().equals(uid));
+            //}
             sifReg.closeSession();
         }
         catch (InstallerException ie)
@@ -324,16 +325,18 @@ public class SifRegistratorTest extends TestCase implements InstallerMain
     private void assertSuiteExists(SuiteInfo aSuite, boolean aExists)
     {
         String not = (aExists? " not": "");
+        // Check for USIF Phase 2 registration.
         ComponentId cid = getComponentId(aSuite.getGlobalId());
-        //assertTrue("Suite " + aSuite.getGlobalId() + not +
-        //           " found from SCR", (aExists? cid != null: cid == null));
-        Vector apps = aSuite.getApplications();
-        for (int i = 0; i < apps.size(); i++)
-        {
-            cid = getComponentId(aSuite.getGlobalId(i));
-            assertTrue("Application " + aSuite.getGlobalId(i) + not +
-                       " found from SCR", (aExists? cid != null: cid == null));
-        }
+        assertTrue("Suite " + aSuite.getGlobalId() + not +
+                   " found from SCR", (aExists? cid != null: cid == null));
+        // Check for USIF Phase 1 registration.
+        //Vector apps = aSuite.getApplications();
+        //for (int i = 0; i < apps.size(); i++)
+        //{
+        //    cid = getComponentId(aSuite.getGlobalId(i));
+        //    assertTrue("Application " + aSuite.getGlobalId(i) + not +
+        //               " found from SCR", (aExists? cid != null: cid == null));
+        //}
     }
 
     private void logSuite(SuiteInfo aSuite)

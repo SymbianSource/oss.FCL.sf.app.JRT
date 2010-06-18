@@ -62,7 +62,7 @@ CMMAVideoRecordControl::CMMAVideoRecordControl(CMMAPlayer* aPlayer,
         CMMARecordControl(aPlayer),
         iRecordSizeLimit(KNoUserDefinedRecordSize)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::CMMAVideoRecordControl");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::CMMAVideoRecordControl");
 
     __ASSERT_DEBUG(aCameraHandle > 0, User::Panic(
                        _L("CMMAVideoRecordControl::Invalid camera"),
@@ -75,7 +75,7 @@ CMMAVideoRecordControl::CMMAVideoRecordControl(CMMAPlayer* aPlayer,
 
 CMMAVideoRecordControl::~CMMAVideoRecordControl()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::~CMMAVideoRecordControl");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::~CMMAVideoRecordControl");
 
     delete iActiveSchedulerWait;
 
@@ -91,7 +91,7 @@ void CMMAVideoRecordControl::ConstructL(
     const TMMAVideoSettings& aVideoSettings,
     CMMAAudioSettings* aAudioSettings)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::ConstructL +");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::ConstructL +");
     CMMARecordControl::ConstructL();
 
     iVideoSettings = aVideoSettings;
@@ -190,12 +190,12 @@ void CMMAVideoRecordControl::ConstructL(
     }
     iRecorder->SetVideoFrameSizeL(videoSize);
 
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::ConstructL()-");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::ConstructL()-");
 }
 
 void CMMAVideoRecordControl::InitializeL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::InitializeL()");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::InitializeL()");
     iRecorder->Prepare();
     if (!iActiveSchedulerWait->IsStarted())
     {
@@ -207,11 +207,11 @@ void CMMAVideoRecordControl::InitializeL()
     // record utility must be prepared to do this
     if (iVideoSettings.iFps != KNoUserDefinedFps)
     {
-        LOG1( EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::InitializeL() SetVideoFrameRateL = %d", iVideoSettings.iFps);
+        LOG1(EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::InitializeL() SetVideoFrameRateL = %d", iVideoSettings.iFps);
         iRecorder->SetVideoFrameRateL(iVideoSettings.iFps);
     }
 
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::InitializeL()-");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::InitializeL()-");
 }
 
 void CMMAVideoRecordControl::DoStartRecordL()
@@ -219,7 +219,7 @@ void CMMAVideoRecordControl::DoStartRecordL()
     // if reset is called then file is reopened, closing it in order to prevent
     // KErrInUse
     iFile.Close();
-    ELOG1( EJavaMMAPI, "MMA:CMMAVideoRecordControl::DoStartRecordL() err=%d", iError);
+    ELOG1(EJavaMMAPI, "MMA:CMMAVideoRecordControl::DoStartRecordL() err=%d", iError);
     User::LeaveIfError(iError);
 
     // play sound when recording starts
@@ -236,14 +236,14 @@ void CMMAVideoRecordControl::DoStartRecordL()
 
 void CMMAVideoRecordControl::DoStopRecordL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::DoStopRecordL");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::DoStopRecordL");
     // Just paused that recording can continue
     iRecorder->PauseL();
 }
 
 void CMMAVideoRecordControl::DoResetL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::ResetL");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::ResetL");
     TInt err = iRecorder->Stop();
     // returns KErrCompletion when recording is finished when size limit is reached
     // and KErrAlreadyExists if we have created file (ignoring both)
@@ -256,7 +256,7 @@ void CMMAVideoRecordControl::DoResetL()
     err = iFs.IsFileOpen(iFilename, isOpen);
     if (!isOpen && (err != KErrNotFound))
     {
-        LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::ResetL - Opening file");
+        LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::ResetL - Opening file");
         // opening file for resetting (or commit)
         User::LeaveIfError(iFile.Open(iFs, iFilename, EFileRead |
                                       EFileWrite |
@@ -264,7 +264,7 @@ void CMMAVideoRecordControl::DoResetL()
     }
     else if (err == KErrNotFound)
     {
-        LOG( EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::ResetL - Recreating file");
+        LOG(EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::ResetL - Recreating file");
         // record utility deletes file if nothing is recorded, creating it again
         User::LeaveIfError(iFile.Create(iFs,
                                         iFilename,
@@ -286,7 +286,7 @@ void CMMAVideoRecordControl::DoSetRecordSizeLimitL(TInt aSize)
     }
     else
     {
-        LOG1( EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::DoSetRecordSizeLimitL %d", aSize);
+        LOG1(EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::DoSetRecordSizeLimitL %d", aSize);
         iRecorder->SetMaxClipSizeL(aSize);
     }
     // reset local value
@@ -302,7 +302,7 @@ void CMMAVideoRecordControl::DoSetRecordSizeLimitL(TInt aSize)
 
 TInt CMMAVideoRecordControl::SetRecordSizeLimitL(TInt aSize)
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::SetRecordSizeLimitL %d", aSize);
+    LOG1(EJavaMMAPI, EInfo, "MMA:CMMAVideoRecordControl::SetRecordSizeLimitL %d", aSize);
 
     // if already recording, try to set immediately
     if (iState == ERecordRecording)
@@ -319,7 +319,7 @@ TInt CMMAVideoRecordControl::SetRecordSizeLimitL(TInt aSize)
 
 void CMMAVideoRecordControl::MvruoOpenComplete(TInt aError)
 {
-    ELOG1( EJavaMMAPI, "MMA:CMMAVideoRecordControl::MvruoOpenComplete aError = %d", aError);
+    ELOG1(EJavaMMAPI, "MMA:CMMAVideoRecordControl::MvruoOpenComplete aError = %d", aError);
 
     // Error situation is handled in ConstructL,
     iError = aError;
@@ -331,7 +331,7 @@ void CMMAVideoRecordControl::MvruoOpenComplete(TInt aError)
 
 void CMMAVideoRecordControl::MvruoPrepareComplete(TInt aError)
 {
-    ELOG1( EJavaMMAPI, "MMA:CMMAVideoRecordControl::MvruoPrepareComplete aError = %d", aError);
+    ELOG1(EJavaMMAPI, "MMA:CMMAVideoRecordControl::MvruoPrepareComplete aError = %d", aError);
     // Error situation is handled in InitializeL
     iError = aError;
     if (iActiveSchedulerWait->IsStarted())
@@ -342,7 +342,7 @@ void CMMAVideoRecordControl::MvruoPrepareComplete(TInt aError)
 
 void CMMAVideoRecordControl::MvruoRecordComplete(TInt aError)
 {
-    ELOG1( EJavaMMAPI, "MMA:CMMAVideoRecordControl::MvruoRecordComplete aError = %d", aError);
+    ELOG1(EJavaMMAPI, "MMA:CMMAVideoRecordControl::MvruoRecordComplete aError = %d", aError);
 
     // iState = ERecordComplete
 
@@ -363,7 +363,7 @@ void CMMAVideoRecordControl::MvruoRecordComplete(TInt aError)
 
 void CMMAVideoRecordControl::MvruoEvent(const TMMFEvent& aEvent)
 {
-    ELOG1( EJavaMMAPI, "MMA:CMMAVideoRecordControl::MvruoEvent event error code = %d", aEvent.iErrorCode);
+    ELOG1(EJavaMMAPI, "MMA:CMMAVideoRecordControl::MvruoEvent event error code = %d", aEvent.iErrorCode);
     // Only error situations needs to be considered.
     if (aEvent.iErrorCode != KErrNone)
     {

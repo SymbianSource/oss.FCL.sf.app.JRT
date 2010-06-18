@@ -56,6 +56,7 @@ ifeq ($(BUILDENV),symbian)
     DEVNULL = /dev/null
     MKDIR = if [ ! -d $(1)]; then mkdir $(1); fi
     RMDIR = if [ -d $(1)]; then rmdir $(1); fi
+    DELTREE = if [ -d $(1)]; then rm -fr $(1); fi
 
   else
     # CMD.exe definitions
@@ -72,6 +73,7 @@ ifeq ($(BUILDENV),symbian)
     DEVNULL = NUL
     MKDIR = if not exist $(1) mkdir  $(1)
     RMDIR = if exist $(1) rmdir  $(1)
+    DELTREE = if exist $(1) rmdir /S/Q $(1)
 
   endif
 

@@ -20,9 +20,9 @@ package javax.microedition.m3g;
 import java.lang.ref.WeakReference;
 import java.util.Hashtable;
 import org.eclipse.swt.widgets.Display;
-#ifdef RD_JAVA_OMJ
+//#ifdef RD_JAVA_OMJ
 import com.nokia.mj.impl.rt.support.Finalizer;
-#endif // RD_JAVA_OMJ
+//#endif // RD_JAVA_OMJ
 
 /**
  * M3G interface object. An interface is automatically created for
@@ -98,9 +98,9 @@ class Interface
     private boolean iNativeInitialized = false;
 
 
-#ifdef RD_JAVA_OMJ
+//#ifdef RD_JAVA_OMJ
     private Finalizer mFinalizer;
-#endif // RD_JAVA_OMJ
+//#endif // RD_JAVA_OMJ
 
     //------------------------------------------------------------------
     // Constructors
@@ -112,7 +112,7 @@ class Interface
         // Contruct native peer
         initNativePeer();
 
-#ifdef RD_JAVA_OMJ
+//#ifdef RD_JAVA_OMJ
         mFinalizer = new Finalizer()
         {
             public void finalizeImpl()
@@ -120,9 +120,9 @@ class Interface
                 doFinalize();
             }
         };
-#else // RD_JAVA_OMJ
-        Platform.registerFinalizer(this);
-#endif // RD_JAVA_OMJ
+//#else // RD_JAVA_OMJ
+//        Platform.registerFinalizer(this);
+//#endif // RD_JAVA_OMJ
     }
 
     //------------------------------------------------------------------
@@ -366,7 +366,7 @@ class Interface
     }
 
 
-#ifdef RD_JAVA_OMJ
+//#ifdef RD_JAVA_OMJ
     private void doFinalize()
     {
         if (mFinalizer != null)
@@ -375,7 +375,7 @@ class Interface
             mFinalizer = null;
         }
     }
-#endif // RD_JAVA_OMJ
+//#endif // RD_JAVA_OMJ
 
     // Native finalization hook, for Symbian only
     final private void registeredFinalize()

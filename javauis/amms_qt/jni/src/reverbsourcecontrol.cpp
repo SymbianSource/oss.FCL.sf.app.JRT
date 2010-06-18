@@ -41,7 +41,7 @@ static void SetRoomLevelL(
 JNIEXPORT jint JNICALL Java_com_nokia_amms_control_audioeffect_ReverbSourceControl__1getRoomLevel(
     JNIEnv*,
     jclass,
-    jint aEventSource,
+    jint,
     jint aControl)
 {
     CAMMSReverbSourceControlGroup* control =

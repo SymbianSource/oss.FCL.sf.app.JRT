@@ -22,6 +22,7 @@ grant allowed {
     permission javax.microedition.io.Connector.bluetooth.client "*" "client";
     permission javax.microedition.location.LocationPermission "location://*" "position,orientation";
     permission javax.microedition.location.LocationPermission "landmarks://*" "read,write,category,management";
+    permission javax.microedition.location.LocationPermission "proximity://*" "registerlistener";
     permission javax.microedition.apdu.aid "apdu://*" "aid";
     permission javax.microedition.apdu.sat "apdu://*" "sat";    
     permission javax.microedition.securityservice.CMSMessageSignatureService "pki://*" "authenticate";
@@ -29,9 +30,11 @@ grant allowed {
     permission javax.microedition.media.control.VideoControl.getSnapshot "*" "snapshot";
     permission javax.microedition.io.Connector.rtsp "*";
     permission javax.microedition.PropertyPermission "mobinfo.imsi" "read";
+    permission javax.microedition.midlet.CmdLineArgsPermission;
 }
 
 grant assigned {
     permission javax.microedition.PropertyPermission "mobinfo.msisdn" "read";
     permission javax.microedition.PropertyPermission "mobinfo.cellid" "read";
+    permission javax.microedition.midlet.AutoStartPermission;
 }

@@ -40,8 +40,8 @@ JNIEXPORT jstring JNICALL Java_com_nokia_microedition_media_ControlContainer__1g
 
     const TDesC& className = control->ClassName();
 
-    LOG1( EJavaMMAPI, EInfo, "MMA::ControlContainer.cpp::getControlClassName name = %S",
-              className.Ptr());
+    LOG1(EJavaMMAPI, EInfo, "MMA::ControlContainer.cpp::getControlClassName name = %S",
+         className.Ptr());
 
     // Create Java String from class name and return it
     return (className == KNullDesC) ? NULL : S60CommonUtils::NativeToJavaString(*aJni, className);
@@ -59,8 +59,8 @@ JNIEXPORT jstring JNICALL Java_com_nokia_microedition_media_ControlContainer__1g
 
     const TDesC& className = control->PublicClassName();
 
-    LOG1( EJavaMMAPI, EInfo, "MMA::ControlContainer.cpp::getPublicControlClassName name = %S",
-              className.Ptr());
+    LOG1(EJavaMMAPI, EInfo, "MMA::ControlContainer.cpp::getPublicControlClassName name = %S",
+         className.Ptr());
 
     // Create Java String from class name and return it
     return (className == KNullDesC) ? NULL : S60CommonUtils::NativeToJavaString(*aJni, className);
@@ -75,8 +75,8 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_ControlContainer__1getC
 {
     CMMAPlayer* player =
         reinterpret_cast< CMMAPlayer *>(aPlayerHandle);
-    LOG1( EJavaMMAPI, EInfo, "MMA::ControlContainer.cpp::getControlsCount count = %d",
-              player->ControlCount());
+    LOG1(EJavaMMAPI, EInfo, "MMA::ControlContainer.cpp::getControlsCount count = %d",
+         player->ControlCount());
     return player->ControlCount();
 }
 

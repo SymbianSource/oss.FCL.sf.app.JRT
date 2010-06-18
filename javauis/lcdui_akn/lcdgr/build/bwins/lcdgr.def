@@ -1,3 +1,0 @@
-EXPORTS
-	?NewFactoryL@@YAPAVMMIDGraphicsFactory@@AAVRFs@@W4TDisplayMode@@@Z @ 1 NONAME ; class MMIDGraphicsFactory * NewFactoryL(class RFs &, enum TDisplayMode)
-

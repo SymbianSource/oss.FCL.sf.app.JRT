@@ -18,13 +18,18 @@
 
 <project name="javam3g" default="deploy" basedir=".">
 
+	<description>
+		Builds M3G on Qt.
+	</description>
+	
   <import file="../../../build/utilities.xml"/>
 
   <!-- Needed by the utilities.xml. See the description form the utilities.xml
        file -->
 
+
   <target name="compile">
-    <omj.javac  classpath="../../bin/eswt.jar:../../bin/openlcdui.jar"/>
+    <omj.javac classpath="${impl.cldc.jar}" excludes="**/CDCCompatibilityDelegate.java"/>
   </target>
 
 

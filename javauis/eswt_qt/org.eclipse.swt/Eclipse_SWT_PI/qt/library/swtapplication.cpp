@@ -21,15 +21,11 @@
 #include "swtapplication.h"
 #include "jniutils.h"
 #include "swtfontcache.h"
-#include "swt.h"
 #include "swtlog.h"
 
 #ifdef __SYMBIAN32__
 #include "swts60.h"
 #endif
-
-
-
 
 using namespace Java::eSWT;
 

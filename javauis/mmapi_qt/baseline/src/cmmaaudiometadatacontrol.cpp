@@ -26,7 +26,7 @@ CMMAAudioMetaDataControl::CMMAAudioMetaDataControl(
     RMMFController& aController)
         : iController(aController)
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAAudioMetaDataControl constructor called.");
+    LOG(EJavaMMAPI, EInfo, "CMMAAudioMetaDataControl constructor called.");
 }
 
 TInt CMMAAudioMetaDataControl::KeyCountL()
@@ -56,7 +56,7 @@ HBufC* CMMAAudioMetaDataControl::KeyL(TInt aIndex)
  */
 HBufC* CMMAAudioMetaDataControl::KeyValueL(const TDesC& aKey)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAAudioMetaDataControl::GetKeyValueL() called.");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAAudioMetaDataControl::GetKeyValueL() called.");
 
     HBufC* retVal = NULL;
     CMMFMetaDataEntry* currEntry = NULL;

@@ -50,22 +50,18 @@ public: // From MMMADisplay
     void SetDisplayLocationL(const TPoint& aPosition);
     TPoint DisplayLocation();
     void SetWindowL(MMMADisplayWindow* aWindow);
-
+    void SourceSizeChanged(TInt aJavaControlWidth, TInt aJavaControlHeight,TInt x, TInt y,TRect aBoundsRect);
+		/*void GetWindowResources(MMMADisplayWindow* aConsumer, MMMADisplay::TThreadType  aThreadType );*/
+	
 private:
     /** ask java side peer about the bound
 	Returns a rectangle describing the receiver's size
 	and location relative to its parent (or its display if its parent is null),
 	unless the receiver is a shell. In this case, the location is relative to the display
 	*/
-   TRect& CMMACanvasDisplay::BoundRect();
-   TRect& CMMACanvasDisplay::ContainerWindowRect();
+   TRect CMMACanvasDisplay::BoundRect();
+   TRect CMMACanvasDisplay::ContainerWindowRect();
 
-//public:
-//    void MdcContentBoundsChanged(const TRect& aRect);
-protected:  // Constructors and destructors
-
-    // Default constructor, protected to allow derivation
-    CMMACanvasDisplay(MMAFunctionServer* aEventSource , jobject aJavaDisplayRef/*MMIDCanvas* aCanvas*/);
 
 private:    // Data
 //    MMIDCanvas* iCanvas;

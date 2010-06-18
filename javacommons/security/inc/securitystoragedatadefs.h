@@ -42,6 +42,7 @@ const wchar_t* const SMART_CARD_COMMUNICATION_SETTINGS = L"Smart Card Communicat
 const wchar_t* const AUTHENTICATION_SETTINGS = L"Authentication";
 const wchar_t* const BROADCAST_SETTINGS = L"Broadcast";
 const wchar_t* const NFC_WRITE_ACCESS_SETTINGS = L"NFC Write Access";
+const wchar_t* const URL_START_SETTINGS = L"Url start";
 
 // interaction modes values
 const wchar_t* const ONESHOT_INTERACTION_MODE = L"1";

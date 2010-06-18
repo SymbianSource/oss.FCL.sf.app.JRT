@@ -312,6 +312,8 @@ public abstract class MIDlet
             mNetworkPromptSchemes = new Hashtable();
             mNetworkPromptSchemes.put("http:","javax.microedition.io.Connector.http");
             mNetworkPromptSchemes.put("https:","javax.microedition.io.Connector.https");
+            mNetworkPromptSchemes.put("rtsp:","javax.microedition.io.Connector.rtsp");
+            mNetworkPromptSchemes.put("mms:","javax.microedition.io.Connector.rtsp");
         }
         if (mNoPromptSchemes == null)
         {
@@ -320,9 +322,7 @@ public abstract class MIDlet
             mNoPromptSchemes = new Hashtable();
             mNoPromptSchemes.put("cti:","");
             mNoPromptSchemes.put("mailto:","");
-            mNoPromptSchemes.put("mms:","");
             mNoPromptSchemes.put("mmsto:","");
-            mNoPromptSchemes.put("rtsp:","");
             mNoPromptSchemes.put("sms:","");
             mNoPromptSchemes.put("tel:","");
         }

@@ -55,7 +55,7 @@ EXPORT_C CMMAVideoControl::~CMMAVideoControl()
     // Event server takes event ownership
     if (iEventPoster)
     {
-        if(iDeleteRefEvent)
+        if (iDeleteRefEvent)
         {
             iEventPoster->PostEvent(iDeleteRefEvent);
         }
@@ -92,7 +92,7 @@ void CMMAVideoControl::ConstructL(CMMAVideoControl* aControl,
 
     aControl->iSnapshot = CMMASnapshot::NewL(aControl->iGuiPlayer,
                           *aControl);
-   // aControl->RegisterForegroundListenerL(aToolkit);   // 3.x QT based UI
+    // aControl->RegisterForegroundListenerL(aToolkit);   // 3.x QT based UI
 }
 /*   // 3.x QT based UI
 // mobitv fix`
@@ -125,77 +125,92 @@ void CMMAVideoControl::RegisterForegroundListenerL(CMIDToolkit* aToolkit)
 }
 */
 void CMMAVideoControl::StaticInitL(CMMAVideoControl* aControl,
-								   jobject javaDisplayRef,
-								   MMAFunctionServer* aEventSource,
+                                   jobject javaDisplayRef,
+                                   MMAFunctionServer* aEventSource,
                                    TInt* aDisplayHandle,
-                                   CMMAEvent* aDeleteRefEvent)
+                                   CMMAEvent* aDeleteRefEvent,
+                                   TBool aGuiType)
 {
 
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticInitL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticInitL +");
 
-    aControl->iDeleteRefEvent = aDeleteRefEvent;
-
-     CMMACanvasDisplay* canvasDisplay =
-	            CMMACanvasDisplay::NewLC(aEventSource,javaDisplayRef);
-	  aControl->iDisplay = canvasDisplay;
-	  CleanupStack::Pop(canvasDisplay);
-      *aDisplayHandle = reinterpret_cast<TInt>(canvasDisplay);
-
-
-/*    MMIDComponent::TType componentType = aComponent->Type();
-    switch (componentType)
+    if (aGuiType == true)
     {
-    case MMIDComponent::ECustomItem:
-    {
-        //MMIDCustomItem  // end of // 3.x QT based UI
-       // MMIDCustomItem* customItem =
-         //   reinterpret_cast< MMIDCustomItem* >(aComponent);
+        LOG(EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticInitL - aGuiType is customitem ");
+        aControl->iDeleteRefEvent = aDeleteRefEvent;
 
         CMMAItemDisplay* itemDisplay =
-            CMMAItemDisplay::NewLC(customItem);
-
+            CMMAItemDisplay::NewLC(aEventSource,javaDisplayRef);
         aControl->iDisplay = itemDisplay;
         CleanupStack::Pop(itemDisplay);
-        *aDisplayHandle = JavaMakeHandle(itemDisplay);
-        break;
+        *aDisplayHandle = reinterpret_cast<TInt>(itemDisplay);
     }
-    case MMIDComponent::ECanvas:
+    else
     {
-        //MMIDCanvas
-        MMIDCanvas* canvas = reinterpret_cast< MMIDCanvas* >(aComponent);
+        LOG(EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticInitL - aGuiType is canvas ");
+        aControl->iDeleteRefEvent = aDeleteRefEvent;
 
         CMMACanvasDisplay* canvasDisplay =
-            CMMACanvasDisplay::NewLC(canvas);
-
+            CMMACanvasDisplay::NewLC(aEventSource,javaDisplayRef);
         aControl->iDisplay = canvasDisplay;
         CleanupStack::Pop(canvasDisplay);
-        *aDisplayHandle = JavaMakeHandle(canvasDisplay);
-        break;
-    }
-    default:
-    {
-        // other component types are not supported
-        User::Leave(KErrNotSupported);
+        *aDisplayHandle = reinterpret_cast<TInt>(canvasDisplay);
     }
 
-    }*/
+    /*    MMIDComponent::TType componentType = aComponent->Type();
+        switch (componentType)
+        {
+        case MMIDComponent::ECustomItem:
+        {
+            //MMIDCustomItem  // end of // 3.x QT based UI
+           // MMIDCustomItem* customItem =
+             //   reinterpret_cast< MMIDCustomItem* >(aComponent);
+
+            CMMAItemDisplay* itemDisplay =
+                CMMAItemDisplay::NewLC(customItem);
+
+            aControl->iDisplay = itemDisplay;
+            CleanupStack::Pop(itemDisplay);
+            *aDisplayHandle = JavaMakeHandle(itemDisplay);
+            break;
+        }
+        case MMIDComponent::ECanvas:
+        {
+            //MMIDCanvas
+            MMIDCanvas* canvas = reinterpret_cast< MMIDCanvas* >(aComponent);
+
+            CMMACanvasDisplay* canvasDisplay =
+                CMMACanvasDisplay::NewLC(canvas);
+
+            aControl->iDisplay = canvasDisplay;
+            CleanupStack::Pop(canvasDisplay);
+            *aDisplayHandle = JavaMakeHandle(canvasDisplay);
+            break;
+        }
+        default:
+        {
+            // other component types are not supported
+            User::Leave(KErrNotSupported);
+        }
+
+        }*/
 
     aControl->iGuiPlayer->SetDisplayL(aControl->iDisplay);
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticInitL - ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticInitL - ");
 }
 
 
 void CMMAVideoControl::SetDisplayHandleToJavaPeer(MMAFunctionServer* eventSource ,jobject aJavaVideoControlPeer)
 {
-	JNIEnv* validJNI = eventSource->getValidJniEnv();
-	
-	jmethodID jmid = validJNI->GetMethodID( validJNI->GetObjectClass(aJavaVideoControlPeer),
-                                         "setNativeDisplayHandleToJavaPeer",
-                                         "(I)V");
-   // DEBUG_INT("CMMADisplay::GetCallbackInUiThread getCallBackMethodID = %d",getCallBackMethodID); 
-   TInt handle = reinterpret_cast<TInt>(iDisplay);                                    
-  validJNI->CallVoidMethod(aJavaVideoControlPeer,jmid,handle);
-  iGuiPlayer->SetDisplayL(iDisplay);
+    JNIEnv* validJNI = eventSource->getValidJniEnv();
+
+    jmethodID jmid = validJNI->GetMethodID(validJNI->GetObjectClass(aJavaVideoControlPeer),
+                                           "setNativeDisplayHandleToJavaPeer",
+                                           "(I)V");
+    // DEBUG_INT("CMMADisplay::GetCallbackInUiThread getCallBackMethodID = %d",getCallBackMethodID);
+    TInt handle = reinterpret_cast<TInt>(iDisplay);
+    validJNI->CallVoidMethod(aJavaVideoControlPeer,jmid,handle);
+    TRAP_IGNORE(iGuiPlayer->SetDisplayL(iDisplay));
 }
 
 void CMMAVideoControl::StaticInitDynamicModeL(
@@ -217,158 +232,161 @@ void CMMAVideoControl::StaticInitDynamicModeL(
     aVideoControl->iDisplay = dcDisplay;
     aVideoControl->iGuiPlayer->SetDisplayL(aVideoControl->iDisplay);
     CleanupStack::Pop(dcDisplay);
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticInitDynamicModeL-");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticInitDynamicModeL-");
 }
 
-void CMMAVideoControl::StaticGetPropertyL(CMMAVideoControl* aControl,
-        TInt aPropertyType,
-        TInt* aReturnValue)
+void CMMAVideoControl::StaticGetPropertyL(CMMAVideoControl* /*aControl*/,
+        TInt /*aPropertyType*/,
+        TInt* /*aReturnValue*/)
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticGetPropertyL property %d",
-              aPropertyType);
+    // LOG1( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticGetPropertyL property %d",
+    //           aPropertyType);
 
 // MMAPI UI 3.x req.
-// remove the below return; once  display is implemented in java
- return;
+// remove the below return and uncomment the below code once  display is implemented in java
+    return;
 
+    /*
+     MMMADisplay* display = aControl->iDisplay;
 
-    MMMADisplay* display = aControl->iDisplay;
+     if (aPropertyType != com_nokia_microedition_media_control_VideoControl_PROPERTY_SOURCE_WIDTH &&
+             aPropertyType != com_nokia_microedition_media_control_VideoControl_PROPERTY_SOURCE_HEIGHT &&
+             !display)
+     {
+         LOG( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticGetPropertyL not initialized yet");
+         // init is not done yet, returning 0
+         *aReturnValue = 0;
+         return;
+     }
 
-    if (aPropertyType != com_nokia_microedition_media_control_VideoControl_PROPERTY_SOURCE_WIDTH &&
-            aPropertyType != com_nokia_microedition_media_control_VideoControl_PROPERTY_SOURCE_HEIGHT &&
-            !display)
-    {
-        LOG( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticGetPropertyL not initialized yet");
-        // init is not done yet, returning 0
-        *aReturnValue = 0;
-        return;
-    }
-
-    switch (aPropertyType)
-    {
-    case com_nokia_microedition_media_control_VideoControl_PROPERTY_DISPLAY_WIDTH:
-    {
-        *aReturnValue = display->DisplaySize().iWidth;
-        break;
-    }
-    case com_nokia_microedition_media_control_VideoControl_PROPERTY_DISPLAY_HEIGHT:
-    {
-        *aReturnValue = display->DisplaySize().iHeight;
-        break;
-    }
-    case com_nokia_microedition_media_control_VideoControl_PROPERTY_DISPLAY_X:
-    {
-        *aReturnValue = display->DisplayLocation().iX;
-        break;
-    }
-    case com_nokia_microedition_media_control_VideoControl_PROPERTY_DISPLAY_Y:
-    {
-        *aReturnValue = display->DisplayLocation().iY;
-        break;
-    }
-    case com_nokia_microedition_media_control_VideoControl_PROPERTY_SOURCE_WIDTH:
-    {
-        LOG( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticGetPropertyL get source width");
-        *aReturnValue = aControl->iGuiPlayer->SourceSize().iWidth;
-        break;
-    }
-    case com_nokia_microedition_media_control_VideoControl_PROPERTY_SOURCE_HEIGHT:
-    {
-        LOG( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticGetPropertyL get source height");
-        *aReturnValue = aControl->iGuiPlayer->SourceSize().iHeight;
-        break;
-    }
-    default:
-    {
-        *aReturnValue = KErrNotFound;
-        User::Leave(KErrNotFound);
-        break;
-    }
-    }
+     switch (aPropertyType)
+     {
+     case com_nokia_microedition_media_control_VideoControl_PROPERTY_DISPLAY_WIDTH:
+     {
+         *aReturnValue = display->DisplaySize().iWidth;
+         break;
+     }
+     case com_nokia_microedition_media_control_VideoControl_PROPERTY_DISPLAY_HEIGHT:
+     {
+         *aReturnValue = display->DisplaySize().iHeight;
+         break;
+     }
+     case com_nokia_microedition_media_control_VideoControl_PROPERTY_DISPLAY_X:
+     {
+         *aReturnValue = display->DisplayLocation().iX;
+         break;
+     }
+     case com_nokia_microedition_media_control_VideoControl_PROPERTY_DISPLAY_Y:
+     {
+         *aReturnValue = display->DisplayLocation().iY;
+         break;
+     }
+     case com_nokia_microedition_media_control_VideoControl_PROPERTY_SOURCE_WIDTH:
+     {
+         LOG( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticGetPropertyL get source width");
+         *aReturnValue = aControl->iGuiPlayer->SourceSize().iWidth;
+         break;
+     }
+     case com_nokia_microedition_media_control_VideoControl_PROPERTY_SOURCE_HEIGHT:
+     {
+         LOG( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticGetPropertyL get source height");
+         *aReturnValue = aControl->iGuiPlayer->SourceSize().iHeight;
+         break;
+     }
+     default:
+     {
+         *aReturnValue = KErrNotFound;
+         User::Leave(KErrNotFound);
+         break;
+     }
+     }
+     */
 }
 
 
-void CMMAVideoControl::StaticSetPropertyL(CMMAVideoControl* aControl,
-        TInt aPropertyType,
-        TInt aPropertyA,
-        TInt aPropertyB)
+void CMMAVideoControl::StaticSetPropertyL(CMMAVideoControl* /*aControl*/,
+        TInt /*aPropertyType*/,
+        TInt /*aPropertyA*/,
+        TInt /*aPropertyB*/)
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticSetPropertyL property type %d",
-              aPropertyType);
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticSetPropertyL a property %d",
-              aPropertyA);
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticSetPropertyL b property %d",
-              aPropertyB);
+    //LOG1( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticSetPropertyL property type %d",
+    //          aPropertyType);
+    //LOG1( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticSetPropertyL a property %d",
+    //         aPropertyA);
+    // LOG1( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticSetPropertyL b property %d",
+    //          aPropertyB);
 // MMAPI UI 3.x req.
-// remove the below return; once  display is implemented in java
- return;
+// remove the below return and uncomment the below code; once  display is implemented in java
+    return;
 
-    MMMADisplay* display = aControl->iDisplay;
+    /*
+        MMMADisplay* display = aControl->iDisplay;
 
-    __ASSERT_DEBUG(display != NULL,
-                   User::Panic(_L("display not initialized"), KErrNotReady));
+        __ASSERT_DEBUG(display != NULL,
+                       User::Panic(_L("display not initialized"), KErrNotReady));
 
-    switch (aPropertyType)
-    {
-    case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_SIZE:
-    {
-        TSize displaySize(aPropertyA, aPropertyB);
-        display->SetDisplaySizeL(displaySize);
-
-        // inform java side
-        if (!display->IsFullScreen())
+        switch (aPropertyType)
         {
-            aControl->iGuiPlayer->NotifyWithStringEvent(
-                CMMAPlayerEvent::ESizeChanged, KControlName);
-        }
-        break;
-    }
-    case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_LOCATION:
-    {
-        TPoint displayLocation(aPropertyA, aPropertyB);
-        display->SetDisplayLocationL(displayLocation);
-        break;
-    }
-    case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_VISIBLE_TRUE:
-    {
-        display->SetVisible(ETrue);
-        break;
-    }
-    case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_VISIBLE_FALSE:
-    {
-        display->SetVisible(EFalse);
-        break;
-    }
-    case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_FULLSCREEN_TRUE:
-    {
-        // store old user rect to determine if SIZE_CHANGED event
-        // has to be delivered when full screen mode is turned off.
-        aControl->iOldDisplaySize = display->DisplaySize();
-
-        display->SetFullScreenL(ETrue);
-        break;
-    }
-    case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_FULLSCREEN_FALSE:
-    {
-        display->SetFullScreenL(EFalse);
-
-        // Send SIZE_CHANGED event when fullscreen is turned off if
-        // size of the video display has changed. Possible position
-        // change is however disregarded
-        if (aControl->iOldDisplaySize != display->DisplaySize())
+        case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_SIZE:
         {
-            aControl->iGuiPlayer->NotifyWithStringEvent(
-                CMMAPlayerEvent::ESizeChanged, KControlName);
-        }
+            TSize displaySize(aPropertyA, aPropertyB);
+            display->SetDisplaySizeL(displaySize);
 
-        break;
-    }
-    default:
-    {
-        User::Leave(KErrNotFound);
-        break;
-    }
-    }
+            // inform java side
+            if (!display->IsFullScreen())
+            {
+                aControl->iGuiPlayer->NotifyWithStringEvent(
+                    CMMAPlayerEvent::ESizeChanged, KControlName);
+            }
+            break;
+        }
+        case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_LOCATION:
+        {
+            TPoint displayLocation(aPropertyA, aPropertyB);
+            display->SetDisplayLocationL(displayLocation);
+            break;
+        }
+        case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_VISIBLE_TRUE:
+        {
+            display->SetVisible(ETrue);
+            break;
+        }
+        case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_VISIBLE_FALSE:
+        {
+            display->SetVisible(EFalse);
+            break;
+        }
+        case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_FULLSCREEN_TRUE:
+        {
+            // store old user rect to determine if SIZE_CHANGED event
+            // has to be delivered when full screen mode is turned off.
+            aControl->iOldDisplaySize = display->DisplaySize();
+
+            display->SetFullScreenL(ETrue);
+            break;
+        }
+        case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_FULLSCREEN_FALSE:
+        {
+            display->SetFullScreenL(EFalse);
+
+            // Send SIZE_CHANGED event when fullscreen is turned off if
+            // size of the video display has changed. Possible position
+            // change is however disregarded
+            if (aControl->iOldDisplaySize != display->DisplaySize())
+            {
+                aControl->iGuiPlayer->NotifyWithStringEvent(
+                    CMMAPlayerEvent::ESizeChanged, KControlName);
+            }
+
+            break;
+        }
+        default:
+        {
+            User::Leave(KErrNotFound);
+            break;
+        }
+        }
+        */
 }
 
 
@@ -387,7 +405,7 @@ void CMMAVideoControl::TakeSnapShotL(CMMAVideoControl* aControl,
 
 EXPORT_C void CMMAVideoControl::SnapshotReady()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::SnapshotReady()");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::SnapshotReady()");
 
     // now this class owns the buffer
     HBufC8* imageBuffer = iSnapshot->ImageBuffer();
@@ -418,7 +436,7 @@ EXPORT_C const TDesC& CMMAVideoControl::ClassName() const
 }
 TBool CMMAVideoControl::IsForeground()
 {
-    LOG1( EJavaMMAPI, EInfo, "CMMAVideoControl::IsForeground() %d",iIsForeground);
+    LOG1(EJavaMMAPI, EInfo, "CMMAVideoControl::IsForeground() %d",iIsForeground);
 
     return iIsForeground;
 }
@@ -426,8 +444,8 @@ TBool CMMAVideoControl::IsForeground()
 void CMMAVideoControl::StaticSetForegroundL(CMMAVideoControl* aControl,
         TInt aForeground)
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticSetForegroundL + aForeground %d",
-              aForeground);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticSetForegroundL + aForeground %d",
+         aForeground);
 
     __ASSERT_DEBUG(
         aControl,
@@ -440,7 +458,7 @@ void CMMAVideoControl::StaticSetForegroundL(CMMAVideoControl* aControl,
         aControl->SetForeground(aForeground, EFalse);
     }
 
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticSetForegroundL - ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticSetForegroundL - ");
 }
 
 /*   // 3.x QT based UI

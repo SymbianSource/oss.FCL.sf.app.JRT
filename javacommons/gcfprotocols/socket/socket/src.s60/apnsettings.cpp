@@ -66,16 +66,4 @@ int ApnSettings::setDefaultApn(int aType, int aApn)
     return def;
 }
 
-void ApnSettings::removeDefaultApn()
-{
 
-    int def = 0;
-
-#ifdef RD_JAVA_OPENC_BETA_PATCH
-    def = setdefaultif(NULL);
-    ILOG(ESOCKET, "sedefaultif called");
-#endif
-    (void)def; //just to suppress a warning
-    ILOG1(ESOCKET, "remove default apn returned %d",def);
-
-}

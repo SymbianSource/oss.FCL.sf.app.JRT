@@ -24,12 +24,12 @@
 
 CMMARateControl::CMMARateControl()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMARateControl::CMMARateControl");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMARateControl::CMMARateControl");
 }
 
 CMMARateControl::~CMMARateControl()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMARateControl::~CMMARateControl");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMARateControl::~CMMARateControl");
 }
 
 const TDesC& CMMARateControl::ClassName() const

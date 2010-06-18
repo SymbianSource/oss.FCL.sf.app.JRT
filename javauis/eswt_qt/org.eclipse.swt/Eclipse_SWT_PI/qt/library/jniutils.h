@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2009, 2010 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,6 +19,7 @@
 #include <QStack>
 #include <QPointer>
 #include <jni.h>
+#include "swtexport.h"
 
 template<class T>
 class QStack;
@@ -45,9 +46,8 @@ public:
     /**
      * The constructor.
      * @param aEnv The JNI environment pointer of the Qt GUI thread.
-     * @param aDisplay Local ref to the Java Display instance, JniUtils will create a global ref
      */
-    JniUtils(JNIEnv* aEnv, jobject aDisplay);
+    JniUtils(JNIEnv* aEnv);
 
     /**
      * The destructor.
@@ -55,7 +55,7 @@ public:
     virtual ~JniUtils();
 
     /**
-     * Calls eventProcess Java method of the active Display instance. 
+     * Calls eventProcess Java method of the Display class. 
      * Can only be called in the UI thread. 
      * @param aQObject Target QObject of the QEvent
      * @param aQEventType Type of the QEvent
@@ -69,7 +69,7 @@ public:
                       const jstring aString = NULL);
 
     /**
-     * Calls eventProcess Java method based on the given jobject and jmethodID.
+     * Calls eventProcess Java instance method based on the given jobject and jmethodID.
      * Can only be called in the UI thread. 
      * @param aObject The Java object instance for the method call.
      * @param aMethodID The Java methodID for the method call.
@@ -77,18 +77,23 @@ public:
      * @return True if the event should be canceled.
      */
     bool eventProcess(jobject aObject, const jmethodID aMethodID,
-            const int& aQObject, const int& aQEventType, const int& a1,
+            const QObject* aQObject, const int& aQEventType, const int& a1,
             const int& a2, const int& a3, const int& a4, const int& a5,
             const jstring aString);
 
     /**
-     * Query if the jobject is the Display of the process.
+     * Calls static eventProcess Java method based on the given jclass and jmethodID.
      * Can only be called in the UI thread. 
-     * @param aObject jobject to compare to the Display.
-     * @return true if given jobject is the Display
+     * @param aObject The Java class for the method call. 
+     * @param aMethodID The Java methodID for the method call. 
+     * @param ... Parameters to pass to the Java method.
+     * @return True if the event should be canceled.
      */
-    bool isDisplay(jobject aObject);
-
+    bool eventProcess(jclass aClazz, const jmethodID aMethodID,
+            const QObject* aQObject, const int& aQEventType, const int& a1,
+            const int& a2, const int& a3, const int& a4, const int& a5,
+            const jstring aString);
+    
     /**
      * This must be called before entering an event loop. E.g. dialogs and
      * menus need to call this before calling exec(). This will handle closing
@@ -138,7 +143,7 @@ public:
      * @return A QString object.
      * @exception std::bad_alloc
      */
-    QString JavaStringToQString(JNIEnv* aEnv, jstring aJavaString);
+    SWTQT_EXPORT QString JavaStringToQString(JNIEnv* aEnv, jstring aJavaString);
 
     /**
      * Creates a Java string from the given QString.
@@ -147,7 +152,7 @@ public:
      * @return A Java string.
      * @exception std::bad_alloc
      */
-    jstring QStringToJavaString(JNIEnv* aEnv, const QString& aQString);
+    SWTQT_EXPORT jstring QStringToJavaString(JNIEnv* aEnv, const QString& aQString);
 
     /**
      * Creates a new Java integer array from the given native int array.
@@ -201,7 +206,7 @@ public:
      * @param aEnv JNI environment for the thread
      * @param aError The SWT error code to throw.
      */
-    void Throw(JNIEnv* aEnv, const int& aError);
+    SWTQT_EXPORT void Throw(JNIEnv* aEnv, const int& aError);
     
     /**
      * Throws a custom Java exception from the current JNI call. 
@@ -341,6 +346,20 @@ private:
     JniUtils() {};
 
     /**
+     * Calls back Java eventProcess method which can be either static class
+     * method of the given class or an instance method of the given object. 
+     * @param aObject Java object instance or NULL if the method is static. 
+     * @param aClazz Java class or NULL if the method is an instance method. 
+     * @param aMethodID The Java methodID for the method call.
+     * @param ... Parameters to pass to the Java method.
+     * @return True if the event should be canceled. 
+     */
+    bool eventProcess(jobject aObject, jclass aClazz, const jmethodID aMethodID,
+            const int& aQObject, const int& aQEventType, const int& a1,
+            const int& a2, const int& a3, const int& a4, const int& a5,
+            const jstring aString);
+    
+    /**
      * Creates a native palette data object based on the given palette data object.
      * @param aEnv JNI environment
      * @param aJavaPaletteData Java side image data object
@@ -385,7 +404,6 @@ private:
     };
 
     JNIEnv*     mUIThreadJniEnv;
-    jobject     mDisplay;
     jclass*     mJclasses;
     jmethodID*  mJmethodIds;
     ExecStack   mExecStack;

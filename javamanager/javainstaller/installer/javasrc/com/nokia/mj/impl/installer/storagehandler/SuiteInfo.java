@@ -80,6 +80,8 @@ public class SuiteInfo
     private String iConvertedIconPath = null;
     /** Application installation group. This member is not saved into storage. */
     private String iInstallationGroup = null;
+    /** Protection domain name. This member is not saved into storage. */
+    private String iProtectionDomainName = null;
 
     /**
      * Combined Jad and Manifest attributes. Key is attribute name,
@@ -521,6 +523,22 @@ public class SuiteInfo
     }
 
     /**
+     * Get protection domain name.
+     */
+    public String getProtectionDomainName()
+    {
+        return iProtectionDomainName;
+    }
+
+    /**
+     * Set protection domain name.
+     */
+    public void setProtectionDomainName(String aProtectionDomainName)
+    {
+        iProtectionDomainName = aProtectionDomainName;
+    }
+
+    /**
      * Set suite uid.
      *
      * @param aUid suite uid
@@ -740,6 +758,14 @@ public class SuiteInfo
     }
 
     /**
+     * Returns true if this application suite is preinstalled, false otherwise.
+     */
+    public boolean isPreinstalled()
+    {
+        return (iPreinstallState == STATE_PREINSTALLED);
+    }
+
+    /**
      * Set flag telling if application suite is preinstalled.
      *
      * @param aTrusted true if suite is preinstalled, false otherwise
@@ -842,6 +868,7 @@ public class SuiteInfo
         buf.append("  OnScreenKeypad: ").append(getOnScreenKeypad()).append("\n");
         buf.append("  ConvertedIcon: ").append(getConvertedIconPath()).append("\n");
         buf.append("  Group: ").append(getInstallationGroup()).append("\n");
+        buf.append("  Protection domain: ").append(getProtectionDomainName()).append("\n");
         if (iApplications != null)
         {
             buf.append("Applications:\n");

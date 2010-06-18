@@ -41,7 +41,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_protocol_EMCSourceInfo_
     __ASSERT_DEBUG((aEventSourceHandle > 0) && (aManagerHandle > 0), User::Invariant());
 
     MMAFunctionServer* eventSource =
-        reinterpret_cast< MMAFunctionServer* >(aEventSourceHandle);	
+        reinterpret_cast< MMAFunctionServer* >(aEventSourceHandle);
     CMMAManager* manager = reinterpret_cast< CMMAManager* >(aManagerHandle);
 
     if (aHeader)

@@ -64,6 +64,7 @@ public class InstallerEngineTest extends TestCase implements InstallerMain
             }));
         }
 
+        // Run 1
         suite.addTest(new InstallerEngineTest("testMidletMessageOk", new TestMethod()
         {
             public void run(TestCase tc)
@@ -112,6 +113,7 @@ public class InstallerEngineTest extends TestCase implements InstallerMain
             }
         }));
 
+        // Run 2
         suite.addTest(new InstallerEngineTest("testDownloadJarOk", new TestMethod()
         {
             public void run(TestCase tc)
@@ -240,6 +242,7 @@ public class InstallerEngineTest extends TestCase implements InstallerMain
             }
         }));
 
+        // Run 3
         suite.addTest(new InstallerEngineTest("testInstallOptions", new TestMethod()
         {
             public void run(TestCase tc)
@@ -985,7 +988,7 @@ public class InstallerEngineTest extends TestCase implements InstallerMain
         callInstallerOk(new String[] { "list", "-systemproperties" });
         callInstallerOk(new String[] { "launch", "-nouid" });
         callInstallerOk(new String[] { "launch", "-uid=invaliduid" });
-        callInstallerOk(new String[] { "uninstallall" });
+        callInstallerOk(new String[] { "uninstallall", "-silent" });
         callInstallerOk(new String[] { "unregister" });
         callInstallerOk(new String[] { "test", "-nomainclass" });
     }

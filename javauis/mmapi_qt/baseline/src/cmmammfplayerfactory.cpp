@@ -48,8 +48,8 @@ CMMAPlayer* CMMAMMFPlayerFactory::CreatePlayerL(const TDesC& aContentType)
 CMMAPlayer* CMMAMMFPlayerFactory::CreatePlayerL(const TDesC& aContentType,
         const TDesC* aFileName)
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAMMFPlayerFactory::CreatePlayerL content type = %S",
-              aContentType.Ptr());
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAMMFPlayerFactory::CreatePlayerL content type = %S",
+         aContentType.Ptr());
     CMMFFormatSelectionParameters* fSelect =
         CMMFFormatSelectionParameters::NewLC();
 
@@ -64,7 +64,7 @@ CMMAPlayer* CMMAMMFPlayerFactory::CreatePlayerL(const TDesC& aContentType,
 
     CleanupStack::PopAndDestroy(contentType);
     CleanupStack::PopAndDestroy(fSelect);
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAMMFPlayerFactory::CreatePlayerL content type ok");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAMMFPlayerFactory::CreatePlayerL content type ok");
     return player;
 }
 
@@ -72,8 +72,8 @@ CMMAPlayer* CMMAMMFPlayerFactory::CreatePlayerL(const TDesC& aProtocol,
         const TDesC& aMiddlePart,
         const TDesC&)
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAMMFPlayerFactory::CreatePlayerL aMiddlePart = %S",
-              aMiddlePart.Ptr());
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAMMFPlayerFactory::CreatePlayerL aMiddlePart = %S",
+         aMiddlePart.Ptr());
     CMMFFormatSelectionParameters* fSelect =
         CMMFFormatSelectionParameters::NewLC();
 
@@ -83,7 +83,7 @@ CMMAPlayer* CMMAMMFPlayerFactory::CreatePlayerL(const TDesC& aProtocol,
     CMMAPlayer* player = NULL;
     if (aProtocol == KMMAFileProtocol)
     {
-        LOG( EJavaMMAPI, EInfo, "MMA:CMMAMMFPlayerFactory::CreatePlayerL creating file player");
+        LOG(EJavaMMAPI, EInfo, "MMA:CMMAMMFPlayerFactory::CreatePlayerL creating file player");
         player = CreatePlayerL(fSelect, &aMiddlePart);
 
 #ifndef RD_JAVA_OMA_DRM_V2
@@ -101,7 +101,7 @@ CMMAPlayer* CMMAMMFPlayerFactory::CreatePlayerL(const TDesC& aProtocol,
     }
 
     CleanupStack::PopAndDestroy(fSelect);
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAMMFPlayerFactory::CreatePlayerL aMiddlePart ok");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAMMFPlayerFactory::CreatePlayerL aMiddlePart ok");
     return player;
 }
 
@@ -133,7 +133,7 @@ CMMAPlayer* CMMAMMFPlayerFactory::TryOpenDRMFileL(const TDesC& aFileName)
 
 CMMAPlayer* CMMAMMFPlayerFactory::CreatePlayerL(const TDesC8& aHeaderData)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAMMFPlayerFactory::CreatePlayerL header data +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAMMFPlayerFactory::CreatePlayerL header data +");
     CMMFFormatSelectionParameters* fSelect =
         CMMFFormatSelectionParameters::NewLC();
 
@@ -143,7 +143,7 @@ CMMAPlayer* CMMAMMFPlayerFactory::CreatePlayerL(const TDesC8& aHeaderData)
     CMMAPlayer* player = CreatePlayerL(fSelect);
 
     CleanupStack::PopAndDestroy(fSelect);
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAMMFPlayerFactory::CreatePlayerL header data -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAMMFPlayerFactory::CreatePlayerL header data -");
     return player;
 }
 

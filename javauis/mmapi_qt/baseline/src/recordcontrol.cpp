@@ -46,7 +46,7 @@ void TIntFuncL(CMMARecordControl* aControl, TInt(CMMARecordControl::*aFunc)(TInt
 JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_RecordControl__1startRecord
 (JNIEnv *, jclass, jint aEventSourceHandle, jint aRecordControlHandle)
 {
-    LOG( EJavaMMAPI, EInfo, "Java_com_nokia_microedition_media_control_RecordControl__1startRecord");
+    LOG(EJavaMMAPI, EInfo, "Java_com_nokia_microedition_media_control_RecordControl__1startRecord");
 
     MMAFunctionServer* eventSource =
         reinterpret_cast< MMAFunctionServer* >(aEventSourceHandle);
@@ -67,7 +67,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_RecordControl__
 JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_RecordControl__1stopRecord
 (JNIEnv *, jclass, jint aEventSourceHandle, jint aRecordControlHandle)
 {
-    LOG( EJavaMMAPI, EInfo, "Java_com_nokia_microedition_media_control_RecordControl__1stopRecord");
+    LOG(EJavaMMAPI, EInfo, "Java_com_nokia_microedition_media_control_RecordControl__1stopRecord");
 
     MMAFunctionServer* eventSource =
         reinterpret_cast< MMAFunctionServer *>(aEventSourceHandle);
@@ -80,7 +80,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_RecordControl__
                                     &CMMARecordControl::StopRecordL);
 }
 
-void CMMAOutputStreamFunc(void(CMMARecordControl::*aFunc)(CMMAOutputStream*),CMMARecordControl* aControl, 
+void CMMAOutputStreamFunc(void(CMMARecordControl::*aFunc)(CMMAOutputStream*),CMMARecordControl* aControl,
                           CMMAOutputStream* aOutputStream)
 {
     (aControl->*aFunc)(aOutputStream);
@@ -91,7 +91,7 @@ void CMMAOutputStreamFunc(void(CMMARecordControl::*aFunc)(CMMAOutputStream*),CMM
 JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_RecordControl__1setRecordStream
 (JNIEnv *aJni, jclass, jint aEventSourceHandle, jint aRecordControlHandle, jobject aOutputWriter)
 {
-    LOG( EJavaMMAPI, EInfo, "Java_com_nokia_microedition_media_control_RecordControl__1setRecordStream");
+    LOG(EJavaMMAPI, EInfo, "Java_com_nokia_microedition_media_control_RecordControl__1setRecordStream");
 
     MMAFunctionServer* eventSource =
         reinterpret_cast< MMAFunctionServer *>(aEventSourceHandle);
@@ -113,7 +113,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_RecordControl__
     {
         eventSource->ExecuteV(&CMMAOutputStreamFunc,
                               &CMMARecordControl::SetRecordStream,
-                              	recordControl,
+                              recordControl,
                               outputStream);
 
         return reinterpret_cast<TInt>(outputStream);
@@ -139,7 +139,7 @@ void HBufCFunc(CMMARecordControl* aControl, HBufC*(CMMARecordControl::*aFunc)(),
 JNIEXPORT jstring JNICALL Java_com_nokia_microedition_media_control_RecordControl__1getContentType
 (JNIEnv *aJniEnv, jclass, jint aEventSourceHandle, jint aRecordControlHandle)
 {
-    LOG( EJavaMMAPI, EInfo, "Java_com_nokia_microedition_media_control_RecordControl__1getContentType");
+    LOG(EJavaMMAPI, EInfo, "Java_com_nokia_microedition_media_control_RecordControl__1getContentType");
 
     MMAFunctionServer* eventSource =
         reinterpret_cast< MMAFunctionServer* >(aEventSourceHandle);
@@ -169,7 +169,7 @@ JNIEXPORT jstring JNICALL Java_com_nokia_microedition_media_control_RecordContro
 JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_RecordControl__1commit
 (JNIEnv *, jclass, jint aEventSourceHandle, jint aRecordControlHandle)
 {
-    LOG( EJavaMMAPI, EInfo, "Java_com_nokia_microedition_media_control_RecordControl__1commit");
+    LOG(EJavaMMAPI, EInfo, "Java_com_nokia_microedition_media_control_RecordControl__1commit");
 
     MMAFunctionServer* eventSource =
         reinterpret_cast< MMAFunctionServer *>(aEventSourceHandle);
@@ -190,10 +190,10 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_RecordControl__
 JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_RecordControl__1setRecordSizeLimit
 (JNIEnv *, jclass, jint aEventSourceHandle, jint aRecordControlHandle, jint aSize)
 {
-    LOG( EJavaMMAPI, EInfo, "Java_com_nokia_microedition_media_control_RecordControl__1setRecordSizeLimit");
+    LOG(EJavaMMAPI, EInfo, "Java_com_nokia_microedition_media_control_RecordControl__1setRecordSizeLimit");
 
     MMAFunctionServer* eventSource =
-		reinterpret_cast< MMAFunctionServer *>(aEventSourceHandle);
+        reinterpret_cast< MMAFunctionServer *>(aEventSourceHandle);
 
     CMMARecordControl* recordControl =
         reinterpret_cast< CMMARecordControl *>(aRecordControlHandle);
@@ -219,7 +219,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_RecordControl__
 JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_RecordControl__1reset
 (JNIEnv *, jclass, jint aEventSourceHandle, jint aRecordControlHandle)
 {
-    LOG( EJavaMMAPI, EInfo, "Java_com_nokia_microedition_media_control_RecordControl__1reset");
+    LOG(EJavaMMAPI, EInfo, "Java_com_nokia_microedition_media_control_RecordControl__1reset");
 
     MMAFunctionServer* eventSource =
         reinterpret_cast< MMAFunctionServer *>(aEventSourceHandle);

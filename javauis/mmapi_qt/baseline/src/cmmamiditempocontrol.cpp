@@ -43,17 +43,17 @@ CMMAMIDITempoControl::CMMAMIDITempoControl(CMMAMIDIPlayer* aPlayer)
     iPlayer = aPlayer;
     iTempo = KMMAMIDIDefaultTempoInMicroBeats;
 
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAMIDITempoControl::CMMAMIDITempoControl");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAMIDITempoControl::CMMAMIDITempoControl");
 }
 
 CMMAMIDITempoControl::~CMMAMIDITempoControl()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAMIDITempoControl::~CMMAMIDITempoControl");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAMIDITempoControl::~CMMAMIDITempoControl");
 }
 
 inline void CMMAMIDITempoControl::ConstructL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAMIDITempoControl::ConstructL");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAMIDITempoControl::ConstructL");
 
     iPlayer->addObserverL(this);
     iPlayer->AddStateListenerL(this);
@@ -61,21 +61,21 @@ inline void CMMAMIDITempoControl::ConstructL()
 
 const TDesC& CMMAMIDITempoControl::ClassName() const
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAMIDITempoControl::ClassName");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAMIDITempoControl::ClassName");
     return KMIDITempoControlName;
 }
 
 
 TInt CMMAMIDITempoControl::TempoL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMAMIDITempoControl: TempoL");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMAMIDITempoControl: TempoL");
 
     return iTempo / KMicroBeatsInMiliBeat;
 }
 
 TInt CMMAMIDITempoControl::SetTempoL(TInt aTempo)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMAMIDITempoControl: SetTempoL");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMAMIDITempoControl: SetTempoL");
     TInt tempo = aTempo;
     if (tempo < KMMAMIDIMinimumTempo)
     {
@@ -86,8 +86,8 @@ TInt CMMAMIDITempoControl::SetTempoL(TInt aTempo)
         tempo = KMMAMIDIMaximumTempo;
     }
 
-    LOG1( EJavaMMAPI, EInfo, "MMA: CMMAMIDITempoControl: SetTempoL: setting tempo %d",
-              tempo);
+    LOG1(EJavaMMAPI, EInfo, "MMA: CMMAMIDITempoControl: SetTempoL: setting tempo %d",
+         tempo);
 
     // Convert tempo to micro-beats.
     tempo *= KMicroBeatsInMiliBeat;
@@ -104,8 +104,8 @@ TInt CMMAMIDITempoControl::SetTempoL(TInt aTempo)
 
     iTempo = tempo;
 
-    LOG1( EJavaMMAPI, EInfo, "MMA: CMMAMIDITempoControl: SetTempoL: Tempo set: %d",
-              tempo / KMicroBeatsInMiliBeat);
+    LOG1(EJavaMMAPI, EInfo, "MMA: CMMAMIDITempoControl: SetTempoL: Tempo set: %d",
+         tempo / KMicroBeatsInMiliBeat);
 
     return tempo / KMicroBeatsInMiliBeat;
 }
@@ -145,7 +145,7 @@ TInt CMMAMIDITempoControl::MinRateL()
 
 void CMMAMIDITempoControl::StateChanged(TInt aState)
 {
-    LOG1( EJavaMMAPI, EInfo, "CMMAMIDITempoControl:: StateChanged, state = %d", aState);
+    LOG1(EJavaMMAPI, EInfo, "CMMAMIDITempoControl:: StateChanged, state = %d", aState);
 
     // If tempo was set when the player was in REALIZED state, set the tempo
     // now when the player has been prefetched.
@@ -155,7 +155,7 @@ void CMMAMIDITempoControl::StateChanged(TInt aState)
         CMidiClientUtility* midi = iPlayer->MidiClient();
         TRAPD(err, midi->SetTempoL(iTempo));
 
-        ELOG1( EJavaMMAPI, "CMMAMIDITempoControl:: StateChanged, err = %d", err);
+        ELOG1(EJavaMMAPI, "CMMAMIDITempoControl:: StateChanged, err = %d", err);
 
         if (err != KErrNone)
         {
@@ -178,7 +178,7 @@ void CMMAMIDITempoControl::MmcuoStateChanged(TMidiState /*aOldState*/,
 
 void CMMAMIDITempoControl::MmcuoTempoChanged(TInt aMicroBeatsPerMinute)
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAMIDITempoControl:: MmcuoTempoChanged");
+    LOG(EJavaMMAPI, EInfo, "CMMAMIDITempoControl:: MmcuoTempoChanged");
 
     iTempo = aMicroBeatsPerMinute;
 }

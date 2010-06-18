@@ -16,58 +16,85 @@
 */
 #include "javaapplicationsettings.h"
 
-JavaApplicationSettings::JavaApplicationSettings()
+JavaApplicationSettings::JavaApplicationSettings():
+    iName(QString("")), 
+    iValues(QStringList()), 
+    iId(0), iCurrentValue(0), 
+    iColumnName(L""), 
+    iTableName(""), 
+    iStorageValuesFilter(L""), 
+    iValuesColumnName(L""), 
+    iFilterColumnName(L""), 
+    iFilterColumnValue(L""), 
+    connectedToUi(false)
 {
-    iId = 0;
-    iName = "";
-    iCurrentValue = 0;
-    iColumnName = L"";
-    iTableName = "";
-    iFilterColumnName = L"";
-    iFilterColumnValue = L"";
 }
 
 JavaApplicationSettings::JavaApplicationSettings(const QString& aName, const QStringList& aValues):
-        iValues(aValues)
+        iName(aName), 
+        iValues(aValues),
+        iId(0), 
+        iCurrentValue(0), 
+        iColumnName(L""), 
+        iTableName(""), 
+        iStorageValuesFilter(L""), 
+        iValuesColumnName(L""), 
+        iFilterColumnName(L""), 
+        iFilterColumnValue(L""), 
+        connectedToUi(false)
 {
-    iName = aName;
-    iId = 0;
-    iCurrentValue = 0;
-    iColumnName = L"";
-    iTableName = "";
-    iFilterColumnName = L"";
-    iFilterColumnValue = L"";
 }
 
 JavaApplicationSettings::JavaApplicationSettings(const QString& aName, const QStringList& aValues, const std::wstring& aColumnName, const std::string& aTableName, const std::vector<std::wstring>& aStorageValues):
-        iValues(aValues)
+        iName(aName), 
+        iValues(aValues), 
+        iId(0), 
+        iCurrentValue(0), 
+        iColumnName(aColumnName), 
+        iTableName(aTableName), 
+        iStorageValues(aStorageValues), 
+        iStorageValuesFilter(L""), 
+        iValuesColumnName(L""), 
+        iFilterColumnName(L""), 
+        iFilterColumnValue(L""), 
+        connectedToUi(false)
 {
-    iName = aName;
-    iId = 0;
-    iCurrentValue = 0;
-    iColumnName = aColumnName;
-    iTableName = aTableName;
-    iStorageValues = aStorageValues;
-    iFilterColumnName = L"";
-    iFilterColumnValue = L"";
 }
 
-JavaApplicationSettings::JavaApplicationSettings(const QString& aName, const QStringList& aValues, const std::wstring& aColumnName, const std::string& aTableName, const std::vector<std::wstring>& aStorageValues, const std::wstring& aFilterColumnName, const std::wstring& aFilterColumnValue):
-        iValues(aValues)
+JavaApplicationSettings::JavaApplicationSettings(const QString& aName, const QStringList& aValues, const std::wstring& aColumnName, const std::string& aTableName, const std::vector<std::wstring>& aStorageValues, const std::wstring& aFilterColumnName, const std::wstring& aFilterColumnValue,  const std::wstring& aValuesColumnName):
+        iName(aName), 
+        iValues(aValues), 
+        iId(0), 
+        iCurrentValue(0), 
+        iColumnName(aColumnName), 
+        iTableName(aTableName), 
+        iStorageValues(aStorageValues), 
+        iStorageValuesFilter(L""), 
+        iValuesColumnName(aValuesColumnName), 
+        iFilterColumnName(aFilterColumnName), 
+        iFilterColumnValue(aFilterColumnValue), 
+        connectedToUi(false)
 {
-    iName = aName;
-    iId = 0;
-    iCurrentValue = 0;
-    iColumnName = aColumnName;
-    iTableName = aTableName;
-    iStorageValues = aStorageValues;
-    iFilterColumnName = aFilterColumnName;
-    iFilterColumnValue = aFilterColumnValue;
 }
 
 void JavaApplicationSettings::setCurrentValue(int aCurrentValue)
 {
     iCurrentValue = aCurrentValue;
+}
+
+void JavaApplicationSettings::connectToUi()
+{
+    connectedToUi = true;
+}
+
+void JavaApplicationSettings::disconnectFromUi()
+{
+    connectedToUi = false;
+}
+
+bool JavaApplicationSettings::isConnectedToUi()
+{
+    return connectedToUi;
 }
 
 int JavaApplicationSettings::getCurrentValue()
@@ -81,6 +108,14 @@ const QString& JavaApplicationSettings::getValue(int aValueIndex)
     if (aValueIndex >= 0 && aValueIndex < iValues.size())
         return iValues[aValueIndex];
     return null;
+}
+
+void JavaApplicationSettings::removeValue(int aValueIndex)
+{
+    if (aValueIndex >= 0 && aValueIndex < iStorageValues.size())
+        iStorageValues.erase(iStorageValues.begin() + aValueIndex);
+    if (aValueIndex >= 0 && aValueIndex < iValues.size())
+        iValues.erase(iValues.begin() + aValueIndex);
 }
 
 int JavaApplicationSettings::getValue(const QString& aValue)
@@ -101,7 +136,7 @@ void JavaApplicationSettings::setId(HbDataFormModelItem * aId)
     iId = aId;
 }
 
-const HbDataFormModelItem * JavaApplicationSettings::getId()
+HbDataFormModelItem * JavaApplicationSettings::getId()
 {
     return iId;
 }
@@ -141,6 +176,11 @@ const std::wstring& JavaApplicationSettings::getColumnName()
     return iColumnName;
 }
 
+const std::wstring& JavaApplicationSettings::getValuesColumnName()
+{
+    return iValuesColumnName;
+}
+    
 const std::string& JavaApplicationSettings::getTableName()
 {
     return iTableName;
@@ -149,6 +189,16 @@ const std::string& JavaApplicationSettings::getTableName()
 const std::vector<std::wstring>& JavaApplicationSettings::getStorageValues()
 {
     return iStorageValues;
+}
+
+void JavaApplicationSettings::setStorageValuesFilter(const std::wstring& aStorageValuesFilter)
+{
+    iStorageValuesFilter = aStorageValuesFilter;
+}
+
+const std::wstring& JavaApplicationSettings::getStorageValuesFilter()
+{
+    return iStorageValuesFilter;
 }
 
 const std::wstring& JavaApplicationSettings::getFilterColumnName()

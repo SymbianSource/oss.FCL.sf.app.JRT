@@ -46,34 +46,34 @@ CMMAMIDIControl* CMMAMIDIControl::NewL(CMMAMIDIPlayer* aPlayer)
 
 CMMAMIDIControl::CMMAMIDIControl(CMMAMIDIPlayer* aPlayer)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAMIDIControl::CMMAMIDIControl");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAMIDIControl::CMMAMIDIControl");
     iPlayer = aPlayer;
 }
 
 CMMAMIDIControl::~CMMAMIDIControl()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAMIDIControl::~CMMAMIDIControl +");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAMIDIControl::~CMMAMIDIControl +");
     delete iVolumeEventWait;
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAMIDIControl::~CMMAMIDIControl -");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAMIDIControl::~CMMAMIDIControl -");
 }
 
 void CMMAMIDIControl::ConstructL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAMIDIControl::ConstructL +");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAMIDIControl::ConstructL +");
     iVolumeEventWait = CChannelVolumeEventWait::NewL();
     iPlayer->addObserverL(this);
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAMIDIControl::ConstructL -");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAMIDIControl::ConstructL -");
 }
 
 const TDesC& CMMAMIDIControl::ClassName() const
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAMIDIControl::ClassName");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAMIDIControl::ClassName");
     return KMIDIControlName;
 }
 
 TInt CMMAMIDIControl::ChannelVolumeL(TInt aChannel)
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA: CMMAMIDIControl: ChannelVolumeL + aChannel=%d", aChannel);
+    LOG1(EJavaMMAPI, EInfo, "MMA: CMMAMIDIControl: ChannelVolumeL + aChannel=%d", aChannel);
 
     CMidiClientUtility* midi = iPlayer->MidiClient();
 
@@ -131,13 +131,13 @@ TInt CMMAMIDIControl::ChannelVolumeL(TInt aChannel)
         retVal = KMAXVolume;
     }
 
-    LOG1( EJavaMMAPI, EInfo, "MMA: CMMAMIDIControl: ChannelVolumeL - retVal=%d", retVal);
+    LOG1(EJavaMMAPI, EInfo, "MMA: CMMAMIDIControl: ChannelVolumeL - retVal=%d", retVal);
     return retVal;
 }
 
 void CMMAMIDIControl::SetChannelVolumeL(TInt aChannel, TInt aVolume)
 {
-    LOG2( EJavaMMAPI, EInfo, "MMA: CMMAMIDIControl: SetChannelVolumeL + aChannel=%d aVolume=%d", aChannel, aVolume);
+    LOG2(EJavaMMAPI, EInfo, "MMA: CMMAMIDIControl: SetChannelVolumeL + aChannel=%d aVolume=%d", aChannel, aVolume);
 
     CMidiClientUtility* midi = iPlayer->MidiClient();
 
@@ -165,11 +165,11 @@ void CMMAMIDIControl::SetChannelVolumeL(TInt aChannel, TInt aVolume)
             (engineState == EOpenDisengaged)))
 #endif
     {
-        LOG( EJavaMMAPI, EInfo, "MMA: CMMAMIDIControl: SetChannelVolumeL: ExecuteL ->");
+        LOG(EJavaMMAPI, EInfo, "MMA: CMMAMIDIControl: SetChannelVolumeL: ExecuteL ->");
         iVolumeEventWait->StartWait(aChannel);
-        LOG( EJavaMMAPI, EInfo, "MMA: CMMAMIDIControl: SetChannelVolumeL: ExecuteL <-");
+        LOG(EJavaMMAPI, EInfo, "MMA: CMMAMIDIControl: SetChannelVolumeL: ExecuteL <-");
     }
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMAMIDIControl: SetChannelVolumeL -");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMAMIDIControl: SetChannelVolumeL -");
 }
 
 void CMMAMIDIControl::SetProgramL(TInt aChannel,
@@ -184,7 +184,7 @@ void CMMAMIDIControl::SetProgramL(TInt aChannel,
 
 TInt CMMAMIDIControl::SendMIDIEventL(const TDesC8* aData)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMAMIDIControl: SendMIDIEventL +");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMAMIDIControl: SendMIDIEventL +");
     CMidiClientUtility* midi = iPlayer->MidiClient();
 
     // SendMessageL only processes first message in the descriptor,
@@ -199,16 +199,16 @@ TInt CMMAMIDIControl::SendMIDIEventL(const TDesC8* aData)
         TPtrC8 nextBlock = aData->Right(dataLength - dataSent);
         dataSent += midi->SendMessageL(nextBlock);
     }
-    LOG1( EJavaMMAPI, EInfo, "MMA: CMMAMIDIControl: SendMIDIEventL: sent %d bytes", dataSent);
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMAMIDIControl: SendMIDIEventL -");
+    LOG1(EJavaMMAPI, EInfo, "MMA: CMMAMIDIControl: SendMIDIEventL: sent %d bytes", dataSent);
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMAMIDIControl: SendMIDIEventL -");
     return dataSent;
 }
 
 TInt CMMAMIDIControl::ReInitializeMidiL(const TDesC8* aData)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMAMIDIControl: ReInitializeMidiL + ");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMAMIDIControl: ReInitializeMidiL + ");
     iPlayer->ReInitializeMidiEngineL(aData);
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMAMIDIControl: ReInitializeMidiL - ");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMAMIDIControl: ReInitializeMidiL - ");
     return KErrNone;
 }
 
@@ -225,12 +225,12 @@ void CMMAMIDIControl::MmcuoTempoChanged(TInt /*aMicroBeatsPerMinute*/)
 
 void CMMAMIDIControl::MmcuoVolumeChanged(TInt aChannel, TReal32 /*aVolumeInDecibels*/)
 {
-    LOG1( EJavaMMAPI, EInfo, "CMMAMIDIControl:: MmcuoVolumeChanged + aChannel=%d", aChannel);
+    LOG1(EJavaMMAPI, EInfo, "CMMAMIDIControl:: MmcuoVolumeChanged + aChannel=%d", aChannel);
     if (iVolumeEventWait)
     {
         iVolumeEventWait->HandleVolumeChangedEvent(aChannel);
     }
-    LOG( EJavaMMAPI, EInfo, "CMMAMIDIControl:: MmcuoVolumeChanged -");
+    LOG(EJavaMMAPI, EInfo, "CMMAMIDIControl:: MmcuoVolumeChanged -");
 }
 
 void CMMAMIDIControl::MmcuoMuteChanged(TInt /*aChannel*/,TBool /*aMuted*/)
@@ -259,7 +259,7 @@ void CMMAMIDIControl::MmcuoInstrumentChanged(TInt /*aChannel*/,TInt /*aBankId*/,
 
 CMMAMIDIControl::CChannelVolumeEventWait* CMMAMIDIControl::CChannelVolumeEventWait::NewL()
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAMIDIControl::CChannelVolumeEventWait::NewL");
+    LOG(EJavaMMAPI, EInfo, "CMMAMIDIControl::CChannelVolumeEventWait::NewL");
     CChannelVolumeEventWait* self = new(ELeave) CChannelVolumeEventWait();
     CleanupStack::PushL(self);
     self->ConstructL();
@@ -285,18 +285,18 @@ CMMAMIDIControl::CChannelVolumeEventWait::~CChannelVolumeEventWait()
 
 void CMMAMIDIControl::CChannelVolumeEventWait::TimerExpired()
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAMIDIControl::CChannelVolumeEventWait::TimerExpired +");
+    LOG(EJavaMMAPI, EInfo, "CMMAMIDIControl::CChannelVolumeEventWait::TimerExpired +");
     if (iWait->IsStarted())
     {
-        LOG( EJavaMMAPI, EInfo, "CMMAMIDIControl::CChannelVolumeEventWait::TimerExpired - cancelling wait");
+        LOG(EJavaMMAPI, EInfo, "CMMAMIDIControl::CChannelVolumeEventWait::TimerExpired - cancelling wait");
         iWait->AsyncStop();
     }
-    LOG( EJavaMMAPI, EInfo, "CMMAMIDIControl::CChannelVolumeEventWait::TimerExpired -");
+    LOG(EJavaMMAPI, EInfo, "CMMAMIDIControl::CChannelVolumeEventWait::TimerExpired -");
 }
 
 void CMMAMIDIControl::CChannelVolumeEventWait::StartWait(TInt aChannel)
 {
-    LOG1( EJavaMMAPI, EInfo, "CMMAMIDIControl::CChannelVolumeEventWait::StartWait aChannel=%d", aChannel);
+    LOG1(EJavaMMAPI, EInfo, "CMMAMIDIControl::CChannelVolumeEventWait::StartWait aChannel=%d", aChannel);
     iChannel = aChannel;
 
     if (!iWait->IsStarted())
@@ -308,7 +308,7 @@ void CMMAMIDIControl::CChannelVolumeEventWait::StartWait(TInt aChannel)
 
 void CMMAMIDIControl::CChannelVolumeEventWait::StopWait()
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAMIDIControl::CChannelVolumeEventWait::StopWait");
+    LOG(EJavaMMAPI, EInfo, "CMMAMIDIControl::CChannelVolumeEventWait::StopWait");
     if (iWait->IsStarted())
     {
         iTimer->Cancel();
@@ -318,7 +318,7 @@ void CMMAMIDIControl::CChannelVolumeEventWait::StopWait()
 
 void CMMAMIDIControl::CChannelVolumeEventWait::HandleVolumeChangedEvent(TInt aChannel)
 {
-    LOG1( EJavaMMAPI, EInfo, "CMMAMIDIControl::CChannelVolumeEventWait::HandleVolumeChangedEvent aChannel=%d", aChannel);
+    LOG1(EJavaMMAPI, EInfo, "CMMAMIDIControl::CChannelVolumeEventWait::HandleVolumeChangedEvent aChannel=%d", aChannel);
     if (iChannel == aChannel)
     {
         StopWait();

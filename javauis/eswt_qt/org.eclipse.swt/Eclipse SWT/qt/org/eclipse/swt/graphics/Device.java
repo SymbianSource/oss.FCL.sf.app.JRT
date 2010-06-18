@@ -29,76 +29,59 @@ import org.eclipse.swt.internal.qt.OS;
 public abstract class Device implements Drawable {
     
     // Native device handle
-    int paintDevice;
+    static int paintDevice;
 
     // Device instance tracking
     static Device[] Devices = new Device[4];
     
     // Debugging
     public static boolean DEBUG; 
-    boolean debug = DEBUG;
-    boolean tracking = DEBUG;
-    Error [] errors;
-    Object [] objects;
-    Object trackingLock;
+    static boolean debug = DEBUG;
+    static boolean tracking = DEBUG;
+    static Error [] errors;
+    static Object [] objects;
+    static Object trackingLock;
 
     // Themed system colors
-    Color COLOR_LIST_BACKGROUND;
-    Color COLOR_LIST_FOREGROUND;
-    Color COLOR_LIST_SELECTION;
-    Color COLOR_LIST_SELECTION_TEXT;
-    Color COLOR_TITLE_BACKGROUND;
-    Color COLOR_TITLE_BACKGROUND_GRADIENT;
-    Color COLOR_TITLE_FOREGROUND;
-    Color COLOR_TITLE_INACTIVE_BACKGROUND;
-    Color COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT;
-    Color COLOR_TITLE_INACTIVE_FOREGROUND;
-    Color COLOR_WIDGET_BACKGROUND;
-    Color COLOR_WIDGET_BORDER;
-    Color COLOR_WIDGET_DARK_SHADOW;
-    Color COLOR_WIDGET_FOREGROUND;
-    Color COLOR_WIDGET_HIGHLIGHT_SHADOW;
-    Color COLOR_WIDGET_LIGHT_SHADOW;
-    Color COLOR_WIDGET_NORMAL_SHADOW;
+    static Color COLOR_LIST_BACKGROUND;
+    static Color COLOR_LIST_FOREGROUND;
+    static Color COLOR_LIST_SELECTION;
+    static Color COLOR_LIST_SELECTION_TEXT;
+    static Color COLOR_TITLE_BACKGROUND;
+    static Color COLOR_TITLE_BACKGROUND_GRADIENT;
+    static Color COLOR_TITLE_FOREGROUND;
+    static Color COLOR_TITLE_INACTIVE_BACKGROUND;
+    static Color COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT;
+    static Color COLOR_TITLE_INACTIVE_FOREGROUND;
+    static Color COLOR_WIDGET_BACKGROUND;
+    static Color COLOR_WIDGET_BORDER;
+    static Color COLOR_WIDGET_DARK_SHADOW;
+    static Color COLOR_WIDGET_FOREGROUND;
+    static Color COLOR_WIDGET_HIGHLIGHT_SHADOW;
+    static Color COLOR_WIDGET_LIGHT_SHADOW;
+    static Color COLOR_WIDGET_NORMAL_SHADOW;
     
-    // Disposed state flag
+    // Disposed state flag, instance data
     protected boolean disposed;
+    
+    // Initialized state flag
+    static boolean initialized;
+    
+	// Internal state flag telling if this is the application's instance
+	// or an internal one
+    boolean internal;
     
     // Handle to the null Icon. Eventually set by Image.internal_getNullIconHandle
     static int nullIconHandle;
     
     // Default height for FontData
     static final int FONT_DEF_HEIGHT = 12;
-    
-    /*
-    * TEMPORARY CODE. When a graphics object is
-    * created and the device parameter is null,
-    * the current Display is used. This presents
-    * a problem because SWT graphics does not
-    * reference classes in SWT widgets. The correct
-    * fix is to remove this feature. Unfortunately,
-    * too many application programs rely on this
-    * feature.
-    *
-    * This code will be removed in the future.
-    */
-    protected static Device CurrentDevice;
-    protected static Runnable DeviceFinder;
+        
     static {
         try {
             Class.forName ("org.eclipse.swt.widgets.Display");
         } catch (Throwable e) {}
     }   
-
-/*
-* TEMPORARY CODE.
-*/
-static synchronized Device getDevice () {
-    if (DeviceFinder != null) DeviceFinder.run();
-    Device device = CurrentDevice;  
-    CurrentDevice = null;
-    return device;
-}
 
 /**
  * Constructs a new instance of this class.
@@ -128,7 +111,18 @@ public Device() {
  * @see DeviceData
  */
 public Device(DeviceData data) {
+	this(data, false);
+}
+
+/**
+ * <p>
+ * <b>IMPORTANT:</b> This constructor is <em>not</em> part of the SWT
+ * public API. It should never be referenced from application code.
+ * </p>
+ */
+protected Device(DeviceData data, boolean internal) {
     synchronized (Device.class) {
+    	this.internal = internal;
         if (data != null) {
             debug = data.debug;
             tracking = data.tracking;
@@ -141,6 +135,7 @@ public Device(DeviceData data) {
         // In this order
         init();
         register(this);
+    	initialized = true;
     }
 }
 
@@ -220,6 +215,7 @@ public void dispose () {
             deregister(this);
         } finally {
             disposed = true;
+        	initialized = false;
         }
         if (tracking) {
             synchronized (trackingLock) {
@@ -567,51 +563,53 @@ public boolean getWarnings () {
  * @see #create
  */
 protected void init () {
-    int palette = OS.QApplication_swt_palette_new();
-    try {
-        int[] rgb;
-        
-        // List like widgets
-        rgb = OS.QPalette_color(palette, OS.QPALETTE_COLORGROUP_NORMAL, OS.QPALETTE_COLORROLE_BASE);
-        COLOR_LIST_BACKGROUND = new Color(this, rgb[0], rgb[1], rgb[2]);
-        rgb = OS.QPalette_color(palette, OS.QPALETTE_COLORGROUP_NORMAL, OS.QPALETTE_COLORROLE_TEXT);
-        COLOR_LIST_FOREGROUND = new Color(this, rgb[0], rgb[1], rgb[2]);
-    
-        // Highlight
-        rgb = OS.QPalette_color(palette, OS.QPALETTE_COLORGROUP_NORMAL, OS.QPALETTE_COLORROLE_HIGHLIGHT);
-        COLOR_LIST_SELECTION = new Color(this, rgb[0], rgb[1], rgb[2]);
-        COLOR_TITLE_BACKGROUND = new Color(this, rgb[0], rgb[1], rgb[2]);    
-        COLOR_TITLE_BACKGROUND_GRADIENT = new Color(this, rgb[0], rgb[1], rgb[2]);
-        COLOR_WIDGET_HIGHLIGHT_SHADOW = new Color(this, rgb[0], rgb[1], rgb[2]);
-        rgb = OS.QPalette_color(palette, OS.QPALETTE_COLORGROUP_NORMAL, OS.QPALETTE_COLORROLE_HIGHLIGHTTEXT);
-        COLOR_LIST_SELECTION_TEXT = new Color(this, rgb[0], rgb[1], rgb[2]);
-        COLOR_TITLE_FOREGROUND = new Color(this, rgb[0], rgb[1], rgb[2]);
-    
-        // Inactive highlight
-        rgb = OS.QPalette_color(palette, OS.QPALETTE_COLORGROUP_DISABLED, OS.QPALETTE_COLORROLE_HIGHLIGHT);
-        COLOR_TITLE_INACTIVE_BACKGROUND = new Color(this, rgb[0], rgb[1], rgb[2]);
-        COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT = new Color(this, rgb[0], rgb[1], rgb[2]);
-        rgb = OS.QPalette_color(palette, OS.QPALETTE_COLORGROUP_DISABLED, OS.QPALETTE_COLORROLE_TEXT);
-        COLOR_TITLE_INACTIVE_FOREGROUND = new Color(this, rgb[0], rgb[1], rgb[2]);
-        
-        // Window
-        rgb = OS.QPalette_color(palette, OS.QPALETTE_COLORGROUP_NORMAL, OS.QPALETTE_COLORROLE_WINDOW);
-        COLOR_WIDGET_BACKGROUND = new Color(this, rgb[0], rgb[1], rgb[2]);
-        rgb = OS.QPalette_color(palette, OS.QPALETTE_COLORGROUP_NORMAL, OS.QPALETTE_COLORROLE_WINDOWTEXT);
-        COLOR_WIDGET_FOREGROUND = new Color(this, rgb[0], rgb[1], rgb[2]);
-        
-        // Shadows: Black <= Shadow < [Dark] < [Mid] < [Button] < Midlight < Light <= White
-        rgb = OS.QPalette_color(palette, OS.QPALETTE_COLORGROUP_NORMAL, OS.QPALETTE_COLORROLE_DARK);
-        COLOR_WIDGET_DARK_SHADOW = new Color(this, rgb[0], rgb[1], rgb[2]);    
-        rgb = OS.QPalette_color(palette, OS.QPALETTE_COLORGROUP_NORMAL, OS.QPALETTE_COLORROLE_MID);
-        COLOR_WIDGET_BORDER = new Color(this, rgb[0], rgb[1], rgb[2]);
-        COLOR_WIDGET_NORMAL_SHADOW = new Color(this, rgb[0], rgb[1], rgb[2]);
-        rgb = OS.QPalette_color(palette, OS.QPALETTE_COLORGROUP_NORMAL, OS.QPALETTE_COLORROLE_BUTTON);
-        COLOR_WIDGET_LIGHT_SHADOW = new Color(this, rgb[0], rgb[1], rgb[2]);
-    } finally {
-        OS.QPalette_delete(palette);
-    }
-    paintDevice = OS.QApplication_swt_desktopPaintDevice();
+	if(!initialized) {
+	    int palette = OS.QApplication_swt_palette_new();
+	    try {
+	        int[] rgb;
+	        
+	        // List like widgets
+	        rgb = OS.QPalette_color(palette, OS.QPALETTE_COLORGROUP_NORMAL, OS.QPALETTE_COLORROLE_BASE);
+	        COLOR_LIST_BACKGROUND = new Color(this, rgb[0], rgb[1], rgb[2]);
+	        rgb = OS.QPalette_color(palette, OS.QPALETTE_COLORGROUP_NORMAL, OS.QPALETTE_COLORROLE_TEXT);
+	        COLOR_LIST_FOREGROUND = new Color(this, rgb[0], rgb[1], rgb[2]);
+	    
+	        // Highlight
+	        rgb = OS.QPalette_color(palette, OS.QPALETTE_COLORGROUP_NORMAL, OS.QPALETTE_COLORROLE_HIGHLIGHT);
+	        COLOR_LIST_SELECTION = new Color(this, rgb[0], rgb[1], rgb[2]);
+	        COLOR_TITLE_BACKGROUND = new Color(this, rgb[0], rgb[1], rgb[2]);    
+	        COLOR_TITLE_BACKGROUND_GRADIENT = new Color(this, rgb[0], rgb[1], rgb[2]);
+	        COLOR_WIDGET_HIGHLIGHT_SHADOW = new Color(this, rgb[0], rgb[1], rgb[2]);
+	        rgb = OS.QPalette_color(palette, OS.QPALETTE_COLORGROUP_NORMAL, OS.QPALETTE_COLORROLE_HIGHLIGHTTEXT);
+	        COLOR_LIST_SELECTION_TEXT = new Color(this, rgb[0], rgb[1], rgb[2]);
+	        COLOR_TITLE_FOREGROUND = new Color(this, rgb[0], rgb[1], rgb[2]);
+	    
+	        // Inactive highlight
+	        rgb = OS.QPalette_color(palette, OS.QPALETTE_COLORGROUP_DISABLED, OS.QPALETTE_COLORROLE_HIGHLIGHT);
+	        COLOR_TITLE_INACTIVE_BACKGROUND = new Color(this, rgb[0], rgb[1], rgb[2]);
+	        COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT = new Color(this, rgb[0], rgb[1], rgb[2]);
+	        rgb = OS.QPalette_color(palette, OS.QPALETTE_COLORGROUP_DISABLED, OS.QPALETTE_COLORROLE_TEXT);
+	        COLOR_TITLE_INACTIVE_FOREGROUND = new Color(this, rgb[0], rgb[1], rgb[2]);
+	        
+	        // Window
+	        rgb = OS.QPalette_color(palette, OS.QPALETTE_COLORGROUP_NORMAL, OS.QPALETTE_COLORROLE_WINDOW);
+	        COLOR_WIDGET_BACKGROUND = new Color(this, rgb[0], rgb[1], rgb[2]);
+	        rgb = OS.QPalette_color(palette, OS.QPALETTE_COLORGROUP_NORMAL, OS.QPALETTE_COLORROLE_WINDOWTEXT);
+	        COLOR_WIDGET_FOREGROUND = new Color(this, rgb[0], rgb[1], rgb[2]);
+	        
+	        // Shadows: Black <= Shadow < [Dark] < [Mid] < [Button] < Midlight < Light <= White
+	        rgb = OS.QPalette_color(palette, OS.QPALETTE_COLORGROUP_NORMAL, OS.QPALETTE_COLORROLE_DARK);
+	        COLOR_WIDGET_DARK_SHADOW = new Color(this, rgb[0], rgb[1], rgb[2]);    
+	        rgb = OS.QPalette_color(palette, OS.QPALETTE_COLORGROUP_NORMAL, OS.QPALETTE_COLORROLE_MID);
+	        COLOR_WIDGET_BORDER = new Color(this, rgb[0], rgb[1], rgb[2]);
+	        COLOR_WIDGET_NORMAL_SHADOW = new Color(this, rgb[0], rgb[1], rgb[2]);
+	        rgb = OS.QPalette_color(palette, OS.QPALETTE_COLORGROUP_NORMAL, OS.QPALETTE_COLORROLE_BUTTON);
+	        COLOR_WIDGET_LIGHT_SHADOW = new Color(this, rgb[0], rgb[1], rgb[2]);
+	    } finally {
+	        OS.QPalette_delete(palette);
+	    }
+	    paintDevice = OS.QApplication_swt_desktopPaintDevice();
+	}
 }
 
 /**  
@@ -761,46 +759,47 @@ protected void release () {
             OS.QIcon_delete( nullIconHandle );
             nullIconHandle = 0;
         }
+        COLOR_LIST_BACKGROUND.dispose();
+        COLOR_LIST_FOREGROUND.dispose();
+        COLOR_LIST_SELECTION.dispose();
+        COLOR_LIST_SELECTION_TEXT.dispose();
+        COLOR_TITLE_BACKGROUND.dispose();
+        COLOR_TITLE_BACKGROUND_GRADIENT.dispose();
+        COLOR_TITLE_FOREGROUND.dispose();
+        COLOR_TITLE_INACTIVE_BACKGROUND.dispose();
+        COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT.dispose();
+        COLOR_TITLE_INACTIVE_FOREGROUND.dispose();
+        COLOR_WIDGET_BACKGROUND.dispose();
+        COLOR_WIDGET_BORDER.dispose();
+        COLOR_WIDGET_DARK_SHADOW.dispose();
+        COLOR_WIDGET_FOREGROUND.dispose();
+        COLOR_WIDGET_HIGHLIGHT_SHADOW.dispose();
+        COLOR_WIDGET_LIGHT_SHADOW.dispose();
+        COLOR_WIDGET_NORMAL_SHADOW.dispose();
+        
+        COLOR_LIST_BACKGROUND = null;
+        COLOR_LIST_FOREGROUND = null;
+        COLOR_LIST_SELECTION = null;
+        COLOR_LIST_SELECTION_TEXT = null;
+        COLOR_TITLE_BACKGROUND = null;
+        COLOR_TITLE_BACKGROUND_GRADIENT = null;
+        COLOR_TITLE_FOREGROUND = null;
+        COLOR_TITLE_INACTIVE_BACKGROUND = null;
+        COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT = null;
+        COLOR_TITLE_INACTIVE_FOREGROUND = null;
+        COLOR_WIDGET_BACKGROUND = null;
+        COLOR_WIDGET_BORDER = null;
+        COLOR_WIDGET_DARK_SHADOW = null;
+        COLOR_WIDGET_FOREGROUND = null;
+        COLOR_WIDGET_HIGHLIGHT_SHADOW = null;
+        COLOR_WIDGET_LIGHT_SHADOW = null;
+        COLOR_WIDGET_NORMAL_SHADOW = null;
+        
+        paintDevice = 0;
     }
     
     // Non static data follows
-    COLOR_LIST_BACKGROUND.dispose();
-    COLOR_LIST_FOREGROUND.dispose();
-    COLOR_LIST_SELECTION.dispose();
-    COLOR_LIST_SELECTION_TEXT.dispose();
-    COLOR_TITLE_BACKGROUND.dispose();
-    COLOR_TITLE_BACKGROUND_GRADIENT.dispose();
-    COLOR_TITLE_FOREGROUND.dispose();
-    COLOR_TITLE_INACTIVE_BACKGROUND.dispose();
-    COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT.dispose();
-    COLOR_TITLE_INACTIVE_FOREGROUND.dispose();
-    COLOR_WIDGET_BACKGROUND.dispose();
-    COLOR_WIDGET_BORDER.dispose();
-    COLOR_WIDGET_DARK_SHADOW.dispose();
-    COLOR_WIDGET_FOREGROUND.dispose();
-    COLOR_WIDGET_HIGHLIGHT_SHADOW.dispose();
-    COLOR_WIDGET_LIGHT_SHADOW.dispose();
-    COLOR_WIDGET_NORMAL_SHADOW.dispose();
-    
-    COLOR_LIST_BACKGROUND = null;
-    COLOR_LIST_FOREGROUND = null;
-    COLOR_LIST_SELECTION = null;
-    COLOR_LIST_SELECTION_TEXT = null;
-    COLOR_TITLE_BACKGROUND = null;
-    COLOR_TITLE_BACKGROUND_GRADIENT = null;
-    COLOR_TITLE_FOREGROUND = null;
-    COLOR_TITLE_INACTIVE_BACKGROUND = null;
-    COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT = null;
-    COLOR_TITLE_INACTIVE_FOREGROUND = null;
-    COLOR_WIDGET_BACKGROUND = null;
-    COLOR_WIDGET_BORDER = null;
-    COLOR_WIDGET_DARK_SHADOW = null;
-    COLOR_WIDGET_FOREGROUND = null;
-    COLOR_WIDGET_HIGHLIGHT_SHADOW = null;
-    COLOR_WIDGET_LIGHT_SHADOW = null;
-    COLOR_WIDGET_NORMAL_SHADOW = null;
-    
-    paintDevice = 0;
+    // No non-static data to release
 }
 
 /**

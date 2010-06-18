@@ -28,9 +28,9 @@ import javax.microedition.io.*;
 import javax.microedition.lcdui.Image;
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
-#ifdef RD_JAVA_OMJ
+//#ifdef RD_JAVA_OMJ
 import com.nokia.mj.impl.rt.support.Finalizer;
-#endif // RD_JAVA_OMJ
+//#endif // RD_JAVA_OMJ
 
 public class Loader
 {
@@ -90,7 +90,7 @@ public class Loader
 
     private Interface iInterface;
 
-#ifdef RD_JAVA_OMJ
+//#ifdef RD_JAVA_OMJ
     private Finalizer mFinalizer = new Finalizer()
     {
         public void finalizeImpl()
@@ -98,7 +98,7 @@ public class Loader
             doFinalize();
         }
     };
-#endif // RD_JAVA_OMJ
+//#endif // RD_JAVA_OMJ
 
     /**
      * Default ctor
@@ -1086,7 +1086,7 @@ public class Loader
         }
     }
 
-#ifdef RD_JAVA_OMJ
+//#ifdef RD_JAVA_OMJ
     private void doFinalize()
     {
         if (mFinalizer != null)
@@ -1095,7 +1095,7 @@ public class Loader
             mFinalizer = null;
         }
     }
-#endif // RD_JAVA_OMJ
+//#endif // RD_JAVA_OMJ
 
     // Finalization method for Symbian
     final private void registeredFinalize()

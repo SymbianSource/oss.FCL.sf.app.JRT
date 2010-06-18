@@ -51,7 +51,7 @@ CMMAManager::CMMAManager()
 
 void CMMAManager::ConstructL(TInt aMIDletSuiteID)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAManager::ConstructL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAManager::ConstructL +");
     //
     // Create and insert known player factories
     //
@@ -82,12 +82,12 @@ void CMMAManager::ConstructL(TInt aMIDletSuiteID)
     AddPlayerFactoryL(audioRecorderFactory);
     CleanupStack::Pop(); // audioRecorderFactory
 
-/*
-    CMMAAnimationPlayerFactory* animationPlayerFactory =
-        CMMAAnimationPlayerFactory::NewLC();
-    AddPlayerFactoryL(animationPlayerFactory);
-    CleanupStack::Pop(); // animationPlayerFactory
-*/
+    /*
+        CMMAAnimationPlayerFactory* animationPlayerFactory =
+            CMMAAnimationPlayerFactory::NewLC();
+        AddPlayerFactoryL(animationPlayerFactory);
+        CleanupStack::Pop(); // animationPlayerFactory
+    */
 
     // Add camera playerfactory only if there is a camera
     if (CCamera::CamerasAvailable() > 0)
@@ -105,7 +105,7 @@ void CMMAManager::ConstructL(TInt aMIDletSuiteID)
     CleanupStack::Pop(); // drmPlayerFactory
 #endif // RD_JAVA_OMA_DRM_V2
 
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAManager::ConstructL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAManager::ConstructL -");
 }
 
 void CMMAManager::StaticCreateManagerL(CMMAManager** aManager,

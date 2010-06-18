@@ -50,9 +50,9 @@ public class Protocol extends NativeBase
                 MediaException,
                 java.lang.SecurityException
     {
-    	ApplicationUtils appUtils = ApplicationUtils.getInstance();
-      RTSPPermission per = new RTSPPermission("network usage");
-      appUtils.checkPermission(per);
+        ApplicationUtils appUtils = ApplicationUtils.getInstance();
+        RTSPPermission per = new RTSPPermission("network usage");
+        appUtils.checkPermission(per);
         return super.createPlayer(aLocator);
     }
 }

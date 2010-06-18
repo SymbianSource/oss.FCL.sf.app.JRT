@@ -324,10 +324,10 @@ void qt_signal_hover() {
 void hookEvents_pp () {
     super.hookEvents_pp ();
     if ((style & SWT.CASCADE) == 0 ){
-        int triggeredProxy = OS.SignalHandler_new(handle, display, OS.QSIGNAL_TRIGGERED);
+        int triggeredProxy = OS.SignalHandler_new(handle, OS.QSIGNAL_TRIGGERED);
         OS.QObject_connectOrThrow(handle, "triggered(bool)", triggeredProxy, "widgetSignal(bool)", OS.QT_AUTOCONNECTION);
     }
-    int hoveredProxy = OS.SignalHandler_new(handle, display, OS.QSIGNAL_HOVER );
+    int hoveredProxy = OS.SignalHandler_new(handle, OS.QSIGNAL_HOVER );
     OS.QObject_connectOrThrow(handle, "hovered()", hoveredProxy, "widgetSignal()", OS.QT_AUTOCONNECTION);
 }
 

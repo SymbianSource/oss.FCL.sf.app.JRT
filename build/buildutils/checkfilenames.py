@@ -42,7 +42,7 @@ known_exts = [
     ".cvsignore", ".dat", ".dcf", ".def", ".defs", ".dll", ".der", ".doc",
     ".dr", ".dso", ".dsp", ".dsw", ".dtd",
     ".emx", ".exe", ".flm", ".gcfml", ".gif",
-    ".h", ".hrh", ".html", ".iby", ".inf", ".ini", ".inl",
+    ".h", ".hrh", ".htm", ".html", ".iby", ".inf", ".ini", ".inl",
     ".jad", ".jar", ".java", ".javaversion", ".jpeg", ".jpg", ".js", ".jsp", ".jupiter",
     ".key", ".ks", ".launch", ".lib", ".loc", ".log",
     ".mak", ".make", "makefile", "makefile_akn", "makefile_qt",  "manifest", ".mbm", ".mdl",
@@ -63,7 +63,8 @@ known_exts = [
     "findtr", "syncqt", "new",
 # Other peculiar filenames:
     "installerodclist", "installerodclist30", "midpodclist", "midpodclist30",
-    "notice", "package-list", "tckrunnerodclist", "tckrunnerodclist30", "unknowncert",
+    "notice", "package-list", "tckrunnerodclist", "tckrunnerodclist30", "unknowncert","midprootslist",
+    "javacontrolpanelodclist", "javacontrolpanelodclist30",
 ]
 
 # Command line options.

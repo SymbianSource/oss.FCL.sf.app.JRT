@@ -19,19 +19,21 @@ public final class OS {
 
     private static boolean started;
     
-    /**
-     * Obtains the platform specific UI thread where SWT UI APIs can be accessed
-     * in and calls the provided UIThreadCallback in it. This method instantly
-     * returns leaving two threads running concurrently: the calling thread and
-     * the UI thread. Only one UI thread can exist per process and this method
-     * can be called only once to obtain it. Subsequent calls will result in an
-     * exception being thrown. This method can be called by any thread.
-     * 
-     * @param callback An object to call in the UI thread.
-     * @return 0 In case of success, non-zero if starting failed and
-     *         callback object will never be called.
-     * @exception RuntimeException If called again after already started
-     */
+	/**
+	 * Obtains the platform specific UI thread where SWT UI APIs can be accessed
+	 * in and calls the provided Runnable in it. This method instantly returns
+	 * leaving two threads running concurrently: the calling thread and the UI
+	 * thread. Only one UI thread can exist per process and this method can be
+	 * called only once to obtain it. Subsequent calls will result in an
+	 * exception being thrown. This method can be called by any thread.
+	 * 
+	 * @param callback
+	 *            An object to call in the UI thread.
+	 * @return 0 In case of success, non-zero if starting failed and callback
+	 *         object will never be called.
+	 * @exception RuntimeException
+	 *                If called again after already started
+	 */
     public synchronized static final int startUI(
             final Runnable callback) {
         if (started) {

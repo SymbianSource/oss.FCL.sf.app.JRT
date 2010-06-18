@@ -25,7 +25,6 @@ import com.nokia.mj.impl.installer.utils.InstallerException;
 import com.nokia.mj.impl.installer.utils.FileUtils;
 import com.nokia.mj.impl.installer.utils.Log;
 import com.nokia.mj.impl.installer.utils.PlatformUid;
-import com.nokia.mj.impl.rt.installer.ApplicationInfoImpl;
 import com.nokia.mj.impl.utils.Attribute;
 import com.nokia.mj.impl.utils.Uid;
 
@@ -126,27 +125,6 @@ public final class SifRegistrator
             uid = PlatformUid.createUid(id.getId());
         }
         return uid;
-    }
-
-    /**
-     * Registers or unregisters Java software type to software
-     * installation framework.
-     *
-     * @param aRegister true for registration, false for unregistration
-     */
-    public static void registerJavaSoftwareType(boolean aRegister)
-    {
-        String op = (aRegister? "Register": "Unregister");
-        int err = _registerJavaSoftwareType(aRegister);
-        if (err < 0)
-        {
-            InstallerException.internalError(
-                op + " Java software type failed with code " + err);
-        }
-        else
-        {
-            Log.log("SifRegistrator " + op + "ed Java software type");
-        }
     }
 
     /**
@@ -690,15 +668,20 @@ public final class SifRegistrator
     private static String[] getComponentFiles(SuiteInfo aSuite)
     {
         Vector componentFiles = new Vector();
-        String path = aSuite.getJadPath();
-        if (path != null)
+        if (!aSuite.isPreinstalled())
         {
-            componentFiles.addElement(getScrString(path));
-        }
-        path = aSuite.getJarPath();
-        if (path != null)
-        {
-            componentFiles.addElement(getScrString(path));
+            // Add component jad and jar files only when the
+            // application is not preinstalled.
+            String path = aSuite.getJadPath();
+            if (path != null)
+            {
+                componentFiles.addElement(getScrString(path));
+            }
+            path = aSuite.getJarPath();
+            if (path != null)
+            {
+                componentFiles.addElement(getScrString(path));
+            }
         }
         boolean addRootPath = true;
         int rootDrive = FileUtils.getDrive(aSuite.getRootDir());
@@ -716,10 +699,15 @@ public final class SifRegistrator
         }
         if (addRootPath)
         {
-            componentFiles.addElement(getScrString(aSuite.getRootDir()));
+            componentFiles.addElement(
+                getScrString(aSuite.getRootDir() + "nofile.txt"));
         }
         String[] result = new String[componentFiles.size()];
         componentFiles.copyInto(result);
+        for (int i = 0; i < result.length; i++)
+        {
+            Log.log("SifRegistrator componentFiles[" + i + "]: " + result[i]);
+        }
         return result;
     }
 
@@ -826,18 +814,55 @@ public final class SifRegistrator
         }
 
         // Register Domain-Category property.
-        ApplicationInfoImpl appInfoImpl = (ApplicationInfoImpl)
-                                          com.nokia.mj.impl.rt.support.ApplicationInfo.getInstance();
-        String domainCategory = appInfoImpl.getProtectionDomain();
-        err = _setLocalizedComponentProperty(
-                  iSessionHandle, cid, "Domain-Category",
-                  domainCategory, UNSPECIFIED_LOCALE);
-        if (err < 0)
+        String protectionDomainProperty = "Domain-Category";
+        String protectionDomainName = aSuite.getProtectionDomainName();
+        if (protectionDomainName != null)
         {
-            InstallerException.internalError(
-                "Adding property Domain-Category value " + domainCategory +
-                " for component " + cid + " failed with code " + err);
+            err = _setLocalizedComponentProperty(
+                iSessionHandle, cid, protectionDomainProperty,
+                getProtectionDomainPropertyValue(protectionDomainName),
+                UNSPECIFIED_LOCALE);
+            if (err < 0)
+            {
+                InstallerException.internalError(
+                    "Adding property " + protectionDomainProperty +
+                    " value " + protectionDomainName + " for component " +
+                    cid + " failed with code " + err);
+            }
         }
+        else
+        {
+            Log.logWarning(
+                "SifRegistrator.registerLocalizedProperties: " +
+                protectionDomainProperty + " not set");
+        }
+    }
+
+    /**
+     * Returns the "Domain-Category" property value which contains
+     * the text id and text file name for the localized domain category
+     * text.
+     */
+    private String getProtectionDomainPropertyValue(String aProtectionDomain)
+    {
+        String textId = null;
+        if (aProtectionDomain.equals("Manufacturer"))
+        {
+            textId = "txt_java_inst_setlabel_cert_domain_val_manufacturer";
+        }
+        else if (aProtectionDomain.equals("Operator"))
+        {
+            textId = "txt_java_inst_setlabel_cert_domain_val_operator";
+        }
+        else if (aProtectionDomain.equals("IdentifiedThirdParty"))
+        {
+            textId = "txt_java_inst_setlabel_cert_domain_val_trusted_third_party";
+        }
+        else if (aProtectionDomain.equals("UnidentifiedThirdParty"))
+        {
+            textId = "txt_java_inst_setlabel_cert_domain_val_untrusted_third_party";
+        }
+        return textId + ",javaapplicationinstaller";
     }
 
     /**
@@ -947,14 +972,6 @@ public final class SifRegistrator
      * @return 0 or Symbian error code (negative number)
      */
     private static native int _launchAppView();
-
-    /**
-     * Registers Java software type to software installation framework.
-     *
-     * @param aRegister true for registration, false for unregistration
-     * @return 0 or Symbian error code (negative number)
-     */
-    private static native int _registerJavaSoftwareType(boolean aRegister);
 
     /**
      * Starts native application registration session.

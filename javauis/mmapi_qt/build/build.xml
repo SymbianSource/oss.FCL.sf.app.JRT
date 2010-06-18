@@ -63,6 +63,7 @@
                    com.nokia.microedition.media.control.MetaDataControl,
                    com.nokia.microedition.media.control.MIDIControl,
                    com.nokia.microedition.media.control.MMACanvasDisplay,
+                   com.nokia.microedition.media.control.ItemDisplay,
                    com.nokia.microedition.media.control.BaseDisplay,
                    com.nokia.microedition.media.control.MMAGUIFactory,
                    com.nokia.microedition.media.control.PitchControl,

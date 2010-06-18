@@ -61,7 +61,7 @@ CMMACameraPlayerFactory::~CMMACameraPlayerFactory()
 CMMAPlayer* CMMACameraPlayerFactory::CreatePlayerL(
     CMMAMMFResolver* aResolver)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMACameraPlayerFactory::CreatePlayerL( aResolver )+");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMACameraPlayerFactory::CreatePlayerL( aResolver )+");
     CMMACameraPlayer* player = CMMACameraPlayer::NewLC(iCameraIndex);
 
     /* Add VideoControl */
@@ -124,7 +124,7 @@ CMMAPlayer* CMMACameraPlayerFactory::CreatePlayerL(
     const TDesC& aMiddlePart,
     const TDesC& aParameters)
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMACameraPlayerFactory::CreatePlayerL aParameters = %S", aParameters.Ptr());
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMACameraPlayerFactory::CreatePlayerL aParameters = %S", aParameters.Ptr());
     // check that locator is capture:://audio
     if (aProtocol != KMMACaptureProtocol)
     {

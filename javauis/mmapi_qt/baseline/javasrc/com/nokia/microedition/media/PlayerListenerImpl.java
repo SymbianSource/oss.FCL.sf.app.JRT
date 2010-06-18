@@ -133,7 +133,7 @@ public class PlayerListenerImpl
     {
         Enumeration listeners = iPlayerListeners.elements();
         Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerListenerImpl.java::PostEvent" + listeners);
-        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerListenerImpl.java::PostEvent" + aEventType + aEventData );
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerListenerImpl.java::PostEvent" + aEventType + aEventData);
         Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlaerListenerImpl.java::PostEvent, this = "+this +" iPlayerListeners = "+iPlayerListeners);
         Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"Listeners count = "+iPlayerListeners.size());
         while (listeners.hasMoreElements())
@@ -228,39 +228,39 @@ public class PlayerListenerImpl
         eventType = (String)sEventTypes.elementAt(aEventType);
         return eventType;
     }
-    
+
     class CallBackThread extends Thread
     {
         private String iEventType;
         private Object iEventData;
         private PlayerListener iListener;
         private Player iPlayer;
-        
+
         public CallBackThread(String aEventType, Object aEventData, PlayerListener aListener, Player aPlayer)
         {
             iEventType = aEventType;
             iEventData = aEventData;
             iListener = aListener;
             iPlayer = aPlayer;
-            
-            
+
+
         }
-        
+
         public void doCallBack()
         {
-            
-            
+
+
         }
         public void run()
         {
             iListener.playerUpdate(iPlayer,
-                                  iEventType,
-                                  iEventData);  
-                                  
+                                   iEventType,
+                                   iEventData);
+
             Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"after calling midlet playerupdate");
-               
-            
-        }   
-        
+
+
+        }
+
     }
 }

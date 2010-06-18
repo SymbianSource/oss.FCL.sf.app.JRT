@@ -46,7 +46,7 @@ public class LaunchAppQueryView extends ConfirmationViewBase
     {
         super(aInstallerUi, aParent, 8);
         setTitle(InstallerUiTexts.get(InstallerUiTexts.INSTALLATION_COMPLETE));
-        setCommands("Show", //InstallerUiTexts.get(InstallerUiTexts.SHOW),
+        setCommands(InstallerUiTexts.get(InstallerUiTexts.SHOW),
                     InstallerUiTexts.get(InstallerUiTexts.CLOSE));
     }
 
@@ -68,8 +68,8 @@ public class LaunchAppQueryView extends ConfirmationViewBase
     protected void createView()
     {
         // Add header.
-        String title = "Installed";
-        addHeader(title, iInstallerUi.getInstallInfo(), null);
+        addHeader(InstallerUiTexts.get(InstallerUiTexts.INSTALLATION_COMPLETE),
+                  iInstallerUi.getInstallInfo(), null);
         // Add content to the application info Composite.
         addAppInfo(iInstallerUi.getInstallInfo(), true);
     }

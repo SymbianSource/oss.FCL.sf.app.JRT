@@ -59,6 +59,7 @@ public: // From MMMADisplay
     TPoint DisplayLocation();
     void SetFullScreenL(TBool aFullScreen);
     void SourceSizeChanged(const TSize& aSourceSize);
+    void SourceSizeChanged(TInt aJavaControlWidth, TInt aJavaControlHeight,TInt x, TInt y,TRect aBoundsRect);
     TBool IsVisible();
 
     /**

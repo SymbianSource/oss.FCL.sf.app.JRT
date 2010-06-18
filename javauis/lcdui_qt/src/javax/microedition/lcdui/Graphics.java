@@ -16,11 +16,11 @@
 */
 package javax.microedition.lcdui;
 
-import org.eclipse.swt.graphics.GC;
+
 import org.eclipse.swt.graphics.Internal_GfxPackageSupport;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.qt.graphics.GraphicsContext;
-import org.eclipse.swt.internal.qt.graphics.JavaCommandBuffer;
+
 import org.eclipse.swt.internal.qt.graphics.FontUtils;
 
 import com.nokia.mid.ui.DirectGraphics;
@@ -76,45 +76,38 @@ public class Graphics
      */
     public static final int DOTTED = 1;
 
+    static final int INVALID_STROKE_STYLE = -1;
+
     static final int RGB_MASK = 0x00FFFFFF;
+
+    static final int OPAQUE_ALPHA = 0xff000000;
 
     static final int COMPONENT_MASK = 0xFF;
 
+    /**
+     * Constants for sync strategy
+     */
+    static final int SYNC_LEAVE_SURFACE_SESSION_CLOSED = 10;
+    static final int SYNC_LEAVE_SURFACE_SESSION_OPEN = 11;
+    
+    // Set default sync strategy as closed
+    private int syncStrategy = SYNC_LEAVE_SURFACE_SESSION_CLOSED; 
+    
     private DirectGraphics directGraphics;
-
-    // Graphics rectangle (off-screen buffer rectangle).
-    // private Rectangle graphicsClientArea;
-
-    // Graphics context for drawing to off-screen buffer.
-    private GraphicsContext gc;
-
-    // Off-screen buffer.
-    //private org.eclipse.swt.internal.qt.graphics.Image frameBuffer;
+    private Buffer graphicsBuffer;
 
     // Current font for rendering texts.
-    private Font currentFont;
-    private int currentColor;
-    private int translateX;
-    private int translateY;
-    private int[] currentClip = new int[4];
-    private int currentStrokeSyle;
+    Font currentFont;
+    int currentColor;
+    int translateX;
+    int translateY;
+    int[] currentClip = new int[4];
+    int currentStrokeStyle;
 
-    // Image owning the Graphics if the Graphics object belongs to an Image.
-    private Image parentImage;
-
-    // Flag indicating that we are in Canvas.paint() callback,
-    // thus inside UI thread
-    private boolean paintCallBack;
-    private boolean buffered;
-    private JavaCommandBuffer cmdBuffer;
     private com.nokia.mj.impl.rt.support.Finalizer finalizer;
-    // serialization lock for command buffering and flush
-    private final Object flushLock = new Object();
-    private Canvas canvasParent;
-    private CustomItem customItemParent;
 
     //Constructor
-    Graphics()
+    Graphics(Buffer buffer, Rectangle clipRect)
     {
         finalizer = ((finalizer != null) ? finalizer
                      : new com.nokia.mj.impl.rt.support.Finalizer()
@@ -138,214 +131,24 @@ public class Graphics
                 }
             }
         });
-    }
-    /**
-     * Set the parent image of this Graphics.
-     *
-     * @param image an image
-     */
-    void eswtSetParentImage(final Image image)
-    {
-        if(buffered)
-        {
-            return;
-        }
-        if(parentImage != image)
-        {
-            parentImage = image;
-
-            if(gc == null)
-            {
-                gc = new GraphicsContext();
-            }
-            else
-            {
-                gc.releaseTarget();
-            }
-            ESWTUIThreadRunner.safeSyncExec(new Runnable()
-            {
-                public void run()
-                {
-                    org.eclipse.swt.graphics.Image eswtImage = Image.getESWTImage(image);
-
-                    if(eswtImage != null)
-                    {
-                        gc.bindTarget(Internal_GfxPackageSupport.getImage(eswtImage));
-                        Rectangle clipRect = eswtImage.getBounds();
-                        setClip(0, 0, clipRect.width, clipRect.height);
-                    }
-                    reset();
-                }
-            });
-        }
-    }
-
-    /**
-     * Initializes this instance of Graphics to use command buffer.
-     *
-     * Can be called in a non-UI thread. Not thread-safe.
-     *
-     * @param x The x-coordinate of clip
-     * @param y The y-coordinate of clip
-     * @param width The width of clip
-     * @param height The height of clip
-     */
-    void initBuffered(final Canvas parent, final int x, final int y, final int width, final int height)
-    {
-        ESWTUIThreadRunner.safeSyncExec(new Runnable()
-        {
-            public void run()
-            {
-                cmdBuffer = new JavaCommandBuffer();
-                if(gc == null)
-                {
-                    gc = new GraphicsContext();
-                }
-                gc.bindTarget(cmdBuffer);
-                setClip(x, y, width, height);
-                reset();
-                buffered = true;
-                javax.microedition.lcdui.Graphics.this.canvasParent = parent;
-            }
-        });
-    }
-
-    /**
-     * Initializes this instance of Graphics to use command buffer.
-     *
-     * Can be called in a non-UI thread. Not thread-safe.
-     *
-     * @param x The x-coordinate of clip
-     * @param y The y-coordinate of clip
-     * @param width The width of clip
-     * @param height The height of clip
-     */
-    void initBuffered(CustomItem parent, int x, int y, int width, int height)
-    {
-        cmdBuffer = new JavaCommandBuffer();
-        if(gc == null)
-        {
-            gc = new GraphicsContext();
-        }
-        gc.bindTarget(cmdBuffer);
-        setClip(x, y, width, height);
+        currentClip[0] = clipRect.x;
+        currentClip[1] = clipRect.y;
+        currentClip[2] = clipRect.width;
+        currentClip[3] = clipRect.height;
+        graphicsBuffer = buffer;
         reset();
-        buffered = true;
-        this.customItemParent = parent;
     }
 
-    /**
-     * Resets the command buffer contents.
-     *
-     * This is safe to call only in the UI thread.
-     */
-    void resetCommandBuffer()
-    {
-        gc.releaseTarget();
-        cmdBuffer.reset();
-        gc.bindTarget(cmdBuffer);
-        // write settings which were active before flush
-        // if they are not the same as defaults
-        gc.setFont(Font.getESWTFont(currentFont).handle);
-        gc.setBackgroundColor(currentColor, false);
-        gc.setForegroundColor(currentColor, false);
-        if((translateX != 0) || (translateY != 0))
-        {
-            gc.translate(translateX, translateY);
-        }
 
-        // Note that if called in a non-UI thread then the size of the
-        // Canvas or CustomItem can change between getting the height and
-        // getting the width. Those are modified by the UI thread and there
-        // is no synchronization.
-        int w = 0;
-        int h = 0;
-        if(canvasParent != null)
-        {
-            w = canvasParent.getWidth();
-            h = canvasParent.getHeight();
-        }
-        else
-        {
-            w = customItemParent.getContentWidth();
-            h = customItemParent.getContentHeight();
-        }
-
-        if((currentClip[0] != 0) && (currentClip[1] != 0) &&
-                (currentClip[2] != w) && (currentClip[2] != h))
-        {
-            gc.setClip(currentClip[0], currentClip[1], currentClip[2], currentClip[3], false);
-        }
-        if(currentStrokeSyle != SOLID)
-        {
-            gc.setStrokeStyle(GraphicsContext.STROKE_DOT);
-        }
-    }
 
     /**
-     * Returns the current command buffer or null.
-     *
-     * This method is thread-safe.
-     */
-    JavaCommandBuffer getCommandBuffer()
-    {
-        return cmdBuffer;
-    }
-
-    /**
-     * Get the parent image of this Graphics.
-     */
-    Image getParentImage()
-    {
-        return parentImage;
-    }
-
-    /**
-     * Set Graphics context to a target - the GC is coming from paint event.
-     *
-     * @param eswtGC
-     */
-    void eswtSetGC(final GC eswtGC)
-    {
-        if(buffered)
-        {
-            return;
-        }
-        gc = eswtGC.getGCData().internalGc;
-        ESWTUIThreadRunner.safeSyncExec(new Runnable()
-        {
-            public void run()
-            {
-                Rectangle clipRect = eswtGC.getClipping();
-                setClip(clipRect.x, clipRect.y, clipRect.width, clipRect.height);
-                reset();
-            }
-        });
-    }
-
-    /**
-     * Disposes Graphics context resources.
+     * Disposes objects with native counterparts
      */
     void dispose()
     {
-        if(parentImage != null)
+        synchronized(graphicsBuffer)
         {
-            parentImage = null;
-        }
-        if(gc != null)
-        {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable()
-            {
-                public void run()
-                {
-                    gc.dispose();
-                }
-            });
-            gc = null;
-        }
-        if(cmdBuffer != null)
-        {
-            cmdBuffer = null;
+            graphicsBuffer.removeRef();
         }
     }
 
@@ -354,11 +157,11 @@ public class Graphics
      */
     void reset()
     {
-        setColor(0, 0, 0);
-        setFont(Font.getDefaultFont());
-        setStrokeStyle(Graphics.SOLID);
-        this.translateX = 0;
-        this.translateY = 0;
+        currentFont = Buffer.defaultFont;
+        currentColor = Buffer.defaultColor;
+        currentStrokeStyle = Buffer.defaultStrokeStyle;
+        translateX = Buffer.defaultTranslateX;
+        translateY = Buffer.defaultTranslateY;
     }
 
     /**
@@ -384,28 +187,17 @@ public class Graphics
     }
 
     /**
-     * Sets flag indicating that we are in Canvas.paint() callback
+     * Sets the sync strategy for this instance.
+     * This affects on the behavior of the sync method of this class
+     * which is called via LCDUIInvoker
      */
-    void beginPaint()
+    void setSyncStrategy(int strategy)
     {
-        paintCallBack = true;
-    }
-
-    /**
-     * Sets flag indicating that we are exiting Canvas.paint() callback
-     */
-    void endPaint()
-    {
-        paintCallBack = false;
-    }
-
-    /**
-     * Provides the serialization lock for buffer writing and flushing
-     * @return lock used for synchronizing command buffer access
-     */
-    Object getLock()
-    {
-        return flushLock;
+    	if((strategy != SYNC_LEAVE_SURFACE_SESSION_CLOSED) && (strategy != SYNC_LEAVE_SURFACE_SESSION_OPEN)) 
+    	{
+    		throw new IllegalArgumentException("Internal: Invalid strategy value");
+    	}
+    	syncStrategy = strategy;
     }
 
     /**
@@ -416,27 +208,12 @@ public class Graphics
      */
     public void translate(int xDelta, int yDelta)
     {
-        synchronized(flushLock)
+        synchronized(graphicsBuffer)
         {
-            if(!buffered)
-            {
-                final int xDelta_ = xDelta;
-                final int yDelta_ = yDelta;
-                ESWTUIThreadRunner.safeSyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        gc.translate(xDelta_, yDelta_);
-                    }
-                });
-            }
-            else
-            {
-                gc.translate(xDelta, yDelta);
-            }
+            graphicsBuffer.translate(xDelta, yDelta, this);
+            translateX += xDelta;
+            translateY += yDelta;
         }
-        translateX += xDelta;
-        translateY += yDelta;
     }
 
     /**
@@ -446,7 +223,10 @@ public class Graphics
      */
     public int getTranslateX()
     {
-        return translateX;
+        synchronized(graphicsBuffer)
+        {
+            return translateX;
+        }
     }
 
     /**
@@ -456,7 +236,10 @@ public class Graphics
      */
     public int getTranslateY()
     {
-        return translateY;
+        synchronized(graphicsBuffer)
+        {
+            return translateY;
+        }
     }
 
     /**
@@ -466,7 +249,10 @@ public class Graphics
      */
     public int getColor()
     {
-        return currentColor;
+        synchronized(graphicsBuffer)
+        {
+            return (currentColor & RGB_MASK);
+        }
     }
 
     /**
@@ -476,7 +262,10 @@ public class Graphics
      */
     public int getRedComponent()
     {
-        return currentColor >> 16;
+        synchronized(graphicsBuffer)
+        {
+            return currentColor >> 16;
+        }
     }
 
     /**
@@ -486,7 +275,10 @@ public class Graphics
      */
     public int getGreenComponent()
     {
-        return (currentColor >> 8) & COMPONENT_MASK;
+        synchronized(graphicsBuffer)
+        {
+            return (currentColor >> 8) & COMPONENT_MASK;
+        }
     }
 
     /**
@@ -496,7 +288,10 @@ public class Graphics
      */
     public int getBlueComponent()
     {
-        return currentColor & COMPONENT_MASK;
+        synchronized(graphicsBuffer)
+        {
+            return currentColor & COMPONENT_MASK;
+        }
     }
 
     /**
@@ -506,7 +301,10 @@ public class Graphics
      */
     public int getGrayScale()
     {
-        return (getRedComponent() + getGreenComponent() + getBlueComponent()) / 3;
+        synchronized(graphicsBuffer)
+        {
+            return (getRedComponent() + getGreenComponent() + getBlueComponent()) / 3;
+        }
     }
 
     /**
@@ -524,29 +322,12 @@ public class Graphics
         {
             throw new IllegalArgumentException();
         }
-        synchronized(flushLock)
+        synchronized(graphicsBuffer)
         {
-            if(!buffered)
-            {
-                final int r_ = r;
-                final int g_ = g;
-                final int b_ = b;
-                ESWTUIThreadRunner.safeSyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        gc.setForegroundColor(r_, g_, b_);
-                        gc.setBackgroundColor(r_, g_, b_);
-                    }
-                });
-            }
-            else
-            {
-                gc.setForegroundColor(r, g, b);
-                gc.setBackgroundColor(r, g, b);
-            }
+            graphicsBuffer.setColor(r, g, b, this);
+            currentColor = (OPAQUE_ALPHA | (r << 16) | (g << 8) | b);
         }
-        currentColor = ((r << 16) | (g << 8) | b) & RGB_MASK;
+
     }
 
     /**
@@ -560,26 +341,12 @@ public class Graphics
         final int r = maskedRGB >> 16;
         final int g = (maskedRGB >> 8) & COMPONENT_MASK;
         final int b = maskedRGB & COMPONENT_MASK;
-        synchronized(flushLock)
+        synchronized(graphicsBuffer)
         {
-            if(!buffered)
-            {
-                ESWTUIThreadRunner.safeSyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        gc.setForegroundColor(r, g, b);
-                        gc.setBackgroundColor(r, g, b);
-                    }
-                });
-            }
-            else
-            {
-                gc.setForegroundColor(r, g, b);
-                gc.setBackgroundColor(r, g, b);
-            }
+            graphicsBuffer.setColor(r, g, b, this);
+            currentColor = (OPAQUE_ALPHA | maskedRGB);
         }
-        currentColor = maskedRGB;
+
     }
 
     /**
@@ -594,26 +361,12 @@ public class Graphics
             throw new IllegalArgumentException();
         }
         final int col = val & COMPONENT_MASK;
-        synchronized(flushLock)
+        synchronized(graphicsBuffer)
         {
-            if(!buffered)
-            {
-                ESWTUIThreadRunner.safeSyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        gc.setForegroundColor(col, col, col);
-                        gc.setBackgroundColor(col, col, col);
-                    }
-                });
-            }
-            else
-            {
-                gc.setForegroundColor(col, col, col);
-                gc.setBackgroundColor(col, col, col);
-            }
+            graphicsBuffer.setColor(col, col, col, this);
+            currentColor = (OPAQUE_ALPHA | (col << 16) | (col << 8) | col);
         }
-        currentColor = ((col << 16) | (col << 8) | col) & RGB_MASK;
+
     }
 
     /**
@@ -623,7 +376,10 @@ public class Graphics
      */
     public Font getFont()
     {
-        return currentFont;
+        synchronized(graphicsBuffer)
+        {
+            return currentFont;
+        }
     }
 
     /**
@@ -633,25 +389,15 @@ public class Graphics
      */
     public void setFont(Font newFont)
     {
-        synchronized(flushLock)
+        synchronized(graphicsBuffer)
         {
-            if(!buffered)
+            if(newFont == null)
             {
-                final Font newFont_ = newFont;
-                ESWTUIThreadRunner.safeSyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        gc.setFont(Font.getESWTFont(newFont_).handle);
-                    }
-                });
+                newFont = Font.getDefaultFont();
             }
-            else
-            {
-                gc.setFont(Font.getESWTFont(newFont).handle);
-            }
+            graphicsBuffer.setFont(Font.getESWTFont(newFont).handle, this);
+            currentFont = newFont;
         }
-        currentFont = newFont;
     }
 
     /**
@@ -661,7 +407,10 @@ public class Graphics
      */
     public int getClipX()
     {
-        return currentClip[0];
+        synchronized(graphicsBuffer)
+        {
+            return currentClip[0];
+        }
     }
 
     /**
@@ -671,7 +420,10 @@ public class Graphics
      */
     public int getClipY()
     {
-        return currentClip[1];
+        synchronized(graphicsBuffer)
+        {
+            return currentClip[1];
+        }
     }
 
     /**
@@ -681,7 +433,10 @@ public class Graphics
      */
     public int getClipWidth()
     {
-        return currentClip[2];
+        synchronized(graphicsBuffer)
+        {
+            return currentClip[2];
+        }
     }
 
     /**
@@ -691,7 +446,10 @@ public class Graphics
      */
     public int getClipHeight()
     {
-        return currentClip[3];
+        synchronized(graphicsBuffer)
+        {
+            return currentClip[3];
+        }
     }
 
     /**
@@ -707,29 +465,16 @@ public class Graphics
      */
     public void clipRect(int x, int y, int w, int h)
     {
-        final int cx2 = Math.min(currentClip[0] + currentClip[2], x + w);
-        final int cy2 = Math.min(currentClip[1] + currentClip[3], y + h);
-        // setting of clip to Java Graphics
-        currentClip[0] = Math.max(x, currentClip[0]);
-        currentClip[1] = Math.max(y, currentClip[1]);
-        currentClip[2] = cx2 - currentClip[0];
-        currentClip[3] = cy2 - currentClip[1];
-        synchronized(flushLock)
+        synchronized(graphicsBuffer)
         {
-            if(!buffered)
-            {
-                ESWTUIThreadRunner.safeSyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        gc.setClip(currentClip[0], currentClip[1], currentClip[2], currentClip[3], false);
-                    }
-                });
-            }
-            else
-            {
-                gc.setClip(currentClip[0], currentClip[1], currentClip[2], currentClip[3], false);
-            }
+            final int cx2 = Math.min(currentClip[0] + currentClip[2], x + w);
+            final int cy2 = Math.min(currentClip[1] + currentClip[3], y + h);
+            // setting of clip to Java Graphics
+            currentClip[0] = Math.max(x, currentClip[0]);
+            currentClip[1] = Math.max(y, currentClip[1]);
+            currentClip[2] = cx2 - currentClip[0];
+            currentClip[3] = cy2 - currentClip[1];
+            graphicsBuffer.setClip(currentClip[0], currentClip[1], currentClip[2], currentClip[3], this);
         }
     }
 
@@ -743,32 +488,14 @@ public class Graphics
      */
     public void setClip(int x, int y, int w, int h)
     {
-        synchronized(flushLock)
+        synchronized(graphicsBuffer)
         {
-            if(!buffered)
-            {
-                final int x_ = x;
-                final int y_ = y;
-                final int w_ = w;
-                final int h_ = h;
-
-                ESWTUIThreadRunner.safeSyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        gc.setClip(x_, y_, w_, h_, false);
-                    }
-                });
-            }
-            else
-            {
-                gc.setClip(x, y, w, h, false);
-            }
+            currentClip[0] = x;
+            currentClip[1] = y;
+            currentClip[2] = w;
+            currentClip[3] = h;
+            graphicsBuffer.setClip(currentClip[0], currentClip[1], currentClip[2], currentClip[3], this);
         }
-        currentClip[0] = x;
-        currentClip[1] = y;
-        currentClip[2] = w;
-        currentClip[3] = h;
     }
 
     /**
@@ -781,27 +508,9 @@ public class Graphics
      */
     public void drawLine(int xStart, int yStart, int xEnd, int yEnd)
     {
-        synchronized(flushLock)
+        synchronized(graphicsBuffer)
         {
-            if(!buffered)
-            {
-                final int xs_ = xStart;
-                final int ys_ = yStart;
-                final int xe_ = xEnd;
-                final int ye_ = yEnd;
-
-                ESWTUIThreadRunner.safeSyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        gc.drawLine(xs_, ys_, xe_, ye_);
-                    }
-                });
-            }
-            else
-            {
-                gc.drawLine(xStart, yStart, xEnd, yEnd);
-            }
+            graphicsBuffer.drawLine(xStart, yStart, xEnd, yEnd, this);
         }
     }
 
@@ -819,27 +528,9 @@ public class Graphics
         {
             return;
         }
-        synchronized(flushLock)
+        synchronized(graphicsBuffer)
         {
-            if(!buffered)
-            {
-                final int x_ = x;
-                final int y_ = y;
-                final int w_ = w;
-                final int h_ = h;
-
-                ESWTUIThreadRunner.safeSyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        gc.fillRect(x_, y_, w_, h_);
-                    }
-                });
-            }
-            else
-            {
-                gc.fillRect(x, y, w, h);
-            }
+            graphicsBuffer.fillRect(x, y, w, h, this);
         }
     }
 
@@ -857,26 +548,9 @@ public class Graphics
         {
             return;
         }
-        synchronized(flushLock)
+        synchronized(graphicsBuffer)
         {
-            if(!buffered)
-            {
-                final int x_ = x;
-                final int y_ = y;
-                final int w_ = w;
-                final int h_ = h;
-                ESWTUIThreadRunner.safeSyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        gc.drawRect(x_, y_, w_, h_);
-                    }
-                });
-            }
-            else
-            {
-                gc.drawRect(x, y, w, h);
-            }
+            graphicsBuffer.drawRect(x, y, w, h, this);
         }
     }
 
@@ -896,29 +570,9 @@ public class Graphics
         {
             return;
         }
-        synchronized(flushLock)
+        synchronized(graphicsBuffer)
         {
-            if(!buffered)
-            {
-                final int x_ = x;
-                final int y_ = y;
-                final int w_ = w;
-                final int h_ = h;
-                final int arcW_ = arcW;
-                final int arcH_ = arcH;
-
-                ESWTUIThreadRunner.safeSyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        gc.drawRoundRect(x_, y_, w_, h_, arcW_, arcH_);
-                    }
-                });
-            }
-            else
-            {
-                gc.drawRoundRect(x, y, w, h, arcW, arcH);
-            }
+            graphicsBuffer.drawRoundRect(x, y, w, h, arcW, arcH, this);
         }
     }
 
@@ -938,29 +592,9 @@ public class Graphics
         {
             return;
         }
-        synchronized(flushLock)
+        synchronized(graphicsBuffer)
         {
-            if(!buffered)
-            {
-                final int x_ = x;
-                final int y_ = y;
-                final int w_ = w;
-                final int h_ = h;
-                final int arcW_ = arcW;
-                final int arcH_ = arcH;
-
-                ESWTUIThreadRunner.safeSyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        gc.fillRoundRect(x_, y_, w_, h_, arcW_, arcH_);
-                    }
-                });
-            }
-            else
-            {
-                gc.fillRoundRect(x, y, w, h, arcW, arcH);
-            }
+            graphicsBuffer.fillRoundRect(x, y, w, h, arcW, arcH, this);
         }
     }
 
@@ -982,29 +616,9 @@ public class Graphics
         {
             return;
         }
-        synchronized(flushLock)
+        synchronized(graphicsBuffer)
         {
-            if(!buffered)
-            {
-                final int x_ = x;
-                final int y_ = y;
-                final int w_ = w;
-                final int h_ = h;
-                final int startAngle_ = startAngle;
-                final int arcAngle_ = arcAngle;
-
-                ESWTUIThreadRunner.safeSyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        gc.fillArc(x_, y_, w_, h_, startAngle_, arcAngle_);
-                    }
-                });
-            }
-            else
-            {
-                gc.fillArc(x, y, w, h, startAngle, arcAngle);
-            }
+            graphicsBuffer.fillArc(x, y, w, h, startAngle, arcAngle, this);
         }
     }
 
@@ -1026,29 +640,9 @@ public class Graphics
         {
             return;
         }
-        synchronized(flushLock)
+        synchronized(graphicsBuffer)
         {
-            if(!buffered)
-            {
-                final int x_ = x;
-                final int y_ = y;
-                final int w_ = w;
-                final int h_ = h;
-                final int startAngle_ = startAngle;
-                final int arcAngle_ = arcAngle;
-
-                ESWTUIThreadRunner.safeSyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        gc.drawArc(x_, y_, w_, h_, startAngle_, arcAngle_);
-                    }
-                });
-            }
-            else
-            {
-                gc.drawArc(x, y, w, h, startAngle, arcAngle);
-            }
+            graphicsBuffer.drawArc(x, y, w, h, startAngle, arcAngle, this);
         }
     }
 
@@ -1077,16 +671,12 @@ public class Graphics
                 MsgRepository.GRAPHICS_EXCEPTION_INVALID_ANCHOR);
         }
 
-        final int alignments = GraphicsContext.ALIGNMENT_TOP | GraphicsContext.ALIGNMENT_LEFT;
-        final int[] boundingBox = new int[4];
-        final String localStr = string;
+        synchronized(graphicsBuffer)
+        {
+            final int alignments = GraphicsContext.ALIGNMENT_TOP | GraphicsContext.ALIGNMENT_LEFT;
+            final int[] boundingBox = new int[4];
+            final String localStr = string;
 
-        if(paintCallBack)
-        {
-            gc.getTextBoundingBox(boundingBox, string, alignments, 0);
-        }
-        else
-        {
             ESWTUIThreadRunner.safeSyncExec(new Runnable()
             {
                 public void run()
@@ -1095,52 +685,30 @@ public class Graphics
                     fu.getBoundingRect(boundingBox, localStr);
                 }
             });
-        }
 
-        // boundingBox[RECT_X] - top-left x of the text bounding box
-        // boundingBox[RECT_Y] - top-left y of the text bounding box
-        // boundingBox[RECT_WIDTH] - the width of the text bounding box
-        // boundingBox[RECT_HEIGHT] - the height of the text bounding box
 
-        // Arrange vertical alignments
-        int y = yPos;
-        if(isFlag(anch, Graphics.BOTTOM))
-        {
-            y = yPos - boundingBox[GraphicsContext.RECT_HEIGHT];
-        }
-        if(isFlag(anch, Graphics.BASELINE))
-        {
-            y = yPos - currentFont.getBaselinePosition();
-        }
-
-        // Arrange horizontal alignments
-        int x = xPos;
-        if(isFlag(anch, Graphics.RIGHT))
-        {
-            x = xPos - boundingBox[GraphicsContext.RECT_WIDTH];
-        }
-        if(isFlag(anch, Graphics.HCENTER))
-        {
-            x = xPos - boundingBox[GraphicsContext.RECT_WIDTH] / 2;
-        }
-        synchronized(flushLock)
-        {
-            if(!buffered)
+            // Arrange vertical alignments
+            int y = yPos;
+            if(isFlag(anch, Graphics.BOTTOM))
             {
-                final int x_ = x;
-                final int y_ = y;
-                ESWTUIThreadRunner.safeSyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        gc.drawString(localStr, x_, y_, true);
-                    }
-                });
+                y = yPos - boundingBox[GraphicsContext.RECT_HEIGHT];
             }
-            else
+            if(isFlag(anch, Graphics.BASELINE))
             {
-                gc.drawString(localStr, x, y, true);
+                y = yPos - currentFont.getBaselinePosition();
             }
+            // Arrange horizontal alignments
+            int x = xPos;
+            if(isFlag(anch, Graphics.RIGHT))
+            {
+                x = xPos - boundingBox[GraphicsContext.RECT_WIDTH];
+            }
+            if(isFlag(anch, Graphics.HCENTER))
+            {
+                x = xPos - boundingBox[GraphicsContext.RECT_WIDTH] / 2;
+            }
+
+            graphicsBuffer.drawString(localStr, x, y, this);
         }
     }
 
@@ -1281,46 +849,46 @@ public class Graphics
             throw new IllegalArgumentException(
                 MsgRepository.GRAPHICS_EXCEPTION_INVALID_ANCHOR);
         }
-
-        int y = yPos;
-        if(isFlag(anch, Graphics.VCENTER))
+        synchronized(graphicsBuffer)
         {
-            y = yPos - image.getHeight() / 2;
-        }
-        if(isFlag(anch, Graphics.BOTTOM))
-        {
-            y = yPos - image.getHeight();
-        }
-
-        int x = xPos;
-        if(isFlag(anch, Graphics.HCENTER))
-        {
-            x = xPos - image.getWidth() / 2;
-        }
-        if(isFlag(anch, Graphics.RIGHT))
-        {
-            x = xPos - image.getWidth();
-        }
-
-        synchronized(flushLock)
-        {
-            if(!buffered)
+            int y = yPos;
+            if(isFlag(anch, Graphics.VCENTER))
             {
-                final int x_ = x;
-                final int y_ = y;
-                final org.eclipse.swt.internal.qt.graphics.Image image_ =
-                    Internal_GfxPackageSupport.getImage(Image.getESWTImage(image));
-                ESWTUIThreadRunner.safeSyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        gc.drawImage(image_, x_, y_);
-                    }
-                });
+                y = yPos - image.getHeight() / 2;
             }
-            else
+            if(isFlag(anch, Graphics.BOTTOM))
             {
-                gc.drawImage(Internal_GfxPackageSupport.getImage(Image.getESWTImage(image)), x, y);
+                y = yPos - image.getHeight();
+            }
+
+            int x = xPos;
+            if(isFlag(anch, Graphics.HCENTER))
+            {
+                x = xPos - image.getWidth() / 2;
+            }
+            if(isFlag(anch, Graphics.RIGHT))
+            {
+                x = xPos - image.getWidth();
+            }
+
+            synchronized(image.graphicsBuffer)
+            {
+                final Image localLcduiImage = image;
+                final org.eclipse.swt.internal.qt.graphics.Image localCgfxImage = 
+                	Internal_GfxPackageSupport.getImage(Image.getESWTImage(image));
+                final int localX = x;
+                final int localY = y;
+                final Graphics self = this;
+                
+                ESWTUIThreadRunner.safeSyncExec(new Runnable() 
+    			{
+    				public void run()
+    				{
+    					localLcduiImage.sync(false);
+    					graphicsBuffer.drawImage(localCgfxImage, localX, localY, self);
+    				}
+    			});
+                
             }
         }
     }
@@ -1374,59 +942,21 @@ public class Graphics
      */
     public void setStrokeStyle(int newStyle)
     {
-        if(newStyle == currentStrokeSyle)
+        if(newStyle == currentStrokeStyle)
         {
             return;
         }
-        if(newStyle == SOLID)
+        synchronized(graphicsBuffer)
         {
-            synchronized(flushLock)
-            {
-                if(!buffered)
-                {
-                    ESWTUIThreadRunner.safeSyncExec(new Runnable()
-                    {
-                        public void run()
-                        {
-                            gc.setStrokeStyle(GraphicsContext.STROKE_SOLID);
-                        }
-                    });
-                }
-                else
-                {
-                    gc.setStrokeStyle(GraphicsContext.STROKE_SOLID);
-                }
-            }
-        }
-        else
-        {
-            if(newStyle == DOTTED)
-            {
-                synchronized(flushLock)
-                {
-                    if(!buffered)
-                    {
-                        ESWTUIThreadRunner.safeSyncExec(new Runnable()
-                        {
-                            public void run()
-                            {
-                                gc.setStrokeStyle(GraphicsContext.STROKE_DOT);
-                            }
-                        });
-                    }
-                    else
-                    {
-                        gc.setStrokeStyle(GraphicsContext.STROKE_DOT);
-                    }
-                }
-            }
-            else
+            int styleToApply = mapStrokeStyle(newStyle);
+            if(styleToApply == INVALID_STROKE_STYLE)
             {
                 throw new IllegalArgumentException(
                     MsgRepository.GRAPHICS_EXCEPTION_ILLEGAL_STROKE_STYLE);
             }
+            graphicsBuffer.setStrokeStyle(styleToApply, newStyle, this);
+            currentStrokeStyle = newStyle;
         }
-        currentStrokeSyle = newStyle;
     }
 
     /**
@@ -1436,7 +966,10 @@ public class Graphics
      */
     public int getStrokeStyle()
     {
-        return currentStrokeSyle;
+        synchronized(graphicsBuffer)
+        {
+            return currentStrokeStyle;
+        }
     }
 
     /**
@@ -1480,31 +1013,9 @@ public class Graphics
             throw new NullPointerException(
                 MsgRepository.IMAGE_EXCEPTION_DATA_IS_NULL);
         }
-        synchronized(flushLock)
+        synchronized(graphicsBuffer)
         {
-            if(!buffered)
-            {
-                final int[] rgb_ = rgb;
-                final int offset_ = offset;
-                final int scanlength_ = scanlength;
-                final int x_ = x;
-                final int y_ = y;
-                final int w_ = w;
-                final int h_ = h;
-                final boolean alpha_ = alpha;
-
-                ESWTUIThreadRunner.safeSyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        gc.drawRGB(rgb_, offset_, scanlength_, x_, y_, w_, h_, alpha_);
-                    }
-                });
-            }
-            else
-            {
-                gc.drawRGB(rgb, offset, scanlength, x, y, w, h, alpha);
-            }
+            graphicsBuffer.drawRGB(rgb, offset, scanlength, x, y, w, h, alpha, this);
         }
     }
 
@@ -1525,23 +1036,10 @@ public class Graphics
                              int xPos3,
                              int yPos3)
     {
-        final int[] points = {xPos1, yPos1, xPos2, yPos2, xPos3, yPos3};
-        synchronized(flushLock)
+        synchronized(graphicsBuffer)
         {
-            if(!buffered)
-            {
-                ESWTUIThreadRunner.safeSyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        gc.fillPolygon(points);
-                    }
-                });
-            }
-            else
-            {
-                gc.fillPolygon(points);
-            }
+            final int[] points = {xPos1, yPos1, xPos2, yPos2, xPos3, yPos3};
+            graphicsBuffer.fillTriangle(points, this);
         }
     }
 
@@ -1565,65 +1063,44 @@ public class Graphics
                          int anch)
     {
 
-        if(this.parentImage == null)
+        if(graphicsBuffer.getHostType() != Buffer.HOST_TYPE_IMAGE)
         {
             // this Graphics belongs to a screen device.
             throw new IllegalStateException(
                 MsgRepository.GRAPHICS_EXCEPTION_DESTINATION_IS_SCREEN);
         }
-
-        if(!javax.microedition.lcdui.Image.validateRegion(parentImage
-                .getWidth(), parentImage.getHeight(), xFrom, yFrom, w, h))
+        synchronized(graphicsBuffer)
         {
-            throw new IllegalArgumentException(
-                MsgRepository.IMAGE_EXCEPTION_INVALID_REGION);
-        }
-
-        // Arrange vertical alignments
-        int destY = yTo;
-        if(isFlag(anch, Graphics.BOTTOM))
-        {
-            destY = yTo - h;
-        }
-        if(isFlag(anch, Graphics.VCENTER))
-        {
-            destY = yTo - h / 2;
-        }
-
-        // Arrange horizontal alignments
-        int destX = xTo;
-        if(isFlag(anch, Graphics.RIGHT))
-        {
-            destX = xTo - w;
-        }
-        if(isFlag(anch, Graphics.HCENTER))
-        {
-            destX = xTo - w / 2;
-        }
-
-        synchronized(flushLock)
-        {
-            if(!buffered)
+            Image image = (Image)graphicsBuffer.getHost();
+            if(!javax.microedition.lcdui.Image.validateRegion(image
+                    .getWidth(), image.getHeight(), xFrom, yFrom, w, h))
             {
-                final int x1 = xFrom;
-                final int y1 = yFrom;
-                final int width = w;
-                final int height = h;
-                final int x2 = destX;
-                final int y2 = destY;
+                throw new IllegalArgumentException(
+                    MsgRepository.IMAGE_EXCEPTION_INVALID_REGION);
+            }
 
-                ESWTUIThreadRunner.safeSyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        gc.copyArea(x1, y1, width, height, x2, y2);
-                    }
-                });
-            }
-            else
+            // Arrange vertical alignments
+            int destY = yTo;
+            if(isFlag(anch, Graphics.BOTTOM))
             {
-                gc.copyArea(xFrom, yFrom, w, h, destX, destY);
+                destY = yTo - h;
             }
+            if(isFlag(anch, Graphics.VCENTER))
+            {
+                destY = yTo - h / 2;
+            }
+
+            // Arrange horizontal alignments
+            int destX = xTo;
+            if(isFlag(anch, Graphics.RIGHT))
+            {
+                destX = xTo - w;
+            }
+            if(isFlag(anch, Graphics.HCENTER))
+            {
+                destX = xTo - w / 2;
+            }
+            graphicsBuffer.copyArea(xFrom, yFrom, w, h, destX, destY, this);
         }
     }
 
@@ -1658,7 +1135,7 @@ public class Graphics
             throw new NullPointerException(
                 MsgRepository.IMAGE_EXCEPTION_IS_NULL);
         }
-        if(srcImage == parentImage)
+        if(srcImage == graphicsBuffer.getHost())
         {
             throw new IllegalArgumentException(
                 MsgRepository.GRAPHICS_EXCEPTION_SAME_SOURCE_AND_DESTINATION);
@@ -1679,58 +1156,80 @@ public class Graphics
             throw new IllegalArgumentException(
                 MsgRepository.IMAGE_EXCEPTION_INVALID_REGION);
         }
-
-        // Arrange vertical alignments
-        int y = yDst;
-        if(isFlag(anch, Graphics.VCENTER))
+        synchronized(graphicsBuffer)
         {
-            y = yDst - srcImage.getHeight() / 2;
-        }
-        if(isFlag(anch, Graphics.BOTTOM))
-        {
-            y = yDst - srcImage.getHeight();
-        }
-
-        // Arrange horizontal alignments
-        int x = xDst;
-        if(isFlag(anch, Graphics.HCENTER))
-        {
-            x = xDst - srcImage.getWidth() / 2;
-        }
-        if(isFlag(anch, Graphics.RIGHT))
-        {
-            x = xDst - srcImage.getWidth();
-        }
-
-        final int gcTransform = Image.getCgTransformValue(transform);
-        synchronized(flushLock)
-        {
-            if(!buffered)
+            // Arrange vertical alignments
+            int y = yDst;
+            if(isFlag(anch, Graphics.VCENTER))
             {
-                final int localXDst = x;
-                final int localYDst = y;
-                final int localW = width;
-                final int localH = height;
-                final int localXSrc = xSrc;
-                final int localYSrc = ySrc;
-                final org.eclipse.swt.internal.qt.graphics.Image localImage =
-                    Internal_GfxPackageSupport.getImage(Image.getESWTImage(srcImage));
-                ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                y = yDst - srcImage.getHeight() / 2;
+            }
+            if(isFlag(anch, Graphics.BOTTOM))
+            {
+                y = yDst - srcImage.getHeight();
+            }
+
+            // Arrange horizontal alignments
+            int x = xDst;
+            if(isFlag(anch, Graphics.HCENTER))
+            {
+                x = xDst - srcImage.getWidth() / 2;
+            }
+            if(isFlag(anch, Graphics.RIGHT))
+            {
+                x = xDst - srcImage.getWidth();
+            }
+            final int gcTransform = Image.getCgTransformValue(transform);
+            synchronized(srcImage.graphicsBuffer)
+            {
+            	final Image localLcduiSrcImage = srcImage;
+            	final org.eclipse.swt.internal.qt.graphics.Image localCgfxImage = 
+                	Internal_GfxPackageSupport.getImage(Image.getESWTImage(srcImage));
+            	final int localX = x;
+            	final int localY = y;
+            	final int localW = width;
+            	final int localH = height;
+            	final int localXSrc = xSrc;
+            	final int localYSrc = ySrc;
+            	final int localGcTransform = gcTransform;
+            	final Graphics self = this;
+            	ESWTUIThreadRunner.safeSyncExec(new Runnable()
                 {
                     public void run()
                     {
-                        gc.drawImage(localImage, localXDst, localYDst, localW, localH, localXSrc, localYSrc, localW, localH, gcTransform);
+                    	localLcduiSrcImage.sync(false);
+                        graphicsBuffer.drawImage(localCgfxImage,
+                        		localX, localY, localW, localH, localXSrc, localYSrc, localW, localH, localGcTransform, self);
                     }
                 });
-            }
-            else
-            {
-                gc.drawImage(Internal_GfxPackageSupport.getImage(Image.getESWTImage(srcImage)),
-                             x, y, width, height, xSrc, ySrc, width, height, gcTransform);
             }
         }
     }
 
+    /**
+     * Performs synchronization on the graphics buffer, i.e.
+     * the buffered draw commands are rasterized to the surface.
+     */
+    void sync()
+    {
+    	synchronized(graphicsBuffer) 
+    	{
+    		if(syncStrategy == SYNC_LEAVE_SURFACE_SESSION_OPEN)
+    		{
+    			// This instance is used only with paint callbacks, thus  
+    			// sync is called with the indication that surface paint  
+    			// session can be left open as it will be closed when the 
+    			// callback returns.
+    		    graphicsBuffer.sync(false);
+    		}
+    		else 
+    		{
+    			graphicsBuffer.sync(true);
+    		} 
+    	}
+    }
+    
+    
     /**
      * Return DirectGraphics associated with this instance.
      */
@@ -1744,11 +1243,85 @@ public class Graphics
     }
 
     /**
-     * Return native graphic context.
-     */
-    GraphicsContext getGc()
+	 * Getter for graphics buffer.
+	 * @return The Buffer.
+	 */
+    Buffer getGraphicsBuffer()
     {
-        return gc;
+        return graphicsBuffer;
+    }
+	
+    /**
+     * Maps stroke style constant from values used by
+     * Graphics to values defined in GraphicsContext
+     */
+    static int mapStrokeStyle(int strokeStyle)
+    {
+        if(strokeStyle == SOLID)
+        {
+            return GraphicsContext.STROKE_SOLID;
+        }
+        else if(strokeStyle == DOTTED)
+        {
+            return GraphicsContext.STROKE_DOT;
+        }
+        return INVALID_STROKE_STYLE;
+    }
+
+    //
+    // Nokia UI API support
+    //
+    void drawRGB(int[] rgb, int offset, int scanlength, int x, int y, int w,
+                 int h, boolean processAlpha, int manipulation)
+    {
+        synchronized(graphicsBuffer)
+        {
+            graphicsBuffer.drawRGB(rgb, offset, scanlength, x, y, w, h, processAlpha, manipulation, this);
+        }
+    }
+
+    void drawRGB(byte[] rgb, byte[] transparencyMask, int offset, int scanlength, int x, int y, int w,
+                 int h, int manipulation, int format)
+    {
+        synchronized(graphicsBuffer)
+        {
+            graphicsBuffer.drawRGB(rgb, transparencyMask, offset, scanlength, x, y, w, h, manipulation, format, this);
+        }
+    }
+
+    void drawRGB(short[] rgb, int offset, int scanlength, int x, int y, int w,
+                 int h, boolean processAlpha, int manipulation, int format)
+    {
+        synchronized(graphicsBuffer)
+        {
+            graphicsBuffer.drawRGB(rgb, offset, scanlength, x, y, w, h, processAlpha, manipulation, format, this);
+        }
+    }
+
+    void drawPolygon(int[] points)
+    {
+        synchronized(graphicsBuffer)
+        {
+            graphicsBuffer.drawPolygon(points, this);
+        }
+    }
+
+    void fillPolygon(int[] points)
+    {
+        synchronized(graphicsBuffer)
+        {
+            graphicsBuffer.fillPolygon(points, this);
+        }
+    }
+
+    void setARGBColor(int argb)
+    {
+        synchronized(graphicsBuffer)
+        {
+            graphicsBuffer.setARGBColor(argb, this);
+            currentColor = argb;
+        }
+
     }
 
 }

@@ -100,7 +100,7 @@ HBufC* CMMAMMFResolver::FileNameOwnership()
 
 void CMMAMMFResolver::ResolveContentTypeL()
 {
-    LOG( EJavaMMAPI, EInfo, "+ CMMAMMFResolver::ResolveContentTypeL()");
+    LOG(EJavaMMAPI, EInfo, "+ CMMAMMFResolver::ResolveContentTypeL()");
     CMMFFormatSelectionParameters* fSelect = iRequiredPlayFormatSupport;
     if (!fSelect)
     {
@@ -123,13 +123,13 @@ void CMMAMMFResolver::ResolveContentTypeL()
 
     if (type == CMMFFormatSelectionParameters::EMatchMimeType)
     {
-        LOG( EJavaMMAPI, EInfo, "CMMAMMFResolver::ResolveContentTypeL - EMatchMimeType");
+        LOG(EJavaMMAPI, EInfo, "CMMAMMFResolver::ResolveContentTypeL - EMatchMimeType");
         // The match was based on a mime type.
         contentType = fSelect->MatchData().AllocLC();
     }
     else if (type == CMMFFormatSelectionParameters::EMatchFileExtension)
     {
-        LOG( EJavaMMAPI, EInfo, "CMMAMMFResolver::ResolveContentTypeL - EMatchFileExtension");
+        LOG(EJavaMMAPI, EInfo, "CMMAMMFResolver::ResolveContentTypeL - EMatchFileExtension");
         // The match was based on a file extension.
         RApaLsSession ls;
         TInt error;
@@ -149,7 +149,7 @@ void CMMAMMFResolver::ResolveContentTypeL()
         }
         else if (!error && (result.iConfidence >= CApaDataRecognizerType::EProbable))
         {
-            LOG1( EJavaMMAPI, EInfo, "CMMAMMFResolver::ResolveContentTypeL - Confidence : %d", result.iConfidence);
+            LOG1(EJavaMMAPI, EInfo, "CMMAMMFResolver::ResolveContentTypeL - Confidence : %d", result.iConfidence);
             contentType = result.iDataType.Des8().AllocLC();
         }
 
@@ -173,7 +173,7 @@ void CMMAMMFResolver::ResolveContentTypeL()
     }
     else if (type == CMMFFormatSelectionParameters::EMatchHeaderData)
     {
-        LOG( EJavaMMAPI, EInfo, "CMMAMMFResolver::ResolveContentTypeL - EMatchHeaderData");
+        LOG(EJavaMMAPI, EInfo, "CMMAMMFResolver::ResolveContentTypeL - EMatchHeaderData");
         // The match was on a header data.
         RApaLsSession ls;
         TInt error;
@@ -204,7 +204,7 @@ void CMMAMMFResolver::ResolveContentTypeL()
     }
     else
     {
-        LOG( EJavaMMAPI, EInfo, "CMMAMMFResolver::ResolveContentTypeL - KErrNotSupported");
+        LOG(EJavaMMAPI, EInfo, "CMMAMMFResolver::ResolveContentTypeL - KErrNotSupported");
         // EMatchAny is not supported
         User::Leave(KErrNotSupported);
     }
@@ -212,7 +212,7 @@ void CMMAMMFResolver::ResolveContentTypeL()
     // iContentType remains NULL if content type was not found.
     if (contentType)
     {
-        LOG1( EJavaMMAPI, EInfo, "CMMAMMFResolver::ResolveContentTypeL - contentType : %s", contentType->Des().PtrZ());
+        LOG1(EJavaMMAPI, EInfo, "CMMAMMFResolver::ResolveContentTypeL - contentType : %s", contentType->Des().PtrZ());
 
         HBufC* ct = HBufC::NewL(contentType->Length());
         (ct->Des()).Copy(*contentType);
@@ -223,10 +223,10 @@ void CMMAMMFResolver::ResolveContentTypeL()
     else
     {
         //This situation should never occur
-        LOG( EJavaMMAPI, EInfo, "CMMAMMFResolver::ResolveContentTypeL - contentType = NULL");
+        LOG(EJavaMMAPI, EInfo, "CMMAMMFResolver::ResolveContentTypeL - contentType = NULL");
         User::Leave(KErrUnknown);
     }
-    LOG( EJavaMMAPI, EInfo, "- CMMAMMFResolver::ResolveContentTypeL()");
+    LOG(EJavaMMAPI, EInfo, "- CMMAMMFResolver::ResolveContentTypeL()");
 }
 
 
@@ -238,7 +238,7 @@ TBool CMMAMMFResolver::IsRealVideoTypeL(const TDesC& aFileName)
     putil = CHXMetaDataUtility::NewL();
     CleanupStack::PushL(putil);
     TRAPD(err, putil->OpenFileL(aFileName));
-    ELOG1( EJavaMMAPI, "MMA:CMMAMMFResolver::IsRealVideoTypeL, err = %d", err);
+    ELOG1(EJavaMMAPI, "MMA:CMMAMMFResolver::IsRealVideoTypeL, err = %d", err);
 
     if (err != KErrNone)
     {

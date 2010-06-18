@@ -32,8 +32,8 @@
 // Static constructor, leaves pointer to cleanup-stack
 CMMACanvasDisplay* CMMACanvasDisplay::NewLC(MMAFunctionServer* aEventSource, jobject obj/*MMIDCanvas* aCanvas*/)
 {
-	CMMACanvasDisplay* self =
-        new(ELeave) CMMACanvasDisplay(aEventSource, obj/*aCanvas*/);
+    CMMACanvasDisplay* self =
+        new(ELeave) CMMACanvasDisplay();
 
     CleanupStack::PushL(self);
     self->Construct(aEventSource,obj);
@@ -45,14 +45,7 @@ CMMACanvasDisplay::~CMMACanvasDisplay()
 {
 }
 
-CMMACanvasDisplay::CMMACanvasDisplay(MMAFunctionServer* aEventSource ,jobject aJavaDisplayRef)
-{
-	/*
-iJni = aEventSource->getValidJniEnv();
-javaDisplayObject = iJni->NewGlobalRef(javadisplayref);
-javaDisplayClass = iJni->GetObjectClass(javaDisplayObject);
-*/
-}
+
 
 
 /*
@@ -62,9 +55,9 @@ void CMMACanvasDisplay::SourceSizeChanged(const TSize& aSourceSize)
 
     #ifdef RD_JAVA_NGA_ENABLED
     if ( iWindow )
-			{
-    	iWindow->SetVideoCropRegion( TRect( iUserRect.iTl, aSourceSize ) );
-    	}
+            {
+        iWindow->SetVideoCropRegion( TRect( iUserRect.iTl, aSourceSize ) );
+        }
     #endif
 
     iSourceSize = aSourceSize;
@@ -82,19 +75,19 @@ void CMMACanvasDisplay::SourceSizeChanged(const TSize& aSourceSize)
      TInt x =  iJni->CallIntMethod(iJavaDisplayObject,getDisplayWidthID);
      TInt y = iJni->CallIntMethod(iJavaDisplayObject,getDisplayHeightID);
 
-   // TSize fullScreenSize(100,100);    // TO-Do remove hardcoded with the relevent one
-	LOG2(EJavaMMAPI,EInfo,"CMMACanvasdisplay.cpp : SourceSizeChanged () fullScreenSize is x = %d ,y = %d ",x,y);
-	// get the ScreenSize from canvas in java
+   // TSize iFullScreenSize(100,100);    // TO-Do remove hardcoded with the relevent one
+    LOG2(EJavaMMAPI,EInfo,"CMMACanvasdisplay.cpp : SourceSizeChanged () iFullScreenSize is x = %d ,y = %d ",x,y);
+    // get the ScreenSize from canvas in java
     TSize canvasSize(x, y);
-    fullScreenSize = canvasSize;
-    TBool sourceIsBigger = (aSourceSize.iWidth > fullScreenSize.iWidth ||
-                            aSourceSize.iHeight > fullScreenSize.iHeight);
+    iFullScreenSize = canvasSize;
+    TBool sourceIsBigger = (aSourceSize.iWidth > iFullScreenSize.iWidth ||
+                            aSourceSize.iHeight > iFullScreenSize.iHeight);
 
     if (sourceIsBigger)
     {
         // Source is larger than display area.
         // Shrink draw are to fit in display.
-        iWindow->SetDrawRect(ScaleToFullScreen(fullScreenSize, iSourceSize));
+        iWindow->SetDrawRect(ScaleToFullScreen(iFullScreenSize, iSourceSize));
     }
     else
     {
@@ -119,9 +112,61 @@ void CMMACanvasDisplay::SourceSizeChanged(const TSize& aSourceSize)
 
 */
 
+void CMMACanvasDisplay::SourceSizeChanged(TInt aJavaControlWidth, TInt aJavaControlHeight,TInt /*x*/, TInt /*y*/,TRect /*aBoundsRect*/)
+{
+    JELOG2(EJavaMMAPI);
+    LOG2(EJavaMMAPI,EInfo,"CMMACanvasDisplay::SourceSizeChanged(aSourceSize,aJavaControlWidth,aJavaControlHeight) + aJavaControlWidth = %d ,aJavaControlHeight = %d",aJavaControlWidth,aJavaControlHeight);
+    iSourceSize = SourceSize();
+    LOG2(EJavaMMAPI,EInfo,"CMMACanvasDisplay::SourceSizeChanged(aSourceSize,aJavaControlWidth,aJavaControlHeight) + sourcesize = %d X %d",iSourceSize.iWidth , iSourceSize.iHeight);
+#ifdef RD_JAVA_NGA_ENABLED
+    if (iWindow)
+    {
+        iWindow->SetVideoCropRegion(TRect(iUserRect.iTl, iSourceSize));
+    }
+#endif
+
+    // size of canvas in java
+    TSize canvasSize(aJavaControlWidth, aJavaControlHeight);
+    iFullScreenSize = canvasSize;
+    TBool sourceIsBigger = (iSourceSize.iWidth > iFullScreenSize.iWidth ||
+                            iSourceSize.iHeight > iFullScreenSize.iHeight);
+
+    if (sourceIsBigger)
+    {
+        // Source is larger than display area.
+        // Shrink draw are to fit in display.
+        LOG(EJavaMMAPI,EInfo,"CMMACanvasDisplay::SourceSizeChanged - source is bigger than display area");
+        iWindow->SetDrawRect(ScaleToFullScreen(iFullScreenSize, iSourceSize));
+        LOG(EJavaMMAPI,EInfo,"CMMACanvasDisplay::SourceSizeChanged - source is bigger than display area - after SetDrawRect");
+
+    }
+    else
+    {
+        // source is smaller than display area
+        LOG(EJavaMMAPI,EInfo,"CMMACanvasDisplay::SourceSizeChanged - source is smaller than display area");
+        iWindow->SetDrawRect(TRect(iUserRect.iTl, iSourceSize));
+    }
+
+    SetClippingRegion();
+
+    if (iUserRect.IsEmpty())
+    {
+        // Java side hasn't set size.
+        iUserRect = iWindow->DrawRect();
+
+        if (!sourceIsBigger)
+        {
+            // Addjusting rect to top left corner.
+            iUserRect = TRect(iUserRect.Size());
+        }
+    }
+    LOG(EJavaMMAPI,EInfo,"CMMACanvasDisplay::SourceSizeChanged(aJavaControlWidth,aJavaControlHeight)-");
+}
+
+
 void CMMACanvasDisplay::SetFullScreenL(TBool aFullScreen)
 {
-	LOG(EJavaMMAPI,EInfo,"CMMACanvasDisplay::SetFullScreenL +");
+    LOG(EJavaMMAPI,EInfo,"CMMACanvasDisplay::SetFullScreenL +");
     iFullScreen = aFullScreen;
     if (iContainerVisible)
     {
@@ -131,11 +176,11 @@ void CMMACanvasDisplay::SetFullScreenL(TBool aFullScreen)
         {
             // use new scaled rect
             // iWindow->SetDrawRect(ScaleToFullScreen(fullScreenSize, iSourceSize));
-            iWindow->SetDrawRectThread(ScaleToFullScreen(fullScreenSize, iSourceSize));
-		}
+            iWindow->SetDrawRectThread(ScaleToFullScreen(iFullScreenSize, iSourceSize));
+        }
         else
         {
-			// use size set from java
+            // use size set from java
             //iWindow->SetDrawRect(iUserRect);
             iWindow->SetDrawRectThread(iUserRect);
         }
@@ -147,14 +192,14 @@ void CMMACanvasDisplay::SetFullScreenL(TBool aFullScreen)
 
 void CMMACanvasDisplay::SetWindowL(MMMADisplayWindow* aWindow)
 {
-    LOG( EJavaMMAPI, EInfo, "CMMACanvasDisplay::SetWindowL");
+    LOG(EJavaMMAPI, EInfo, "CMMACanvasDisplay::SetWindowL");
     CMMADisplay::SetWindowL(aWindow);
     if (!iWindow)
     {
-        LOG( EJavaMMAPI, EInfo, "CMMACanvasDisplay::SetWindowL: NULL window, returning");
+        LOG(EJavaMMAPI, EInfo, "CMMACanvasDisplay::SetWindowL: NULL window, returning");
         return;
     }
-	/*
+    /*
     CFbsBitmap* bitmap = iCanvas->FrameBuffer();
 
     __ASSERT_DEBUG(bitmap,
@@ -168,73 +213,74 @@ void CMMACanvasDisplay::SetWindowL(MMMADisplayWindow* aWindow)
 
     LOG2( EJavaMMAPI, EInfo, "MMA::CMMACanvasDisplay::SetWindowL iDirectContainer->MdcContentBounds() TL %d %d", iDirectContainer->MdcContentBounds().iTl.iX, iDirectContainer->MdcContentBounds().iTl.iY);
     LOG2( EJavaMMAPI, EInfo, "MMA::CMMACanvasDisplay::SetWindowL iDirectContainer->MdcContentBounds() BR %d %d", iDirectContainer->MdcContentBounds().iBr.iX, iDirectContainer->MdcContentBounds().iBr.iY);
-	*/
-	LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::before calling  BoundRect");
-	TRect boundrect = BoundRect();
+    */
+    LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::before calling  BoundRect");
+    TRect boundrect = BoundRect();
     iWindow->SetWindowRect(boundrect/*iDirectContainer->MdcContentBounds()*/, MMMADisplay::EMmaThread);
 
-    #ifdef RD_JAVA_NGA_ENABLED
+#ifdef RD_JAVA_NGA_ENABLED
     //iWindow->SetRWindowRect( iDirectContainer->MdcContainerWindowRect(),
     //                         MMMADisplay::EMmaThread );
-	iWindow->SetRWindowRect( boundrect,
-     							MMMADisplay::EMmaThread );
-    #endif
-    
+    iWindow->SetRWindowRect(boundrect,
+                            MMMADisplay::EMmaThread);
+#endif
+
     SetClippingRegion();
 }
 
 
 
-TRect& CMMACanvasDisplay::BoundRect()
+TRect CMMACanvasDisplay::BoundRect()
 {
-  LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::BoundRect +");
-  jmethodID getBoundRectID = iJni->GetMethodID(
-	                                         iJavaDisplayClass,
-	                                         "getBoundRect",
-                                         "()V");
+    LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::BoundRect +");
+    jmethodID getBoundRectID = iJni->GetMethodID(
+                                   iJavaDisplayClass,
+                                   "getBoundRect",
+                                   "()V");
 
-  LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::BoundRect --1");
-  // set the value to java,so that we can access those from array
-  iJni->CallVoidMethod(iJavaDisplayObject,getBoundRectID);
-  jfieldID field = iJni->GetFieldID(iJavaDisplayClass, "displayboundarr", "[I");
-  if(field == NULL)
-  {
-	  // handle error
-  }
-  /* Read the instance field s */
-  jintArray javaboundinfoarr = (jintArray)iJni->GetObjectField(iJavaDisplayObject, field);
-  LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::BoundRect --2");
-  jint* nativeboundinfoarr = iJni->GetIntArrayElements(javaboundinfoarr, NULL);
+    LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::BoundRect --1");
+    // set the value to java,so that we can access those from array
+    iJni->CallVoidMethod(iJavaDisplayObject,getBoundRectID);
+    jfieldID field = iJni->GetFieldID(iJavaDisplayClass, "displayboundarr", "[I");
+    if (field == NULL)
+    {
+        // handle error
+    }
+    /* Read the instance field s */
+    jintArray javaboundinfoarr = (jintArray)iJni->GetObjectField(iJavaDisplayObject, field);
+    LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::BoundRect --2");
+    jint* nativeboundinfoarr = iJni->GetIntArrayElements(javaboundinfoarr, NULL);
     LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::BoundRect --3");
     if (!nativeboundinfoarr)
-    {    // outputBuffer was already allocated
+    {
+        // outputBuffer was already allocated
         iJni->ReleaseIntArrayElements(javaboundinfoarr, nativeboundinfoarr, JNI_ABORT);
         // return invalid rect.
         TRect rect(0,0,0,0);
         return rect;
     }
-  LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::BoundRect --4");
+    LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::BoundRect --4");
 // create TRect
-  TInt xcoordinate = nativeboundinfoarr[0];
-  TInt ycoordinate = nativeboundinfoarr[1];
-  TInt width = nativeboundinfoarr[2];
-  TInt height = nativeboundinfoarr[3];
-  LOG2(EJavaMMAPI,EInfo,"CMMACanvasDisplay: BoundRect() co-ordinate of topleftcorner is x = %d,y =%d",xcoordinate,ycoordinate);
-  LOG2(EJavaMMAPI,EInfo,"CMMACanvasDisplay: BoundRect() size of bound rect is width = %d,height =%d",width,height);
-  TPoint topleft(xcoordinate,ycoordinate);
-  TSize rectsize(width,height);
-  TRect boundRect(topleft,rectsize);
-  iJni->ReleaseIntArrayElements(javaboundinfoarr, nativeboundinfoarr, JNI_COMMIT);
-   LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::BoundRect -");
-  return boundRect;
+    TInt xcoordinate = nativeboundinfoarr[0];
+    TInt ycoordinate = nativeboundinfoarr[1];
+    TInt width = nativeboundinfoarr[2];
+    TInt height = nativeboundinfoarr[3];
+    LOG2(EJavaMMAPI,EInfo,"CMMACanvasDisplay: BoundRect() co-ordinate of topleftcorner is x = %d,y =%d",xcoordinate,ycoordinate);
+    LOG2(EJavaMMAPI,EInfo,"CMMACanvasDisplay: BoundRect() size of bound rect is width = %d,height =%d",width,height);
+    TPoint topleft(xcoordinate,ycoordinate);
+    TSize rectsize(width,height);
+    TRect boundRect(topleft,rectsize);
+    iJni->ReleaseIntArrayElements(javaboundinfoarr, nativeboundinfoarr, JNI_COMMIT);
+    LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::BoundRect -");
+    return boundRect;
 }
 
 // ask java side peer about the container rect size
 // currently assuming the boundrect and containerrect will be same in case of canvas
-TRect& CMMACanvasDisplay::ContainerWindowRect()
+TRect CMMACanvasDisplay::ContainerWindowRect()
 {
 
-  return BoundRect();
+    return BoundRect();
 
 }
 

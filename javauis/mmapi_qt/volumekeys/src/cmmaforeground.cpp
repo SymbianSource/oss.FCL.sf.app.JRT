@@ -33,37 +33,37 @@ CMMAForeground* CMMAForeground::NewL(MMMAEventPoster* aEventPoster,
                                      jmethodID aJavaMethod/* ,
                                      CMIDToolkit* aToolkit*/)
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAForeground::NewL + ");
+    LOG(EJavaMMAPI, EInfo, "CMMAForeground::NewL + ");
     CMMAForeground* self = new(ELeave) CMMAForeground;
 
     CleanupStack::PushL(self);
     self->ConstructL(aEventPoster, aForegroundListener, aJavaMethod/*, aToolkit*/);
     CleanupStack::Pop();
 
-    LOG( EJavaMMAPI, EInfo, "CMMAForeground::NewL - ");
+    LOG(EJavaMMAPI, EInfo, "CMMAForeground::NewL - ");
     return self;
 }
 
 CMMAForeground::~CMMAForeground()
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAForeground::~CMMAForeground() + ");
-   /* if (iMidEnv)
-    {
-        // unregister for getting the foreground change event
-        LOG( EJavaMMAPI, EInfo, "CMMAForeground::~CMMAForeground() : iMidEnv RemoveObserver +");
-        iMidEnv->RemoveObserver(*this);
-        LOG( EJavaMMAPI, EInfo, "CMMAForeground::~CMMAForeground() : iMidEnv RemoveObserver -");
-    }
+    LOG(EJavaMMAPI, EInfo, "CMMAForeground::~CMMAForeground() + ");
+    /* if (iMidEnv)
+     {
+         // unregister for getting the foreground change event
+         LOG( EJavaMMAPI, EInfo, "CMMAForeground::~CMMAForeground() : iMidEnv RemoveObserver +");
+         iMidEnv->RemoveObserver(*this);
+         LOG( EJavaMMAPI, EInfo, "CMMAForeground::~CMMAForeground() : iMidEnv RemoveObserver -");
+     }
 
-    CEikonEnv* eikEnv = ((CEikonEnv*)CEikonEnv::Static());
+     CEikonEnv* eikEnv = ((CEikonEnv*)CEikonEnv::Static());
 
-    if (eikEnv)
-    {
-        LOG( EJavaMMAPI, EInfo, "CMMAForeground::~CMMAForeground() : eikEnv RemoveForegroundObserver +");
-        eikEnv->RemoveForegroundObserver(*this);
-        LOG( EJavaMMAPI, EInfo, "CMMAForeground::~CMMAForeground() : eikEnv RemoveForegroundObserver -");
-    }
-*/
+     if (eikEnv)
+     {
+         LOG( EJavaMMAPI, EInfo, "CMMAForeground::~CMMAForeground() : eikEnv RemoveForegroundObserver +");
+         eikEnv->RemoveForegroundObserver(*this);
+         LOG( EJavaMMAPI, EInfo, "CMMAForeground::~CMMAForeground() : eikEnv RemoveForegroundObserver -");
+     }
+    */
     if (iEventPoster && iDeleteRefEvent)
     {
         iEventPoster->PostEvent(iDeleteRefEvent);
@@ -74,7 +74,7 @@ CMMAForeground::~CMMAForeground()
     }
     delete iForegroundEvent;
     delete iActiveScheduler;
-    LOG( EJavaMMAPI, EInfo, "CMMAForeground::~CMMAForeground() - ");
+    LOG(EJavaMMAPI, EInfo, "CMMAForeground::~CMMAForeground() - ");
 }
 
 CMMAForeground::CMMAForeground()
@@ -87,7 +87,7 @@ void CMMAForeground::ConstructL(MMMAEventPoster* aEventPoster,
                                 jmethodID aJavaMethod /* ,
                                 CMIDToolkit* aToolkit*/) // xm-radio fix
 {
-    LOG1( EJavaMMAPI, EInfo, "CMMAForeground::ConstructL + ISFOREGROUND = %d",iIsForeground);
+    LOG1(EJavaMMAPI, EInfo, "CMMAForeground::ConstructL + ISFOREGROUND = %d",iIsForeground);
 
     iActiveScheduler = new(ELeave) CActiveSchedulerWait();
     iEventPoster = aEventPoster;
@@ -127,20 +127,20 @@ void CMMAForeground::ConstructL(MMMAEventPoster* aEventPoster,
         eikEnv->AddForegroundObserverL(*this);
         DEBUG("CMMAForeground::ConstructL - eikAppUi->AddForegroundObserverL() - ");
     }
- */
-    LOG( EJavaMMAPI, EInfo, "CMMAForeground::ConstructL - ");
+     */
+    LOG(EJavaMMAPI, EInfo, "CMMAForeground::ConstructL - ");
 }
 
 TBool CMMAForeground::IsForeground()
 {
-    LOG2( EJavaMMAPI, EInfo, "THREADID = %d : CMMAForeground::IsForeground : ISFOREGROUND = %d",RThread().Id().Id(),iIsForeground);
+    LOG2(EJavaMMAPI, EInfo, "THREADID = %d : CMMAForeground::IsForeground : ISFOREGROUND = %d",RThread().Id().Id(),iIsForeground);
     return iIsForeground;
 }
 
 void CMMAForeground::SetForeground(TBool aIsForeground)
 {
     iIsForeground = aIsForeground;
-    LOG1( EJavaMMAPI, EInfo, "CMMAForeground::SetForeground - ISFOREGROUND = %d",iIsForeground);
+    LOG1(EJavaMMAPI, EInfo, "CMMAForeground::SetForeground - ISFOREGROUND = %d",iIsForeground);
 }
 
 // Implement MMIDEnvObserver
@@ -153,11 +153,11 @@ void CMMAForeground::HandleSwitchOnL(TBool aSwitchOn)
 /**
  * Handles the case when the MIDlet is brought to the foreground.
  */
- /*
+/*
 void CMMAForeground::HandleForegroundL(TBool aForeground)
 {
-    LOG1( EJavaMMAPI, EInfo, "CMMAForeground::HandleForegroundL %d", aForeground);
-    iIsForeground = aForeground;
+   LOG1( EJavaMMAPI, EInfo, "CMMAForeground::HandleForegroundL %d", aForeground);
+   iIsForeground = aForeground;
 }
 */
 /**

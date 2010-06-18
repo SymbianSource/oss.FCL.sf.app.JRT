@@ -15,14 +15,12 @@
 *
 */
 
-PRJ_EXPORTS
-
+#include <platform_paths.hrh>
 #include "../../../../inc/build_defines.hrh"
 
-#ifdef RD_JAVA_SYMBIAN_TARGET
+PRJ_EXPORTS
 
-#include <platform_paths.hrh>
-
-../../../../javauis/runtimeui_akn/loc/javausermessages.loc  APP_LAYER_LOC_EXPORT_PATH(javausermessages.loc)
-
+// Export the localization file temporarily from this component in 10.1 builds
+#ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS
+javausermessages.loc  APP_LAYER_LOC_EXPORT_PATH(javausermessages.loc)
 #endif

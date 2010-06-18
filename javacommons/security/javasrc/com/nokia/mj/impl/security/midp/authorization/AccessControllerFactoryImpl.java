@@ -61,7 +61,7 @@ public final class AccessControllerFactoryImpl
      *                        which the AccessControllerImpl instance
      *                        is retrieved
      */
-    public static AccessControllerImpl getAccessController(StorageSession aStorageSession,
+    public synchronized static AccessControllerImpl getAccessController(StorageSession aStorageSession,
             Uid aAppSuiteUid,
             String aAppName)
     {
@@ -69,7 +69,6 @@ public final class AccessControllerFactoryImpl
         {
             return null;
         }
-        // Synchronization missing
         AccessControllerImpl instance = (AccessControllerImpl)instances.get(
                                             aAppSuiteUid);
 
@@ -82,14 +81,13 @@ public final class AccessControllerFactoryImpl
         return instance;
     }
 
-    public static void destroyAccessController(Uid appUID)
+    public synchronized static void destroyAccessController(Uid appUID)
     {
         if (appUID == null)
         {
             return;
         }
         // This is to be called when a MIDlet suite is stoped
-        // Synchronization missing
         // Remove the instance or mark it as inactive?
         AccessControllerImpl ac = (AccessControllerImpl)instances
                                   .remove(appUID);

@@ -56,7 +56,7 @@ void CMMAStopTimeControl::CStopTimer::ConstructL()
 
 void CMMAStopTimeControl::CStopTimer::RunL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAStopTimeControl:CStopTimer:RunL timer triggered");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAStopTimeControl:CStopTimer:RunL timer triggered");
     iControl->StopAtTimeL();
 }
 
@@ -113,7 +113,7 @@ void CMMAStopTimeControl::StaticSetStopTimeL(CMMAStopTimeControl* aControl,
 
 void CMMAStopTimeControl::StopAtTimeL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAStopTimeControl::StopAtTime");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAStopTimeControl::StopAtTime");
 
     // Stop the player only when it's playing
     if (iPlayer->State() == CMMAPlayer::EStarted)
@@ -122,8 +122,8 @@ void CMMAStopTimeControl::StopAtTimeL()
         iPlayer->GetMediaTime(&time);
         if (time >= 0 && time < iStopTime)
         {
-            LOG1( EJavaMMAPI, EInfo, "MMA:CMMAStopTimeControl::StopAtTime - Called %dms too early",
-                      I64INT((time - iStopTime)/1000));
+            LOG1(EJavaMMAPI, EInfo, "MMA:CMMAStopTimeControl::StopAtTime - Called %dms too early",
+                 I64INT((time - iStopTime)/1000));
             StartTimer(time);
             return;
         }
@@ -133,7 +133,7 @@ void CMMAStopTimeControl::StopAtTimeL()
         // MediaTime is known
         if (time >= 0)
         {
-            LOG1( EJavaMMAPI, EInfo, "MMA:CMMAStopTimeControl::StopAtTime - called %dms late", I64INT((time - iStopTime)/1000));
+            LOG1(EJavaMMAPI, EInfo, "MMA:CMMAStopTimeControl::StopAtTime - called %dms late", I64INT((time - iStopTime)/1000));
             stopTime = time;
         }
         else
@@ -171,8 +171,8 @@ void CMMAStopTimeControl::SetStopTimeL(const TInt64& aTime)
 
     if (aTime != iNoTimer)
     {
-        LOG1( EJavaMMAPI, EInfo, "MMA:CMMAStopTimeControl:SetStopTime(%dms)",
-                  I64INT(aTime / 1000));
+        LOG1(EJavaMMAPI, EInfo, "MMA:CMMAStopTimeControl:SetStopTime(%dms)",
+             I64INT(aTime / 1000));
 
         if (iPlayer->State() == CMMAPlayer::EStarted)
         {
@@ -184,7 +184,7 @@ void CMMAStopTimeControl::SetStopTimeL(const TInt64& aTime)
     }
     else
     {
-        LOG( EJavaMMAPI, EInfo, "MMA:CMMAStopTimeControl:SetStopTime(RESET)");
+        LOG(EJavaMMAPI, EInfo, "MMA:CMMAStopTimeControl:SetStopTime(RESET)");
 
         iTimer->Cancel();
     }
@@ -199,8 +199,8 @@ void CMMAStopTimeControl::StartTimer(const TInt64& aCurrentTime)
 {
     // StopTime is defined
     TInt64 time = iStopTime - aCurrentTime;
-    LOG1( EJavaMMAPI, EInfo, "MMA:CMMAStopTimeControl:StartTimer timer started; time=%dms",
-              I64INT(time / 1000));
+    LOG1(EJavaMMAPI, EInfo, "MMA:CMMAStopTimeControl:StartTimer timer started; time=%dms",
+         I64INT(time / 1000));
     iTimer->Cancel();
 
     if (time >= 0)

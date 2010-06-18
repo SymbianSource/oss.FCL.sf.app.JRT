@@ -51,7 +51,7 @@ static void SetReverbTimeL(
 JNIEXPORT jint JNICALL Java_com_nokia_amms_control_audioeffect_ReverbControl__1getReverbLevel(
     JNIEnv*,
     jclass,
-    jint aEventSource,
+    jint,
     jint aControl)
 {
     CAMMSReverbControlGroup* control = static_cast< CAMMSReverbControlGroup* >(
@@ -66,7 +66,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_amms_control_audioeffect_ReverbControl__1g
  * Signature: (II)I
  */
 JNIEXPORT jint JNICALL Java_com_nokia_amms_control_audioeffect_ReverbControl__1getReverbTime(
-    JNIEnv*, jclass, jint aEventSource, jint aControl)
+    JNIEnv*, jclass, jint, jint aControl)
 {
     CAMMSReverbControlGroup* control = static_cast< CAMMSReverbControlGroup* >(
                                            reinterpret_cast< CAMMSControlGroup *>(aControl));

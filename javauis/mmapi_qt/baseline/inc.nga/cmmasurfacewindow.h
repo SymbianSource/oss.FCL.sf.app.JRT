@@ -58,7 +58,8 @@ public:
      */
     enum TUiCallbackType
     {
-        ERemoveSurface = 1,
+        ESetClipRect = 1,
+        ERemoveSurface,
         ESetDrawRect,
         EInitVideoDisplay,
         EResetSurfaceParameters,
@@ -170,7 +171,6 @@ public: // from base class MUiEventConsumer
     																										CWsScreenDevice* aScreenDevice,
   																													  RWindowBase* aWindow);	
   																													  
-    virtual CMMAPlayer* UiPlayer();
 
 public: // New methods
     TBool IsVisible() const;
@@ -204,14 +204,6 @@ public: // New methods
 
 private: // New methods
     /**
-     * scales video to the required size.
-     * This method must always be executed in UI-Thread context.
-     *
-     * @param aRect rectangular size to which the video has to be scaled.
-     */
-    void ScaleVideoL(const TRect& aRect);
-
-    /**
      * starts video rendering to a graphics surface.
      * restarts video rendering to a graphics surafce with changed parameters.
      * This method must always be executed in UI-Thread context.
@@ -233,6 +225,12 @@ private: // New methods
      * This method must always be executed in UI-Thread context.
      */
     void InitVideoDisplayL();
+
+    /**
+     * updates CMediaClientVideoDisplay with new RWindow rect value.
+     * This method must always be executed in UI-Thread context.
+     */
+    TInt SetClipRect();
 
     /**
      * updates CMediaClientVideoDisplay instance with new surface parameters.

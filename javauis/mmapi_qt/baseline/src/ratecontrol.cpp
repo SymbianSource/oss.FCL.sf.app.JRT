@@ -99,7 +99,7 @@ Java_com_nokia_microedition_media_control_RateControl__1getMinRate
                                      &CMMARateControl::MinRateL,
                                      &returnValue);
 
-    LOG1( EJavaMMAPI, EInfo, "RateControl__1getMinRate return value %d", returnValue);
+    LOG1(EJavaMMAPI, EInfo, "RateControl__1getMinRate return value %d", returnValue);
 
     return (error == KErrNone) ? returnValue : error;
 }
@@ -131,7 +131,7 @@ Java_com_nokia_microedition_media_control_RateControl__1getRate
                                      &CMMARateControl::RateL,
                                      &returnValue);
 
-    LOG1( EJavaMMAPI, EInfo, "RateControl__1getRate return value %d", returnValue);
+    LOG1(EJavaMMAPI, EInfo, "RateControl__1getRate return value %d", returnValue);
 
     return (error == KErrNone) ? returnValue : error;
 }
@@ -149,7 +149,7 @@ Java_com_nokia_microedition_media_control_RateControl__1setRate
 {
     // Get pointer to native event source.
     MMAFunctionServer* eventSource =
-	  reinterpret_cast< MMAFunctionServer *>(aEventSourceHandle);
+        reinterpret_cast< MMAFunctionServer *>(aEventSourceHandle);
 
     CMMARateControl* RateControl =
         reinterpret_cast< CMMARateControl *>(aControlHandle);
@@ -165,7 +165,7 @@ Java_com_nokia_microedition_media_control_RateControl__1setRate
                                      aRate,
                                      &returnValue);
 
-    LOG1( EJavaMMAPI, EInfo, "RateControl__1setRate return value %d", returnValue);
+    LOG1(EJavaMMAPI, EInfo, "RateControl__1setRate return value %d", returnValue);
 
     return (error == KErrNone) ? returnValue : error;
 }
@@ -194,7 +194,7 @@ Java_com_nokia_microedition_media_control_RateControl__1getMaxRate
                                      RateControl,
                                      &CMMARateControl::MaxRateL,
                                      &returnValue);
-    LOG1( EJavaMMAPI, EInfo, "RateControl__1getMaxRate return value %d", returnValue);
+    LOG1(EJavaMMAPI, EInfo, "RateControl__1getMaxRate return value %d", returnValue);
 
     return (error == KErrNone) ? returnValue : error;
 }

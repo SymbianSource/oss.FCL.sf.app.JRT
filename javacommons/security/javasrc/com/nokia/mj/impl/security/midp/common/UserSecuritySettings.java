@@ -48,6 +48,7 @@ public interface UserSecuritySettings
     public static final String AUTHENTICATION_SETTINGS = "Authentication";
     public static final String BROADCAST_SETTINGS = "Broadcast";
     public static final String NFC_WRITE_ACCESS_SETTINGS = "NFC Write Access";
+    public static final String URL_START_SETTINGS = "Url start";
 
     // security warnings modes
     public static final String SECURITY_WARNINGS_USER_DEFINED_MODE = "1";

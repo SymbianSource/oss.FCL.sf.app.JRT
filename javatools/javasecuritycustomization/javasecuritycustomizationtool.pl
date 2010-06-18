@@ -64,6 +64,7 @@ my $sis_file_name;
 my $pkg_file_name;
 my $pkg_name;
 my $package_type;
+my $s60_version;
 my $signed_sis                                     = "false";
 my $ROM                                            = "rom";
 my $SIS                                            = "sis";
@@ -87,6 +88,7 @@ my $NON_REMOVABLE_PACKAGE_TYPE                     = ",(0x2001FD68), 1,0,0, TYPE
 my $REMOVABLE_PACKAGE_TYPE                         = ",(0x2001FD68), 1,0,0, TYPE=SP,RU\n%{\"Nokia\"}\n:\"Nokia\"\n[0x1028315F], 0, 0, 0, {\"Series60ProductID\"}\n";
 # IBY and PKG data
 my $CERTS_DATACAGE                                 = "\\private\\200211dc\\security\\trustroots\\device\\certificates\\";
+my $CERTS_DEST                                     = "\\resource\\java\\security\\trustroots\\";
 my $CERTS_STATE_DATACAGE                           = "\\private\\200211dc\\security\\trustroots\\device\\state\\";
 my $POLICIES_DATACAGE_SRC                          = "\\resource\\java\\security\\policies\\";
 my $POLICIES_DATACAGE_SRC_5_0                      = "\\private\\102033E6\\resource\\security\\policies\\";
@@ -418,7 +420,8 @@ sub add_certs()
     open (POLICY_FILE, "+>tmp/update_certs") or die "Cannot create tmp file (tmp/update_certs)\n";
     close POLICY_FILE;
   }
-
+  
+  open (MIDPROOTSLIST_FILE, "+>tmp/midprootslist") or die "Cannot create temp file (tmp/certs/midprootslist)\n";
   foreach my $root (@{$xmldata->{root}}) {
     
       # read the xml node
@@ -584,51 +587,69 @@ sub add_certs()
       }
       else
       {
+          print MIDPROOTSLIST_FILE $root_file_with_ext;       
+          print MIDPROOTSLIST_FILE "\n";       
           print PKG_FILE   "\"./tmp/certs/";
           print PKG_FILE   $root_file_with_ext;
-          print PKG_FILE   "\"-\"c:" . "$CERTS_DATACAGE";
+          if ($s60_version eq "5.0")
+          {
+              print PKG_FILE   "\"-\"c:" . "$CERTS_DATACAGE";
+          }
+          else
+          {
+              print PKG_FILE   "\"-\"c:" . "$CERTS_DEST";
+          }
           print PKG_FILE   $root_file_with_ext;
           print PKG_FILE   "\"\n\"./tmp/certs/";
           print PKG_FILE   $root_file_without_ext;
-          print PKG_FILE   "$METADATA_EXT\"-\"c:" ."$CERTS_DATACAGE";
+          if ($s60_version eq "5.0")
+          {
+              print PKG_FILE   "$METADATA_EXT\"-\"c:" ."$CERTS_DATACAGE";
+          }
+          else
+          {
+              print PKG_FILE   "$METADATA_EXT\"-\"c:" ."$CERTS_DEST";
+          }
           print PKG_FILE   $root_file_without_ext;
           print PKG_FILE   "$METADATA_EXT\"\n";
-          if ($root_state ne "")
+          open (STATE_FILE, "+>tmp/certs/$root_file_without_ext$STATE_EXT") or die "Cannot create temp file (tmp/certs/$root_file_without_ext$STATE_EXT)\n";
+          binmode STATE_FILE;
+          my $state;
+          if ($root_state eq "enabled" || $root_state eq "")
           {
-              open (STATE_FILE, "+>tmp/certs/$root_file_without_ext$STATE_EXT") or die "Cannot create temp file (tmp/certs/$root_file_without_ext$STATE_EXT)\n";
-              binmode STATE_FILE;
-              my $state;
-              if ($root_state eq "enabled")
+            $state = pack("h8", "3000");
+          }
+          else
+          {
+              if ($root_state eq "disabled")
               {
-                $state = pack("h8", "3000");
+                $state = pack("h8", "2000");
               }
               else
               {
-                  if ($root_state eq "disabled")
-                  {
-                    $state = pack("h8", "2000");
-                  }
-                  else
-                  {
-                     if ($root_state eq "removed")
-                     {
-                        $state = pack("h8", "1000");
-                     }
+                 if ($root_state eq "removed")
+                 {
+                    $state = pack("h8", "1000");
                   }
               }
-              print STATE_FILE $state;
-              close STATE_FILE;
-              print PKG_FILE   "\"./tmp/certs/";
-              print PKG_FILE   $root_file_without_ext;
-              print PKG_FILE   "$STATE_EXT\"-\"c:" ."$CERTS_STATE_DATACAGE";
-              print PKG_FILE   $root_file_without_ext;
-              print PKG_FILE   "$STATE_EXT\"\n";
           }
+          print STATE_FILE $state;
+          close STATE_FILE;
+          print PKG_FILE   "\"./tmp/certs/";
+          print PKG_FILE   $root_file_without_ext;
+          print PKG_FILE   "$STATE_EXT\"-\"c:" ."$CERTS_STATE_DATACAGE";
+          print PKG_FILE   $root_file_without_ext;
+          print PKG_FILE   "$STATE_EXT\"\n";
       }
   }
+  close MIDPROOTSLIST_FILE;
  	if ($deployment_destination eq $SIS)
  	{
     print PKG_FILE   "\"./tmp/update_certs\"-\"c:\\private\\102033E6\\security\\tmp\\update_certs\"\n";
+    if ($s60_version ne "5.0")
+    {
+        print PKG_FILE   "\"./tmp/midprootslist\"-\"c:\\resource\\java\\security\\trustroots\\midprootslist\"\n";
+    }
   }
   if ($deploy == 1)
   {
@@ -714,7 +735,6 @@ sub add_policy()
  	
   # read the xml node
   $policy_name = $xmldata->{policy}->{name};
-  $s60_version = $xmldata->{s60_version};
   $utp_policy_path = $xmldata->{policy}->{unidentifiedthirdparty};
   $ttp_policy_path = $xmldata->{policy}->{identifiedthirdparty};
   $operator_policy_path = $xmldata->{policy}->{operator};
@@ -1171,6 +1191,7 @@ sub init
     $signing_key = $xmldata->{signing}->{key};
  
     $package_type = $xmldata->{deploytype};
+    $s60_version = $xmldata->{s60_version};
     if (($package_type ne "") && ($package_type ne "removable") && ($package_type ne "non-removable"))
     {
         print "\nERROR: when specified, the type of the deployment package can have one of the two values: 'removable' or 'non-removable'. Please check the configuration file $config_file\n";

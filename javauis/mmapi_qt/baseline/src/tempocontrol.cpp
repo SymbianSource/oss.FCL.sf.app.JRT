@@ -103,7 +103,7 @@ Java_com_nokia_microedition_media_control_TempoControl__1setTempo
                                      aTempo,
                                      &returnValue);
 
-    LOG1( EJavaMMAPI, EInfo, "TempoControl__1setTempo return value %d", returnValue);
+    LOG1(EJavaMMAPI, EInfo, "TempoControl__1setTempo return value %d", returnValue);
 
     return (error == KErrNone) ? returnValue : error;
 }
@@ -133,7 +133,7 @@ Java_com_nokia_microedition_media_control_TempoControl__1getTempo
                                      &CMMAMIDITempoControl::TempoL,
                                      &returnValue);
 
-    LOG1( EJavaMMAPI, EInfo, "TempoControl__1getTempo return value %d", returnValue);
+    LOG1(EJavaMMAPI, EInfo, "TempoControl__1getTempo return value %d", returnValue);
 
     return (error == KErrNone) ? returnValue : error;
 }

@@ -27,13 +27,20 @@ HEADERS += $$PWD/qt/surfaceimpl.h \
     $$PWD/qt/graphicscontextimpl.h \
     $$PWD/qt/bufferimpl.h \
     $$PWD/qt/targetobserver.h \
-    $$PWD/qt/windowsurfaceimpl.h \
     $$PWD/gfxlog.h \
     $$PWD/graphics.h \
-    $$PWD/gfxutils.h
+    $$PWD/gfxutils.h \
+    $$PWD/qt/windowsurfaceimpl_linux.h \
+    $$PWD/qt/windowsurfaceimpl_symbian.h
+
+symbian {
+    HEADERS -= $$PWD/qt/windowsurfaceimpl_linux.h
+}
+!symbian {
+    HEADERS -= $$PWD/qt/windowsurfaceimpl_symbian.h
+}
 
 SOURCES += $$PWD/qt/surfaceimpl.cpp \
-    $$PWD/qt/windowsurfaceimpl.cpp \
     $$PWD/qt/pixmap.cpp \
     $$PWD/qt/imageloaderimpl.cpp \
     $$PWD/qt/imagedataimpl.cpp \
@@ -43,8 +50,14 @@ SOURCES += $$PWD/qt/surfaceimpl.cpp \
     $$PWD/qt/targetobserver.cpp \
     $$PWD/graphicsfactory.cpp \
     $$PWD/gfxos.cpp \
-    $$PWD/gfxutils.cpp
+    $$PWD/gfxutils.cpp \
+    $$PWD/qt/windowsurfaceimpl_linux.cpp \
+    $$PWD/qt/windowsurfaceimpl_symbian.cpp
 
 symbian {
-LIBS += -llibEGL
+    SOURCES -= $$PWD/qt/windowsurfaceimpl_linux.cpp
+    LIBS += -llibEGL
+}
+!symbian {
+    SOURCES -= $$PWD/qt/windowsurfaceimpl_symbian.cpp
 }

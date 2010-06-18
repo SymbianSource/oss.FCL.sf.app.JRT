@@ -33,7 +33,7 @@
 NONSHARABLE_CLASS(CMMAItemDisplay): public CMMADisplay
 {
 public:     // Constructors and destructors
-    static CMMAItemDisplay* NewLC(/*MMIDCustomItem* aCustomItem*/);
+    static CMMAItemDisplay* NewLC(MMAFunctionServer* aEventSource , jobject aItemDispObj);
 
     ~CMMAItemDisplay();    // Destructor ()
 
@@ -58,11 +58,11 @@ public:     // New methods
                                  TSize* aSize);
 
 public: // Methods derived from MMMADisplay
-    void SourceSizeChanged(const TSize& aSourceSize);
     void SetFullScreenL(TBool aFullScreen);
     void SetDisplayLocationL(const TPoint& aPosition);
     TPoint DisplayLocation();
     void SetWindowL(MMMADisplayWindow* aWindow);
+    void SourceSizeChanged(TInt aJavaControlWidth, TInt aJavaControlHeight,TInt x, TInt y,TRect aBoundsRect);
 /*
 public: // From MDirectContent
     void MdcContentBoundsChanged(const TRect& aRect);

@@ -260,7 +260,7 @@ public class MobileDevice {
 	}
 	
 	private static void hookEvents() {
-	    int screenSignalProxy = OS.SignalHandler_new(desktopWidgetHandle, getDisplay(), OS.QSIGNAL_QDESKTOPWIDGET_SCREENCOUNTCHANGED);
+	    int screenSignalProxy = OS.SignalHandler_new(desktopWidgetHandle, OS.QSIGNAL_QDESKTOPWIDGET_SCREENCOUNTCHANGED);
 	    OS.QObject_connectOrThrow(desktopWidgetHandle, "screenCountChanged(int)", screenSignalProxy,
 	            "widgetSignal(int)", OS.QT_AUTOCONNECTION);
 	}

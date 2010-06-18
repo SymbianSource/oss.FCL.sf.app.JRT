@@ -305,9 +305,10 @@ void CAcceleratorSensor::OpenChannelL()
     iScaleFactor = 1;
     TInt format(ESensrvChannelDataFormatAbsolute);
     TSensrvProperty property;
-    TRAPD(err1,iChannel->GetPropertyL(KSensrvPropIdChannelDataFormat, KSensrvItemIndexNone,
-                                      property););
-    LOG1(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::GetPropertyL() One = %d",err1);
+    iChannel->GetPropertyL(KSensrvPropIdChannelDataFormat, KSensrvItemIndexNone,
+                                      property);
+    
+
     if (property.PropertyType() == ESensrvIntProperty)
     {
         property.GetValue(format);
@@ -326,19 +327,17 @@ void CAcceleratorSensor::OpenChannelL()
         // Scaled value maximum
         TSensrvProperty property_scaled;
         TInt maxScaled(0);
-        TRAPD(err2,iChannel->GetPropertyL(KSensrvPropIdScaledRange, KSensrvItemIndexNone,
-                                          property_scaled););
-        LOG1(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::GetPropertyL() Two = %d",err2);
+       iChannel->GetPropertyL(KSensrvPropIdScaledRange, KSensrvItemIndexNone,
+                                          property_scaled);
+        
 
         if (property_scaled.GetArrayIndex() == ESensrvArrayPropertyInfo)
         {
             LOG(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::If");
             //for 2G Accelerometer Sensor index value is 0.
             TInt rangeIndex(0);
-            TRAPD(err3,iChannel->GetPropertyL(KSensrvPropIdScaledRange, KSensrvItemIndexNone,
-                                              rangeIndex, property_scaled););
-            LOG1(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::GetPropertyL() Three = %d",err3);
-
+            iChannel->GetPropertyL(KSensrvPropIdScaledRange, KSensrvItemIndexNone,
+                                              rangeIndex, property_scaled);
             property_scaled.GetMaxValue(maxScaled);
 
             LOG1(ESensor,EInfo,"property_scaled::maxValue = %d",maxScaled);
@@ -351,35 +350,32 @@ void CAcceleratorSensor::OpenChannelL()
         }
         // MeasureRange can be an array property
         TReal maxMeasure;
+        
         TSensrvProperty property_Measured;
-        TRAPD(err4,iChannel->GetPropertyL(KSensrvPropIdMeasureRange, KSensrvItemIndexNone,
-                                          property_Measured););
-        LOG1(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::GetPropertyL() Four = %d",err4);
+        iChannel->GetPropertyL(KSensrvPropIdMeasureRange, KSensrvItemIndexNone,
+                                          property_Measured);
+             
+        TInt arrayIndex = property_Measured.GetArrayIndex();
+        LOG1(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::KSensrvPropIdMeasureRange::arrayIndex = %d",arrayIndex);
 
-        if (err4 == KErrNone)
+        if (property_Measured.GetArrayIndex() == ESensrvArrayPropertyInfo)
         {
-            TInt arrayIndex = property_Measured.GetArrayIndex();
-            LOG1(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::KSensrvPropIdMeasureRange::arrayIndex = %d",arrayIndex);
+            LOG(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::If");
 
-            if (property_Measured.GetArrayIndex() == ESensrvArrayPropertyInfo)
-            {
-                LOG(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::If");
-
-                TInt index2g = 0;
-                LOG1(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::Getting RangeIndex = %f",index2g);
-                //We need to TypeCast variable rangeIndex to TInt for
-                TRAPD(err5,iChannel->GetPropertyL(KSensrvPropIdMeasureRange, KSensrvItemIndexNone,
-                                                  index2g, property_Measured););
-                LOG1(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::GetPropertyL() Five = %d",err5);
-                property_Measured.GetMaxValue(maxMeasure);
-            }
-            else
-            {
-                LOG(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::else");
-                property_Measured.GetMaxValue(maxMeasure);
-            }
-
+            TInt index2g = 0;
+            LOG1(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::Getting RangeIndex = %f",index2g);
+            //We need to TypeCast variable rangeIndex to TInt for
+            iChannel->GetPropertyL(KSensrvPropIdMeasureRange, KSensrvItemIndexNone,
+                                              index2g, property_Measured);
+            property_Measured.GetMaxValue(maxMeasure);
         }
+        else
+        {
+            LOG(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::else");
+            property_Measured.GetMaxValue(maxMeasure);
+        }
+
+        
         iScaleFactor = maxMeasure / maxScaled ;
         LOG1(ESensor,EInfo,"CAcceleratorSensor::OpenChannelL()::iScaleFactor = %f",iScaleFactor);
     }

@@ -9,14 +9,21 @@
 #     Nokia Corporation - initial implementation
 #*******************************************************************************
 
+QT += core \
+      gui
+
+DEFINES += SWTQT_LIBRARY
+
 INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD
 
-HEADERS += eventcallback.h \
+HEADERS += \
+    eventcallback.h \
     slotcallback.h \
     swtlog.h \
     jniutils.h \
     swt.h \
+    swterror.h \
     autorelease.h \
     listdatamodel.h \
     qcaptionedwidget.h \
@@ -26,11 +33,11 @@ HEADERS += eventcallback.h \
     qswttabwidget.h \
     execexceptionhandler.h \
     swtfontcache.h \
-    swtbufferflushevent.h
+    swtbufferflushevent.h \
+    swtexport.h
 
-
-
-SOURCES += eventcallback.cpp \
+SOURCES += \
+    eventcallback.cpp \
     slotcallback.cpp \
     os.cpp \
     swtlog.cpp \
@@ -45,29 +52,33 @@ SOURCES += eventcallback.cpp \
 
 ##### Symbian specific items ######
 symbian {
-
-CONFIG += mobility
-MOBILITY += bearer
-
-HEADERS += swts60.h \
-	swtmobiledevice.h \
-    swtflipwatch.h
-
-SOURCES += swts60.cpp \
-	swtmobiledevice.cpp \
-    swtflipwatch.cpp
+    CONFIG += mobility
+    MOBILITY += bearer
     
-LIBS += -leikcore
-LIBS += -lapparc
-LIBS += -lavkon
-LIBS += -lefsrv
-LIBS += -lcone
-LIBS += -leikcoctl
-LIBS += -lapgrfx
-LIBS += -lHWRMVibraClient
-LIBS += -lHWRMLightClient
-LIBS += -lxqservice
-LIBS += -lxqtelephonyservice
-LIBS += -lQtContacts
-
+    HEADERS += \
+        swts60.h \
+    	swtmobiledevice.h \
+        swtflipwatch.h
+    
+    SOURCES += \
+        swts60.cpp \
+    	swtmobiledevice.cpp \
+        swtflipwatch.cpp
+        
+    LIBS += \
+        -leikcore \
+        -lapparc \
+        -lavkon \
+        -lefsrv \
+        -lcone \
+        -leikcoctl \
+        -lapgrfx \
+        -lHWRMVibraClient \
+        -lHWRMLightClient \
+        -lxqservice \
+        -lxqtelephonyservice \
+        -lQtContacts \
+        -lhal \
+        -lws32 \
+        -lgdi
 }

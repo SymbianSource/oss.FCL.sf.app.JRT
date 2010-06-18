@@ -1,7 +1,7 @@
 EXPORTS
-	?jni_lookup@@YAP6AXXZPBD@Z @ 1 NONAME ; void (*)(void) jni_lookup(char const *)
+  ?jni_lookup@@YAP6AXXZPBD@Z @ 1 NONAME ; void (*)(void) jni_lookup(char const *)
 	?SetLoopCount@CMMAPlayer@@UAEXH@Z @ 2 NONAME ; void CMMAPlayer::SetLoopCount(int)
-	?PostObjectEvent@CMMAPlayer@@QAEXW4TEventType@CMMAPlayerEvent@@PAV_jobject@@@Z @ 3 NONAME ; void CMMAPlayer::PostObjectEvent(enum CMMAPlayerEvent::TEventType, class _jobject *)
+	?PostObjectEvent@CMMAPlayer@@QAEXW4TEventType@CMMAPlayerEvent@@PAV_jobject@@@Z @ 3 NONAME ; void CMMAPlayer::PostObjectEvent(enum CMMAPlayerEvent::TEventType, class _jobject *)	
 	?PrefetchFileL@CMMAEMCAudioPlayer@@MAEXXZ @ 4 NONAME ; void CMMAEMCAudioPlayer::PrefetchFileL(void)
 	?AddControlL@CMMAPlayer@@UAEXPAVCMMAControl@@@Z @ 5 NONAME ; void CMMAPlayer::AddControlL(class CMMAControl *)
 	?NotifyWithStringEvent@CMMAVideoPlayer@@UAEXW4TEventType@CMMAPlayerEvent@@ABVTDesC16@@@Z @ 6 NONAME ; void CMMAVideoPlayer::NotifyWithStringEvent(enum CMMAPlayerEvent::TEventType, class TDesC16 const &)

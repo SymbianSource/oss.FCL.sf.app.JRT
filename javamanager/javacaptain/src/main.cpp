@@ -60,6 +60,15 @@ void makeHomeDir()
 }
 #endif
 
+// In S60 working directory should be initalized to C:\private\<UID> by OpenC
+// But for some reason this does not seem to work if captain binary is in rom.
+#ifdef __SYMBIAN32__
+const char* const IAD_BOOT_FLAG   = "c:\\private\\200211DC\\iadboot.dat";
+#else
+const char* const IAD_BOOT_FLAG   = "iadboot.dat";
+#endif /* __SYMBIAN32__ */
+
+
 int main(int ac, char** av)
 {
     JELOG2(EJavaCaptain);
@@ -72,7 +81,7 @@ int main(int ac, char** av)
     if (ac == 2 && strcmp(av[1], "iad") == 0)
     {
         LOG(EJavaCaptain, EInfo, "creating iad boot event flag");
-        int fd = open("iadboot.dat", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+        int fd = open(IAD_BOOT_FLAG, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
         if (fd < 0)
         {
             ELOG1(EJavaCaptain, "create boot event flag failed: %s", strerror(errno));

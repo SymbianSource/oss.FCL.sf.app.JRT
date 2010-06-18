@@ -116,7 +116,7 @@ public Color(Device device, RGB rgb) {
 public void dispose() {
     if (device == null) return;
     if (device.isDisposed()) return;    
-    if (device.tracking) device.dispose_Object(this);
+    if (Device.tracking) device.dispose_Object(this);
     device = null;
     handle = -1;
 }
@@ -214,8 +214,6 @@ public int hashCode() {
  * Invokes platform specific functionality to allocate a new color.
  */
 void init(Device device, int red, int green, int blue) {
-    
-    if (device == null) device = Device.getDevice();
     if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
     this.device = device;
     
@@ -226,7 +224,7 @@ void init(Device device, int red, int green, int blue) {
     }
     handle = (red & 0xFF) | ((green & 0xFF) << 8) | ((blue & 0xFF) << 16);
     // Keep this after dealing with all exceptions!
-    if (device.tracking) device.new_Object(this);
+    if (Device.tracking) device.new_Object(this);
 }
 
 /**

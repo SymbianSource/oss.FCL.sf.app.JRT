@@ -34,7 +34,7 @@ public class PlayerImpl extends PlayerBase
 
     // object for waiting native asynchronous method calls
     protected Object iLockObject = new Object();
-     protected Object iPrefetchLockObject = new Object();
+    protected Object iPrefetchLockObject = new Object();
 
     // native error code
     protected int iError;
@@ -42,9 +42,9 @@ public class PlayerImpl extends PlayerBase
     protected PlayerListenerImpl iPlayerListenerImpl;
 
     private Finalizer mFinalizer;
-    
+
     private boolean iWaitFlag = true;
-    
+
     private boolean iStartWaitFlag = true;
 
     /**
@@ -183,8 +183,11 @@ public class PlayerImpl extends PlayerBase
         int state = CLOSED;
         if (iState != CLOSED)
         {
+            Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl.java : before _getState()  ");
             state = _getState(ManagerImpl.getEventSource(), iPlayerHandle);
+            Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl.java : after _getState()  ");
         }
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"+ PlayerIMPl.getState() ");
         return state;
     }
 
@@ -210,37 +213,38 @@ public class PlayerImpl extends PlayerBase
      */
     public void doPrefetch() throws MediaException
     {
-    	Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl.java : doPrefetch");
-        synchronized(iPrefetchLockObject)
-        { 
-        	if (PREFETCHED == getState())
-        	return;
-         synchronized (iLockObject)
-         {
-        	Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl.java : doPrefetch inside try"+Thread.currentThread().getName());
-          //int retval[] = new int[1];
-      		 int err = _prefetch(ManagerImpl.getEventSource(), iPlayerHandle);
-          Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl.java : doPrefetch err = " + err);
-          if (err < NativeError.KErrNone)
-          {
-              throw new MediaException(
-              "Prefetch failed, Symbian OS error: " + err);
-          }
-          if(iWaitFlag)
-          {
-           try
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl.java : doPrefetch");
+        synchronized (iPrefetchLockObject)
+        {
+            if (PREFETCHED == getState())
+                return;
+            synchronized (iLockObject)
             {
-                // wait until actionCompleted( int aError ) is called
-                iLockObject.wait();
-            }
-            catch (InterruptedException ie)
-            {
-                // cannot occur
-            }
-          }
-         Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl.java : doPrefetch Sync end");
-	        } // end   synchronized (iLockObject)
-   	   }
+                Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl.java : doPrefetch inside try"+Thread.currentThread().getName());
+                //int retval[] = new int[1];
+                int err = _prefetch(ManagerImpl.getEventSource(), iPlayerHandle);
+                Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl.java : doPrefetch err = " + err);
+                if (err < NativeError.KErrNone)
+                {
+                    throw new MediaException(
+                        "Prefetch failed, Symbian OS error: " + err);
+                }
+                if (iWaitFlag)
+                {
+                    try
+                    {
+                        // wait until actionCompleted( int aError ) is called
+                        iLockObject.wait();
+                    }
+                    catch (InterruptedException ie)
+                    {
+                        // cannot occur
+                    }
+                }
+                Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl.java : doPrefetch Sync end");
+            } // end   synchronized (iLockObject)
+        }
+
         if (iError < NativeError.KErrNone)
         {
             throw new MediaException(
@@ -254,28 +258,28 @@ public class PlayerImpl extends PlayerBase
      */
     private void actionCompleted(int aError)
     {
-    	  Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"actionCompleted callback11 aError ="+ aError + "    "+Thread.currentThread().getName());
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"actionCompleted callback11 aError ="+ aError + "    "+Thread.currentThread().getName());
         iError = aError;
 
         synchronized (iLockObject)
-       {
-        	Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"actionCompleted callback inside synchronized (iLockObject)");
+        {
+            Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"actionCompleted callback inside synchronized (iLockObject)");
             iLockObject.notify();
         }
     }
-    
+
     private void actionCompletedFile()
     {
         Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl.java : actionCompletedFile");
-        iWaitFlag = false;       
-        
-   }
-    
+        iWaitFlag = false;
+
+    }
+
     private void actionCompletedStart()
     {
         Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl.java : actionCompletedStart");
-        iStartWaitFlag = false;       
-        
+        iStartWaitFlag = false;
+
     }
 
     /**
@@ -298,44 +302,45 @@ public class PlayerImpl extends PlayerBase
      */
     public void start() throws MediaException
     {
-    Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl.java : start()");
-    prefetch();
-			 Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl, start, state = "+getState());
-    // Only preteched player may be started. If player is already started
-    // this method returns silently.
-    if (getState() == PREFETCHED)
-    {
-         synchronized (iLockObject)
-         {        
-             Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl, before calling native _start() thread is =" +Thread.currentThread().getName());
-            	Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl, before calling native _start()");
-             int err = _start(ManagerImpl.getEventSource(), iPlayerHandle);
-             Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl, before calling native _start( ) returned : err = "+err);
-             if (err < NativeError.KErrNone)
-             {
-                throw new MediaException(
-                "Start failed, Symbian OS error: " + err);
-             }
-             if (iError < NativeError.KErrNone)
-             {
-                    throw new MediaException(
-                    "Start failed, Symbian OS error: " + iError);
-             }
-             if(iStartWaitFlag)
-             {
-                try
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl.java : start()");
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl.java : start() outside if(iSPrefetchOngoing)");
+        prefetch();
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl, start, state = "+getState());
+        // Only preteched player may be started. If player is already started
+        // this method returns silently.
+        if (getState() == PREFETCHED)
+        {
+            synchronized (iLockObject)
+            {
+                Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl, before calling native _start() thread is =" +Thread.currentThread().getName());
+                Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl, before calling native _start()");
+                int err = _start(ManagerImpl.getEventSource(), iPlayerHandle);
+                Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl, before calling native _start( ) returned : err = "+err);
+                if (err < NativeError.KErrNone)
                 {
-                      // wait until actionCompleted( int aError ) is called
-                       iLockObject.wait();   // only for tck run
-                 }
-                 catch (InterruptedException ie)
-                 {
-                    // cannot occur
-                 }
-                
-             }
-          }
-    }
+                    throw new MediaException(
+                        "Start failed, Symbian OS error: " + err);
+                }
+                if (iError < NativeError.KErrNone)
+                {
+                    throw new MediaException(
+                        "Start failed, Symbian OS error: " + iError);
+                }
+                if (iStartWaitFlag)
+                {
+                    try
+                    {
+                        // wait until actionCompleted( int aError ) is called
+                        iLockObject.wait();   // only for tck run
+                    }
+                    catch (InterruptedException ie)
+                    {
+                        // cannot occur
+                    }
+
+                }
+            }
+        }
     }
 
     /**
@@ -366,7 +371,7 @@ public class PlayerImpl extends PlayerBase
      */
     public void doClose()
     {
-    	Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl.java : doclose() 1");
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl.java : doclose() 1");
         _close(ManagerImpl.getEventSource(), iPlayerHandle);
 
         if (iPlayerHandle > NativeError.KErrNone)  // construction has succeed

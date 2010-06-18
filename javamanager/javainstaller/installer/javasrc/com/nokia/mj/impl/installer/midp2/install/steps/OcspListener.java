@@ -78,7 +78,6 @@ public class OcspListener implements OcspEventListener
             }
             if (iBall.iSifNotifier != null)
             {
-                Log.log("OcspListener.ocspEvent: update SifNotifier to 0 / 0");
                 try
                 {
                     iBall.iSifNotifier.notifyProgress(
@@ -109,7 +108,6 @@ public class OcspListener implements OcspEventListener
                 }
                 if (iBall.iSifNotifier != null)
                 {
-                    Log.log("OcspListener.ocspEvent: update SifNotifier to 100 / 100");
                     try
                     {
                         iBall.iSifNotifier.notifyProgress(

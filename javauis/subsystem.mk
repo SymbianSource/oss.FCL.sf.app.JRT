@@ -23,13 +23,16 @@ include $(JAVA_SRC_ROOT)/build/Makefile.defs
 NONQTSUBSYSTEMS += \
 	coreui/build
 
+COMPONENTS += nokiasound/build
 
 #
 # Common legacy utilities
 #
 SUBSYSTEMS += javalegacyutils
 
-SYMBIAN_ONLY += javalegacyutils
+
+SYMBIAN_ONLY += javalegacyutils nokiasound/build
+
 
 
 #
@@ -41,5 +44,8 @@ else
 include subsystem_qt.mk
 endif
 
+# Declare that release preparation removes subdirectories not in build, except
+# listed special cases
+REMOVE_NOTBUILT_EXCLUDING = inc internal tsrc
 
 include ${JAVA_SRC_ROOT}/build/Makefile.subsystem

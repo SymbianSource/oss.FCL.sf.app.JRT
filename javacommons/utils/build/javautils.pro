@@ -37,7 +37,7 @@ symbian {
                ../src.s60/*.cpp \
 
       LIBS += -lflogger -lplatformver -lsysversioninfo -lsysutil -lbafl \
-              -lefsrv -ljavaenv -lhal -llibcrypto -lcommonengine -lplatformenv
+              -lefsrv -ljavaenvinfo -lhal -llibcrypto -lcommonengine -lplatformenv
 
     !contains(PROJECT_DEFINES,RD_JAVA_UI_QT) {
         LIBS += -lavkon

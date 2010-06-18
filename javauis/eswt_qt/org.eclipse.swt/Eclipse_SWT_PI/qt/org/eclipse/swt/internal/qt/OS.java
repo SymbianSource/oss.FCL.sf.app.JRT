@@ -120,6 +120,8 @@ public final class OS {
     public static final int QT_KEY_Y = 0x59;
     public static final int QT_KEY_Z = 0x5a;
     public static final int QT_KEY_UNKNOWN = 0x01ffffff;
+    public static final int QT_KEY_YES = 0x01010001;
+    public static final int QT_KEY_NO = 0x01010002;
 
     // Mask for non-printable keys
     public static final int QT_NONPRINTABLEKEYMASK = 0x01000000;
@@ -165,7 +167,6 @@ public final class OS {
     // QInputContextFactory key
     public static final String  QINPUTCONTEXT_COEFEP = "coefep";
     
-    
     // CntServicesContact actions
     public static final String CNT_ACTIONALL = "all";
     public static final String CNT_ACTIONCALL ="call";
@@ -175,9 +176,6 @@ public final class OS {
     // CntServicesContact filters
     public static final String  CNT_DISPLAYALL = "all";
     public static final String  CNT_FILTERDISPLAYFAVORITES = "favorites";
-
-    
-
 
     // Implementation specific codes for the signals emitted by the Qt widgets
     public static final int QSIGNAL_ID_RANGE_FIRST = 1000;
@@ -231,14 +229,13 @@ public final class OS {
     public static final int QSWTEVENT_WIDGETPAINTED = QSWTEVENT_ID_RANGE_FIRST + 1;
     public static final int QSWTEVENT_WIDGETRESIZED = QSWTEVENT_ID_RANGE_FIRST + 2;
     public static final int QSWTEVENT_WIDGETMOVED = QSWTEVENT_ID_RANGE_FIRST + 3;
-    public static final int QSWTEVENT_ENDKEYCLOSE = QSWTEVENT_ID_RANGE_FIRST + 4;
-    public static final int QSWTEVENT_SYSTEMSHUTDOWN = QSWTEVENT_ID_RANGE_FIRST + 5;
-    public static final int QSWTEVENT_BUFFERFLUSH = QSWTEVENT_ID_RANGE_FIRST + 6;
-    public static final int QSWTEVENT_RESOURCECHANGE = QSWTEVENT_ID_RANGE_FIRST + 7;
-    public static final int QSWTEVENT_MOBILEDEVICEOPENED = QSWTEVENT_ID_RANGE_FIRST + 8;
-    public static final int QSWTEVENT_MOBILEDEVICECLOSED = QSWTEVENT_ID_RANGE_FIRST + 9;
-    public static final int QSWTEVENT_SCREENACTIVATED = QSWTEVENT_ID_RANGE_FIRST + 10;
-    public static final int QSWTEVENT_SCREENDEACTIVATED = QSWTEVENT_ID_RANGE_FIRST + 11;
+    public static final int QSWTEVENT_SYSTEMSHUTDOWN = QSWTEVENT_ID_RANGE_FIRST + 4;
+    public static final int QSWTEVENT_BUFFERFLUSH = QSWTEVENT_ID_RANGE_FIRST + 5;
+    public static final int QSWTEVENT_RESOURCECHANGE = QSWTEVENT_ID_RANGE_FIRST + 6;
+    public static final int QSWTEVENT_MOBILEDEVICEOPENED = QSWTEVENT_ID_RANGE_FIRST + 7;
+    public static final int QSWTEVENT_MOBILEDEVICECLOSED = QSWTEVENT_ID_RANGE_FIRST + 8;
+    public static final int QSWTEVENT_SCREENACTIVATED = QSWTEVENT_ID_RANGE_FIRST + 9;
+    public static final int QSWTEVENT_SCREENDEACTIVATED = QSWTEVENT_ID_RANGE_FIRST + 10;
 
     // Qt connection types for signal-slot connections
     public static final int QT_AUTOCONNECTION = 0;
@@ -1082,8 +1079,7 @@ public final class OS {
     public static final native String[] ListModel_itemStrings( int handle );
     public static final native int ListModel_indexOf( int handle, String string, int start );
     public static final native void ListModel_remove( int handle, int index );
-    public static final native void ListModel_setItem( int handle, int index, String string );
-    public static final native void ListModel_setItem( int handle, int index, String string, int imageHandle );
+    public static final native void ListModel_setItemContentsToNull( int handle, int index);
     public static final native void ListModel_clearList(int dataModelHandle);
 
     //
@@ -1498,25 +1494,8 @@ public final class OS {
     // QInputDialog
     //
     public static final native String QInputDialog_swt_getText(int parentHandle, String title, String label, int echoMode, String defaultText, String dialogId, int layoutDirection);
-    public static final native String QInputDialog_swt_getDouble(int parentHandle, String title, String label, double min,
-            double max, double defaultValue, int decimals, String dialogId, int layoutDirection);
-
-    //
-    // QWebView
-    //
-    public static final native int QWebView_new();
-    public static final native void QWebView_back(int handle);
-    public static final native void QWebView_forward(int handle);
-    public static final native void QWebView_reload(int handle);
-    public static final native void QWebView_setHtml(int handle, String html);
-    public static final native void QWebView_setUrl(int handle, String url);
-    public static final native void QWebView_stop(int handle);
-    public static final native String QWebView_swt_backUrl(int handle);
-    public static final native boolean QWebView_swt_canGoBack(int handle);
-    public static final native boolean QWebView_swt_canGoForward(int handle);
-    public static final native boolean QWebView_swt_evaluateJavaScript(int handle, String script);
-    public static final native String QWebView_swt_forwardUrl(int handle);
-    public static final native String QWebView_url(int handle);
+    public static final native String QInputDialog_swt_getInteger(int parentHandle, String title, String label, int min,
+            int max, int defaultValue, String dialogId, int layoutDirection);
 
     //
     // QSystemTrayIcon
@@ -1727,22 +1706,32 @@ public final class OS {
     // Other
     //
     public static final native int EventHandler_new( );
-    public static final native void EventHandler_destroy( int handle );
+    public static final native void EventHandler_destroy(int handle);
+    
     /**
-     * Creates a QObject which implements slots to receive the signals and passes
-     * them to Java along with signal parameters and the signal id.
+     * Creates a QObject which implements slots to receive signals and passes
+     * them to the Display along with the signal parameters and the signal id. 
      * @param widget The handle of the widget which will send the signal.
-     * @param peer The peer Java object where signal is delivered to (The Display)
      * @param signalId The id that can be used to identify the signal.
-     * @return handle of the slot object, owned by the widget
+     * @return Handle of the slot object, owned by the widget that was passed as the first parameter. 
      */
-    public static final native int SignalHandler_new( int widget, Object peer, int signalId );
+    public static final native int SignalHandler_new(int widget, int signalId);
+    
+    /**
+     * Creates a QObject which implements slots to receive signals and forwards
+     * them to the given Object along with the signal parameters and the signal id. 
+     * @param widget The handle of the widget which will send the signal.
+     * @param peer The peer Java object where the signal is delivered to. 
+     * @param signalId The id that can be used to identify the signal.
+     * @return Handle of the slot object, owned by the widget that was passed as the first parameter. 
+     */
+    public static final native int SignalForwarder_new(int widget, Object peer, int signalId);
+    
     /**
      * Creates the JNI utility used for all JNI activity.
-     * @param display The Display
      * @return handle or 0 in case of failure, doesn't throw an exception
      */
-    public static final native int JniUtils_new(Object display);
+    public static final native int JniUtils_new();
 
     /**
      * Performs a check if the QObject can be safely deleted immediately. If not
@@ -1750,6 +1739,7 @@ public final class OS {
      * be deleted safely e.g. when inside an event listener of the object.
      */
     public static final native boolean JniUtils_safeToDelete(int handle, int qObjectHandle);
+    
     private static final native int windowServer();
 
     /**
@@ -1759,6 +1749,7 @@ public final class OS {
      * @return 0 in case of success, non-zero in case of failure.
      */
     public static final native int initUiThread(int uid);
+    
     /**
      * Some platforms require initialization before Qt-APIs can be used
      * and cleaning up after the application is done with them. This method will
@@ -1766,10 +1757,7 @@ public final class OS {
      */
     public static final native void cleanUpUiThread();
 
-    // Add new stuff above Other, Other is the last category
-
-
     public static final native void setSymbianAppName(String name);
 
-
+    // Add new stuff above the category "Other", that is the last category
 }

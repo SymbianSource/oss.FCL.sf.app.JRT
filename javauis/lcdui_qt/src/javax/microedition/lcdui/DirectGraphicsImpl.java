@@ -72,15 +72,10 @@ class DirectGraphicsImpl implements DirectGraphics
         }
 
         final boolean processAlpha = (format == TYPE_INT_8888_ARGB);
-        ESWTUIThreadRunner.safeSyncExec(new Runnable()
-        {
-            public void run()
-            {
-                graphics.getGc().drawRGB(pixels, offset, scanlength,
-                                         x, y, width, height, processAlpha,
-                                         getNativeTransformValue(manipulation));
-            }
-        });
+
+        graphics.drawRGB(pixels, offset, scanlength,
+                         x, y, width, height, processAlpha,
+                         getNativeTransformValue(manipulation));
     }
 
     public void drawPixels(final byte[] pixels, final byte[] transparencyMask,
@@ -101,15 +96,9 @@ class DirectGraphicsImpl implements DirectGraphics
                 MsgRepository.DIRECTGRAPHICS_EXCEPTION_INVALID_FORMAT);
         }
 
-        ESWTUIThreadRunner.safeSyncExec(new Runnable()
-        {
-            public void run()
-            {
-                graphics.getGc().drawRGB(pixels, transparencyMask, offset, scanlength,
-                                         x, y, width, height, getNativeTransformValue(manipulation),
-                                         getNativeFormatValue(format));
-            }
-        });
+        graphics.drawRGB(pixels, transparencyMask, offset, scanlength,
+                         x, y, width, height, getNativeTransformValue(manipulation),
+                         getNativeFormatValue(format));
     }
 
     public void drawPixels(final short[] pixels, final boolean transparency,
@@ -134,16 +123,11 @@ class DirectGraphicsImpl implements DirectGraphics
         }
 
         final boolean processAlpha = (format == TYPE_USHORT_4444_ARGB);
-        ESWTUIThreadRunner.safeSyncExec(new Runnable()
-        {
-            public void run()
-            {
-                graphics.getGc().drawRGB(pixels, offset, scanlength,
-                                         x, y, width, height, processAlpha,
-                                         getNativeTransformValue(manipulation),
-                                         getNativeFormatValue(format));
-            }
-        });
+
+        graphics.drawRGB(pixels, offset, scanlength,
+                         x, y, width, height, processAlpha,
+                         getNativeTransformValue(manipulation),
+                         getNativeFormatValue(format));
     }
 
     public void drawPolygon(int[] xPoints, int xOffset, int[] yPoints,
@@ -156,13 +140,7 @@ class DirectGraphicsImpl implements DirectGraphics
             points[i * 2] = xPoints[xOffset + i];
             points[(i * 2) + 1] = yPoints[yOffset + i];
         }
-        ESWTUIThreadRunner.safeSyncExec(new Runnable()
-        {
-            public void run()
-            {
-                graphics.getGc().drawPolygon(points);
-            }
-        });
+        graphics.drawPolygon(points);
     }
 
     public void drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3,
@@ -170,13 +148,7 @@ class DirectGraphicsImpl implements DirectGraphics
     {
         setARGBColor(argbColor);
         final int[] points = {x1, y1, x2, y2, x3, y3};
-        ESWTUIThreadRunner.safeSyncExec(new Runnable()
-        {
-            public void run()
-            {
-                graphics.getGc().drawPolygon(points);
-            }
-        });
+        graphics.drawPolygon(points);
     }
 
     public void fillPolygon(int[] xPoints, int xOffset, int[] yPoints,
@@ -189,13 +161,7 @@ class DirectGraphicsImpl implements DirectGraphics
             points[i * 2] = xPoints[xOffset + i];
             points[(i * 2) + 1] = yPoints[yOffset + i];
         }
-        ESWTUIThreadRunner.safeSyncExec(new Runnable()
-        {
-            public void run()
-            {
-                graphics.getGc().fillPolygon(points);
-            }
-        });
+        graphics.fillPolygon(points);
     }
 
     public void fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3,
@@ -203,13 +169,7 @@ class DirectGraphicsImpl implements DirectGraphics
     {
         setARGBColor(argbColor);
         final int[] points = {x1, y1, x2, y2, x3, y3};
-        ESWTUIThreadRunner.safeSyncExec(new Runnable()
-        {
-            public void run()
-            {
-                graphics.getGc().fillPolygon(points);
-            }
-        });
+        graphics.fillPolygon(points);
     }
 
 
@@ -231,23 +191,23 @@ class DirectGraphicsImpl implements DirectGraphics
         {
             public void run()
             {
+                // TODO use window surface for canvas and do sync
+                /*
                 org.eclipse.swt.internal.qt.graphics.Image cgImg;
                 Object target = graphics.getGc().getBoundTarget();
-                if(target != null && target instanceof org.eclipse.swt.internal.qt.graphics.Image)
-                {
+                if (target != null && target instanceof org.eclipse.swt.internal.qt.graphics.Image) {
                     cgImg = (org.eclipse.swt.internal.qt.graphics.Image) target;
                 }
-                else
-                {
+                else {
                     cgImg = new org.eclipse.swt.internal.qt.graphics.Image(width, height);
                     // TODO: in future the copyArea() signature will change
                     graphics.getGc().copyArea(cgImg, x, y);
                 }
                 cgImg.getRGB(pixels, offset, scanlength, x, y, width, height);
-                if(target == null || !(target instanceof org.eclipse.swt.internal.qt.graphics.Image))
-                {
+                if (target == null || !(target instanceof org.eclipse.swt.internal.qt.graphics.Image)) {
                     cgImg.dispose();
                 }
+                */
             }
         });
     }
@@ -270,23 +230,23 @@ class DirectGraphicsImpl implements DirectGraphics
         {
             public void run()
             {
+                // TODO use window surface for canvas and do sync
+                /*
                 org.eclipse.swt.internal.qt.graphics.Image cgImg;
                 Object target = graphics.getGc().getBoundTarget();
-                if(target != null && target instanceof org.eclipse.swt.internal.qt.graphics.Image)
-                {
+                if (target != null && target instanceof org.eclipse.swt.internal.qt.graphics.Image) {
                     cgImg = (org.eclipse.swt.internal.qt.graphics.Image) target;
                 }
-                else
-                {
+                else {
                     cgImg = new org.eclipse.swt.internal.qt.graphics.Image(width, height);
                     graphics.getGc().copyArea(cgImg, x, y);
                 }
                 cgImg.getRGB(pixels, transparencyMask, offset, scanlength, x, y, width,
-                             height, getNativeFormatValue(format));
-                if(target == null || !(target instanceof org.eclipse.swt.internal.qt.graphics.Image))
-                {
+                        height, getNativeFormatValue(format));
+                if (target == null || !(target instanceof org.eclipse.swt.internal.qt.graphics.Image)) {
                     cgImg.dispose();
                 }
+                */
             }
         });
     }
@@ -312,22 +272,22 @@ class DirectGraphicsImpl implements DirectGraphics
         {
             public void run()
             {
+                // TODO use window surface for canvas and do sync
+                /*
                 org.eclipse.swt.internal.qt.graphics.Image cgImg;
                 Object target = graphics.getGc().getBoundTarget();
-                if(target != null && target instanceof org.eclipse.swt.internal.qt.graphics.Image)
-                {
+                if (target != null && target instanceof org.eclipse.swt.internal.qt.graphics.Image) {
                     cgImg = (org.eclipse.swt.internal.qt.graphics.Image) target;
                 }
-                else
-                {
+                else {
                     cgImg = new org.eclipse.swt.internal.qt.graphics.Image(width, height);
                     graphics.getGc().copyArea(cgImg, x, y);
                 }
                 cgImg.getRGB(pixels, offset, scanlength, 0, 0, width, height, getNativeFormatValue(format));
-                if(target == null || !(target instanceof org.eclipse.swt.internal.qt.graphics.Image))
-                {
+                if (target == null || !(target instanceof org.eclipse.swt.internal.qt.graphics.Image)) {
                     cgImg.dispose();
                 }
+                */
             }
         });
     }
@@ -335,15 +295,7 @@ class DirectGraphicsImpl implements DirectGraphics
     public void setARGBColor(int argbColor)
     {
         alpha = (argbColor >> 24) & Graphics.COMPONENT_MASK;
-        graphics.setColor(argbColor);
-        ESWTUIThreadRunner.safeSyncExec(new Runnable()
-        {
-            public void run()
-            {
-                graphics.getGc().setForegroundAlpha(alpha);
-                graphics.getGc().setBackgroundAlpha(alpha);
-            }
-        });
+        graphics.setARGBColor(argbColor);
     }
 
     public int getAlphaComponent()

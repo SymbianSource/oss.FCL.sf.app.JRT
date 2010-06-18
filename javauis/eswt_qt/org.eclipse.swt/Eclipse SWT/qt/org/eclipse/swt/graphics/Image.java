@@ -160,7 +160,6 @@ public final class Image implements Drawable {
      * @param device Device
      */
     Image(Device device) {
-        if (device == null) device = Device.getDevice();
         if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
         this.device = device;
     }
@@ -367,28 +366,34 @@ public final class Image implements Drawable {
      * </ul>
      */
     public Image(Device device, String filename) {
+        this(device, filename, true);
+     }
+    
+    private Image(Device device, String filename, boolean securityCheck) {
         this(device);
         if (filename == null) {
             SWT.error(SWT.ERROR_NULL_ARGUMENT);
         }
         init();
+        
+        if (securityCheck == true) {
+            // Drop the "file:///" prefix
+            String trimmedFileName = filename.trim();
+            final String prefix = "file:///";
+            if (trimmedFileName.startsWith(prefix)) {
+                trimmedFileName = trimmedFileName.substring(prefix.length());
+            }
+            filename = trimmedFileName;
 
-        // Drop the "file:///" prefix
-        String trimmedFileName = filename.trim();
-        final String prefix = "file:///";
-        if(trimmedFileName.startsWith(prefix)) {
-        	trimmedFileName = trimmedFileName.substring(prefix.length());
-        }
-        filename = trimmedFileName;
-
-        boolean canRead = false;
-        try {
-            canRead = Compatibility.canOpenFile(filename);
-        } catch (SecurityException e) {
-            SWT.error(SWT.ERROR_IO);
-        }
-        if (!canRead) {
-            SWT.error(SWT.ERROR_IO);
+            boolean canRead = false;
+            try {
+                canRead = Compatibility.canOpenFile(filename);
+            } catch (SecurityException e) {
+                SWT.error(SWT.ERROR_IO);
+            }
+            if (!canRead) {
+                SWT.error(SWT.ERROR_IO);
+            }
         }
 
         org.eclipse.swt.internal.qt.graphics.ImageLoader loader = new org.eclipse.swt.internal.qt.graphics.ImageLoader();
@@ -423,6 +428,10 @@ public final class Image implements Drawable {
             SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
         }
     }
+    
+    static Image createImageWithoutSecurityCheck(Device device, String filename) {
+        return new Image(device, filename, false);
+    }
 
     /**
      * Disposes of the operating system resources associated with the image.
@@ -440,7 +449,7 @@ public final class Image implements Drawable {
 
         if (device == null) return;
         if (device.isDisposed()) return;
-        if (device.tracking) device.dispose_Object(this);
+        if (Device.tracking) device.dispose_Object(this);
         device = null;
     }
 
@@ -810,6 +819,6 @@ public final class Image implements Drawable {
      * Call this only after dealing with all exceptions!
      */
     private void track() {
-        if (device.tracking) device.new_Object(this);
+        if (Device.tracking) device.new_Object(this);
     }
 }

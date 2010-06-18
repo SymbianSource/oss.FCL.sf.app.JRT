@@ -325,23 +325,33 @@ public class QueryDialog extends Dialog {
                 result = OS.QInputDialog_swt_getText(handle(getParent()), getText(), promptText, echoMode, defaultValue, dialogID, qtLayoutDirection);
 
             } else { // NUMERIC
-
-                double max = Double.MAX_VALUE;
-                double defaultInput = (defaultValue == null) ? 0 : Double.parseDouble(defaultValue);
+                int max = Integer.MAX_VALUE;
+                int defaultInput = (defaultValue == null) ? 0 : Integer.parseInt(defaultValue);                            
 
                 if (maximum > 0) {
-                    // Calculate the max double value that can be entered
-                    // with the current maximum
+                    int strMax = maximum;
+
+                    if (strMax > 10) {
+                        // A 32-bit integer can hold max 10 digits
+                        strMax = 10;
+                    }   
+
+                    // Calculate the max int value that can be entered
+                    // with the current maximum string length
                     String str = "";
-                    for (int i = 0; i < maximum; ++i) {
+                    for (int i = 0; i < strMax; ++i) {
                         str += 9;
                     }
-                    max = Double.parseDouble(str);
+                    try {
+                        max = Integer.parseInt(str);
+                    } catch (NumberFormatException e) {
+                        max = Integer.MAX_VALUE;
+                    }
                 }
-
-                result = OS.QInputDialog_swt_getDouble(handle(getParent()), getText(), promptText, -max, max,
-                                                    defaultInput, MAX_DECIMALS, dialogID, qtLayoutDirection);
-            }
+                
+                result = OS.QInputDialog_swt_getInteger(handle(getParent()), getText(), promptText, -max, max, 
+                                                        defaultInput, dialogID, qtLayoutDirection);
+            } 
 
             if (getParent() != null && !getParent().isDisposed()) {
                 getParent().removeDisposeListener(listener);
@@ -487,7 +497,7 @@ public class QueryDialog extends Dialog {
             case NUMERIC:
             {
                 try {
-                    Double.parseDouble(text);
+                    Integer.parseInt(text);
                 } catch (NumberFormatException e) {
                     return false;
                 }

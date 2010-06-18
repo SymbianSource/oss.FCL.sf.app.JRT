@@ -22,6 +22,7 @@ package com.nokia.microedition.volumekeys;
 // IMPORTS
 import com.nokia.microedition.media.NativeError;
 import java.lang.OutOfMemoryError;
+import com.nokia.mj.impl.utils.Logger;
 //import com.nokia.microedition.volumekeys.LCDUIForegroundListener;
 
 import org.eclipse.swt.*;
@@ -42,9 +43,9 @@ public class ForegroundListener implements Listener
     //private final LCDUIForegroundListener iLCDUIForegroundListener;
     private final int iForegroundHandle;
     private final int iEventSourceHandle;
-     // Added for MMAPI UI 3.x
+    // Added for MMAPI UI 3.x
     private boolean flagForground = true;
-   // private MMAPILCDUIInvokerImpl obj;
+    // private MMAPILCDUIInvokerImpl obj;
 
     /*
      * Constructor. Creates Foreground listener
@@ -53,95 +54,98 @@ public class ForegroundListener implements Listener
     public ForegroundListener(int aEventSourceHandle)
     {
         iEventSourceHandle = aEventSourceHandle;
-		 // Added for MMAPI UI 3.x
+        // Added for MMAPI UI 3.x
         // obj = new MMAPILCDUIInvokerImpl();
         // obj.AddObservertoDisplay(this);
-         System.out.println("inside ForgroundLIstener constructor before _initialize");
-         iForegroundHandle = _initialize(aEventSourceHandle, this/*, iToolkitHandle*/);
-         System.out.println("inside ForgroundLIstener constructor after _initialize");
-         if (iForegroundHandle < NativeError.KErrNone)
-         {
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside ForgroundLIstener constructor before _initialize");
+        iForegroundHandle = _initialize(aEventSourceHandle, this/*, iToolkitHandle*/);
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside ForgroundLIstener constructor after _initialize");
+        if (iForegroundHandle < NativeError.KErrNone)
+        {
             throw new OutOfMemoryError("Foreground initialization failed.");
-         }
+        }
 
 
 
     }
 
 
-public void init()
-{
-final ForegroundListener listener = this;
-System.out.println("inside init()....");
+    public void init()
+    {
+        final ForegroundListener listener = this;
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside init()....");
 
-try{
-	 final org.eclipse.swt.widgets.Display disp = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtDisplay();
-	 System.out.println("inside init()....1");
-
-
-	 			 disp.syncExec(new Runnable() {
-	 			             public void run() {
-	 							org.eclipse.swt.widgets.Display disp = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtDisplay();
-	 			               disp.addFilter(SWT.Activate,listener);
-	 			               disp.addFilter(SWT.Deactivate,listener);
-	 			             }
-		 });
-}
-catch(Exception e)
-{
-	System.out.println("inside init()....exception is " + e.toString());
-}
+        try
+        {
+            final org.eclipse.swt.widgets.Display disp = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtDisplay();
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside init()....1");
 
 
-}
+            disp.syncExec(new Runnable()
+            {
+                public void run()
+                {
+                    org.eclipse.swt.widgets.Display disp = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtDisplay();
+                    disp.addFilter(SWT.Activate,listener);
+                    disp.addFilter(SWT.Deactivate,listener);
+                }
+            });
+        }
+        catch (Exception e)
+        {
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside init()....exception is " + e.toString());
+        }
+
+
+    }
 
 
     //  Added for MMAPI UI 3.x
 
-	    public boolean isForeground()
-	    {
-	   		return flagForground;
-	    }
+    public boolean isForeground()
+    {
+        return flagForground;
+    }
 
-		/*
-	     * From org.eclipse.swt.widget.Listener interface
-	     * Handling all the event
-	     * Used to filter out the event which can be used for Foreground/Background notification
-	     */
-	    public void handleEvent(Event event)
-	    {
-			System.out.println("ForegroundListener :handle event is called");
-			if(event.type == SWT.Activate)
-			{
-				System.out.println("handle event got a event: not in background");
-				flagForground = true;
-			//	update();
+    /*
+     * From org.eclipse.swt.widget.Listener interface
+     * Handling all the event
+     * Used to filter out the event which can be used for Foreground/Background notification
+     */
+    public void handleEvent(Event event)
+    {
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"ForegroundListener :handle event is called");
+        if (event.type == SWT.Activate)
+        {
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"handle event got a event: not in background");
+            flagForground = true;
+            //  update();
 
-			}
-			else if(event.type == SWT.Deactivate)
-			{
-				System.out.println("handle event got a event: in background");
-				flagForground = false;
-			// update();
-			}
-	}
+        }
+        else if (event.type == SWT.Deactivate)
+        {
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"handle event got a event: in background");
+            flagForground = false;
+            // update();
+        }
+    }
 
-  /*
-  * Called from handleEvent callback function to notify native about the midlet foreground status
-  */
+    /*
+    * Called from handleEvent callback function to notify native about the midlet foreground status
+    */
     public synchronized void update()
     {
-		boolean isFg = isForeground();
-		System.out.println("ForegroundListener.java inside update() : before calling native function ");
-       _setForeground(iEventSourceHandle, iForegroundHandle, isFg);
-       System.out.println("ForegroundListener.java inside update() : after calling native function ");
+        boolean isFg = isForeground();
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"ForegroundListener.java inside update() : before calling native function ");
+        _setForeground(iEventSourceHandle, iForegroundHandle, isFg);
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"ForegroundListener.java inside update() : after calling native function ");
     }
 
     private native int _initialize(int aEventSourceHandle,
                                    Object aForegroundListener/*,
                                    int atoolkitHandle*/); // xm-radio fix
 
-   private native void _setForeground(int aEventSourceHandle,
+    private native void _setForeground(int aEventSourceHandle,
                                        int aForegroundHandle,
                                        boolean aForeground);
 

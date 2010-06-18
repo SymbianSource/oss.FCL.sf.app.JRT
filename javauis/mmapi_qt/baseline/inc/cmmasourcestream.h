@@ -20,7 +20,7 @@
 #define CMMASOURCESTREAM_H
 
 //#include <jutils.h>
-#include "MMAFunctionServer.h"
+#include "mmafunctionserver.h"
 
 class CMMASourceStreamEvent;
 class MMMASourceStreamListener;

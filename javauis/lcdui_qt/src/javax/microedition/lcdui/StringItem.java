@@ -82,7 +82,7 @@ public class StringItem extends Item
      */
     public void setText(String newTxt)
     {
-        if((newTxt == null) || (newTxt.equals("")))
+        if(newTxt == null)
         {
             text = null;
         }

@@ -1,9 +1,0 @@
-EXPORTS
-	?jni_lookup@@YAP6AXXZPBD@Z @ 1 NONAME ; void (*)(void) jni_lookup(char const *)
-	?findDllMethod@@YAP6APAXXZPBD@Z @ 2 NONAME ; void * (*)(void) findDllMethod(char const *)
-	?getInstance@CoreUiAvkonEswt@ui@java@@SAAAV123@XZ @ 3 NONAME ; class java::ui::CoreUiAvkonEswt & java::ui::CoreUiAvkonEswt::getInstance(void)
-	?getInstance@CoreUiAvkonLcdui@ui@java@@SAAAV123@XZ @ 4 NONAME ; class java::ui::CoreUiAvkonLcdui & java::ui::CoreUiAvkonLcdui::getInstance(void)
-	?CreateAppUi@RLcdui@@QAEHXZ @ 5 NONAME ; int RLcdui::CreateAppUi(void)
-	?Get@RLcdui@@SAPAV1@XZ @ 6 NONAME ; class RLcdui * RLcdui::Get(void)
-	?isCoreUiCreated@CoreUiAvkon@ui@java@@SA_NXZ @ 7 NONAME ; bool java::ui::CoreUiAvkon::isCoreUiCreated(void)
-

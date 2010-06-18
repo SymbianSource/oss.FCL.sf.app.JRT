@@ -143,30 +143,30 @@ public final class NativeError
     }
 
 
-	/**
-	 * Checks if the object is a null reference, and throws OutOfMemoryError
-	 * if this is the case. Useful for checking for OOM when Java objects
-	 * returned from a native method.
-	 * 
-	 * @param aObject Object that may be null.
-	 * @return Value passed in is returned if not an error.
-	 */
-	public static Object checkOOM( Object aObject )
-		{
-		if ( aObject == null )
-			{
-			throw new OutOfMemoryError();
-			}
-		return aObject;
-		}
-		
-		/**
-     * Checks if the error code represents out of memory, and throws Java Error
-     * if true. Does not throw anything otherwise.
+    /**
+     * Checks if the object is a null reference, and throws OutOfMemoryError
+     * if this is the case. Useful for checking for OOM when Java objects
+     * returned from a native method.
      *
-     * @param aError Possible error code.
-     * @return Value passed in is returned if not an out of memory error.
+     * @param aObject Object that may be null.
+     * @return Value passed in is returned if not an error.
      */
+    public static Object checkOOM(Object aObject)
+    {
+        if (aObject == null)
+        {
+            throw new OutOfMemoryError();
+        }
+        return aObject;
+    }
+
+    /**
+         * Checks if the error code represents out of memory, and throws Java Error
+         * if true. Does not throw anything otherwise.
+         *
+         * @param aError Possible error code.
+         * @return Value passed in is returned if not an out of memory error.
+         */
     public static int checkOOMOnly(int aError)
     {
         if (aError == KErrNoMemory)
@@ -175,19 +175,19 @@ public final class NativeError
         }
         return aError;
     }
-		
-		/**
-     * Checks for basic native error codes that map to standard Java
-     * exceptions and throws the exception if the error code matches.
-     * Otherwise throws basic Error class.
-     *
-     * @param aError Possible error code.
-     * @param aThrowAlways Determines whether a default exception is thrown
-     * if the error code is not recognised.
-     * @return Value passed in is returned if not an error.
-     * @throws Error If the error code does not match any exception thrown
-     * in checkExplicitOnly, a default exception is thrown here.
-     */
+
+    /**
+         * Checks for basic native error codes that map to standard Java
+         * exceptions and throws the exception if the error code matches.
+         * Otherwise throws basic Error class.
+         *
+         * @param aError Possible error code.
+         * @param aThrowAlways Determines whether a default exception is thrown
+         * if the error code is not recognised.
+         * @return Value passed in is returned if not an error.
+         * @throws Error If the error code does not match any exception thrown
+         * in checkExplicitOnly, a default exception is thrown here.
+         */
     public static int check(int aError)
     {
         if (aError < KErrNone)
@@ -197,38 +197,38 @@ public final class NativeError
         }
         return aError;
     }
-    		
-	/**
-	 * Checks for basic native error codes that map to standard Java
-	 * exceptions and throws the exception if the error code matches.
-	 * Otherwise just returns the error.
-	 * 
-	 * @param aError Possible error code.
-	 * @return Value passed in is returned if not an error.
-	 * @throws OutOfMemoryError If aError equals KErrNoMemory.
-	 * @throws IllegalArgumentException If aError equals KErrArgument
-	 * @throws ArithmeticException If aError equals KErrDivideByZero
-	 */
-	public static int checkExplicitOnly( int aError )
-		{
-		if ( aError < KErrNone )
-			{
-			switch ( aError )
-				{
-				case KErrNoMemory:
-					throw new OutOfMemoryError();
-				// KErrArgument must throw IllegalArgumentException
-				// otherwise lcdui will break, so don't change this.
-				case KErrArgument:
-					throw new IllegalArgumentException();
-				case KErrDivideByZero:
-					throw new ArithmeticException();
-				default:
-					// Do nothing
-				}
-			}
-		return aError;
-		}		
+
+    /**
+     * Checks for basic native error codes that map to standard Java
+     * exceptions and throws the exception if the error code matches.
+     * Otherwise just returns the error.
+     *
+     * @param aError Possible error code.
+     * @return Value passed in is returned if not an error.
+     * @throws OutOfMemoryError If aError equals KErrNoMemory.
+     * @throws IllegalArgumentException If aError equals KErrArgument
+     * @throws ArithmeticException If aError equals KErrDivideByZero
+     */
+    public static int checkExplicitOnly(int aError)
+    {
+        if (aError < KErrNone)
+        {
+            switch (aError)
+            {
+            case KErrNoMemory:
+                throw new OutOfMemoryError();
+                // KErrArgument must throw IllegalArgumentException
+                // otherwise lcdui will break, so don't change this.
+            case KErrArgument:
+                throw new IllegalArgumentException();
+            case KErrDivideByZero:
+                throw new ArithmeticException();
+            default:
+                // Do nothing
+            }
+        }
+        return aError;
+    }
 
     /**
      * Returns a string formatted with generic text to indicate where the error

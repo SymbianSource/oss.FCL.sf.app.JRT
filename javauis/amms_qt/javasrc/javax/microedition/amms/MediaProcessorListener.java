@@ -11,9 +11,10 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
+
 package javax.microedition.amms;
 
 /**

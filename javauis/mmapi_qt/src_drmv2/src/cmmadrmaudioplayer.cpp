@@ -45,12 +45,12 @@ CMMADRMAudioPlayer::~CMMADRMAudioPlayer()
     CloseClientUtility();
     delete iUtility;
 
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMADRMAudioPlayer::~CMMADRMAudioPlayer ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMADRMAudioPlayer::~CMMADRMAudioPlayer ");
 }
 
 void CMMADRMAudioPlayer::ConstructL(const TDesC& aContentType)
 {
-    LOG( EJavaMMAPI, EInfo, "CMMADRMAudioPlayer::ConstructL");
+    LOG(EJavaMMAPI, EInfo, "CMMADRMAudioPlayer::ConstructL");
     // Only file based sources are supported with DRM
     if (iFileName == KNullDesC)
     {
@@ -77,26 +77,26 @@ CDrmPlayerUtility* CMMADRMAudioPlayer::DRMUtility() const
 
 void CMMADRMAudioPlayer::RealizeL()
 {
-    LOG( EJavaMMAPI, EInfo, "CMMADRMAudioPlayer::RealizeL");
+    LOG(EJavaMMAPI, EInfo, "CMMADRMAudioPlayer::RealizeL");
     CMMAPlayer::RealizeL();
 }
 
 void CMMADRMAudioPlayer::PrefetchL()
 {
-    LOG( EJavaMMAPI, EInfo, "CMMADRMAudioPlayer::PrefetchL");
+    LOG(EJavaMMAPI, EInfo, "CMMADRMAudioPlayer::PrefetchL");
     // Prefetch will be completed in init callback
     iUtility->OpenFileL(iFileName);
 }
 
 void CMMADRMAudioPlayer::DeallocateL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMAMidiPlayer: DeallocateL +");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMAMidiPlayer: DeallocateL +");
     if (iState == EPrefetched)
     {
         CloseClientUtility();
         ChangeState(ERealized);
     }
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMAMidiPlayer: DeallocateL -");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMAMidiPlayer: DeallocateL -");
 }
 
 void CMMADRMAudioPlayer::StartL()
@@ -162,7 +162,7 @@ void CMMADRMAudioPlayer::GetDuration(TInt64* aDuration)
 
 void CMMADRMAudioPlayer::SetMediaTimeL(TInt64* aTime)
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMADRMAudioPlayer::SetMediaTimeL + aTime: %d", *aTime);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMADRMAudioPlayer::SetMediaTimeL + aTime: %d", *aTime);
     // Duration is needed so we do not try to set media time
     // too far away. If duration is not known, setting media time
     // is not allowed.
@@ -208,7 +208,7 @@ void CMMADRMAudioPlayer::SetMediaTimeL(TInt64* aTime)
 
 void CMMADRMAudioPlayer::GetMediaTime(TInt64* aMediaTime)
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMADRMAudioPlayer::GetMediaTime + aMediaTime: %d", *aMediaTime);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMADRMAudioPlayer::GetMediaTime + aMediaTime: %d", *aMediaTime);
     TTimeIntervalMicroSeconds position;
     TInt64 duration = TInt64(KMediaStartTime);
 
@@ -244,7 +244,7 @@ void CMMADRMAudioPlayer::GetMediaTime(TInt64* aMediaTime)
     {
         *aMediaTime = duration;
     }
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMADRMAudioPlayer::GetMediaTime - aMediaTime: %d", *aMediaTime);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMADRMAudioPlayer::GetMediaTime - aMediaTime: %d", *aMediaTime);
 }
 
 void CMMADRMAudioPlayer::CloseL()
@@ -260,7 +260,7 @@ const TDesC& CMMADRMAudioPlayer::Type()
 
 void CMMADRMAudioPlayer::PlayCompleteL(TInt aError)
 {
-    ELOG1( EJavaMMAPI, "MMA: CMMADRMAudioPlayer: PlayCompleteL: Error=%d", aError);
+    ELOG1(EJavaMMAPI, "MMA: CMMADRMAudioPlayer: PlayCompleteL: Error=%d", aError);
     TInt64 time;
     GetDuration(&time);
 
@@ -290,12 +290,12 @@ void CMMADRMAudioPlayer::PlayCompleteL(TInt aError)
         // repeats for next start
         SetLoopCount(iRepeatNumberOfTimes);
     }
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMADRMAudioPlayer: PlayCompleteL -");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMADRMAudioPlayer: PlayCompleteL -");
 }
 
 void CMMADRMAudioPlayer::MdapcInitComplete(TInt aError, const TTimeIntervalMicroSeconds& /*aDuration*/)
 {
-    ELOG1( EJavaMMAPI, "MMA::CMMADRMAudioPlayer::MdapcInitComplete: aError = %d", aError);
+    ELOG1(EJavaMMAPI, "MMA::CMMADRMAudioPlayer::MdapcInitComplete: aError = %d", aError);
     if (!aError)
     {
         ChangeState(EPrefetched);
@@ -321,17 +321,17 @@ void CMMADRMAudioPlayer::MdapcPlayComplete(TInt aError)
 
 void CMMADRMAudioPlayer::CloseClientUtility()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMADRMAudioPlayer: CloseClientUtility +");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMADRMAudioPlayer: CloseClientUtility +");
     if (iUtility)
     {
         iUtility->Close();
     }
-    LOG( EJavaMMAPI, EInfo, "MMA: CMMADRMAudioPlayer: CloseClientUtility -");
+    LOG(EJavaMMAPI, EInfo, "MMA: CMMADRMAudioPlayer: CloseClientUtility -");
 }
 
 void CMMADRMAudioPlayer::ErrorPlaybackComplete(TInt aError)
 {
-    ELOG1( EJavaMMAPI, "MMA::CMMADRMAudioPlayer::ErrorPlaybackComplete: aError = %d", aError);
+    ELOG1(EJavaMMAPI, "MMA::CMMADRMAudioPlayer::ErrorPlaybackComplete: aError = %d", aError);
     TBuf<KErrorMessageSize> errorMessage;
     errorMessage.Format(KErrDefaultError, aError);
     PostStringEvent(CMMAPlayerEvent::EError, errorMessage);

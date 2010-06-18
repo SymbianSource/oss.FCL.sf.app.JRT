@@ -19,9 +19,6 @@
 #define __JAVALOCALIZATION_IBY__
 
 data=DATAZ_\RESOURCE_FILES_DIR\java\javausermessages.rsc            RESOURCE_FILES_DIR\java\javausermessages.rsc
-data=DATAZ_\RESOURCE_FILES_DIR\java\pimcm.rsc                       RESOURCE_FILES_DIR\java\pimcm.rsc
-data=DATAZ_\RESOURCE_FILES_DIR\java\pimevent.rsc                    RESOURCE_FILES_DIR\java\pimevent.rsc
-data=DATAZ_\RESOURCE_FILES_DIR\java\pimtodo.rsc                     RESOURCE_FILES_DIR\java\pimtodo.rsc
 data=DATAZ_\QT_TRANSLATIONS_DIR\javaruntimeapplicationsettings.qm   QT_TRANSLATIONS_DIR\javaruntimeapplicationsettings.qm 
 
 #endif // __JAVALOCALIZATION_IBY__

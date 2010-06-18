@@ -164,7 +164,7 @@ void CMMASnapshot::RunL()
     {
     case ETakingSnapshot:
     {
-        LOG1( EJavaMMAPI, EInfo, "MMA::CMMASnapshot::RunL: iEncoding = %d", iEncoding);
+        LOG1(EJavaMMAPI, EInfo, "MMA::CMMASnapshot::RunL: iEncoding = %d", iEncoding);
         if (iEncoding == MMMASnapshot::EEncoded)
         {
             // take encoded image from player.

@@ -81,32 +81,32 @@ EXPORT_C void CMMAVideoUrlPlayer::CloseL()
 EXPORT_C void CMMAVideoUrlPlayer::StartL()
 {
     __ASSERT_DEBUG(iPlayerDelegate != NULL, User::Invariant());
-    LOG( EJavaMMAPI, EInfo, "CMMAVideoUrlPlayer::StartL() +");
+    LOG(EJavaMMAPI, EInfo, "CMMAVideoUrlPlayer::StartL() +");
     iPlayerDelegate->StartL();
-    LOG( EJavaMMAPI, EInfo, "CMMAVideoUrlPlayer::StartL() -");
+    LOG(EJavaMMAPI, EInfo, "CMMAVideoUrlPlayer::StartL() -");
 }
 
 EXPORT_C void CMMAVideoUrlPlayer::StopL(TBool aPostEvent)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAVideoUrlPlayer::StopL ");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAVideoUrlPlayer::StopL ");
     __ASSERT_DEBUG(iPlayerDelegate != NULL, User::Invariant());
     iPlayerDelegate->StopL(aPostEvent);
 }
 
 EXPORT_C void CMMAVideoUrlPlayer::GetMediaTime(TInt64* aMediaTime)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAVideoUrlPlayer::GetMediaTime +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAVideoUrlPlayer::GetMediaTime +");
     if (iPlayerDelegate)
     {
-        LOG( EJavaMMAPI, EInfo, "MMA::CMMAVideoUrlPlayer::GetMediaTime .iPlayerDelegate->GetMediaTime ");
+        LOG(EJavaMMAPI, EInfo, "MMA::CMMAVideoUrlPlayer::GetMediaTime .iPlayerDelegate->GetMediaTime ");
         iPlayerDelegate->GetMediaTime(aMediaTime);
     }
     else
     {
-        LOG( EJavaMMAPI, EInfo, "MMA::CMMAVideoUrlPlayer::GetMediaTime Not found ");
+        LOG(EJavaMMAPI, EInfo, "MMA::CMMAVideoUrlPlayer::GetMediaTime Not found ");
         *aMediaTime = KErrNotFound;
     }
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAVideoUrlPlayer::GetMediaTime -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAVideoUrlPlayer::GetMediaTime -");
 }
 
 EXPORT_C void CMMAVideoUrlPlayer::RealizeL()
@@ -121,14 +121,14 @@ EXPORT_C void CMMAVideoUrlPlayer::PrefetchL()
     TUint connectIap((TUint)KUseDefaultIap);
     TUint connectionCount(0);
     User::LeaveIfError(iConnection.EnumerateConnections(connectionCount));
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAVideoUrlPlayer::PrefetchL: connectionCount = %d", connectionCount);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAVideoUrlPlayer::PrefetchL: connectionCount = %d", connectionCount);
     if (connectionCount == KConnectionTreshold)
     {
         // One active connection - find it and try using it
         FindActiveIap(connectionCount, connectIap);
     }
     // else No active connections try using the default one
-    LOG1( EJavaMMAPI, EInfo, "MMA::CMMAVideoUrlPlayer::PrefetchL: connectIap = %d", connectIap);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAVideoUrlPlayer::PrefetchL: connectIap = %d", connectIap);
 
     CMMFUrlParams* urlCfg = CMMFUrlParams::NewLC(*iUrl, (TInt)connectIap);
     CBufFlat* urlCfgBuffer = urlCfg->ExternalizeToCBufFlatLC();
@@ -164,7 +164,7 @@ EXPORT_C void CMMAVideoUrlPlayer::PrefetchL()
 
 void CMMAVideoUrlPlayer::FindActiveIap(const TUint aConnectionCount, TUint& aActiveIap)
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer::FindActiveIap: aConnectionCount = %d +", aConnectionCount);
+    LOG1(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer::FindActiveIap: aConnectionCount = %d +", aConnectionCount);
 
     TPckgBuf<TConnectionInfo> connectionInfo;
     for (TUint i = 1; i <= aConnectionCount; ++i)
@@ -176,12 +176,12 @@ void CMMAVideoUrlPlayer::FindActiveIap(const TUint aConnectionCount, TUint& aAct
         }
     }
 
-    LOG1( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer::FindActiveIap: aActiveIap = %d -", aActiveIap);
+    LOG1(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer::FindActiveIap: aActiveIap = %d -", aActiveIap);
 }
 
 TBool CMMAVideoUrlPlayer::IsLiveStreamL()
 {
-    LOG( EJavaMMAPI, EInfo, "CMMAVideoUrlPlayer::IsLiveStream: Checking if this is a live stream..");
+    LOG(EJavaMMAPI, EInfo, "CMMAVideoUrlPlayer::IsLiveStream: Checking if this is a live stream..");
 
     CMMFMetaDataEntry* currEntry = NULL;
 
@@ -195,7 +195,7 @@ TBool CMMAVideoUrlPlayer::IsLiveStreamL()
         if ((0 == currEntry->Name().Compare(KMMALiveStreamMetaDataKeyword)) &&
                 (0 == currEntry->Value().Compare(KMMALiveStreamMetaDataValue)))
         {
-            LOG( EJavaMMAPI, EInfo, "CMMAVideoUrlPlayer::IsLiveStream: Stream is a live stream");
+            LOG(EJavaMMAPI, EInfo, "CMMAVideoUrlPlayer::IsLiveStream: Stream is a live stream");
             delete currEntry;
             return ETrue;
         }
@@ -203,29 +203,29 @@ TBool CMMAVideoUrlPlayer::IsLiveStreamL()
         delete currEntry;
     }
 
-    LOG( EJavaMMAPI, EInfo, "CMMAVideoUrlPlayer::IsLiveStream: Not a live stream");
+    LOG(EJavaMMAPI, EInfo, "CMMAVideoUrlPlayer::IsLiveStream: Not a live stream");
     return EFalse;
 }
 
 EXPORT_C void CMMAVideoUrlPlayer::HandleEvent(const TMMFEvent& aEvent)
 {
-    LOG1( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer::HandleEvent 0x%X", aEvent.iEventType.iUid);
-    ELOG1( EJavaMMAPI, "MMA:CMMAVideoUrlPlayer::HandleEvent error code: %d", aEvent.iErrorCode);
+    LOG1(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer::HandleEvent 0x%X", aEvent.iEventType.iUid);
+    ELOG1(EJavaMMAPI, "MMA:CMMAVideoUrlPlayer::HandleEvent error code: %d", aEvent.iErrorCode);
     RThread currentThread;
 
     if (iPlayerDelegate != NULL)
     {
-        LOG( EJavaMMAPI, EInfo, "MMA::CMMAVideoUrlPlayer::HandleEvent: iPlayerDelegate != NULL");
+        LOG(EJavaMMAPI, EInfo, "MMA::CMMAVideoUrlPlayer::HandleEvent: iPlayerDelegate != NULL");
         iPlayerDelegate->HandleEvent(aEvent);
     }
     else
     {
-        LOG( EJavaMMAPI, EInfo, "MMA::CMMAVideoUrlPlayer::HandleEvent: else");
+        LOG(EJavaMMAPI, EInfo, "MMA::CMMAVideoUrlPlayer::HandleEvent: else");
 
         __ASSERT_DEBUG(iPlayerDelegate == NULL, User::Invariant());
         TInt err = aEvent.iErrorCode;
 
-        LOG1( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer::HandleEvent: currentThread.Priority() I = %d", currentThread.Priority());
+        LOG1(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer::HandleEvent: currentThread.Priority() I = %d", currentThread.Priority());
 
         // Lower thread priority to give more CPU time to Java-threads
         // i.e. current thread has one increment higher priority than
@@ -236,13 +236,13 @@ EXPORT_C void CMMAVideoUrlPlayer::HandleEvent(const TMMFEvent& aEvent)
             currentThread.SetPriority(EPriorityNormal);
         }
 
-        LOG1( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer::HandleEvent: currentThread.Priority() II = %d", currentThread.Priority());
+        LOG1(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer::HandleEvent: currentThread.Priority() II = %d", currentThread.Priority());
 
         if (aEvent.iEventType == KMMFEventCategoryVideoPrepareComplete)
         {
             // Restore original thread priority
             currentThread.SetPriority(iOrigPriority);
-            LOG1( EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer::HandleEvent: currentThread.Priority() III = %d", currentThread.Priority());
+            LOG1(EJavaMMAPI, EInfo, "MMA:CMMAVideoUrlPlayer::HandleEvent: currentThread.Priority() III = %d", currentThread.Priority());
 
             // NotCompleteVideoError is not considered as an error condition, instead it indicates
             // that some elements of the media cannot be played (e.g. video OR audio)
@@ -285,7 +285,7 @@ EXPORT_C void CMMAVideoUrlPlayer::HandleEvent(const TMMFEvent& aEvent)
         else
         {
             // All other events.
-            LOG( EJavaMMAPI, EInfo, "MMA::CMMAVideoUrlPlayer::HandleEvent: Calling CMMAVideoPlayer::HandleEvent()");
+            LOG(EJavaMMAPI, EInfo, "MMA::CMMAVideoUrlPlayer::HandleEvent: Calling CMMAVideoPlayer::HandleEvent()");
             CMMAVideoPlayer::HandleEvent(aEvent);
         }
     }

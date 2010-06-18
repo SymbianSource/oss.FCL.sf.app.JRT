@@ -23,19 +23,19 @@
 
 CMMAStreamRequest* CMMAStreamRequest::NewLC(MMMAStreamRequestListener* aListener)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamRequest::NewLC +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamRequest::NewLC +");
     CMMAStreamRequest* self = new(ELeave)CMMAStreamRequest(aListener);
     CleanupStack::PushL(self);
     self->ConstructL();
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamRequest::NewLC -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamRequest::NewLC -");
     return self;
 }
 
 CMMAStreamRequest::~CMMAStreamRequest()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamRequest::~CMMAStreamRequest +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamRequest::~CMMAStreamRequest +");
     delete iData;
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamRequest::~CMMAStreamRequest -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamRequest::~CMMAStreamRequest -");
 }
 
 TPtr8& CMMAStreamRequest::DataPtr()
@@ -45,7 +45,7 @@ TPtr8& CMMAStreamRequest::DataPtr()
 
 void CMMAStreamRequest::CompleteRead(TInt aError)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamRequest::CompleteRead +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamRequest::CompleteRead +");
     if (aError < KErrNone)
     {
         iListener->HandleError(this, aError);
@@ -54,7 +54,7 @@ void CMMAStreamRequest::CompleteRead(TInt aError)
     {
         iListener->ReadComplete(this);
     }
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamRequest::CompleteRead -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamRequest::CompleteRead -");
 }
 
 void CMMAStreamRequest::SetActive(TBool aActive)
@@ -74,7 +74,7 @@ TPckgBuf< TInt >& CMMAStreamRequest::RequestBuffer()
 
 void CMMAStreamRequest::WriteRequestComplete(TInt Err)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamRequest::WriteRequestComplete +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamRequest::WriteRequestComplete +");
     if (Err == KErrNone)
     {
         // data is processed, set ready for reuse
@@ -85,7 +85,7 @@ void CMMAStreamRequest::WriteRequestComplete(TInt Err)
     {
         iListener->HandleError(this, Err);
     }
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamRequest::WriteRequestComplete -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamRequest::WriteRequestComplete -");
 }
 
 CMMAStreamRequest::CMMAStreamRequest(MMMAStreamRequestListener* aListener):
@@ -97,10 +97,10 @@ CMMAStreamRequest::CMMAStreamRequest(MMMAStreamRequestListener* aListener):
 
 void CMMAStreamRequest::ConstructL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamRequest::ConstructL +");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamRequest::ConstructL +");
     iData = HBufC8::NewL(KMMAStreamRequestBufferSize);
     iDataPtr.Set(iData->Des());
-    LOG( EJavaMMAPI, EInfo, "MMA::CMMAStreamRequest::ConstructL -");
+    LOG(EJavaMMAPI, EInfo, "MMA::CMMAStreamRequest::ConstructL -");
 }
 
 //  END OF FILE

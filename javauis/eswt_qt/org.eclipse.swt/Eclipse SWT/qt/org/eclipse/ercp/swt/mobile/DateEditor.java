@@ -427,7 +427,7 @@ public class DateEditor extends Control {
     }
 
     void hookEvents() {
-        int signalProxy = OS.SignalHandler_new(handle(), Internal_PackageSupport.display(this),
+        int signalProxy = OS.SignalHandler_new(handle(),
                 OS.QSIGNAL_DATETIMEEDIT_CHANGED);
         OS.QObject_connectOrThrow(handle(), "dateTimeChanged(const QDateTime&)",
                 signalProxy, "widgetSignal(const QDateTime&)",

@@ -55,8 +55,8 @@ CMMAOutputStreamEvent::TMMAOutputStreamState CMMAOutputStreamEvent::State()
 
 void CMMAOutputStreamEvent::Dispatch(JNIEnv& aJni)
 {
-    LOG2( EJavaMMAPI, EInfo, "CMMAOutputStreamEvent::Dispatch, len=%d status=%d-",
-               iLength, iStatus);
+    LOG2(EJavaMMAPI, EInfo, "CMMAOutputStreamEvent::Dispatch, len=%d status=%d-",
+         iLength, iStatus);
 
     if (iState == EMMAEventActive)
     {

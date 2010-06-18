@@ -46,14 +46,14 @@ CMMAAnimationRateControl* CMMAAnimationRateControl::NewL(CMMAAnimationPlayer* aP
 //
 CMMAAnimationRateControl::CMMAAnimationRateControl(CMMAAnimationPlayer* aPlayer)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAAnimationRateControl::CMMAAnimationRateControl");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAAnimationRateControl::CMMAAnimationRateControl");
     iPlayer = aPlayer;
 }
 
 // Destructor
 CMMAAnimationRateControl::~CMMAAnimationRateControl()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAAnimationRateControl::~CMMAAnimationRateControl");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAAnimationRateControl::~CMMAAnimationRateControl");
 }
 
 // -----------------------------------------------------------------------------
@@ -63,7 +63,7 @@ CMMAAnimationRateControl::~CMMAAnimationRateControl()
 //
 void CMMAAnimationRateControl::ConstructL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAAnimationRateControl::ConstructL");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAAnimationRateControl::ConstructL");
     iPlayer->SetRateL(KMMADefaultRate);
 }
 
@@ -75,7 +75,7 @@ void CMMAAnimationRateControl::ConstructL()
 // -----------------------------------------------------------------------------
 TInt CMMAAnimationRateControl::SetRateL(TInt aRate)
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAAnimationRateControl::SetRateL");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAAnimationRateControl::SetRateL");
     TInt rate = aRate;
 
     if (rate <= KMMAMinRate)
@@ -97,7 +97,7 @@ TInt CMMAAnimationRateControl::SetRateL(TInt aRate)
 // -----------------------------------------------------------------------------
 TInt CMMAAnimationRateControl::RateL()
 {
-    LOG( EJavaMMAPI, EInfo, "MMA:CMMAAnimationRateControl::RateL");
+    LOG(EJavaMMAPI, EInfo, "MMA:CMMAAnimationRateControl::RateL");
     return iPlayer->RateL();
 }
 

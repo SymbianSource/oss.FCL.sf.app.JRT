@@ -1,9 +1,0 @@
-EXPORTS
-	_Z10jni_lookupPKc @ 1 NONAME
-	_Z13findDllMethodPKc @ 2 NONAME
-	_ZN4java2ui15CoreUiAvkonEswt11getInstanceEv @ 3 NONAME
-	_ZN4java2ui16CoreUiAvkonLcdui11getInstanceEv @ 4 NONAME
-	_ZN6RLcdui11CreateAppUiEv @ 5 NONAME
-	_ZN6RLcdui3GetEv @ 6 NONAME
-	_ZN4java2ui11CoreUiAvkon15isCoreUiCreatedEv @ 7 NONAME
-

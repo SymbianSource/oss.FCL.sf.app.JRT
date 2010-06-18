@@ -31,7 +31,6 @@ class MPIMEventListAdapter;
 class MPIMToDoAdapterManager;
 class MPIMToDoListAdapter;
 class MPIMLocalizationData;
-class CCalSession;
 
 // CLASS DECLARATION
 
@@ -130,8 +129,7 @@ public:
      * @li \c KErrNotFound - The native database does not exist any more.
      * @li Other - The system is non-functional.
      */
-     virtual TBool OpenEventListL(CCalSession* aCalSession, 
-                                 const TDesC* aListName,
+    virtual TBool OpenEventListL(const TDesC* aListName,
                                  MPIMEventAdapterManager** aRetAdapterManager,
                                  MPIMEventListAdapter** aRetListAdapter,
                                  MPIMLocalizationData** aRetLocalizationData) = 0;
@@ -165,8 +163,7 @@ public:
      * @li \c KErrNotFound - The native database does not exist any more.
      * @li Other - The system is non-functional.
      */
-     virtual TBool OpenToDoListL(CCalSession* aCalSession,
-                                const TDesC* aListName,
+    virtual TBool OpenToDoListL(const TDesC* aListName,
                                 MPIMToDoAdapterManager** aRetAdapterManager,
                                 MPIMToDoListAdapter** aRetListAdapter,
                                 MPIMLocalizationData** aRetLocalizationData) = 0;

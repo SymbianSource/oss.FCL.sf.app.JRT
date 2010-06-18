@@ -22,10 +22,19 @@
 #include <QString>
 #include <QStringList>
 #include <hbdataformmodelitem.h>
+#include <cmapplsettingsui.h>
 
 class JavaApplicationSettings
 {
 public:
+    
+    struct NetworkConnection
+        {
+        QString name;
+        uint id;
+        CmApplSettingsUi::SelectionType type;
+        };
+        
     JavaApplicationSettings(const QString&,
                             const QStringList&);
     JavaApplicationSettings(const QString&,
@@ -39,6 +48,7 @@ public:
                             const std::string&,
                             const std::vector<std::wstring>&,
                             const std::wstring&,
+                            const std::wstring&,
                             const std::wstring&);
     JavaApplicationSettings();
 
@@ -48,17 +58,25 @@ public:
     int getCurrentValue();
     const QString& getValue(int);
     int getValue(const QString&);
+    void removeValue(int);
     void setId(HbDataFormModelItem *);
-    const HbDataFormModelItem * getId();
+    HbDataFormModelItem * getId();
     const QList<JavaApplicationSettings*>& getHighRiskList() const;
     void setHighRiskList(const QList<JavaApplicationSettings*>&);
     const QList<JavaApplicationSettings*>& getMutuallyExclusiveList() const;
     void setMutuallyExclusiveList(const QList<JavaApplicationSettings*>&);
     const std::wstring& getColumnName();
     const std::string& getTableName();
+    const std::wstring& getValuesColumnName();
     const std::wstring& getFilterColumnName();
     const std::wstring& getFilterColumnValue();
     const std::vector<std::wstring>& getStorageValues();
+    void setStorageValuesFilter(const std::wstring&);
+    const std::wstring& getStorageValuesFilter();
+    void connectToUi();
+    void disconnectFromUi();
+    bool isConnectedToUi();
+        
 private:
     QString iName;
     QStringList iValues;
@@ -69,8 +87,11 @@ private:
     std::wstring iColumnName;
     std::string iTableName;
     std::vector<std::wstring> iStorageValues;
+    std::wstring iStorageValuesFilter;
+    std::wstring iValuesColumnName;
     std::wstring iFilterColumnName;
     std::wstring iFilterColumnValue;
+    bool connectedToUi;
 };
 
 #endif // JAVAAPPLICATIONSETTINGS_H

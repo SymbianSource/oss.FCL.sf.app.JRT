@@ -38,8 +38,8 @@ _LIT(KSwtDllName, "eswtqt.dll");
 // Stack size for the UI thread, 0x14000 = 80kB
 const TInt KSwtUiThreadStackSize = 0x14000;
 
-// Stack size for the support thread, 0x200 = 0.5kB
-const TInt KSwtSupportThreadStackSize = 0x200;
+// Stack size for the support thread, 0x1F40 = 8kB
+const TInt KSwtSupportThreadStackSize = 0x1F40;
 
 static const char* const EVENT_FILTER = "swt_event_filter";
 
@@ -228,9 +228,6 @@ bool SymbianUtils::eventFilter(QObject* object, const TWsEvent* aEvent)
     int swtEventType = -1;
     switch (aEvent->Type())
     {
-    case KAknUidValueEndKeyCloseEvent:
-        swtEventType = org_eclipse_swt_internal_qt_OS_QSWTEVENT_ENDKEYCLOSE;
-        break;
     case KAknShutOrHideApp: //The event is received when exit from task list, 
                             //which terminates application straight away
         swtEventType = org_eclipse_swt_internal_qt_OS_QSWTEVENT_SYSTEMSHUTDOWN;
@@ -452,6 +449,7 @@ TInt SymbianUtils::trappedSupportThreadEntryPoint(TAny* aParams)
 
     // Wait until the process dies. If the UI thread dies notify MIDP 
     // application management software that the MIDlet should die. 
+    // This is a workaround until QTBUG-5284 is resolved.
     while(ETrue)
         {
         User::WaitForAnyRequest();

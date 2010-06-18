@@ -11,6 +11,7 @@
 package org.eclipse.swt.internal.qt.graphics;
 
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Internal_PackageSupport;
 
 /** 
  * Class for general utilities for common graphics
@@ -28,10 +29,13 @@ final class Utils {
 		if (!Config.ENABLE_UI_THREAD_VALIDATION) {
 			return;
 		}
-		if (Display.getCurrent() == null) {
+		Display display = Internal_PackageSupport.getDisplayInstance();
+		if(display == null) {
+			display = Internal_PackageSupport.getInternalDisplayInstance();
+		}
+		if (display == null) {
 			throw new Error("Ui thread not initialized or call was made outside ui thread");
 		} else {
-			Display display = Display.getCurrent();
 			if (Thread.currentThread() != display.getThread()) {
 				throw new Error("Call to common graphics object occured outside ui thread");
 			}

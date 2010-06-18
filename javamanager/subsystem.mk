@@ -16,24 +16,22 @@
 
 include $(JAVA_SRC_ROOT)/build/Makefile.defs
 
-
 SUBSYSTEMS = \
 	javacaptain \
 	javainstaller \
 	javaregistry \
-	javabackup
+	javabackup \
+	javasettings
 
-    
 COMPONENTS = \
-    preinstaller/build \
-    debugapi/build \
-    javalauncher/build
+	preinstaller/build \
+	debugapi/build \
+	javalauncher/build
 
-    
 NONQTSUBSYSTEMS = \
 	javasidchecker/build \
 	javarecognizer/build \
-    javaappschemeplugin/build
+	javaappschemeplugin/build
 
 SYMBIAN_ONLY = \
 	javaregistry \
@@ -42,24 +40,8 @@ SYMBIAN_ONLY = \
 	javasidchecker/build \
 	javarecognizer/build \
 	preinstaller/build \
-    debugapi/build \
-    javaappschemeplugin/build
-
-ifdef RD_JAVA_APPLICATION_SETTINGS_QT
-COMPONENTS += \
-    javasettings/appsettingsview_qt/build
-SYMBIAN_ONLY += \
-    javasettings/appsettingsview_qt/build
-else
-ifndef RD_JAVA_S60_RELEASE_5_0_IAD
-NONQTSUBSYSTEMS += \
-	javasettings/appmngrplugin/build
-SYMBIAN_ONLY += \
-	javasettings/appmngrplugin/build
-endif
-endif
-
-LINUX_ONLY = 
+	debugapi/build \
+	javaappschemeplugin/build
 
 javasidchecker/build : javaregistry
 

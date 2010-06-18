@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 - 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008 - 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -109,10 +109,10 @@ static void startByJavaLauncherSimpleL()
     // Create one process using this command line
     RProcess rProcess;
     // start
-//    TInt err = rProcess.Create(KJavaLauncherExe, _L("midlet-uid=0x1014e720;midlet-args=startMode=startFromCmdLine;sound=ON;landscapeMode=true;"));  // OK
+//    TInt err = rProcess.Create(KJavaLauncherExe, _L("midlet-uid=0x1014e720;startMode=startFromCmdLine;sound=ON;landscapeMode=true;"));  // OK
 //    TInt err = rProcess.Create(KJavaLauncherExe, _L("midlet-name=%E6%98%9F%E5%A4%A2%E7%BE%8E%E5%B0%91%E5%A5%B3%E7%A0%8C%E5%9C%96"));
 //    TInt err = rProcess.Create(KJavaLauncherExe, _L("midlet-name=%C3%80%C3%80NEST%C3%80.EXE"));
-//    err = rProcess.Create(KJavaLauncherExe, _L("midlet-name=SPtesti;midlet-args=mode=nativestart;sounds=ON;difficulty=medium;wizard_mode"));
+//    err = rProcess.Create(KJavaLauncherExe, _L("midlet-name=SPtesti;mode=nativestart;sounds=ON;difficulty=medium;wizard_mode"));
 
     err = rProcess.Create(KJavaLauncherExe, *pCmdLine);
     if (KErrNone == err)
@@ -214,7 +214,7 @@ static void startByJavaLauncherL()
     LOG(EJavaConverters, EInfo, "testmidletstart: startByJavaLauncherL: Create process");
 
     // start
-    TInt err = rProcess.Create(KJavaLauncherExe, _L("midlet-uid=0x10137c4d;midlet-args=startMode=strangeStart"));
+    TInt err = rProcess.Create(KJavaLauncherExe, _L("midlet-uid=0x10137c4d;startMode=strangeStart"));
     if (KErrNone == err)
     {
         LOG(EJavaConverters, EInfo, "testmidletstart: startByJavaLauncherL: Set process commandline");

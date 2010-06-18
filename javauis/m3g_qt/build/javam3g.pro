@@ -17,13 +17,15 @@
 TEMPLATE=lib
 TARGET=javam3g
 CONFIG += omj java staticdata stl
-CONFIG -= qt
+#CONFIG -= qt
 
 QT += core gui
 
 INCLUDEPATH += ../inc
 INCLUDEPATH += ../src/jni
-INCLUDEPATH += ../../../../eSWT/org.eclipse.swt/Eclipse_SWT_PI/qt/library/graphics
+INCLUDEPATH += ../../eswt_qt/org.eclipse.swt/Eclipse_SWT_PI/qt/library/graphics
+
+
 
 SOURCES += ../src/*.cpp
          
@@ -32,9 +34,9 @@ DEFINES += M3G_NATIVE_LOADER
 
 LIBS += -lcone \
         -lezlib \
-#        -lfbscli \
+        -lfbscli \
         -llibgles_cm \
-        -lm3gcore \
-        -leswt-qt
+        -llibegl \
+        -lm3gcore
 
 include(../../../build/omj.pri)

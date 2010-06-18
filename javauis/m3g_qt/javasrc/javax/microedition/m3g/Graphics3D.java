@@ -24,6 +24,7 @@ import java.util.Vector;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.qt.graphics.*;
+import org.eclipse.swt.internal.qt.GCData;
 import com.nokia.mj.impl.rt.support.ShutdownListener;
 import com.nokia.mj.impl.rt.support.ApplicationUtils;
 import com.nokia.mj.impl.nokialcdui.LCDUIInvoker;
@@ -214,7 +215,8 @@ public class Graphics3D
             {
                 public void doRun()
                 {
-                    iSurfaceHandle = (LCDUIInvoker.getGc(finalG)).getWindowSurface().getHandle();
+                    LCDUIInvoker.startExternalRendering( finalG );
+                    iSurfaceHandle = LCDUIInvoker.getWindowSurface(finalG).getHandle();
                     iIsImageTarget = _bindGraphics(
                                          handle,
                                          iSurfaceHandle,
@@ -277,15 +279,17 @@ public class Graphics3D
         }
         else if (currentTarget instanceof Graphics)
         {
-            Platform.executeInUIThread(
-                new M3gRunnable()
-            {
-                public void doRun()
+                final Graphics finalG = (Graphics)currentTarget;
+                Platform.executeInUIThread(
+                    new M3gRunnable()
                 {
-                    _releaseGraphics(handle,
-                                     iSurfaceHandle, iIsImageTarget, iIsProperRenderer);
-                }
-            });
+                    public void doRun()
+                    {
+                        _releaseGraphics(handle,
+                                         iSurfaceHandle, iIsImageTarget, iIsProperRenderer);
+                        LCDUIInvoker.endExternalRendering( finalG );
+                    }
+                });
             /*
             Graphics g = (Graphics) currentTarget;
 

@@ -22,7 +22,7 @@
  *
  * Converts M3G errors to exceptions and throws them automatically.
  */
-static void errorHandler(M3Genum errorCode, M3GInterface m3g)
+static void errorHandler(M3Genum errorCode, M3GInterface /*m3g*/)
 {
     CSynchronization::InstanceL()->SetErrorCode(errorCode);
 }

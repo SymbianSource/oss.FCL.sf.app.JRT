@@ -51,6 +51,7 @@ public class UserSecuritySettingsImpl
     private static final String AUTHENTICATION_ID = "setting_auth";
     private static final String BROADCAST_ID = "setting_broadcast";
     private static final String NFC_WRITE_ACCESS_ID = "setting_nfc_write_access";
+    private static final String URL_START_ID = "setting_url_start";
 
     public UserSecuritySettingsImpl(
         String name,
@@ -158,6 +159,10 @@ public class UserSecuritySettingsImpl
         else if (BROADCAST_SETTINGS.equalsIgnoreCase(aSettingName))
         {
             id = BROADCAST_ID;
+        }
+        else if (URL_START_SETTINGS.equalsIgnoreCase(aSettingName))
+        {
+            id = URL_START_ID;
         }
         return resLoader.format(id, null /*aTextParameters*/);
     }

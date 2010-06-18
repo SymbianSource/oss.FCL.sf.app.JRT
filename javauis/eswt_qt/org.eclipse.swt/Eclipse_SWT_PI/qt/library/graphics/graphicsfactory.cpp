@@ -16,8 +16,13 @@
 #include "imageloaderimpl.h"
 #include "imagedataimpl.h"
 #include "palettedataimpl.h"
-#include "windowsurfaceimpl.h"
 #include "gfxlog.h"
+
+#ifdef __SYMBIAN32__
+#include "windowsurfaceimpl_symbian.h"
+#else
+#include "windowsurfaceimpl_linux.h"
+#endif
 
 namespace Java { namespace GFX {
 

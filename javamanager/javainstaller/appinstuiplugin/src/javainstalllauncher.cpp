@@ -619,7 +619,7 @@ void CJavaInstallLauncher::OpenUiResourcesL()
     // Open UI env and resource file.
     if (!iEik)
     {
-        iEik = CEikonEnv::Static();
+        iEik = CEikonEnv::Static();  // codescanner::eikonenvstatic
     }
     if (!iEik)
     {

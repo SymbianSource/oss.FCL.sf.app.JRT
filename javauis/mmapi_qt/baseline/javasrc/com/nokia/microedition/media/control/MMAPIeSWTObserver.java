@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -11,127 +11,138 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
+
 package com.nokia.microedition.media.control;
 
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.events.*;
 import com.nokia.microedition.volumekeys.*;
+import com.nokia.mj.impl.utils.Logger;
 
 
 public class MMAPIeSWTObserver
 {
-	//MMAPILCDUIInvokerImpl mmapiLcduiInvoker;
+    //MMAPILCDUIInvokerImpl mmapiLcduiInvoker;
 
- mmacontrollistener cntrlsner ;
- mmashelllistener shellsner ;
- mmadisposelistener displsner;
+    mmacontrollistener cntrlsner ;
+    mmashelllistener shellsner ;
+    mmadisposelistener displsner;
 
-MMACanvasDisplay display;
-
-
-	public MMAPIeSWTObserver()
-	{
-		//mmapiLcduiInvoker = new MMAPILCDUIInvokerImpl();
-	}
-
-	public void setDisplayToObserver(MMACanvasDisplay display)
-	{
-		this.display = display;
-		cntrlsner = new mmacontrollistener(display);
-		shellsner = new mmashelllistener(display);
-		displsner = new mmadisposelistener(display);
-	}
-
-	public void addControlListenerToControl(final Control eSWTControl)
-	{
-
-		System.out.println("MMAPIeSWTObserver.java :addControlListenerToControl +");
-		//mmapiLcduiInvoker.AddControlListenerToControl(eSWTControl,(org.eclipse.swt.events.ControlListener)this);
-
-	  try{
-			 final org.eclipse.swt.widgets.Display disp = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtDisplay();
-			 disp.syncExec(new Runnable() {
-			 			             public void run() {
-			 							               eSWTControl.addControlListener(cntrlsner);
-			 			             					}
-				 });
-		}
-		catch(Exception e)
-		{
-			System.out.println("addControlListenerToControl....exception is " + e.toString());
-		}
-
-		System.out.println("MMAPIeSWTObserver.java :addControlListenerToControl -");
-
-	}
-
-	public void addShellListenerToControl(final Control eSWTControl)
-	{
-			System.out.println("MMAPIeSWTObserver.java :addShellListenerToControl +");
-			try{
-				 final org.eclipse.swt.widgets.Display disp = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtDisplay();
-				 disp.syncExec(new Runnable() {
-										 public void run() {
-														     eSWTControl.getShell().addShellListener(shellsner);
-														   }
-					 });
-				}
-				catch(Exception e)
-				{
-					System.out.println("addShellListenerToControl....exception is " + e.toString());
-				}
-
-			System.out.println("MMAPIeSWTObserver.java :addShellListenerToControl -");
-
-	}
+    BaseDisplay display;
 
 
-	public void addDisposeListenerToControl(final Control eSWTControl)
-	{
-			System.out.println("MMAPIeSWTObserver.java :addDisposeListenerToControl +");
-			//mmapiLcduiInvoker.AddDisposeListenerToControl(eSWTControl,(org.eclipse.swt.events.DisposeListener)this);
+    public MMAPIeSWTObserver()
+    {
+        //mmapiLcduiInvoker = new MMAPILCDUIInvokerImpl();
+    }
 
-			try{
-				 final org.eclipse.swt.widgets.Display disp = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtDisplay();
-				 disp.syncExec(new Runnable() {
-										 public void run() {
-															 eSWTControl.addDisposeListener(displsner);
-														   }
-					 });
-				}
-				catch(Exception e)
-				{
-					System.out.println("addShellListenerToControl....exception is " + e.toString());
-				}
-			System.out.println("MMAPIeSWTObserver.java :addDisposeListenerToControl -");
+    public void setDisplayToObserver(BaseDisplay display)
+    {
+        this.display = display;
+        cntrlsner = new mmacontrollistener(display);
+        shellsner = new mmashelllistener(display);
+        displsner = new mmadisposelistener(display);
+    }
 
-	}
+    public void addControlListenerToControl(final Control eSWTControl)
+    {
 
-	public void removeControlListenerToControl(Control eSWTControl)
-	{
-		System.out.println("MMAPIeSWTObserver.java :removeControlListenerToControl +");
-		//mmapiLcduiInvoker.RemoveControlListenerToControl(eSWTControl,(org.eclipse.swt.events.ControlListener)this);
-		System.out.println("MMAPIeSWTObserver.java :removeControlListenerToControl -");
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMAPIeSWTObserver.java :addControlListenerToControl +");
+        //mmapiLcduiInvoker.AddControlListenerToControl(eSWTControl,(org.eclipse.swt.events.ControlListener)this);
 
-	}
-	public void removeShellListenerToControl(Control eSWTControl)
-	{
-			System.out.println("MMAPIeSWTObserver.java :removeShellListenerToControl +");
-			//mmapiLcduiInvoker.RemoveShellListenerToControl(eSWTControl,(org.eclipse.swt.events.ShellListener)this);
-			System.out.println("MMAPIeSWTObserver.java :removeShellListenerToControl -");
+        try
+        {
+            final org.eclipse.swt.widgets.Display disp = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtDisplay();
+            disp.syncExec(new Runnable()
+            {
+                public void run()
+                {
+                    eSWTControl.addControlListener(cntrlsner);
+                }
+            });
+        }
+        catch (Exception e)
+        {
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"addControlListenerToControl....exception is " + e.toString());
+        }
 
-	}
-	public void removeDisposeListenerToControl(Control eSWTControl)
-	{
-			System.out.println("MMAPIeSWTObserver.java :removeDisposeListenerToControl +");
-			//mmapiLcduiInvoker.RemoveDisposeListenerToControl(eSWTControl,(org.eclipse.swt.events.DisposeListener)this);
-			System.out.println("MMAPIeSWTObserver.java :removeDisposeListenerToControl -");
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMAPIeSWTObserver.java :addControlListenerToControl -");
 
-	}
+    }
+
+    public void addShellListenerToControl(final Control eSWTControl)
+    {
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMAPIeSWTObserver.java :addShellListenerToControl +");
+        try
+        {
+            final org.eclipse.swt.widgets.Display disp = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtDisplay();
+            disp.syncExec(new Runnable()
+            {
+                public void run()
+                {
+                    eSWTControl.getShell().addShellListener(shellsner);
+                }
+            });
+        }
+        catch (Exception e)
+        {
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"addShellListenerToControl....exception is " + e.toString());
+        }
+
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMAPIeSWTObserver.java :addShellListenerToControl -");
+
+    }
+
+
+    public void addDisposeListenerToControl(final Control eSWTControl)
+    {
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMAPIeSWTObserver.java :addDisposeListenerToControl +");
+        //mmapiLcduiInvoker.AddDisposeListenerToControl(eSWTControl,(org.eclipse.swt.events.DisposeListener)this);
+
+        try
+        {
+            final org.eclipse.swt.widgets.Display disp = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtDisplay();
+            disp.syncExec(new Runnable()
+            {
+                public void run()
+                {
+                    eSWTControl.addDisposeListener(displsner);
+                }
+            });
+        }
+        catch (Exception e)
+        {
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"addShellListenerToControl....exception is " + e.toString());
+        }
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMAPIeSWTObserver.java :addDisposeListenerToControl -");
+
+    }
+
+    public void removeControlListenerToControl(Control eSWTControl)
+    {
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMAPIeSWTObserver.java :removeControlListenerToControl +");
+        //mmapiLcduiInvoker.RemoveControlListenerToControl(eSWTControl,(org.eclipse.swt.events.ControlListener)this);
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMAPIeSWTObserver.java :removeControlListenerToControl -");
+
+    }
+    public void removeShellListenerToControl(Control eSWTControl)
+    {
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMAPIeSWTObserver.java :removeShellListenerToControl +");
+        //mmapiLcduiInvoker.RemoveShellListenerToControl(eSWTControl,(org.eclipse.swt.events.ShellListener)this);
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMAPIeSWTObserver.java :removeShellListenerToControl -");
+
+    }
+    public void removeDisposeListenerToControl(Control eSWTControl)
+    {
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMAPIeSWTObserver.java :removeDisposeListenerToControl +");
+        //mmapiLcduiInvoker.RemoveDisposeListenerToControl(eSWTControl,(org.eclipse.swt.events.DisposeListener)this);
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMAPIeSWTObserver.java :removeDisposeListenerToControl -");
+
+    }
 
 }
 
@@ -141,60 +152,60 @@ MMACanvasDisplay display;
 class mmacontrollistener implements ControlListener
 {
 
-	private MMACanvasDisplay display;
-	mmacontrollistener(MMACanvasDisplay display)
-	{
-		this.display = display;
+    private BaseDisplay display;
+    mmacontrollistener(BaseDisplay display)
+    {
+        this.display = display;
 
-	}
-	// from ControlListener
-	public void controlMoved(ControlEvent e)
-	{
-		System.out.println("MMAPIeSWTObserver.java :controlMoved callback");
-	}
+    }
+    // from ControlListener
+    public void controlMoved(ControlEvent e)
+    {
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMAPIeSWTObserver.java :controlMoved callback");
+    }
 
-	public void controlResized(ControlEvent e)
-	{
-		System.out.println("MMAPIeSWTObserver.java :controlResized callback");
-	}
+    public void controlResized(ControlEvent e)
+    {
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMAPIeSWTObserver.java :controlResized callback");
+    }
 }
 
 // ShellListener
 class mmashelllistener implements ShellListener
 {
-    private MMACanvasDisplay display;
-	mmashelllistener(MMACanvasDisplay display)
-	{
-		this.display = display;
+    private BaseDisplay display;
+    mmashelllistener(BaseDisplay display)
+    {
+        this.display = display;
 
-	}
-	// from ShellListener
-	public void shellActivated(ShellEvent e)
-	{
-		System.out.println("MMAPIeSWTObserver.java :shellActivated callback");
-		display.setContainerVisibilityToNative(true);
-	}
+    }
+    // from ShellListener
+    public void shellActivated(ShellEvent e)
+    {
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMAPIeSWTObserver.java :shellActivated callback");
+        display.setContainerVisibilityToNative(true);
+    }
 
-	public void shellClosed(ShellEvent e)
-	{
-		System.out.println("MMAPIeSWTObserver.java :shellClosed callback");
-	}
+    public void shellClosed(ShellEvent e)
+    {
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMAPIeSWTObserver.java :shellClosed callback");
+    }
 
-	public void shellDeactivated(ShellEvent e)
-	{
-		System.out.println("MMAPIeSWTObserver.java :shellDeactivated callback");
-		display.setContainerVisibilityToNative(false);
-	}
+    public void shellDeactivated(ShellEvent e)
+    {
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMAPIeSWTObserver.java :shellDeactivated callback");
+        display.setContainerVisibilityToNative(false);
+    }
 
-	public void shellDeiconified(ShellEvent e)
-	{
-		System.out.println("MMAPIeSWTObserver.java :shellDeiconified callback");
-	}
+    public void shellDeiconified(ShellEvent e)
+    {
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMAPIeSWTObserver.java :shellDeiconified callback");
+    }
 
-	public void shellIconified(ShellEvent e)
-	{
-		System.out.println("MMAPIeSWTObserver.java :shellIconified callback");
-	}
+    public void shellIconified(ShellEvent e)
+    {
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMAPIeSWTObserver.java :shellIconified callback");
+    }
 
 
 }
@@ -203,16 +214,16 @@ class mmashelllistener implements ShellListener
 
 class mmadisposelistener implements DisposeListener
 {
-	private MMACanvasDisplay display;
-  mmadisposelistener(MMACanvasDisplay display)
-	{
-	 this.display = display;
-	}
+    private BaseDisplay display;
+    mmadisposelistener(BaseDisplay display)
+    {
+        this.display = display;
+    }
 
-	// from DisposeListener
-	public void widgetDisposed(DisposeEvent e)
-	{
-		System.out.println("MMAPIeSWTObserver.java :widgetDisposed callback");
-	}
+    // from DisposeListener
+    public void widgetDisposed(DisposeEvent e)
+    {
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMAPIeSWTObserver.java :widgetDisposed callback");
+    }
 
 }

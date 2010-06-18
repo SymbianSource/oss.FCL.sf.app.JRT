@@ -29,7 +29,7 @@ import com.nokia.mj.impl.utils.Logger;
 
 public class SourceStreamReader extends Thread
 {
-	  Thread t1 = null;
+    Thread t1 = null;
     // these states are the same in c++ side
     private static final int NO_ERROR = 0;
     private static final int ERR_GENERAL = -2;  // KErrGeneral
@@ -95,7 +95,7 @@ public class SourceStreamReader extends Thread
         int length = 0;
         do
         {
-        	  Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"Source stream reader run()");
+            Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"Source stream reader run()");
             iStatus = MORE_DATA;
             try
             {
@@ -103,11 +103,11 @@ public class SourceStreamReader extends Thread
             }
             catch (IOException ioe)
             {
-            	  Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"Source stream reader run(), io exception");
-            	  ioe.printStackTrace();
+                Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"Source stream reader run(), io exception");
+                ioe.printStackTrace();
                 iStatus = ERR_GENERAL;
             }
-						Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"Source stream reader run(), length = "+length);
+            Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"Source stream reader run(), length = "+length);
             if (iStatus == CLOSED)
             {
                 return;
@@ -115,39 +115,39 @@ public class SourceStreamReader extends Thread
             // no more data because end of file has been reach
             if (length == -1)
             {
-            	Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"no more data because end of file has been reach");
+                Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"no more data because end of file has been reach");
                 iStatus = COMPLETED;
             }
-           // synchronized (iWaitObject)
-           // {
-            	  Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"Source stream reader run(), calling jni _write"+"status =" + iStatus + "length =" + length);
+            // synchronized (iWaitObject)
+            // {
+            Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"Source stream reader run(), calling jni _write"+"status =" + iStatus + "length =" + length);
 
-                int err = _write(iHandle,
-                                 iEventSourceHandle,
-                                 iBuffer,
-                                 length,
-                                 iStatus,
-                                 iPlayerHandle);
-               Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"Source stream reader run(), calling jni _write ret = "+err);
-                if (err != 0)
-                {
-                    // error in writing, closing thread
-                    iIsActive = false;
-                    iStatus = CLOSED;
-                    break;
-                }
-								// wait for next native read
-               // try
-               // {
-                	Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"Source stream reader run(), calling wait()");
-                	Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"Source stream reader run(), calling wait() thread is =" +Thread.currentThread().getName());
-                   // iWaitObject.wait();
-                //}
-                /*catch (InterruptedException ex)
-                {
-                    // MIDP's object does not have interrupt
-                }*/
-           // }
+            int err = _write(iHandle,
+                             iEventSourceHandle,
+                             iBuffer,
+                             length,
+                             iStatus,
+                             iPlayerHandle);
+            Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"Source stream reader run(), calling jni _write ret = "+err);
+            if (err != 0)
+            {
+                // error in writing, closing thread
+                iIsActive = false;
+                iStatus = CLOSED;
+                break;
+            }
+            // wait for next native read
+            // try
+            // {
+            Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"Source stream reader run(), calling wait()");
+            Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"Source stream reader run(), calling wait() thread is =" +Thread.currentThread().getName());
+            // iWaitObject.wait();
+            //}
+            /*catch (InterruptedException ex)
+            {
+                // MIDP's object does not have interrupt
+            }*/
+            // }
         }
         while (length>0);
     }
@@ -252,17 +252,17 @@ public class SourceStreamReader extends Thread
             Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"SourceStreamReader::  read() before sync(iWaitObjet() ");
             synchronized (iWaitObject)
             {
-            	Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"SourceStreamReader::  read() notifying iWaitObject");
-              iWaitObject.notify();
+                Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"SourceStreamReader::  read() notifying iWaitObject");
+                iWaitObject.notify();
             }
         }
         else
         {
-        	  Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"SourceStreamReader, creating new Thread");
+            Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"SourceStreamReader, creating new Thread");
             iIsActive = true;
             t1 = new Thread(this);
             t1.start();
-          // start();
+            // start();
         }
 
     }
