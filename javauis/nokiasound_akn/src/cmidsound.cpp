@@ -197,8 +197,8 @@ void CMIDSound::InitL(TInt aType, const TDesC8* aData)
 TInt CMIDSound::Play(TInt aLoop)
 {
     JELOG2(EJavaUI);
-    TInt err;
-    CallMethodL(err, this, &CMIDSound::DoPlay, aLoop, this);
+    TInt err = 0;
+    CallMethod(err, this, &CMIDSound::DoPlay, aLoop, this);
     return err;
 }
 
@@ -252,8 +252,8 @@ void CMIDSound::DoStop()
 TInt CMIDSound::SoundVolume()
 {
     JELOG2(EJavaUI);
-    TInt result;
-    CallMethodL(result, this, &CMIDSound::Volume, this);
+    TInt result = 0;
+    CallMethod(result, this, &CMIDSound::Volume, this);
     return result;
 }
 
@@ -285,8 +285,8 @@ void CMIDSound::DoSetVolume(TInt aVolume)
 TInt CMIDSound::PlayerState()
 {
     JELOG2(EJavaUI);
-    TInt result;
-    CallMethodL(result, this, &CMIDSound::State, this);
+    TInt result = 0;
+    CallMethod(result, this, &CMIDSound::State, this);
     return result;
 }
 

@@ -30,15 +30,37 @@ public class SecurityPolicyPermissionSettings
     private String name;
     private int currentInteractionMode;
     private int[] allowedInteractionModes;
+    private boolean active;
+
+    public SecurityPolicyPermissionSettings(
+        String name)
+    {
+        this(name, UNDEFINED_INTERACTION_MODE, null, true);
+    }
 
     public SecurityPolicyPermissionSettings(
         String name,
         int currentInteractionMode,
         int[] allowedInteractionModes)
     {
+        this(name, currentInteractionMode, allowedInteractionModes, true);
+    }
+
+    public SecurityPolicyPermissionSettings(
+        String name,
+        int currentInteractionMode,
+        int[] allowedInteractionModes,
+        boolean activeSettings)
+    {
         this.name = name;
         this.currentInteractionMode = currentInteractionMode;
         this.allowedInteractionModes = allowedInteractionModes;
+        this.active = activeSettings;
+    }
+
+    public boolean isActive()
+    {
+        return active;
     }
 
     public String getName()
@@ -166,7 +188,7 @@ public class SecurityPolicyPermissionSettings
         return oStream.toByteArray();
     }
 
-    public static SecurityPolicyPermissionSettings getFromBytes(byte[] buf)
+    public static SecurityPolicyPermissionSettings getFromBytes(byte[] buf, boolean activeSettings)
     {
         int nameLen = buf[SecurityPolicy.index];
         SecurityPolicy.index++;
@@ -181,7 +203,7 @@ public class SecurityPolicyPermissionSettings
             allowedInteractionModes[i] = buf[SecurityPolicy.index];
             SecurityPolicy.index++;
         }
-        return new SecurityPolicyPermissionSettings(name, currentInteractionMode, allowedInteractionModes);
+        return new SecurityPolicyPermissionSettings(name, currentInteractionMode, allowedInteractionModes, activeSettings);
     }
 
 }

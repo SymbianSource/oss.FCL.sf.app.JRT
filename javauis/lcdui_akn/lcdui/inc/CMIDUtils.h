@@ -436,11 +436,11 @@ inline void CMIDUtils::Dispose()
 }
 
 inline CMIDUtils::TScalingData::TScalingData(): iOriginalSize(),
-    iTargetSize(),
-    iScreenSize(),
-    iCanvasSize(),
-    iRatioX(1.0f),
-    iRatioY(1.0f)
+        iTargetSize(),
+        iScreenSize(),
+        iCanvasSize(),
+        iRatioX(1.0f),
+        iRatioY(1.0f)
 {}
 
 #endif // CMIDUTILS_H

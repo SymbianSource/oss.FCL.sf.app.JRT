@@ -113,7 +113,9 @@ LIBS += -lAknIcon \
         -lmediaclientvideo \
         -lmidiclient \
         -lws32 \
-        -lhxmetadatautil
+        -lhxmetadatautil \
+        -lprofileeng \
+        -laccmonitor
 
 
 !contains(PROJECT_DEFINES,RD_JAVA_HTTP_EMC_ENABLED) {

@@ -569,7 +569,7 @@ public class Image
 
     /**
      * destroy native image.
-     * Synchronization prevents Image to be disposed when in use.     
+     * Synchronization prevents Image to be disposed when in use.
      */
     synchronized private void dispose()
     {

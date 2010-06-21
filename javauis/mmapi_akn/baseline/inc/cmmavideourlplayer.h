@@ -56,7 +56,7 @@ protected:
         /**
          * Handles StartL call for url player.
          */
-        virtual void StartL() = 0;
+        virtual void StartL(TBool aPostEvent) = 0;
 
         /**
          * Handles StopL call for url player.
@@ -95,7 +95,7 @@ protected:
         virtual ~CMMAVideoUrlPlayerClipStreamDelegate();
 
     public: // from CMMAVideoUrlPlayerDelegate
-        void StartL();
+        void StartL(TBool aPostEvent);
         void StopL(TBool aPostEvent);
         void GetMediaTime(TInt64* aMediaTime);
         void HandleEvent(const TMMFEvent& aEvent);
@@ -118,7 +118,7 @@ protected:
         void ConstructL();
 
     public: // from CMMAVideoUrlPlayerDelegate
-        void StartL();
+        void StartL(TBool aPostEvent);
         void StopL(TBool aPostEvent);
         void GetMediaTime(TInt64* aMediaTime);
         void HandleEvent(const TMMFEvent& aEvent);
@@ -157,7 +157,7 @@ protected:
 public: // from CMMAPlayer
     IMPORT_C void RealizeL();
     IMPORT_C void PrefetchL();
-    IMPORT_C void StartL();
+    IMPORT_C void StartL(TBool aPostEvent);
     IMPORT_C void StopL(TBool aPostEvent);
     IMPORT_C void GetMediaTime(TInt64* aMediaTime);
     IMPORT_C void DeallocateL();

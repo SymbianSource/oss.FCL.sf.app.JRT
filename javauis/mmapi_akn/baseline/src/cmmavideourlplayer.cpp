@@ -78,11 +78,11 @@ EXPORT_C void CMMAVideoUrlPlayer::CloseL()
     CMMAAudioPlayer::CloseL();
 }
 
-EXPORT_C void CMMAVideoUrlPlayer::StartL()
+EXPORT_C void CMMAVideoUrlPlayer::StartL(TBool aPostEvent)
 {
     __ASSERT_DEBUG(iPlayerDelegate != NULL, User::Invariant());
     DEBUG("CMMAVideoUrlPlayer::StartL() +");
-    iPlayerDelegate->StartL();
+    iPlayerDelegate->StartL(aPostEvent);
     DEBUG("CMMAVideoUrlPlayer::StartL() -");
 }
 

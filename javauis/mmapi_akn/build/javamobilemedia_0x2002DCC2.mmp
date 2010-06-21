@@ -256,6 +256,8 @@ LIBRARY		mediaclientvideo.lib
 LIBRARY		midiclient.lib
 LIBRARY		ws32.lib
 STATICLIBRARY	hxmetadatautil.lib
+LIBRARY		profileeng.lib
+LIBRARY		accmonitor.lib
 LIBRARY		javautils.lib
 LIBRARY		libpthread.lib
 LIBRARY		libstdcppv5.lib
@@ -318,3 +320,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javamobilemedia.def
+#elif defined EABI
+DEFFILE ./eabi/javamobilemedia.def
+#endif

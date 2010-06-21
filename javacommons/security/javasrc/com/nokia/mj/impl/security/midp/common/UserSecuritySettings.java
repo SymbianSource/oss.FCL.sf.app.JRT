@@ -25,6 +25,7 @@ package com.nokia.mj.impl.security.midp.common;
 public interface UserSecuritySettings
 {
     // interaction modes
+    public static final int UNDEFINED_INTERACTION_MODE = -1;
     public static final int ONESHOT_INTERACTION_MODE = 1;
     public static final int SESSION_INTERACTION_MODE = 2;
     public static final int BLANKET_INTERACTION_MODE = 3;
@@ -55,6 +56,7 @@ public interface UserSecuritySettings
     public static final String SECURITY_WARNINGS_DEFAULT_MODE = "2";
 
     public String getName();
+    public boolean isActive();
     public int getCurrentInteractionMode();
     public int[] getAllowedInteractionModes();
     public boolean isInteractionModeAllowed(int interactionMode);

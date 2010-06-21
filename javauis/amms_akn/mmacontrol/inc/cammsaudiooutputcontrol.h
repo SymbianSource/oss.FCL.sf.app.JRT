@@ -30,7 +30,7 @@
 #include <AccMonitorInfo.h>
 
 
-
+class CMMAVolumeControl;
 
 // CONSTANTS
 _LIT(KAMMSAudioOutputControl, "AudioOutputControl");
@@ -45,7 +45,8 @@ _LIT(KAMMSAudioOutputControl, "AudioOutputControl");
 *  @since X.X
 */
 NONSHARABLE_CLASS(CAMMSAudioOutputControl)
-        : public CAMMSControl, public MMMAPlayerStateListener ,public MAudioOutputObserver,public MAccMonitorObserver
+        : public CAMMSControl, public MMMAPlayerStateListener ,
+          public MAccMonitorObserver
 {
 public:
     // Constructors and destructor
@@ -124,7 +125,7 @@ public:
 
 public:
     // From MAudioOutputObserver
-    void DefaultAudioOutputChanged(CAudioOutput& aAudioOutput,  CAudioOutput::TAudioOutputPreference aNewDefault);
+
     void DisconnectedL(CAccMonitorInfo *aAccessoryInfo);
     void ConnectedL(CAccMonitorInfo* aAccessoryInfo);
     void AccMonitorObserverError(TInt aError);
@@ -152,6 +153,8 @@ private:
     */
     void ConstructL();
 
+    CMMAVolumeControl* GetVolumeControl();
+
 private:
     //Data
     // Preference visible in AMMS.
@@ -162,12 +165,13 @@ private:
     TInt iCurrentPreference;
     // owned
     CAudioOutput* iAudioOutput;
-    CMMAPlayer::TPlayerState playerState;
-    //To get the peripheral attached/detached notification
-    CAccMonitorInfo* iAccessoryInfo;
-    RAccMonCapabilityArray capabilityArray;
+    CMMAPlayer::TPlayerState iPlayerState;
+    // Reference to volume control to set the current audio o/p preference.
+    // Not owning
+    CMMAVolumeControl* iVolumeControl;
+    // Owning
     CAccMonitor *iAccMonitor;
-    RConnectedAccessories array;
+    RConnectedAccessories iArray;
     jobject iJavaAudioOutputObj;
     JNIEnv* iJni;
 

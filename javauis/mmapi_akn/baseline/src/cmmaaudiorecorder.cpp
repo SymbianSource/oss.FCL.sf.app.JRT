@@ -68,12 +68,15 @@ CMMAAudioRecorder::CMMAAudioRecorder(
 /**
  * start the play
  */
-void CMMAAudioRecorder::StartL()
+void CMMAAudioRecorder::StartL(TBool aPostEvent)
 {
-    TInt64 time;
-    GetMediaTime(&time);
+    if (aPostEvent)
+    {
+        TInt64 time;
+        GetMediaTime(&time);
+        PostLongEvent(CMMAPlayerEvent::EStarted, time);
+    }
 
-    PostLongEvent(CMMAPlayerEvent::EStarted, time);
     ChangeState(EStarted);
     PostActionCompleted(KErrNone);   // java start return
 }

@@ -438,7 +438,7 @@ void CSwtJavaBufferDrawer::Draw(MSwtGc* aGc, TInt* aIntParams, TInt aIntCount, H
             aWindow->BeginRedraw(aDrawRect);
 #endif // RD_JAVA_S60_RELEASE_9_2
 
-            aGc->CopyAreaL(*image, pos);
+            TRAP_IGNORE(aGc->CopyAreaL(*image, pos));
         }
         break;
         case OP_DRAWM2GIMAGE:

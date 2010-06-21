@@ -142,3 +142,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javasoftnotification.def
+#elif defined EABI
+DEFFILE ./eabi/javasoftnotification.def
+#endif

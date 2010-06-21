@@ -48,6 +48,10 @@
 #include <javastoragenames.h>
 #include <javauid.h>
 #include <javasymbianoslayer.h>
+#ifdef RD_JAVA_S60_RELEASE_9_2
+// Used with partial VKB
+#include <aknpriv.hrh>
+#endif // RD_JAVA_S60_RELEASE_9_2
 
 #include "javaoslayer.h"
 
@@ -560,7 +564,7 @@ event not consumed by any custom component");
             return EKeyWasNotConsumed;
         }
 
-        if (iDisplayable && iDisplayable->IsFullScreenMode()  &&
+        if (iDisplayable && iDisplayable->IsFullScreenMode() &&
                 iDisplayable->IsCommandListenerSet() &&
                 iDisplayable->CommandCount() > 0)
         {
@@ -1074,7 +1078,7 @@ void CMIDCanvas::MdcAddContent(MDirectContent* aContent)
 
 #ifdef RD_JAVA_NGA_ENABLED
     if (iFirstPaintState != EFirstPaintOccurred &&
-        iDirectContents.Count() == 1)
+            iDirectContents.Count() == 1)
     {
         // The first canvas paint using NGA might be interrupted
         // by addition of the direct content.
@@ -1082,7 +1086,7 @@ void CMIDCanvas::MdcAddContent(MDirectContent* aContent)
         TInt posPacked  = (iViewRect.iTl.iX << 16) | (iViewRect.iTl.iY);
         TSize size = iViewRect.Size();
         TInt sizePacked = (size.iWidth << 16) | (size.iHeight);
-        
+
         PostEvent(EPaint, posPacked, sizePacked);
     }
 #endif // RD_JAVA_NGA_ENABLED
@@ -1446,6 +1450,17 @@ TBool CMIDCanvas::IsFullScreen() const
     return iFullScreen;
 }
 
+#ifdef RD_JAVA_S60_RELEASE_9_2
+// ---------------------------------------------------------------------------
+// CMIDCanvas::GetDisplayable
+// (other items are commented in the header file)
+// ---------------------------------------------------------------------------
+//
+CMIDDisplayable* CMIDCanvas::GetDisplayable() const
+{
+    return iDisplayable;
+}
+#endif // RD_JAVA_S60_RELEASE_9_2
 // ---------------------------------------------------------------------------
 // CMIDCanvas::SetComponentIndexL
 // Changes the index of the specified custom component.
@@ -1578,9 +1593,9 @@ void CMIDCanvas::UpdateL(const TRect& aRect)
 #ifdef RD_JAVA_NGA_ENABLED
         iCoeEnv->WsSession().Finish();
 #endif
-        
+
         if (iFirstPaintState == EFirstPaintInitiated ||
-            iFirstPaintState == EFirstPaintPrepared)
+                iFirstPaintState == EFirstPaintPrepared)
         {
             // NGA is not used, StartScreen can be informed now
             if (iForeground)
@@ -2081,10 +2096,16 @@ void CMIDCanvas::DrawDirect(const TRect& aRect) const
 //
 void CMIDCanvas::HandleResourceChange(TInt aType)
 {
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    if ((aType == KEikInputLanguageChange) |
+            (aType == KAknSplitInputEnabled) |
+            (aType == KAknSplitInputDisabled))
+#else
     if (aType == KEikInputLanguageChange)
+#endif // RD_JAVA_S60_RELEASE_9_2
     {
         if ((iFocusedComponent != KComponentFocusedNone) &&
-                (iFocusedComponent < iCustomComponents.Count()))
+        (iFocusedComponent < iCustomComponents.Count()))
         {
             iCustomComponents[iFocusedComponent]->
             CustomComponentControl(KComponentMainControl)->
@@ -2267,6 +2288,14 @@ void CMIDCanvas::HandlePointerEventL(const TPointerEvent& aPointerEvent)
             // iViewRect.iBr - TSize(1, 1)  -> (iContentSize.iWidth - 1,
             //                                  iContentSize.iHeight - 1)
             point -= iViewRect.iTl;
+            
+#ifdef RD_JAVA_NGA_ENABLED
+            if (iFullScreen && iScalingOn)
+            {
+                // Fix coordinates
+                point += iPositionRelativeToScreen;
+            }
+#endif // RD_JAVA_NGA_ENABLED
 
             if (javaMaxCoords != nativeMaxCoords)
             {
@@ -3402,6 +3431,7 @@ TSize CMIDCanvas::OrientedOrgMIDletScrSize() const
 //
 TBool CMIDCanvas::IsNetworkIndicatorEnabledL() const
 {
+#ifndef RD_JAVA_S60_RELEASE_9_2
     if (RProcess().SecureId().iId != 0x102033E6)
     {
         // For standalone type apps we don't show indicator.
@@ -3461,6 +3491,10 @@ TBool CMIDCanvas::IsNetworkIndicatorEnabledL() const
     }
 
     return enabled;
+#else
+// Network and Call indicator is disabled for 9_2
+    return EFalse;
+#endif //RD_JAVA_S60_RELEASE_9_2
 }
 
 // ---------------------------------------------------------------------------

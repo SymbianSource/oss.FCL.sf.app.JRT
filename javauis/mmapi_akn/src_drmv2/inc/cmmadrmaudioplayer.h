@@ -56,7 +56,7 @@ public: // new methods
     CDrmPlayerUtility* DRMUtility() const;
 
 public: // from CMMAPlayer
-    void StartL();
+    void StartL(TBool aPostEvent);
     void StopL(TBool aPostEvent);
     void RealizeL();
     void PrefetchL();

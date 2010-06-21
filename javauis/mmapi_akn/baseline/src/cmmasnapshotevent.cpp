@@ -40,6 +40,7 @@ CMMASnapshotEvent::~CMMASnapshotEvent()
     // event server hasn't sent this event before
     // middlet is destroyed
     delete iImageBuffer;
+
 }
 
 void CMMASnapshotEvent::Dispatch(JNIEnv& aJni)
@@ -48,6 +49,7 @@ void CMMASnapshotEvent::Dispatch(JNIEnv& aJni)
 
     // create java byte array
     jbyteArray byteArray;
+
     if (iImageBuffer)
     {
         byteArray = aJni.NewByteArray(iImageBuffer->Size());
@@ -69,7 +71,6 @@ void CMMASnapshotEvent::Dispatch(JNIEnv& aJni)
     {
         delete iImageBuffer;
         iImageBuffer = NULL; // otherwise double delete in destructor
-
         DEBUG("MMA::CMMASnapshotEvent::Dispatch - Failed to create ByteArray");
         return;
     }
@@ -81,7 +82,10 @@ void CMMASnapshotEvent::Dispatch(JNIEnv& aJni)
                         byteArray);
 
     delete iImageBuffer;
+
     iImageBuffer = NULL; // otherwise double delete in destructor
+    aJni.DeleteLocalRef(byteArray);
+
 }
 
 //  END OF FILE

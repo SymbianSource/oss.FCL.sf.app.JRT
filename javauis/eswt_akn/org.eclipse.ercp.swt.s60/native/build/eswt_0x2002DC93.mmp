@@ -318,3 +318,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/eswt.def
+#elif defined EABI
+DEFFILE ./eabi/eswt.def
+#endif

@@ -934,7 +934,9 @@ void CMIDTextBoxQueryDialog::HandleTextUpdateL(TEdwinEvent aEventType)
             TInt illegalCharPos = -1;
             TPtr16 ptr = res->Des();
             TInt minusPos = ptr.LocateReverse(TChar('-'));
-            iStrict = EFalse;
+            TInt pointPosL = ptr.Locate(iDecimalSeparator);
+            TInt pointPosR = ptr.LocateReverse(iDecimalSeparator);
+            TInt cursorPos = GetCaretPosition();
 
             // check if minus sign is inserted on incorrect place
             // (not at the beginning)
@@ -951,14 +953,38 @@ void CMIDTextBoxQueryDialog::HandleTextUpdateL(TEdwinEvent aEventType)
                     ptr.Delete(minusPos, 1);
                     ptr.Insert(0, KMinusChar);
                     minusPos = 0;
+                    iStrict = EFalse;
+
+                    // Decimal separator was inserted twice and minus
+                    // was next character in text. Minus was just set as first
+                    // character - so in fact we have two decimal separators
+                    // after minus character - this is not allowed,
+                    // delete extra character
+                    if (pointPosL != pointPosR && pointPosL == 0 &&
+                            minusPos == pointPosL)
+                    {
+                        // Delete both decimal separator characters
+                        // and place new decimal separator in correct position
+                        ptr.Delete(pointPosR, 1);
+                        ptr.Delete((pointPosL + 1), 1);
+                        ptr.Insert(1, KFullStopChar);
+                    }
                     SetTextL(*res);
                     textChanged = ETrue;
+
+                    // Set correct cusros possition
+                    if (pointPosL == 0 && minusPos == pointPosL)
+                    {
+                        SetCursorPositionL(pointPosL + 1);
+                    }
                 }
             }
 
-            TInt pointPosL = ptr.Locate(iDecimalSeparator);
-            TInt pointPosR = ptr.LocateReverse(iDecimalSeparator);
-            TInt cursorPos = GetCaretPosition();
+            // Locate decimal separator again
+            pointPosL = ptr.Locate(iDecimalSeparator);
+            pointPosR = ptr.LocateReverse(iDecimalSeparator);
+            cursorPos = GetCaretPosition();
+
             if ((minusPos != KErrNotFound) && (pointPosL == 0))
             {
                 illegalCharPos = pointPosL;
@@ -974,11 +1000,12 @@ void CMIDTextBoxQueryDialog::HandleTextUpdateL(TEdwinEvent aEventType)
                 // deleting second minus or dot/comma char
                 // and set cursor position on the right place
                 ptr.Delete(illegalCharPos, 1);
+                iStrict = EFalse;
                 SetTextL(*res);
                 textChanged = ETrue;
                 if (cursorPos >= 1)
                 {
-                    if (cursorPos == illegalCharPos)
+                    if (cursorPos == (illegalCharPos + 1))
                     {
                         cursorPos--;
                     }
@@ -996,7 +1023,17 @@ void CMIDTextBoxQueryDialog::HandleTextUpdateL(TEdwinEvent aEventType)
             // are not supported, chars need to be changed to space
             // SetText function before actual text change checks if line
             // breaks are not supported
-            SetTextL(*res);
+            TPtr16 text = res->Des();
+            TInt tmpPos;
+
+            if ((text.Locate(TChar('\n'))) >=0 ||
+                    (text.Locate(TChar('\f'))) >=0)
+            {
+                tmpPos = GetCaretPosition();
+                SetTextL(*res);
+                SetCursorPositionL(tmpPos);
+            }
+
             textChanged = ETrue;
         }
         CleanupStack::Pop(res);

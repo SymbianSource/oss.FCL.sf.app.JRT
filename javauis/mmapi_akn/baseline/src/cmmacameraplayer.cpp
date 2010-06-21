@@ -238,7 +238,7 @@ void CMMACameraPlayer::ResolveCaptureSizes(const CCamera::TFormat aFormat,
     aLargestIndex = largestSizeIndex;
 }
 
-void CMMACameraPlayer::StartL()
+void CMMACameraPlayer::StartL(TBool aPostEvent)
 {
     DEBUG_INT("CMMACameraPlayer:StartL iState %d", iState);
 
@@ -261,8 +261,11 @@ void CMMACameraPlayer::StartL()
         // about the status change
         iWindow->SetStarted(ETrue);
 
-        // inform java side
-        PostLongEvent(CMMAPlayerEvent::EStarted, time);
+        if (aPostEvent)
+        {
+            // inform java side
+            PostLongEvent(CMMAPlayerEvent::EStarted, time);
+        }
     }
     PostActionCompleted(KErrNone);   // java start return
 }

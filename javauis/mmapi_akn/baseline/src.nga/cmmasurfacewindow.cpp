@@ -17,6 +17,8 @@
 */
 
 //  Include Files
+#include <AccMonitorInfo.h>
+#include <AccMonitorCapabilities.h>
 #include "jdebug.h"
 #include "cmmasurfacewindow.h"
 #include "cmmaplayer.h"
@@ -24,13 +26,15 @@
 // Used for iDisplay member
 #include "mmmadisplay.h"
 
-CMMASurfaceWindow* CMMASurfaceWindow::NewL(
+EXPORT_C CMMASurfaceWindow* CMMASurfaceWindow::NewL(
     CMMAEventSource* aEventSource,
-    CMMAPlayer* aPlayer)
+    CMMAPlayer* aPlayer,
+    TBool aAVCableConnStatus)
 {
     CMMASurfaceWindow* self =
         new(ELeave) CMMASurfaceWindow(aEventSource,
-                                      aPlayer);
+                                      aPlayer,
+                                      aAVCableConnStatus);
     return self;
 }
 
@@ -46,10 +50,12 @@ CMMASurfaceWindow::~CMMASurfaceWindow()
 
 CMMASurfaceWindow::CMMASurfaceWindow(
     CMMAEventSource* aEventSource,
-    CMMAPlayer* aPlayer):
+    CMMAPlayer* aPlayer,
+    TBool aAVCableConnStatus):
         iEventSource(aEventSource),
         iPlayer(aPlayer),
-        iVideoDisplayInitState(EUIResourcesAndSurfaceParametersNotSet)
+        iVideoDisplayInitState(EUIResourcesAndSurfaceParametersNotSet),
+        iAVCableConnected(aAVCableConnStatus)
 {
     // Empty rect until video size is known
     iContentRect.SetRect(0, 0, 0, 0);
@@ -120,8 +126,10 @@ TInt CMMASurfaceWindow::SetClipRect()
     DEBUG("MID::CMMASurfaceWindow::SetClipRect");
 
     // CMediaClientVideoDisplay expects client to RemoveDisplayWindow
-    // and AddDisplayWindow again everytime when RWindow rect changes
-    if (iMediaClientVideoDisplay && iWindow)
+    // and AddDisplayWindow again everytime when RWindow rect changes.
+    // If audio/video cable is connected do not reposition the video,
+    // this is done to prevent video playback pause.
+    if (iMediaClientVideoDisplay && iWindow && !iAVCableConnected)
     {
         iMediaClientVideoDisplay->RemoveDisplayWindow(*iWindow);
 
@@ -309,7 +317,7 @@ void CMMASurfaceWindow::ContainerDestroyed()
     CleanVideoDisplay();
 }
 
-void CMMASurfaceWindow::SetDisplay(MMMADisplay *aDisplay)
+EXPORT_C void CMMASurfaceWindow::SetDisplay(MMMADisplay *aDisplay)
 {
     DEBUG("MID::CMMASurfaceWindow::SetDisplay +");
 
@@ -461,7 +469,7 @@ void CMMASurfaceWindow::MdcUICallback(TInt aCallbackId)
     }
 }
 
-void CMMASurfaceWindow::SetSurfaceParameters(const TSurfaceId& aSurfaceId,
+EXPORT_C void CMMASurfaceWindow::SetSurfaceParameters(const TSurfaceId& aSurfaceId,
         const TRect& aCropRect,
         const TVideoAspectRatio& aPixelAspectRatio)
 {
@@ -510,7 +518,7 @@ void CMMASurfaceWindow::SetSurfaceParameters(const TSurfaceId& aSurfaceId,
     }
 }
 
-void CMMASurfaceWindow::SetChangedSurfaceParameters(const TSurfaceId& aSurfaceId,
+EXPORT_C void CMMASurfaceWindow::SetChangedSurfaceParameters(const TSurfaceId& aSurfaceId,
         const TRect& aCropRect,
         const TVideoAspectRatio& aPixelAspectRatio)
 {
@@ -524,7 +532,7 @@ void CMMASurfaceWindow::SetChangedSurfaceParameters(const TSurfaceId& aSurfaceId
     }
 }
 
-void CMMASurfaceWindow::RemoveSurface()
+EXPORT_C void CMMASurfaceWindow::RemoveSurface()
 {
     if (iDisplay)
     {
@@ -657,6 +665,16 @@ void CMMASurfaceWindow::CleanVideoDisplay()
     }
 
     DEBUG("MID::CMMASurfaceWindow::CleanVideoDisplay -");
+}
+
+void CMMASurfaceWindow::SetAVCableConnStatus(TBool aStatus)
+{
+    iAVCableConnected = aStatus;
+    if (iDisplay && !iAVCableConnected)
+    {
+        iDisplay->UIGetCallback(*this,
+                                CMMASurfaceWindow::ESetClipRect);
+    }
 }
 
 //  END OF FILE

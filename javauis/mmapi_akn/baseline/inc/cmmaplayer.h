@@ -72,12 +72,12 @@ public:
     /**
      * Deletes all owned members.
      */
-    virtual ~CMMAPlayer();
+    IMPORT_C virtual ~CMMAPlayer();
 protected:
     /**
      * Initializes member variables to defaults.
      */
-    CMMAPlayer();
+    IMPORT_C CMMAPlayer();
 
     /**
      * Second phase construct.
@@ -155,7 +155,7 @@ public: // New methods
      * Start playing. Started event will be posted. If there is no error
      * player will be in EStarted state.
      */
-    virtual void StartL() = 0;
+    virtual void StartL(TBool aPostEvent) = 0;
 
     /**
      * Stops playing. After this player may be restarted with StartL method.
@@ -181,7 +181,7 @@ public: // New methods
      *
      * @param aDuration Duration or KTimeUnknown if not specified.
      */
-    virtual void GetDuration(TInt64* aDuration);
+    IMPORT_C virtual void GetDuration(TInt64* aDuration);
 
     /**
      * Sets media time.
@@ -225,7 +225,7 @@ public: // new methods
      * @param aJni Used to get method ids.
      * @param aPoster Used to post events.
      */
-    virtual void SetPlayerListenerObjectL(jobject aListenerObject,
+    IMPORT_C virtual void SetPlayerListenerObjectL(jobject aListenerObject,
                                           JNIEnv* aJni,
                                           MMMAEventPoster* aPoster);
 
@@ -346,7 +346,7 @@ protected: // new methods
      *
      * @param aState New state.
      */
-    void ChangeState(TPlayerState aState);
+    IMPORT_C void ChangeState(TPlayerState aState);
 
 public: // from MMMASourceStreamListener
     virtual void ReadCompletedL(TInt aStatus, const TDesC8& aData);

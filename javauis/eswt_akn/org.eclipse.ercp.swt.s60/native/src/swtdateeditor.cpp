@@ -222,7 +222,7 @@ void CSwtDateEditor::FocusChanged(TDrawNow aDrawNow)
 void CSwtDateEditor::MakeVisible(TBool aVisible)
 {
     // Close VKB. Do it here instead of FocusChange to avoid split input flicker.
-    if (iEditor->IsFocused() && !aVisible)
+    if (iEditor && iEditor->IsFocused() && !aVisible)
     {
         CCoeFep* fep = iDisplay.CoeEnv()->Fep();
         if (fep)
@@ -541,7 +541,7 @@ void CSwtDateEditor::SetDimmed(TBool aDimmed)
     ASSERT(iEditor);
 
     // Close VKB. Do it here instead of FocusChange to avoid split input flicker.
-    if (iEditor->IsFocused() && aDimmed)
+    if (iEditor && iEditor->IsFocused() && aDimmed)
     {
         CCoeFep* fep = iDisplay.CoeEnv()->Fep();
         if (fep)
@@ -1177,7 +1177,7 @@ void CSwtDateEditor::SetWidgetSize(const TSize& aSize)
 TSwtPeer CSwtDateEditor::Dispose()
 {
     // Close VKB.
-    if (iEditor->IsFocused())
+    if (iEditor && iEditor->IsFocused())
     {
         CCoeFep* fep = iDisplay.CoeEnv()->Fep();
         if (fep)

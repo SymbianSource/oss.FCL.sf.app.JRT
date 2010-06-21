@@ -168,7 +168,7 @@ EXPORT_C void CMMAAudioPlayer::PlayCompleteL(TInt aError)
 
         if (iRepeatForever || iRepeatCount < iRepeatNumberOfTimes)
         {
-            StartL();
+            StartL(ETrue);
         }
         else
         {

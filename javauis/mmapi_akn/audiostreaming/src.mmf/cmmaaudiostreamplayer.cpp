@@ -144,18 +144,20 @@ void CMMAAudioStreamPlayer::PrefetchL()
     iStreamHandler->PrepareL();
 }
 
-void CMMAAudioStreamPlayer::StartL()
+void CMMAAudioStreamPlayer::StartL(TBool aPostEvent)
 {
     // If the player is in Prefetched state then it is implied that it has read "KMMAStreamRequestBufferSize"
     // and it can be played
     if (iState == EPrefetched)
     {
 
-        TInt64 time;
-        GetMediaTime(&time);
-
-        // inform java side
-        PostLongEvent(CMMAPlayerEvent::EStarted, time);
+        if (aPostEvent)
+        {
+            TInt64 time;
+            GetMediaTime(&time);
+            // inform java side
+            PostLongEvent(CMMAPlayerEvent::EStarted, time);
+        }
 
         // go to started state
         ChangeState(EStarted);
@@ -213,7 +215,7 @@ void CMMAAudioStreamPlayer::PlayCompleteL(TInt aError)
 
         if (iRepeatForever || iRepeatCount < iRepeatNumberOfTimes)
         {
-            StartL();
+            StartL(ETrue);
         }
         else
         {

@@ -145,7 +145,7 @@ void CMMAMIDIPlayer::DeallocateL()
     DEBUG("MMA: CMMAMidiPlayer: DeallocateL -");
 }
 
-void CMMAMIDIPlayer::StartL()
+void CMMAMIDIPlayer::StartL(TBool aPostEvent)
 {
     iMediaTime = KTimeUnknown;
 
@@ -158,8 +158,11 @@ void CMMAMIDIPlayer::StartL()
         iMidi->Play();
     }
 
-    // inform java side
-    PostLongEvent(CMMAPlayerEvent::EStarted, iStartedEventTime);
+    if (aPostEvent)
+    {
+        // inform java side
+        PostLongEvent(CMMAPlayerEvent::EStarted, iStartedEventTime);
+    }
     ChangeState(EStarted);
 
     // To achieve similar functionality as reference implementation,
@@ -335,7 +338,7 @@ void CMMAMIDIPlayer::PlayCompleteL(TInt aError)
 
         if (iRepeatForever || iRepeatCount < iRepeatNumberOfTimes)
         {
-            StartL();
+            StartL(ETrue);
         }
         else
         {

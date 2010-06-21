@@ -215,7 +215,7 @@ TBool CMMAEMCPlayerBase::IsFilePlayer()
     return EFalse;
 }
 
-void CMMAEMCPlayerBase::StartL()
+void CMMAEMCPlayerBase::StartL(TBool /*aPostEvent*/)
 {
     // empty implementation
     // should be overwritten in derived class

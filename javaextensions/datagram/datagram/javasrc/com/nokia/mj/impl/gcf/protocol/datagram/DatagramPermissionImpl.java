@@ -56,7 +56,7 @@ public class DatagramPermissionImpl extends PermissionBase
 
     public String toString()
     {
-        return "javax.microedition.io.DatagramProtocolPermission";
+        return "javax.microedition.io.Connector.datagram";
     }
 
     public boolean implies(Permission p)

@@ -153,3 +153,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javastorage.def
+#elif defined EABI
+DEFFILE ./eabi/javastorage.def
+#endif

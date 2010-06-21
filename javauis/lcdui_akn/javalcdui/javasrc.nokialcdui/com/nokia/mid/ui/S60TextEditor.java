@@ -21,7 +21,7 @@ package com.nokia.mid.ui;
 /**
  * <P>
  * S60 platform specific extensions to <code>TextEditor</code>. These methods
- * are only available in S60 Java Runtime.
+ * are only available in Java Runtime for Symbian.
  * </P>
  *
  * <P>
@@ -61,6 +61,15 @@ package com.nokia.mid.ui;
  * preferred or enabled.
  * </p>
  *
+ * <h3>Touch screen virtual keyboard</h3>
+ * <p>
+ * In touch-only devices when user taps on a text editor touch screen
+ * virtual keyboard is opened. The keyboard takes part of the screen space, so
+ * canvas is smaller when virtual keyboard is visible.
+ * Application is notified about this by events, so it can react on this
+ * change and resize, move TextEditor to the visible area and adjust the
+ * whole Canvas.
+ * </p>
  * @see TextEditor
  * @since 1.4
  */
@@ -103,6 +112,16 @@ public abstract interface S60TextEditor
      * Mini ITU-T for Japanese devices
      */
     public static final int TOUCH_INPUT_MINI_ITUT = 32;
+
+    /**
+     * Indicates that the touch screen virtual keyboard is opened.
+     */
+    public static final int ACTION_VIRTUAL_KEYBOARD_OPEN = 0x1000;
+
+    /**
+     * Indicates that the touch screen virtual keyboard is closed.
+     */
+    public static final int ACTION_VIRTUAL_KEYBOARD_CLOSE = 0x2000;
 
     /**
      * <P>

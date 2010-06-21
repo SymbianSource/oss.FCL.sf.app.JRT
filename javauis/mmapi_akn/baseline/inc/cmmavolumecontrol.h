@@ -22,13 +22,14 @@
 //  INCLUDES
 #include "cmmacontrol.h"
 #include "mmmaplayerstatelistener.h"
+#include <mprofilechangeobserver.h>
 
 // CONSTANS
 _LIT(KMMAVolumeControlName, "VolumeControl");
 const TInt KMMAVolumeMaxLevel = 100;
 
 class CMMAPlayer;
-
+class CProfileChangeNotifyHandler;
 //  CLASS DECLARATION
 /**
 *   This class is used for volume setting
@@ -37,7 +38,8 @@ class CMMAPlayer;
 */
 
 class CMMAVolumeControl : public CMMAControl,
-        public MMMAPlayerStateListener
+        public MMMAPlayerStateListener,
+        public MProfileChangeObserver
 {
 public:
     static void StaticSetLevelL(CMMAVolumeControl* aVolumeControl,
@@ -74,6 +76,8 @@ public: // From CMMAControl
 public: // From MMMAPlayerStateListener
     void StateChanged(TInt aState);
 
+public: // from MProfileChangeObserver
+    void HandleActiveProfileEventL(TProfileEvent aProfileEvent, TInt aProfileId );
 
 public: // New methods
     /**
@@ -95,8 +99,12 @@ public: // New methods
                                   TInt aVolumeLevel);
     void GetVolumeLevelL(TInt aLevelIndex,
                          TInt* aVolumeLevel);
-
-
+    void SetProfilesBasedSoundMutingL();
+    /**
+     * Sets the audio o/p preference. Based on this the profile based
+     * volume setting is done.
+     */
+    IMPORT_C void SetAudioOutputPreferenceL( TInt aRoutingPreference);
 
 private: // New methods
 
@@ -117,6 +125,10 @@ private: // New methods
      * @return Current level.
      */
     TInt CalculateLevel();
+    
+    void SetJavaSoundVolumeLevelL();
+    
+    void SetProfileSoundVolumeLevelL();
 protected: // data
     CMMAPlayer* iPlayer;
 
@@ -125,7 +137,13 @@ protected: // data
 
     // Array containing all levels.
     RArray< TInt > iLevels;
-
+    // profile change notifier 
+    // Owning
+    CProfileChangeNotifyHandler* iProfChangeNotifier;
+    // Current audio o/p preference.
+    TInt iAudioOutputPreference;
+    // Current profile Id.
+    TInt iProfileId;
 };
 
 #endif // CMMAVOLUMECONTROL_H

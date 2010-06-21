@@ -132,3 +132,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javacaptain_ext_ondemand_2.def
+#elif defined EABI
+DEFFILE ./eabi/javacaptain_ext_ondemand_2.def
+#endif

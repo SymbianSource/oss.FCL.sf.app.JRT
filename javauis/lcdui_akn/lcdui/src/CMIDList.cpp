@@ -1778,11 +1778,11 @@ TBool CMIDList::CreateListBoxL()
 
         // We need avoid stretching list's elements. This prevents problems
         // with icon overlaying and bad wrapping.
-        if(type < EDouble2Style)
+        if (type < EDouble2Style)
         {
             CEikColumnListBox* clb =
                 (static_cast<CEikColumnListBox*>(listBox));
-            if(clb)
+            if (clb)
             {
                 clb->EnableStretching(EFalse);
             }
@@ -1791,7 +1791,7 @@ TBool CMIDList::CreateListBoxL()
         {
             CEikFormattedCellListBox* fclb =
                 (static_cast<CEikFormattedCellListBox*>(listBox));
-            if(fclb)
+            if (fclb)
             {
                 fclb->EnableStretching(EFalse);
             }

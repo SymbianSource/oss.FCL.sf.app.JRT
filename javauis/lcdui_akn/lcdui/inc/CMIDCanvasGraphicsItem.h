@@ -54,8 +54,8 @@ public: // Type definitions
         CMIDUtils* iUtils;
 
         TCtorParams::TCtorParams() :
-            iPainterHandle(NULL),
-            iUtils(NULL) {}
+                iPainterHandle(NULL),
+                iUtils(NULL) {}
     };
 
 public: // Constructors and destructor
@@ -147,12 +147,6 @@ public: // From MMIDCustomComponent
         return EFalse;
     }
 
-public: // From MMIDScalable
-
-    TBool IsScalingOn() const;
-
-public: //Own methods
-
     /**
      * Handles fullscreen state of parent Canvas.
      *
@@ -166,6 +160,10 @@ public: //Own methods
      * @since S60 5.0
      */
     void HandleResolutionChange();
+
+public: // From MMIDScalable
+
+    TBool IsScalingOn() const;
 
 public: // From MMIDCanvasGraphicsItem
 

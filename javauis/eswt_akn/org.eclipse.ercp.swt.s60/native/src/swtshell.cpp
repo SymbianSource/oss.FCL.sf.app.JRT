@@ -1022,8 +1022,15 @@ void CSwtShell::SetMaximized(TBool aMaximized)
         newRect = iNormalBounds;
     }
 
+    if (!aMaximized)
+    {
+        iIsMaximized = EFalse;
+    }
     SetBounds(newRect);
-    iIsMaximized = aMaximized;
+    if (aMaximized)
+    {
+        iIsMaximized = ETrue;
+    }
     Redraw();
 }
 

@@ -422,7 +422,7 @@ void CAppMngr2MidletSettingsHandler::GetSecuritySettings(std::vector<MidletSuite
         query.insert(attr);
         attr.setEntry(FUNCTION_GROUP, L"");
         query.insert(attr);
-        iStorage->search(MIDP_FUNC_GRP_SETTINGS_TABLE, query, queryResult);
+        iStorage->search(MIDP_PERMISSIONS_TABLE, query, queryResult);
         JavaStorageApplicationList_t::const_iterator iterator;
         JavaStorageApplicationList_t settingsQueryResult;
         MidletSuiteSecuritySettings settings;
@@ -431,33 +431,49 @@ void CAppMngr2MidletSettingsHandler::GetSecuritySettings(std::vector<MidletSuite
             std::wstring settingsName = L"";
             JavaStorageApplicationEntry_t entry = (*iterator);
             findColumn(entry, FUNCTION_GROUP, settingsName);
-            entry.clear();
-            query.clear();
-            attr.setEntry(ID, iMidletSuiteUid.toString());
-            query.insert(attr);
-            attr.setEntry(FUNCTION_GROUP, settingsName);
-            query.insert(attr);
-            attr.setEntry(CURRENT_SETTING, L"");
-            query.insert(attr);
-            attr.setEntry(ALLOWED_SETTINGS , L"");
-            query.insert(attr);
-            settingsQueryResult.clear();
-            iStorage->search(MIDP_FUNC_GRP_SETTINGS_TABLE, query, settingsQueryResult);
-            if (settingsQueryResult.size() > 0)
+            if (settingsName.size() > 0)
             {
-                wstring currentInteractionMode = L"";
-                wstring allowedInteractionModes = L"";
-                findEntry(settingsQueryResult,CURRENT_SETTING , currentInteractionMode);
-                findEntry(settingsQueryResult,ALLOWED_SETTINGS , allowedInteractionModes);
-                if (currentInteractionMode.size() > 0 && allowedInteractionModes.size() > 0)
+                // go on only if the setting does not exist already
+                bool found = false;
+                for(int j=0; j<aMidletSuiteSecuritySettings.size(); j++)
                 {
-                    settings = MidletSuiteSecuritySettings(
-                                   settingsName,
-                                   currentInteractionMode,
-                                   allowedInteractionModes);
+                    if (settingsName == aMidletSuiteSecuritySettings[j].getName())
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    entry.clear();
+                    query.clear();
+                    attr.setEntry(ID, iMidletSuiteUid.toString());
+                    query.insert(attr);
+                    attr.setEntry(FUNCTION_GROUP, settingsName);
+                    query.insert(attr);
+                    attr.setEntry(CURRENT_SETTING, L"");
+                    query.insert(attr);
+                    attr.setEntry(ALLOWED_SETTINGS , L"");
+                    query.insert(attr);
+                    settingsQueryResult.clear();
+                    iStorage->search(MIDP_FUNC_GRP_SETTINGS_TABLE, query, settingsQueryResult);
+                    if (settingsQueryResult.size() > 0)
+                    {
+                        wstring currentInteractionMode = L"";
+                        wstring allowedInteractionModes = L"";
+                        findEntry(settingsQueryResult,CURRENT_SETTING , currentInteractionMode);
+                        findEntry(settingsQueryResult,ALLOWED_SETTINGS , allowedInteractionModes);
+                        if (currentInteractionMode.size() > 0 && allowedInteractionModes.size() > 0)
+                        {
+                            settings = MidletSuiteSecuritySettings(
+                                           settingsName,
+                                           currentInteractionMode,
+                                           allowedInteractionModes);
+                            aMidletSuiteSecuritySettings.push_back(settings);
+                        }
+                    }
                 }
             }
-            aMidletSuiteSecuritySettings.push_back(settings);
         }
     }
     catch (JavaStorageException& aJse)

@@ -132,3 +132,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javacaptain_ext_storageserverplugin.def
+#elif defined EABI
+DEFFILE ./eabi/javacaptain_ext_storageserverplugin.def
+#endif

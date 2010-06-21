@@ -99,7 +99,7 @@ void CMMADRMAudioPlayer::DeallocateL()
     DEBUG("MMA: CMMAMidiPlayer: DeallocateL -");
 }
 
-void CMMADRMAudioPlayer::StartL()
+void CMMADRMAudioPlayer::StartL(TBool aPostEvent)
 {
     // start can't be called to not ready player
     ASSERT(iState == EPrefetched);
@@ -125,9 +125,12 @@ void CMMADRMAudioPlayer::StartL()
 
     iUtility->Play();
 
-    // inform java side
     PostActionCompleted(KErrNone);   // java start return
-    PostLongEvent(CMMAPlayerEvent::EStarted, time);
+    if (aPostEvent)
+    {
+        // inform java side
+        PostLongEvent(CMMAPlayerEvent::EStarted, time);
+    }
     ChangeState(EStarted);
 }
 
@@ -275,7 +278,7 @@ void CMMADRMAudioPlayer::PlayCompleteL(TInt aError)
 
         if (iRepeatForever || iRepeatCount < iRepeatNumberOfTimes)
         {
-            StartL();
+            StartL(ETrue);
         }
         else
         {

@@ -77,7 +77,7 @@ public: // from CMMAPlayer
                                   MMMAEventPoster* aEventPoster);
     void RealizeL();
     void PrefetchL();
-    void StartL();
+    void StartL(TBool aPostEvent);
     void StopL(TBool aPostEvent);
     void DeallocateL();
     void GetDuration(TInt64* aDuration);

@@ -33,6 +33,7 @@ public class UserSecuritySettingsImpl
     private int[] allowedInteractionModes;
     private boolean blanketPrompt;
     private static ResourceLoader resLoader = null;
+    private boolean active;
 
     private static final String NET_ACCESS_ID = "setting_net_access";
     private static final String LOW_LEVEL_NET_ACCESS_ID = "setting_low_level_net_access";
@@ -65,12 +66,28 @@ public class UserSecuritySettingsImpl
         String name,
         int currentInteractionMode,
         int[] allowedInteractionModes,
-        boolean blanketPrompt)
+        boolean blanketPrompt,
+        boolean active)
     {
         this.name = name;
         setCurrentInteractionMode(currentInteractionMode);
         setAllowedInteractionModes(allowedInteractionModes);
         this.blanketPrompt = blanketPrompt;
+        this.active = active;
+    }
+
+    public UserSecuritySettingsImpl(
+        String name,
+        int currentInteractionMode,
+        int[] allowedInteractionModes,
+        boolean blanketPrompt)
+    {
+        this(name, currentInteractionMode, allowedInteractionModes, blanketPrompt, true);
+    }
+    
+    public boolean isActive()
+    {
+        return active;
     }
 
     public String getName()

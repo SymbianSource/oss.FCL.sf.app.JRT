@@ -131,16 +131,18 @@ private:
     };
 
 public:   // Constructors and destructors
-    static CMMASurfaceWindow* NewL(
+    IMPORT_C static CMMASurfaceWindow* NewL(
         CMMAEventSource* aEventSource,
-        CMMAPlayer* aPlayer);
+        CMMAPlayer* aPlayer,
+        TBool aAVCableConnStatus);
 
     virtual ~CMMASurfaceWindow();
 
 private:  // Constructors and destructors
     CMMASurfaceWindow(
         CMMAEventSource* aEventSource,
-        CMMAPlayer* aPlayer);
+        CMMAPlayer* aPlayer,
+        TBool aAVCableConnStatus);
 
 public: // Methods derived from MMMADisplayWindow
     void SetDestinationBitmapL(CFbsBitmap* aBitmap);
@@ -166,7 +168,7 @@ public: // from base class MUiEventConsumer
 
 public: // New methods
     TBool IsVisible() const;
-    void SetDisplay(MMMADisplay *aDisplay);
+    IMPORT_C void SetDisplay(MMMADisplay *aDisplay);
 
     /**
      * copies surface paramaters and intializes video display if
@@ -175,14 +177,14 @@ public: // New methods
      *
      * @params aSurfaceId, aCropRect, aPixelAspectRatio surface paramaters.
      */
-    void SetSurfaceParameters(const TSurfaceId& aSurfaceId,
+    IMPORT_C void SetSurfaceParameters(const TSurfaceId& aSurfaceId,
                               const TRect& aCropRect,
                               const TVideoAspectRatio& aPixelAspectRatio);
 
     /**
      * invokes DoRemoveSurface() in UI thread context.
      */
-    void RemoveSurface();
+    IMPORT_C void RemoveSurface();
 
     /**
      * updates members variables with new surface parameters and invokes
@@ -190,9 +192,17 @@ public: // New methods
      *
      * @params aSurfaceId, aCropRect, aPixelAspectRatio surface paramaters.
      */
-    void SetChangedSurfaceParameters(const TSurfaceId& aSurfaceId,
+    IMPORT_C void SetChangedSurfaceParameters(const TSurfaceId& aSurfaceId,
                                      const TRect& aCropRect,
                                      const TVideoAspectRatio& aPixelAspectRatio);
+
+    /**
+     * updates iAVCableConnected flag as and when the audio/video cable is
+     * connected or disconnected
+     *
+     * @param aStatus true indicates cable connected else false
+     */
+    void SetAVCableConnStatus(TBool aStatus);
 
 private: // New methods
     /**
@@ -263,8 +273,8 @@ private:  // Data
     TRect iContentRect;
 
     /**
-         * parent rectangle used for positioning contentRect.
-         */
+     * parent rectangle used for positioning contentRect.
+     */
     TRect iParentRect;
 
     /**
@@ -296,9 +306,9 @@ private:  // Data
     CMediaClientVideoDisplay* iMediaClientVideoDisplay;
 
     /**
-         * Display instance used to invoke UI callbacks.
-         * Not owned.
-         */
+     * Display instance used to invoke UI callbacks.
+     * Not owned.
+     */
     MMMADisplay* iDisplay;
 
     /**
@@ -329,13 +339,13 @@ private:  // Data
     TSurfaceId iSurfaceId;
 
     /**
-         * The dimensions of the crop rectangle, relative to the video image.
-         */
+     * The dimensions of the crop rectangle, relative to the video image.
+     */
     TRect iCropRect;
 
     /**
-         * The pixel aspect ratio to display video picture.
-         */
+     * The pixel aspect ratio to display video picture.
+     */
     TVideoAspectRatio iPixelAspectRatio;
 
     /**
@@ -349,6 +359,10 @@ private:  // Data
      */
     TBool iVisible;
 
+    /**
+     * Audio/Video device cable connection status
+     */
+    TBool iAVCableConnected;
 };
 
 #endif // CMMASURFACEWINDOW_H

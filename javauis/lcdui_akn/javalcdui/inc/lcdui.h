@@ -823,7 +823,7 @@ public:
      */
     virtual void UpdateRect(const TRect& aRect) = 0;
 #endif // RD_JAVA_NGA_ENABLED
-    
+
     virtual TBool ReadyToBlit() const = 0;
 };
 

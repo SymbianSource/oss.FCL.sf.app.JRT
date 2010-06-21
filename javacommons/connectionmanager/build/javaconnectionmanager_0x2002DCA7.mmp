@@ -141,3 +141,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javaconnectionmanager.def
+#elif defined EABI
+DEFFILE ./eabi/javaconnectionmanager.def
+#endif

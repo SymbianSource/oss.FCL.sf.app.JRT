@@ -155,10 +155,11 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_PlayerImpl__1start
 
 
 
-    TInt err = eventSource->ExecuteTrap(&VVoidFuncL,
+    TInt err = eventSource->ExecuteTrap(&BoolFuncL,
                                         aPlayer,
                                         eventSource,
-                                        &CMMAPlayer::StartL);
+                                        &CMMAPlayer::StartL,
+                                        (TBool)ETrue);
     // complete java side request in case of leave.
     if (err != KErrNone)
     {

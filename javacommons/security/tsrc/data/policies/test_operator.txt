@@ -34,5 +34,8 @@ grant allowed {
 }
 grant assigned {
     permission javax.microedition.PropertyPermission "mobinfo.msisdn" "read";
+    permission javax.microedition.PropertyPermission "mobinfo.cellid" "read";
+    permission javax.microedition.PropertyPermission "mobinfo.countrycode" "read";
+    permission javax.microedition.PropertyPermission "mobinfo.networkid" "read";
     permission javax.microedition.midlet.AutoStartPermission;
 }

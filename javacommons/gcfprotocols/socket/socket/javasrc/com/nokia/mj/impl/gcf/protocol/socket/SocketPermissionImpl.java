@@ -55,7 +55,7 @@ public class SocketPermissionImpl extends PermissionBase
 
     public String toString()
     {
-        return "javax.microedition.io.SocketProtocolPermission";
+        return "javax.microedition.io.Connector.socket";
     }
 
     public boolean implies(Permission p)

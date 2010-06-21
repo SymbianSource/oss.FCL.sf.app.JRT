@@ -49,7 +49,7 @@ CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::~CMMAVideoUrlPlayerLiv
     delete iActiveSchedulerWait;
 }
 
-void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::StartL()
+void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::StartL(TBool /*aPostEvent*/)
 {
     // start can't be called to not ready player
     ASSERT(iPlayer.iState == EPrefetched);

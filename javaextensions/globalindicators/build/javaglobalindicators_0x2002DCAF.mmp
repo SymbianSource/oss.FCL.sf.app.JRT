@@ -141,3 +141,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javaglobalindicators.def
+#elif defined EABI
+DEFFILE ./eabi/javaglobalindicators.def
+#endif

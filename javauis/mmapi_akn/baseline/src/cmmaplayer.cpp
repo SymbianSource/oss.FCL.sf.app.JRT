@@ -31,7 +31,7 @@ _LIT(KPanicOutOfMem, "out of memory");
 _LIT(KPanicMethod, "method not found");
 #endif
 
-CMMAPlayer::~CMMAPlayer()
+EXPORT_C CMMAPlayer::~CMMAPlayer()
 {
     DEBUG("CMMAPlayer::~CMMAPlayer()");
 
@@ -46,7 +46,7 @@ CMMAPlayer::~CMMAPlayer()
 }
 
 
-CMMAPlayer::CMMAPlayer():
+EXPORT_C CMMAPlayer::CMMAPlayer():
         iRepeatNumberOfTimes(0),
         iRepeatForever(EFalse),
         iRepeatCount(0),
@@ -154,7 +154,7 @@ void CMMAPlayer::CloseL()
 }
 
 
-void CMMAPlayer::GetDuration(TInt64* aDuration)
+EXPORT_C void CMMAPlayer::GetDuration(TInt64* aDuration)
 {
     DEBUG("MMA::CMMAPlayer::GetDuration ");
     *aDuration = iDuration;
@@ -188,7 +188,7 @@ HBufC* CMMAPlayer::ContentType() const
     return iContentType;
 }
 
-void CMMAPlayer::SetPlayerListenerObjectL(jobject aListenerObject,
+EXPORT_C void CMMAPlayer::SetPlayerListenerObjectL(jobject aListenerObject,
         JNIEnv* aJni,
         MMMAEventPoster* aEventPoster)
 {
@@ -429,7 +429,7 @@ void CMMAPlayer::PostActionCompleted(TInt aError)
 }
 
 
-void CMMAPlayer::ChangeState(TPlayerState aState)
+EXPORT_C void CMMAPlayer::ChangeState(TPlayerState aState)
 {
     iState = aState;
     DEBUG_INT("MMA::CMMAPlayer::ChangeState - iStateListeners count is %d", iStateListeners.Count());

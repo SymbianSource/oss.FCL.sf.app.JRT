@@ -116,7 +116,7 @@ void CMMAAudioStreamPlayer::PrefetchL()
     DEBUG("CMMAAudioStreamPlayer::PrefetchL -");
 }
 
-void CMMAAudioStreamPlayer::StartL()
+void CMMAAudioStreamPlayer::StartL(TBool aPostEvent)
 {
     DEBUG("MMA::CMMAAudioStreamPlayer::StartL +");
     if (iStreamHandler->LastBufferWritten() &&
@@ -126,8 +126,12 @@ void CMMAAudioStreamPlayer::StartL()
         GetMediaTime(&time);
         TInt err = iMStreamControl->Start();
         if (err == KErrNone && iState != EStarted)
-        { // move to started state and post started event
-            PostLongEvent(CMMAPlayerEvent::EStarted, time);
+        {
+            // move to started state and post started event
+            if (aPostEvent)
+            {
+                PostLongEvent(CMMAPlayerEvent::EStarted, time);
+            }
             ChangeState(EStarted);
         }
         else
@@ -204,7 +208,7 @@ void CMMAAudioStreamPlayer::PlayCompleteL(TInt aError)
 
         if (iRepeatForever || iRepeatCount < iRepeatNumberOfTimes)
         {
-            StartL();
+            StartL(ETrue);
         }
         else
         {

@@ -76,7 +76,7 @@ public: // New methods
     TInt Pause();
 
 public: // from CMMAPlayer
-    void StartL();
+    void StartL(TBool aPostEvent);
     void PrefetchL();
     CMMASourceStream* AddSourceStreamL(JNIEnv* aJNIEnv,
                                        CMMAEventSource* aEventSource,

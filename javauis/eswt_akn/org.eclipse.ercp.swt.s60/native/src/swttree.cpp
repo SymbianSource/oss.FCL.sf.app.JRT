@@ -45,6 +45,9 @@ CSwtTree::CSwtTree(MSwtDisplay& aDisplay, TSwtPeer aPeer,
                    MSwtComposite& aParent, TInt aStyle, TBool aVisibility, TBool aDimmed)
         : CSwtComposite(aDisplay, aPeer, &aParent, aStyle, aVisibility, aDimmed)
         , iItemHeightValid(EFalse)
+        , iPointerRevertExpandNeeded(EFalse)
+        , iPointerRevertCollapseNeeded(EFalse)
+        , iRevertedItem(KAknTreeIIDNone)
 {
 }
 
@@ -409,6 +412,20 @@ void CSwtTree::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 
     iLastFocusedItem = iTree->FocusedItem();
     CSwtComposite::HandlePointerEventL(aPointerEvent);
+
+    // Expanding node as part of pointer event reverting
+    if (iPointerRevertExpandNeeded)
+    {
+        iTree->ExpandNode(iRevertedItem, ETrue);
+        iPointerRevertExpandNeeded = EFalse;
+    }
+
+    // Collapsing node as part of pointer event reverting
+    if (iPointerRevertCollapseNeeded)
+    {
+        iTree->CollapseNode(iRevertedItem, ETrue);
+        iPointerRevertCollapseNeeded = EFalse;
+    }
 
 #ifdef RD_JAVA_ADVANCED_TACTILE_FEEDBACK
     if (feedback)
@@ -813,36 +830,64 @@ TInt CSwtTree::HandleTreeListEvent(CAknTreeList& aList, TAknTreeItemID aItem,
     {
     case MAknTreeListObserver::ENodeExpanded:
     {
-        TInt count = iTree->ChildCount(aItem);
-        if (count > 0)
+        /*
+         * Pointer reverting has to be done after HandlePointerEvent. So here
+         * just setting attributes and actual reverting is done in
+         * CSwtTree::HandlePointerEventL
+         * In case of reverting event, Java will not get any notifications.
+         */
+        if (iDisplay.RevertPointerEvent() && !iPointerRevertExpandNeeded)
         {
-            TRAP_IGNORE(iDisplay.PostTreeEventL(iPeer, ESwtEventExpand, aItem));
-        }
-        if (IsMarkable())
-        {
-            if (count == 0)
-            {
-                iTree->SetMarked(aItem, ETrue, ETrue);
-            }
+            iPointerRevertCollapseNeeded = ETrue;
+            iRevertedItem = aItem;
         }
         else
         {
-            TRAP_IGNORE(iDisplay.PostTreeEventL(iPeer, ESwtEventDefaultSelection, aItem));
+            TInt count = iTree->ChildCount(aItem);
+            if (count > 0)
+            {
+                TRAP_IGNORE(iDisplay.PostTreeEventL(iPeer, ESwtEventExpand, aItem));
+            }
+            if (IsMarkable())
+            {
+                if (count == 0)
+                {
+                    iTree->SetMarked(aItem, ETrue, ETrue);
+                }
+            }
+            else
+            {
+                TRAP_IGNORE(iDisplay.PostTreeEventL(iPeer, ESwtEventDefaultSelection, aItem));
+            }
         }
         break;
     }
     case MAknTreeListObserver::ENodeCollapsed:
     {
-        TInt count = iTree->ChildCount(aItem);
-        if (count > 0)
+        /*
+         * Pointer reverting has to be done after HandlePointerEvent. So here
+         * just setting attributes and actual reverting is done in
+         * CSwtTree::HandlePointerEventL
+         * In case of reverting event, Java will not get any notifications.
+         */
+        if (iDisplay.RevertPointerEvent() && !iPointerRevertCollapseNeeded)
         {
-            TRAP_IGNORE(iDisplay.PostTreeEventL(iPeer, ESwtEventCollapse, aItem));
+            iPointerRevertExpandNeeded = ETrue;
+            iRevertedItem = aItem;
         }
-        if (IsMarkable())
+        else
         {
-            if (count == 0)
+            TInt count = iTree->ChildCount(aItem);
+            if (count > 0)
             {
-                iTree->SetMarked(aItem, EFalse, ETrue);
+                TRAP_IGNORE(iDisplay.PostTreeEventL(iPeer, ESwtEventCollapse, aItem));
+            }
+            if (IsMarkable())
+            {
+                if (count == 0)
+                {
+                    iTree->SetMarked(aItem, EFalse, ETrue);
+                }
             }
         }
         break;

@@ -139,3 +139,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javapushregistry.def
+#elif defined EABI
+DEFFILE ./eabi/javapushregistry.def
+#endif

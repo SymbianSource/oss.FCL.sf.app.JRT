@@ -29,6 +29,7 @@
 #include "CMIDEdwinUtils.h"
 #include "CMIDUtils.h"
 #include "CMIDFont.h"
+#include "CMIDDisplayable.h"
 
 // Default background color.
 const TInt KDefColorBgRed       = 0;
@@ -302,7 +303,11 @@ void CMIDTextEditor::SetParentL(
         iTextEdwin->SetContainerWindowL(control);
         iTextEdwin->SetTopParent(&control);
         // Initialize the editor window.
-        iTextEdwin->InitializeL();
+        CMIDDisplayable* displayable = NULL;
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        displayable = aComponentContainer->GetDisplayable();
+#endif // RD_JAVA_S60_RELEASE_9_2
+        iTextEdwin->InitializeL(displayable);
         // Set container window also for the indicator.
         iEditingStateIndicator->SetContainerWindowL(&control);
 
@@ -606,6 +611,10 @@ void CMIDTextEditor::SetFocusStateL(TBool aFocusState)
     {
         // Remove focus if the text editor is focused.
         iFocusState = EFalse;
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        iTextEdwin->FocusLost();
+#endif // RD_JAVA_S60_RELEASE_9_2
 
         // Call SetFocus on edwin
         iTextEdwin->SetFocus(EFalse);
@@ -1649,8 +1658,13 @@ void CMIDTextEditor::Dispose()
 {
     DEBUG("CMIDTextEditor::Dispose +");
 
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    if (iFocusState)
+    {
+        iTextEdwin->CloseVKB();
+    }
+#endif // RD_JAVA_S60_RELEASE_9_2
     delete this;
-
     DEBUG("CMIDTextEditor::Dispose -");
 }
 
@@ -1950,6 +1964,11 @@ void CMIDTextEditor::UpdateIndicatorPosition()
         // Update the indicator.
         if (iTextEdwin->IsVisible() && iTextEdwin->IsFocused())
         {
+            if (iComponentContainer &&
+                    iComponentContainer->IsFullScreen())
+            {
+                iEditingStateIndicator->MakeVisible(ETrue);
+            }
             iEditingStateIndicator->Redraw();
         }
         else
@@ -2028,8 +2047,8 @@ void CMIDTextEditor::ConstructL(const TCtorParams& aParams)
     if (aParams.iHeightInRows)
     {
         // Height is specified using rows.
-        iTextEdwin->ConstructL(
-            flags, aParams.iWidth, aParams.iMaxSize, aParams.iHeight);
+        iTextEdwin->ConstructL(flags, aParams.iWidth,
+                               aParams.iMaxSize, aParams.iHeight);
         iRowCountActive = ETrue;
         iRowCount = aParams.iHeight;
 

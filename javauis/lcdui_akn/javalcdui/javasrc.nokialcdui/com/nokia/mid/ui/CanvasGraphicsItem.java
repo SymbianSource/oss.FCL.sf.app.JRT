@@ -28,6 +28,8 @@ import com.nokia.mid.ui.CanvasGraphicsItemPainter;
 
 import com.nokia.mj.impl.rt.legacy.NativeError;
 import com.nokia.mj.impl.rt.legacy.ToolkitInvoker;
+import com.nokia.mj.impl.rt.support.Finalizer;
+
 /**
  * <P>
  * A <code>CanvasGraphicsItem</code> is a drawable component that is used with a
@@ -85,6 +87,9 @@ public abstract class CanvasGraphicsItem
 
     // LCDUI Toolkit object.
     Object iToolkit;
+
+    //Object finalizer
+    private Finalizer mFinalizer;
 
     private com.nokia.mid.ui.CanvasGraphicsItemPainter iItemPainter;
 
@@ -149,6 +154,14 @@ public abstract class CanvasGraphicsItem
         // Construction was successful. Store handle and register for
         // finalization.
         iHandle = handle;
+
+        mFinalizer = new Finalizer()
+        {
+            public void finalizeImpl()
+            {
+                registeredFinalize();
+            }
+        };
     }
 
     /**
@@ -458,6 +471,23 @@ public abstract class CanvasGraphicsItem
     public final void repaint()
     {
         iItemPainter.Repaint(0, 0, getWidth(), getHeight());
+    }
+
+    /*
+     * Disposes the Landmark native peer object, if the handles are valid.
+     * Invalid (negative) handles indicate that their creation failed in the
+     * first place.
+     */
+    final void registeredFinalize()
+    {
+        synchronized (iToolkit)
+        {
+            if (iHandle > 0)
+            {
+                _dispose(getToolkitHandle(), iHandle);
+                iHandle = 0;
+            }
+        }
     }
 
     void Repaint(Graphics aGraphics)

@@ -98,7 +98,7 @@ TInt CMMAAudioStreamRateControl::SetRateL(TInt aRate)
         else
         {
             // do not post event to Java or change player state
-            iPlayer->StartL();
+            iPlayer->StartL(ETrue);
         }
     }
     iCurrentRate = newRate;

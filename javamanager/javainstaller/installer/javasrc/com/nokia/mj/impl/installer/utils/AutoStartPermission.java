@@ -67,7 +67,7 @@ public class AutoStartPermission extends PermissionBase
      */
     public String toString()
     {
-        return "javax.microedition.midlet.AutoStartPermission";
+        return "AutoStartPermission";
     }
     
     /**

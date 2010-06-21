@@ -19,6 +19,7 @@
 #include <AudioPreference.h>
 #include <jdebug.h>
 #include "cammsaudiooutputcontrol.h"
+#include "cmmavolumecontrol.h"
 #include <cmmaplayerevent.h>
 #include <cmmaaudioplayer.h>
 #include <cmmavideoplayer.h>
@@ -58,7 +59,6 @@ CAMMSAudioOutputControl::~CAMMSAudioOutputControl()
     DEBUG("AMMS::CAMMSAudioOutputControl::~");
     if (iAudioOutput)
     {
-        iAudioOutput->UnregisterObserver(*this);
         delete iAudioOutput;
     }
     if (iAccMonitor)
@@ -189,14 +189,14 @@ TInt CAMMSAudioOutputControl::GetCurrentPrefInt()
 TInt CAMMSAudioOutputControl::GetDeviceDefaultPreference()
 {
     DEBUG_INT("AMMS::CAMMSAudioOutputControl::GetDeviceDefaultPreference %d", (TInt)iDefaultDevicePreference);
-    array.Reset();
+    iArray.Reset();
     TInt temp = 0;
-    TRAPD(err,iAccMonitor->GetConnectedAccessoriesL(array));
+    TRAPD(err,iAccMonitor->GetConnectedAccessoriesL(iArray));
     if (err)
     {
         temp = -1;
     }
-    TInt count = array.Count();
+    TInt count = iArray.Count();
     if (count == 0)
     {
         temp = (TInt)CAudioOutput::EPublic;
@@ -204,8 +204,8 @@ TInt CAMMSAudioOutputControl::GetDeviceDefaultPreference()
     DEBUG_INT("AMMS::CAMMSAudioOutputControl::GetDeviceDefaultPreference :RConnectedAccessories count = %d",count);
     for (TInt i = 0; i != count; i++)
     {
-        TAccMonCapability deviceType = array[ i ]->AccDeviceType();
-        if ((deviceType == KAccMonHeadset)||(deviceType == KAccMonBluetooth))
+        TAccMonCapability deviceType = iArray[ i ]->AccDeviceType();
+        if (deviceType == KAccMonHeadset)
         {
             DEBUG("AMMS::CAMMSAudioOutputControl::CreateHeadsetStateObserverL info = Headset Connected  ");
             temp = (TInt)CAudioOutput::EPrivate;
@@ -222,7 +222,7 @@ TInt CAMMSAudioOutputControl::GetDeviceDefaultPreference()
 void CAMMSAudioOutputControl::StateChanged(TInt aState)
 {
     DEBUG_INT("AMMS::CAMMSAudioOutputControl::StateChanged +, state = %d",  aState);
-    playerState = (CMMAPlayer::TPlayerState)aState;
+    iPlayerState = (CMMAPlayer::TPlayerState)aState;
     if (aState == CMMAPlayer::EStarted)
     {
         NotifyJavaOnChange();
@@ -242,34 +242,50 @@ const TDesC& CAMMSAudioOutputControl::ClassName() const
 TInt CAMMSAudioOutputControl::SetAudioOutputToMmf(CAudioOutput::TAudioOutputPreference aPref)
 {
     DEBUG("AMMS::CAMMSAudioOutputControl::SetAudioOutputToMmfL +");
-    CAudioOutput::TAudioOutputPreference tempPreference = iRoutingUserPreference ;
-    iRoutingUserPreference = aPref;
     TRAPD(err,CreateNativeAudioOutputControlL();
           iAudioOutput->SetAudioOutputL(aPref));
     if (KErrNone != err)
     {
-        iRoutingUserPreference = tempPreference;
         TBuf<KEventMessageSize> errorMessage;
         errorMessage.Format(KErrAudioOutputControlError, err);
         iPlayer->PostStringEvent(CMMAPlayerEvent::EError, errorMessage);
+        return (TInt)iRoutingUserPreference;
+    }
+    iRoutingUserPreference = aPref;
+    if (iVolumeControl)
+    {
+        TRAPD(err,
+        {
+           // If current audio o/p preference is default and Headset or 
+           // Bluetooth device is connected or if preference is private then 
+           // set the audio preference as private to volume control else set it
+           // as public
+           if ( (iRoutingUserPreference == (TInt)(CAudioOutput::ENoPreference) &&
+               GetDeviceDefaultPreference() == (TInt)(CAudioOutput::EPrivate))||
+                iRoutingUserPreference == (TInt)(CAudioOutput::EPrivate))
+           {
+               iVolumeControl->SetAudioOutputPreferenceL(
+                   (TInt)(CAudioOutput::EPrivate));
+           }
+           else
+           {
+               iVolumeControl->SetAudioOutputPreferenceL(
+                   (TInt)(CAudioOutput::EPublic));
+           }
+        });
+        if (KErrNone > err)
+        {
+           TBuf<KEventMessageSize> errorMessage;
+           errorMessage.Format(KErrAudioOutputControlError, err);
+           iPlayer->PostStringEvent(CMMAPlayerEvent::EError, errorMessage);
+        }
     }
     // if during play user set a preference event should be sent to java
-    if (playerState == CMMAPlayer::EStarted)
+    if (iPlayerState == CMMAPlayer::EStarted)
     {
         NotifyJavaOnChange();
     }
     return (TInt)iRoutingUserPreference;
-}
-// -----------------------------------------------------------------------------
-// CAMMSAudioOutputControl::DefaultAudioOutputChanged
-// MAudioOutputObserver's function is implemented to notify about the change in routing preference
-// -----------------------------------------------------------------------------
-
-void CAMMSAudioOutputControl::DefaultAudioOutputChanged(CAudioOutput& /*aAudioOutput*/,
-        CAudioOutput::TAudioOutputPreference /*aNewDefault*/)
-{
-    DEBUG("AMMS::CAMMSAudioOutputControl::DefaultAudioOutputChanged ");
-
 }
 
 void CAMMSAudioOutputControl::NotifyJavaOnChange()
@@ -287,9 +303,12 @@ void CAMMSAudioOutputControl::NotifyJavaOnChange()
     iPlayer->PostObjectEvent(CMMAPlayerEvent::EAudioOutputPreferenceChangeEvent, iJavaAudioOutputObj);
 }
 
-void CAMMSAudioOutputControl::AccMonitorObserverError(TInt /*aError*/)
+void CAMMSAudioOutputControl::AccMonitorObserverError(TInt aError)
 {
     DEBUG("AMMS::CAMMSAudioOutputControl::AccMonitorObserverError");
+    TBuf<KEventMessageSize> errorMessage;
+    errorMessage.Format(KErrAudioOutputControlError, aError);
+    iPlayer->PostStringEvent(CMMAPlayerEvent::EError, errorMessage);
 }
 // -----------------------------------------------------------------------------
 // CAMMSAudioOutputControl::CAMMSAudioOutputControl
@@ -303,23 +322,22 @@ CAMMSAudioOutputControl::CAMMSAudioOutputControl(CMMAPlayer* aPlayer)
 }
 // HEADSET CONNECTED OR NOT
 void CAMMSAudioOutputControl::ConnectedL(CAccMonitorInfo* aAccessoryInfo)
-{    // Reserve memory for the accessory information instance if necessary
+{
     DEBUG("AMMS::CAMMSAudioOutputControl::ConnectedL +");
-    if (!iAccessoryInfo)
-    {
-        iAccessoryInfo = CAccMonitorInfo::NewL();
-        DEBUG("AMMS::CAMMSAudioOutputControl::ConnectedL iAccessoryInfo created");
-    }
-    // Otherwise just reset accessory information instance
-    else
-    {
-        iAccessoryInfo->Reset();
-    }
-    iAccessoryInfo->CopyL(aAccessoryInfo);
-    TAccMonCapability deviceType = iAccessoryInfo->AccDeviceType() ;
-    if ((deviceType == KAccMonHeadset) || (deviceType == KAccMonBluetooth))
+    TAccMonCapability deviceType = aAccessoryInfo->AccDeviceType() ;
+    if (deviceType == KAccMonHeadset)
     {
         DEBUG("AMMS::CAMMSAudioOutputControl::DisconnectedL: Headset connected");
+        // If audio o/p preference is default set the preference as private
+        // to volume control
+        if ( iRoutingUserPreference == (TInt)(CAudioOutput::ENoPreference))
+        {
+            if (iVolumeControl)
+            {
+                iVolumeControl->SetAudioOutputPreferenceL(
+                    (TInt)(CAudioOutput::EPrivate));
+            }
+        }
         //send a callback
         if (iRoutingUserPreference == (TInt)(CAudioOutput::ENoPreference))
         {
@@ -331,23 +349,25 @@ void CAMMSAudioOutputControl::ConnectedL(CAccMonitorInfo* aAccessoryInfo)
 
 
 void CAMMSAudioOutputControl::DisconnectedL(CAccMonitorInfo*  aAccessoryInfo)
-{   // Reserve memory for the accessory information instance if necessary
-
+{
     DEBUG("AMMS::CAMMSAudioOutputControl::DisconnectedL +");
-    if (!iAccessoryInfo)
-    {
-        iAccessoryInfo = CAccMonitorInfo::NewL();
-        DEBUG("AMMS::CAMMSAudioOutputControl::DisconnectedL: iAccessoryInfo created");
-    }
-    else
-    {
-        iAccessoryInfo->Reset();
-    }
-    iAccessoryInfo->CopyL(aAccessoryInfo);
-    TAccMonCapability deviceType = iAccessoryInfo->AccDeviceType();
-    if ((deviceType == KAccMonHeadset)||(deviceType == KAccMonBluetooth))
+    TAccMonCapability deviceType = aAccessoryInfo->AccDeviceType();
+    if (deviceType == KAccMonHeadset)
     {
         DEBUG("AMMS::CAMMSAudioOutputControl::DisconnectedL: Headset Disconnected");
+        // If audio o/p preference is default and no accessories is connected or
+        // o/p preference is not private then set the preference as public to
+        // volume control
+        if ( (iRoutingUserPreference == (TInt)(CAudioOutput::ENoPreference) &&
+               GetDeviceDefaultPreference() == (TInt)(CAudioOutput::EPublic)) ||
+                iRoutingUserPreference != (TInt)(CAudioOutput::EPrivate))
+        {
+            if (iVolumeControl)
+            {
+                iVolumeControl->SetAudioOutputPreferenceL(
+                    (TInt)(CAudioOutput::EPublic));
+            }
+        }
         //send a callback
         if (iRoutingUserPreference == (TInt)(CAudioOutput::ENoPreference))
         {
@@ -362,12 +382,12 @@ void CAMMSAudioOutputControl::DisconnectedL(CAccMonitorInfo*  aAccessoryInfo)
 void CAMMSAudioOutputControl::CreateHeadsetStateObserverL()
 {
     // Headset connection and disconnection
-    iAccessoryInfo = NULL;
+    RAccMonCapabilityArray capabilityArray;
     capabilityArray.Append(KAccMonHeadset);
-    capabilityArray.Append(KAccMonBluetooth);
 
     iAccMonitor = CAccMonitor::NewL();
-    iDefaultDevicePreference = (CAudioOutput::TAudioOutputPreference)GetDeviceDefaultPreference();
+    iDefaultDevicePreference = (CAudioOutput::TAudioOutputPreference)
+                               GetDeviceDefaultPreference();
     iCurrentPreference = (TInt)iDefaultDevicePreference;
     TBool isObserving = iAccMonitor->IsObserving();
     if (!isObserving)
@@ -387,9 +407,34 @@ void CAMMSAudioOutputControl::ConstructL()
 {
     DEBUG("AMMS::CAMMSAudioOutputControl::ConstructL +");
     // create an observer to notify the state of headset
-    //and initialize iDefaultDevicePreference with CAudioOutput::EPrivate if headset is connected.
+    // and initialize iDefaultDevicePreference with CAudioOutput::EPrivate
+    // if headset is connected.
     CreateHeadsetStateObserverL();
     iPlayer->AddStateListenerL(this);
+    // set the current preference to volume control
+    iVolumeControl = GetVolumeControl();
+    if (iVolumeControl)
+    {
+        iVolumeControl->SetAudioOutputPreferenceL(iCurrentPreference);
+    }
+
+}
+
+CMMAVolumeControl* CAMMSAudioOutputControl::GetVolumeControl()
+{
+    // loop through all the available controls of player and return
+    // volume control if found else return null.
+    TInt count(iPlayer->ControlCount());
+    for (TInt i(0); i < count; i++)
+    {
+        CMMAControl* control = iPlayer->Control(i);
+        // Check that if this control supports volume control
+        if (control->ClassName() == KMMAVolumeControlName)
+        {
+            return static_cast< CMMAVolumeControl* >(control);
+        }
+    }
+    return 0;
 }
 
 void CAMMSAudioOutputControl::CreateNativeAudioOutputControlL()
@@ -419,15 +464,6 @@ void CAMMSAudioOutputControl::CreateNativeAudioOutputControlL()
         MCustomCommand* customCommandUtility =
             CAMMSCustomCommandUtility::NewL(mmfController);
         iAudioOutput = CAudioOutput::NewL(*customCommandUtility);
-    }
-
-    if (iAudioOutput)
-    {
-        iAudioOutput->RegisterObserverL(*this);
-    }
-    else
-    {
-        User::Leave(KErrNotSupported);
     }
 }
 

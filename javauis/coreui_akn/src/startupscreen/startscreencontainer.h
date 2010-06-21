@@ -85,6 +85,7 @@ private:
     void ShowIndicator(CEikStatusPane* aSp, TInt aId, TBool aVisible);
     void ShowIndicators(TBool aVisible);
     void FlushScreenL();
+    void DoShowExitScreenL();
 
 // Data
 private:

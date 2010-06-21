@@ -326,7 +326,7 @@ void CSwtCaptionedControl::SetDefaultForegroundL()
     }
     else
     {
-        colorIndex = EAknsCIQsnTextColorsCG8;
+        colorIndex = EAknsCIQsnTextColorsCG6;
     }
     if (AknsUtils::GetCachedColor(AknsUtils::SkinInstance(), defaultColor,
                                   KAknsIIDQsnTextColors, colorIndex) == KErrNone)

@@ -21,10 +21,15 @@
 
 // INTERNAL INCLUDES
 #include "CMIDEdwinUtils.h"
+#include "CMIDDisplayable.h"
+// Used for scaling
 #include <MMIDScalable.h>
 
 // EXTERNAL INCLUDES
 #include <eikedwin.h>
+#ifdef RD_JAVA_S60_RELEASE_9_2
+#include <coreuiavkonlcdui.h>
+#endif // RD_JAVA_S60_RELEASE_9_2
 
 // FORWARD DECLARATIONS
 class CMIDEditingStateIndicator;
@@ -194,7 +199,7 @@ public: // From CEikEdwin
      * @param aType Resource change type.
      * @since S60 5.0
      */
-    void CMIDTextEditorEdwin::HandleResourceChange(TInt aType);
+    void HandleResourceChange(TInt aType);
 
     /**
      * Handles external text changes.
@@ -227,6 +232,47 @@ public: // From MEikEdwinObserver
 #endif // RD_SCALABLE_UI_V2
 
 public: // New methods
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    /**
+     * Gets StatusPane
+     *
+     * @return pointer to StatusPane.
+     * @since S60 5.0
+     */
+    CEikStatusPane* GetStatusPane();
+
+    /**
+     * Handles lost focus.
+     *
+     * @since S60 5.0
+     */
+    void FocusLost();
+
+    /**
+     * Closes VKB if editor is loosing visibility, disposing etc.,
+     *
+     * @since S60 5.0
+     */
+    void CloseVKB();
+
+    /**
+     * Handles disabling of partial VKB.
+     *
+     * @since S60 5.0
+     */
+    void HandlePartialVKBDisable();
+
+#endif // RD_JAVA_S60_RELEASE_9_2
+
+    /**
+     * Handles Scrollbar change event sending.
+     *
+     * @return The scroll bar change event or 0 if it shouldn't be updated.
+     *
+     * @since S60 5.0
+     */
+    TInt ScrollBarEvent();
 
     /**
      * Sets the top parent of this control. Note that the ownership
@@ -393,9 +439,10 @@ public: // New methods
     /**
      * Initializes this text editor edwin component.
      *
+     * @param aDisplayable Parent displayable.
      * @since S60 5.0
      */
-    void InitializeL();
+    void InitializeL(CMIDDisplayable* aDisplayable);
 
     /**
      * Uninitializes this text editor edwin component.
@@ -590,7 +637,18 @@ private: // Data
     // Direction of writing
     TAknLayoutId iDirection;
     // Visible content height used for sending scroll event
-    TBool iVisibleContentHeight;
+    TInt iVisibleContentHeight;
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    // Indicates state of partial VKB
+    TBool iPartialVKBOpen;
+    // Used for Statuspane visibility
+    CAknAppUi* iJavaAppUi;
+    /**
+     * Displayable.
+     * Not own.
+     */
+    CMIDDisplayable* iDisplayable;
+#endif // RD_JAVA_S60_RELEASE_9_2
     // Canvas fullscreen size
     TRect iOnScreenCanvasRect;
     // Flag if scaling is on now.

@@ -628,7 +628,7 @@ void CMIDEditingStateIndicator::Reserved_1()
 // ---------------------------------------------------------------------------
 //
 CMIDEditingStateIndicator::CMIDEditingStateIndicator() :
-    CAknIndicatorContainer(CAknIndicatorContainer::EQueryEditorIndicators)
+        CAknIndicatorContainer(CAknIndicatorContainer::EQueryEditorIndicators)
 {
     DEBUG("CMIDEditingStateIndicator::CMIDEditingStateIndicator");
 }

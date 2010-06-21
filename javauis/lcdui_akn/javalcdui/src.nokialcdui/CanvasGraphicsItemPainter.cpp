@@ -26,6 +26,40 @@
 #include <jutils.h>
 #include <jdebug.h>
 
+/**
+ * Local helper function for disposing graphics item painter
+ * native side component.
+ *
+ * @param aItem The graphics item painter to be destroyed.
+ */
+LOCAL_C void Dispose(CMIDToolkit* aToolkit, MMIDCanvasGraphicsItemPainter* aItem)
+{
+    aToolkit->DisposeObject(aItem);
+}
+
+/*
+ * Class:     com_nokia_mid_ui_CanvasGraphicsItemPainter
+ * Method:    _dispose
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_javax_microedition_lcdui_CanvasGraphicsItemPainter__1dispose(
+    JNIEnv* /* aJniEnv */,
+    jobject /* aPeer */,
+    jint aToolkitHandle,
+    jint aNativePeerHandle)
+{
+    DEBUG("CanvasGraphicsItemPainter.cpp - dispose +");
+
+    CMIDToolkit* toolkit = JavaUnhand< CMIDToolkit >(aToolkitHandle);
+
+    MMIDCanvasGraphicsItemPainter* item =
+        MIDUnhandObject<MMIDCanvasGraphicsItemPainter>(aNativePeerHandle);
+
+    toolkit->ExecuteV(&Dispose, toolkit, item);
+
+    DEBUG("CanvasGraphicsItemPainter.cpp - dispose -");
+}
+
 LOCAL_C void CreateNativePeerL
 (
     CMIDToolkit* aToolkit,

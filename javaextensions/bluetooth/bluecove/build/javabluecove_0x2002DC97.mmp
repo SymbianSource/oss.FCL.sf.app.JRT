@@ -132,3 +132,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javabluecove.def
+#elif defined EABI
+DEFFILE ./eabi/javabluecove.def
+#endif

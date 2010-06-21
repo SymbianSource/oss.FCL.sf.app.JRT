@@ -157,7 +157,7 @@ public class Graphics
     private Font    iScalableFont;
     private boolean iFontSet;
     private boolean iScalableFontSet;
-    private boolean iM3Gdraw;
+    private boolean iPrevScalingFlag = false;
 
     private int iOnScreenWidth;  // width of screen
     private int iOnScreenHeight; // height of screen
@@ -196,7 +196,6 @@ public class Graphics
         iToolkit = aToolkit;
         iBuffer = aToolkit.iBuffer;
         iTarget = aTarget;
-        iM3Gdraw = false;
         iIsSetTargetSize = false;
         // If a Graphics is drawing to image then a image is saved. Null otherwise
         iImage = (aTarget instanceof Image) ? (Image)aTarget : null;
@@ -1404,7 +1403,7 @@ public class Graphics
                     // Check that aImage haven't been disposed yet
                     if (aImage.iHandle != 0)
                     {
-                        // If downscaling off, 
+                        // If downscaling off,
                         // then it only send data to native side
                         iBuffer.write(iHandle,
                                       OP_DRAW_REGION,
@@ -1475,40 +1474,31 @@ public class Graphics
         }
     }
 
-    /**
-     *this function blocking downscaled when M3G drawing some content    
-     **/    
-    void M3Gdraw(int aM3Gdraw)
-    {
-       if (aM3Gdraw == 0) 
-          {
-             iM3Gdraw = false;
-          }
-       else
-       { 
-          iM3Gdraw = true; 
-       }
-    }
+
     /**
      * This function return flag if Graphics is downscaled.
      * Graphics is downscaled on if we have set original size, this size is bigger then screen
      * (at least on one measure) and iTarget is Canvas in full screen Canvas or a target size is
      * smaller than original size.
      * @return true if Graphics is downscaled, false otherwise
-     */ 
+     */
     boolean isDownscaled()
     {
-       // If M3G is drawnig then downscaling is turn off.
-       if (iM3Gdraw)
-          { 
-             return false;
-          }
+        boolean ret = false;
+        // If M3G is drawnig then downscaling is turn off.
         if ((iTarget instanceof Canvas) && ((Canvas)iTarget).getFullScreenMode()
-                && iIsSetOriginalSize)
+                && iIsSetOriginalSize && !((Canvas)iTarget).m3gDraw())
         {
-            return iOnScreenHeight < iHeight || iOnScreenWidth < iWidth ;
+            ret = iOnScreenHeight < iHeight || iOnScreenWidth < iWidth;
         }
-        return false;
+        // If downscaling is turn off then disable scalable font
+        if (iPrevScalingFlag != ret && iPrevScalingFlag == true)
+        {
+            iFontSet = false;
+            iScalableFontSet = false;
+        }
+        iPrevScalingFlag = ret;
+        return ret;
     }
 
     /**

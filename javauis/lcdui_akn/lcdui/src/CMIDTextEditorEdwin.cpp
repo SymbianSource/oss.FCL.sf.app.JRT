@@ -21,6 +21,7 @@
 #include "CMIDEdwinUtils.h"
 #include "CMIDTextEditorEdwinCustomDraw.h"
 #include "CMIDEditingStateIndicator.h"
+#include "CMIDDisplayable.h"
 
 // EXTERNAL INCLUDES
 #include <MMIDTextEditor.h> // MMIDTextEditorObserver
@@ -28,6 +29,10 @@
 #include <AknSettingCache.h>
 #include <eikedwob.h>
 #include <j2me/jdebug.h>
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+#include <AknPriv.hrh>
+#endif // RD_JAVA_S60_RELEASE_9_2
 
 const TInt KColorOpaque = 255;
 const TInt KCharMinus   = 0x2d;
@@ -37,13 +42,18 @@ const TInt KCharMinus   = 0x2d;
 // ---------------------------------------------------------------------------
 //
 CMIDTextEditorEdwin::CMIDTextEditorEdwin(CMIDEdwinUtils& aEdwinUtils)
-    : CEikEdwin(),
-      iMultiline(EFalse),
-      iCursorPosForAction(KErrNotFound),
-      iEdwinUtils(aEdwinUtils)
+        : CEikEdwin(),
+        iMultiline(EFalse),
+        iCursorPosForAction(KErrNotFound),
+        iEdwinUtils(aEdwinUtils)
 {
     DEBUG("CMIDTextEditorEdwin::CMIDTextEditorEdwin +");
 
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    iPartialVKBOpen = EFalse;
+    iDisplayable = NULL;
+    iJavaAppUi = NULL;
+#endif // RD_JAVA_S60_RELEASE_9_2
     // Set margins to zero
     TMargins8 margins;
     margins.SetAllValuesTo(0);
@@ -172,7 +182,6 @@ TKeyResponse CMIDTextEditorEdwin::OfferKeyEventL(
                 // Restore cursor's original position.
                 SetCursorPosL(iCursorPosForAction, EFalse);
             }
-
             CleanupStack::PopAndDestroy(oldContent);
         }
 
@@ -205,12 +214,13 @@ TKeyResponse CMIDTextEditorEdwin::OfferKeyEventL(
 //
 TBool CMIDTextEditorEdwin::Traverse(const TKeyEvent& aEvent)
 {
-    TInt cursorPos = CursorPos();
+    TInt cursorPos = 0;
     TBool traverse = EFalse;
 
     if ((aEvent.iCode == EKeyDownArrow) ||
             (aEvent.iScanCode == EStdKeyDownArrow))
     {
+        cursorPos = CursorPos();
         if (TextLength() == cursorPos)
         {
             traverse = ETrue;
@@ -220,6 +230,7 @@ TBool CMIDTextEditorEdwin::Traverse(const TKeyEvent& aEvent)
     else if ((aEvent.iCode == EKeyUpArrow) ||
              (aEvent.iScanCode == EStdKeyUpArrow))
     {
+        cursorPos = CursorPos();
         if (cursorPos == 0)
         {
             traverse = ETrue;
@@ -554,6 +565,116 @@ void CMIDTextEditorEdwin::HandleResourceChange(TInt aType)
             iObserver->NotifyInputAction(event);
         }
     }
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    if ((aType == KAknSplitInputEnabled))
+    {
+        // Partial screen keyboard is opened
+        CEikStatusPane* pane = GetStatusPane();
+        if (!iPartialVKBOpen || pane->IsVisible())
+        {
+            // Hide status pane and resize displayable
+            iDisplayable->HandleSplitScreenKeyboard(ETrue);
+            // Preventing from notification when pane is visible, but VKB is
+            // already opened
+            if (iObserver && !iPartialVKBOpen)
+            {
+                iObserver->NotifyInputAction(
+                    MMIDTextEditorObserver::EActionPartialInputEnabled);
+            }
+            iPartialVKBOpen = ETrue;
+        }
+    }
+    else if ((aType == KAknSplitInputDisabled) && (iPartialVKBOpen))
+    {
+        HandlePartialVKBDisable();
+    }
+#endif // RD_JAVA_S60_RELEASE_9_2
+}
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+// ---------------------------------------------------------------------------
+// CMIDTextEditorEdwin::FocusLost
+// (other items were commented in the header file)
+// ---------------------------------------------------------------------------
+//
+void CMIDTextEditorEdwin::FocusLost()
+{
+    if (iPartialVKBOpen)
+    {
+        DEBUG("Focus LOST - disable VKB");
+        CloseVKB();
+    }
+}
+
+// ---------------------------------------------------------------------------
+// CMIDTextEditorEdwin::FocusLost
+// (other items were commented in the header file)
+// ---------------------------------------------------------------------------
+//
+void CMIDTextEditorEdwin::CloseVKB()
+{
+    CCoeFep* fep = iCoeEnv->Fep();
+    if (fep)
+    {
+        fep->HandleDestructionOfFocusedItem();
+    }
+}
+
+// ---------------------------------------------------------------------------
+// CMIDTextEditorEdwin::DisablePartialVKB
+// (other items were commented in the header file)
+// ---------------------------------------------------------------------------
+//
+void CMIDTextEditorEdwin::HandlePartialVKBDisable()
+{
+    // Partial screen keyboard is closed
+    iPartialVKBOpen = EFalse;
+    // Show status pane if not in fullscreen and resize displayable
+    iDisplayable->HandleSplitScreenKeyboard(EFalse);
+    if (iObserver)
+    {
+        iObserver->NotifyInputAction(
+            MMIDTextEditorObserver::EActionPartialInputDisabled);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// CMIDTextEditorEdwin::GetStatusPane
+// (other items were commented in the header file)
+// ---------------------------------------------------------------------------
+//
+CEikStatusPane* CMIDTextEditorEdwin::GetStatusPane()
+{
+    if (!iJavaAppUi)
+    {
+        iJavaAppUi = java::ui::CoreUiAvkonLcdui::
+                     getInstance().getJavaAknAppUi();
+    }
+    CEikStatusPane* pane = iJavaAppUi->StatusPane();
+    return pane;
+}
+#endif // RD_JAVA_S60_RELEASE_9_2
+
+// ---------------------------------------------------------------------------
+// CMIDTextEditorEdwin::GetStatusPane
+// (other items were commented in the header file)
+// ---------------------------------------------------------------------------
+//
+TInt CMIDTextEditorEdwin::ScrollBarEvent()
+{
+    TInt event = 0;
+    TInt newVisiblecontentHeight = VisibleContentPosition();
+
+    // Check if cursor has moved. This must be done because
+    // currently edwin does not report cursor position movement
+    // when text is changed due to user input.
+    if (iVisibleContentHeight != newVisiblecontentHeight)
+    {
+        event |= MMIDTextEditorObserver::EActionScrollbarChange;
+        // Reported, reset here to avoid multiple notifications.
+        iVisibleContentHeight = newVisiblecontentHeight;
+    }
+    return event;
 }
 
 // ---------------------------------------------------------------------------
@@ -587,18 +708,7 @@ void CMIDTextEditorEdwin::HandleEdwinEventL(
         case EEventNavigation:
         {
             TInt event = MMIDTextEditorObserver::EActionCaretMove;
-            TInt newVisiblecontentHeight = VisibleContentPosition();
-
-            // Check if cursor has moved. This must be done because
-            // currently edwin does not report cursor position movement
-            // when text is changed due to user input.
-            if (iVisibleContentHeight != newVisiblecontentHeight)
-            {
-                event |= MMIDTextEditorObserver::EActionScrollbarChange;
-                // Reported, reset here to avoid multiple notifications.
-                iVisibleContentHeight = newVisiblecontentHeight;
-            }
-
+            event |= ScrollBarEvent();
             iObserver->NotifyInputAction(event);
             break;
         }
@@ -617,7 +727,7 @@ void CMIDTextEditorEdwin::HandleEdwinEventL(
                 // Reported, reset here to avoid multiple notifications.
                 iCursorPosForAction = KErrNotFound;
             }
-
+            event |= ScrollBarEvent();
             iObserver->NotifyInputAction(event);
             break;
         }
@@ -673,8 +783,7 @@ TKeyResponse CMIDTextEditorEdwin::HandleSpecialKeyEventsL(
     if (TextLength() >= MaxLength() || IsReadOnly())
     {
         DEBUG("CMIDTextEditorEdwin::HandleSpecialKeyEventsL -, \
-max size reached");
-
+max size reached or is read only");
         return response;
     }
 
@@ -962,7 +1071,11 @@ void CMIDTextEditorEdwin::RestoreDefaultInputState()
 
     SetAknEditorCase(EAknEditorTextCase);
     SetAknEditorPermittedCaseModes(EAknEditorAllCaseModes);
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    SetAknEditorFlags(EAknEditorFlagEnablePartialScreen);
+#else
     SetAknEditorFlags(EAknEditorFlagDefault);
+#endif // RD_JAVA_S60_RELEASE_9_2
     SetAknEditorSpecialCharacterTable(KErrNotFound);
     SetAknEditorInputMode(EAknEditorTextInputMode);
     SetAknEditorAllowedInputModes(EAknEditorAllInputModes);
@@ -1202,12 +1315,19 @@ TBool CMIDTextEditorEdwin::IsInitialized() const
 // (other items were commented in the header file)
 // ---------------------------------------------------------------------------
 //
-void CMIDTextEditorEdwin::InitializeL()
+void CMIDTextEditorEdwin::InitializeL(CMIDDisplayable* aDisplayable)
 {
     DEBUG("CMIDTextEditorEdwin::InitializeL +");
 
     if (!iInitialized)
     {
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        iDisplayable = aDisplayable;
+#else
+        (void)aDisplayable;  // Just to remove a compiler warning
+#endif // RD_JAVA_S60_RELEASE_9_2
+
         CreateTextViewL();
         ActivateL();
 
@@ -1251,6 +1371,9 @@ void CMIDTextEditorEdwin::Uninitialize()
 
     if (iInitialized)
     {
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        iDisplayable = NULL;
+#endif // RD_JAVA_S60_RELEASE_9_2
         // Remove focus and hide the editor.
         SetFocus(EFalse);
         MakeVisible(EFalse);

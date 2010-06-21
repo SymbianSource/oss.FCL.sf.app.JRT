@@ -158,3 +158,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javabluetooth.def
+#elif defined EABI
+DEFFILE ./eabi/javabluetooth.def
+#endif

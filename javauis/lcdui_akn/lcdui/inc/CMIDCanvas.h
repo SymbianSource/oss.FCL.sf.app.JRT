@@ -709,6 +709,16 @@ public:
      */
     TBool IsFullScreen() const;
 
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    /**
+     * Gets a Displayable from the container.
+     *
+     * @return The Displayable from container.
+     * @since S60 5.0
+     */
+    CMIDDisplayable* GetDisplayable() const;
+#endif // RD_JAVA_S60_RELEASE_9_2
+
 protected:
 
     /**
@@ -885,7 +895,7 @@ private:
     TBool PointerEventInControl(MMIDCustomComponent* aControl,
                                 TPoint aPoint);
 
-#endif // RD_SCALABLE_UI_V2 
+#endif // RD_SCALABLE_UI_V2
 
     /**
      * Constructor.

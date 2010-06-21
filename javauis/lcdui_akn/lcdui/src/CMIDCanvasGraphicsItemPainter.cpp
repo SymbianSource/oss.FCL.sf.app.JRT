@@ -64,7 +64,7 @@ void CMIDCanvasGraphicsItemPainter::ConstructL(
 // ---------------------------------------------------------------------------
 //
 CMIDCanvasGraphicsItemPainter::CMIDCanvasGraphicsItemPainter(MMIDEnv& aEnv) :
-    iEnv(aEnv)
+        iEnv(aEnv)
 {
     // No implementation.
 }

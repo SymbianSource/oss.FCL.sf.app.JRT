@@ -22,7 +22,6 @@ package com.nokia.mid.ui;
 import com.nokia.mj.impl.rt.legacy.NativeError;
 import com.nokia.mj.impl.rt.legacy.ToolkitInvoker;
 
-
 /**
  * Class to provide extra functionality that is related to text-editing
  *
@@ -37,7 +36,10 @@ public abstract class Clipboard
     }
 
     /**
-     * Copies characters into the system-clipboard
+     * Copies characters into the system clipboard.
+     * <P>
+     * If <code>text</code> parameter is <code>null</code> or empty string,
+     * it clears the system clipboard.
      *
      * @param text the text to be copied
      */
@@ -48,11 +50,51 @@ public abstract class Clipboard
         ToolkitInvoker toolkitInvoker = ToolkitInvoker.getToolkitInvoker();
 
         Object toolkit = toolkitInvoker.getToolkit();
+
         synchronized (toolkit)
         {
+            if ((text != null) && (text.length() == 0))
+            {
+                text = null;
+            }
             NativeError.check(_copyToClipboard(
                                   toolkitInvoker.toolkitGetHandle(toolkit), text));
         }
+    }
+
+    /**
+     * Copies characters from the system clipboard.
+     * <P>
+     * Returns empty string when there is nothing in the system clipboard.
+     * <P>
+     * This method is not supported on S40 platform, returns <code>null</code>.
+     * <P>
+     * @return the content in clipboard
+     */
+    public static String copyFromClipboard()
+    {
+        String text = null;
+
+        int[] error = new int[1];
+        // Toolkit invoker is needed for accessing javax.microedition.lcdui
+        // package
+        ToolkitInvoker toolkitInvoker = ToolkitInvoker.getToolkitInvoker();
+
+        Object toolkit = toolkitInvoker.getToolkit();
+
+        synchronized (toolkit)
+        {
+            text = _copyFromClipboard(
+                       toolkitInvoker.toolkitGetHandle(toolkit),
+                       error);
+        }
+
+        NativeError.check(error[0]);
+        if (text == null)
+        {
+            text = "";
+        }
+        return text;
     }
 
     /*
@@ -66,6 +108,19 @@ public abstract class Clipboard
      * a system-wide error code is returned.
      */
     private static native int _copyToClipboard(int toolkit, String text);
+
+    /*
+     * Copies characters from the system-clipboard.
+     *
+     * @param toolkit A handle to the LCDUI toolkit.
+     *
+     * @param error On return contains the error code for the operation.
+     *
+     * @return The content of clipboard.
+     */
+    private static native String _copyFromClipboard(
+        int toolkit,
+        int[] error);
 
 }
 

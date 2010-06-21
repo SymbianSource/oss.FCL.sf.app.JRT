@@ -142,3 +142,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javabtgoepscplugin.def
+#elif defined EABI
+DEFFILE ./eabi/javabtgoepscplugin.def
+#endif

@@ -98,6 +98,8 @@ public interface TextEditorListener
      */
     public static final int ACTION_SCROLLBAR_CHANGED = 0x800;
 
+    // Events 0x1000 and 0x2000 are used in s60 extension
+
     /**
      * This method is called by the platform to notify the client about events
      * in a TextEditor. A call to this method may represent more than one event.

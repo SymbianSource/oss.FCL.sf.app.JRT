@@ -130,3 +130,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javathreaddumper.def
+#elif defined EABI
+DEFFILE ./eabi/javathreaddumper.def
+#endif

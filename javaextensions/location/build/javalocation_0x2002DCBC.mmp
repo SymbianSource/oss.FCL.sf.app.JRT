@@ -185,3 +185,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javalocation.def
+#elif defined EABI
+DEFFILE ./eabi/javalocation.def
+#endif

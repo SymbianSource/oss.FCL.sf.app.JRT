@@ -88,7 +88,7 @@ public abstract class Canvas extends Displayable
 
     // This flag is valid only in NGA
     private boolean iM3GContent;
-
+    private boolean iM3GDraw = false;
     /**
      * This member variable is set <code>true</code> if the <code>Nokia-UI-Enhancement</code>
      * attribute is "CanvasHasBackground". The attribute may be placed in the JAD or the manifest.
@@ -637,14 +637,14 @@ public abstract class Canvas extends Displayable
             break;
         case Toolkit.EVENT_M3G_DRAW:
             if (shown)
-             {
+            {
                 synchronized (iCallbackLock)
                 {
-                   Graphics graphics = GetPaintGraphics();
-                   graphics.M3Gdraw(aData0);
+                    Graphics graphics = GetPaintGraphics();
+                    iM3GDraw = aData0 != 0;
                 }
-             }
-             break;    
+            }
+            break;
         default:
             super.handleEvent(aEvent, aData0, aData1);
             break;
@@ -911,6 +911,14 @@ public abstract class Canvas extends Displayable
     void setM3GContent(boolean aValue)
     {
         iM3GContent = aValue;
+    }
+
+    /*
+     * This function blocking downscaled when M3G drawing some content
+     */
+    boolean m3gDraw()
+    {
+        return iM3GDraw;
     }
 
     private native int _create(

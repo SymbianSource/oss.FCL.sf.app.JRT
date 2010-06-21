@@ -202,7 +202,14 @@
 
   <target name="create.internal.api.jar">
     <omj.internal.apis includes="com/nokia/microedition/media/control/ControlImpl.class,
-                                 com/nokia/microedition/media/control/MMAGUIFactory.class"/>
+                                 com/nokia/microedition/media/control/MMAGUIFactory.class,
+                                 com/nokia/microedition/media/Locator.class,
+                                 com/nokia/microedition/media/InternalPlayer.class,
+                                 com/nokia/microedition/media/protocol/NativeBase.class,
+                                 com/nokia/microedition/media/protocol/Protocol.class,
+                                 com/nokia/microedition/media/ManagerImpl.class,
+                                 com/nokia/microedition/media/PlayerBase.class,
+                                 com/nokia/microedition/media/PlayerImpl.class"/>
   </target>
 
 </project>

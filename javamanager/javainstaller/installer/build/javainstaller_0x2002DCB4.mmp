@@ -172,3 +172,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javainstaller.def
+#elif defined EABI
+DEFFILE ./eabi/javainstaller.def
+#endif

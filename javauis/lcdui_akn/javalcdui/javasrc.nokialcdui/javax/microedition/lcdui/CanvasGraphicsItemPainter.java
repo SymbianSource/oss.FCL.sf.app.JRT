@@ -20,7 +20,7 @@ package javax.microedition.lcdui;
 
 import com.nokia.mj.impl.rt.legacy.NativeError;
 import com.nokia.mid.ui.CanvasGraphicsItem;
-
+import com.nokia.mj.impl.rt.support.Finalizer;
 
 class CanvasGraphicsItemPainter
         extends com.nokia.mid.ui.CanvasGraphicsItemPainter
@@ -33,6 +33,9 @@ class CanvasGraphicsItemPainter
 
     // Graphics
     private Graphics iGraphics;
+
+    //Object finalizer
+    private Finalizer mFinalizer;
 
     //
     // Repainting
@@ -64,6 +67,14 @@ class CanvasGraphicsItemPainter
         }
 
         iGraphics = null;
+
+        mFinalizer = new Finalizer()
+        {
+            public void finalizeImpl()
+            {
+                registeredFinalize();
+            }
+        };
     }
 
     /**
@@ -245,7 +256,33 @@ class CanvasGraphicsItemPainter
         }
     }
 
+    /*
+     * Disposes the Landmark native peer object, if the handles are valid.
+     * Invalid (negative) handles indicate that their creation failed in the
+     * first place.
+     */
+    final void registeredFinalize()
+    {
+        synchronized (iToolkit)
+        {
+            if (iHandle > 0)
+            {
+                _dispose(iToolkit.getHandle(), iHandle);
+                iHandle = 0;
+            }
+        }
+    }
+
     // Native methods
+
+    /*
+     * Disposes the native side peer object.
+     *
+     * @param aToolkitHandle A handle to the LCDUI toolkit.
+     *
+     * @param aNativePeerHandle A handle to the native side peer object.
+     */
+    private native void _dispose(int aToolkitHandle, int aNativePeerHandle);
 
     private native int _createNativePeer(
         int aToolkit,

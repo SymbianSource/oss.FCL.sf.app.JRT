@@ -26,6 +26,9 @@
 // FORWARD DECLARATIONS
 class MMIDCustomComponent;
 class CCoeControl;
+#ifdef RD_JAVA_S60_RELEASE_9_2
+class CMIDDisplayable;
+#endif // RD_JAVA_S60_RELEASE_9_2
 
 
 /**
@@ -116,6 +119,16 @@ public: // New methods
      * @since S60 5.0
      */
     virtual TBool IsFullScreen() const = 0;
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    /**
+     * Gets the Displayable from container.
+     *
+     * @return The Displayable from container.
+     * @since S60 5.0
+     */
+    virtual CMIDDisplayable* GetDisplayable() const = 0;
+#endif // RD_JAVA_S60_RELEASE_9_2
 
 protected: // Destructor
 

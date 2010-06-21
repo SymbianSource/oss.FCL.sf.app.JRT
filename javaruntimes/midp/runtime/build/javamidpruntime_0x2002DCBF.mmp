@@ -149,3 +149,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javamidpruntime.def
+#elif defined EABI
+DEFFILE ./eabi/javamidpruntime.def
+#endif

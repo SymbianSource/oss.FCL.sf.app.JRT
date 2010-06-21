@@ -137,12 +137,15 @@ TBool CMMAMMFPlayerBase::IsFilePlayer()
     return EFalse;
 }
 
-void CMMAMMFPlayerBase::StartL()
+void CMMAMMFPlayerBase::StartL(TBool aPostEvent)
 {
     iMediaTime = KTimeUnknown;
     User::LeaveIfError(iController.Play());
-    // inform java side
-    PostLongEvent(CMMAPlayerEvent::EStarted, iStartedEventTime);
+    if (aPostEvent)
+    {
+        // inform java side
+        PostLongEvent(CMMAPlayerEvent::EStarted, iStartedEventTime);
+    }
     ChangeState(EStarted);
     PostActionCompleted(KErrNone);   // java start return
 }

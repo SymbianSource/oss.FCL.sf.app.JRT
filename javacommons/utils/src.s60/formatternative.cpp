@@ -19,10 +19,12 @@
 //#include <avkon.rsg>
 #include <memory>
 #include <stringresourcereader.h>
+#include <aknutils.h>
 
 #include "com_nokia_mj_impl_utils_Formatter.h"
 #include "com_nokia_mj_impl_utils_ResourceLoader.h"
 #include "javajniutils.h"
+#include "s60commonutils.h"
 #include "logger.h"
 
 enum EDateTimeFormat
@@ -41,6 +43,7 @@ const TUint JavaLowerTimeFor1970 = 254771200;
 // const TInt KMaxDateTimeStringSize = 50;
 const TInt KMaxDateFormatSize = 30;
 const TInt KMaxNumberFormatSize = 40;
+using namespace java::util;
 
 // _LIT( KAvkonResFile, "z:\\resource\\avkon.rsc" );
 
@@ -65,6 +68,7 @@ JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_utils_Formatter__1formatInteger
               "Cannot format %d to current locale. Error: %d", aNumber, error);
     }
 
+    AknTextUtils::LanguageSpecificNumberConversion( numberPtr );
     return aJni->NewString(
                (const jchar*)numberPtr.Ptr(), numberPtr.Length());
 }
@@ -105,3 +109,15 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_utils_ResourceLoader__1getLocaleId
     return (jint)User::Language();
 }
 
+JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_utils_Formatter__1formatDigits
+  (JNIEnv * aEnv, jclass, jstring str)
+{
+    jstring ret = str;
+    std::wstring wstr = JniUtils::jstringToWstring(aEnv, str);
+    HBufC* buf = S60CommonUtils::wstringToDes(wstr.c_str());
+    TPtr ptr(buf->Des());
+    AknTextUtils::LanguageSpecificNumberConversion( ptr );
+    ret = S60CommonUtils::NativeToJavaString(*aEnv, ptr);
+    delete buf; buf = NULL;
+    return ret;
+}

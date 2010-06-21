@@ -243,3 +243,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javasatsa.def
+#elif defined EABI
+DEFFILE ./eabi/javasatsa.def
+#endif

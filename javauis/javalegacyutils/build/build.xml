@@ -31,5 +31,11 @@
                    com.nokia.mj.impl.rt.legacy.MemoryUtil,
                    com.nokia.mj.impl.rt.legacy.MIDEventServer,
                    com.nokia.mj.impl.rt.legacy.NativeError"/>
+
+  <target name="create.internal.api.jar">
+    <omj.internal.apis includes="com/nokia/mj/impl/rt/legacy/MIDEventServer.class,
+                                 com/nokia/mj/impl/rt/legacy/Security.class"/>
+  </target>
+
 </project>
 

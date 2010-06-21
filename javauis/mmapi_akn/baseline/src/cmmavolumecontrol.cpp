@@ -17,15 +17,19 @@
 
 
 //  INCLUDE FILES
-
-#include "cmmavolumecontrol.h"
 #include "cmmaplayer.h"
+#include "cmmavolumecontrol.h"
 #include <jdebug.h>
+#include <mprofile.h>
+#include <mprofileengine.h>
+#include <cprofilechangenotifyhandler.h>
 
 _LIT(KMMAVolumeErrorMsg, "Can't set volume level");
 
 const TInt KMMAJavaSoundIndex = 0;
+const TInt KMMAProfileSoundIndex = 1;
 const TInt KMMAGlobalVolumeSoundIndex = 2;
+const TInt KAudioEarpiece = 3;
 
 void CMMAVolumeControl::StaticSetLevelL(CMMAVolumeControl* aVolumeControl,
                                         TInt aLevel)
@@ -50,6 +54,7 @@ CMMAVolumeControl::CMMAVolumeControl(CMMAPlayer* aPlayer)
 
 CMMAVolumeControl::~CMMAVolumeControl()
 {
+    delete iProfChangeNotifier;
     iLevels.Close();
 }
 
@@ -58,11 +63,12 @@ void CMMAVolumeControl::ConstructBaseL()
 {
     iPlayer->AddStateListenerL(this);
 
-    // Add level for java, will set in StaticSetLevelL method.
-    // In constructor iLevels array is empty and Java level will be the first,
-    // KMMAJavaSoundIndex.
-    AddLevelL();
+    // Add level for javasound, will set in StaticSetLevelL method.
+    SetJavaSoundVolumeLevelL();
 
+    SetProfileSoundVolumeLevelL();
+
+    // Sets level to 0 if profile isn't on
     iLevel = CalculateLevel();
 
     // The default value is not yet known. Volume control may change the
@@ -71,6 +77,85 @@ void CMMAVolumeControl::ConstructBaseL()
     // the controller.
     iLevels[ KMMAJavaSoundIndex ] = KErrNotFound;
 }
+
+void CMMAVolumeControl::SetJavaSoundVolumeLevelL()
+{
+    // In constructor iLevels array is empty and Java level will be the first,
+    // KMMAJavaSoundIndex.
+    AddLevelL();
+}
+
+void CMMAVolumeControl::SetProfileSoundVolumeLevelL()
+{
+    // Add level for profile, level's index will be 1, KMMAProfileSoundIndex
+    AddLevelL();
+}
+
+void CMMAVolumeControl::SetProfilesBasedSoundMutingL()
+{
+    //Get the current active profile id.
+    MProfileEngine* lProfileEngine = CreateProfileEngineL();
+    iProfileId =lProfileEngine->ActiveProfileId();
+    lProfileEngine->Release();
+
+    // if profile is silent or meeting and no headset or bluetooth device
+    // connected,set profile volume level to 0, otherwise keep the original
+    // value 100
+    if ( (EProfileSilentId == iProfileId || EProfileMeetingId == iProfileId)&&
+            iAudioOutputPreference != KAudioEarpiece )
+    {
+        iLevels[ KMMAProfileSoundIndex ] = 0;
+    }
+
+    // Gets notfication about profile changes
+    // Notification is sent to MProfileChangeObserver::HandleActiveProfileEventL()
+    iProfChangeNotifier = CProfileChangeNotifyHandler::NewL( this );
+    // Sets level to 0 if profile isn't on
+    iLevel = CalculateLevel();
+
+}
+void CMMAVolumeControl::HandleActiveProfileEventL(TProfileEvent aProfileEvent,
+        TInt aProfileId)
+{
+    switch (aProfileEvent)
+    {
+    case EProfileNewActiveProfile:
+    {
+        // New profile is activated
+        // Update the volume level, if profile is changed to silent or meeting
+        // then mute it, if no headset or bluetooth device is connected
+        // else set it to max volume level
+        TInt level = 0;
+        iProfileId = aProfileId;
+
+        if ( EProfileSilentId != aProfileId &&
+                EProfileMeetingId != aProfileId)
+        {
+
+            level = KMMAVolumeMaxLevel;
+        }
+        else if (iAudioOutputPreference == KAudioEarpiece)
+        {
+            level = KMMAVolumeMaxLevel;
+        }
+        else
+        {
+            level = 0;
+        }
+        TRAPD( error, SetVolumeLevelL( KMMAProfileSoundIndex, level ) );
+        if ( error != KErrNone )
+        {
+            iPlayer->PostStringEvent( CMMAPlayerEvent::EError,
+                                      KMMAVolumeErrorMsg );
+        }
+        break;
+    }
+    default: // do nothing
+        break;
+    }
+}
+
+
 
 const TDesC& CMMAVolumeControl::ClassName() const
 {
@@ -171,7 +256,7 @@ EXPORT_C void CMMAVolumeControl::SetVolumeLevelL(TInt aLevelIndex,
 {
     DEBUG_INT2("CMMAVolumeControl::SetVolumeLevelL - setting index %d, level %d",
                aLevelIndex, aVolumeLevel);
-    if (0 >= iLevels.Count() ||  iLevels.Count() > 3)
+    if (0 >= iLevels.Count() ||  iLevels.Count() > 4)
     {
         return ;
     }
@@ -214,6 +299,23 @@ void CMMAVolumeControl::GetVolumeLevelL(TInt aLevelIndex,
     *aVolumeLevel = iLevels[ aLevelIndex ];
 
     DEBUG_INT("CMMAVolumeControl::GetVolumeLevelL - level %d", *aVolumeLevel);
+}
+
+EXPORT_C void CMMAVolumeControl::SetAudioOutputPreferenceL(
+    TInt aRoutingPreference)
+{
+    iAudioOutputPreference = aRoutingPreference;
+    // If audio o/p preference is set to private then set the profile sound
+    // to max value else if profile is in silent or meeting set the profile
+    // sound to 0   
+    if ( iAudioOutputPreference == KAudioEarpiece)
+    {
+       SetVolumeLevelL(KMMAProfileSoundIndex, KMMAVolumeMaxLevel);
+    }
+    else if (EProfileSilentId == iProfileId || EProfileMeetingId == iProfileId)
+    {
+       SetVolumeLevelL(KMMAProfileSoundIndex, 0);
+    }
 }
 
 TInt CMMAVolumeControl::CalculateLevel()

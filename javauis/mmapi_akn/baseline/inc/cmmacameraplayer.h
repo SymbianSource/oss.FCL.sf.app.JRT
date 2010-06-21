@@ -69,7 +69,7 @@ private: // new methods
                              TInt& aLargestIndex);
 
 public: // from CMMAPlayer
-    void StartL();
+    void StartL(TBool aPostEvent);
     void StopL(TBool aPostEvent);
     void DeallocateL();
     void RealizeL();

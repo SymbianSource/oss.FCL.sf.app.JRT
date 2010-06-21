@@ -291,6 +291,9 @@ CMIDDisplayable::CMIDDisplayable(MMIDEnv& aEnv,CMIDUIManager& aUIManager)
 #endif //RD_TACTILE_FEEDBACK
         ,iIdOfMSKCommand(KErrNotFound)
 {
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    iSplitScreenKeyboard = EFalse;
+#endif // RD_JAVA_S60_RELEASE_9_2
     iAppUi = (CMIDAppUi*)java::ui::CoreUiAvkonLcdui::getInstance().getJavaUiAppUi()->getLcduiChild();
 }
 
@@ -986,7 +989,7 @@ void CMIDDisplayable::HandleForegroundL(TBool aForeground)
         form->HandleForegroundL(aForeground);
     }
 
-    HandleCanvasForeground(aForeground);   
+    HandleCanvasForeground(aForeground);
 
     if (aForeground)
     {
@@ -1037,7 +1040,6 @@ void CMIDDisplayable::HandleResourceChangeL(TInt aType)
         SetRect(iDisplayableRect);
 
         // MIDlet icon is resized in cpane SizeChanged()
-
         if (!iActive && iContentControl)
         {//The active displayable already gets this call by the CONE framework but
             //background displayables don't, so for example a background form won't be
@@ -1237,7 +1239,7 @@ TRect CMIDDisplayable::GetCanvasRectFromLaf()
                 else
                 {
 #ifdef RD_JAVA_S60_RELEASE_9_2
-                    canvasRect.LayoutRect( resultRect, AknLayoutScalable_Avkon::midp_canvas_pane(9).LayoutLine() );
+                    canvasRect.LayoutRect(resultRect, AknLayoutScalable_Avkon::midp_canvas_pane(9).LayoutLine());
 #else
                     resultRect = TRect(80,0,560,360); // Layout data not defined in older releases.
                     DEBUG("- CMIDDisplayable::GetCanvasRectFromLaf");
@@ -1795,7 +1797,11 @@ void CMIDDisplayable::ReadOnScreenKeypadTypeFromSuiteSettings()
 void CMIDDisplayable::HandleOnScreenKeypadVisual()
 {
     DEBUG("+ CMIDDisplayable::HandleOnScreenKeypadVisual");
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    if (iActive && !iSplitScreenKeyboard)
+#else
     if (iActive)
+#endif // RD_JAVA_S60_RELEASE_9_2
     {
         UpdateOnScreenKeypadSettings();
         UpdateDisplayableRect();
@@ -2054,6 +2060,40 @@ void CMIDDisplayable::SetFullScreenModeL(TBool aFullScreen)
 
     DEBUG("- CMIDDisplayable::SetFullScreenModeL");
 }
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+// ---------------------------------------------------------------------------
+// When partial screen keyboard is opened we need to
+// get rid of status pane and resize Displayable.
+// ---------------------------------------------------------------------------
+void CMIDDisplayable::HandleSplitScreenKeyboard(TBool aOpened)
+{
+    iSplitScreenKeyboard = aOpened;
+    if (aOpened)
+    {
+        iAppUi->StatusPane()->MakeVisible(EFalse);
+        TRect clientRect = iAppUi->ClientRect();
+        SetRect(clientRect);
+        if (iActive)
+        {
+            DrawDeferred();
+        }
+    }
+    else
+    {
+        if (iActive)
+        {
+            UpdateOnScreenKeypadSettings();
+            UpdateDisplayableRect();
+            SetRect(iDisplayableRect);
+            // Ignoring leave
+            // The method was already called at least once
+            // and must be called here.
+            TRAP_IGNORE(UpdateVisualAppearanceL());
+        }
+    }
+}
+#endif // RD_JAVA_S60_RELEASE_9_2
 
 // ---------------------------------------------------------------------------
 // Return true if we are in full screen mode (cavas), false otherwise.
@@ -3138,7 +3178,7 @@ void CMIDDisplayable::HandleApplicationBackground()
         iCanvasKeypad->HandleApplicationBackground();
     }
 
-    HandleCanvasForeground(EFalse);    
+    HandleCanvasForeground(EFalse);
 }
 
 void CMIDDisplayable::ProcessMSKCommandL()

@@ -55,7 +55,7 @@ protected: // new methods
     void DoOpenL();
 
 public: // from CMMAPlayer
-    void StartL();
+    void StartL(TBool aPostEvent);
     void StopL(TBool aPostEvent = ETrue);
     void PrefetchL();
     void GetDuration(TInt64* aDuration);

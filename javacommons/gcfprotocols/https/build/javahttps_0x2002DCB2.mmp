@@ -147,3 +147,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javahttps.def
+#elif defined EABI
+DEFFILE ./eabi/javahttps.def
+#endif

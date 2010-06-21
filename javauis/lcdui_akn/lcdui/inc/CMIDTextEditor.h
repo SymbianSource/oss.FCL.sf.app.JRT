@@ -72,11 +72,11 @@ public: // Type definitions
         CMIDUtils* iUtils;
 
         TCtorParams::TCtorParams() :
-            iMaxSize(0),
-            iWidth(0),
-            iHeight(0),
-            iHeightInRows(EFalse),
-            iUtils(NULL) {}
+                iMaxSize(0),
+                iWidth(0),
+                iHeight(0),
+                iHeightInRows(EFalse),
+                iUtils(NULL) {}
     };
 
 public: // Constructors and destructor

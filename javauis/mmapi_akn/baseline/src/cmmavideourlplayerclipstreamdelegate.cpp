@@ -33,9 +33,9 @@ CMMAVideoUrlPlayer::CMMAVideoUrlPlayerClipStreamDelegate::~CMMAVideoUrlPlayerCli
     // Nothing to be done.
 }
 
-void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerClipStreamDelegate::StartL()
+void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerClipStreamDelegate::StartL(TBool aPostEvent)
 {
-    iPlayer.CMMAMMFPlayerBase::StartL();
+    iPlayer.CMMAMMFPlayerBase::StartL(aPostEvent);
 }
 
 void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerClipStreamDelegate::StopL(TBool aPostEvent)

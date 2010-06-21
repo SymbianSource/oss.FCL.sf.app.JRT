@@ -1118,7 +1118,17 @@ void CMIDEdwin::HandleEdwinEventL(CEikEdwin* aEdwin, TEdwinEvent aEventType)
             // are not supported, chars need to be changed to space
             // SetText function before actual text change checks if line
             // breaks are not supported
-            SetTextL(*res);
+            TPtr16 text = res->Des();
+            TInt tmpPos;
+
+            if ((text.Locate(TChar('\n'))) >=0 ||
+                    (text.Locate(TChar('\f'))) >=0)
+            {
+                tmpPos = CEikEdwin::CursorPos();
+                SetTextL(*res);
+                CEikEdwin::SetCursorPosL(tmpPos, EFalse);
+            }
+
             textChanged = ETrue;
             CleanupStack::Pop(res);
             delete res;

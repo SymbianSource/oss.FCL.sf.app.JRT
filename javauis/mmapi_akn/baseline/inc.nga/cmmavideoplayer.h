@@ -19,19 +19,23 @@
 #define CMMAVIDEOPLAYER_H
 
 //  INCLUDES
+#include <AccMonitor.h>
+#include <jutils.h>
 #include "cmmaaudioplayer.h"
 #include "mmmaguiplayer.h"
 #include "mmmasnapshot.h"
 #include "cmmasurfacewindow.h"
-#include <jutils.h>
 
 // FORWARD DECLARATIONS
 class CMMAEventSource;
+class CAccMonitorInfo;
 
 // CONSTANTS
 // Error code from MMF meaning that video is missing sound,
 // but still can be played.
 const TInt KNotCompleteVideoError = -12017;
+// Error blitting video to display
+const TInt KMMVideoBlitError = -12015;
 _LIT(KMMAVideoPlayer, "VideoPlayer");
 
 //  CLASS DECLARATION
@@ -41,7 +45,8 @@ _LIT(KMMAVideoPlayer, "VideoPlayer");
 */
 NONSHARABLE_CLASS(CMMAVideoPlayer): public CMMAAudioPlayer,
         public MMMAGuiPlayer,
-        public MMMASnapshot
+        public MMMASnapshot,
+        public MAccMonitorObserver
 {
 public: // Construction
     static CMMAVideoPlayer* NewLC(
@@ -83,6 +88,11 @@ public: // From MMMASnapshot
     IMPORT_C CFbsBitmap* SnapshotBitmap();
     IMPORT_C HBufC8* SnapshotEncoded();
 
+public: // from MAccMonitorObserver
+    void ConnectedL(CAccMonitorInfo* aAccessoryInfo );
+    void DisconnectedL(CAccMonitorInfo* aAccessoryInfo);
+    void AccMonitorObserverError( TInt aError );
+
 protected: // New methods
     void CompletePrefetch(TInt aError);
     void PrepareDisplay();
@@ -118,6 +128,13 @@ private: // Data
 
     // owned
     CActiveSchedulerWait* iActiveSchedulerWait;
+
+    /**
+     * owned
+     * used for listening to audio/video cable connection status.
+     */
+    CAccMonitor *iAccMonitor;
+    RAccMonCapabilityArray iAccMonCapabilityArray;
 };
 
 #endif // CMMAVIDEOPLAYER_H

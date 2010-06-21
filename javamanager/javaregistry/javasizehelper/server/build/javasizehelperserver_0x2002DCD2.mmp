@@ -134,3 +134,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javasizehelperserver.def
+#elif defined EABI
+DEFFILE ./eabi/javasizehelperserver.def
+#endif

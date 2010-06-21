@@ -165,6 +165,3 @@ private:
 };
 
 #endif // CMIDTEXTFIELDITEM_H
-
-
-

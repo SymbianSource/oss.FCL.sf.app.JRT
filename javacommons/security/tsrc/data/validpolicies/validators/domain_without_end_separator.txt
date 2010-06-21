@@ -1,2 +1,2 @@
 domain=operator
-allowed,javax.microedition.midlet.AutoStartPermission
+allowed?javax.microedition.midlet.AutoStartPermission

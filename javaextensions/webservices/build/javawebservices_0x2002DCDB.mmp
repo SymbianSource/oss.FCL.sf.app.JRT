@@ -131,3 +131,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javawebservices.def
+#elif defined EABI
+DEFFILE ./eabi/javawebservices.def
+#endif

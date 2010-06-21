@@ -59,9 +59,9 @@ public: // Type definitions
         MMIDEnv* iEnv;
 
         TCtorParams::TCtorParams() :
-            iWidth(0),
-            iHeight(0),
-            iEnv(NULL)
+                iWidth(0),
+                iHeight(0),
+                iEnv(NULL)
         {}
     };
 
@@ -400,7 +400,7 @@ private: // Data
 };
 
 inline void CMIDCanvasGraphicsItemPainter::SetItem(
-                                          CMIDCanvasGraphicsItem* aItem)
+    CMIDCanvasGraphicsItem* aItem)
 {
     iItem = aItem;
 }
@@ -411,7 +411,7 @@ inline void CMIDCanvasGraphicsItemPainter::SetViewSize(const TSize& aSize)
 }
 
 inline void CMIDCanvasGraphicsItemPainter::SetOnScreenCanvasRect(
-                                          const TRect& aRect)
+    const TRect& aRect)
 {
     iOnScreenCanvasRect = aRect;
 }

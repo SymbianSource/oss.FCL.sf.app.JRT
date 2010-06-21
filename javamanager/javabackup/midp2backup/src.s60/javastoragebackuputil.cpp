@@ -881,6 +881,9 @@ int CStorageBackupUtil::WriteDataToStorage()
 
             attribute.setEntry(ON_SCREEN_KEYPAD, iStringVector[count++]);
             insertEntry.insert(attribute);
+            
+            attribute.setEntry(SECURITY_WARNINGS, iStringVector[count++]);
+            insertEntry.insert(attribute);
 
             try
             {
@@ -1612,6 +1615,16 @@ int CStorageBackupUtil::FillVectorwithMidpPackageTableData(JavaStorageApplicatio
         iStringVector.push_back(str);
 
         attribute.setEntry(ON_SCREEN_KEYPAD, L"");
+        str = emptyString;
+        findIterator = (*applications).find(attribute);
+
+        if (findIterator != (*applications).end())
+        {
+            str = (*findIterator).entryValue();
+        }
+        iStringVector.push_back(str);
+        
+        attribute.setEntry(SECURITY_WARNINGS, L"");
         str = emptyString;
         findIterator = (*applications).find(attribute);
 

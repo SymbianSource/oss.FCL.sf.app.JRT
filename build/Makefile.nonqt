@@ -43,11 +43,16 @@ test:
 # Symbian ----------------------------------
 ifeq ($(BUILDENV),symbian)
 
-all: native
+all: native codescanner
 
 javareleasables:
 
 makestubs:
+
+codescanner:
+ifneq ($(call PATHSEARCH,codescanner.exe),)
+	$(call CODESCANNER,..)
+endif
 
 # Symbian SBS ------------------------------
 ifdef USESBS
@@ -55,7 +60,7 @@ ifdef USESBS
 # BUILD combines commands EXPORT MAKEFILE BITMAP RESOURCE LIBRARY TARGET FINAL
 native:
 	$(PHASEINFO)
-	$(SBS) -c $(PLATFORM)_$(CFG) BUILD
+	$(SBS) -c $(PLATFORM)_$(CFG)
 
 clean_java:
 

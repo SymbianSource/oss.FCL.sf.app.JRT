@@ -63,7 +63,7 @@ void CMIDCanvasGraphicsItem::ConstructL(const TCtorParams& aParams)
 // ---------------------------------------------------------------------------
 //
 CMIDCanvasGraphicsItem::CMIDCanvasGraphicsItem() :
-    iUtils(NULL)
+        iUtils(NULL)
 {
     // No implementation.
 }

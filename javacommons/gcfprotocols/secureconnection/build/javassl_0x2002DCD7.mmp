@@ -149,3 +149,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javassl.def
+#elif defined EABI
+DEFFILE ./eabi/javassl.def
+#endif

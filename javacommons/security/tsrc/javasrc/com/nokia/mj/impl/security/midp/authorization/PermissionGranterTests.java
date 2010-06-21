@@ -218,6 +218,7 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         IMPL_PERMISSION_MAPPING_TABLE = PermissionMappingTable.setMappingTable(TestPermissionMappingTable.getMappingTable());
         SecurityPolicyModule.policiesDir = TEST_DATA_DIR;
         SecurityPolicyModule.policiesFileNamePrefix = "test_";
+        String[] blanketPermissions = null;
         // data structures used in tests
         AuthenticationStorageData authData = null;
         AuthenticationCredentials[] authCredentials = null;
@@ -823,7 +824,6 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
                    },
                    getAssignedPermissions("IdentifiedThirdParty")));
         // 19. getBlanketPermissions - null appUID
-        String[] blanketPermissions = null;
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session, appUID);
         blanketPermissions = permissionGranter.getBlanketPermissions(null);
@@ -975,7 +975,7 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
                 ((PolicyBasedPermission)grantedPermissions.elementAt(i));
             UserSecuritySettings settings =
                 permission.getUserSecuritySettings();
-            if (settings != null)
+            if (settings != null && settings.getName() == UserSecuritySettings.LOCAL_CONNECTIVITY_SETTINGS)
             {
                 assertTrue(settings.getCurrentInteractionMode() == UserSecuritySettings.BLANKET_INTERACTION_MODE);
             }
@@ -1041,7 +1041,8 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
                     && findString(policyPerms[i].getName(), permissionNameFilter) != -1)
                     || permissionNameFilter == null) && (permissionTypeFilter == null
                                                          || (permissionTypeFilter.equals("assigned")
-                                                             && policyPerms[i].getUserSecuritySettings() == null)))
+                                                             && (policyPerms[i].getType() == PolicyBasedPermission.ASSIGNED_TYPE 
+                                                             || policyPerms[i].getType() == PolicyBasedPermission.USER_ASSIGNED_TYPE))))
             {
                 vPermissions.addElement(new MIDPPermission(policyPerms[i].getName(), policyPerms[i].getTarget(), policyPerms[i].getActionList()));
             }
@@ -1087,10 +1088,12 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
 
     private static MIDPPermission[] getDefaultPermissions()
     {
-        MIDPPermission[] defaultPerms = new MIDPPermission[3];
+        MIDPPermission[] defaultPerms = new MIDPPermission[5];
         defaultPerms[0] = new MIDPPermission("java.util.PropertyPermission", "microedition.*", "read");
         defaultPerms[1] = new MIDPPermission("javax.microedition.PropertyPermission", "mobinfo.publicinfo", "read");
         defaultPerms[2] = new MIDPPermission("javax.microedition.PropertyPermission", "mobinfo.cellid", "read");
+        defaultPerms[3] = new MIDPPermission("javax.microedition.PropertyPermission", "mobinfo.countrycode", "read");
+        defaultPerms[4] = new MIDPPermission("javax.microedition.PropertyPermission", "mobinfo.networkid", "read");
         return defaultPerms;
     }
 

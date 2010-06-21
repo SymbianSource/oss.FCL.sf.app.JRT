@@ -131,3 +131,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javajvmargsmodifierfile.def
+#elif defined EABI
+DEFFILE ./eabi/javajvmargsmodifierfile.def
+#endif

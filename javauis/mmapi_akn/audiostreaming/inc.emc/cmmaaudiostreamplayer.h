@@ -65,7 +65,7 @@ public: // New methods
 
 public: // from CMMAPlayer
     void DeallocateL();
-    void StartL();
+    void StartL(TBool aPostEvent);
     void PrefetchL();
     CMMASourceStream* AddSourceStreamL(JNIEnv* aJNIEnv,
                                        CMMAEventSource* aEventSource,

@@ -135,3 +135,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javadatagramscplugin.def
+#elif defined EABI
+DEFFILE ./eabi/javadatagramscplugin.def
+#endif

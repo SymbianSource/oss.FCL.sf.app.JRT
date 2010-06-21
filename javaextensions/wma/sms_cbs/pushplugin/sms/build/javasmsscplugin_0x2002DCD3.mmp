@@ -146,3 +146,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javasmsscplugin.def
+#elif defined EABI
+DEFFILE ./eabi/javasmsscplugin.def
+#endif

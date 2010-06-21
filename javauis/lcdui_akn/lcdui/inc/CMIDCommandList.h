@@ -45,10 +45,10 @@ public:
     TInt FindCommandIndex(MMIDCommand* aCommand);
 
     TInt HighestNonMappedPriorityCommand(MMIDCommand::TCommandType aType,
-            TBool aIgnoreForImplicitList = EFalse) const;
+                                         TBool aIgnoreForImplicitList = EFalse) const;
     TInt HighestPriorityCommand(MMIDCommand::TCommandType aType) const;
-    TInt FindCommandForSoftKey(const CMIDSoftKey& aSoftKey, 
-            TBool aIgnoreForImplicitList = EFalse) const;
+    TInt FindCommandForSoftKey(const CMIDSoftKey& aSoftKey,
+                               TBool aIgnoreForImplicitList = EFalse) const;
     void UnMapCommands();
 
     TInt Count() const;

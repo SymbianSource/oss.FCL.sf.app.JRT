@@ -119,6 +119,9 @@ public:
     void SetComponentL(MMIDComponent& aComponent);
     MMIDComponent* Component() const;
     void SetFullScreenModeL(TBool aFullScreen);
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    void HandleSplitScreenKeyboard(TBool aOpened);
+#endif // RD_JAVA_S60_RELEASE_9_2
     CCoeControl& ContentWindow();
     TBool SoftKeyLabelLocation(TInt aSoftKeyId, TPoint& aPosition, TSize& aSize);
     TInt SoftKeyLabelAnchor(TInt aSoftKeyId);
@@ -551,6 +554,11 @@ private:
 
     //stores id of command mapped to the MSK
     TInt iIdOfMSKCommand;
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    // Indicates opened split screen keyboard
+    TBool iSplitScreenKeyboard;
+#endif // RD_JAVA_S60_RELEASE_9_2
 
 };
 

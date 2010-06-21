@@ -171,7 +171,7 @@ void CMMAAnimationPlayer::PrefetchL()
     DEBUG("MMA::CMMAAnimationPlayer::PrefetchL -");
 }
 
-void CMMAAnimationPlayer::StartL()
+void CMMAAnimationPlayer::StartL(TBool aPostEvent)
 {
     DEBUG("MMA::CMMAAnimationPlayer::StartL +");
 
@@ -183,7 +183,10 @@ void CMMAAnimationPlayer::StartL()
         iViewer->SetAnimationFrame(0);
         iMediaTime = 0;
     }
-    PostLongEvent(CMMAPlayerEvent::EStarted, iMediaTime);
+    if (aPostEvent)
+    {
+        PostLongEvent(CMMAPlayerEvent::EStarted, iMediaTime);
+    }
 
     // process current frame
     ProcessCurrentFrameL();

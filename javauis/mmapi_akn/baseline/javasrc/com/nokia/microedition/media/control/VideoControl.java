@@ -410,8 +410,9 @@ public class VideoControl
 
         // Check the permission here, so 'the moment' is not lost?
         Security.ensurePermission(PERMISSION, PERMISSION, PERM_ARGS);
-
-        return iImageData;
+        byte[] tempimage=iImageData;
+        iImageData=null;
+        return tempimage;
     }
 
     /**

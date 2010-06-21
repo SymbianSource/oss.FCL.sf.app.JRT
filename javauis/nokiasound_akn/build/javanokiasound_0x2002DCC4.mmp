@@ -143,3 +143,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javanokiasound.def
+#elif defined EABI
+DEFFILE ./eabi/javanokiasound.def
+#endif

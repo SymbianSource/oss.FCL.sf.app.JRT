@@ -146,9 +146,19 @@ private:
     // Last focused item.
     TInt iLastFocusedItem;
 
-    // CAknTree ignore images, that don't have mask
+    // CAknTree ignores images, that don't have mask
     // This class creates such masks
     CSwtMaskHandler* iMaskHandler;
+
+    /*
+     * Attributes used for reverting pointer events on Scrollable Composite
+     * iPointerRevertExpandNeeded   - need to expand item in pointer revert
+     * iPointerRevertCollapseNeeded - need to collapse item in pointer revert
+     * iRevertedItem                - item, that should revert its state
+     */
+    TBool iPointerRevertExpandNeeded;
+    TBool iPointerRevertCollapseNeeded;
+    TAknTreeItemID iRevertedItem;
 };
 
 

@@ -85,7 +85,7 @@ public: // new methods
     TBool IsFilePlayer();
 
 public: // from CMMAPlayer
-    void StartL();
+    void StartL(TBool aPostEvent);
     void StopL(TBool aPostEvent);
     void DeallocateL();
     void GetDuration(TInt64* aDuration);

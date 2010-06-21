@@ -25,7 +25,9 @@
 #include "cmmasurfacewindow.h"
 
 // CONSTANTS
+const TInt KErrorMessageSize = 32;
 _LIT(KVideoControlName, "VideoControl");
+_LIT(KAccMonError, "Accessory monitor Error: %d");
 
 CMMAVideoPlayer* CMMAVideoPlayer::NewLC(
     CMMAMMFResolver* aResolver)
@@ -70,6 +72,8 @@ CMMAVideoPlayer::~CMMAVideoPlayer()
         }
     }
 
+    iAccMonCapabilityArray.Close();
+    delete iAccMonitor;
     delete iEmptySnapshotImage;
     delete iActiveSchedulerWait;
 }
@@ -86,8 +90,19 @@ CMMAVideoPlayer::CMMAVideoPlayer(
 
 void CMMAVideoPlayer::ConstructL()
 {
+    DEBUG("MMA::CMMAVideoPlayer::ConstructL +");
     CMMAAudioPlayer::ConstructL();
     iActiveSchedulerWait = new(ELeave)CActiveSchedulerWait;
+    iAccMonitor = CAccMonitor::NewL();
+    iAccMonCapabilityArray.Append(KAccMonAVDevice);
+    iAccMonitor->StartObservingL(this, iAccMonCapabilityArray);
+    DEBUG("MMA::CMMAVideoPlayer::ConstructL -");
+}
+
+// static cleanup function
+static void PointerArrayCleanup(TAny* aArray)
+{
+    static_cast<RPointerArray<CAccMonitorInfo>*>(aArray)->ResetAndDestroy();
 }
 
 EXPORT_C void CMMAVideoPlayer::SetPlayerListenerObjectL(jobject aListenerObject,
@@ -101,12 +116,29 @@ EXPORT_C void CMMAVideoPlayer::SetPlayerListenerObjectL(jobject aListenerObject,
     // this method must be called only ones
     __ASSERT_DEBUG(!iSurfaceWindow, User::Invariant());
 
+    // get audio/video cable connected status
+    TBool avCableConnStatus(EFalse);
+    RConnectedAccessories connectedAccessories;
+    TCleanupItem arrayCleanup(PointerArrayCleanup, 
+                              &connectedAccessories);
+    CleanupStack::PushL(arrayCleanup);
+    TInt accCount = 
+        iAccMonitor->GetConnectedAccessoriesL(connectedAccessories);
+    for (TInt i = 0; i < accCount; i++)
+    {
+        if (KAccMonAVDevice == connectedAccessories[i]->AccDeviceType())
+        {
+            avCableConnStatus = ETrue;
+            break;
+        }
+    }
+    CleanupStack::PopAndDestroy();
+
     // create window for videoplayer
     // event poster is always CMMAEventSource type.
-
     iSurfaceWindow = CMMASurfaceWindow::NewL(
                          static_cast< CMMAEventSource* >(iEventPoster),
-                         this);
+                         this, avCableConnStatus);
 }
 
 EXPORT_C void CMMAVideoPlayer::SetDisplayL(MMMADisplay* aDisplay)
@@ -210,6 +242,18 @@ void CMMAVideoPlayer::HandleEvent(const TMMFEvent& aEvent)
     if (aEvent.iEventType == KMMFEventCategoryPlaybackComplete)
     {
         iSurfaceWindow->RemoveSurface();
+    }
+
+    // Start player again and ignore error 
+    if ((aEvent.iEventType == KMMFEventCategoryVideoPlayerGeneralError) &&
+            (aEvent.iErrorCode == KMMVideoBlitError))
+    {
+        TRAPD(error, StartL(EFalse));
+        if (KErrNone != error)
+        {
+            DEBUG_INT("MMA:CMMAVideoPlayer::HandleEvent, StartL() error %d", error);
+        }
+        return;
     }
 
     // KNotCompleteVideoError can be notified when video is not complete
@@ -517,6 +561,34 @@ void CMMAVideoPlayer::SourceSizeChanged()
 {
     iDisplay->SourceSizeChanged(iSourceSize);
     NotifyWithStringEvent(CMMAPlayerEvent::ESizeChanged, KVideoControlName);
+}
+
+void CMMAVideoPlayer::ConnectedL(CAccMonitorInfo* aAccessoryInfo)
+{
+    TAccMonCapability deviceType = aAccessoryInfo->AccDeviceType() ;
+    DEBUG_INT("MID::CMMAVideoPlayer::ConnectedL %d", deviceType);
+    if (iSurfaceWindow && (deviceType == KAccMonAVDevice))
+    {
+        iSurfaceWindow->SetAVCableConnStatus(ETrue);
+    }
+}
+
+void CMMAVideoPlayer::DisconnectedL(CAccMonitorInfo* aAccessoryInfo)
+{
+    TAccMonCapability deviceType = aAccessoryInfo->AccDeviceType() ;
+    DEBUG_INT("MID::CMMAVideoPlayer::DisconnectedL %d", deviceType);
+    if (iSurfaceWindow && (deviceType == KAccMonAVDevice))
+    {
+        iSurfaceWindow->SetAVCableConnStatus(EFalse);
+    }
+}
+
+void CMMAVideoPlayer::AccMonitorObserverError(TInt aError)
+{
+    DEBUG_INT("MMA::CMMAVideoPlayer::AccMonitorObserverError %d", aError);
+    TBuf<KErrorMessageSize> errorMessage;
+    errorMessage.Format(KAccMonError, aError);
+    PostStringEvent(CMMAPlayerEvent::EError, errorMessage);
 }
 
 //  END OF FILE

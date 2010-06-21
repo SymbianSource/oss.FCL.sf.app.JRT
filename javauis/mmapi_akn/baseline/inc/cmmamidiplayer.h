@@ -61,7 +61,7 @@ public: // new methods
     void addObserverL(MMidiClientUtilityObserver* aObserver);
 
 public: // from CMMAPlayer
-    void StartL();
+    void StartL(TBool aPostEvent);
     void StopL(TBool aPostEvent);
     void RealizeL();
     void PrefetchL();

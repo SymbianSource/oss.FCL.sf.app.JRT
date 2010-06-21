@@ -105,6 +105,11 @@ void CStartScreenContainer::HandleForeground(bool aForeground)
 
 void CStartScreenContainer::ShowExitScreen()
 {
+     TRAP_IGNORE(DoShowExitScreenL());
+}
+
+void CStartScreenContainer::DoShowExitScreenL()
+{
     JELOG2(EJavaUI);
 
     TRect rect;

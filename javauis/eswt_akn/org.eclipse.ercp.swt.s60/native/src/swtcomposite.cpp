@@ -445,10 +445,6 @@ void CSwtComposite::HandlePointerEventL(const TPointerEvent& aPointerEvent)
                     if (Abs(drag.iX) > iPhysics->DragThreshold()
                             || Abs(drag.iY) > iPhysics->DragThreshold())
                     {
-                        iPhysicsTimer->Cancel();
-                        iPhysics->RegisterPanningPosition(drag);
-                        iPhysicsAction = KSwtPhysicsPanning;
-
                         // Unfocus
                         MSwtControl* ctrl = GetShell().FocusControl();
                         if (ctrl)
@@ -474,6 +470,10 @@ void CSwtComposite::HandlePointerEventL(const TPointerEvent& aPointerEvent)
                             iPointerGrabbingControl->HandlePointerEventL(ev);
                             iDisplay.SetRevertPointerEvent(EFalse);
                         }
+
+                        iPhysicsTimer->Cancel();
+                        iPhysics->RegisterPanningPosition(drag);
+                        iPhysicsAction = KSwtPhysicsPanning;
                     }
                 }
             }

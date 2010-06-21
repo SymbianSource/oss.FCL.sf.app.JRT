@@ -142,3 +142,9 @@ LIBRARY ewsd.lib
 #endif
 
 STDCPP
+
+#ifdef WINSCW
+DEFFILE ./bwins/javamobinfo.def
+#elif defined EABI
+DEFFILE ./eabi/javamobinfo.def
+#endif

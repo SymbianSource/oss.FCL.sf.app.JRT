@@ -837,9 +837,14 @@ void CMIDEdwinUtils::SetFEPModeAndCharFormat(TUint aConstraints, CEikEdwin* aEdw
         //on wheather the temporary char is displayed or the '*' is displayed.
         TRAP_IGNORE(aEdwin->SetWordWrapL(aConstraints & MMIDTextField::EPassword ? EFalse : ETrue));
     }
-    aEdwin->SetAknEditorFlags(EAknEditorFlagDefault);
-    aEdwin->SetAknEditorSpecialCharacterTable(-1);
 
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    aEdwin->SetAknEditorFlags(aEdwin->AknEdwinFlags() &
+                              EAknEditorFlagEnablePartialScreen);
+#else
+    aEdwin->SetAknEditorFlags(EAknEditorFlagDefault);
+#endif // RD_JAVA_S60_RELEASE_9_2
+    aEdwin->SetAknEditorSpecialCharacterTable(-1);
     // handle all constraints and the PASSWORD modifier
     TUint constraint = aConstraints & MMIDTextField::EConstraintMask;
     if ((constraint == MMIDTextField::EAny) && (aConstraints & MMIDTextField::EPassword))
@@ -857,11 +862,14 @@ void CMIDEdwinUtils::SetFEPModeAndCharFormat(TUint aConstraints, CEikEdwin* aEdw
         // handle other modifiers
         if ((aConstraints & MMIDTextField::ENonPredictive) || (aConstraints & MMIDTextField::ESensitive))
         {
-            aEdwin->SetAknEditorFlags(EAknEditorFlagNoT9 | EAknEditorFlagDeliverVirtualKeyEventsToApplication);
+            aEdwin->SetAknEditorFlags(aEdwin->AknEdwinFlags() |
+                                      EAknEditorFlagNoT9 |
+                                      EAknEditorFlagDeliverVirtualKeyEventsToApplication);
         }
         else
         {
-            aEdwin->SetAknEditorFlags(EAknEditorFlagDeliverVirtualKeyEventsToApplication);
+            aEdwin->SetAknEditorFlags(aEdwin->AknEdwinFlags() |
+                                      EAknEditorFlagDeliverVirtualKeyEventsToApplication);
         }
         if ((aConstraints & MMIDTextField::EInitialCapsWordSentence) || (aConstraints & MMIDTextField::EInitialCapsWord))
         {
@@ -880,7 +888,9 @@ void CMIDEdwinUtils::SetFEPModeAndCharFormat(TUint aConstraints, CEikEdwin* aEdw
         aEdwin->SetAknEditorCurrentInputMode(EAknEditorTextInputMode);
         aEdwin->SetAknEditorCase(EAknEditorLowerCase);
         aEdwin->SetAknEditorCurrentCase(EAknEditorLowerCase);
-        aEdwin->SetAknEditorFlags(EAknEditorFlagNoT9 | EAknEditorFlagDeliverVirtualKeyEventsToApplication);
+        aEdwin->SetAknEditorFlags(aEdwin->AknEdwinFlags() |
+                                  EAknEditorFlagNoT9 |
+                                  EAknEditorFlagDeliverVirtualKeyEventsToApplication);
         aEdwin->SetAknEditorSpecialCharacterTable(R_MIDP_TEXTBOX_SPECIAL_CHARACTER_TABLE_DIALOG);
         break;
     case MMIDTextField::ENumeric:
@@ -899,8 +909,10 @@ void CMIDEdwinUtils::SetFEPModeAndCharFormat(TUint aConstraints, CEikEdwin* aEdw
                 extendedInputCapabilities->Capabilities() |
                 CAknExtendedInputCapabilities::EDisableSCT);
         }
-        aEdwin->SetAknEditorFlags(EAknEditorFlagFixedCase | EAknEditorFlagNoT9 |
-                                  EAknEditorFlagUseSCTNumericCharmap | EAknEditorFlagDeliverVirtualKeyEventsToApplication);
+        aEdwin->SetAknEditorFlags(aEdwin->AknEdwinFlags() |
+                                  EAknEditorFlagFixedCase | EAknEditorFlagNoT9 |
+                                  EAknEditorFlagUseSCTNumericCharmap |
+                                  EAknEditorFlagDeliverVirtualKeyEventsToApplication);
         aEdwin->SetAknEditorSpecialCharacterTable(R_MIDP_TEXTBOX_NUMERIC_MODE_DIALOG);
     }
     break;
@@ -909,8 +921,10 @@ void CMIDEdwinUtils::SetFEPModeAndCharFormat(TUint aConstraints, CEikEdwin* aEdw
         aEdwin->SetAknEditorAllowedInputModes(EAknEditorNumericInputMode);
         aEdwin->SetAknEditorInputMode(EAknEditorNumericInputMode);
         aEdwin->SetAknEditorCurrentInputMode(EAknEditorNumericInputMode);
-        aEdwin->SetAknEditorFlags(EAknEditorFlagFixedCase | EAknEditorFlagNoT9 |
-                                  EAknEditorFlagUseSCTNumericCharmap | EAknEditorFlagDeliverVirtualKeyEventsToApplication);
+        aEdwin->SetAknEditorFlags(aEdwin->AknEdwinFlags() |
+                                  EAknEditorFlagFixedCase | EAknEditorFlagNoT9 |
+                                  EAknEditorFlagUseSCTNumericCharmap |
+                                  EAknEditorFlagDeliverVirtualKeyEventsToApplication);
         aEdwin->SetAknEditorNumericKeymap(EAknEditorPlainNumberModeKeymap);
         if (iDecimalSeparator == ',')
         {
@@ -925,7 +939,8 @@ void CMIDEdwinUtils::SetFEPModeAndCharFormat(TUint aConstraints, CEikEdwin* aEdw
         aEdwin->SetAknEditorAllowedInputModes(EAknEditorNumericInputMode);
         aEdwin->SetAknEditorInputMode(EAknEditorNumericInputMode);
         aEdwin->SetAknEditorCurrentInputMode(EAknEditorNumericInputMode);
-        aEdwin->SetAknEditorFlags(EAknEditorFlagFixedCase | EAknEditorFlagNoT9 |
+        aEdwin->SetAknEditorFlags(aEdwin->AknEdwinFlags() |
+                                  EAknEditorFlagFixedCase | EAknEditorFlagNoT9 |
                                   EAknEditorFlagDeliverVirtualKeyEventsToApplication);
         aEdwin->SetAknEditorNumericKeymap(EAknEditorStandardNumberModeKeymap);
         break;

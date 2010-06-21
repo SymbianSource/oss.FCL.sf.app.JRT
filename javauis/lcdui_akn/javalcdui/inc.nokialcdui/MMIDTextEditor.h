@@ -64,7 +64,11 @@ public: // Type definitions
         // The editor cannot scroll down anymore.
         EActionScrollDown = 0x400,
         // The scrollbar should be updated
-        EActionScrollbarChange = 0x800
+        EActionScrollbarChange = 0x800,
+        // The partial virtual keyboard is opened
+        EActionPartialInputEnabled = 0x1000,
+        // The partial virtual keyboard is closed
+        EActionPartialInputDisabled = 0x2000
     };
 
 public: // New methods

@@ -69,4 +69,33 @@ JNIEXPORT int JNICALL Java_com_nokia_microedition_media_control_VolumeControl__1
     return error;
 }
 
+/**
+ * Local function which can be used to call CMMAVolumeControl class methods.
+ *
+ * @param aControl CMMAVolumeControl pointer.
+ */
+LOCAL_C void SetProfileBasedMutingL(CMMAVolumeControl* aControl)
+{
+    aControl->SetProfilesBasedSoundMutingL();
+}
+
+/*
+ * Class:     com_nokia_microedition_media_control_VolumeControl
+ * Method:    _setProfilesBasedSoundMuting
+ * Signature: (I)V
+ */
+
+JNIEXPORT int JNICALL Java_com_nokia_microedition_media_control_VolumeControl__1setProfilesBasedSoundMuting
+(JNIEnv *, jclass , jint aEventSource, jint aVolumeControl)
+{
+    CMMAEventSource* eventSource =
+        JavaUnhand< CMMAEventSource >(aEventSource);
+
+    CMMAVolumeControl* volumeControl =
+        JavaUnhand< CMMAVolumeControl >(aVolumeControl);
+
+    TInt error = eventSource->ExecuteTrap(&SetProfileBasedMutingL,volumeControl);
+    return error;
+}
+
 //  END OF FILE
