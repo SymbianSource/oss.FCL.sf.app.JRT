@@ -658,7 +658,7 @@ abstract public class ViewBase
         GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
         gridData.horizontalSpan = aColumns;
         gridData.horizontalAlignment = SWT.CENTER;
-        gridData.verticalAlignment = SWT.CENTER;
+        gridData.verticalAlignment = SWT.TOP;
         label.setLayoutData(gridData);
         return label;
     }

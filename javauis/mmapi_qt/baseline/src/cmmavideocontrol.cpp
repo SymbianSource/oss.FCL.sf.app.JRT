@@ -129,12 +129,12 @@ void CMMAVideoControl::StaticInitL(CMMAVideoControl* aControl,
                                    MMAFunctionServer* aEventSource,
                                    TInt* aDisplayHandle,
                                    CMMAEvent* aDeleteRefEvent,
-                                   TBool aGuiType)
+                                   TInt aGuiType)
 {
 
     LOG(EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticInitL +");
 
-    if (aGuiType == true)
+    if (aGuiType == CMMAVideoControl::EDISPLAY_VIDEOITEM)
     {
         LOG(EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticInitL - aGuiType is customitem ");
         aControl->iDeleteRefEvent = aDeleteRefEvent;
@@ -145,7 +145,7 @@ void CMMAVideoControl::StaticInitL(CMMAVideoControl* aControl,
         CleanupStack::Pop(itemDisplay);
         *aDisplayHandle = reinterpret_cast<TInt>(itemDisplay);
     }
-    else
+    else if (aGuiType == CMMAVideoControl::EDISPLAY_CANVAS)
     {
         LOG(EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticInitL - aGuiType is canvas ");
         aControl->iDeleteRefEvent = aDeleteRefEvent;
@@ -215,6 +215,7 @@ void CMMAVideoControl::SetDisplayHandleToJavaPeer(MMAFunctionServer* eventSource
 
 void CMMAVideoControl::StaticInitDynamicModeL(
     CMMAVideoControl* aVideoControl,
+    JNIEnv* aJni,
     TInt* aContentHandle,
     MMAFunctionServer* aEventSource,
     jobject aGUIObject,
@@ -225,89 +226,92 @@ void CMMAVideoControl::StaticInitDynamicModeL(
 
     CMMADCDisplay* dcDisplay = CMMADCDisplay::NewLC(aVideoControl->iGuiPlayer,
                                aEventSource,
+                               aJni,
                                aGUIObject);
 
-    MMMADirectContent* content = dcDisplay;
-    *aContentHandle = reinterpret_cast< TInt >(content);
+    //MMMADirectContent* content = dcDisplay;
+    *aContentHandle = reinterpret_cast< TInt >(dcDisplay);
     aVideoControl->iDisplay = dcDisplay;
     aVideoControl->iGuiPlayer->SetDisplayL(aVideoControl->iDisplay);
     CleanupStack::Pop(dcDisplay);
     LOG(EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticInitDynamicModeL-");
 }
 
-void CMMAVideoControl::StaticGetPropertyL(CMMAVideoControl* /*aControl*/,
-        TInt /*aPropertyType*/,
-        TInt* /*aReturnValue*/)
+void CMMAVideoControl::StaticGetPropertyL(CMMAVideoControl* aControl,
+        TInt aPropertyType,
+        TInt* aReturnValue)
 {
-    // LOG1( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticGetPropertyL property %d",
-    //           aPropertyType);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticGetPropertyL property %d",
+         aPropertyType);
 
 // MMAPI UI 3.x req.
 // remove the below return and uncomment the below code once  display is implemented in java
-    return;
+//    return;
 
-    /*
-     MMMADisplay* display = aControl->iDisplay;
 
-     if (aPropertyType != com_nokia_microedition_media_control_VideoControl_PROPERTY_SOURCE_WIDTH &&
-             aPropertyType != com_nokia_microedition_media_control_VideoControl_PROPERTY_SOURCE_HEIGHT &&
-             !display)
-     {
-         LOG( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticGetPropertyL not initialized yet");
-         // init is not done yet, returning 0
-         *aReturnValue = 0;
-         return;
-     }
+    MMMADisplay* display = aControl->iDisplay;
 
-     switch (aPropertyType)
-     {
-     case com_nokia_microedition_media_control_VideoControl_PROPERTY_DISPLAY_WIDTH:
-     {
-         *aReturnValue = display->DisplaySize().iWidth;
-         break;
-     }
-     case com_nokia_microedition_media_control_VideoControl_PROPERTY_DISPLAY_HEIGHT:
-     {
-         *aReturnValue = display->DisplaySize().iHeight;
-         break;
-     }
-     case com_nokia_microedition_media_control_VideoControl_PROPERTY_DISPLAY_X:
-     {
-         *aReturnValue = display->DisplayLocation().iX;
-         break;
-     }
-     case com_nokia_microedition_media_control_VideoControl_PROPERTY_DISPLAY_Y:
-     {
-         *aReturnValue = display->DisplayLocation().iY;
-         break;
-     }
-     case com_nokia_microedition_media_control_VideoControl_PROPERTY_SOURCE_WIDTH:
-     {
-         LOG( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticGetPropertyL get source width");
-         *aReturnValue = aControl->iGuiPlayer->SourceSize().iWidth;
-         break;
-     }
-     case com_nokia_microedition_media_control_VideoControl_PROPERTY_SOURCE_HEIGHT:
-     {
-         LOG( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticGetPropertyL get source height");
-         *aReturnValue = aControl->iGuiPlayer->SourceSize().iHeight;
-         break;
-     }
-     default:
-     {
-         *aReturnValue = KErrNotFound;
-         User::Leave(KErrNotFound);
-         break;
-     }
-     }
-     */
+    if (aPropertyType != com_nokia_microedition_media_control_VideoControl_PROPERTY_SOURCE_WIDTH &&
+            aPropertyType != com_nokia_microedition_media_control_VideoControl_PROPERTY_SOURCE_HEIGHT &&
+            !display)
+    {
+        LOG(EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticGetPropertyL not initialized yet");
+        // init is not done yet, returning 0
+        *aReturnValue = 0;
+        return;
+    }
+
+    switch (aPropertyType)
+    {
+    case com_nokia_microedition_media_control_VideoControl_PROPERTY_DISPLAY_WIDTH:
+    {
+        *aReturnValue = display->DisplaySize().iWidth;
+        break;
+    }
+    case com_nokia_microedition_media_control_VideoControl_PROPERTY_DISPLAY_HEIGHT:
+    {
+        *aReturnValue = display->DisplaySize().iHeight;
+        LOG1(EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticGetPropertyL aReturnValue %d",
+             *aReturnValue);
+        break;
+    }
+    case com_nokia_microedition_media_control_VideoControl_PROPERTY_DISPLAY_X:
+    {
+        *aReturnValue = display->DisplayLocation().iX;
+        break;
+    }
+    case com_nokia_microedition_media_control_VideoControl_PROPERTY_DISPLAY_Y:
+    {
+        *aReturnValue = display->DisplayLocation().iY;
+        break;
+    }
+    case com_nokia_microedition_media_control_VideoControl_PROPERTY_SOURCE_WIDTH:
+    {
+        LOG(EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticGetPropertyL get source width");
+        *aReturnValue = aControl->iGuiPlayer->SourceSize().iWidth;
+        break;
+    }
+    case com_nokia_microedition_media_control_VideoControl_PROPERTY_SOURCE_HEIGHT:
+    {
+        LOG(EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticGetPropertyL get source height");
+        *aReturnValue = aControl->iGuiPlayer->SourceSize().iHeight;
+        break;
+    }
+    default:
+    {
+        *aReturnValue = KErrNotFound;
+        User::Leave(KErrNotFound);
+        break;
+    }
+    }
+
 }
 
 
-void CMMAVideoControl::StaticSetPropertyL(CMMAVideoControl* /*aControl*/,
-        TInt /*aPropertyType*/,
-        TInt /*aPropertyA*/,
-        TInt /*aPropertyB*/)
+void CMMAVideoControl::StaticSetPropertyL(CMMAVideoControl* aControl,
+        TInt aPropertyType,
+        TInt aPropertyA,
+        TInt aPropertyB)
 {
     //LOG1( EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticSetPropertyL property type %d",
     //          aPropertyType);
@@ -317,76 +321,86 @@ void CMMAVideoControl::StaticSetPropertyL(CMMAVideoControl* /*aControl*/,
     //          aPropertyB);
 // MMAPI UI 3.x req.
 // remove the below return and uncomment the below code; once  display is implemented in java
-    return;
+    // return;
 
-    /*
-        MMMADisplay* display = aControl->iDisplay;
 
-        __ASSERT_DEBUG(display != NULL,
-                       User::Panic(_L("display not initialized"), KErrNotReady));
+    MMMADisplay* display = aControl->iDisplay;
 
-        switch (aPropertyType)
-        {
-        case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_SIZE:
-        {
-            TSize displaySize(aPropertyA, aPropertyB);
-            display->SetDisplaySizeL(displaySize);
+    __ASSERT_DEBUG(display != NULL,
+                   User::Panic(_L("display not initialized"), KErrNotReady));
 
-            // inform java side
-            if (!display->IsFullScreen())
-            {
-                aControl->iGuiPlayer->NotifyWithStringEvent(
-                    CMMAPlayerEvent::ESizeChanged, KControlName);
-            }
-            break;
-        }
-        case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_LOCATION:
+    switch (aPropertyType)
+    {
+    case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_SIZE:
+    {
+        TSize displaySize(aPropertyA, aPropertyB);
+        LOG1(EJavaMMAPI, EInfo, "CMMAVideoControl::statepropertyl %d",displaySize);
+        display->SetDisplaySizeL(displaySize);
+        LOG(EJavaMMAPI, EInfo, "CMMAVideoControl::SetDisplayProperty:: setDisplaySizeL Completed");
+        // inform java side
+        if (!display->IsFullScreen())
         {
-            TPoint displayLocation(aPropertyA, aPropertyB);
-            display->SetDisplayLocationL(displayLocation);
-            break;
+            aControl->iGuiPlayer->NotifyWithStringEvent(
+                CMMAPlayerEvent::ESizeChanged, KControlName);
         }
-        case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_VISIBLE_TRUE:
-        {
-            display->SetVisible(ETrue);
-            break;
-        }
-        case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_VISIBLE_FALSE:
-        {
-            display->SetVisible(EFalse);
-            break;
-        }
-        case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_FULLSCREEN_TRUE:
-        {
-            // store old user rect to determine if SIZE_CHANGED event
-            // has to be delivered when full screen mode is turned off.
-            aControl->iOldDisplaySize = display->DisplaySize();
+        break;
+    }
+    case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_LOCATION:
+    {
+        TPoint displayLocation(aPropertyA, aPropertyB);
+        display->SetDisplayLocationL(displayLocation);
+        break;
+    }
+    case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_VISIBLE_TRUE:
+    {
+        display->SetVisible(ETrue);
+        break;
+    }
+    case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_VISIBLE_FALSE:
+    {
+        display->SetVisible(EFalse);
+        break;
+    }
+    case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_FULLSCREEN_TRUE:
+    {
+        // store old user rect to determine if SIZE_CHANGED event
+        // has to be delivered when full screen mode is turned off.
+        aControl->iOldDisplaySize = display->DisplaySize();
+        LOG1(EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticSetPropertyL a property %d",
+             aPropertyA);
+        LOG1(EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticSetPropertyL b property %d",
+             aPropertyB);
+        //TSize fullscreenSize(aPropertyA, aPropertyB);
+        //display->SetFullscreenSize(fullscreenSize);
+        //display->SetDisplaySizeL(fullscreenSize);
+        //display->SetFullScreenL(ETrue);
+        display->SourceSizeChanged(aPropertyA, aPropertyB,0,0,TRect(0,0,0,0));
+        break;
+    }
+    case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_FULLSCREEN_FALSE:
+    {
+        TSize fullscreenSize = aControl->iOldDisplaySize;
+        display->SetFullscreenSize(fullscreenSize);
+        display->SetFullScreenL(EFalse);
 
-            display->SetFullScreenL(ETrue);
-            break;
-        }
-        case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_FULLSCREEN_FALSE:
-        {
-            display->SetFullScreenL(EFalse);
+        // Send SIZE_CHANGED event when fullscreen is turned off if
+        // size of the video display has changed. Possible position
+        // change is however disregarded
+        /* if (aControl->iOldDisplaySize != display->DisplaySize())
+         {
+             aControl->iGuiPlayer->NotifyWithStringEvent(
+                 CMMAPlayerEvent::ESizeChanged, KControlName);
+         }*/
 
-            // Send SIZE_CHANGED event when fullscreen is turned off if
-            // size of the video display has changed. Possible position
-            // change is however disregarded
-            if (aControl->iOldDisplaySize != display->DisplaySize())
-            {
-                aControl->iGuiPlayer->NotifyWithStringEvent(
-                    CMMAPlayerEvent::ESizeChanged, KControlName);
-            }
+        break;
+    }
+    default:
+    {
+        User::Leave(KErrNotFound);
+        break;
+    }
+    }
 
-            break;
-        }
-        default:
-        {
-            User::Leave(KErrNotFound);
-            break;
-        }
-        }
-        */
 }
 
 
@@ -491,7 +505,12 @@ void CMMAVideoControl::SetForeground(TBool aForeground, TBool aUseEventServer)
     }
 }
 
-
+/*
+MMMAGuiPlayer* CMMAVideoControl::GuiPlayer()
+{
+    return iGuiPlayer;
+}
+*/
 /**
  * Handles a change to resources which are shared accross the environment.
  */

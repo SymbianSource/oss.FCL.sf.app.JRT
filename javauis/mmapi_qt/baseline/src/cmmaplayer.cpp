@@ -446,7 +446,7 @@ EXPORT_C CMMASourceStream* CMMAPlayer::AddSourceStreamL(JNIEnv* aJNIEnv,
 }
 
 
-void CMMAPlayer::PostActionCompleted(TInt aError)
+EXPORT_C void CMMAPlayer::PostActionCompleted(TInt aError)
 {
     LOG(EJavaMMAPI, EInfo, "MMA::CMMAPlayer::PostActionCompleted ");
     iActionCompletedEvent->SetEventData(aError);

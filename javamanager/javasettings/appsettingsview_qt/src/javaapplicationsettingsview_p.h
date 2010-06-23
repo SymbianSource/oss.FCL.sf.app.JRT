@@ -80,7 +80,7 @@ private:
     void writeToStorage(JavaApplicationSettings& settings);
     bool findFromStorage(const std::wstring&, const std::wstring&, const std::wstring&, const std::string&);
     std::wstring readFromStorage(const std::wstring&, const std::wstring&, const std::wstring&, const std::string&);
-    std::vector<IndexedSettingsName> readFromStorage(const std::wstring& aColumnName, const std::string& aTableName);
+    std::vector<IndexedSettingsName> readFromStorage(const std::wstring& aColumnName, const std::string& aPrimaryTableName,const std::string& aSecondaryTableName);
     void filterSecuritySettings(JavaApplicationSettings& settings);
     void findEntry(const java::storage::JavaStorageApplicationList_t&, const std::wstring&, std::wstring& eValue);
     void readSuiteUid(const QString& aAppUid);

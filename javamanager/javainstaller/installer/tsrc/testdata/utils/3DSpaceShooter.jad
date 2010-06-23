@@ -1,0 +1,18 @@
+
+MIDlet-1: 3DSpaceShooter, /icon.png, Sapce3D
+
+
+MIDlet-Jar-Size: 240229
+    
+	
+MIDlet-Jar-URL: 3DSpaceShooter.jar
+MIDlet-Name: 3DSpaceShooter
+MIDlet-Vendor: Innovative Ideas From Outer Space Ltd.
+
+
+
+
+	                 
+MIDlet-Version: 1.0.4
+Nokia-MIDlet-Original-Display-Size: 176,208
+Nokia-MIDlet-On-Screen-Keypad:	 	navigationkeys	    	

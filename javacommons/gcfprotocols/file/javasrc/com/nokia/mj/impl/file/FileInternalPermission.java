@@ -95,7 +95,17 @@ public class FileInternalPermission extends PermissionBase
 
     public String toString()
     {
-        return "javax.microedition.io.FileProtocolPermission";
+        if (intent.equals("read"))
+        {
+            return "javax.microedition.io.Connector.file.read";
+        }
+
+        if (intent.equals("write"))
+        {
+            return "javax.microedition.io.Connector.file.write";   
+        }
+
+        return null;
     }
 
     /**

@@ -141,6 +141,14 @@ Point oldSize;
 WindowSurface windowSurface;
 
 /**
+ * When QMainWindow/QDialog visibility is changed, Qt may send a resize event.
+ * eSWT application may have a Shell.setVisible() call in Shell's resize event
+ * handler, which would cause an infinite loop. To prevent this suppress resize
+ * events when Shell visibility is being changed.
+ */
+boolean suppressResizeEvent;
+
+/**
  * Constructs a new instance of this class. This is equivalent
  * to calling <code>Shell((Display) null)</code>.
  *
@@ -467,11 +475,15 @@ Point setInitialSize () {
     Point size =  computeSize(area.width, area.height, true);
     size.x -= windowFrameTrim() * 2;
     size.y -= windowTitleTrim() + windowFrameTrim();
+    
+    // These values will be returned if the size is queried before the Shell
+    // is made visible (and they are not set again). 
+    OS.QWidget_resize(topHandle, size.x, size.y);
+    
     if(OS.windowServer == OS.WS_SYMBIAN_S60 && parent == null) {
         setRestoreState(OS.QT_WINDOWMAXIMIZED, false);
-    } else {
-        OS.QWidget_resize(topHandle, size.x, size.y);
     }
+
     return size;
 }
 
@@ -991,7 +1003,15 @@ public void setVisible (boolean visible) {
     }
     
     // This shell
-    super.setVisible(visible);
+    try {
+        if (visible) {
+            suppressResizeEvent = true;
+        }
+        super.setVisible(visible);
+    } finally {
+        suppressResizeEvent = false;
+    }
+    
     if(isDisposed()) return;
         
     // Dialog shells. 
@@ -1130,6 +1150,10 @@ boolean qt_event_keyrelease_pp( int widgetHandle, int key, int modifier, int cha
 
 public Rectangle internal_getDefaultBounds() {
     return defBounds;
+}
+
+void qt_swt_event_widgetResized_pp(int widgetHandle, int oldWidth, int oldHeight, int width, int height, boolean sendResizeEvent) {
+    super.qt_swt_event_widgetResized_pp(widgetHandle, oldWidth, oldHeight, width, height, !suppressResizeEvent);
 }
 
 WindowSurface getWindowSurface() {

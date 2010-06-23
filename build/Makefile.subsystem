@@ -188,6 +188,11 @@ clean_generated:
 bld.inf:
 	$(MAKE) -f subsystem.mk makestubs qmake
 
+# Use Carbide CodeScanner to list high-level issues
+codescanner:
+ifneq ($(call PATHSEARCH,codescanner.exe),)
+	$(call CODESCANNER,.)
+endif
 
 # Symbian SBS ------------------------------
 ifdef USESBS

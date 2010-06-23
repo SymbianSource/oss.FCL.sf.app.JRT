@@ -54,6 +54,15 @@ public class GetFromStorage extends ExeStep
         // Check if debug attribute has been defined for this suite.
         ball.setDebug(ball.iSuite.getAttributeValue("Nokia-MIDlet-Install-Debug"));
 
+        // Check from arguments if preinstall state should be reset.
+        String arg = ball.iArgs.get("resetpreinstall");
+        if (arg != null)
+        {
+            ball.iSuite.setResetPreinstall(true);
+            ball.log("ResetPreinstall set");
+        }
+
+
         // Log all suite info.
         //ball.log(ball.iSuite.toString());
     }

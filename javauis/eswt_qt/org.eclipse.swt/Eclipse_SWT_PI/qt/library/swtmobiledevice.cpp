@@ -146,7 +146,7 @@ void CSwtMobileDevice::SetLights(TInt aLevel)
     {
     if ((aLevel < 0) || (aLevel > KMIDMaxLightLevel))
         {
-        User::Leave(KErrArgument);
+        return;
         }
 
     if (!iHWRMLight)

@@ -123,7 +123,7 @@ int SwtApplication::initializeMobileDevice()
     SWT_LOG_FUNC_CALL();
     int handle = 0;
 #ifdef __SYMBIAN32__
-   handle = reinterpret_cast<int>(CSwtMobileDevice::NewL());
+    TRAP_IGNORE(handle = reinterpret_cast<int>(CSwtMobileDevice::NewL()));
 #endif
     return handle;
     }

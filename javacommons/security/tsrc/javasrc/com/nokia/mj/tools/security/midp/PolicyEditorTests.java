@@ -336,7 +336,7 @@ public class PolicyEditorTests extends TestCase implements InstallerMain
         initBoolArray(permsChecked);
         for (int i=0; i<perms1.size(); i++)
         {
-            String[] permTokens = Tokenizer.split((String)perms1.get(i), ",");
+            String[] permTokens = Tokenizer.split((String)perms1.get(i), "?");
             int currentToken = 0;
             int type = getType(permTokens[currentToken]);
             currentToken++;
@@ -344,7 +344,7 @@ public class PolicyEditorTests extends TestCase implements InstallerMain
             String name = null;
             String target = null;
             String actionList = null;
-            if (type == PolicyBasedPermission.USER_TYPE)
+            if (permTokens.length == 3)
             {
                 String[] settingsProps = Tokenizer.split(permTokens[currentToken],":");
                 String settingsName = settingsProps[0];
@@ -361,30 +361,33 @@ public class PolicyEditorTests extends TestCase implements InstallerMain
                 settings = new UserSecuritySettingsImpl(settingsName, currentInteractionMode, allowedInteractionModes);
                 currentToken++;
             }
-            name = permTokens[currentToken];
+            String[] permDetails = Tokenizer.split(permTokens[currentToken], ",");
+            currentToken = 0;
+            name = permDetails[currentToken];
             MIDPPermission mappedPerm = PermissionMappingTable.get(name);
             if (mappedPerm != null)
             {
                 name = mappedPerm.getName();
             }
             currentToken++;
-            if (permTokens.length > currentToken)
+            if (permDetails.length > currentToken)
             {
-                target = permTokens[currentToken];
+                target = permDetails[currentToken];
                 currentToken++;
             }
-            if (permTokens.length > currentToken)
+            if (permDetails.length > currentToken)
             {
-                actionList = permTokens[currentToken];
+                actionList = permDetails[currentToken];
                 actionList = actionList.replace(':',',');
             }
-            PolicyBasedPermissionImpl perm1 = new PolicyBasedPermissionImpl(name, target, actionList, settings);
+            PolicyBasedPermissionImpl perm1 = new PolicyBasedPermissionImpl(name, target, actionList, type, settings);
             for (int j=0; j<perms2.length; j++)
             {
                 PolicyBasedPermissionImpl perm2 = new PolicyBasedPermissionImpl(
                     perms2[j].getName(),
                     perms2[j].getTarget(),
                     perms2[j].getActionList(),
+                    perms2[j].getType(),
                     (perms2[j].getUserSecuritySettings() != null ?
                      (new UserSecuritySettingsImpl(
                           perms2[j].getUserSecuritySettings().getName(),
@@ -419,6 +422,10 @@ public class PolicyEditorTests extends TestCase implements InstallerMain
         else if (sType.equalsIgnoreCase("assigned"))
         {
             return PolicyBasedPermission.ASSIGNED_TYPE;
+        }
+        else if (sType.equalsIgnoreCase("user_assigned"))
+        {
+            return PolicyBasedPermission.USER_ASSIGNED_TYPE;
         }
         return -1;
     }

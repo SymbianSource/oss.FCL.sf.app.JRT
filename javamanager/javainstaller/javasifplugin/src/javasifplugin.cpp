@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 - 2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -24,7 +24,7 @@
 #include <e32property.h>
 #include <charconv.h>
 #include <data_caging_path_literals.hrh>
-#include <usiferror.h>
+#include <usif/usiferror.h>
 
 #include "comms.h"
 #include "commsmessage.h"
@@ -318,180 +318,7 @@ void CJavaSifPlugin::Install(
         commandLine.Append(_L(" -silent"));
     }
 
-    TBool paramFound = EFalse;
-    TInt  intValue = 0;
-    TDesC desValue = KNullDesC;
-
-    // KSifInParam_Drive -> -drive=install_target_drive (A, B, C, ..., Z)
-    TRAP_IGNORE(paramFound = aArguments.GetIntByNameL(KSifInParam_Drive, intValue));
-    if (paramFound)
-    {
-        // Value 0 is 'A:' drive and  value 25 is 'Z:' drive
-        if ((intValue > -1) && (intValue < 26))
-        {
-            commandLine.Append(_L(" -drive="));
-            TChar drive('A');
-            drive += intValue;
-            commandLine.Append(drive);
-        }
-        else
-        {
-            WLOG1(EJavaInstaller,
-                "CJavaSifPlugin::Install Ignoring illegal KSifInParam_Drive param (value %d)",
-                intValue);
-        }
-    }
-
-    // KSifInParam_PerformOCSP Yes/No/AskUser -> -ocsp=yes|no
-    TRAP_IGNORE(paramFound = aArguments.GetIntByNameL(KSifInParam_PerformOCSP, intValue));
-    if (paramFound)
-    {
-        if (intValue == 0) // Yes
-        {
-            commandLine.Append(_L(" -ocsp=yes"));
-        }
-        else if (intValue == 1) // No
-        {
-            commandLine.Append(_L(" -ocsp=no"));
-        }
-        // AskUser is not supported
-    }
-
-    // KSifInParam_IgnoreOCSPWarnings Yes/No/AskUser -> -ignore_ocsp_warnings=yes|no
-    TRAP_IGNORE(paramFound = aArguments.GetIntByNameL(KSifInParam_IgnoreOCSPWarnings, intValue));
-    if (paramFound)
-    {
-        if (intValue == 0) // Yes
-        {
-            commandLine.Append(_L(" -ignore_ocsp_warnings=yes"));
-        }
-        else if (intValue == 1) // No
-        {
-            commandLine.Append(_L(" -ignore_ocsp_warnings=no"));
-        }
-        // AskUser is not supported
-    }
-
-    // KSifInParam_AllowUpgrade Yes/No/AskUser -> -upgrade=yes|no
-    TRAP_IGNORE(paramFound = aArguments.GetIntByNameL(KSifInParam_AllowUpgrade, intValue));
-    if (paramFound)
-    {
-        if (intValue == 0) // Yes
-        {
-            commandLine.Append(_L(" -upgrade=yes"));
-        }
-        else if (intValue == 1) // No
-        {
-            commandLine.Append(_L(" -upgrade=no"));
-        }
-        // AskUser is not supported
-    }
-
-
-    // TODO: activate this code block when KSifInParam_UpgradeData has been
-    // defined in sifcommon.h
-/*
-    // KSifInParam_UpgradeData Yes/No/AskUser -> -upgrade_data=yes|no
-    TRAP_IGNORE(paramFound = aArguments.GetIntByNameL(KSifInParam_UpgradeData, intValue));
-    if (paramFound)
-    {
-        if (intValue == 0) // Yes
-        {
-            commandLine.Append(_L(" -upgrade_data=yes"));
-        }
-        else if (intValue == 1) // No
-        {
-            commandLine.Append(_L(" -upgrade_data=no"));
-        }
-        // AskUser is not supported
-    }
-*/
-
-    // KSifInParam_AllowUntrusted Yes/No/AskUser -> -untrusted=yes|no
-    TRAP_IGNORE(paramFound = aArguments.GetIntByNameL(KSifInParam_AllowUntrusted, intValue));
-    if (paramFound)
-    {
-        if (intValue == 0) // Yes
-        {
-            commandLine.Append(_L(" -untrusted=yes"));
-        }
-        else if (intValue == 1) // No
-        {
-            commandLine.Append(_L(" -untrusted=no"));
-        }
-        // AskUser is not supported
-    }
-
-    // KSifInParam_AllowOverwrite Yes/No/AskUser -> -overwrite=yes|no
-    TRAP_IGNORE(paramFound = aArguments.GetIntByNameL(KSifInParam_AllowOverwrite, intValue));
-    if (paramFound)
-    {
-        if (intValue == 0) // Yes
-        {
-            commandLine.Append(_L(" -overwrite=yes"));
-        }
-        else if (intValue == 1) // No
-        {
-            commandLine.Append(_L(" -overwrite=no"));
-        }
-        // AskUser is not supported
-    }
-
-    // KSifInParam_AllowDownload Yes/No/AskUser -> -download=yes|no
-    TRAP_IGNORE(paramFound = aArguments.GetIntByNameL(KSifInParam_AllowDownload, intValue));
-    if (paramFound)
-    {
-        if (intValue == 0) // Yes
-        {
-            commandLine.Append(_L(" -download=yes"));
-        }
-        else if (intValue == 1) // No
-        {
-            commandLine.Append(_L(" -download=no"));
-        }
-        // AskUser is not supported
-    }
-
-    // KSifInParam_UserName -> -username=download_username
-    TRAP_IGNORE(desValue = aArguments.StringByNameL(KSifInParam_UserName));
-    if (desValue.Length() > 0)
-    {
-        commandLine.Append(_L(" -username="));
-        commandLine.Append(desValue);
-    }
-
-    // KSifInParam_Password -> -password=download_password
-    TRAP_IGNORE(desValue = aArguments.StringByNameL(KSifInParam_Password));
-    if (desValue.Length() > 0)
-    {
-        commandLine.Append(_L(" -password="));
-        commandLine.Append(desValue);
-    }
-
-    // KSifInParam_SourceUrl -> -sourceurl=original (HTTP) URL of the JAD or JAR file
-    TRAP_IGNORE(desValue = aArguments.StringByNameL(KSifInParam_SourceUrl));
-    if (desValue.Length() > 0)
-    {
-        commandLine.Append(_L(" -sourceurl="));
-        commandLine.Append(desValue);
-    }
-
-    // KSifInParam_IAP -> -iap=IAP_ID (internet access point id)
-    TRAP_IGNORE(paramFound = aArguments.GetIntByNameL(KSifInParam_IAP, intValue));
-    if (paramFound)
-    {
-        commandLine.Append(_L(" -iap="));
-        commandLine.AppendNum(intValue);
-    }
-
-    // KSifInParam_Charset -> -charset=Internet-standard character set name
-    TRAP_IGNORE(desValue = aArguments.StringByNameL(KSifInParam_Charset));
-    if (desValue.Length() > 0)
-    {
-        commandLine.Append(_L(" -charset="));
-        commandLine.Append(desValue);
-    }
-
+    BuildInstallCommandLine(commandLine, aArguments);
 
     // Ask Java Installer to send installation results back
     // as Comms message. 11000 is IPC_ADDRESS_JAVA_SIF_PLUGIN_C Comms endpoint
@@ -835,6 +662,189 @@ void CJavaSifPlugin::CopyFilesIfNeededL(TFileName &aFileName)
 
     return;
 }
+
+
+void CJavaSifPlugin::BuildInstallCommandLine(
+        TBuf<1536>& aCommandLine,
+        const COpaqueNamedParams& aArguments)
+{
+    TBool paramFound = EFalse;
+    TInt  intValue = 0;
+    TDesC desValue = KNullDesC;
+
+    // KSifInParam_Drive -> -drive=install_target_drive (A, B, C, ..., Z)
+    TRAP_IGNORE(paramFound = aArguments.GetIntByNameL(KSifInParam_Drive, intValue));
+    if (paramFound)
+    {
+        // Value 0 is 'A:' drive and  value 25 is 'Z:' drive
+        if ((intValue > -1) && (intValue < 26))
+        {
+            aCommandLine.Append(_L(" -drive="));
+            TChar drive('A');
+            drive += intValue;
+            aCommandLine.Append(drive);
+        }
+        else
+        {
+            WLOG1(EJavaInstaller,
+                "CJavaSifPlugin::Install Ignoring illegal KSifInParam_Drive param (value %d)",
+                intValue);
+        }
+    }
+
+    // KSifInParam_PerformOCSP Yes/No/AskUser -> -ocsp=yes|no
+    TRAP_IGNORE(paramFound = aArguments.GetIntByNameL(KSifInParam_PerformOCSP, intValue));
+    if (paramFound)
+    {
+        if (intValue == 0) // Yes
+        {
+            aCommandLine.Append(_L(" -ocsp=yes"));
+        }
+        else if (intValue == 1) // No
+        {
+            aCommandLine.Append(_L(" -ocsp=no"));
+        }
+        // AskUser is not supported
+    }
+
+    // KSifInParam_IgnoreOCSPWarnings Yes/No/AskUser -> -ignore_ocsp_warnings=yes|no
+    TRAP_IGNORE(paramFound = aArguments.GetIntByNameL(KSifInParam_IgnoreOCSPWarnings, intValue));
+    if (paramFound)
+    {
+        if (intValue == 0) // Yes
+        {
+            aCommandLine.Append(_L(" -ignore_ocsp_warnings=yes"));
+        }
+        else if (intValue == 1) // No
+        {
+            aCommandLine.Append(_L(" -ignore_ocsp_warnings=no"));
+        }
+        // AskUser is not supported
+    }
+
+    // KSifInParam_AllowUpgrade Yes/No/AskUser -> -upgrade=yes|no
+    TRAP_IGNORE(paramFound = aArguments.GetIntByNameL(KSifInParam_AllowUpgrade, intValue));
+    if (paramFound)
+    {
+        if (intValue == 0) // Yes
+        {
+            aCommandLine.Append(_L(" -upgrade=yes"));
+        }
+        else if (intValue == 1) // No
+        {
+            aCommandLine.Append(_L(" -upgrade=no"));
+        }
+        // AskUser is not supported
+    }
+
+
+    // TODO: activate this code block when KSifInParam_UpgradeData has been
+    // defined in sifcommon.h
+/*
+    // KSifInParam_UpgradeData Yes/No/AskUser -> -upgrade_data=yes|no
+    TRAP_IGNORE(paramFound = aArguments.GetIntByNameL(KSifInParam_UpgradeData, intValue));
+    if (paramFound)
+    {
+        if (intValue == 0) // Yes
+        {
+            aCommandLine.Append(_L(" -upgrade_data=yes"));
+        }
+        else if (intValue == 1) // No
+        {
+            aCommandLine.Append(_L(" -upgrade_data=no"));
+        }
+        // AskUser is not supported
+    }
+*/
+
+    // KSifInParam_AllowUntrusted Yes/No/AskUser -> -untrusted=yes|no
+    TRAP_IGNORE(paramFound = aArguments.GetIntByNameL(KSifInParam_AllowUntrusted, intValue));
+    if (paramFound)
+    {
+        if (intValue == 0) // Yes
+        {
+            aCommandLine.Append(_L(" -untrusted=yes"));
+        }
+        else if (intValue == 1) // No
+        {
+            aCommandLine.Append(_L(" -untrusted=no"));
+        }
+        // AskUser is not supported
+    }
+
+    // KSifInParam_AllowOverwrite Yes/No/AskUser -> -overwrite=yes|no
+    TRAP_IGNORE(paramFound = aArguments.GetIntByNameL(KSifInParam_AllowOverwrite, intValue));
+    if (paramFound)
+    {
+        if (intValue == 0) // Yes
+        {
+            aCommandLine.Append(_L(" -overwrite=yes"));
+        }
+        else if (intValue == 1) // No
+        {
+            aCommandLine.Append(_L(" -overwrite=no"));
+        }
+        // AskUser is not supported
+    }
+
+    // KSifInParam_AllowDownload Yes/No/AskUser -> -download=yes|no
+    TRAP_IGNORE(paramFound = aArguments.GetIntByNameL(KSifInParam_AllowDownload, intValue));
+    if (paramFound)
+    {
+        if (intValue == 0) // Yes
+        {
+            aCommandLine.Append(_L(" -download=yes"));
+        }
+        else if (intValue == 1) // No
+        {
+            aCommandLine.Append(_L(" -download=no"));
+        }
+        // AskUser is not supported
+    }
+
+    // KSifInParam_UserName -> -username=download_username
+    TRAP_IGNORE(desValue = aArguments.StringByNameL(KSifInParam_UserName));
+    if (desValue.Length() > 0)
+    {
+        aCommandLine.Append(_L(" -username="));
+        aCommandLine.Append(desValue);
+    }
+
+    // KSifInParam_Password -> -password=download_password
+    TRAP_IGNORE(desValue = aArguments.StringByNameL(KSifInParam_Password));
+    if (desValue.Length() > 0)
+    {
+        aCommandLine.Append(_L(" -password="));
+        aCommandLine.Append(desValue);
+    }
+
+    // KSifInParam_SourceUrl -> -sourceurl=original (HTTP) URL of the JAD or JAR file
+    TRAP_IGNORE(desValue = aArguments.StringByNameL(KSifInParam_SourceUrl));
+    if (desValue.Length() > 0)
+    {
+        aCommandLine.Append(_L(" -sourceurl="));
+        aCommandLine.Append(desValue);
+    }
+
+    // KSifInParam_IAP -> -iap=IAP_ID (internet access point id)
+    TRAP_IGNORE(paramFound = aArguments.GetIntByNameL(KSifInParam_IAP, intValue));
+    if (paramFound)
+    {
+        aCommandLine.Append(_L(" -iap="));
+        aCommandLine.AppendNum(intValue);
+    }
+
+    // KSifInParam_Charset -> -charset=Internet-standard character set name
+    TRAP_IGNORE(desValue = aArguments.StringByNameL(KSifInParam_Charset));
+    if (desValue.Length() > 0)
+    {
+        aCommandLine.Append(_L(" -charset="));
+        aCommandLine.Append(desValue);
+    }
+
+    return;
+}
+
 
 TBool CJavaSifPlugin::ExitIfJavaInstallerRunning(
     COpaqueNamedParams& aResults,

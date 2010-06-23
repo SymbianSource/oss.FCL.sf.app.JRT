@@ -26,6 +26,7 @@ public interface PolicyBasedPermission
     public static final int USER_TYPE = 1;
     public static final int ALLOWED_TYPE = 2;
     public static final int ASSIGNED_TYPE = 3;
+    public static final int USER_ASSIGNED_TYPE = 4;
 
     public String getName();
     public String getTarget();

@@ -63,7 +63,7 @@ CMMAForeground::~CMMAForeground()
          eikEnv->RemoveForegroundObserver(*this);
          LOG( EJavaMMAPI, EInfo, "CMMAForeground::~CMMAForeground() : eikEnv RemoveForegroundObserver -");
      }
-    */
+
     if (iEventPoster && iDeleteRefEvent)
     {
         iEventPoster->PostEvent(iDeleteRefEvent);
@@ -71,7 +71,8 @@ CMMAForeground::~CMMAForeground()
     else
     {
         delete iDeleteRefEvent;
-    }
+    }*/
+    //TODO MemoryLeak need to delete the above object.
     delete iForegroundEvent;
     delete iActiveScheduler;
     LOG(EJavaMMAPI, EInfo, "CMMAForeground::~CMMAForeground() - ");

@@ -52,13 +52,23 @@ public class SecurityPolicyPermission
         String name,
         String target,
         String actionList,
+        int type,
         SecurityPolicyPermissionSettings settings)
     {
         this.name = name;
         this.target = target;
         this.actionList = actionList;
-        this.type = USER_TYPE;
+        this.type = type;
         this.settings = settings;
+    }
+
+    public SecurityPolicyPermission(
+        String name,
+        String target,
+        String actionList,
+        SecurityPolicyPermissionSettings settings)
+    {
+        this(name, target, actionList, USER_TYPE, settings);
     }
 
     public SecurityPolicyPermission(
@@ -67,11 +77,7 @@ public class SecurityPolicyPermission
         String actionList,
         int type)
     {
-        this.name = name;
-        this.target = target;
-        this.actionList = actionList;
-        // Check type
-        this.type = type;
+        this(name, target, actionList, type, null);
     }
 
     public int getType()
@@ -145,7 +151,7 @@ public class SecurityPolicyPermission
         return oStream.toByteArray();
     }
 
-    public static SecurityPolicyPermission getFromBytes(byte[] buf)
+    public static SecurityPolicyPermission getFromBytes(byte[] buf, boolean activeSettings)
     {
         int type = buf[SecurityPolicy.index];
         SecurityPolicy.index++;
@@ -155,10 +161,12 @@ public class SecurityPolicyPermission
         SecurityPolicy.index += nameLen;
         String target = readString(buf);
         String actionList = readString(buf);
-        if (type == USER_TYPE)
+        if (type == USER_TYPE || type == USER_ASSIGNED_TYPE)
         {
-            return new SecurityPolicyPermission(name, target, actionList,
-                                                SecurityPolicyPermissionSettings.getFromBytes(buf));
+            return new SecurityPolicyPermission(
+                name, target, actionList, type,
+                SecurityPolicyPermissionSettings.getFromBytes(
+                buf, activeSettings));
         }
         return new SecurityPolicyPermission(name, target, actionList, type);
     }

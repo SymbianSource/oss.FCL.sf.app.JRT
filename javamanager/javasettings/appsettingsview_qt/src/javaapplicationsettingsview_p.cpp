@@ -142,7 +142,7 @@ void JavaApplicationSettingsViewPrivate::init(JavaApplicationSettingsView* aPubl
     if (mainForm)
     {        
         // do the connect for the main form
-        iPublicView->connect(mainForm, SIGNAL(activated(const QModelIndex)),
+        iPublicView->connect(mainForm, SIGNAL(itemShown(const QModelIndex)),
                              iPublicView, SLOT(_q_dataItemDisplayed(const QModelIndex)));
     
         // set the form as view's widget
@@ -231,7 +231,7 @@ void JavaApplicationSettingsViewPrivate::readAllSettings()
     localizedSettingsNames[QString::fromStdWString(BROADCAST_SETTINGS)] = QString(hbTrId("txt_java_sett_setlabel_broadcast"));
     localizedSettingsNames[QString::fromStdWString(NFC_WRITE_ACCESS_SETTINGS)] = QString(hbTrId("txt_java_sett_setlabel_nfc_write_access"));
     localizedSettingsNames[QString::fromStdWString(URL_START_SETTINGS)] = QString(hbTrId("txt_java_sett_setlabel_url_start"));
-    vector<IndexedSettingsName> allSecuritySettings = readFromStorage(FUNCTION_GROUP, MIDP_FUNC_GRP_SETTINGS_TABLE);
+    vector<IndexedSettingsName> allSecuritySettings = readFromStorage(FUNCTION_GROUP, MIDP_FUNC_GRP_SETTINGS_TABLE, MIDP_PERMISSIONS_TABLE);
     // sort the security settings according to how they should be displayed
     std::sort(allSecuritySettings.begin(), allSecuritySettings.end(), AscendingSort());
     QHash<QString, int> settingsIndexes;
@@ -965,7 +965,7 @@ wstring JavaApplicationSettingsViewPrivate::readFromStorage(const std::wstring& 
     return value;
 }
 
-vector<IndexedSettingsName> JavaApplicationSettingsViewPrivate::readFromStorage(const std::wstring& aColumnName, const std::string& aTableName)
+vector<IndexedSettingsName> JavaApplicationSettingsViewPrivate::readFromStorage(const std::wstring& aColumnName, const std::string& aPrimaryTableName, const std::string& aSecondaryTableName)
 {
     vector<IndexedSettingsName> values;
     
@@ -991,7 +991,7 @@ vector<IndexedSettingsName> JavaApplicationSettingsViewPrivate::readFromStorage(
     settingsNamesIndexes[QString::fromStdWString(NFC_WRITE_ACCESS_SETTINGS)] = 15;
     settingsNamesIndexes[QString::fromStdWString(URL_START_SETTINGS)] = 16;
     int last_index = 16;
-
+    
     JavaStorageApplicationEntry_t query;
     JavaStorageApplicationList_t queryResult;
     JavaStorageEntry attr;
@@ -1002,8 +1002,10 @@ vector<IndexedSettingsName> JavaApplicationSettingsViewPrivate::readFromStorage(
 
     try
     {
-        iStorage->search(aTableName, query, queryResult);
+        iStorage->search(aPrimaryTableName, query, queryResult);
+        
         JavaStorageApplicationList_t::const_iterator iterator;
+        JavaStorageApplicationList_t secondaryQueryResult;
         for (iterator = queryResult.begin(); iterator != queryResult.end(); iterator++)
         {
             std::wstring name = L"";
@@ -1011,22 +1013,32 @@ vector<IndexedSettingsName> JavaApplicationSettingsViewPrivate::readFromStorage(
             JavaStorageEntry findPattern;
             findPattern.setEntry(aColumnName, L"");
             JavaStorageApplicationEntry_t::const_iterator findIterator =
-                entry.find(findPattern);
+                    entry.find(findPattern);
             if (findIterator != entry.end())
             {
                 name = findIterator->entryValue();
-            }
-            
+            }            
             if (name.size() > 0)
             {
-                IndexedSettingsName value;
-                value.name = name;
-                value.index = last_index + 1;
-                if (settingsNamesIndexes.contains(QString::fromStdWString(name)))
+                entry.clear();
+                query.clear();
+                attr.setEntry(ID, iSuiteUid);
+                query.insert(attr);
+                attr.setEntry(aColumnName, name);
+                query.insert(attr);
+                secondaryQueryResult.clear();
+                iStorage->search(aSecondaryTableName, query, secondaryQueryResult);
+                if (secondaryQueryResult.size() > 0)
                 {
-                    value.index = settingsNamesIndexes.value(QString::fromStdWString(name));
+                    IndexedSettingsName value;
+                    value.name = name;
+                    value.index = last_index + 1;
+                    if (settingsNamesIndexes.contains(QString::fromStdWString(name)))
+                    {
+                        value.index = settingsNamesIndexes.value(QString::fromStdWString(name));
+                    }
+                    values.push_back(value);
                 }
-                values.push_back(value);
             }
         }
     }

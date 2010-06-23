@@ -510,7 +510,7 @@ Point minimumSize (int wHint, int hHint, boolean changed) {
     return new Point (width, height);
 }
 
-void qt_swt_event_widgetResized_pp(int widgetHandle, int oldWidth, int oldHeight, int width, int height) {
+void qt_swt_event_widgetResized_pp(int widgetHandle, int oldWidth, int oldHeight, int width, int height, boolean sendResizeEvent) {
     if (isDisposed ()) return;
     if((widgetHandle == handle) && isMirrored()) {
         // In real coordinate system the children need to be moved so that they
@@ -533,7 +533,7 @@ void qt_swt_event_widgetResized_pp(int widgetHandle, int oldWidth, int oldHeight
             }
         }
     }
-    super.qt_swt_event_widgetResized_pp(widgetHandle, oldWidth, oldHeight, width, height);
+    super.qt_swt_event_widgetResized_pp(widgetHandle, oldWidth, oldHeight, width, height, sendResizeEvent);
     if (layout != null) {
         markLayout (false, false);
         updateLayout (false);

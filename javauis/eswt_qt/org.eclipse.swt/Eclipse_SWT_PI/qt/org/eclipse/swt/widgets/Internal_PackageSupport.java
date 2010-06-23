@@ -168,7 +168,7 @@ public static void qt_signal_abstractitemview_activated(Widget w, int row, int c
     w.qt_signal_abstractitemview_activated_pp(row, column);
 }
 public static void qt_swt_event_widgetResized(Widget w, int widgetHandle, int oldWidth, int oldHeight, int width, int height) {
-    w.qt_swt_event_widgetResized_pp(widgetHandle, oldWidth, oldHeight, width, height);
+    w.qt_swt_event_widgetResized_pp(widgetHandle, oldWidth, oldHeight, width, height, true);
 }
 public static void register(Widget w) {
     w.register_pp();

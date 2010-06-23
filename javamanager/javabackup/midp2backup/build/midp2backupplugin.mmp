@@ -49,8 +49,6 @@ USERINCLUDE             ../src.s60
 USERINCLUDE             ../../inc.s60
 USERINCLUDE             ../../../../inc
 
-SYSTEMINCLUDE           /epoc32/include/connect
-
 start resource          ../data/10282474.rss
 TARGET                  midp2backupplugin.rsc
 end

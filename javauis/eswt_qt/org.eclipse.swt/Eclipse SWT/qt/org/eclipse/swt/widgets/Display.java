@@ -1247,7 +1247,7 @@ static private boolean handleNativeSwtEvent(Widget widget, int widgetHandle,
         if(widget.packageProxy != null) {
             widget.packageProxy.qt_swt_event_widgetResized(widgetHandle, arg1, arg2, arg3, arg4);
         } else {
-            widget.qt_swt_event_widgetResized_pp(widgetHandle, arg1, arg2, arg3, arg4);
+            widget.qt_swt_event_widgetResized_pp(widgetHandle, arg1, arg2, arg3, arg4, true);
         }
         return false;
     case OS.QSWTEVENT_WIDGETMOVED:

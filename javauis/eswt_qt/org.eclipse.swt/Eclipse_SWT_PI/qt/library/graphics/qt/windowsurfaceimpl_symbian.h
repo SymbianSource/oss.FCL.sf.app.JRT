@@ -12,7 +12,7 @@
 #define WINDOWSURFACEQT_H_
 
 #include "graphics.h"
-#include "qwindowsurface_p.h"
+#include <QtGui/private/qwindowsurface_p.h>
 
 namespace Java { namespace GFX {
 

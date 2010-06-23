@@ -43,6 +43,17 @@ IF NOT exists("Z:\system\install\Series60v5.0.sis")
   ; Popup error on Non-S60 v 5.0 platforms. Do not allow continuing.
   "incompatible_platform.txt"-"", FILETEXT, FORCEABORT
 ENDIF
+
+; Check OpenC versions
+; 0x10282872 = Standard C++ library
+; 0x10281F34 = Open C LIBSSL
+; 0x20009a80 = Symbian OS PIPS
+IF( version(0x10282872, <, 1, 5, 0) ) OR
+  ( version(0x10281F34, <, 1, 5, 0) ) OR
+  ( version(0x20009a80, <, 1, 5, 0) )
+    "incompatible_openc.txt"-"", FT, TA
+ENDIF
+
 #endif // RD_JAVA_S60_RELEASE_5_0_IAD
 
 

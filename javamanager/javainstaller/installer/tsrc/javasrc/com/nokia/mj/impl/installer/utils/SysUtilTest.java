@@ -167,6 +167,41 @@ public class SysUtilTest extends TestCase implements InstallerMain
             }
         }));
 
+        if (Platform.isS60())
+        {
+        suite.addTest(new SysUtilTest("testGetProcessState", new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((SysUtilTest)tc).testGetProcessState();
+            }
+        }));
+
+        suite.addTest(new SysUtilTest("testDriveGetters", new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((SysUtilTest)tc).testDriveGetters();
+            }
+        }));
+
+        suite.addTest(new SysUtilTest("testGetScreenSize", new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((SysUtilTest)tc).testGetScreenSize();
+            }
+        }));
+
+        suite.addTest(new SysUtilTest("testIsoToLang", new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((SysUtilTest)tc).testIsoToLang();
+            }
+        }));
+        }
+
         com.nokia.mj.impl.utils.OmjTestRunner.run(suite);
     }
 
@@ -198,11 +233,11 @@ public class SysUtilTest extends TestCase implements InstallerMain
     {
         try
         {
-            // Test PS keys defined in ScreensaverInternalPSKeys.h
-            Uid uid = PlatformUid.createUid("0x101F8771");  // KPSUidScreenSaver
-            int key = 0x00000001; // KScreenSaverPreviewMode
+            // Test PS keys defined in hwrmpowerstatesdkpskey.h
+            Uid uid = PlatformUid.createUid("0x10205041");  // KPSUidHWRMPowerState
+            int key = 0x00000003; // KHWRMChargingStatus
             int value = SysUtil.getPropertyValue(uid, key);
-            assertTrue("KScreenSaverPreviewMode(!=0): " + value, value == 0);
+            assertTrue("KHWRMChargingStatus(!=0): " + value, value == 0);
         }
         catch (InstallerException ie)
         {
@@ -215,8 +250,8 @@ public class SysUtilTest extends TestCase implements InstallerMain
     {
         try
         {
-            // Test PS keys defined in ScreensaverInternalPSKeys.h
-            Uid uid = PlatformUid.createUid("0x101F8771");  // KPSUidScreenSaver
+            // Test PS keys defined in hwrmpowerstatesdkpskey.h
+            Uid uid = PlatformUid.createUid("0x10205041");  // KPSUidHWRMPowerState
             int key = 0x00000010; // Undefined key
             int value = SysUtil.getPropertyValue(uid, key);
             assertTrue("Getting undefined property value did not fail", false);
@@ -572,5 +607,52 @@ public class SysUtilTest extends TestCase implements InstallerMain
         {
             // OK, expected exception.
         }
+    }
+
+    public void testGetProcessState()
+    {
+        int state = SysUtil.getProcessState(PlatformUid.createUid("[102033e6]"));
+        assertTrue("installer process state is " + state +
+                   ", not " + SysUtil.PROC_STATE_ALIVE,
+                   SysUtil.PROC_STATE_ALIVE == state);
+        state = SysUtil.getProcessState(PlatformUid.createUid("[e0001001]"));
+        assertTrue("nonexisting process state is " + state + ", not 0",
+                   0 == state);
+    }
+
+    public void testDriveGetters()
+    {
+        int defMem = SysUtil.getDefaultPhoneMemory();
+        int defMassStorage = SysUtil.getDefaultMassStorage();
+        Log.log("testDriveGetter: defaultPhoneMemory = " + defMem);
+        Log.log("testDriveGetter: defaultMassStorage = " + defMassStorage);
+    }
+
+    public void testGetScreenSize()
+    {
+        int screenWidth = SysUtil.getScreenWidth();
+        int screenHeight = SysUtil.getScreenHeight();
+        Log.log("testGetScreenSize: screenWidth = " + screenWidth);
+        Log.log("testGetScreenSize: screenHeight = " + screenHeight);
+        assertTrue("screenWidth <= 0", screenWidth > 0);
+        assertTrue("screenHeight <= 0", screenHeight > 0);
+    }
+
+    public void testIsoToLang()
+    {
+        testIsoToLang("unknown", -1); // unknown locale is indicated with -1
+        testIsoToLang("fi", 9); // ELangFinnish, Finnish
+        testIsoToLang("fi_FI", 9); // ELangFinnish, Finnish
+        testIsoToLang("sv", 6); // ELangSwedish, Swedish
+        testIsoToLang("sv_FI", 85); // ELangFinlandSwedish, Finland Swedish
+        testIsoToLang("en", 1); // ELangEnglish, UK English
+        testIsoToLang("en_US", 10); // ELangAmerican, American
+        testIsoToLang("en_AU", 20); // ELangAustralian, Australian English
+    }
+
+    private void testIsoToLang(String aLocale, int aLang)
+    {
+        assertTrue("SysUtil.isoToLang " + aLocale + " != " + aLang,
+                   SysUtil.isoToLang(aLocale) == aLang);
     }
 }

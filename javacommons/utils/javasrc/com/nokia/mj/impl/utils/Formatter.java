@@ -260,6 +260,18 @@ public class Formatter
         }
         return toString();
     }
+    /**
+     * Applies convertion from european digits into arabic-indic digits 
+     * based on existing language settings
+     *
+     * @param str String which might contain european digits
+     * @return A string identical with the provided string but with the 
+     *         european digits (if any) converted to arabic-indic digits
+     */
+    public static String formatDigits(String str)
+    {
+        return _formatDigits(str);
+    }
 
     /*** ----------------------------- PRIVATE ---------------------------- */
 
@@ -358,4 +370,14 @@ public class Formatter
      *
      */
     private native String _formatDate(long timeInMilliSecs);
+
+    /**
+     * Applies convertion from european digits into arabic-indic digits
+     * based on existing language settings
+     *
+     * @param str String which might contain european digits
+     * @return A string identical with the provided string but with the 
+     *         european digits (if any) converted to arabic-indic digits
+     */
+    private static native String _formatDigits(String str);
 }

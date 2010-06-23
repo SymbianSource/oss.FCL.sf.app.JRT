@@ -169,13 +169,17 @@ public class ProgressView extends ViewBase
         {
             public void run()
             {
+                // Set horizontalSpan to 2 for one button,
+                // and to 1 for one two buttons.
+                int horizontalSpan = 2;
+                GridData gridData = null;
+                /*
                 iHideCommand = new Button(getCommandComposite(), SWT.PUSH);
-                GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-                gridData.horizontalSpan = 1;
+                gridData = new GridData(GridData.FILL_HORIZONTAL);
+                gridData.horizontalSpan = horizontalSpan;
                 iHideCommand.setLayoutData(gridData);
                 iHideCommand.setText(InstallerUiTexts.get(InstallerUiTexts.HIDE));
-                iHideCommand.addSelectionListener
-                (new SelectionListener()
+                iHideCommand.addSelectionListener(new SelectionListener()
                 {
                     public void widgetDefaultSelected(SelectionEvent aEvent)
                     {
@@ -187,15 +191,15 @@ public class ProgressView extends ViewBase
                     }
                 });
                 addSoftKeyListenerFor(iHideCommand);
+                */
 
                 iCancelCommand = new Button(getCommandComposite(), SWT.PUSH);
                 gridData = new GridData(GridData.FILL_HORIZONTAL);
-                gridData.horizontalSpan = 1;
+                gridData.horizontalSpan = horizontalSpan;
                 iCancelCommand.setLayoutData(gridData);
                 iCancelCommand.setText(
                     InstallerUiTexts.get(InstallerUiTexts.CANCEL));
-                iCancelCommand.addSelectionListener
-                (new SelectionListener()
+                iCancelCommand.addSelectionListener(new SelectionListener()
                 {
                     public void widgetDefaultSelected(SelectionEvent aEvent)
                     {
@@ -234,8 +238,11 @@ public class ProgressView extends ViewBase
             public void run()
             {
                 getShell().setDefaultButton(null);
-                iHideCommand.dispose();
-                iHideCommand = null;
+                if (iHideCommand != null)
+                {
+                    iHideCommand.dispose();
+                    iHideCommand = null;
+                }
                 iCancelCommand.dispose();
                 iCancelCommand = null;
             }

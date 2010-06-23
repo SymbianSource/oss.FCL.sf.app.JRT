@@ -56,12 +56,16 @@ abstract class Buffer
     final static int HOST_TYPE_CUSTOMITEM = 3;
 
     // Flags for raising settings validation
-    private final static int NONE            = 0;
-    private final static int COLOR           = 1;
-    private final static int CLIP            = 2;
-    private final static int FONT            = 4;
-    private final static int STROKESTYLE     = 8;
-    private final static int COORS_TRANSLATION = 16;
+    // FORCE_SETTINGS Forces settings to validated also in case
+    // there's only one Graphics instance as client, normally 
+    // settings are not checked in such case
+    final static int NONE            = 0;
+    final static int COLOR           = 1;
+    final static int CLIP            = 2;
+    final static int FONT            = 4;
+    final static int STROKESTYLE     = 8;
+    final static int COORDS_TRANSLATION = 16; 
+    final static int FORCE_SETTINGS    = 32; 
 
     // Graphics settings active in buffer
     // all values are comparable to those
@@ -107,35 +111,35 @@ abstract class Buffer
      */
     static Buffer createInstance(Object host, Control control)
     {
-    	if(host instanceof Canvas) 
-    	{
-    		if(OS.windowServer == OS.WS_SYMBIAN_S60)
-    		{	
-    		    return new CanvasBufferSymbian((Canvas) host, control);
-    		}
-    		else if(OS.windowServer == OS.WS_X11)
-    		{
-    			return new CanvasBufferLinux((Canvas) host, control);
-    		}
-  			return null;
-    	} 
-    	else if(host instanceof CustomItem)
-    	{
-    		if(OS.windowServer == OS.WS_SYMBIAN_S60)
-    		{	
-    		    return new CustomItemBufferSymbian((CustomItem) host, control);
-    		}
-    		else if(OS.windowServer == OS.WS_X11)
-    		{
-    			return new CustomItemBufferLinux((CustomItem) host, control);
-    		}
-  			return null;
-    	} 
-    	else if(host instanceof Image) 
-    	{
-    	    return new ImageBuffer((Image) host);	
-    	}
-    	return null;
+        if(host instanceof Canvas) 
+        {
+            if(OS.windowServer == OS.WS_SYMBIAN_S60)
+            {   
+                return new CanvasBufferSymbian((Canvas) host, control);
+            }
+            else if(OS.windowServer == OS.WS_X11)
+            {
+                return new CanvasBufferLinux((Canvas) host, control);
+            }
+            return null;
+        } 
+        else if(host instanceof CustomItem)
+        {
+            if(OS.windowServer == OS.WS_SYMBIAN_S60)
+            {   
+                return new CustomItemBufferSymbian((CustomItem) host, control);
+            }
+            else if(OS.windowServer == OS.WS_X11)
+            {
+                return new CustomItemBufferLinux((CustomItem) host, control);
+            }
+            return null;
+        } 
+        else if(host instanceof Image) 
+        {
+            return new ImageBuffer((Image) host);   
+        }
+        return null;
     }
     
     /**
@@ -154,8 +158,7 @@ abstract class Buffer
     /**
      * Defines the bounds of the host.
      * Bounds are used for restricting the rendering in
-     * the area of the control that is being updated. With Images
-     * the bounds are not used.
+     * the area of the control that is being updated. 
      *
      * @param crtl The Control of the host
      * @param clienArea The area of the control which can be drawn by Graphics
@@ -177,6 +180,20 @@ abstract class Buffer
     }
 
     /**
+     * Defines the bounds of the host.
+     *
+     * @param crtl The Control of the host
+     * @param clienArea The area of the control which can be drawn by Graphics
+     */
+    void setImageBounds(int width, int height)
+    {
+        hostBounds.x = 0;
+        hostBounds.y = 0;
+        hostBounds.width = width;
+        hostBounds.height = height;
+    }
+
+    /**
      * Prepares surface for a new frame and starts paint session. 
      * Must be called in UI thread (sync calls this automatically)
      * and at the start of new frame. The rectangle provided as 
@@ -189,11 +206,11 @@ abstract class Buffer
      */
     void startFrame(int x, int y, int w, int h)
     {
-    	if(!isSurfaceSessionOpen)
-    	{
-    	    beginPaint(x, y, w, h);
-    	    isSurfaceSessionOpen = true;
-    	}
+        if(!isSurfaceSessionOpen)
+        {
+            beginPaint(x, y, w, h);
+            isSurfaceSessionOpen = true;
+        }
     }
     
     /**
@@ -202,11 +219,11 @@ abstract class Buffer
      */
     void endFrame()
     {
-    	if(isSurfaceSessionOpen)
-    	{
-    		endPaint();
-    	    isSurfaceSessionOpen = false;
-    	}
+        if(isSurfaceSessionOpen)
+        {
+            endPaint();
+            isSurfaceSessionOpen = false;
+        }
     }
     
     /**
@@ -216,8 +233,8 @@ abstract class Buffer
      */
     void blitToDisplay(GraphicsContext gc, Widget widget)
     {
-  	    endFrame();
-    	blit(gc, widget);
+        endFrame();
+        blit(gc, widget);
     }
     
     /** 
@@ -286,7 +303,7 @@ abstract class Buffer
         // write the default values to the buffer
         if(clientCount == 1) 
         {
-            writeDefaultValuesToBuffer();	
+            writeDefaultValuesToBuffer();   
         }
         return new Graphics(this, hostBounds );
     }
@@ -299,7 +316,7 @@ abstract class Buffer
      */
     void sync() 
     {
-    	sync(true);
+        sync(true);
     }
     
     /**
@@ -325,7 +342,7 @@ abstract class Buffer
         }
         
         // Start surface session if not started yet
-       	startFrame(hostBounds.x, hostBounds.y , hostBounds.width , hostBounds.height);
+        startFrame(hostBounds.x, hostBounds.y , hostBounds.width , hostBounds.height);
         
         doRelease();
         bindToHost(gc);
@@ -365,12 +382,12 @@ abstract class Buffer
      */
     void dispose()
     {
-    	if(gc != null) 
-    	{
+        if(gc != null) 
+        {
             doRelease();
             gc.dispose();
             gc = null;
-    	}
+        }
         commandBuffer = null;
     }
 
@@ -381,31 +398,31 @@ abstract class Buffer
 
     void fillRect(int x, int y, int w, int h, Graphics client)
     {
-        validateAndApplySettings((COLOR|CLIP|COORS_TRANSLATION), client);
+        validateAndApplySettings((COLOR|CLIP|COORDS_TRANSLATION), client);
         gc.fillRect(x, y, w, h);
     }
 
     void fillRoundRect(int x, int y, int w, int h, int arcW, int arcH, Graphics client)
     {
-        validateAndApplySettings((COLOR|CLIP|COORS_TRANSLATION), client);
+        validateAndApplySettings((COLOR|CLIP|COORDS_TRANSLATION), client);
         gc.fillRoundRect(x, y, w, h, arcW, arcH);
     }
 
     void fillArc(int x, int y, int w, int h, int startAngle, int arcAngle, Graphics client)
     {
-        validateAndApplySettings((COLOR|CLIP|COORS_TRANSLATION), client);
+        validateAndApplySettings((COLOR|CLIP|COORDS_TRANSLATION), client);
         gc.fillArc(x, y, w, h, startAngle, arcAngle);
     }
 
     void fillTriangle(int[] points, Graphics client)
     {
-        validateAndApplySettings((COLOR|CLIP|COORS_TRANSLATION), client);
+        validateAndApplySettings((COLOR|CLIP|COORDS_TRANSLATION), client);
         gc.fillPolygon(points);
     }
 
     void setClip(int x, int y, int w, int h, Graphics client)
     {
-        validateAndApplySettings(COORS_TRANSLATION, client);
+        validateAndApplySettings(COORDS_TRANSLATION, client);
         // check if given clip is already active in buffer
         if((bufferClip.x == x) && (bufferClip.y == y) &&
                 (bufferClip.width == w) && (bufferClip.height== h))
@@ -420,7 +437,7 @@ abstract class Buffer
         }
 
         // translate clip to display coordinates and apply
-        Rectangle rect = clipToDisplayCoords(x, y, w, h);
+        Rectangle rect = clipToWindowCoords(x, y, w, h);
         if(rect.isEmpty())
         {
             // check is buffer clip is already up to date
@@ -452,6 +469,11 @@ abstract class Buffer
         gc.setClip(rect.x, rect.y, rect.width, rect.height, false);
     }
 
+    void setGraphicsDefaults(Graphics client)
+    {
+    	validateAndApplySettings((FONT|COLOR|STROKESTYLE|COORDS_TRANSLATION|FORCE_SETTINGS), client);
+    }
+    
     void setColor(int r, int g, int b, Graphics client)
     {
         // check if given color is already active in buffer
@@ -503,37 +525,37 @@ abstract class Buffer
 
     void drawLine(int xStart, int yStart, int xEnd, int yEnd, Graphics client)
     {
-        validateAndApplySettings((COLOR|CLIP|COORS_TRANSLATION|STROKESTYLE), client);
+        validateAndApplySettings((COLOR|CLIP|COORDS_TRANSLATION|STROKESTYLE), client);
         gc.drawLine(xStart, yStart, xEnd, yEnd);
     }
 
     void drawRect(int x, int y, int w, int h, Graphics client)
     {
-        validateAndApplySettings((COLOR|CLIP|COORS_TRANSLATION|STROKESTYLE), client);
+        validateAndApplySettings((COLOR|CLIP|COORDS_TRANSLATION|STROKESTYLE), client);
         gc.drawRect(x, y, w, h);
     }
 
     void drawRoundRect(int x, int y, int w, int h, int arcW, int arcH, Graphics client)
     {
-        validateAndApplySettings((COLOR|CLIP|COORS_TRANSLATION|STROKESTYLE), client);
+        validateAndApplySettings((COLOR|CLIP|COORDS_TRANSLATION|STROKESTYLE), client);
         gc.drawRoundRect(x, y, w, h, arcW, arcH);
     }
 
     void drawArc(int x, int y, int w, int h, int startAngle, int arcAngle, Graphics client)
     {
-        validateAndApplySettings((COLOR|CLIP|COORS_TRANSLATION|STROKESTYLE), client);
+        validateAndApplySettings((COLOR|CLIP|COORDS_TRANSLATION|STROKESTYLE), client);
         gc.drawArc(x, y, w, h, startAngle, arcAngle);
     }
 
     void drawString(String string, int x, int y, Graphics client)
     {
-        validateAndApplySettings((COLOR|CLIP|COORS_TRANSLATION|FONT), client);
+        validateAndApplySettings((COLOR|CLIP|COORDS_TRANSLATION|FONT), client);
         gc.drawString(string, x, y, true);
     }
 
     void drawImage(org.eclipse.swt.internal.qt.graphics.Image image, int x,int y, Graphics client)
     {
-        validateAndApplySettings((CLIP|COORS_TRANSLATION), client);
+        validateAndApplySettings((CLIP|COORDS_TRANSLATION), client);
         gc.drawImage(image, x, y);
     }
 
@@ -541,7 +563,7 @@ abstract class Buffer
                    int wDst, int hDst, int xSrc, int ySrc, int wSrc, int hSrc,
                    int transform, Graphics client)
     {
-        validateAndApplySettings((CLIP|COORS_TRANSLATION), client);
+        validateAndApplySettings((CLIP|COORDS_TRANSLATION), client);
         gc.drawImage(image, xDst, yDst, wDst, hDst, xSrc, ySrc, wSrc, hSrc, transform);
     }
 
@@ -555,7 +577,7 @@ abstract class Buffer
                  boolean alpha,
                  Graphics client)
     {
-        validateAndApplySettings((CLIP|COORS_TRANSLATION), client);
+        validateAndApplySettings((CLIP|COORDS_TRANSLATION), client);
         gc.drawRGB(rgb, offset, scanlength, x, y, w, h, alpha);
     }
 
@@ -570,7 +592,7 @@ abstract class Buffer
                  int manipulation,
                  Graphics client)
     {
-        validateAndApplySettings((CLIP|COORS_TRANSLATION), client);
+        validateAndApplySettings((CLIP|COORDS_TRANSLATION), client);
         gc.drawRGB(rgb, offset, scanlength, x, y, w, h, alpha, manipulation);
     }
 
@@ -586,7 +608,7 @@ abstract class Buffer
                  int format,
                  Graphics client)
     {
-        validateAndApplySettings((CLIP|COORS_TRANSLATION), client);
+        validateAndApplySettings((CLIP|COORDS_TRANSLATION), client);
         gc.drawRGB(rgb, transparencyMask, offset, scanlength, x, y, w, h, manipulation, format);
     }
 
@@ -602,19 +624,19 @@ abstract class Buffer
                  int format,
                  Graphics client)
     {
-        validateAndApplySettings((CLIP|COORS_TRANSLATION), client);
+        validateAndApplySettings((CLIP|COORDS_TRANSLATION), client);
         gc.drawRGB(rgb, offset, scanlength, x, y, w, h, alpha, manipulation, format);
     }
 
     void drawPolygon(int[] points, Graphics client)
     {
-        validateAndApplySettings((COLOR|CLIP|COORS_TRANSLATION|STROKESTYLE), client);
+        validateAndApplySettings((COLOR|CLIP|COORDS_TRANSLATION|STROKESTYLE), client);
         gc.drawPolygon(points);
     }
 
     void fillPolygon(int[] points, Graphics client)
     {
-        validateAndApplySettings((COLOR|CLIP|COORS_TRANSLATION), client);
+        validateAndApplySettings((COLOR|CLIP|COORDS_TRANSLATION), client);
         gc.fillPolygon(points);
     }
 
@@ -658,8 +680,16 @@ abstract class Buffer
         return null;
     }
     
+    boolean containsDrawnPrimitives() {
+        boolean result = false;
+        if(commandBuffer != null) {
+            result = commandBuffer.containsDrawnPrimitives();
+        }
+        return result;
+    }
+    
     /**
-     * Translates given rectangle to display/window surface coordinates
+     * Translates given rectangle to window surface coordinates
      * and outlines the clip inside the control bounds.
      *
      * @param x The x-coordinate of the rectangle
@@ -668,7 +698,7 @@ abstract class Buffer
      * @param h The height of the rectangle
      *
      */
-    private Rectangle clipToDisplayCoords(int x, int y, int w, int h)
+    private Rectangle clipToWindowCoords(int x, int y, int w, int h)
     {
         // Bottom-right corner of control bounds in window coordinates
         final int hostX2 = hostBounds.x + hostBounds.width;
@@ -701,7 +731,7 @@ abstract class Buffer
         clipY2 = clipY2Dpy < hostBounds.y ? (clipY2 + (hostBounds.y - clipY1Dpy)) : clipY2;
         clipY2 = clipY2Dpy > hostY2 ? (clipY2 - (clipY1Dpy - hostY2)) : clipY2;
 
-        return new Rectangle(clipX1, clipY1, (clipX2 - clipX1) , (clipY1 - clipY2));
+        return new Rectangle(clipX1, clipY1, (clipX2 - clipX1) , (clipY2 - clipY1));
     }
 
     /**
@@ -715,7 +745,7 @@ abstract class Buffer
      */
     private void validateAndApplySettings(int flags, Graphics client)
     {
-        if(!clientChanged(client))
+        if(!clientChanged(client) && (FORCE_SETTINGS & flags) == 0)
         {
             return;
         }
@@ -736,7 +766,7 @@ abstract class Buffer
                     client.currentClip[3] != bufferClip.height)
             {
 
-                Rectangle rect = clipToDisplayCoords(client.currentClip[0], client.currentClip[1],
+                Rectangle rect = clipToWindowCoords(client.currentClip[0], client.currentClip[1],
                                                      client.currentClip[2], client.currentClip[3]);
                 gc.setClip(rect.x, rect.y, rect.width, rect.height, false);
                 bufferClip.x = client.currentClip[0];
@@ -745,7 +775,7 @@ abstract class Buffer
                 bufferClip.height = client.currentClip[3];
             }
         }
-        if((COORS_TRANSLATION & flags) != 0)
+        if((COORDS_TRANSLATION & flags) != 0)
         {
             if((bufferTranslateX != client.translateX) && (bufferTranslateY != client.translateY))
             {
@@ -815,6 +845,9 @@ abstract class Buffer
 
    /**
     * Writes Graphics default values to buffer
+    * @param force If true defaults are written unconditionally to buffer, 
+    *              otherwise only values that different than the ones in buffer
+    *              are written
     */
     private void writeDefaultValuesToBuffer()
     {

@@ -61,11 +61,7 @@ symbian {
 
     contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_10_1_ONWARDS) {
         CONFIG += hb
-        LIBS += -lxqservice
-    }
-
-    contains(PROJECT_DEFINES,RD_JAVA_USIF_NOTIFY_PROGRESS) {
-        LIBS += -lsifnotification
+        LIBS += -lsifnotification -lxqservice
     }
 
     MMP_RULES += \

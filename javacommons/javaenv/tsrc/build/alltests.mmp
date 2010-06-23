@@ -22,8 +22,6 @@ CAPABILITY all -tcb -allfiles -drm
 #include <../../../../inc/java_stdcpp_support_for_exe.hrh>
 #include <domain/osextensions/platform_paths.hrh>
 
-//SYSTEMINCLUDE /epoc32/include 
-
 USERINCLUDE ../../../inc
 USERINCLUDE ../../../../tools/cpputest/include/cpputest
 USERINCLUDE ../../../../tools/cpputest/include/platforms/symbian

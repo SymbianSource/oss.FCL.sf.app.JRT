@@ -51,7 +51,7 @@ public class MobileInfoProperties implements SystemPropertyProvider
 
     private static final String BATTERY_LEVEL = "com.nokia.mid.batterylevel";
 
-    private static final String COUNTRY_CODE = "com.nokia.mid.countrycode";
+    static final String COUNTRY_CODE = "com.nokia.mid.countrycode";
 
     private static final String IMEI = "com.nokia.mid.imei";
 
@@ -59,7 +59,7 @@ public class MobileInfoProperties implements SystemPropertyProvider
 
     private static final String NETWORK_AVAILABILITY = "com.nokia.mid.networkavailability";
 
-    private static final String NETWORK_ID = "com.nokia.mid.networkid";
+    static final String NETWORK_ID = "com.nokia.mid.networkid";
 
     private static final String NETWORK_SIGNAL = "com.nokia.mid.networksignal";
 

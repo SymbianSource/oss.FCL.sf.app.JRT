@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of the License "Eclipse Public License v1.0"
@@ -11,15 +11,18 @@
 *
 * Contributors:
 *
-* Description:  Comms server,
-*    part of Java platform 2.0 javarestoreconverter process
+* Description:  Comms server, part of Java Sif plugin.
+*               When started  in 'commsresult' mode from Java Sif plugin
+*               Java Installer sends the results of the operation
+*               it executes (install, uninstall or component info)
+*               to this server.
 *
 */
 
 
 #include <iostream>
 #include <unistd.h>
-#include <usiferror.h>
+#include <usif/usiferror.h>
 
 #include "comms.h"
 #include "javasymbianoslayer.h"
@@ -69,8 +72,10 @@ int ResultsServer::start()
             "ResultsServer::start iResults.AddIntL ExtendedErrCode err %d", err);
     }
 
-    // TODO: return also localized error message from usif
+    // TODO: return also localized error message (KSifOutParam_ErrMessage and 
+    // perhaps also KSifOutParam_ErrMessageDetails) from usif
     // common localization file after the localized strings are available
+    
 
     iRunning = 1;
     iComms.registerDefaultListener(this);
@@ -145,58 +150,8 @@ void ResultsServer::processMessage(CommsMessage& aMessage)
 
             if (KErrNone != result)
             {
-                // return common error information
-                TRAP(err, iResults.AddIntL(KSifOutParam_ErrCode, result));
-                if (KErrNone != err)
-                {
-                    ELOG1(EJavaInstaller,
-                        "ResultsServer::processMessage iResults.AddIntL ErrCode err %d", err);
-                }
-
-                TRAP(err, iResults.AddIntL(
-                    KSifOutParam_ErrCategory, iIntPairs[L"error-category"]));
-                if (KErrNone != err)
-                {
-                    ELOG1(EJavaInstaller,
-                        "ResultsServer::processMessage iResults.AddIntL ErrCategory err %d",
-                        err);
-                }
-
-                HBufC *message = wstringToBuf(iStringPairs[L"error-message"]);
-                if (message == NULL)
-                {
-                    ELOG(EJavaInstaller,
-                          "ResultsServer::processMessage iResults.wstringToBuf returned NULL ");
-                }
-                else
-                {
-                    TRAP(err, iResults.AddStringL(KSifOutParam_ErrMessage, *message));
-                    if (KErrNone != err)
-                    {
-                        ELOG1(EJavaInstaller,
-                            "ResultsServer::processMessage iResults.AddStringL ErrMessage err %d",
-                            err);
-                    }
-                    delete message;
-                }
-
-                message = wstringToBuf(iStringPairs[L"error-details"]);
-                if (message == NULL)
-                {
-                    ELOG(EJavaInstaller,
-                          "ResultsServer::processMessage iResults.wstringToBuf 2 returned NULL ");
-                }
-                else
-                {
-                    TRAP(err, iResults.AddStringL(KSifOutParam_ErrMessageDetails, *message));
-                    if (KErrNone != err)
-                    {
-                        ELOG1(EJavaInstaller,
-                            "ResultsServer::processMessage iResults.AddStringL ErrMessageDetails "
-                            "err %d", err);
-                    }
-                    delete message;
-                }
+                // return common error information;
+                setCommonErrorInfo(result);
 
                 if (INSTALL_OPERATION == operation)
                 {
@@ -221,20 +176,7 @@ void ResultsServer::processMessage(CommsMessage& aMessage)
 
                 // Overwrite (reset) the default error values set for the case where no
                 // InstallerResultMessage is never received
-                TRAPD(err, iResults.AddIntL(KSifOutParam_ErrCategory, 0));
-                if (KErrNone != err)
-                {
-                    ELOG1(EJavaInstaller,
-                        "ResultsServer::processMessage iResults.AddIntL ErrCategory err %d", err);
-                }
-
-                TRAP(err, iResults.AddIntL(KSifOutParam_ErrCode, 0));
-                if (KErrNone != err)
-                {
-                    ELOG1(EJavaInstaller,
-                        "ResultsServer::processMessage iResults.AddIntL ErrCode err %d", err);
-                }
-
+                resetDefaultErrorValues();
 
                 if (INSTALL_OPERATION == operation)
                 {
@@ -296,6 +238,97 @@ void ResultsServer::processMessage(CommsMessage& aMessage)
     }
 
     clearData();
+}
+
+
+/**
+ * Set common error information.
+ * Note that most of the information is in member variables
+ * iIntPairs and iStringPairs
+ *
+ * @param aResult  the error code to be set
+ */
+void ResultsServer::setCommonErrorInfo(int aResult)
+{
+    // return common error information
+    TRAPD(err, iResults.AddIntL(KSifOutParam_ErrCode, aResult));
+    if (KErrNone != err)
+    {
+        ELOG1(EJavaInstaller,
+            "ResultsServer::setCommonErrorInfo iResults.AddIntL ErrCode err %d", err);
+    }
+
+    TRAP(err, iResults.AddIntL(
+        KSifOutParam_ErrCategory, iIntPairs[L"error-category"]));
+    if (KErrNone != err)
+    {
+        ELOG1(EJavaInstaller,
+            "ResultsServer::setCommonErrorInfo iResults.AddIntL ErrCategory err %d",
+            err);
+    }
+
+    HBufC *message = wstringToBuf(iStringPairs[L"error-message"]);
+    if (message == NULL)
+    {
+        ELOG(EJavaInstaller,
+              "ResultsServer::setCommonErrorInfo iResults.wstringToBuf returned NULL ");
+    }
+    else
+    {
+        TRAP(err, iResults.AddStringL(KSifOutParam_ErrMessage, *message));
+        if (KErrNone != err)
+        {
+            ELOG1(EJavaInstaller,
+                "ResultsServer::setCommonErrorInfo iResults.AddStringL ErrMessage err %d",
+                err);
+        }
+        delete message;
+    }
+
+    message = wstringToBuf(iStringPairs[L"error-details"]);
+    if (message == NULL)
+    {
+        ELOG(EJavaInstaller,
+              "ResultsServer::setCommonErrorInfo iResults.wstringToBuf 2 returned NULL ");
+    }
+    else
+    {
+        TRAP(err, iResults.AddStringL(KSifOutParam_ErrMessageDetails, *message));
+        if (KErrNone != err)
+        {
+            ELOG1(EJavaInstaller,
+                "ResultsServer::setCommonErrorInfo iResults.AddStringL ErrMessageDetails "
+                "err %d", err);
+        }
+        delete message;
+    }
+}
+
+
+/**
+ * Overwrite (reset) the default error values to 'no error'.
+ * The default error values were originally set for the case
+ * where no InstallerResultMessage is never received and we must
+ * return sensible error information.
+ */
+void ResultsServer::resetDefaultErrorValues()
+{
+    TRAPD(err, iResults.AddIntL(KSifOutParam_ErrCategory, 0));
+    if (KErrNone != err)
+    {
+        ELOG1(EJavaInstaller,
+            "ResultsServer::resetDefaultErrorValues iResults.AddIntL ErrCategory err %d", err);
+    }
+
+    TRAP(err, iResults.AddIntL(KSifOutParam_ErrCode, 0));
+    if (KErrNone != err)
+    {
+        ELOG1(EJavaInstaller,
+            "ResultsServer::resetDefaultErrorValues iResults.AddIntL ErrCode err %d", err);
+    }
+
+    // TODO: reset also localized error message KSifOutParam_ErrMessage and 
+    // perhaps also KSifOutParam_ErrMessageDetails if they have been set in start()
 }
 
 

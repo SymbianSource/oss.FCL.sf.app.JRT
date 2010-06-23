@@ -241,10 +241,8 @@ public class InstallationNotifier implements ExeProgressListener
         Log.log("InstallationNotifier.set: progress " + currentPercentage);
         defineProperties();
 
-        if (aCurrentValue == 0 ||
-                aCurrentValue == iMaxValue ||
-                aCurrentValue >= iLastPropertyUpdate + iPropertyProgressStep ||
-                aCurrentValue <= iLastPropertyUpdate - iPropertyProgressStep)
+        if (isUpdateNeeded(aCurrentValue, iMaxValue,
+                           iLastPropertyUpdate, iPropertyProgressStep))
         {
             iLastPropertyUpdate = aCurrentValue;
             Log.log("InstallationNotifier.set: update property to " +
@@ -256,10 +254,8 @@ public class InstallationNotifier implements ExeProgressListener
              currentPercentage);
         }
 
-        if (aCurrentValue == 0 ||
-                aCurrentValue == iMaxValue ||
-                aCurrentValue >= iLastUiUpdate + iUiProgressStep ||
-                aCurrentValue <= iLastUiUpdate - iUiProgressStep)
+        if (isUpdateNeeded(aCurrentValue, iMaxValue,
+                           iLastUiUpdate, iUiProgressStep))
         {
             iLastUiUpdate = aCurrentValue;
             if (iInstallerUi != null)
@@ -379,5 +375,25 @@ public class InstallationNotifier implements ExeProgressListener
             Log.logError(
                 "InstallationNotifier: Deleting property failed", ex);
         }
+    }
+
+    /**
+     * Returns true if progress update is needed, false otherwise.
+     *
+     * @param aCurrent current progress value
+     * @param aMax maximum progress value
+     * @param aPrevious previously updated progress value
+     * @param aStep step between progress updates
+     */
+    private static boolean isUpdateNeeded(
+        int aCurrent, int aMax, int aPrevious, int aStep)
+    {
+        if (aCurrent == 0 || aCurrent == aMax ||
+            aCurrent >= aPrevious + aStep ||
+            aCurrent <= aPrevious - aStep)
+        {
+            return true;
+        }
+        return false;
     }
 }

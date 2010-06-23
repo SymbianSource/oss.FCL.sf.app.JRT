@@ -414,7 +414,7 @@ TBool CWriteableJavaRegistry::IsPresent(
             }
         }
     }
-    catch (ExceptionBase)
+    catch (ExceptionBase& ee)
     {
         ELOG1WSTR(EJavaStorage, "MediaId conversion failed: '%s'", value);
     }

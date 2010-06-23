@@ -36,7 +36,7 @@ CMMACanvasDisplay* CMMACanvasDisplay::NewLC(MMAFunctionServer* aEventSource, job
         new(ELeave) CMMACanvasDisplay();
 
     CleanupStack::PushL(self);
-    self->Construct(aEventSource,obj);
+    self->Construct(aEventSource,NULL,obj);
     return self;
 }
 

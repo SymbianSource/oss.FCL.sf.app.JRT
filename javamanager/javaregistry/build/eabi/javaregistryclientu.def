@@ -209,4 +209,12 @@ EXPORTS
 	_ZNK4Java7Manager8Registry34CWriteableJavaRegistryPackageEntry17UsedUserDiskSpaceEv @ 208 NONAME
 	_ZNK4Java7Manager8Registry34CWriteableJavaRegistryPackageEntry14IsPreinstalledEv @ 209 NONAME
 	_ZNK4Java25CJavaRegistryPackageEntry14IsPreinstalledEv @ 210 NONAME
+	_ZN4Java14CJavaAttributeD0Ev @ 211 NONAME
+	_ZN4Java14CJavaAttributeD1Ev @ 212 NONAME
+	_ZN4Java14CJavaAttributeD2Ev @ 213 NONAME
+	_ZN4Java18CJavaRegistryEntryD0Ev @ 214 NONAME
+	_ZN4Java18CJavaRegistryEntryD1Ev @ 215 NONAME
+	_ZN4Java18CJavaRegistryEntryD2Ev @ 216 NONAME
+	_ZThn4_N4Java14CJavaAttributeD0Ev @ 217 NONAME
+	_ZThn4_N4Java14CJavaAttributeD1Ev @ 218 NONAME
 

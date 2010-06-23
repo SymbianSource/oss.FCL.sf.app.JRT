@@ -30,6 +30,7 @@
                    com.nokia.mj.impl.properties.common.Locale,
                    com.nokia.mj.impl.properties.common.Platform,
                    com.nokia.mj.impl.utils.Formatter,
+                   com.nokia.mj.impl.utils.InstallerErrorMessage,
                    com.nokia.mj.impl.utils.ResourceLoader"/>
 
   <target name="system.properties">

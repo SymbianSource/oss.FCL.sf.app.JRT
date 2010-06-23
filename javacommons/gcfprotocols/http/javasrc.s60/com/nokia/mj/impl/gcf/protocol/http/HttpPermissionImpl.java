@@ -45,7 +45,7 @@ public class HttpPermissionImpl extends PermissionBase
 
     public String toString()
     {
-        return "javax.microedition.io.HttpProtocolPermission";
+        return "javax.microedition.io.Connector.http";
     }
 
     public boolean implies(Permission p)

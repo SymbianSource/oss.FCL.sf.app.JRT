@@ -126,10 +126,11 @@ public abstract class Displayable
         {
             public void run()
             {
-                shell = eswtConstructShell(SWT.SYSTEM_MODAL);
+                shell = eswtConstructShell(SWT.SHELL_TRIM | SWT.PRIMARY_MODAL);
                 eswtSetTitle();
                 contentComp = eswtConstructContent(SWT.NONE);
                 contentArea = eswtLayoutShellContent();
+                eswtInitGraphics();
             }
         });
     }
@@ -184,6 +185,13 @@ public abstract class Displayable
     }
 
     /**
+     * Initializes the Displayable for Graphics drawing. 
+     */
+    void eswtInitGraphics() {
+    
+    }
+    
+    /**
      * Called by Display when Displayable should become visible.
      */
     void eswtHandleShowCurrentEvent()
@@ -191,6 +199,10 @@ public abstract class Displayable
         if(!shell.isDisposed())
         {
             eswtUpdateSizes();
+            if(ticker != null)
+            {
+                ticker.start();
+            }
             shell.addShellListener(eswtShellListener);
             shell.addDisposeListener(eswtDisposeListener);
             shell.addControlListener(eswtControlListener);
@@ -343,6 +355,7 @@ public abstract class Displayable
         if(tickerLabel != null)
         {
             int tickerHeight = tickerLabel.getBounds().height;
+
             contentComp.setBounds(0, tickerHeight,
                                   shellArea.width, shellArea.height - tickerHeight);
         }
@@ -620,6 +633,26 @@ public abstract class Displayable
     }
 
     /**
+     * Gets the commands array.
+     *
+     * @return the commands
+     */
+    Vector getCommands()
+    {
+        return commands;
+    }
+
+    /**
+     * Gets the command listener.
+     *
+     * @return the eswt command listener.
+     */
+    final EswtCommandListener getCommandListener()
+    {
+        return eswtCommandListener;
+    }
+
+    /**
      * Gets width.
      *
      * @return Width of the Displayable in pixels.
@@ -690,10 +723,13 @@ public abstract class Displayable
         });
         if(ticker != null)
         {
-            // Start to scroll the ticker. Ticker may be already running
-            // if it exists in some other displayable already, but
-            // calling this again wont do any harm:
-            ticker.start();
+            if(isLcduiVisible)
+            {
+                // Start to scroll the ticker. Ticker may be already running
+                // if it exists in some other displayable already, but
+                // calling this again wont do any harm:
+                ticker.start();
+            }
         }
     }
 
@@ -746,7 +782,7 @@ public abstract class Displayable
     /**
      * Creates singleton Label instance used by Ticker.
      */
-    private Label getTickerLabel()
+    Label getTickerLabel()
     {
         if(tickerLabel == null)
         {
@@ -856,13 +892,17 @@ public abstract class Displayable
      */
     class EswtShellListener implements ShellListener
     {
-
+    
         public void shellActivated(ShellEvent e)
         {
-            if(!isShellActive)
+            ESWTUIThreadRunner.getInstance().getDisplay()
+            .asyncExec(new Runnable()
             {
-                handleShellActivatedEvent();
-            }
+                public void run()
+                {
+                    handleShellActivatedEvent();
+                }
+            });
         }
 
         public void shellDeactivated(ShellEvent e)
@@ -907,6 +947,7 @@ public abstract class Displayable
      */
     class EswtControlListener implements ControlListener
     {
+    
         public void controlResized(ControlEvent e)
         {
             eswtUpdateSizes();

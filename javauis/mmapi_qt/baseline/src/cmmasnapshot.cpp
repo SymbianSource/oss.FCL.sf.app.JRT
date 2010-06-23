@@ -91,6 +91,8 @@ void CMMASnapshot::TakeSnapShotL(const TDesC& aProperties)
     // take snapshot from player. RunL is called when image is ready
     // or error occures
     iState = ETakingSnapshot;
+    LOG2(EJavaMMAPI, EInfo, "CMMASnapshot::TakeSnapshotL::iSettings->iWidth = %d, iSettings->iHeight = %d",
+         iSettings->iWidth, iSettings->iHeight);
     TSize snapshotSize(iSettings->iWidth, iSettings->iHeight);
     iEncoding = iGUIPlayer->SnapshoterL()->TakeSnapshotL(&iStatus,
                 snapshotSize,

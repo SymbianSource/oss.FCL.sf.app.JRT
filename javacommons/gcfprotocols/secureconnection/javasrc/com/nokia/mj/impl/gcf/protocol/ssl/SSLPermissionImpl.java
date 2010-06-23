@@ -55,7 +55,7 @@ public class SSLPermissionImpl extends PermissionBase
 
     public String toString()
     {
-        return "javax.microedition.io.SSLProtocolPermission";
+        return "javax.microedition.io.Connector.ssl";
     }
 
     public boolean implies(Permission p)

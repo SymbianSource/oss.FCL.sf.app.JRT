@@ -22,7 +22,7 @@
 JNIEXPORT jboolean JNICALL Java_javax_microedition_m3g_Graphics3D__1isProperRenderer
 (JNIEnv* /*aEnv*/, jclass)
 {
-    EGLContext ctx;
+/*    EGLContext ctx;
     EGLConfig config;
     EGLSurface surf;
     EGLint attrib[5];
@@ -78,7 +78,8 @@ JNIEXPORT jboolean JNICALL Java_javax_microedition_m3g_Graphics3D__1isProperRend
     eglDestroySurface(eglGetDisplay(0), surf);
     eglDestroyContext(eglGetDisplay(0), ctx);
 
-    return isProperRenderer;
+    return isProperRenderer;*/
+    return false;
 }
 
 /*

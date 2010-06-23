@@ -869,7 +869,7 @@ void qt_swt_event_widgetMoved(int widgetHandle) {
 void qt_swt_event_widgetPainted(int widgetHandle, int x, int y, int width, int height, int regionHandle) {
 }
 
-void qt_swt_event_widgetResized_pp(int widgetHandle, int oldWidth, int oldHeight, int width, int height) {
+void qt_swt_event_widgetResized_pp(int widgetHandle, int oldWidth, int oldHeight, int width, int height, boolean sendResizeEvent) {
 }
 
 void register_pp () {

@@ -203,7 +203,9 @@ public final class PermissionResolver
                     // add new settings
                     newPermissionInstancesAndSettings.addElement(
                         new PermisionInstanceAndSettings(
-                            p.getPermissionInstance(), newSettings));
+                            p.getPermissionInstance(), 
+                            p.getType(),
+                            newSettings));
                 }
                 else
                 {
@@ -240,6 +242,7 @@ public final class PermissionResolver
                     getResolvedPermission(
                         requestedPermission,
                         policyPermission,
+                        p.getType(),
                         p.getSettings(),
                         requestedPermission.getClass().getName(),
                         requestedPermission.getName(),
@@ -274,6 +277,7 @@ public final class PermissionResolver
                             PolicyBasedPermissionImpl permission1 =
                                 getResolvedPermission(requestedPermission,
                                                       policyPermission,
+                                                      p.getType(),
                                                       p.getSettings(),
                                                       requestedPermission.getClass().getName(),
                                                       requestedPermission.getName(),
@@ -307,6 +311,7 @@ public final class PermissionResolver
                                         // the combined actions
                                         resolvedPermissions.setElementAt(getResolvedPermission(
                                                                              permission1.getPromptDetails(),
+                                                                             p.getType(),
                                                                              p.getSettings(),
                                                                              requestedPermission.getClass().getName(),
                                                                              requestedPermission.getName(),
@@ -358,6 +363,7 @@ public final class PermissionResolver
                 (PermisionInstanceAndSettings)tmp.elementAt(0);
             tmp.removeElementAt(0);
             Permission permission1 = (Permission)instance1.getPermissionInstance();
+            int type = instance1.getType();
             UserSecuritySettings settings1 = instance1.getSettings();
             String compositeAction = "";
             // put the individual actions into a vector so that the composite
@@ -423,6 +429,7 @@ public final class PermissionResolver
                             getResolvedPermission(
                                 requestedPermission,
                                 permission1,
+                                type,
                                 settings1,
                                 requestedPermission.getClass().getName(),
                                 requestedPermission.getName(),
@@ -452,6 +459,7 @@ public final class PermissionResolver
 
     private static PolicyBasedPermissionImpl getResolvedPermission(
         PermissionBase securityPromptDetails,
+        int type,
         UserSecuritySettings userSettings,
         String permissionName,
         String targetName,
@@ -479,6 +487,7 @@ public final class PermissionResolver
                    permissionName,
                    targetName,
                    actionList,
+                   type,
                    userSettings,
                    securityPromptDetails2);
     }
@@ -486,6 +495,7 @@ public final class PermissionResolver
     private static PolicyBasedPermissionImpl getResolvedPermission(
         Permission requestedPermission,
         Object policyPermission,
+        int type,
         UserSecuritySettings userSettings,
         String permissionName,
         String targetName,
@@ -514,6 +524,7 @@ public final class PermissionResolver
                    permissionName,
                    targetName,
                    actionList,
+                   type,
                    userSettings,
                    securityPromptDetails);
     }
@@ -545,7 +556,8 @@ public final class PermissionResolver
                                policyPermissions[i].getActionList());
                 policyPermissionInstancesAndSettings.addElement(
                     new PermisionInstanceAndSettings(p,
-                                                     policyPermissions[i].getUserSecuritySettings()));
+                        policyPermissions[i].getType(),
+                        policyPermissions[i].getUserSecuritySettings()));
             }
             catch (InstantiationException e)
             {
@@ -590,7 +602,8 @@ public final class PermissionResolver
                                grantedPermission.getActionList());
                 grantedPermissionInstancesAndSettings.addElement(
                     new PermisionInstanceAndSettings(p,
-                                                     grantedPermission.getUserSecuritySettings()));
+                    grantedPermission.getType(),
+                    grantedPermission.getUserSecuritySettings()));
             }
             catch (InstantiationException e)
             {
@@ -703,11 +716,13 @@ public final class PermissionResolver
     private static class PermisionInstanceAndSettings
     {
         private Object permissionObject;
+        private int type;
         private UserSecuritySettings settings;
 
-        public PermisionInstanceAndSettings(Object permissionObject, UserSecuritySettings settings)
+        public PermisionInstanceAndSettings(Object permissionObject, int type, UserSecuritySettings settings)
         {
             this.permissionObject = permissionObject;
+            this.type = type;
             this.settings = settings;
         }
 
@@ -719,6 +734,11 @@ public final class PermissionResolver
         public UserSecuritySettings getSettings()
         {
             return settings;
+        }
+        
+        public int getType()
+        {
+            return type;
         }
     }
 }

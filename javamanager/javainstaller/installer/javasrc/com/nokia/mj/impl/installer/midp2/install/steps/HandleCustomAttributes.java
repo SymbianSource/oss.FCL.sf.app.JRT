@@ -56,7 +56,7 @@ public class HandleCustomAttributes extends ExeStep
     {
         if (aBall.iApplicationRegistrator.isOnDeviceKeypadNeeded())
         {
-            // default value when on-screen-keypad is needed
+            // Default value when on-screen-keypad is needed.
             aBall.iSuite.setOnScreenKeypad(SuiteInfo.OSK_GAMEACTIONS);
 
             String attrName = "Nokia-MIDlet-On-Screen-Keypad";
@@ -77,13 +77,16 @@ public class HandleCustomAttributes extends ExeStep
                 }
                 else
                 {
-                    Log.logWarning("Invalid " + attrName + " value " + attrValue);
+                    // Ignore on-screen-keypad attribute with invalid value.
+                    aBall.iSuite.setOnScreenKeypad(SuiteInfo.OSK_UNDEFINED);
+                    Log.logWarning("Ignoring invalid " + attrName +
+                                   " value " + attrValue);
                 }
             }
         }
         else
         {
-            // If the device does not need on-screen-keypad, the value is not set at all
+            // If the device does not need on-screen-keypad, the value is not set at all.
             aBall.iSuite.setOnScreenKeypad(SuiteInfo.OSK_UNDEFINED);
         }
 

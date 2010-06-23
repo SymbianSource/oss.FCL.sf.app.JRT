@@ -62,6 +62,8 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class InstallerUiEswt extends InstallerUi
 {
+    /** Disable UI temporarily. */
+    private static final boolean DISABLE_UI = true;
     /** Default shell style. */
     private static final int SHELL_STYLE =
         SWT.BORDER | SWT.APPLICATION_MODAL | SWT.ON_TOP;
@@ -135,7 +137,6 @@ public class InstallerUiEswt extends InstallerUi
         // Create a hashtable for icons.
         iImageTable = new Hashtable();
         // Create a new thread to be the UI main thread.
-        iUiThreadExists = true;
         UIThreadSupport.startInUIThread(new Runnable()
         {
             public void run()
@@ -154,6 +155,7 @@ public class InstallerUiEswt extends InstallerUi
     private void uiMain()
     {
         log("uiMain: thread started");
+        iUiThreadExists = true;
         try
         {
             // Create the necessary views.
@@ -463,7 +465,7 @@ public class InstallerUiEswt extends InstallerUi
     public void updateProgress(int aProgress)
     {
         super.updateProgress(aProgress);
-        if (true) return; // Disable UI temporarily.
+        if (DISABLE_UI) return; // Disable UI temporarily.
         if (!isUiReady())
         {
             return;
@@ -510,7 +512,7 @@ public class InstallerUiEswt extends InstallerUi
     public void ended()
     {
         super.ended();
-        if (true) return; // Disable UI temporarily.
+        if (DISABLE_UI) return; // Disable UI temporarily.
         if (!isUiReady())
         {
             return;
@@ -555,7 +557,7 @@ public class InstallerUiEswt extends InstallerUi
     public void started(DownloadInfo aDownloadInfo)
     {
         super.started(aDownloadInfo);
-        if (true) return; // Disable UI temporarily.
+        if (DISABLE_UI) return; // Disable UI temporarily.
         if (!isUiReady())
         {
             return;
@@ -582,7 +584,7 @@ public class InstallerUiEswt extends InstallerUi
     public void updateProgress(DownloadInfo aDownloadInfo)
     {
         super.updateProgress(aDownloadInfo);
-        if (true) return; // Disable UI temporarily.
+        if (DISABLE_UI) return; // Disable UI temporarily.
         if (!isUiReady())
         {
             return;
@@ -632,7 +634,7 @@ public class InstallerUiEswt extends InstallerUi
     public void ended(DownloadInfo aDownloadInfo)
     {
         super.ended(aDownloadInfo);
-        if (true) return; // Disable UI temporarily.
+        if (DISABLE_UI) return; // Disable UI temporarily.
         if (!isUiReady())
         {
             return;
@@ -659,7 +661,7 @@ public class InstallerUiEswt extends InstallerUi
     public void setOcspIndicator(boolean aOn)
     {
         super.setOcspIndicator(aOn);
-        if (true) return; // Disable UI temporarily.
+        if (DISABLE_UI) return; // Disable UI temporarily.
         waitForUi();
         if (!isUiReady())
         {
@@ -760,7 +762,7 @@ public class InstallerUiEswt extends InstallerUi
     public void error(InstallerExceptionBase aInstallerException)
     {
         super.error(aInstallerException);
-        if (true) return; // Disable UI temporarily.
+        if (DISABLE_UI) return; // Disable UI temporarily.
 
         waitForUi();
         if (!isUiReady()) {
@@ -857,7 +859,7 @@ public class InstallerUiEswt extends InstallerUi
      */
     public boolean confirm(String aAppName, ConfirmData aConfirmData)
     {
-        if (true) return true; // Disable UI temporarily.
+        if (DISABLE_UI) return true; // Disable UI temporarily.
         waitForUi();
         if (!isUiReady()) {
             return true;
@@ -896,7 +898,7 @@ public class InstallerUiEswt extends InstallerUi
      */
     public String[] getUsernamePassword(String aUrl)
     {
-        if (true) return new String[] { "", "" }; // Disable UI temporarily.
+        if (DISABLE_UI) return new String[] { "", "" }; // Disable UI temporarily.
         waitForUi();
         if (!isUiReady())
         {
@@ -952,7 +954,7 @@ public class InstallerUiEswt extends InstallerUi
      */
     public boolean launchAppQuery(LaunchAppInfo aLaunchAppInfo)
     {
-        if (true) return false; // Disable UI temporarily.
+        if (DISABLE_UI) return false; // Disable UI temporarily.
         waitForUi();
         if (!isUiReady() || iConfirmationsCanceled || getInstallInfo() == null)
         {
@@ -974,16 +976,28 @@ public class InstallerUiEswt extends InstallerUi
             });
         }
         boolean result = iLaunchAppQueryView.launchAppQuery(aLaunchAppInfo);
-        iParent.getDisplay().syncExec(new Runnable()
-        {
-            public void run()
-            {
-                iParent.dispose();
-            }
-        });
+        iLaunchAppQueryView.dispose();
         iLaunchAppQueryView = null;
+        if (!result)
+        {
+            iParent.getDisplay().syncExec(new Runnable()
+            {
+                public void run()
+                {
+                    iParent.dispose();
+                }
+            });
+        }
         log("LaunchAppQuery returns " + result + " for " + aLaunchAppInfo);
         return result;
+    }
+
+    /**
+     * Executes given Runnable synchronously in the UI thread.
+     */
+    public void syncExec(Runnable aRunnable)
+    {
+        iParent.getDisplay().syncExec(aRunnable);
     }
 
     /**

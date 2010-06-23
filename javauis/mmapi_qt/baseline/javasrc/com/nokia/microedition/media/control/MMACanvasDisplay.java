@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -24,7 +24,7 @@ import javax.microedition.lcdui.*;
 import org.eclipse.ercp.swt.mobile.MobileShell;
 import org.eclipse.swt.graphics.Rectangle;
 import com.nokia.microedition.media.control.VideoItem;
-
+import com.nokia.mj.impl.utils.Logger;
 
 
 public class MMACanvasDisplay extends BaseDisplay
@@ -51,20 +51,20 @@ public class MMACanvasDisplay extends BaseDisplay
     {
         iEventSourceHandle = aEventSourceHandle;
         eswtObserver = new MMAPIeSWTObserver();
-        eswtCanvasControl = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtControl(canvas);
+        iControl = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtControl(canvas);
         //super.setESWTControl(eswtCanvasControl);
     }
 
     private void addListeners()
     {
-        eswtObserver.addControlListenerToControl(eswtCanvasControl);
-        eswtObserver.addShellListenerToControl(eswtCanvasControl);
-        eswtObserver.addDisposeListenerToControl(eswtCanvasControl);
+        eswtObserver.addControlListenerToControl(iControl);
+        eswtObserver.addShellListenerToControl(iControl);
+        eswtObserver.addDisposeListenerToControl(iControl);
     }
 
     public void setNativeHandle(int handle)
     {
-        System.out.println("MMACanvasDisplay.java : setNativeHandle :" + handle);
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMACanvasDisplay.java : setNativeHandle :" + handle);
         nativeDisplayHandle = handle;
         eswtObserver.setDisplayToObserver(this);
         addListeners();
@@ -82,24 +82,24 @@ public class MMACanvasDisplay extends BaseDisplay
                 public void run()
                 {
                     org.eclipse.swt.graphics.Point size = new org.eclipse.swt.graphics.Point(width,height);
-                    eswtCanvasControl.redraw();
+                    iControl.redraw();
 
-                    System.out.println("inside videoControl's setDisplaySize redraw called");
+                    Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize redraw called");
                 }
             });
         }
         catch (Exception e)
         {
-            System.out.println("inside videoControl's setDisplaySize....exception is " + e.toString());
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize....exception is " + e.toString());
         }
 
 
-        System.out.println("inside videoControl's setDisplaySize +");
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize +");
         _setDisplaySize(nativeDisplayHandle,
                         iEventSourceHandle,
                         aWidth,
                         aHeight);
-        System.out.println("inside videoControl's setDisplaySize -");
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize -");
     }
 
     public void setDisplayFullScreen(final boolean aFullScreenMode)
@@ -112,16 +112,16 @@ public class MMACanvasDisplay extends BaseDisplay
             {
                 public void run()
                 {
-                    eswtCanvasControl.setBounds(disp.getClientArea());
-                    new MobileShell(disp).setFullScreenMode(aFullScreenMode);
+                    iControl.setBounds(disp.getClientArea());
+                    //new MobileShell(disp).setFullScreenMode(aFullScreenMode);
                     // instruct native to switch to full screen mode
-                    _setFullScreenMode(nativeDisplayHandle,aFullScreenMode);
+                    //_setFullScreenMode(nativeDisplayHandle,aFullScreenMode);
                 }
             });
         }
         catch (Exception e)
         {
-            System.out.println("inside videoControl's setDisplaySize....exception is " + e.toString());
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize....exception is " + e.toString());
         }
 
     }
@@ -139,7 +139,7 @@ public class MMACanvasDisplay extends BaseDisplay
             {
                 public void run()
                 {
-                    org.eclipse.swt.graphics.Point topleftposition = eswtCanvasControl.getLocation();
+                    org.eclipse.swt.graphics.Point topleftposition = iControl.getLocation();
                     eSWTcontrolLocationX = topleftposition.x;
                     eSWTcontrolLocationY = topleftposition.y;
 
@@ -148,17 +148,17 @@ public class MMACanvasDisplay extends BaseDisplay
         }
         catch (Exception e)
         {
-            System.out.println("inside videoControl's setDisplaySize....exception is " + e.toString());
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize....exception is " + e.toString());
         }
         // To Avoid UI thread block
-        System.out.println("inside videoControl's setDisplaySize before calling _setPosition ");
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize before calling _setPosition ");
         _setPosition(nativeDisplayHandle,
                      iEventSourceHandle,
                      eSWTcontrolLocationX,
                      eSWTcontrolLocationY,
                      videoControlLocationX,
                      videoControlLocationY);
-        System.out.println("inside videoControl's setDisplaySize after calling _setPosition ");
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize after calling _setPosition ");
 
         try
         {
@@ -167,19 +167,19 @@ public class MMACanvasDisplay extends BaseDisplay
             {
                 public void run()
                 {
-                    System.out.println("inside videoControl's setDisplaySize before redraw() ");
-                    eswtCanvasControl.redraw();
-                    System.out.println("inside videoControl's setDisplaySize after redraw() ");
+                    Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize before redraw() ");
+                    iControl.redraw();
+                    Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize after redraw() ");
                 }
             });
         }
         catch (Exception e)
         {
-            System.out.println("inside videoControl's setDisplayLocation in redraw()....exception is " + e.toString());
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplayLocation in redraw()....exception is " + e.toString());
         }
 
 
-        System.out.println("inside videoControl's setDisplayLocation coming out of setDisplayLocation()");
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplayLocation coming out of setDisplayLocation()");
     }
 
 
@@ -201,7 +201,7 @@ public class MMACanvasDisplay extends BaseDisplay
         }
         catch (Exception e)
         {
-            System.out.println("inside videoControl's setDisplaySize....exception is " + e.toString());
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize....exception is " + e.toString());
         }
         //System.out.println("inside videoControl's setVisible before native call");
         // _setVisible(nativeDisplayHandle,aVisible);
@@ -220,13 +220,13 @@ public class MMACanvasDisplay extends BaseDisplay
 
                 public void run()
                 {
-                    y = eswtCanvasControl.getSize().y;
+                    y = iControl.getSize().y;
                 }
             });
         }
         catch (Exception e)
         {
-            System.out.println("inside videoControl's setDisplaySize....exception is " + e.toString());
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize....exception is " + e.toString());
         }
         return y;
 
@@ -241,14 +241,14 @@ public class MMACanvasDisplay extends BaseDisplay
             {
                 public void run()
                 {
-                    x = eswtCanvasControl.getSize().x;
+                    x = iControl.getSize().x;
 
                 }
             });
         }
         catch (Exception e)
         {
-            System.out.println("inside videoControl's setDisplaySize....exception is " + e.toString());
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize....exception is " + e.toString());
         }
 
         return x;
@@ -263,14 +263,14 @@ public class MMACanvasDisplay extends BaseDisplay
             {
                 public void run()
                 {
-                    x = eswtCanvasControl.getLocation().x;
+                    x = iControl.getLocation().x;
 
                 }
             });
         }
         catch (Exception e)
         {
-            System.out.println("inside videoControl's setDisplaySize....exception is " + e.toString());
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize....exception is " + e.toString());
         }
         return x;
 
@@ -288,14 +288,14 @@ public class MMACanvasDisplay extends BaseDisplay
             {
                 public void run()
                 {
-                    y = eswtCanvasControl.getLocation().y;
+                    y = iControl.getLocation().y;
 
                 }
             });
         }
         catch (Exception e)
         {
-            System.out.println("inside videoControl's setDisplaySize....exception is " + e.toString());
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize....exception is " + e.toString());
         }
         return y;
     }
@@ -317,7 +317,7 @@ public class MMACanvasDisplay extends BaseDisplay
 
     public void getBoundRect()
     {
-        System.out.println("MMACanvasDisplay.java :getBoundRect()");
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMACanvasDisplay.java :getBoundRect()");
 
         try
         {
@@ -326,7 +326,7 @@ public class MMACanvasDisplay extends BaseDisplay
             {
                 public void run()
                 {
-                    Rectangle boundrect  = eswtCanvasControl.getBounds();
+                    Rectangle boundrect  = iControl.getBounds();
                     displayboundarr[0] = boundrect.x ;
                     displayboundarr[1] = boundrect.y ;
                     displayboundarr[2] = boundrect.width ;
@@ -337,9 +337,9 @@ public class MMACanvasDisplay extends BaseDisplay
         }
         catch (Exception e)
         {
-            System.out.println("inside videoControl's setDisplaySize....exception is " + e.toString());
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize....exception is " + e.toString());
         }
-        System.out.println("MMACanvasDisplay.java :getBoundRect() x =" + displayboundarr[0] + "y ="+ displayboundarr[1] +"width ="+ displayboundarr[2] +"height =" + displayboundarr[3]);
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMACanvasDisplay.java :getBoundRect() x =" + displayboundarr[0] + "y ="+ displayboundarr[1] +"width ="+ displayboundarr[2] +"height =" + displayboundarr[3]);
     }
 
 
@@ -353,22 +353,22 @@ public class MMACanvasDisplay extends BaseDisplay
 
     public void setContainerVisibilityToNative(final boolean active)
     {
-        System.out.println("MMACanvasDisplay.java : SetContainerVisibilityToNative + ");
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMACanvasDisplay.java : SetContainerVisibilityToNative + ");
         new Thread()
         {
             public void run()
             {
-                System.out.println("MMACanvasDisplay.java : SetContainerVisibilityToNative execute the native function in new thread ");
+                Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMACanvasDisplay.java : SetContainerVisibilityToNative execute the native function in new thread ");
                 _setContainerVisible(iEventSourceHandle,nativeDisplayHandle,active);
             }
         } .start();
 
-        System.out.println("MMACanvasDisplay.java : SetContainerVisibilityToNative - ");
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMACanvasDisplay.java : SetContainerVisibilityToNative - ");
     }
 
     public void setWindowResources(VideoItem aVideoItem)
     {
-        System.out.println("MMACanvasDisplay.java: setWindowResources windowHandle ");
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMACanvasDisplay.java: setWindowResources windowHandle ");
         try
         {
             final org.eclipse.swt.widgets.Display disp = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtDisplay();
@@ -377,18 +377,18 @@ public class MMACanvasDisplay extends BaseDisplay
             {
                 public void run()
                 {
-                    Shell shell = eswtCanvasControl.getShell();
+                    Shell shell = iControl.getShell();
                     qwidgetHandle = Internal_PackageSupport.topHandle(shell);
-                    x = eswtCanvasControl.getSize().x;
-                    y = eswtCanvasControl.getSize().y;
+                    x = iControl.getSize().x;
+                    y = iControl.getSize().y;
                     _setWindowToNative(nativeDisplayHandle,qwidgetHandle);
-                    System.out.println("MMACanvasDisplay.java: setWindowResources qwidgetHandle is " + qwidgetHandle);
+                    Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMACanvasDisplay.java: setWindowResources qwidgetHandle is " + qwidgetHandle);
                 }
             });
         }
         catch (Exception e)
         {
-            System.out.println("inside videoControl's setDisplaySize....exception is " + e.toString());
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize....exception is " + e.toString());
         }
         _setNativeWindowSize(nativeDisplayHandle,iEventSourceHandle,x,y);
 

@@ -41,6 +41,7 @@ file=ABI_DIR\BUILD_DIR\javaapplicationsettingsview.dll                          
 data=DATAZ_\resource\qt\plugins\appsettings\javaapplicationsettingsview.qtplugin 		resource\qt\plugins\appsettings\javaapplicationsettingsview.qtplugin
 
 // Captain
+file=ABI_DIR\BUILD_DIR\javacaptain_ext_autostarter.dll             	        SHARED_LIB_DIR\javacaptain_ext_autostarter.dll
 file=ABI_DIR\BUILD_DIR\javacaptain_ext_btdeviceclassmanager.dll             SHARED_LIB_DIR\javacaptain_ext_btdeviceclassmanager.dll
 file=ABI_DIR\BUILD_DIR\javacaptain_ext_config.dll                           SHARED_LIB_DIR\javacaptain_ext_config.dll
 file=ABI_DIR\BUILD_DIR\javacaptain_ext_ondemand_2.dll                       SHARED_LIB_DIR\javacaptain_ext_ondemand_2.dll
@@ -77,10 +78,6 @@ data=DATAZ_\private\102033E6\installer\inst_plugins.cfg                     \pri
 file=ABI_DIR\BUILD_DIR\javalauncher.exe                                     PROGRAMS_DIR\javalauncher.exe
 ECOM_PLUGIN(javaappschemeplugin.dll,javaappschemeplugin.rsc)
 data=ZRESOURCE\plugins\javaappschemeplugin.rsc                              ECOM_RESOURCE_DIR\javaappschemeplugin.rsc
-
-// SID Checker
-ECOM_PLUGIN(javasidchecker.dll,javasidchecker.rsc)
-data=ZRESOURCE\plugins\javasidchecker.rsc                                   ECOM_RESOURCE_DIR\javasidchecker.rsc
 
 #ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 // Usif installer plugin
@@ -119,18 +116,7 @@ data=JAVA_VM_RES_BLD\eswtqtwebkit.odc                                         JA
 // LCDUI
 file=ABI_DIR\BUILD_DIR\openlcdui.dll                                        SHARED_LIB_DIR\openlcdui.dll
 data=JAVA_VM_RES_BLD\openlcdui.odc                                          JAVA_VM_RES_IMG\openlcdui.odc
-// AMMS API
-/*
-file=ABI_DIR\BUILD_DIR\javaamms.dll                                         SHARED_LIB_DIR\javaamms.dll
-data=JAVA_VM_RES_BLD\javaamms.odc                                           JAVA_VM_RES_IMG\javaamms.odc
-*/
-// Mobile Media API
-/*
-file=ABI_DIR\BUILD_DIR\javamobilemedia.dll                                  SHARED_LIB_DIR\javamobilemedia.dll
-data=JAVA_VM_RES_BLD\javamobilemedia.odc                                    JAVA_VM_RES_IMG\javamobilemedia.odc
-data=ABI_DIR\BUILD_DIR\z\system\sounds\digital\CamcorderJavaCapture.wav     \System\Sounds\Digital\CamcorderJavaCapture.wav
-data=ABI_DIR\BUILD_DIR\z\system\sounds\digital\CamcorderJavaStart.wav       \System\Sounds\Digital\CamcorderJavaStart.wav
-*/
+
 // MobInfo API
 file=ABI_DIR\BUILD_DIR\javamobinfo.dll                                      SHARED_LIB_DIR\javamobinfo.dll
 data=JAVA_VM_RES_BLD\javamobinfo.odc                                        JAVA_VM_RES_IMG\javamobinfo.odc
@@ -341,6 +327,15 @@ data=JAVA_VM_RES_BLD\javafile.odc                                           JAVA
 file=ABI_DIR\BUILD_DIR\javaiapinfo.dll                                      SHARED_LIB_DIR\javaiapinfo.dll
 data=JAVA_VM_RES_BLD\javaiapinfo.odc                                        JAVA_VM_RES_IMG\javaiapinfo.odc
 
+// MMAPI
+file=ABI_DIR\BUILD_DIR\javamobilemedia.dll                                      SHARED_LIB_DIR\javamobilemedia.dll
+data=JAVA_VM_RES_BLD\javamobilemedia.odc                                        JAVA_VM_RES_IMG\javamobilemedia.odc
+data=ABI_DIR\BUILD_DIR\z\system\sounds\digital\CamcorderJavaCapture.wav     \System\Sounds\Digital\CamcorderJavaCapture.wav
+data=ABI_DIR\BUILD_DIR\z\system\sounds\digital\CamcorderJavaStart.wav       \System\Sounds\Digital\CamcorderJavaStart.wav
+
+// AMMS
+file=ABI_DIR\BUILD_DIR\javaamms.dll                                      SHARED_LIB_DIR\javaamms.dll
+data=JAVA_VM_RES_BLD\javaamms.odc                                        JAVA_VM_RES_IMG\javaamms.odc
 
 ///////////////////
 // Miscellaneous //

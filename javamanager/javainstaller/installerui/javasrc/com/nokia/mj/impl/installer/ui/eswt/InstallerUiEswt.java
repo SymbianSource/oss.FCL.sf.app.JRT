@@ -126,7 +126,6 @@ public class InstallerUiEswt extends InstallerUi
         // Create a hashtable for icons.
         iImageTable = new Hashtable();
         // Create a new thread to be the UI main thread.
-        iUiThreadExists = true;
         UIThreadSupport.startInUIThread(new Runnable()
         {
             public void run()
@@ -145,6 +144,7 @@ public class InstallerUiEswt extends InstallerUi
     private void uiMain()
     {
         log("uiMain: thread started");
+        iUiThreadExists = true;
         try
         {
             // Create the necessary views.
@@ -991,6 +991,14 @@ public class InstallerUiEswt extends InstallerUi
         iLaunchAppQueryView = null;
         log("LaunchAppQuery returns " + result + " for " + aLaunchAppInfo);
         return result;
+    }
+
+    /**
+     * Executes given Runnable synchronously in the UI thread.
+     */
+    public void syncExec(Runnable aRunnable)
+    {
+        iParent.getDisplay().syncExec(aRunnable);
     }
 
     /**

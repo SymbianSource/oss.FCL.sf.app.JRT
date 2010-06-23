@@ -112,7 +112,7 @@ public class ApplicationUtilsImpl extends ApplicationUtils
 
         boolean userPromptAllowed = false;
         if (aPermission.toString().equals(
-                    "javax.microedition.io.PushRegistryPermission"))
+                    "javax.microedition.io.PushRegistry"))
         {
             // PushRegistryPermission is the only permission which
             // must be prompted from the user during installation.

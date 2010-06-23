@@ -18,7 +18,7 @@
 
 //  Include Files
 #include <logger.h>
-#include <W32STD.H>
+#include <w32std.h>
 #include "cmmasurfacewindow.h"
 #include "cmmaplayer.h"
 
@@ -106,7 +106,15 @@ void CMMASurfaceWindow::SetRWindowRect(const TRect& aRect,
             //iDisplay->UIGetCallback(*this,
 //                                    CMMASurfaceWindow::ESetClipRect);
             // MMAPI UI 3.x req.
-            iDisplay->GetCallbackInUiThread((TInt)CMMASurfaceWindow::ESetClipRect);
+            TBool iseSWT = iDisplay->iseSWT();
+            if (iseSWT)
+            {
+                UICallback((TInt)CMMASurfaceWindow::ESetClipRect);
+            }
+            else
+            {
+                iDisplay->GetCallbackInUiThread((TInt)CMMASurfaceWindow::ESetClipRect);
+            }
         }
     }
     else if (MMMADisplay::EUiThread == aThreadType)
@@ -148,7 +156,7 @@ TInt CMMASurfaceWindow::SetClipRect()
         // setting video draw rect and adjusting it to window
         TRect drawRect = contentRect;
         drawRect.Move(relativeParentRect.iTl);
-
+        LOG2(EJavaMMAPI, EInfo, "CMMASurfaceWindow::SetClipRect(): iRWindowRect size = %d x %d", iRWindowRect.Width(), iRWindowRect.Height());
         TRect clipRect(0,0,iRWindowRect.Width(),iRWindowRect.Height());
         TRAPD(error, iMediaClientVideoDisplay->AddDisplayWindowL(iWindow,
                 clipRect, // new clip rect
@@ -158,8 +166,8 @@ TInt CMMASurfaceWindow::SetClipRect()
                 0.0f, // ignore
                 EVideoRotationNone,
                 EAutoScaleBestFit,
-                EHorizontalAlignLeft,
-                EVerticalAlignTop,
+                EHorizontalAlignCenter,
+                EVerticalAlignCenter,
                 (RWindow*)iWindow));
 
         LOG(EJavaMMAPI,EInfo,"MID::CMMASurfaceWindow::SetClipRect -");
@@ -176,12 +184,21 @@ void CMMASurfaceWindow::SetDrawRect(const TRect& aRect)
          aRect.iBr.iX, aRect.iBr.iY);
 
     iContentRect = aRect;
+    LOG1(EJavaMMAPI,EInfo,"MID::CMMASurfaceWindow::SetDrawRect aRect %d",iContentRect);
     if (iDisplay)
     {
         // iDisplay->UIGetCallback( *this,
         //                         CMMASurfaceWindow::ESetDrawRect );
         // MMAPI UI 3.x req.
-        iDisplay->GetCallbackInUiThread((TInt)CMMASurfaceWindow::ESetDrawRect);
+        TBool iseSWT = iDisplay->iseSWT();
+        if (iseSWT)
+        {
+            UICallback((TInt)CMMASurfaceWindow::ESetDrawRect);
+        }
+        else
+        {
+            iDisplay->GetCallbackInUiThread((TInt)CMMASurfaceWindow::ESetDrawRect);
+        }
         LOG(EJavaMMAPI,EInfo,"MID::CMMASurfaceWindow::SetDrawRect, after GetCallbackInUiThread");
     }
 }
@@ -202,7 +219,7 @@ void CMMASurfaceWindow::RedrawVideoL()
         LOG(EJavaMMAPI, EInfo,  "MID::CMMASurfaceWindow::RedrawVideoL: no MediaClientVideoDisplay set, aborting -");
         return;
     }
-    iVisible = true;
+    //iVisible = true;
     if (iWindow)
     {
         TRect contentRect;
@@ -318,23 +335,23 @@ void CMMASurfaceWindow::SetVisible(TBool aVisible, TBool aUseEventServer)
 
             if (aUseEventServer)
             {
-                //TInt error = StaticRedrawVideo(*this);
-                iDisplay->GetCallbackInUiThread((TInt)CMMASurfaceWindow::ESetDrawRect);
-                //  if (KErrNone != error)
-                // {
-                //ELOG1( EJavaMMAPI, "MID::CMMASurfaceWindow::SetVisible, StaticRedrawVideo error = %d", error);
-                //   }
+                TInt error = StaticRedrawVideo(*this);
+                if (KErrNone != error)
+                {
+                    LOG1(EJavaMMAPI,EInfo,"MID::CMMASurfaceWindow::SetVisible, StaticRedrawVideo error = %d", error);
+                }
             }
-            else // in MMA thread, so switch to UI thread
+            else
             {
                 if (iDisplay)
                 {
-                    //iDisplay->UIGetCallback(*this,
-                    //                     CMMASurfaceWindow::ESetDrawRect );
-                    //MMAPI UI 3.x req.
+
+                    LOG(EJavaMMAPI,EInfo,"MID::CMMASurfaceWindow::SetVisible,calling GetCallbackInUiThread");
                     iDisplay->GetCallbackInUiThread((TInt)CMMASurfaceWindow::ESetDrawRect);
-                    LOG(EJavaMMAPI,EInfo,"MID::CMMASurfaceWindow::SetVisible,GetCallbackInUiThread");
+                    LOG(EJavaMMAPI,EInfo,"MID::CMMASurfaceWindow::SetVisible,after GetCallbackInUiThread");
+
                 }
+
             }
         }
     }
@@ -376,7 +393,15 @@ void CMMASurfaceWindow::SetDisplay(MMMADisplay *aDisplay)
         if (iDisplay)
         {
             // Clear the resources created within the old Display
-            iDisplay->GetCallbackInUiThread((TInt)CMMASurfaceWindow::ECleanVideoDisplay);
+            TBool iseSWT = iDisplay->iseSWT();
+            if (iseSWT)
+            {
+                UICallback((TInt)CMMASurfaceWindow::ECleanVideoDisplay);
+            }
+            else
+            {
+                iDisplay->GetCallbackInUiThread((TInt)CMMASurfaceWindow::ECleanVideoDisplay);
+            }
         }
 
         // Set the new Display
@@ -529,6 +554,7 @@ void CMMASurfaceWindow::UICallback(TInt aCallbackId)
     break;
     case ERemoveSurface:
     {
+        LOG(EJavaMMAPI, EInfo, "MID::CMMASurfaceWindow::MdcUICallback, ERemoveSurface ");
         DoRemoveSurface();
     }
     break;
@@ -607,7 +633,15 @@ void CMMASurfaceWindow::SetSurfaceParameters(const TSurfaceId& aSurfaceId,
         // iDisplay->UIGetCallback( *this, CMMASurfaceWindow::EResetSurfaceParameters );
         //MMAPI UI 3.x req.
         LOG(EJavaMMAPI,EInfo,"CMMASurfaceWindow::SetSurfaceParameters : switch case EUIResourcesAndSurfaceParametersSet +");
-        iDisplay->GetCallbackInUiThread((TInt)CMMASurfaceWindow::EResetSurfaceParameters);
+        TBool iseSWT = iDisplay->iseSWT();
+        if (iseSWT)
+        {
+            UICallback((TInt)CMMASurfaceWindow::EResetSurfaceParameters);
+        }
+        else
+        {
+            iDisplay->GetCallbackInUiThread((TInt)CMMASurfaceWindow::EResetSurfaceParameters);
+        }
         LOG(EJavaMMAPI,EInfo,"CMMASurfaceWindow::SetSurfaceParameters : switch case EUIResourcesAndSurfaceParametersSet -");
         return;
     }
@@ -623,8 +657,16 @@ void CMMASurfaceWindow::SetSurfaceParameters(const TSurfaceId& aSurfaceId,
     {
         //iDisplay->UIGetCallback( *this, CMMASurfaceWindow::EInitVideoDisplay );
         //MMAPI UI 3.x req.
-        iDisplay->GetCallbackInUiThread((TInt)CMMASurfaceWindow::EInitVideoDisplay);
-        LOG(EJavaMMAPI,EInfo,"CMMASurfaceWindow::SetSurfaceParameters,EUIResourcesAndSurfaceParametersSet");
+        TBool iseSWT = iDisplay->iseSWT();
+        if (iseSWT)
+        {
+            UICallback((TInt)CMMASurfaceWindow::EInitVideoDisplay);
+        }
+        else
+        {
+            LOG(EJavaMMAPI,EInfo,"CMMASurfaceWindow::SetSurfaceParameters,EUIResourcesAndSurfaceParametersSet");
+            iDisplay->GetCallbackInUiThread((TInt)CMMASurfaceWindow::EInitVideoDisplay);
+        }
     }
 }
 
@@ -640,7 +682,15 @@ void CMMASurfaceWindow::SetChangedSurfaceParameters(const TSurfaceId& aSurfaceId
     {
         //iDisplay->UIGetCallback(*this, CMMASurfaceWindow::ESetChangedSurfaceParameters);
         LOG(EJavaMMAPI,EInfo,"CMMASurfaceWindow::SetChangedSurfaceParameters + ");
-        iDisplay->GetCallbackInUiThread((TInt)CMMASurfaceWindow::ESetChangedSurfaceParameters);
+        TBool iseSWT = iDisplay->iseSWT();
+        if (iseSWT)
+        {
+            UICallback((TInt)CMMASurfaceWindow::ESetChangedSurfaceParameters);
+        }
+        else
+        {
+            iDisplay->GetCallbackInUiThread((TInt)CMMASurfaceWindow::ESetChangedSurfaceParameters);
+        }
         LOG(EJavaMMAPI,EInfo,"CMMASurfaceWindow::SetChangedSurfaceParameters - ");
 
     }
@@ -648,20 +698,25 @@ void CMMASurfaceWindow::SetChangedSurfaceParameters(const TSurfaceId& aSurfaceId
 
 void CMMASurfaceWindow::RemoveSurface()
 {
+    LOG(EJavaMMAPI, EInfo, "CMMASurfaceWindow::RemoveSurface() +");
     if (iDisplay)
     {
         iDisplay->GetCallbackInUiThread((TInt)CMMASurfaceWindow::ERemoveSurface);
     }
+    LOG(EJavaMMAPI, EInfo, "CMMASurfaceWindow::RemoveSurface() -");
 }
 
 void CMMASurfaceWindow::DoRemoveSurface()
 {
+    LOG(EJavaMMAPI, EInfo, "CMMASurfaceWindow::DoRemoveSurface() +");
     if (iMediaClientVideoDisplay)
     {
+        LOG(EJavaMMAPI,EInfo,"MID::CMMASurfaceWindow::DoRemoveSurface, Removing Surface");
         iMediaClientVideoDisplay->RemoveSurface();
         LOG(EJavaMMAPI,EInfo,"MID::CMMASurfaceWindow::DoRemoveSurface, Surface Removed");
 
     }
+    LOG(EJavaMMAPI, EInfo, "CMMASurfaceWindow::DoRemoveSurface() -");
 }
 
 void CMMASurfaceWindow::DoResetSurfaceParameters()
@@ -767,8 +822,8 @@ void CMMASurfaceWindow::InitVideoDisplayL()
             0.0f, // ignore
             EVideoRotationNone,
             EAutoScaleBestFit,
-            EHorizontalAlignLeft,
-            EVerticalAlignTop,
+            EHorizontalAlignCenter,
+            EVerticalAlignCenter,
             (RWindow*)iWindow);
 
 

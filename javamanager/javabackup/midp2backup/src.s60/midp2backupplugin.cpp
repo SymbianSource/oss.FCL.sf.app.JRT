@@ -29,7 +29,7 @@
 #include "javacommonutils.h"
 #include "logger.h"
 
-#include <sbdefs.h>
+#include <connect/sbdefs.h>
 #include <s32mem.h>
 #include <s32file.h>
 #include <f32file.h>

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -220,6 +220,22 @@ private:
      *  if needed. In this case aFileName is changed also.
      */
     void CopyFilesIfNeededL(TFileName &aFileName);
+
+    /**
+     * Uses the information in aArguments to create the correct command line for
+     * Java Installer.
+     *
+     * @param aCommandLine the buffer to be filled with command line arguments
+     * @param aArguments The array of opaque params for the plug-in. An empty
+     *   array may be passed.  The following param is defined for the "SCOMO Install
+     *   Inactive" operation:
+     *   Name: InstallInactive, Type: Int, Value: ETrue
+     *   If a plug-in receives this param, it must install a component normally but the SCOMO
+     *   State should remain EDeactivated.
+     */
+    void BuildInstallCommandLine(
+        TBuf<1536>& aCommandLine,
+        const COpaqueNamedParams& aArguments);
 
     /**
      * If Java Installer is already running, set error category EInstallerBusy etc

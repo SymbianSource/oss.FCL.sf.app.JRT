@@ -52,8 +52,6 @@ USERINCLUDE     .
 USERINCLUDE     ../inc
 USERINCLUDE     ../../../../inc
 
-SYSTEMINCLUDE   ../../../../inc
-
 // Libraries
 LIBRARY         charconv.lib
 LIBRARY         cone.lib

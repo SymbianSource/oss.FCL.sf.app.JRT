@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -37,8 +37,8 @@ import j2meunit.framework.TestSuite;
  */
 public class DownloaderTest extends TestCase implements InstallerMain
 {
-    private static final String TEST_URL = "http://195.134.231.83:7070/java-server/resources/DS_Snow.jar";
-    private static final int TEST_URL_SIZE = 10241; // test data file size
+    private static final String TEST_URL = "/installertest/HelloWorld.jar";
+    private static final int TEST_URL_SIZE = 1511; // test data file size
 
     // Begin j2meunit test framework setup
 
@@ -172,10 +172,15 @@ public class DownloaderTest extends TestCase implements InstallerMain
     public void testBasicDownload(Downloader downloader,
                                   TestDlListener listener)
     {
+        String server = System.getProperty(
+                            "com.nokia.mj.impl.installer.test.server");
+        assertNotNull("-server=<address>:<port> argument required.", server);
+
         try
         {
             String filename = "test.dat";
-            DownloadInfo dlInfo = new DownloadInfo(TEST_URL, filename);
+            DownloadInfo dlInfo = new DownloadInfo("http://" + server
+                                                   + TEST_URL, filename);
             downloader.start(dlInfo);
             downloader.waitForCompletion();
             assertTrue("Result DlInfo is null",

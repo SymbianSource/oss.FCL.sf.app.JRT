@@ -21,20 +21,10 @@
 #include "javasymbianoslayer.h" // for CleanupResetAndDestroyPushL
 #include "logger.h"
 
-#if defined(SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK) && defined(RD_JAVA_USIF_NOTIFY_PROGRESS)
+#ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 
 #include <usif/sif/sifnotification.h>
 #include <usif/usifcommon.h>
-
-// Helper macro for logging a TDesC.
-#define LOG_TDESC_L(compIdParam, logLevelParam, msgParam, tdescParam) \
-    {                                                               \
-        HBufC8* tdescBuf = HBufC8::NewLC(tdescParam.Length() + 1);  \
-        TPtr8 tdescPtr(tdescBuf->Des());                            \
-        tdescPtr.Append(tdescParam);                                \
-        LOG1(compIdParam, logLevelParam, msgParam, tdescPtr.PtrZ());\
-        CleanupStack::PopAndDestroy(tdescBuf);                      \
-    }
 
 // NAMESPACE DECLARATION
 using namespace java;
@@ -306,7 +296,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
     return KErrNone;
 }
 
-#else // SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK && RD_JAVA_USIF_NOTIFY_PROGRESS
+#else // SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 
 /*
  * Class:     com_nokia_mj_impl_installer_applicationregistrator_SifNotifier
@@ -390,4 +380,4 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
     return KErrNone;
 }
 
-#endif // SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK && RD_JAVA_USIF_NOTIFY_PROGRESS
+#endif // SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK

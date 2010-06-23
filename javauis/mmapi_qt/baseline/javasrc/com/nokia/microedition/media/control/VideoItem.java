@@ -23,6 +23,7 @@ import javax.microedition.lcdui.Graphics;
 import javax.microedition.media.PlayerListener;
 import javax.microedition.media.Player;
 import javax.microedition.lcdui.*;
+import com.nokia.mj.impl.utils.Logger;
 
 /**
  * Item for VideoControl.
@@ -51,9 +52,10 @@ public class VideoItem extends CustomItem implements PlayerListener
     // from PlayerListener
     public void playerUpdate(Player aPlayer, String aEvent, Object aEventData)
     {
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"VideoItem.Playerupdate +");
         if (aEvent == SIZE_CHANGED)
         {
-            invalidate();
+            //invalidate();
         }
     }
 

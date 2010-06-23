@@ -1,2 +1,2 @@
 # Set Java version (must be dot separated, without spaces)
-JAVA_VERSION = 2.2.1
+JAVA_VERSION = 2.2.2

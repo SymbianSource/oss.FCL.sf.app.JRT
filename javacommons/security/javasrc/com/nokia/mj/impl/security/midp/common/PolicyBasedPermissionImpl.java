@@ -33,17 +33,27 @@ public class PolicyBasedPermissionImpl
         String name,
         String target,
         String actionList,
+        int type,
         UserSecuritySettings userSettings,
         PermissionBase securityPromptDetails)
     {
         super(name, target, actionList, userSettings, securityPromptDetails);
+        this.type = type;
+    }
 
-        this.type = USER_TYPE;
+    public PolicyBasedPermissionImpl(
+        String name,
+        String target,
+        String actionList,
+        int type,
+        UserSecuritySettings userSettings)
+    {
+        this(name, target, actionList, type, userSettings, null);
     }
 
     public PolicyBasedPermissionImpl(PolicyBasedPermission p)
     {
-        this(p.getName(), p.getTarget(), p.getActionList(),
+        this(p.getName(), p.getTarget(), p.getActionList(), p.getType(),
              (p.getUserSecuritySettings() != null ?
               new UserSecuritySettingsImpl(p.getUserSecuritySettings().getName(),
                                            p.getUserSecuritySettings().getCurrentInteractionMode(),
@@ -57,7 +67,7 @@ public class PolicyBasedPermissionImpl
         String actionList,
         UserSecuritySettings userSettings)
     {
-        this(name, target, actionList, userSettings, null);
+        this(name, target, actionList, USER_TYPE, userSettings, null);
     }
 
 
@@ -67,10 +77,7 @@ public class PolicyBasedPermissionImpl
         String actionList,
         int type)
     {
-        super(name, target, actionList, null);
-
-        // Check type
-        this.type = type;
+        this(name, target, actionList, type, null, null);
     }
 
     public int getType()

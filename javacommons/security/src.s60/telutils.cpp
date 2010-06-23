@@ -63,6 +63,18 @@ void TelUtils::getImei(std::string& imei)
     }
 }
 
+signed int TelUtils::getSecureTime()
+{
+    TTime t;
+    if (t.UniversalTimeSecure())
+    {
+        t.UniversalTime();
+    }
+    TTimeIntervalSeconds sec;
+    TTime baseTime(MAKE_TINT64(0x00dcddb3 ,0x0f2f8000)); // 1st Jan 1970
+    t.SecondsFrom(baseTime, sec);
+    return sec.Int();
+}
 
 void TelUtils::ConstructL()
 {
