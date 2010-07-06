@@ -28,10 +28,10 @@
 #include "eventconsumerinterface.h"
 #include "extensionplugininterface.h"
 
-namespace java
+namespace java  // codescanner::namespace
 {
 
-namespace captain
+namespace captain  // codescanner::namespace
 {
 
 class CoreInterface;
@@ -48,7 +48,7 @@ public:
     virtual void stopPlugin();
 
     // EventConsumerInterface
-    virtual void event(const std::string& eventProvider,
+    virtual void event(const std::string& aEventProvider,
                        java::comms::CommsMessage& aMsg);
 
     // ExtensionPluginInterface methods
@@ -60,9 +60,6 @@ private:
     void initializeScrPresenceInfoL();
 
     Usif::RSoftwareComponentRegistry *createScrL();
-
-
-    CoreInterface* mCore;
 };
 
 } // namespace captain

@@ -33,4 +33,6 @@ public final class OS {
     //
     public static final native int XQCallInfo_create();
     public static final native boolean XQCallInfo_swt_hasCalls(int handle);
+    
+    public static final native int HbInputSettingProxy_availableHwKeyboard();
 }

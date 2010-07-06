@@ -33,6 +33,8 @@
 
 using namespace Usif;
 
+_LIT(KMediaId, "Media-Id");
+
 /**
  * Return pointer to ExtensionPluginInterface implementation for this
  * extension dll
@@ -42,9 +44,9 @@ java::captain::ExtensionPluginInterface* getExtensionPlugin()
     return new java::captain::ScrUpdater();
 }
 
-namespace java
+namespace java  // codescanner::namespace
 {
-namespace captain
+namespace captain  // codescanner::namespace
 {
 
 using java::fileutils::driveInfo;
@@ -53,7 +55,7 @@ using java::fileutils::DriveListenerInterface;
 /**
  * Empty contructor
  */
-ScrUpdater::ScrUpdater() : mCore(0)
+ScrUpdater::ScrUpdater()
 {
 }
 
@@ -67,11 +69,9 @@ ScrUpdater::~ScrUpdater()
 /**
  * Implement PluginInterface method
  */
-void ScrUpdater::startPlugin(CoreInterface* core)
+void ScrUpdater::startPlugin(CoreInterface* /* aCore */)
 {
     LOG(EJavaCaptain, EInfo, "ScrUpdater plugin started");
-
-    mCore = core;
 }
 
 /**
@@ -79,7 +79,6 @@ void ScrUpdater::startPlugin(CoreInterface* core)
  */
 void ScrUpdater::stopPlugin()
 {
-    mCore = 0;
 }
 
 /**
@@ -96,10 +95,10 @@ EventConsumerInterface* ScrUpdater::getEventConsumer()
  *
  * Implement EventConsumerInterface method
  */
-void ScrUpdater::event(const std::string& eventProvider,
+void ScrUpdater::event(const std::string& aEventProvider,
                        java::comms::CommsMessage& aMsg)
 {
-    if (eventProvider == BOOT_EVENT_PROVIDER)
+    if (aEventProvider == BOOT_EVENT_PROVIDER)
     {
         int bootType = NORMAL_BOOT_C;
         getBootMessageParams(aMsg, bootType);
@@ -131,7 +130,7 @@ void ScrUpdater::event(const std::string& eventProvider,
             break;
         }
     }
-    else if (eventProvider == MMC_EVENT_PROVIDER)
+    else if (aEventProvider == MMC_EVENT_PROVIDER)
     {
         int operation = 0;
         driveInfo di;
@@ -189,27 +188,28 @@ void ScrUpdater::removeScrPresencesL(driveInfo *aInfo)
 
     // Get ids of all Java components in scr
     RArray<TComponentId> componentIdList;
+    CleanupClosePushL(componentIdList);
+
     CComponentFilter *pJavaSwTypeFilter = CComponentFilter::NewLC();
     pJavaSwTypeFilter->SetSoftwareTypeL(Usif::KSoftwareTypeJava);
 
     pScr->GetComponentIdsL(componentIdList, pJavaSwTypeFilter);
     CleanupStack::PopAndDestroy(pJavaSwTypeFilter);
-    CleanupClosePushL(componentIdList);
 
     // For each component check whether it has been installed
     // to the removed drive
     TInt  nComponents = componentIdList.Count();
     TUint removedDrive = (TUint)(aInfo->iRootPath[0]);
     // Now removedDrive contains the drive letter, convert it to drive number 0-25
-    if ((removedDrive > 64) && (removedDrive < 91))
+    if ((removedDrive > 64) && (removedDrive < 91))  // codescanner::magicnumbers
     {
         // 'A' - 'Z'
-        removedDrive -= 65;
+        removedDrive -= 65;  // codescanner::magicnumbers
     }
-    else if ((removedDrive > 96) && (removedDrive < 123))
+    else if ((removedDrive > 96) && (removedDrive < 123))  // codescanner::magicnumbers
     {
         // 'a' - 'z'
-        removedDrive -= 97;
+        removedDrive -= 97;  // codescanner::magicnumbers
     }
     else
     {
@@ -223,7 +223,6 @@ void ScrUpdater::removeScrPresencesL(driveInfo *aInfo)
     LOG2(EJavaCaptain, EInfo, "Number of Java components is %d, removed drive is %d",
         nComponents, removedDrive);
 
-    TBool fPresenceChange = EFalse;
     RArray<TApaAppUpdateInfo> removedApps;
     CleanupClosePushL(removedApps);
 
@@ -262,8 +261,6 @@ void ScrUpdater::removeScrPresencesL(driveInfo *aInfo)
                 "removeScrPresencesL: set component %d to not present",
                 componentIdList[nInd]);
 
-            fPresenceChange = ETrue;
-
             // Gather the Uids of all applications that are no longer present
             RArray<TUid> appsInComponent;
             CleanupClosePushL(appsInComponent);
@@ -274,7 +271,7 @@ void ScrUpdater::removeScrPresencesL(driveInfo *aInfo)
                 TApaAppUpdateInfo appInfo;
                 appInfo.iAppUid = appsInComponent[nInd2];
                 appInfo.iAction = TApaAppUpdateInfo::EAppNotPresent;
-                (void)removedApps.Append(appInfo);
+                removedApps.AppendL(appInfo);
             }
             CleanupStack::PopAndDestroy(&appsInComponent);
         }
@@ -283,27 +280,19 @@ void ScrUpdater::removeScrPresencesL(driveInfo *aInfo)
     }
 
     // Tell AppArc which applications are no longer present
-    while (fPresenceChange)
+    if (removedApps.Count() > 0)
     {
-        if (removedApps.Count() == 0)
-        {
-            ELOG(EJavaCaptain, "removeScrPresencesL: Uids of the removed apps are not known");
-            break;
-        }
-
         RApaLsSession apaSession;
         TInt err = apaSession.Connect();
         if (KErrNone != err)
         {
             ELOG1(EJavaCaptain, "removeScrPresencesL: Error %d when connecting AppArc", err);
-            break;
         }
         else
         {
             CleanupClosePushL(apaSession);
             apaSession.UpdateAppListL(removedApps);
             CleanupStack::PopAndDestroy(); // closes apaSession
-            fPresenceChange = EFalse;
         }
     }
 
@@ -329,12 +318,13 @@ void ScrUpdater::addScrPresencesL(driveInfo *aInfo)
 
     // Get ids of all Java components in scr
     RArray<TComponentId> componentIdList;
+    CleanupClosePushL(componentIdList);
+
     CComponentFilter *pJavaSwTypeFilter = CComponentFilter::NewLC();
     pJavaSwTypeFilter->SetSoftwareTypeL(Usif::KSoftwareTypeJava);
 
     pScr->GetComponentIdsL(componentIdList, pJavaSwTypeFilter);
     CleanupStack::PopAndDestroy(pJavaSwTypeFilter);
-    CleanupClosePushL(componentIdList);
 
     // For each component check whether it has been installed
     // to the added drive AND whether the media id is correct
@@ -344,15 +334,15 @@ void ScrUpdater::addScrPresencesL(driveInfo *aInfo)
     TUint addedMediaId = (TUint)(aInfo->iId);
     TUint addedDrive   = (TUint)(aInfo->iRootPath[0]);
     // Now addedDrive contains the drive letter, convert it to drive number 0-25
-    if ((addedDrive > 64) && (addedDrive < 91))
+    if ((addedDrive > 64) && (addedDrive < 91))  // codescanner::magicnumbers
     {
         // 'A' - 'Z'
-        addedDrive -= 65;
+        addedDrive -= 65;  // codescanner::magicnumbers
     }
-    else if ((addedDrive > 96) && (addedDrive < 123))
+    else if ((addedDrive > 96) && (addedDrive < 123))  // codescanner::magicnumbers
     {
         // 'a' - 'z'
-        addedDrive -= 97;
+        addedDrive -= 97;  // codescanner::magicnumbers
     }
     else
     {
@@ -366,7 +356,6 @@ void ScrUpdater::addScrPresencesL(driveInfo *aInfo)
     LOG2(EJavaCaptain, EInfo, "Number of Java components is %d, added drive is %d",
         nComponents, addedDrive);
 
-    TBool fPresenceChange = EFalse;
     RArray<TApaAppUpdateInfo> addedApps;
     CleanupClosePushL(addedApps);
 
@@ -384,9 +373,9 @@ void ScrUpdater::addScrPresencesL(driveInfo *aInfo)
 
         // When Java Installer registers Java app to SCR it stores also
         // the media id using SetComponentPropertyL(TComponentId aComponentId,
-        // _L("Media-Id")), TInt64 aValue);  (aValue is actually 32 bit int)
+        // _L("Media-Id"), TInt64 aValue);  (aValue is actually 32 bit int)
         CIntPropertyEntry* pMediaIdProperty = (CIntPropertyEntry *)
-            pScr->GetComponentPropertyL(componentIdList[nInd],_L("Media-Id"));
+            pScr->GetComponentPropertyL(componentIdList[nInd], KMediaId);
         if (NULL == pMediaIdProperty)
         {
             ELOG1(EJavaCaptain,
@@ -424,8 +413,6 @@ void ScrUpdater::addScrPresencesL(driveInfo *aInfo)
                     "addScrPresencesL: set component %d to present",
                     componentIdList[nInd]);
 
-                fPresenceChange = ETrue;
-
                 // Gather the Uids of all 'new' applications that are now present
                 RArray<TUid> appsInComponent;
                 CleanupClosePushL(appsInComponent);
@@ -436,7 +423,7 @@ void ScrUpdater::addScrPresencesL(driveInfo *aInfo)
                     TApaAppUpdateInfo appInfo;
                     appInfo.iAppUid = appsInComponent[nInd2];
                     appInfo.iAction = TApaAppUpdateInfo::EAppPresent;
-                    (void)addedApps.Append(appInfo);
+                    addedApps.AppendL(appInfo);
                 }
                 CleanupStack::PopAndDestroy(&appsInComponent);
             }
@@ -447,27 +434,19 @@ void ScrUpdater::addScrPresencesL(driveInfo *aInfo)
     }
 
     // Tell AppArc which 'new' applications are now present
-    while (fPresenceChange)
+    if (addedApps.Count() > 0)
     {
-        if (addedApps.Count() == 0)
-        {
-            ELOG(EJavaCaptain, "addScrPresencesL: Uids of the 'new' apps are not known");
-            break;
-        }
-
         RApaLsSession apaSession;
         TInt err = apaSession.Connect();
         if (KErrNone != err)
         {
             ELOG1(EJavaCaptain, "addScrPresencesL: Error %d when connecting AppArc", err);
-            break;
         }
         else
         {
             CleanupClosePushL(apaSession);
             apaSession.UpdateAppListL(addedApps);
             CleanupStack::PopAndDestroy(); // closes apaSession
-            fPresenceChange = EFalse;
         }
     }
 
@@ -487,7 +466,7 @@ void ScrUpdater::addScrPresencesL(driveInfo *aInfo)
 void ScrUpdater::initializeScrPresenceInfoL()
 {
     __UHEAP_MARK;
-    RFs fs;
+    RFs fs;  // codescanner::rfs
     User::LeaveIfError(fs.Connect());
     CleanupClosePushL(fs);
 
@@ -505,8 +484,8 @@ void ScrUpdater::initializeScrPresenceInfoL()
         err = fs.Volume(volumeInfo, nInd);
         if (KErrNone == err)
         {
-            drivePresent[nInd] = ETrue;
-            driveMediaId[nInd] = volumeInfo.iUniqueID;
+            drivePresent[nInd] = ETrue;  // codescanner::accessArrayElementWithoutCheck2
+            driveMediaId[nInd] = volumeInfo.iUniqueID;  // codescanner::accessArrayElementWithoutCheck2
             // If the media is not removable, media id is not checked
             err2 = fs.Drive(driveInfo, nInd);
             if (KErrNone != err2)
@@ -520,15 +499,15 @@ void ScrUpdater::initializeScrPresenceInfoL()
             {
                 if (!(driveInfo.iDriveAtt & KDriveAttRemovable))
                 {
-                    driveMediaId[nInd] = 0;
+                    driveMediaId[nInd] = 0;  // codescanner::accessArrayElementWithoutCheck2
                 }
             }
         }
         else if (KErrNotReady == err)
         {
             // no volume in this drive
-            drivePresent[nInd] = EFalse;
-            driveMediaId[nInd] = 0;
+            drivePresent[nInd] = EFalse;  // codescanner::accessArrayElementWithoutCheck2
+            driveMediaId[nInd] = 0;  // codescanner::accessArrayElementWithoutCheck2
         }
         else
         {
@@ -573,7 +552,7 @@ void ScrUpdater::initializeScrPresenceInfoL()
         }
 
         CIntPropertyEntry* pMediaIdProperty = (CIntPropertyEntry *)
-            pScr->GetComponentPropertyL(componentIdList[nInd],_L("Media-Id"));
+            pScr->GetComponentPropertyL(componentIdList[nInd], KMediaId);
         if (NULL == pMediaIdProperty)
         {
             ELOG1(EJavaCaptain,
@@ -615,10 +594,10 @@ void ScrUpdater::initializeScrPresenceInfoL()
             continue;
         }
 
-        if (drivePresent[installationDrive])
+        if (drivePresent[installationDrive])  // codescanner::accessArrayElementWithoutCheck2
         {
             // Check also the media id
-            if (driveMediaId[installationDrive] == pMediaIdProperty->IntValue())
+            if (driveMediaId[installationDrive] == pMediaIdProperty->IntValue())  // codescanner::accessArrayElementWithoutCheck2
             {
                 LOG1(EJavaCaptain, EInfo,
                     "initializeScrPresenceInfoL: set component %d to present",
@@ -662,7 +641,7 @@ void ScrUpdater::initializeScrPresenceInfoL()
  */
 RSoftwareComponentRegistry *ScrUpdater::createScrL()
 {
-    RSoftwareComponentRegistry *pScr = new RSoftwareComponentRegistry;
+    RSoftwareComponentRegistry *pScr = new RSoftwareComponentRegistry;  // codescanner::nonleavenew
     if (NULL == pScr)
     {
         ELOG(EJavaInstaller,

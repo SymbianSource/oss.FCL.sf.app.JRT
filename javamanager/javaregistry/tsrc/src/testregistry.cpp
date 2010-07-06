@@ -19,7 +19,7 @@
 #include <string>
 #include <memory>
 
-#include "TestHarness.h"
+#include <CppUTest/TestHarness.h>
 
 #include "javastorage.h"
 #include "javastorageexception.h"

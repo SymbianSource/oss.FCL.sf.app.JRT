@@ -649,7 +649,7 @@ protected void destroy () {
     if(notifyExit) {
         // Notify MIDP runtime to watch that the MIDlet exits. 
         // For other runtime environments this does nothing. 
-        ExitNotificationWrapper.notifyExit();
+        ExitNotificationWrapper.uiDisposed();
     }
 }
 
@@ -1255,6 +1255,13 @@ static private boolean handleNativeSwtEvent(Widget widget, int widgetHandle,
         return false;
     case OS.QSWTEVENT_BUFFERFLUSH:
         widget.qt_swt_event_bufferFlush();
+        return false;
+    case OS.QSWTEVENT_SYMBIAN_WINDOW_FULLY_VISIBLE:
+    case OS.QSWTEVENT_SYMBIAN_WINDOW_PARTIALLY_VISIBLE:
+        widget.qt_swt_event_symbianWindowShow();
+        return false;
+    case OS.QSWTEVENT_SYMBIAN_WINDOW_NOT_VISIBLE:
+        widget.qt_swt_event_symbianWindowHide();
         return false;
     default:
         return false;

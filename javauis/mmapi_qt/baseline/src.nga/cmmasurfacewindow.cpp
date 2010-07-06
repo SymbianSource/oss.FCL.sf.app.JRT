@@ -184,7 +184,7 @@ void CMMASurfaceWindow::SetDrawRect(const TRect& aRect)
          aRect.iBr.iX, aRect.iBr.iY);
 
     iContentRect = aRect;
-    LOG1(EJavaMMAPI,EInfo,"MID::CMMASurfaceWindow::SetDrawRect aRect %d",iContentRect);
+    LOG2(EJavaMMAPI,EInfo,"MID::CMMASurfaceWindow::SetDrawRect aRect size = (%d,%d) ",iContentRect.Height(),iContentRect.Width());
     if (iDisplay)
     {
         // iDisplay->UIGetCallback( *this,

@@ -109,7 +109,7 @@ private:
     static TInt supportThreadEntryPoint(TAny* aParams);
     static TInt trappedSupportThreadEntryPoint(TAny* aParams);
     static void startSupportThread(TAny* aParams);
-    static void notifyExitCmd(JNIEnv* aEnv);
+    static void notifyUIThreadExit(JNIEnv* aEnv);
 };
 
 }}

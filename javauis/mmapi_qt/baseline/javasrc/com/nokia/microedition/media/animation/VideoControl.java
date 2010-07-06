@@ -96,6 +96,7 @@ public class VideoControl extends ControlImpl implements
     // Global??? yes because we need to remove it from player listener, while finalizer will be called
     private VideoItem iVideoItem;
 
+    ESWTinitializeListener iESWTinitializeListener;
 
     /**
      * Constructor of VideoControl
@@ -104,6 +105,7 @@ public class VideoControl extends ControlImpl implements
     public VideoControl(Player player)
     {
         this.iPlayer=player;
+        iESWTinitializeListener=(AnimationPlayer)iPlayer;
     }
     /**
      *
@@ -226,16 +228,23 @@ public class VideoControl extends ControlImpl implements
             throw new IllegalStateException(
                 "VideoControl.initDisplayMode() not called yet");
         }
-        Image image=((AnimationPlayer)iPlayer).getCurrentFrame(aImageType);
-        byte bytArry[]= null;//getByteArray(image);
-        // TODO Enable the permission check
-        // Commented out below line, because I was getting exception
-        // Check the permission here, so 'the moment' is not lost?
-        //Security.ensurePermission(PERMISSION, PERMISSION, PERM_ARGS);
+        String supportedFormat=System.getProperty("video.snapshot.encodings");
+        if (aImageType==null)
+        {
+            aImageType=supportedFormat.substring(0, supportedFormat.indexOf(' '));
+        }
+        else if (supportedFormat.indexOf(aImageType)==-1)
+        {
+            throw new MediaException("Unsupported image type: " + aImageType);
+        }
+        byte data[]=((AnimationPlayer)iPlayer).getCurrentFrame(aImageType);
+        //TODO before returning the check permissions here
+        // we are making late check here, so that moment should not be lost.
+
 //        ApplicationUtils appUtils = ApplicationUtils.getInstance();
 //        PlayerPermission per = new PlayerPermission("audio/video recording","snapshot");
 //        appUtils.checkPermission(per);
-        return bytArry;
+        return data;
     }
 
     /**
@@ -287,11 +296,13 @@ public class VideoControl extends ControlImpl implements
             // Following line will return the same Display object
             // Which is created in Midlet
             iDisplay =Display.getDefault();
+            iESWTinitializeListener.notifyDisplayAvailable(iDisplay);
         }
         else
         {
             // Get the Display object of ESWT
             iDisplay = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtDisplay();
+            iESWTinitializeListener.notifyDisplayAvailable(iDisplay);
         }
         if (aMode == USE_GUI_PRIMITIVE)
         {
@@ -312,6 +323,7 @@ public class VideoControl extends ControlImpl implements
                     // Since it is eswtControl itself so no need of LCDUIInvoker here
                     // assign it in iControl and return immediately from here
                     iControl=(Control)guiObject;
+                    iESWTinitializeListener.notifyControlAvailable(iControl);
                     // Now we will change the status, when MIDlet developer will call the setParent
                     iStatus = USE_GUI_PRIMITIVE;
                     return iControl;
@@ -348,7 +360,8 @@ public class VideoControl extends ControlImpl implements
             }
             iControl = com.nokia.mj.impl.nokialcdui.LCDUIInvoker
                        .getEswtControl(aArg);
-
+            //in this case Control will be provided immediately
+            iESWTinitializeListener.notifyControlAvailable(iControl);
             //If USE_DIRECT_VIDEO is set, the video by default is not
             //shown when the canvas is displayed until setVisible(true) is called
             //iIsControlVisible variable of AnimationPlayer class decides, whether
@@ -372,12 +385,9 @@ public class VideoControl extends ControlImpl implements
      */
     private Object initLCDUI()
     {
-        final String DEBUG_STR="VideoControl::initLCDUI()";
-        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,DEBUG_STR+"+");
         iVideoItem = new VideoItem(((AnimationPlayer)iPlayer).getImageDimension());
         iPlayer.addPlayerListener(iVideoItem);
         iStatus = USE_GUI_PRIMITIVE;
-        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,DEBUG_STR+"-");
         return iVideoItem;
     }
 
@@ -518,6 +528,7 @@ public class VideoControl extends ControlImpl implements
                 "VideoControl.initDisplayMode() not called yet");
         }
         //if this is in case of form, return silently
+        // No need to display the CustomItem in full screen mode
         //This is as per earlier NOKIA implementation,
         if (iVideoItem!=null)
         {
@@ -554,13 +565,22 @@ public class VideoControl extends ControlImpl implements
      */
     public void setDisplayLocation(int aX, int aY)
     {
+        if (iStatus == USE_GUI_PRIMITIVE)
+        {
+            // In USE_GUI_PRIMITIVE mode, this call will be ignored.
+            return;
+        }
+        if (iStatus != USE_DIRECT_VIDEO)
+        {
+            // This method only works when the USE_DIRECT_VIDEO mode is set.
+            throw new IllegalStateException();
+        }
         // Need to ignore this call in case of USE_GUI_PRIMITIVE
         // in case of customItem, we are getting canvasExtension as control
         // and in this case we need to ignore the setDisplayLocation call.
         // it is also possible that iControl may be null( it will be null until and unless
         // notifyControlAvailable function is not get called)
-        System.out.println("VideoControl::setDisplayLocation() curretn status is "+iStatus);
-        if (iControl==null || (iControl instanceof org.eclipse.swt.internal.extension.CanvasExtension))
+        if (iControl==null)// || (iControl instanceof org.eclipse.swt.internal.extension.CanvasExtension))
             return ;
         ((AnimationPlayer)iPlayer).setDisplayLocation(aX, aY);
     }
@@ -632,20 +652,20 @@ public class VideoControl extends ControlImpl implements
     /**
      *
      * @return Display object retrieved from ESWT
-     */
-    Display getiDisplay()
-    {
-        return iDisplay;
-    }
+    //     */
+//    Display getiDisplay()
+//    {
+//        return iDisplay;
+//    }
 
     /**
      *
      * @return
      */
-    Control getControl()
-    {
-        return iControl;
-    }
+//    Control getControl()
+//    {
+//        return iControl;
+//    }
     /**
      * Function of ItemStateChangeListener
      * Notified by LCDUI implementation
@@ -656,11 +676,8 @@ public class VideoControl extends ControlImpl implements
     {
         final String DEBUG_STR= "VideoControl::notifyControlAvailable(Control ctrl,Item item)";
         iControl=ctrl;
+        iESWTinitializeListener.notifyControlAvailable(iControl);
         Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo, DEBUG_STR+"Control is "+ctrl.hashCode()+ " Item is "+item);
-        //TODO is it proper here to put the below line in try/catch?, remove if we can.
-        // Otherwise it may deteriorate the performance, as in case of CustomItem on each
-        // repaint, eSWT control is getting destroyed, and reconstructed
-        ((AnimationPlayer)iPlayer).addPaintListener(iControl);
     }
     /**
      * Function of ItemStateChangeListener

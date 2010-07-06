@@ -23,7 +23,7 @@ CONFIG -= qt
 symbian {
     TARGET.UID2          = 0
     TARGET.UID3          = 0xE0E5E262
-    TARGET.CAPABILITY    = WriteDeviceData TrustedUI
+    TARGET.CAPABILITY    = all -tcb -drm
 
 
     LIBS +=  -lestor -lapparc -lapgrfx -lefsrv -lsif

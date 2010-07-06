@@ -24,6 +24,7 @@
 #include <stdio.h>
 #endif
 
+#include <cstring>
 #include <errno.h>
 #include "logger.h"
 

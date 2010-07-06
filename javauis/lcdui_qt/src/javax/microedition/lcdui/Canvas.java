@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2009, 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -30,6 +30,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.extension.CompositeExtension;
 import org.eclipse.swt.internal.qt.graphics.WindowSurface;
+import org.eclipse.swt.internal.extension.MobileShellExtension;
+import org.eclipse.swt.internal.qt.SymbianWindowVisibilityListener;
 
 
 /**
@@ -172,16 +174,19 @@ public abstract class Canvas extends Displayable
     private CanvasShellMouseListener mouseListener =
         new CanvasShellMouseListener();
 
+    private CanvasShellVisibilityListener shellVisibilityListener =
+        new CanvasShellVisibilityListener();
+
     // Canvas Graphics object passed to paint(Graphics g)
     private Graphics canvasGraphics;
 
     // Graphics object for transferring return values
     // from UI thread
     private Graphics tempGraphics;
-    
+
     // Graphics command buffer for this instance
     Buffer graphicsBuffer;
-    
+
     //On Screen Keypad
     //private Composite keypadComposite;
     private CanvasKeypad onScreenkeypad;
@@ -243,7 +248,6 @@ public abstract class Canvas extends Displayable
         keysPressed = new Vector();
     }
 
-
     /**
      * Disposes this instance
      * Called when finalizer is destroying this instance.
@@ -264,7 +268,7 @@ public abstract class Canvas extends Displayable
                 synchronized(this)
                 {
                     objectCount--;
-                    
+
                     if((objectCount == 0) || isMode(GAME_CANVAS))
                     {
                         mShell.dispose();
@@ -289,7 +293,6 @@ public abstract class Canvas extends Displayable
             }
         });
     }
-
 
     /* (non-Javadoc)
      * @see Displayable#eswtConstructShell(int)
@@ -317,7 +320,7 @@ public abstract class Canvas extends Displayable
         // so this has no effect but on other platforms explicit maximizing
         // might be needed.
         mShell.setMaximized(true);
-        
+
         return mShell;
     }
 
@@ -429,19 +432,17 @@ public abstract class Canvas extends Displayable
 
         canvasComp = super.eswtConstructContent(style);
         canvasComp.setVisible(false);
-        
+
         createOnScreenKeypad();
+
+        // create graphics buffer
+        graphicsBuffer = Buffer.createInstance(this, canvasComp);
 
         return canvasComp;
     }
 
-    void eswtInitGraphics() {
-        // create graphics buffer
-        graphicsBuffer = Buffer.createInstance(this, canvasComp);
-    }
-	
     /**
-     * Creates OSK(OnScreenKeypad), shared Keypad will be created for Canvas, 
+     * Creates OSK(OnScreenKeypad), shared Keypad will be created for Canvas,
      * seperate OSK will be created for each GameCanvas.
      */
     CanvasKeypad createOnScreenKeypad()
@@ -475,7 +476,6 @@ public abstract class Canvas extends Displayable
         return null;
     }
 
-
     Rectangle eswtLayoutShellContent()
     {
         Rectangle shellArea = mShell.getClientArea();
@@ -488,7 +488,6 @@ public abstract class Canvas extends Displayable
         canvasComp.setFocus();
         return canvasComp.getClientArea();
     }
-
 
     /* (non-Javadoc)
      * @see Displayable#eswtHandleShowCurrentEvent()
@@ -516,6 +515,7 @@ public abstract class Canvas extends Displayable
         getContentComp().addPaintListener(paintListener);
         getContentComp().addMouseListener(mouseListener);
         getContentComp().addMouseMoveListener(mouseListener);
+        ((MobileShellExtension)getShell()).addSymbianWindowVisibilityListener(shellVisibilityListener);
     }
 
     /* (non-Javadoc)
@@ -534,6 +534,7 @@ public abstract class Canvas extends Displayable
         getContentComp().removePaintListener(paintListener);
         getContentComp().removeMouseListener(mouseListener);
         getContentComp().removeMouseMoveListener(mouseListener);
+        ((MobileShellExtension)getShell()).removeSymbianWindowVisibilityListener(shellVisibilityListener);
     }
 
     /**
@@ -651,10 +652,10 @@ public abstract class Canvas extends Displayable
                         tickerLabel.setLocation(Integer.MIN_VALUE, 0);
                     }
 
-					if(isMode(CURRENTLY_VISIBLE))
-					{
-	                    tickerLabel.setVisible(!isMode(FULLSCREEN_MODE));
-					}
+                    if(isMode(CURRENTLY_VISIBLE))
+                    {
+                        tickerLabel.setVisible(!isMode(FULLSCREEN_MODE));
+                    }
                 }
 
                 if(isMode(CURRENTLY_VISIBLE))
@@ -773,7 +774,6 @@ public abstract class Canvas extends Displayable
 
     }
 
-
     /**
      * Callback to be implemented by the application to render the
      * <code>Canvas</code>. The clip region of <code>Graphics</code> object
@@ -889,7 +889,6 @@ public abstract class Canvas extends Displayable
         setMode(SUPPRESS_GAMEKEYS, suppressKeys);
     }
 
-
     /**
      * Gets composite that contains Canvas content.
      *
@@ -900,14 +899,13 @@ public abstract class Canvas extends Displayable
         return canvasComp;
     }
 
-
     /**
      * Get game canvas frame buffer graphics.
      */
     final Graphics getGameBufferGraphics()
     {
         tempGraphics = null;
-        ESWTUIThreadRunner.safeSyncExec(new Runnable() 
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
         {
             public void run()
             {
@@ -958,13 +956,13 @@ public abstract class Canvas extends Displayable
     void flushGameBuffer(final int x, final int y, final int width,
                          final int height)
     {
-        // This is serialized with the 
+        // This is serialized with the
         // paint callback processing
         synchronized(flushLock)
         {
             synchronized(graphicsBuffer)
             {
-                 ESWTUIThreadRunner.safeSyncExec(new Runnable() 
+                 ESWTUIThreadRunner.safeSyncExec(new Runnable()
                 {
                     public void run()
                     {
@@ -974,7 +972,7 @@ public abstract class Canvas extends Displayable
                 });
             }
         }
-    }    
+    }
 
     /**
      * Called by ShellListener when shell gets activated.
@@ -1012,7 +1010,7 @@ public abstract class Canvas extends Displayable
     {
         super.eswtHandleResizeEvent(width, height);
         // update new bounds to graphicsBuffer
-        // this call must not be synchronized as we 
+        // this call must not be synchronized as we
         // cannot use locking in UI thread
         graphicsBuffer.setControlBounds(getContentComp());
         synchronized(cleanupLock)
@@ -1065,7 +1063,7 @@ public abstract class Canvas extends Displayable
         public void paintControl(PaintEvent pe)
         {
             // Check if we got here from buffer flush
-            if(graphicsBuffer.isPaintingActive()) 
+            if(graphicsBuffer.isPaintingActive())
             {
                 graphicsBuffer.blitToDisplay(pe.gc.getGCData().internalGc, null);
             }
@@ -1142,14 +1140,14 @@ public abstract class Canvas extends Displayable
         {
             // It's possible that this Canvas is sent to background
             // right after the visibility is checked here, however
-            // it is okay as in such case we just do one extra paint 
+            // it is okay as in such case we just do one extra paint
             // callback. The visibility change cannot be synchronized with
             // this method, since it would expose implementation to deadlock
             if(!isMode(CURRENTLY_VISIBLE))
             {
                 return;
             }
-            
+
             // Decide the area going to be painted by the callback.
             final int redrawNowX;
             final int redrawNowY;
@@ -1221,9 +1219,9 @@ public abstract class Canvas extends Displayable
             paint(canvasGraphics);
 
             // Blit frame to display
-            synchronized(graphicsBuffer) 
+            synchronized(graphicsBuffer)
             {
-                ESWTUIThreadRunner.safeSyncExec(new Runnable() 
+                ESWTUIThreadRunner.safeSyncExec(new Runnable()
                 {
                      public void run()
                     {
@@ -1306,7 +1304,6 @@ public abstract class Canvas extends Displayable
 
         }
     }
-
 
     /*
      * UI thread calls.
@@ -1560,6 +1557,16 @@ public abstract class Canvas extends Displayable
         public void run()
         {
             setMode(SUPPRESS_DRAGEVENT, false);
+        }
+    }
+
+    class CanvasShellVisibilityListener implements SymbianWindowVisibilityListener
+    {
+        public void handleSymbianWindowVisibilityChange(Widget widget, boolean visible) {
+            if (javax.microedition.lcdui.Canvas.this.getShell() == widget)
+            {
+                graphicsBuffer.getWindowSurface().handleSymbianWindowVisibilityChange(visible);
+            }
         }
     }
 }

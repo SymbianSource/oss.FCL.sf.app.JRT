@@ -77,6 +77,7 @@
 #include <QLocale>
 #include <QInputContextFactory>
 #include <QChar>
+#include <QLibrary>
 
 #ifdef __SYMBIAN32__
 #include <xqservicerequest.h>
@@ -84,6 +85,7 @@
 #include <cntservicescontact.h>
 #include <qnetworkconfigmanager.h>
 #include <qnetworkconfiguration.h>
+#include <hbinputsettingproxy.h>
 #endif
 
 #include <org_eclipse_swt_internal_qt_OS.h>
@@ -167,6 +169,29 @@ JNIEXPORT jint JNICALL OS_NATIVE(QApplication_1swt_1new)
             jniUtils->Throw( aJniEnv, ESwtErrorUnspecified );
             }
         args->setParent( app );
+
+// Load qttestability plugin. Normally QApplication does this, but on Symbian it fails, so we need to
+// load the plugin manually. Will be fixed to Qt 4.7.
+#if !defined(QT_NO_LIBRARY)
+        QLibrary testLib("qttestability");
+        if (testLib.load())
+            {
+            typedef void (*TasInitialize)(void);
+            TasInitialize initFunction = (TasInitialize)testLib.resolve("qt_testability_init");
+#ifdef Q_OS_SYMBIAN
+            //not found so use ordinal
+            if (!initFunction)
+                {
+                initFunction = (TasInitialize)testLib.resolve("1");
+                }
+#endif
+            if (initFunction)
+                {
+                initFunction();
+                }
+            }
+#endif
+
         }
     catch(...)
         {
@@ -11302,6 +11327,27 @@ JNIEXPORT jstring JNICALL OS_NATIVE( QInputContextFactory_1swt_1key )
         }
     SWT_CATCH
     return strKey;
+    }
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_extension_OS_HbInputSettingProxy_1availableHwKeyboard
+    (JNIEnv* aJniEnv, jclass)
+    {
+    jint result = 0;
+#ifdef __SYMBIAN32__
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        HbInputSettingProxy* hbisp = HbInputSettingProxy::instance();
+        QList<HbKeyboardType> keyBoards;
+        hbisp->availableHwKeyboard(keyBoards);
+        if(keyBoards.size()>0)
+            {
+            result = keyBoards[0];
+            }
+        }
+    SWT_CATCH
+#endif
+    return result;
     }
 
 //

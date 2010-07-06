@@ -25,9 +25,7 @@ DEFINES += RD_JAVA_OMA_DRM_V2
 DEFINES += __JAVA_JSR234_TUNER
 
 
-INCLUDEPATH +=  /epoc32/include/mmf/common \
-                /epoc32/include/caf \
-                ../ammscontrol/inc \
+INCLUDEPATH +=  ../ammscontrol/inc \
                 ../ammscontrol/audio3D/inc \
                 ../ammscontrol/audioeffect/inc \
                 ../mmacontrol/inc \
@@ -36,8 +34,7 @@ INCLUDEPATH +=  /epoc32/include/mmf/common \
                 ../src_tuner/native/inc \
                 ../ammscontrol/inc \
                 ../../mmapi_qt/baseline/inc \
-                ../../mmapi_qt/utils/inc \
-                 /epoc32/include/mw/Qt 
+                ../../mmapi_qt/utils/inc
 
 
 SOURCES +=  ../ammscontrol/src/*.cpp \

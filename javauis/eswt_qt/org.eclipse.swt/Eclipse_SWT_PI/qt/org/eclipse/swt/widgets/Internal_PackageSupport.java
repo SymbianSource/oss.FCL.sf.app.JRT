@@ -16,6 +16,7 @@ import org.eclipse.ercp.swt.mobile.MobileDevice;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.qt.CommandArranger;
+import org.eclipse.swt.internal.qt.SymbianWindowVisibilityListener;
 import org.eclipse.swt.internal.qt.graphics.WindowSurface;
 
 /**
@@ -305,6 +306,12 @@ public static WindowSurface getWindowsurface(Shell s) {
 }
 public static int windowFlagsFromStyle(Shell s) {
     return s.windowFlagsFromStyle();
+}
+public static void addSymbianWindowVisibilityListener(Shell s, SymbianWindowVisibilityListener listener) {
+    s.addSymbianWindowVisibilityListener_pp(listener);
+}
+public static void removeSymbianWindowVisibilityListener(Shell s, SymbianWindowVisibilityListener listener) {
+    s.removeSymbianWindowVisibilityListener_pp(listener);
 }
 /*
  * From the class Table

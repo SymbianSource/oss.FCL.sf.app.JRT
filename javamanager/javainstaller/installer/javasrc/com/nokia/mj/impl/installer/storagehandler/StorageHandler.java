@@ -1091,13 +1091,11 @@ public class StorageHandler
 
     /**
      * Removes preinstall state for given suite from
-     * preinstall table but only if preinstall state
-     * in given SuiteInfo is SuiteInfo.STATE_INSTALLED.
+     * preinstall table 
      */
     private void removePreinstallState(SuiteInfo aSuiteInfo)
     {
-        if (aSuiteInfo == null ||
-                aSuiteInfo.iPreinstallState != aSuiteInfo.STATE_INSTALLED)
+        if (aSuiteInfo == null)
         {
             return;
         }

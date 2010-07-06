@@ -26,7 +26,7 @@
 // CONSTANTS
 const TImplementationProxy KImplementationTable[] =
     { IMPLEMENTATION_PROXY_ENTRY(KJavaSifPluginEcomImplUid,
-                                 Java::Installer::CJavaSifPlugin::NewL)
+                                 java::installer::CJavaSifPlugin::NewL)
     };
 
 // -----------------------------------------------------------------------------

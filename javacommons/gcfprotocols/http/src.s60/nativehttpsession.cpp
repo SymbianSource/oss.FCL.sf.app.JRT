@@ -49,10 +49,10 @@ NativeHttpSession::NativeHttpSession(): java::util::FunctionServer("Myhttp1Serve
 TInt NativeHttpSession::NewL(JNIEnv& aJni, jobject aPeer,/* TJavaEventServer aServer,*/ TInt aType, TInt aAPNId, TInt * aErr, TInt * apnerr)
 {
     NativeHttpSession* self =   new(ELeave) NativeHttpSession();
-    
+
     *aErr = self->ConstructL(aJni, aPeer  /* aServer*/, aType, aAPNId, apnerr);
     LOG1(ESOCKET,EInfo,"NativeHttpSession::NewL - aErr : %d",*aErr);
-   
+
     self->attachToVm(aJni,aPeer);
     // Pop the cleanup of the object and create a handle:
     return reinterpret_cast<TInt>(self); //selfCleanup.GetHandle();
@@ -119,17 +119,17 @@ TInt NativeHttpSession::ExecuteCreateHttpSessionL(int aSelfhandle, TInt aType, T
 
 void NativeHttpSession::doSubmitCallback(TInt aStatus,jobject &aPeer)
 {
-    LOG(ESOCKET,EInfo,"+doSubmitCallback1");    
+    LOG(ESOCKET,EInfo,"+doSubmitCallback1");
     jobject localPeerObject = mJniEnv->NewLocalRef(aPeer);
-    if(localPeerObject)
+    if (localPeerObject)
     {
-    		// java side peer object may be GC'ed when this call is being made. 
-    		mJniEnv->CallVoidMethod(aPeer,iSubmitCallbackMethodID,aStatus);
+        // java side peer object may be GC'ed when this call is being made.
+        mJniEnv->CallVoidMethod(aPeer,iSubmitCallbackMethodID,aStatus);
     }
     else
     {
-    		ELOG(ESOCKET,"NativeHttpSession::doSubmitCallback: Error!! java peer object not found ");
-  	}	
+        ELOG(ESOCKET,"NativeHttpSession::doSubmitCallback: Error!! java peer object not found ");
+    }
     LOG(ESOCKET,EInfo,"-doSubmitCallback1");
 }
 
@@ -137,14 +137,14 @@ void NativeHttpSession::doReadCallback(TInt aStatus,jobject &aPeer)
 {
     LOG(ESOCKET,EInfo,"+doReadCallback1");
     jobject localPeerObject = mJniEnv->NewLocalRef(aPeer);
-    if(localPeerObject)
+    if (localPeerObject)
     {
-    		mJniEnv->CallVoidMethod(aPeer,iReadCallbackMethodID,aStatus);
+        mJniEnv->CallVoidMethod(aPeer,iReadCallbackMethodID,aStatus);
     }
     else
     {
-    		ELOG(ESOCKET,"NativeHttpSession::doReadCallback: Error!! java peer object not found ");
-  	}    
+        ELOG(ESOCKET,"NativeHttpSession::doReadCallback: Error!! java peer object not found ");
+    }
     LOG(ESOCKET,EInfo,"-doReadCallback1");
 }
 

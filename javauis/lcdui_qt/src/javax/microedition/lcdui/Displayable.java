@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2009, 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -21,11 +21,11 @@ import java.util.Vector;
 
 import javax.microedition.lcdui.EventDispatcher.LCDUIEvent;
 
-import org.eclipse.ercp.swt.mobile.MobileShell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.extension.CompositeExtension;
+import org.eclipse.swt.internal.extension.MobileShellExtension;
 import org.eclipse.swt.widgets.*;
 import com.nokia.mj.impl.rt.support.ApplicationUtils;
 import com.nokia.mj.impl.rt.support.ApplicationInfo;
@@ -130,7 +130,6 @@ public abstract class Displayable
                 eswtSetTitle();
                 contentComp = eswtConstructContent(SWT.NONE);
                 contentArea = eswtLayoutShellContent();
-                eswtInitGraphics();
             }
         });
     }
@@ -167,7 +166,7 @@ public abstract class Displayable
      */
     Shell eswtConstructShell(int style)
     {
-        return new MobileShell(ESWTUIThreadRunner.getInstance().getDisplay(), style);
+        return new MobileShellExtension(ESWTUIThreadRunner.getInstance().getDisplay(), style);
     }
 
     /**
@@ -184,13 +183,6 @@ public abstract class Displayable
         return comp;
     }
 
-    /**
-     * Initializes the Displayable for Graphics drawing. 
-     */
-    void eswtInitGraphics() {
-    
-    }
-    
     /**
      * Called by Display when Displayable should become visible.
      */
@@ -892,7 +884,7 @@ public abstract class Displayable
      */
     class EswtShellListener implements ShellListener
     {
-    
+
         public void shellActivated(ShellEvent e)
         {
             ESWTUIThreadRunner.getInstance().getDisplay()
@@ -947,7 +939,7 @@ public abstract class Displayable
      */
     class EswtControlListener implements ControlListener
     {
-    
+
         public void controlResized(ControlEvent e)
         {
             eswtUpdateSizes();

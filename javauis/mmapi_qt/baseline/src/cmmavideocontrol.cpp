@@ -334,7 +334,7 @@ void CMMAVideoControl::StaticSetPropertyL(CMMAVideoControl* aControl,
     case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_SIZE:
     {
         TSize displaySize(aPropertyA, aPropertyB);
-        LOG1(EJavaMMAPI, EInfo, "CMMAVideoControl::statepropertyl %d",displaySize);
+        LOG2(EJavaMMAPI, EInfo, "CMMAVideoControl::statepropertyl %d , %d",displaySize.iHeight,displaySize.iWidth);
         display->SetDisplaySizeL(displaySize);
         LOG(EJavaMMAPI, EInfo, "CMMAVideoControl::SetDisplayProperty:: setDisplaySizeL Completed");
         // inform java side

@@ -130,6 +130,10 @@ void WindowSurfaceImpl::dispose()
     delete this;
 }
 
+void WindowSurfaceImpl::handleSymbianWindowVisibilityChange(bool /*aVisible*/)
+{
+    // Do nothing
+}
 
 // Private methods
 void WindowSurfaceImpl::createLocalSurface(int aWidth, int aHeight)

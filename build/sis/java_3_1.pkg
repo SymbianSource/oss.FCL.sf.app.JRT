@@ -50,6 +50,7 @@
 "\epoc32\release\armv5\urel\javabackup.exe"-"c:\sys\bin\javabackup.exe"
 "\epoc32\release\armv5\urel\javacaptain.exe"-"c:\sys\bin\javacaptain.exe"
 "\epoc32\release\armv5\urel\javalauncher.exe"-"c:\sys\bin\javalauncher.exe"
+"\epoc32\release\armv5\urel\javaupgradeapp.exe"-"c:\sys\bin\javaupgradeapp.exe"
 
 ;Odc file lists
 "\epoc32\data\z\resource\java\midpodclist"-"c:\resource\java\midpodclist"
@@ -203,6 +204,7 @@
 "\epoc32\release\armv5\urel\javacaptain_ext_storageserverplugin.dll"    -"c:\sys\bin\javacaptain_ext_storageserverplugin.dll"
 "\epoc32\release\armv5\urel\javacaptain_ext_btdeviceclassmanager.dll"   -"c:\sys\bin\javacaptain_ext_btdeviceclassmanager.dll"
 "\epoc32\release\armv5\urel\javacaptain_ext_autostarter.dll"            -"c:\sys\bin\javacaptain_ext_autostarter.dll"
+"\epoc32\release\armv5\urel\javacaptain_ext_settingslistener.dll"       -"c:\sys\bin\javacaptain_ext_settingslistener.dll"
 ; PLUGIN_ID_JAVA_CERT_STORE_EXTENSION_C = 7
 "\epoc32\release\armv5\urel\javacaptain_ext_ondemand_7.dll"             -"c:\sys\bin\javacaptain_ext_ondemand_7.dll"
 #ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
@@ -220,8 +222,9 @@
 "\epoc32\data\z\private\10003a3f\apps\javainstaller_reg.rsc"-"c:\private\10003a3f\import\apps\javainstaller_reg.rsc"
 "\epoc32\data\z\resource\apps\javainstaller_loc.rsc"-"c:\resource\apps\javainstaller_loc.rsc"
 "\epoc32\data\z\resource\apps\javainstaller_icon.mif"-"c:\resource\apps\javainstaller_icon.mif"
-"\epoc32\data\z\resource\java\java_trusted.png"-"c:\resource\java\java_trusted.png"
-"\epoc32\data\z\resource\java\java_untrusted.png"-"c:\resource\java\java_untrusted.png"
+"\epoc32\data\z\resource\java\java_3_trusted.png"-"c:\resource\java\java_3_trusted.png"
+"\epoc32\data\z\resource\java\java_3_untrusted.png"-"c:\resource\java\java_3_untrusted.png"
+"\epoc32\data\z\resource\java\javaapplicationinstaller.css"-"c:\resource\java\javaapplicationinstaller.css"
 "\epoc32\data\z\resource\plugins\javaunicertstoreplugin.rsc" -"c:\resource\plugins\javaunicertstoreplugin.rsc"
 "\epoc32\data\z\resource\plugins\midp2backupplugin.rsc"-"c:\resource\plugins\midp2backupplugin.rsc"
 #ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK

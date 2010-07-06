@@ -28,9 +28,8 @@ PAGED
 
 APP_LAYER_SYSTEMINCLUDE
 
-// Corrects a problem with SchemeHandler.inl in 5.0 2009w18 and 10.1 builds
 #ifndef RD_JAVA_S60_RELEASE_9_2
-SYSTEMINCLUDE   /epoc32/include/ecom
+SYSTEMINCLUDE   /epoc32/include/ecom    // Due to SchemeHandler.inl in 5.0 2009w18 and 10.1 builds
 #endif
 
 SOURCEPATH  ../src

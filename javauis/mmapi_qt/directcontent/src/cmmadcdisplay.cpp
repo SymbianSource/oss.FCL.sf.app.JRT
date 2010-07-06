@@ -254,7 +254,7 @@ void CMMADCDisplay::SourceSizeChanged(TInt aJavaControlWidth, TInt aJavaControlH
     //  TSize canvasSize(aJavaControlWidth, aJavaControlHeight);
     iSourceSize = SourceSize();
     //iSourceSize=canvasSize;
-    LOG1(EJavaMMAPI, EInfo, "CMMADCDisplay::SourceSizeChanged() asourcesize %d",iSourceSize);
+    LOG2(EJavaMMAPI, EInfo, "CMMADCDisplay::SourceSizeChanged() asourcesize (%d,%d)",iSourceSize.iHeight,iSourceSize.iWidth);
 #ifdef RD_JAVA_NGA_Enabled
     if (iWindow)
     {
@@ -282,9 +282,9 @@ void CMMADCDisplay::SourceSizeChanged(TInt aJavaControlWidth, TInt aJavaControlH
         //;iWindow->SetDrawRect( TRect(iUserRect.iTl, iSourceSize));
         iWindow->SetDrawRect(TRect(iUserRect.iTl,iFullScreenSize));
     }
-    LOG1(EJavaMMAPI, EInfo, "CMMADCDisplay::SourceSizeChanged()1 - %d",iUserRect.Size());
+    LOG2(EJavaMMAPI, EInfo, "CMMADCDisplay::SourceSizeChanged()1 - %d , %d",iUserRect.Height(),iUserRect.Width());
     SetClippingRegion();
-    LOG1(EJavaMMAPI, EInfo, "CMMADCDisplay::SourceSizeChanged()2 -%d",iUserRect.Size());
+    LOG2(EJavaMMAPI, EInfo, "CMMADCDisplay::SourceSizeChanged()2 -%d , %d ",iUserRect.Height(),iUserRect.Width());
     if (iUserRect.IsEmpty())
     {
         iUserRect = iWindow->DrawRect();
@@ -295,7 +295,7 @@ void CMMADCDisplay::SourceSizeChanged(TInt aJavaControlWidth, TInt aJavaControlH
         }
     }
     LOG(EJavaMMAPI, EInfo, "CMMADCDisplay::SourceSizeChanged() -");
-    LOG1(EJavaMMAPI, EInfo, "CMMADCDisplay::SourceSizeChanged()3 -%d",iUserRect.Size());
+    LOG2(EJavaMMAPI, EInfo, "CMMADCDisplay::SourceSizeChanged()3 -%d , %d",iUserRect.Height(),iUserRect.Width());
 }
 
 // interface MMMADisplay

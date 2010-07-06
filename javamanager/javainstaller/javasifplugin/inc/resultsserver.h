@@ -65,20 +65,19 @@ public:
 
     CommsEndpoint* getComms()
     {
-        return &iComms;
+        return &mComms;
     }
 
 private:
     void clearData();
     void setComponentInfoL();
     void resetDefaultErrorValues();
-    void setCommonErrorInfo(int aResult);
+    void setCommonErrorInfo();
 
 private:
-    int iRunning;   // 1 if running, 0 if not running
-    CommsServerEndpoint  iComms;
-    COpaqueNamedParams  &iResults;
-    CComponentInfo      &iInfo;
+    CommsServerEndpoint  mComms;
+    COpaqueNamedParams  &mResults;
+    CComponentInfo      &mInfo;
 
     std::map<std::wstring, int> iIntPairs;
     std::map<std::wstring, std::wstring> iStringPairs;

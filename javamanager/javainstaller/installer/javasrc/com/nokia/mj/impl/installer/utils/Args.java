@@ -211,6 +211,10 @@ public class Args
 
     /**
      * Decodes base64 encoded arguments.
+     * In Symbian environment the decoded argument is UTF-16LE string.
+     *
+     * @see /sf/app/jrt/javacommons/utils/inc/javacommonutils.h,
+     *  wbase64encode()
      */
     private void decodeBase64Args()
     {
@@ -237,7 +241,7 @@ public class Args
                     byte[] valueBytes = Base64.decode(value);
                     if (valueBytes != null && valueBytes.length > 0)
                     {
-                        value = new String(valueBytes, "UTF-16");
+                        value = new String(valueBytes, "UTF-16LE");
                         Log.log("Args: Base64 decoded option " +
                                 name + "=" + value);
                         iArgs.put(name, value);

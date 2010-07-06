@@ -86,6 +86,7 @@ public class ProgressView extends ViewBase
         {
             setTitle(iMsg);
             iLabel = createLabel(iMsg, SWT.WRAP);
+            setCssId(iLabel, "heading");
         }
 
         iIndeterminate = aIndeterminate;
@@ -102,6 +103,7 @@ public class ProgressView extends ViewBase
             iProgressBar.setMaximum(100);
             iProgressBar.setSelection(iValue);
         }
+        setCssId(iProgressBar, "progressBar");
         GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
         gridData.horizontalSpan = getColumns();
         iProgressBar.setLayoutData(gridData);
@@ -115,6 +117,8 @@ public class ProgressView extends ViewBase
 
         // By default add cancel command to all progress bars.
         addCancelCommand();
+
+        iInstallerUi.loadCss();
     }
 
     /** Update text for this progress bar. */
@@ -175,6 +179,7 @@ public class ProgressView extends ViewBase
                 GridData gridData = null;
                 /*
                 iHideCommand = new Button(getCommandComposite(), SWT.PUSH);
+                setCssId(iHideCommand, "softKeyButton");
                 gridData = new GridData(GridData.FILL_HORIZONTAL);
                 gridData.horizontalSpan = horizontalSpan;
                 iHideCommand.setLayoutData(gridData);
@@ -194,6 +199,7 @@ public class ProgressView extends ViewBase
                 */
 
                 iCancelCommand = new Button(getCommandComposite(), SWT.PUSH);
+                setCssId(iCancelCommand, "softKeyButtonWide");
                 gridData = new GridData(GridData.FILL_HORIZONTAL);
                 gridData.horizontalSpan = horizontalSpan;
                 iCancelCommand.setLayoutData(gridData);

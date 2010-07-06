@@ -626,14 +626,14 @@ void CHttpTransactionClient::MHFRunL(RHTTPTransaction aTransaction, const THTTPE
             iStatus = CHttpTransactionClient::ERequestNextBodayData;
             break;
         }
-        
+
         case THTTPEvent::EReceiveTimeOut:
         {
-        	  ELOG(ESOCKET,"MHFRunL EReceiveTimeOut");
-        	  NotifyErrorL(KErrTimedOut);  // send timeout error to java
-        	  break;
-        	
-        }        
+            ELOG(ESOCKET,"MHFRunL EReceiveTimeOut");
+            NotifyErrorL(KErrTimedOut);  // send timeout error to java
+            break;
+
+        }
         /*
         * -j2me expects the http stack to be able to post body data with no content type
         *   the native stack default validation filter does not allow this.

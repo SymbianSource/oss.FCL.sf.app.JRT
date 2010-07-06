@@ -106,6 +106,7 @@ ENDIF
 
 "\epoc32\release\armv5\urel\javacaptain.exe"-"c:\sys\bin\javacaptain.exe"
 "\epoc32\release\armv5\urel\javalauncher.exe"-"c:\sys\bin\javalauncher.exe"
+"\epoc32\release\armv5\urel\javaupgradeapp.exe"-"c:\sys\bin\javaupgradeapp.exe"
 
 
 
@@ -504,6 +505,7 @@ ENDIF
 "\epoc32\release\armv5\urel\javacaptain_ext_storageserverplugin.dll"    -"c:\sys\bin\javacaptain_ext_storageserverplugin.dll"
 "\epoc32\release\armv5\urel\javacaptain_ext_btdeviceclassmanager.dll"   -"c:\sys\bin\javacaptain_ext_btdeviceclassmanager.dll"
 "\epoc32\release\armv5\urel\javacaptain_ext_autostarter.dll"            -"c:\sys\bin\javacaptain_ext_autostarter.dll"
+"\epoc32\release\armv5\urel\javacaptain_ext_settingslistener.dll"       -"c:\sys\bin\javacaptain_ext_settingslistener.dll"
 ; PLUGIN_ID_JAVA_CERT_STORE_EXTENSION_C = 7
 "\epoc32\release\armv5\urel\javacaptain_ext_ondemand_7.dll"             -"c:\sys\bin\javacaptain_ext_ondemand_7.dll"
 #ifdef RD_JAVA_MIDPRMS_DB

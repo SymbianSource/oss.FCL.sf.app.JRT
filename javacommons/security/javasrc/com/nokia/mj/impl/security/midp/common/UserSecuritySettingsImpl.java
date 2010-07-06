@@ -18,6 +18,7 @@
 package com.nokia.mj.impl.security.midp.common;
 
 import java.util.Vector;
+import com.nokia.mj.impl.utils.Id;
 import com.nokia.mj.impl.utils.ResourceLoader;
 
 /**
@@ -35,24 +36,29 @@ public class UserSecuritySettingsImpl
     private static ResourceLoader resLoader = null;
     private boolean active;
 
-    private static final String NET_ACCESS_ID = "setting_net_access";
-    private static final String LOW_LEVEL_NET_ACCESS_ID = "setting_low_level_net_access";
-    private static final String MESSAGING_ID = "setting_messaging";
-    private static final String RESTRICTED_MESSAGING_ID = "setting_restricted_messaging";
-    private static final String CALL_CONTROL_ID = "setting_call_control";
-    private static final String LOCAL_CONNECTIVITY_ID = "setting_local_conn";
-    private static final String MULTIMEDIA_RECORDING_ID = "setting_mm_record";
-    private static final String READ_USER_DATA_ACCESS_ID = "setting_read_data";
-    private static final String WRITE_USER_DATA_ACCESS_ID = "setting_write_data";
-    private static final String APPLICATION_AUTO_INVOCATION_ID = "setting_app_auto_invocat";
-    private static final String PHONE_CALL_ID = "setting_phone_call";
-    private static final String LOCATION_ID = "setting_location";
-    private static final String LANDMARK_ID = "setting_landmarks";
-    private static final String SMART_CARD_COMMUNICATION_ID = "setting_smartcard";
-    private static final String AUTHENTICATION_ID = "setting_auth";
-    private static final String BROADCAST_ID = "setting_broadcast";
-    private static final String NFC_WRITE_ACCESS_ID = "setting_nfc_write_access";
-    private static final String URL_START_ID = "setting_url_start";
+    private static final Id NET_ACCESS_ID = new Id("setting_net_access", "setlabel_net_access");
+    private static final Id LOW_LEVEL_NET_ACCESS_ID = new Id("setting_low_level_net_access", "setlabel_low_level_net_access");
+    private static final Id MESSAGING_ID = new Id("setting_messaging", "setlabel_messaging");
+    private static final Id RESTRICTED_MESSAGING_ID = new Id("setting_restricted_messaging", "setlabel_restricted_messaging");
+    private static final Id CALL_CONTROL_ID = new Id("setting_call_control", "setlabel_call_control");
+    private static final Id LOCAL_CONNECTIVITY_ID = new Id("setting_local_conn", "setlabel_local_conn");
+    private static final Id MULTIMEDIA_RECORDING_ID = new Id("setting_mm_record", "setlabel_mm_record");
+    private static final Id READ_USER_DATA_ACCESS_ID = new Id("setting_read_data", "setlabel_read_data");
+    private static final Id WRITE_USER_DATA_ACCESS_ID = new Id("setting_write_data", "setlabel_write_data");
+    private static final Id APPLICATION_AUTO_INVOCATION_ID = new Id("setting_app_auto_invocat", "setlabel_app_auto_invoc");
+    private static final Id PHONE_CALL_ID = new Id("setting_phone_call", "setlabel_call_control");
+    private static final Id LOCATION_ID = new Id("setting_location", "setlabel_location");
+    private static final Id LANDMARK_ID = new Id("setting_landmarks", "setlabel_landmarks");
+    private static final Id SMART_CARD_COMMUNICATION_ID = new Id("setting_smartcard", "setlabel_smartcard");
+    private static final Id AUTHENTICATION_ID = new Id("setting_auth", "setlabel_auth");
+    private static final Id BROADCAST_ID = new Id("setting_broadcast", "setlabel_broadcast");
+    private static final Id NFC_WRITE_ACCESS_ID = new Id("setting_nfc_write_access", "setlabel_nfc_write_access");
+    private static final Id URL_START_ID = new Id("setting_url_start", "setlabel_url_start");
+
+    private static final String AVKON_LOC_FILE = "javaapplicationsettings";
+    private static final String AVKON_PREFIX = "qtn_java_";
+    private static final String QT_LOC_FILE = "javaruntimeapplicationsettings";
+    private static final String QT_PREFIX = "txt_java_sett_";
 
     public UserSecuritySettingsImpl(
         String name,
@@ -106,9 +112,9 @@ public class UserSecuritySettingsImpl
     {
         if (resLoader == null)
         {
-            resLoader = ResourceLoader.getInstance("javaapplicationsettings", "qtn_java_");
+            resLoader = ResourceLoader.getInstance(AVKON_LOC_FILE, AVKON_PREFIX, QT_LOC_FILE, QT_PREFIX);
         }
-        String id = "";
+        Id id = null;
         if (NET_ACCESS_SETTINGS.equalsIgnoreCase(aSettingName))
         {
             id = NET_ACCESS_ID;
@@ -181,14 +187,18 @@ public class UserSecuritySettingsImpl
         {
             id = URL_START_ID;
         }
+        else
+        {
+            return aSettingName;   
+        }
         return resLoader.format(id, null /*aTextParameters*/);
     }
 
-    public static String getLocalizedString(String aStrId)
+    public static String getLocalizedString(Id aStrId)
     {
         if (resLoader == null)
         {
-            resLoader = ResourceLoader.getInstance("javaapplicationsettings", "qtn_java_");
+            resLoader = ResourceLoader.getInstance(AVKON_LOC_FILE, AVKON_PREFIX, QT_LOC_FILE, QT_PREFIX);
         }
         return resLoader.format(aStrId, null /*aTextParameters*/);
     }

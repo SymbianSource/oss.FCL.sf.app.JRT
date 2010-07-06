@@ -20,7 +20,7 @@
 #include <x509certchain.h>
 #include <memory>
 
-#include "TestHarness.h"
+#include <CppUTest/TestHarness.h>
 
 #include "javastorage.h"
 #include "javastorageexception.h"

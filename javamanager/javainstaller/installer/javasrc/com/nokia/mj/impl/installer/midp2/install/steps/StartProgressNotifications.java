@@ -36,6 +36,12 @@ public class StartProgressNotifications extends ExeStep
         InstallBall ball = (InstallBall)aBall;
         Log.log("Starting progress notifications...");
 
+        if (ball.iPreinstallation)
+        {
+            Log.log("SifNotifier disabled during preinstallation.");
+            return;
+        }
+
         if (!SifNotifier.enabled())
         {
             Log.log("SifNotifier disabled.");

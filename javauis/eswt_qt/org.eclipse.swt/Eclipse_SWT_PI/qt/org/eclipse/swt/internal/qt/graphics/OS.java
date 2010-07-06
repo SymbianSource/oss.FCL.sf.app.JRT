@@ -125,4 +125,5 @@ final class OS {
     static final native int windowsurface_getType(int handle);
     static final native void windowsurface_dispose(int handle);
     static final native void windowsurface_refresh(int handle);
+    static final native void windowsurface_handleSymbianWindowVisibilityChange(int handle, boolean visible);
 }

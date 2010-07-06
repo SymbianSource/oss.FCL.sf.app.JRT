@@ -50,6 +50,7 @@ file=ABI_DIR\BUILD_DIR\javacaptain_ext_ondemand_7.dll                       SHAR
 file=ABI_DIR\BUILD_DIR\javacaptain_ext_preinstallerstarter.dll              SHARED_LIB_DIR\javacaptain_ext_preinstallerstarter.dll
 file=ABI_DIR\BUILD_DIR\javacaptain_ext_pushregistryplugin.dll               SHARED_LIB_DIR\javacaptain_ext_pushregistryplugin.dll
 file=ABI_DIR\BUILD_DIR\javacaptain_ext_storageserverplugin.dll              SHARED_LIB_DIR\javacaptain_ext_storageserverplugin.dll
+file=ABI_DIR\BUILD_DIR\javacaptain_ext_settingslistener.dll                 SHARED_LIB_DIR\javacaptain_ext_settingslistener.dll
 file=ABI_DIR\BUILD_DIR\javacaptain.exe                                      PROGRAMS_DIR\javacaptain.exe
 
 // Registry
@@ -359,5 +360,8 @@ data=ZRESOURCE\java\javacontrolpanelodclist                                 JAVA
 
 // trust roots list
 data=ZRESOURCE\java\security\trustroots\midprootslist                       JAVA_RES_IMG\security\trustroots\midprootslist
+
+// Utility for Services team
+file=ABI_DIR\BUILD_DIR\javaupgradeapp.exe                                   PROGRAMS_DIR\javaupgradeapp.exe
 
 #endif

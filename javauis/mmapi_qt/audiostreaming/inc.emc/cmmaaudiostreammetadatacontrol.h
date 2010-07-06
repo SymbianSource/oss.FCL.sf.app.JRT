@@ -20,7 +20,7 @@
 #define CMMAAUDIOSTREAMMETADATACONTROL_H
 
 //  INCLUDES
-#include <mmfcontroller.h>
+#include <mmf/common/mmfcontroller.h>
 #include <MetaDataUtility.h>
 #include <MetaDataFieldContainer.h>
 #include "cmmametadatacontrol.h"

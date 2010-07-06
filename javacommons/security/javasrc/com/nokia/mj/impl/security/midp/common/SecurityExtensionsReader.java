@@ -327,6 +327,7 @@ public final class SecurityExtensionsReader
             String mappingsSystemProperty)
     {
         String[] mappings = Tokenizer.split(mappingsSystemProperty, ";");
+        Vector validatedPermNames = new Vector();
         if (mappings != null)
         {
             for (int i=0; i<mappings.length; i++)
@@ -358,11 +359,13 @@ public final class SecurityExtensionsReader
                             // one more check against the existing extensions
                             // permission mappings
                             found = find(namedPermName,
-                                         classBasedPermName,
+                                         (validatedPermNames.contains(classBasedPermName) 
+                                         ? null: classBasedPermName),
                                          extPermissionMappings);
                         }
                         if (!found)
                         {
+                            validatedPermNames.addElement(classBasedPermName);
                             extPermissionMappings.put(
                                 namedPermName,
                                 new MIDPPermission(
@@ -387,8 +390,9 @@ public final class SecurityExtensionsReader
             Object key = e.nextElement();
             Object value = permMapping.get(key);
             if (((String)key).equalsIgnoreCase(namedPermName)
-                    || (((MIDPPermission)value)).getName()
-                    .equalsIgnoreCase(classBasedPermName))
+                    || ( classBasedPermName != null 
+                    && (((MIDPPermission)value)).getName()
+                    .equalsIgnoreCase(classBasedPermName)))
             {
                 return true;
             }

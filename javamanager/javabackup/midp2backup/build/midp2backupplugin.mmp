@@ -44,6 +44,7 @@ SOURCE                  midp2backupplugin.cpp
 SOURCE                  apparcbackuputil.cpp
 SOURCE                  javastoragebackuputil.cpp
 SOURCE                  javaversionbackuputil.cpp
+SOURCE                  mediaidupdater.cpp
 
 USERINCLUDE             ../src.s60
 USERINCLUDE             ../../inc.s60
@@ -62,6 +63,7 @@ LIBRARY                 apgrfx.lib
 LIBRARY                 apparc.lib
 LIBRARY                 estlib.lib
 LIBRARY                 javaenvinfo.lib
+LIBRARY                 javafileutils.lib
 
 #if defined(WINSCW)
   deffile ./bwins/backup.def

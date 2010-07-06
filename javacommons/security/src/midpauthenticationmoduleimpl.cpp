@@ -40,6 +40,7 @@
 #include <openssl/rsa.h>
 #include <openssl/sha.h>
 #include <string.h>
+#include <errno.h>
 
 using namespace java::security;
 using namespace java::storage;
@@ -251,6 +252,13 @@ JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_security_midp_authentication_Au
         delete[] jar_hash_value;
         jar_hash_value = NULL;
         return hash;
+    }
+    else
+    {
+        if (errno == ENOENT)
+        {
+            SecurityUtils::throw_exception(env, "JAR_NOT_FOUND");
+        }
     }
     return NULL;
 }

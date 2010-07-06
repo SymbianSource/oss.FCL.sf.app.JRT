@@ -79,7 +79,7 @@ public class CertificateDetailsView extends ConfirmationViewBase
         Label detailsLabel = createLabel(
                                  InstallerUiTexts.get(InstallerUiTexts.NOT_CERTIFIED_TITLE),
                                  horizontalSpan, labelStyle);
-        detailsLabel.setFont(iInstallerUi.getBoldFont());
+        setCssId(detailsLabel, "heading");
 
         // Add domain category label.
         createLabel("", horizontalSpan, labelStyle);
@@ -103,6 +103,7 @@ public class CertificateDetailsView extends ConfirmationViewBase
                                                       new String[] { appName }),
                                  horizontalSpan, labelStyle);
 
+        setCssId(warningLabel, "detailsWarningLabel");
     }
 
     /**
@@ -118,7 +119,7 @@ public class CertificateDetailsView extends ConfirmationViewBase
                              (InstallerUiTexts.get
                               (InstallerUiTexts.CERTIFICATE_TITLE),
                               horizontalSpan, labelStyle);
-        detailsLabel.setFont(iInstallerUi.getBoldFont());
+        setCssId(detailsLabel, "heading");
 
         SigningCertificate certificate = iCerts[iCertIndex];
 

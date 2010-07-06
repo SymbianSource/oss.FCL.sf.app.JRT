@@ -23,27 +23,21 @@ include(../../../inc/build_defines.pri)
 DEFINES += RD_JAVA_VOLUME_CONTROL
 DEFINES += RD_JAVA_OMA_DRM_V2
 
-INCLUDEPATH +=  /epoc32/include/mmf/common \              
-#              ../animated_gif/inc \
-                ../baseline/inc \
+INCLUDEPATH += ../baseline/inc \
                 ../src_drmv2/inc \
                 ../directcontent/inc \
                 ../camerasound/inc \
                 ../volumekeys/inc \
                 ../audiostreaming/inc \
-                /epoc32/include/mw/Qt \
-								../utils/inc 
-								
-#								 ../../remconobserver_akn/inc \
+                ../utils/inc 
               
 SOURCES +=  ../baseline/src/*.cpp \
- #           ../animated_gif/src/*.cpp \
             ../camerasound/src/*.cpp \
             ../directcontent/src/*.cpp \
             ../src_drmv2/src/*.cpp \
             ../volumekeys/src/*.cpp \
             ../audiostreaming/src/*.cpp \
-	    ../utils/src/*.cpp
+    	    ../utils/src/*.cpp
             
 contains(PROJECT_DEFINES,RD_JAVA_HTTP_EMC_ENABLED) {
         INCLUDEPATH +=  ../baseline/inc.emc \
@@ -56,8 +50,8 @@ contains(PROJECT_DEFINES,RD_JAVA_HTTP_EMC_ENABLED) {
         -lMetaDataUtility \
         -lapmime\
         -lapgrfx \
-				-lapmime \
-				-lflogger 
+        -lapmime \
+        -lflogger 
 				
 }
 else{
@@ -94,8 +88,6 @@ LIBS += -lAknIcon \
         -lMMFControllerFramework \
         -lMediaClientAudio \
         -lMmfStandardCustomCommands \
-#        -lRemConCoreApi \
-#        -lRemConInterfaceBase \
         -lbafl \
         -lbitgdi \
         -lcaf \
@@ -116,7 +108,6 @@ LIBS += -lAknIcon \
         -lmidiclient \
         -lws32 \
         -lQtGui \
- #     -ljavaremconobserver \
 
 # Static libraries must use .lib, otherwise the platform build fails as
 # qmake incorrectly defaults the library to a dynamic lib.

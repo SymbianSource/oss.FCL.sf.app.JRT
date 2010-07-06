@@ -31,7 +31,16 @@
 using namespace Usif;
 
 _LIT(KTestMIDlet, "E:\\stopwatch10midp2.jad");
-//_LIT(KTestMIDlet, "C:\\data\\installs\\DS_Snow.jad");
+_LIT(KTestMIDlet2, "E:\\stopwatch11midp2.jar");
+_LIT(KTestMIDlet3, "E:\\Private\\10281e17\\SimpleRMS.jar");
+_LIT(KUserName, "user");
+_LIT(KPassWord, "password");
+_LIT(KEmptyString, "");
+_LIT(KSourceUrl, "\\sourceurl\\foo");
+_LIT(KCharSet, "charset");
+_LIT(KJadMimeType, "text/vnd.sun.j2me.app-descriptor");
+_LIT(KJarMimeType, "application/java-archive");
+
 
 /**
  * Installs a component by file name
@@ -64,6 +73,82 @@ static void sifSimplestInstallL()
     CleanupStack::PopAndDestroy(1);
 }
 
+
+/**
+ * This test case requires that you start Java Installer 
+ * manually before executing this one and keep it running 
+ * this test case ends.
+ *
+ *
+ * Keep the installer running until 1) installation has failed
+ * 2) uninstallation has failed and 3) getComponentInfo had failed
+ * because the installer is already running.
+ */
+static void sifInstallerAlreadyRunningL()
+{
+    LOG(EJavaConverters, EInfo,
+        "testsifapi: sifInstallerAlreadyRunningL: Called");
+
+    RSoftwareInstall installer;
+    TInt err = installer.Connect();
+    if (KErrNone != err)
+    {
+        ELOG1(EJavaConverters,
+              "testsifapi: sifInstallerAlreadyRunningL: Cannot connect to RSoftwareInstall, err %d", err);
+        User::Leave(err);
+    }
+    CleanupClosePushL(installer);
+
+/*
+    LOG(EJavaConverters, EInfo,
+        "testsifapi: sifInstallerAlreadyRunningL: Starting the first installer process");
+    TRequestStatus status;
+    installer.Install(KTestMIDlet, status);
+
+    // wait for second
+    User::After(1000000);
+*/
+
+    LOG(EJavaConverters, EInfo,
+        "testsifapi: sifInstallerAlreadyRunningL: Starting the concurrent installation");
+    // Try to start concurrent installation, will fail
+    TRequestStatus status2;
+    installer.Install(KTestMIDlet2, status2, EFalse);
+    User::WaitForRequest(status2);
+    LOG1(EJavaConverters, EInfo,
+        "testsifapi: sifInstallerAlreadyRunningL: The return status of concurrent install operation was %d", status2.Int());
+
+    LOG(EJavaConverters, EInfo,
+        "testsifapi: sifInstallerAlreadyRunningL: Starting the concurrent uninstallation");
+    // Try to start concurrent uninstallation, will fail
+    TRequestStatus status3;
+    installer.Uninstall(15, status3, EFalse);
+    User::WaitForRequest(status3);
+    LOG1(EJavaConverters, EInfo,
+        "testsifapi: sifInstallerAlreadyRunningL: The return status of concurrent uninstall operation was %d", status3.Int());
+
+    LOG(EJavaConverters, EInfo,
+        "testsifapi: sifInstallerAlreadyRunningL: Starting the concurrent get component info");
+    // Try to start concurrent GetComponentInfo, will fail
+    TRequestStatus status4;
+    CComponentInfo *info = CComponentInfo::NewL();
+    installer.GetComponentInfo(KTestMIDlet, *info, status4);
+    User::WaitForRequest(status4);
+    delete info;
+    LOG1(EJavaConverters, EInfo,
+        "testsifapi: sifInstallerAlreadyRunningL: The return status of concurrent GetComponentInfo operation was %d", status4.Int());
+
+/*
+    User::WaitForRequest(status);
+
+    LOG1(EJavaConverters, EInfo,
+        "testsifapi: sifInstallerAlreadyRunningL: The return status of install operation was %d", status.Int());
+*/
+
+    // free resources before returning
+    CleanupStack::PopAndDestroy(1);
+}
+
 /**
  * Installs a component by file handle using opaque arguments/results
  */
@@ -89,8 +174,9 @@ static TInt sifByHandleAndArgsAndResultsInstallL()
         User::Leave(err);
     }
 
+// TEMP TEST
     RFile installFile;
-    err = installFile.Open(fs, KTestMIDlet, EFileShareReadersOnly | EFileRead);
+    err = installFile.Open(fs, KTestMIDlet3, EFileShareReadersOnly | EFileRead);
     if (KErrNone != err)
     {
         ELOG1(EJavaConverters,
@@ -125,6 +211,32 @@ static TInt sifByHandleAndArgsAndResultsInstallL()
     // Silent installation request
     arguments->AddIntL(KSifInParam_InstallSilently, 1);
 
+    // drive E:
+    arguments->AddIntL(KSifInParam_Drive, 4);
+
+    // 0 is TSifPolicy::EUserAllowed == Yes
+    arguments->AddIntL(KSifInParam_PerformOCSP, 0);
+    arguments->AddIntL(KSifInParam_IgnoreOCSPWarnings, 0);
+
+    arguments->AddIntL(KSifInParam_AllowUpgrade, 0);
+    arguments->AddIntL(KSifInParam_AllowUntrusted, 0);
+    arguments->AddIntL(KSifInParam_AllowOverwrite, 0);
+    arguments->AddIntL(KSifInParam_AllowDownload, 0);
+
+
+// TEMP TEST prevent overflow
+//    arguments->AddStringL(KSifInParam_UserName, KUserName);
+//    arguments->AddStringL(KSifInParam_Password, KPassWord);
+
+    arguments->AddStringL(KSifInParam_SourceUrl, KSourceUrl);
+
+    arguments->AddIntL(KSifInParam_IAP, 3);
+
+    arguments->AddStringL(KSifInParam_Charset, KEmptyString);
+
+    arguments->AddStringL(KSifInParam_MimeType, KJadMimeType);
+
+
     LOG(EJavaConverters, EInfo,
         "testsifapi: sifByHandleAndArgsAndResultsInstallL: arguments created");
 
@@ -155,6 +267,90 @@ static TInt sifByHandleAndArgsAndResultsInstallL()
     return componentId;
 }
 
+/**
+ * Installs a component by file handle using other opaque arguments than
+ * sifByHandleAndArgsAndResultsInstallL()
+ */
+static TInt secondSifByFileAndArgsAndResultsInstallL()
+{
+    RSoftwareInstall installer;
+    TInt err = installer.Connect();
+    if (KErrNone != err)
+    {
+        ELOG1(EJavaConverters,
+              "testsifapi: secondSifByFileAndArgsAndResultsInstallL: Cannot connect to RSoftwareInstall, err %d", err);
+        User::Leave(err);
+    }
+    CleanupClosePushL(installer);
+
+    LOG(EJavaConverters, EInfo,
+        "testsifapi: secondSifByFileAndArgsAndResultsInstallL: RSoftwareInstall connected");
+
+    TRequestStatus status;
+    COpaqueNamedParams *arguments = COpaqueNamedParams::NewL();
+    CleanupStack::PushL(arguments);
+    COpaqueNamedParams *results = COpaqueNamedParams::NewL();
+    CleanupStack::PushL(results);
+
+    // Silent installation request
+    arguments->AddIntL(KSifInParam_InstallSilently, 1);
+
+    // illegal drive number 33
+    arguments->AddIntL(KSifInParam_Drive, 33);
+
+    // 1 is No
+    arguments->AddIntL(KSifInParam_PerformOCSP, 1);
+    arguments->AddIntL(KSifInParam_IgnoreOCSPWarnings, 1);
+
+    arguments->AddIntL(KSifInParam_AllowUpgrade, 1);
+    arguments->AddIntL(KSifInParam_AllowUntrusted, 1);
+    arguments->AddIntL(KSifInParam_AllowOverwrite, 1);
+    arguments->AddIntL(KSifInParam_AllowDownload, 1);
+
+// TEMP TEST prevent overflow
+//    arguments->AddStringL(KSifInParam_UserName, KEmptyString);
+//    arguments->AddStringL(KSifInParam_Password, KEmptyString);
+
+    arguments->AddStringL(KSifInParam_SourceUrl, KEmptyString);
+
+    arguments->AddIntL(KSifInParam_SNAP, 8);
+
+    arguments->AddStringL(KSifInParam_Charset, KCharSet);
+
+    arguments->AddStringL(KSifInParam_MimeType, KJarMimeType);
+
+    // forcecancel argument value is ignored, forcecancel is set if the value length > 0
+    arguments->AddStringL(_L("-forcecancel"), KCharSet);
+
+    LOG(EJavaConverters, EInfo,
+        "testsifapi: secondSifByFileAndArgsAndResultsInstallL: arguments created");
+
+    installer.Install(KTestMIDlet2, *arguments, *results, status);
+
+    User::WaitForRequest(status);
+
+    LOG1(EJavaConverters, EInfo,
+        "testsifapi: secondSifByFileAndArgsAndResultsInstallL: The return status of install operation was %d", status.Int());
+
+
+    TInt componentId = 0;
+    TBool idExisted = results->GetIntByNameL(KSifOutParam_ComponentId, componentId);
+    if ( idExisted )
+    {
+        LOG1(EJavaConverters, EInfo,
+            "testsifapi: secondSifByFileAndArgsAndResultsInstallL: Component id was %d", componentId);
+    }
+    else
+    {
+        LOG(EJavaConverters, EInfo,
+            "testsifapi: secondSifByFileAndArgsAndResultsInstallL: No component id was returned");
+    }
+
+    // free resources before returning
+    CleanupStack::PopAndDestroy(3);
+
+    return componentId;
+}
 
 static void sifUninstallL(TInt &aComponentId)
 {
@@ -296,8 +492,50 @@ static void sifGetComponentInfoL()
         logApplicationInfo(*(info->RootNodeL().Applications()[nInd]));
     }
 
+    CleanupStack::PopAndDestroy(info);
+
+
+    User::After(1000000);
+
+    // Get component info also from jar
+    TRequestStatus status2;
+    CComponentInfo *info2 = CComponentInfo::NewL();
+    CleanupStack::PushL(info2);
+
+    installer.GetComponentInfo(KTestMIDlet2, *info2, status2);
+
+    User::WaitForRequest(status2);
+
+    LOG1(EJavaConverters, EInfo,
+        "testsifapi: sifGetComponentInfoL: The return status of get "
+        "component info operation 2 was %d", status.Int());
+
+    LOG(EJavaConverters, EInfo,
+        "testsifapi: sifGetComponentInfoL: Logging root node (suite2)");
+
+    logComponentInfoNode(info2->RootNodeL());
+
+    LOG(EJavaConverters, EInfo,
+        "testsifapi: sifGetComponentInfoL: Logging child nodes (MIDlets2)");
+
+    TInt nMIDlets2 = info2->RootNodeL().Children().Count();
+    TInt nInd2;
+    for (nInd2 = 0; nInd2 < nMIDlets2; nInd2++)
+    {
+        logComponentInfoNode(*(info2->RootNodeL().Children()[nInd2]));
+    }
+
+    nMIDlets2 = info2->RootNodeL().Applications().Count();
+    for (nInd2 = 0; nInd2 < nMIDlets2; nInd2++)
+    {
+        logApplicationInfo(*(info2->RootNodeL().Applications()[nInd2]));
+    }
+
+    CleanupStack::PopAndDestroy(info2);
+
+
     // free resources before returning
-    CleanupStack::PopAndDestroy(2);
+    CleanupStack::PopAndDestroy(1);
 }
 
 
@@ -350,6 +588,12 @@ int cancelFunction(void *installer)
     LOG(EJavaConverters, EInfo,
         "testsifapi: cancelFunction: Called");
 
+    // TEMP TEST
+    // This thread does not have active scheduler,
+    // create and install it
+    CActiveScheduler* as = new(ELeave) CActiveScheduler();   
+    CActiveScheduler::Install(as);
+
     // Wait for 6 seconds so that the operation to be cancelled
     // has had time to really do something already
     User::After(6000000);
@@ -359,9 +603,13 @@ int cancelFunction(void *installer)
 
     ((RSoftwareInstall *)installer)->CancelOperation();
 
+    LOG(EJavaConverters, EInfo, "testsifapi: cancelFunction: Starting CActiveScheduler");
+    CActiveScheduler::Start();
+
     LOG(EJavaConverters, EInfo,
         "testsifapi: cancelFunction: CancelOperation() was called");
 
+    delete as;
     return 0;
 }
 
@@ -398,6 +646,7 @@ static void cancelFromSameThread(RSoftwareInstall &aInstaller)
     LOG(EJavaConverters, EInfo,
         "testsifapi: cancelFromSameThread: CancelOperation() returned");
 }
+
 
 static void cancelInstallL()
 {
@@ -438,6 +687,30 @@ static void cancelInstallL()
 
 }
 
+static void cancelNoOperationL()
+{
+    LOG(EJavaConverters, EInfo,
+        "testsifapi: cancelNoOperationL: Called");
+
+    RSoftwareInstall installer;
+    TInt err = installer.Connect();
+    if (KErrNone != err)
+    {
+        ELOG1(EJavaConverters,
+            "testsifapi: cancelNoOperationL: Cannot connect to RSoftwareInstall, err %d", err);
+        User::Leave(err);
+    }
+    CleanupClosePushL(installer);
+
+    cancelFromSameThread(installer);
+
+    LOG(EJavaConverters, EInfo,
+        "testsifapi: cancelNoOperationL: cancelFrom<X>Thread returned");
+
+    // free resources before returning
+    CleanupStack::PopAndDestroy(1);
+
+}
 
 /**
  * Create cleanup stack and run the cleaner code inside TRAP harness
@@ -445,35 +718,35 @@ static void cancelInstallL()
  */
 TInt E32Main()
 {
-/*
-    ELOG2(EJavaConverters,
-        "testsifapi: Starting testing long long long long long long long long long long "
-        "long long long long long long long long long long long long long long long long "
-        "long long long long long long long long long long long long long long long long "
-        "long long long long long long long long long long long long long buffer %d %d", 0, 1);
-
-    LOG(EJavaConverters, EInfo,
-        "testsifapi: sifByHandleAndArgsAndResultsInstallL: Called");
-*/
-
-    __UHEAP_MARK;
+//    __UHEAP_MARK;
     CTrapCleanup* cleanupStack = CTrapCleanup::New();
 
     TInt err = KErrNone;
 
 
-    /*
-        TRAP(err, cancelInstallL());
-        if (KErrNone != err)
-        {
-            ELOG1(EJavaConverters, "testsifapi: cancelInstallL leaved with err %d", err);
-        }
+    LOG(EJavaConverters, EInfo, "testsifapi: starting cancelNoOperationL");
+    TRAP(err, cancelNoOperationL());
+    if (KErrNone != err)
+    {
+        ELOG1(EJavaConverters, "testsifapi: cancelNoOperationL leaved with err %d", err);
+    }
 
-        // Wait for a moment
-        User::After(500000);
-    */
+    // Wait for a moment
+    User::After(500000);
 
 
+    LOG(EJavaConverters, EInfo, "testsifapi: starting cancelInstallL");
+    TRAP(err, cancelInstallL());
+    if (KErrNone != err)
+    {
+        ELOG1(EJavaConverters, "testsifapi: cancelInstallL leaved with err %d", err);
+    }
+
+    // Wait for a moment
+    User::After(500000);
+
+
+    LOG(EJavaConverters, EInfo, "testsifapi: starting sifSimplestInstallL");
     TRAP(err, sifSimplestInstallL());
     if (KErrNone != err)
     {
@@ -484,8 +757,25 @@ TInt E32Main()
     User::After(500000);
 
 
-    TInt componentId = 0;
 
+    // This test case must be executed sepatately, while manually started 
+    // Java Installer is running
+    LOG(EJavaConverters, EInfo, "testsifapi: starting sifInstallerAlreadyRunningL");
+    TRAP(err, sifInstallerAlreadyRunningL());
+    if (KErrNone != err)
+    {
+        ELOG1(EJavaConverters, "testsifapi: sifInstallerAlreadyRunningL leaved with err %d", err);
+    }
+
+    // Wait for a moment
+    User::After(500000);
+
+
+    TInt componentId = 0;
+    TInt componentId2 = 0;
+
+
+    LOG(EJavaConverters, EInfo, "testsifapi: starting sifByHandleAndArgsAndResultsInstallL");
     TRAP(err, componentId = sifByHandleAndArgsAndResultsInstallL());
     if (KErrNone != err)
     {
@@ -495,7 +785,22 @@ TInt E32Main()
     // Wait for a moment
     User::After(500000);
 
-    // TODO: if this fails, it leaks memory
+
+    // This installation will fail because MIDlet is untrusted and installing
+    // untrusted is denied AND because charset is illegal
+    LOG(EJavaConverters, EInfo, "testsifapi: starting secondSifByFileAndArgsAndResultsInstallL");
+    TRAP(err, componentId2 = secondSifByFileAndArgsAndResultsInstallL());
+    if (KErrNone != err)
+    {
+        ELOG1(EJavaConverters,
+            "testsifapi: secondSifByFileAndArgsAndResultsInstallL leaved with err %d", err);
+    }
+    // Wait for a moment
+    User::After(500000);
+
+
+    // if this fails, it leaks memory
+    LOG(EJavaConverters, EInfo, "testsifapi: starting sifGetComponentInfoL");
     TRAP(err, sifGetComponentInfoL());
     if (KErrNone != err)
     {
@@ -505,6 +810,7 @@ TInt E32Main()
     // Wait for a moment
     User::After(500000);
 
+    LOG(EJavaConverters, EInfo, "testsifapi: starting sifActivationTestL");
     TRAP(err, sifActivationTestL(componentId));
     if (KErrNone != err)
     {
@@ -519,6 +825,7 @@ TInt E32Main()
     // TODO: if this fails, it leaks memory
     if (0 != componentId)
     {
+        LOG(EJavaConverters, EInfo, "testsifapi: starting sifUninstallL");
         TRAP(err, sifUninstallL(componentId));
         if (KErrNone != err)
         {
@@ -530,8 +837,9 @@ TInt E32Main()
         User::After(500000);
     }
 
+
     delete cleanupStack;
 //    __UHEAP_MARKEND;
-    __UHEAP_MARKENDC(1);
+//    __UHEAP_MARKENDC(1);
     return KErrNone;
 }

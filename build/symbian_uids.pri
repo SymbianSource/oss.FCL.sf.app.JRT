@@ -116,6 +116,7 @@ contains(TARGET, javastarter): TARGET.UID3 = 0x2002E6A7
 
 contains(TARGET, openlcdui): TARGET.UID3 = 0x2002DCE2
 contains(TARGET, tckrunner): TARGET.UID3 = 0x2002DCE3
+contains(TARGET, javacaptain_ext_settingslistener): TARGET.UID3 = 0x200315D8
 contains(TARGET, javacaptain_ext_scrupdater): TARGET.UID3 = 0x2002DD10
 contains(TARGET, javacaptain_ext_ondemand_2): TARGET.UID3 = 0x2002DD01
 contains(TARGET, javanokiaui): TARGET.UID3 = 0x2002E697

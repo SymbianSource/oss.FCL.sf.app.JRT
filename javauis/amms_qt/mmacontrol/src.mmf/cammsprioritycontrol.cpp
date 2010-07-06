@@ -24,7 +24,7 @@
 #include "CAMMSPriorityControl.h"
 #include <CMMAPlayerEvent.h>
 #include <CMMAAudioPlayer.h>
-#include <MMFController.h>
+#include <mmf/common/mmfcontroller.h>
 #include <MidiClientUtility.h>
 
 

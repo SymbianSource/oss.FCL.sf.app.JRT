@@ -91,6 +91,7 @@ void NotifyStartL(
                 HBufC *appIcon = CreateHBufCFromJavaStringLC(aEnv, tmpAppIcon);
                 applicationIcons.AppendL(appIcon);
                 CleanupStack::Pop(appIcon);
+                aEnv->DeleteLocalRef(tmpAppIcon);
             }
             else
             {

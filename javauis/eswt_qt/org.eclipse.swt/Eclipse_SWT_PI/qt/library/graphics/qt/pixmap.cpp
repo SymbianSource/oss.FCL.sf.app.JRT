@@ -543,7 +543,7 @@ void Pixmap::transform(TTransform aTransform)
             flip = true;
             break;
         default:
-            Q_ASSERT(false && "Transform type not recognized");
+            Q_ASSERT_X(false, "Graphics", "Transform type not recognized");
             return;
     }
 

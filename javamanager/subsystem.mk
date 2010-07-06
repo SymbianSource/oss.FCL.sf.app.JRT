@@ -26,7 +26,8 @@ SUBSYSTEMS = \
 COMPONENTS = \
 	preinstaller/build \
 	debugapi/build \
-	javalauncher/build
+	javalauncher/build \
+	javaupgradeapp/build
 
 NONQTSUBSYSTEMS = \
 	javarecognizer/build \
@@ -35,6 +36,7 @@ NONQTSUBSYSTEMS = \
 SYMBIAN_ONLY = \
 	javaregistry \
 	javalauncher/build \
+	javaupgradeapp/build \
 	javabackup \
 	javarecognizer/build \
 	preinstaller/build \

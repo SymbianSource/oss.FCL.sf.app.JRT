@@ -28,6 +28,7 @@ import com.nokia.mj.impl.installer.utils.InstallerException;
 import com.nokia.mj.impl.installer.utils.Log;
 import com.nokia.mj.impl.installer.utils.PlatformUid;
 import com.nokia.mj.impl.utils.exception.ExceptionBase;
+import com.nokia.mj.impl.utils.ErrorMessageBase;
 import com.nokia.mj.impl.utils.InstallerErrorMessage;
 import com.nokia.mj.impl.utils.Tokenizer;
 import com.nokia.mj.impl.utils.Uid;
@@ -437,9 +438,30 @@ public class InstallerResultMessage
      */
     private void addErrorCodes(ExceptionBase aEb)
     {
-        addValue(NAME_ERROR_CATEGORY,
-                 SifRegistrator.getErrorCategory(aEb.getShortMessageId()));
-        addValue(NAME_ERROR_CODE,
-                 aEb.getShortMessageId()*1000 + aEb.getDetailedMessageId());
+        if (aEb.getShortMessageId() >= ErrorMessageBase.INSTALLER_RANGE_START &&
+            aEb.getShortMessageId() <= ErrorMessageBase.INSTALLER_RANGE_END)
+        {
+            addValue(NAME_ERROR_CATEGORY,
+                     SifRegistrator.getErrorCategory(aEb.getShortMessageId()));
+            addValue(NAME_ERROR_CODE,
+                     aEb.getShortMessageId() + aEb.getDetailedMessageId());
+        }
+        else if (aEb.getShortMessageId() >= ErrorMessageBase.SECURITY_RANGE_START &&
+                 aEb.getShortMessageId() <= ErrorMessageBase.SECURITY_RANGE_END)
+        {
+            addValue(NAME_ERROR_CATEGORY,
+                     SifRegistrator.getErrorCategory(
+                         InstallerErrorMessage.INST_AUTHORIZATION_ERR));
+            addValue(NAME_ERROR_CODE,
+                     aEb.getShortMessageId() + aEb.getDetailedMessageId());
+        }
+        else
+        {
+            addValue(NAME_ERROR_CATEGORY,
+                     SifRegistrator.getErrorCategory(
+                         InstallerErrorMessage.INST_UNEXPECTED_ERR));
+            addValue(NAME_ERROR_CODE,
+                     aEb.getShortMessageId()*1000 + aEb.getDetailedMessageId());
+        }
     }
 }

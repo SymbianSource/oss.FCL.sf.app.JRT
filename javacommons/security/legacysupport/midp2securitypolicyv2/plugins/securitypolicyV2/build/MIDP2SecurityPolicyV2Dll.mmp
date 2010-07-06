@@ -21,8 +21,10 @@
 
 @SYMPurpose MIDP2SecurityPolicyV2.dll Java security policy interface implementation
 */
-
+#include <platform_paths.hrh>
 #include <../../../../../../../inc/project_defines.hrh>
+
+APP_LAYER_SYSTEMINCLUDE
 
 target			MIDP2SecurityPolicyV2.dll
 targettype		dll
@@ -42,10 +44,6 @@ deffile ./bmarm/MIDP2SecurityPolicyV2.def
 deffile ./midp2secrp/eabi/MIDP2SecurityPolicyV2.def
 #endif
 
-systeminclude	/epoc32/include
-systeminclude	/epoc32/include/libc
-
-systeminclude ../../../../../../../inc
 
 userinclude		../export
 userinclude     ../../../../../../../inc

@@ -12,11 +12,14 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import java.util.Vector;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.qt.OS;
+import org.eclipse.swt.internal.qt.SymbianWindowVisibilityListener;
 import org.eclipse.swt.internal.qt.WidgetState;
 import org.eclipse.swt.internal.qt.graphics.WindowSurface;
 
@@ -147,6 +150,8 @@ WindowSurface windowSurface;
  * events when Shell visibility is being changed.
  */
 boolean suppressResizeEvent;
+
+private Vector winVisibilityListeners = new Vector();
 
 /**
  * Constructs a new instance of this class. This is equivalent
@@ -1148,6 +1153,14 @@ boolean qt_event_keyrelease_pp( int widgetHandle, int key, int modifier, int cha
     return true;
 }
 
+void qt_swt_event_symbianWindowHide() {
+    notifySymbianWindowVisibilityChange(false);
+}
+
+void qt_swt_event_symbianWindowShow() {
+    notifySymbianWindowVisibilityChange(true);
+}
+
 public Rectangle internal_getDefaultBounds() {
     return defBounds;
 }
@@ -1168,4 +1181,21 @@ WindowSurface getWindowSurface() {
 	return windowSurface;
 }
 
+void addSymbianWindowVisibilityListener_pp(SymbianWindowVisibilityListener listener) {
+    if (!winVisibilityListeners.contains(listener))
+        winVisibilityListeners.addElement(listener);
+}
+
+void removeSymbianWindowVisibilityListener_pp(SymbianWindowVisibilityListener listener) {
+    if (winVisibilityListeners.contains(listener))
+        winVisibilityListeners.removeElement(listener);
+}
+
+void notifySymbianWindowVisibilityChange(boolean visible) {
+    int count = winVisibilityListeners.size();
+    for (int i = 0; i < count; i++) {
+        SymbianWindowVisibilityListener listener = (SymbianWindowVisibilityListener)(winVisibilityListeners.elementAt(i));
+        listener.handleSymbianWindowVisibilityChange(this, visible);
+    }
+}
 }

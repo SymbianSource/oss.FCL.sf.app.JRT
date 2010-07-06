@@ -105,6 +105,13 @@ bool EventCallback::eventToJava(QObject* aObj, QEvent* aEvent, const int& aSwtEv
             {
             SWT_LOG_EVENT_2("QEvent type=%d (key event) object=%x", eventType, aObj);
             QKeyEvent *keyEvent = static_cast<QKeyEvent*>(aEvent);
+
+            // In SWT repeat is done by repeating the key-down event with no release
+            if((eventType == QEvent::KeyRelease) && keyEvent->isAutoRepeat())
+                {
+                return false;
+                }
+                
             // QString ensures that the character at position size() is always '\0'
             int character = keyEvent->text()[0].unicode();
             

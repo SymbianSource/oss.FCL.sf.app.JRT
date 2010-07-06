@@ -19,6 +19,7 @@
 #include "javastoragebackuputil.h"
 #include "midp2backupplugin.h"
 #include "midp2backupdataids.h"
+#include "mediaidupdater.h"
 
 #include "javastorageentry.h"
 #include "javastorage.h"
@@ -170,6 +171,10 @@ void CStorageBackupUtil::RestoreStorageDataL(RDesReadStream& aStream, TInt& aRes
             CleanupStack::PopAndDestroy(&aStream);
             User::Leave(KErrGeneral);
         }
+
+        // ensure that storage contains correct removable media ids
+        MediaIdUpdater updater;
+        updater.update();
 
         // Storage restore is over; Set state to EAppArc
         aRestoreState = EAppArc;

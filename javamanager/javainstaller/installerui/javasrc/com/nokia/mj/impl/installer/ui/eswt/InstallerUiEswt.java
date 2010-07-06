@@ -512,6 +512,12 @@ public class InstallerUiEswt extends InstallerUi
         // updating it.
         synchronized (iProgressSyncObject)
         {
+            if (iDlProgressView != null && iDlProgressView.isVisible())
+            {
+                // If download progress is being displayed,
+                // do not display installation progress.
+                return;
+            }
             if (iDisplayProgress && !iProgressView.isVisible())
             {
                 iProgressView.setVisible(true);

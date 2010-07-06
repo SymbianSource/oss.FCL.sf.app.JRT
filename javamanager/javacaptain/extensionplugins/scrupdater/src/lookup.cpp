@@ -27,8 +27,7 @@ using namespace java::captain;
 ExtensionPluginInterface* getExtensionPlugin();
 
 EXPORT_C FuncPtr findDllMethod(const char* funcName)
-{
-    JELOG2(EJavaCaptain);
+{    
     FuncPtr ptr = 0;
     if (funcName)
     {

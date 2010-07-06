@@ -17,6 +17,7 @@ TEMPLATE = subdirs
 SUBDIRS += preinstaller/build/javapreinstaller.pro 
 SUBDIRS += debugapi/build/debugapi.pro 
 SUBDIRS += javalauncher/build/javalauncher.pro 
+SUBDIRS += javaupgradeapp/build/javaupgradeapp.pro 
 SUBDIRS += javacaptain 
 SUBDIRS += javainstaller 
 SUBDIRS += javaregistry 

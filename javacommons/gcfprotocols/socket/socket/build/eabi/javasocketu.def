@@ -20,4 +20,5 @@ EXPORTS
 	_ZN4java22NativeSocketConnectionD2Ev @ 19 NONAME
 	_ZTIN4java22NativeSocketConnectionE @ 20 NONAME ; #<TI>#
 	_ZTVN4java22NativeSocketConnectionE @ 21 NONAME ; #<VT>#
+	_ZN19SocketLocalHostInfo15getLocalAddressEiPcii @ 22 NONAME
 

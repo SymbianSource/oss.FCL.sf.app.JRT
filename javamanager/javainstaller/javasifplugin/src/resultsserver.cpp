@@ -33,7 +33,7 @@ using namespace java::comms;
 using namespace std;
 
 ResultsServer::ResultsServer(COpaqueNamedParams& aResults, CComponentInfo& aInfo) :
-        iResults(aResults), iInfo(aInfo)
+        mResults(aResults), mInfo(aInfo)
 {
 }
 
@@ -48,52 +48,43 @@ ResultsServer::~ResultsServer()
 
 int ResultsServer::start()
 {
-    // Write reasonable error codes to iResults that can be used if
+    // Write reasonable error codes to mResults that can be used if
     // Java Installer never returns InstallerResultMessage.
     // If InstallerResultMessage is received the values will be overwritten.
-    TRAPD(err, iResults.AddIntL(KSifOutParam_ErrCategory, EUnexpectedError));
+    TRAPD(err, mResults.AddIntL(KSifOutParam_ErrCategory, EUnexpectedError));
     if (KErrNone != err)
     {
         ELOG1(EJavaInstaller,
-            "ResultsServer::start iResults.AddIntL ErrCategory err %d", err);
+            "ResultsServer::start mResults.AddIntL ErrCategory err %d", err);
     }
 
-    TRAP(err, iResults.AddIntL(KSifOutParam_ErrCode, KErrUnknown));
+    TRAP(err, mResults.AddIntL(KSifOutParam_ErrCode, KErrUnknown));
     if (KErrNone != err)
     {
         ELOG1(EJavaInstaller,
-            "ResultsServer::start iResults.AddIntL ErrCode err %d", err);
+            "ResultsServer::start mResults.AddIntL ErrCode err %d", err);
     }
 
-    TRAP(err, iResults.AddIntL(KSifOutParam_ExtendedErrCode, 0));
+    TRAP(err, mResults.AddIntL(KSifOutParam_ExtendedErrCode, 0));
     if (KErrNone != err)
     {
         ELOG1(EJavaInstaller,
-            "ResultsServer::start iResults.AddIntL ExtendedErrCode err %d", err);
+            "ResultsServer::start mResults.AddIntL ExtendedErrCode err %d", err);
     }
 
-    // TODO: return also localized error message (KSifOutParam_ErrMessage and 
+    // TODO: return also localized error message (KSifOutParam_ErrMessage and
     // perhaps also KSifOutParam_ErrMessageDetails) from usif
     // common localization file after the localized strings are available
-    
 
-    iRunning = 1;
-    iComms.registerDefaultListener(this);
-    return iComms.start(IPC_ADDRESS_JAVA_SIF_PLUGIN_C);
+
+    mComms.registerDefaultListener(this);
+    return mComms.start(IPC_ADDRESS_JAVA_SIF_PLUGIN_C);
 }
 
 int ResultsServer::stop()
 {
-    if (iRunning > 0)
-    {
-        iRunning = 0;
-        iComms.unregisterDefaultListener(this);
-        return iComms.stop();
-    }
-    else
-    {
-        return 0;
-    }
+    mComms.unregisterDefaultListener(this);
+    return mComms.stop();
 }
 
 /**
@@ -151,7 +142,7 @@ void ResultsServer::processMessage(CommsMessage& aMessage)
             if (KErrNone != result)
             {
                 // return common error information;
-                setCommonErrorInfo(result);
+                setCommonErrorInfo();
 
                 if (INSTALL_OPERATION == operation)
                 {
@@ -182,11 +173,11 @@ void ResultsServer::processMessage(CommsMessage& aMessage)
                 {
                     // Return the component ids of the installed Java application.
                     TComponentId resultComponentId = iIntPairs[L"suite-cid"];
-                    TRAP(err, iResults.AddIntL(KSifOutParam_ComponentId, resultComponentId));
+                    TRAP(err, mResults.AddIntL(KSifOutParam_ComponentId, resultComponentId));
                     if (KErrNone != err)
                     {
                         ELOG1(EJavaInstaller,
-                              "ResultsServer::processMessage iResults.AddIntL cid error %d", err);
+                              "ResultsServer::processMessage mResults.AddIntL cid error %d", err);
                     }
                 }
                 else if (UNINSTALL_OPERATION == operation)
@@ -218,7 +209,7 @@ void ResultsServer::processMessage(CommsMessage& aMessage)
             reply.setMessageId(INSTALLER_RESULT_RESPONSE_MESSAGE_ID);
             reply << 0;
 
-            int err = iComms.send(reply);
+            int err = mComms.send(reply);
             if (err != 0)
             {
                 ELOG1(EJavaInstaller,
@@ -243,61 +234,59 @@ void ResultsServer::processMessage(CommsMessage& aMessage)
 
 /**
  * Set common error information.
- * Note that most of the information is in member variables
+ * Note that the information is in member variables
  * iIntPairs and iStringPairs
- *
- * @param aResult  the error code to be set
  */
-void ResultsServer::setCommonErrorInfo(int aResult)
+void ResultsServer::setCommonErrorInfo()
 {
     // return common error information
-    TRAPD(err, iResults.AddIntL(KSifOutParam_ErrCode, aResult));
+    TRAPD(err, mResults.AddIntL(KSifOutParam_ErrCode, iIntPairs[L"error-code"]));
     if (KErrNone != err)
     {
         ELOG1(EJavaInstaller,
-            "ResultsServer::setCommonErrorInfo iResults.AddIntL ErrCode err %d", err);
+            "ResultsServer::setCommonErrorInfo mResults.AddIntL ErrCode err %d", err);
     }
 
-    TRAP(err, iResults.AddIntL(
+    TRAP(err, mResults.AddIntL(
         KSifOutParam_ErrCategory, iIntPairs[L"error-category"]));
     if (KErrNone != err)
     {
         ELOG1(EJavaInstaller,
-            "ResultsServer::setCommonErrorInfo iResults.AddIntL ErrCategory err %d",
+            "ResultsServer::setCommonErrorInfo mResults.AddIntL ErrCategory err %d",
             err);
     }
 
     HBufC *message = wstringToBuf(iStringPairs[L"error-message"]);
-    if (message == NULL)
+    if (!message)
     {
         ELOG(EJavaInstaller,
-              "ResultsServer::setCommonErrorInfo iResults.wstringToBuf returned NULL ");
+              "ResultsServer::setCommonErrorInfo mResults.wstringToBuf returned NULL ");
     }
     else
     {
-        TRAP(err, iResults.AddStringL(KSifOutParam_ErrMessage, *message));
+        TRAP(err, mResults.AddStringL(KSifOutParam_ErrMessage, *message));
         if (KErrNone != err)
         {
             ELOG1(EJavaInstaller,
-                "ResultsServer::setCommonErrorInfo iResults.AddStringL ErrMessage err %d",
+                "ResultsServer::setCommonErrorInfo mResults.AddStringL ErrMessage err %d",
                 err);
         }
         delete message;
     }
 
     message = wstringToBuf(iStringPairs[L"error-details"]);
-    if (message == NULL)
+    if (!message)
     {
         ELOG(EJavaInstaller,
-              "ResultsServer::setCommonErrorInfo iResults.wstringToBuf 2 returned NULL ");
+              "ResultsServer::setCommonErrorInfo mResults.wstringToBuf 2 returned NULL ");
     }
     else
     {
-        TRAP(err, iResults.AddStringL(KSifOutParam_ErrMessageDetails, *message));
+        TRAP(err, mResults.AddStringL(KSifOutParam_ErrMessageDetails, *message));
         if (KErrNone != err)
         {
             ELOG1(EJavaInstaller,
-                "ResultsServer::setCommonErrorInfo iResults.AddStringL ErrMessageDetails "
+                "ResultsServer::setCommonErrorInfo mResults.AddStringL ErrMessageDetails "
                 "err %d", err);
         }
         delete message;
@@ -313,21 +302,21 @@ void ResultsServer::setCommonErrorInfo(int aResult)
  */
 void ResultsServer::resetDefaultErrorValues()
 {
-    TRAPD(err, iResults.AddIntL(KSifOutParam_ErrCategory, 0));
+    TRAPD(err, mResults.AddIntL(KSifOutParam_ErrCategory, 0));
     if (KErrNone != err)
     {
         ELOG1(EJavaInstaller,
-            "ResultsServer::resetDefaultErrorValues iResults.AddIntL ErrCategory err %d", err);
+            "ResultsServer::resetDefaultErrorValues mResults.AddIntL ErrCategory err %d", err);
     }
 
-    TRAP(err, iResults.AddIntL(KSifOutParam_ErrCode, 0));
+    TRAP(err, mResults.AddIntL(KSifOutParam_ErrCode, 0));
     if (KErrNone != err)
     {
         ELOG1(EJavaInstaller,
-            "ResultsServer::resetDefaultErrorValues iResults.AddIntL ErrCode err %d", err);
+            "ResultsServer::resetDefaultErrorValues mResults.AddIntL ErrCode err %d", err);
     }
 
-    // TODO: reset also localized error message KSifOutParam_ErrMessage and 
+    // TODO: reset also localized error message KSifOutParam_ErrMessage and
     // perhaps also KSifOutParam_ErrMessageDetails if they have been set in start()
 }
 
@@ -370,7 +359,7 @@ void ResultsServer::setComponentInfoL()
         ss >> midletUidN;
 
         //LOG1WSTR(EJavaInstaller, EInfo,
-        //         "ResultsServer::processMessage: checking %s", midletUidN.c_str());
+        //  "ResultsServer::processMessage: checking %S", midletUidN.c_str());
 
         int uid = iIntPairs[midletUidN];
         if (uid == 0)
@@ -396,8 +385,8 @@ void ResultsServer::setComponentInfoL()
         CleanupStack::Pop(applicationInfo);
 
         n++;
-    }
-    while (n < 10000);  // sanity check: no suite can have 10000 midlets
+    } // sanity check: no suite can have 10000 midlets
+    while (n < 10000);   // codescanner::magicnumbers
 
     CComponentInfo::CNode *rootNode = NULL;
     rootNode = CComponentInfo::CNode::NewLC(
@@ -418,7 +407,7 @@ void ResultsServer::setComponentInfoL()
                );
 
     // Store whole component info tree
-    iInfo.SetRootNodeL(rootNode);
+    mInfo.SetRootNodeL(rootNode);
     CleanupStack::Pop(rootNode);
     CleanupStack::PopAndDestroy(&applications);
 }

@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description:
+* Description: ProxyControl
 *
 */
 package org.eclipse.swt.widgets;
@@ -37,7 +37,6 @@ import org.eclipse.swt.graphics.Rectangle;
  * the actual Control, for which it will be acting like a proxy. All further call to any function of
  * this class will be delegated to the Control object, created in the setParent method.
  *
- * @author d35kumar
  */
 public class ProxyControl extends Control
 {

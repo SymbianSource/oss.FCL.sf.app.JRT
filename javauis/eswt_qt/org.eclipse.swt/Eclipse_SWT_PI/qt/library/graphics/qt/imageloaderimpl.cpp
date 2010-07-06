@@ -44,7 +44,7 @@ void ImageloaderImpl::append(const char* aData, int aLength, int /*aOffset*/)
     }
 
     // validate buffer
-    Q_ASSERT((mBufferData->buffer != NULL) && "Internal buffer is null when appending");
+    Q_ASSERT_X((mBufferData->buffer != NULL), "Graphics", "Internal buffer is null when appending");
 
     // check buffer capacity and increase if needed
     if (mBufferData->capacity < (mBufferData->allocation + aLength) )

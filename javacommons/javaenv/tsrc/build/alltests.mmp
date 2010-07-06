@@ -20,12 +20,12 @@ UID			 0x00000000 0x03A6305A
 CAPABILITY all -tcb -allfiles -drm
 
 #include <../../../../inc/java_stdcpp_support_for_exe.hrh>
-#include <domain/osextensions/platform_paths.hrh>
+#include <platform_paths.hrh>
 
 USERINCLUDE ../../../inc
+USERINCLUDE ../../../../inc
 USERINCLUDE ../../../../tools/cpputest/include/cpputest
 USERINCLUDE ../../../../tools/cpputest/include/platforms/symbian
-USERINCLUDE ../../../../inc
 
 STATICLIBRARY cpputest.lib
 

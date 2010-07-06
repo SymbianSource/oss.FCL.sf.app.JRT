@@ -297,7 +297,33 @@ public class UDPDatagramConnectionImpl implements UDPDatagramConnection
         {
             throw new IOException("getLocalAddress failed: connection is already closed");
         }
-        retVal = _getLocalAddress(iNativePeerHandle, address);
+        int apId = -1;
+        int apType = -1;
+        try
+        {
+
+            Uid appSuite = ApplicationInfo.getInstance().getSuiteUid();
+            iCmInstance = ConnectionManager.getInstance();
+            AccessPoint apn = iCmInstance.getApplicationDefault(appSuite);
+            if (apn != null)
+            {
+                apId = apn.getNapId();
+                apType = apn.getType();
+
+                if ((apType!=AccessPoint.NAP_SNAP) && (apType!=AccessPoint.NAP_IAP))
+                {
+                    apType = -1;
+                    apId = -1;
+                }
+                Logger.LOG(Logger.ESOCKET, Logger.EInfo,
+                           "+SocketServerConnectionImpl:: getApplicationDefault returned,  \n"+apn.getNapId()+" type = "+apn.getType());
+            }
+        }
+        catch (Exception e)
+        {
+
+        }
+        retVal = _getLocalAddress(iNativePeerHandle, address, apId, apType);
         if (retVal < 0)
         {
             throw new IOException("getLocalAddress method failed.Posix error code: " + retVal);
@@ -512,7 +538,7 @@ public class UDPDatagramConnectionImpl implements UDPDatagramConnection
     public Datagram newDatagram(byte[] aBuf, int aSize, String aAddr)
     throws IOException
     {
-
+        DatagramImpl tmp = null;
         if (!iConnectionOpen)
         {
             throw new IOException("newDatagram failed: connection is already closed");
@@ -524,9 +550,21 @@ public class UDPDatagramConnectionImpl implements UDPDatagramConnection
         if (aAddr != null)
         {
             UrlParser urlvalidation = new UrlParser(aAddr);
+            tmp = new DatagramImpl(aBuf, aSize, aAddr);
         }
-        DatagramImpl t = new DatagramImpl(aBuf, aSize, aAddr);
-        return t;
+        else
+        {
+            String tmpAddr = null;
+            if (iUri != null)   // server datagram if iUri = null
+            {
+                if (iUri.host != null) // server datagram is host is null
+                {
+                    tmpAddr = iUri.toString();
+                }
+            }
+            tmp = new DatagramImpl(aBuf, aSize, tmpAddr);
+        }
+        return tmp;
     }
 
     Finalizer registerforFinalization()
@@ -571,7 +609,7 @@ public class UDPDatagramConnectionImpl implements UDPDatagramConnection
                              int length, String host, int port);
     private native int _receive(int iNativePeerHandle, byte[] buf, int offset,
                                 int length, String[] senderAddr, int[] senderPort);
-    private native int _getLocalAddress(int iNativePeerHandle, String[] address);
+    private native int _getLocalAddress(int iNativePeerHandle, String[] address, int aIapId, int aType);
     private native int _getLocalPort(int iNativePeerHandle);
     private native int _close(int iNativePeerHandle);
     private native void _dispose(int iNativePeerHandle);

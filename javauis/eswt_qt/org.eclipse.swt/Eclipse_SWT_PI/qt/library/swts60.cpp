@@ -16,6 +16,7 @@
 #include <w32std.h>
 #include <avkon.hrh>
 #include <QVariant>
+#include <QWidget>
 #include <AknDef.h>
 #include <apgtask.h>
 #include <hal.h>
@@ -43,8 +44,8 @@ const TInt KSwtSupportThreadStackSize = 0x1F40;
 
 static const char* const EVENT_FILTER = "swt_event_filter";
 
-// Data stored to thread/dll specific Symbian thread local storage of the UI 
-// thread. 
+// Data stored to thread/dll specific Symbian thread local storage of the UI
+// thread.
 typedef struct
     {
     JavaVM* vm;
@@ -78,13 +79,13 @@ int SymbianUtils::startUI(JNIEnv* aJniEnv, jobject aRunner, jint aUid)
     JavaVM* javaVM = NULL;
     jint getVMStatus = aJniEnv->GetJavaVM(&javaVM);
     if(getVMStatus < 0) return KErrNoMemory;
-    
-    // Add a global reference to callback object so that in can be used from 
-    // the UI thread. 
+
+    // Add a global reference to callback object so that in can be used from
+    // the UI thread.
     jobject globalRef = aJniEnv->NewGlobalRef(aRunner);
     if(!globalRef) return KErrNoMemory;
-    
-    // Put needed data to a stucture for TLS storing that will be done later 
+
+    // Put needed data to a stucture for TLS storing that will be done later
     // in the UI thread
     SwtTlsData* data = new (std::nothrow) SwtTlsData();
     if(!data) return KErrNoMemory;
@@ -94,7 +95,7 @@ int SymbianUtils::startUI(JNIEnv* aJniEnv, jobject aRunner, jint aUid)
     data->initStatus = KRequestPending;
     RThread thread;
     data->initThreadId = thread.Id();
-    
+
     // Create a new thread that will be the UI thread
     TName uiThreadName(KSwtUiThreadName);
     RThread uiThread;
@@ -106,42 +107,42 @@ int SymbianUtils::startUI(JNIEnv* aJniEnv, jobject aRunner, jint aUid)
         delete data;
         return createStatus;
         }
-    
-    // Resume the UI thread and wait until it reports back the initialization 
+
+    // Resume the UI thread and wait until it reports back the initialization
     // status
     uiThread.Resume();
     User::WaitForRequest(data->initStatus);
-    
+
     // Launch the support thread
     if(data->initStatus == KErrNone)
         {
         startSupportThread(reinterpret_cast<TAny*>(data));
         }
-    
+
     // Return the thread initialization status
-    return data->initStatus.Int(); 
+    return data->initStatus.Int();
     }
 
 int SymbianUtils::initUiThread(JNIEnv* aJniEnv, const TInt& aUid)
     {
-    // This thread may or may not be a UI thread started by calling startUI. 
-    // It's concluded that this thread was started by startUI if TLS is set by 
-    // this DLL. If this is already the UI thread then not much initialization 
-    // is left to do. If this isn't a UI thread then everything has to be 
-    // initialized. In the latter case the stack size has already been fixed 
-    // and that might cause problems. 
+    // This thread may or may not be a UI thread started by calling startUI.
+    // It's concluded that this thread was started by startUI if TLS is set by
+    // this DLL. If this is already the UI thread then not much initialization
+    // is left to do. If this isn't a UI thread then everything has to be
+    // initialized. In the latter case the stack size has already been fixed
+    // and that might cause problems.
     TBool isUiThread = ETrue;
     SwtTlsData* data = reinterpret_cast<SwtTlsData*>(Dll::Tls());
     if(!data) isUiThread = EFalse;
-    
+
     // If this is already initialized as a UI thread by startUI the do nothing
-    // more. Otherwise continue with the initialization. 
+    // more. Otherwise continue with the initialization.
     if(isUiThread)
         {
         return KErrNone;
         }
-    
-    // Create and set the TLS data structure. 
+
+    // Create and set the TLS data structure.
     data = new (std::nothrow) SwtTlsData();
     if(!data) return KErrNoMemory;
     data->doFreeTLSInCleanupUIThread = ETrue;
@@ -150,16 +151,16 @@ int SymbianUtils::initUiThread(JNIEnv* aJniEnv, const TInt& aUid)
     // This is the UI thread now, store its id
     RThread uiThread;
     data->uiThreadId = uiThread.Id();
-    
+
     // Get a VM pointer using the current thread context
     JavaVM* javaVM = NULL;
     jint getVMStatus = aJniEnv->GetJavaVM(&javaVM);
     if(getVMStatus < 0) return KErrNoMemory;
     data->vm = javaVM;
-    
+
     // Store the MIDlet uid we got as a parameter
     data->uid = aUid;
-    
+
     // Launch the support thread
     startSupportThread(reinterpret_cast<TAny*>(data));
 
@@ -188,7 +189,7 @@ void SymbianUtils::setAppName(JNIEnv* aJniEnv, jstring aName)
             {
             AutoReleaseStringChars cleaner(aJniEnv, aName, javaChars);
             jsize length = aJniEnv->GetStringLength(aName);
-            
+
             TRAPD(err, buffer = HBufC16::NewL(length));
             if (err == KErrNone)
                 {
@@ -228,24 +229,62 @@ bool SymbianUtils::eventFilter(QObject* object, const TWsEvent* aEvent)
     int swtEventType = -1;
     switch (aEvent->Type())
     {
-    case KAknShutOrHideApp: //The event is received when exit from task list, 
-                            //which terminates application straight away
+    case KAknShutOrHideApp: //The event is received when exit from task list,
+        //which terminates application straight away
         swtEventType = org_eclipse_swt_internal_qt_OS_QSWTEVENT_SYSTEMSHUTDOWN;
         break;
-     case EEventUser:
-        if ( ( *reinterpret_cast<TApaSystemEvent*>( aEvent->EventData() ) ) == EApaSystemEventShutdown )
+    case EEventUser:
+        if ((*reinterpret_cast<TApaSystemEvent*> (aEvent->EventData()))
+            == EApaSystemEventShutdown)
+        {
+            // other system exit (e.g. when out of memory).
+            if (!CEikonEnv::Static()->IsSystem())
             {
-            // other system exit (e.g. when out of memory). 
-            if( !CEikonEnv::Static()->IsSystem() )
+                swtEventType
+                    = org_eclipse_swt_internal_qt_OS_QSWTEVENT_SYSTEMSHUTDOWN;
+            }
+        }
+        break;
+    case EEventWindowVisibilityChanged:
+    {
+        CCoeControl* control =
+            reinterpret_cast<CCoeControl*> (aEvent->Handle());
+        QWidget* widget = QWidget::find(control);
+        if (widget)
+        {
+            const TWsVisibilityChangedEvent* ev = aEvent->VisibilityChanged();
+            if (ev)
+            {
+                if (ev->iFlags & TWsVisibilityChangedEvent::ENotVisible)
                 {
-                swtEventType = org_eclipse_swt_internal_qt_OS_QSWTEVENT_SYSTEMSHUTDOWN;
+                    swtEventType
+                        = org_eclipse_swt_internal_qt_OS_QSWTEVENT_SYMBIAN_WINDOW_NOT_VISIBLE;
+                }
+                else if (ev->iFlags
+                    & TWsVisibilityChangedEvent::EPartiallyVisible)
+                {
+                    swtEventType
+                        = org_eclipse_swt_internal_qt_OS_QSWTEVENT_SYMBIAN_WINDOW_PARTIALLY_VISIBLE;
+                }
+                else if (ev->iFlags & TWsVisibilityChangedEvent::EFullyVisible)
+                {
+                    swtEventType
+                        = org_eclipse_swt_internal_qt_OS_QSWTEVENT_SYMBIAN_WINDOW_FULLY_VISIBLE;
                 }
             }
-        break;
+            if (swtEventType > -1)
+            {
+                object = widget;
+            }
+        }
+
+        bool res = eventFilter(object, -1, swtEventType);
+        return res;
+    }
     default:
         break;
     }
-    return eventFilter( object, -1, swtEventType);
+    return eventFilter(object, -1, swtEventType);
 }
 
 bool SymbianUtils::eventFilter(QObject* object, const TInt aSymbianType, TInt aSwtType)
@@ -261,10 +300,10 @@ bool SymbianUtils::eventFilter(QObject* object, const TInt aSymbianType, TInt aS
                break;
            }
         }
-    
+
     if (aSwtType > -1)
         {
-        QVariant data = object->property(EVENT_FILTER);
+        QVariant data = qApp->property(EVENT_FILTER);
         if (data.isValid())
             {
             EventCallback* filter = reinterpret_cast<EventCallback*> (data.toInt());
@@ -294,13 +333,13 @@ TInt SymbianUtils::GetHwInputs()
     HAL::Get(HALData::EKeyboard, mask);
     return mask;
     }
-	
+
 CApaApplication* SymbianUtils::NewApplication()
     {
     return new SwtQtS60MainApplication;
     }
 
-void SymbianUtils::notifyThreadInitStatus(const TInt& aStatus, 
+void SymbianUtils::notifyThreadInitStatus(const TInt& aStatus,
         TThreadId aInitThreadId, TRequestStatus* aStatusPtr)
     {
     RThread initThread;
@@ -320,10 +359,10 @@ TInt SymbianUtils::uiThreadEntryPoint(TAny* aTlsData)
     Dll::SetTls(aTlsData);
     data->doFreeTLSInCleanupUIThread = EFalse;
 
-    // Set the thread as process critical so that the entire process will die 
-    // if the UI thread panics. 
+    // Set the thread as process critical so that the entire process will die
+    // if the UI thread panics.
     User::SetCritical(User::EProcessCritical);
-    
+
     // Create a CleanupStack
     CTrapCleanup* cleanup = CTrapCleanup::New();
     if(!cleanup)
@@ -332,11 +371,11 @@ TInt SymbianUtils::uiThreadEntryPoint(TAny* aTlsData)
         freeTLSData(data);
         return KErrNoMemory;
         }
-    
-    // Attach this thread to the VM to get the JNIEnv pointer. 
+
+    // Attach this thread to the VM to get the JNIEnv pointer.
     JNIEnv* env = NULL;
     void* args = NULL;
-    jint attachStatus = data->vm->AttachCurrentThread((void**)&env, args);    
+    jint attachStatus = data->vm->AttachCurrentThread((void**)&env, args);
     if(attachStatus < 0)
         {
         notifyThreadInitStatus(KErrNoMemory, data->initThreadId, &data->initStatus);
@@ -345,58 +384,58 @@ TInt SymbianUtils::uiThreadEntryPoint(TAny* aTlsData)
         cleanup = NULL;
         return KErrNoMemory;
         }
-    
+
     // Obtain methodID of run() of the Java callback object
     jclass runnerClass = env->GetObjectClass(data->runner);
     jmethodID mid = NULL;
     if(runnerClass) mid = env->GetMethodID(runnerClass, "run", "()V");
-    
+
     // Check if something failed
     if(!mid)
         {
         notifyThreadInitStatus(KErrNoMemory, data->initThreadId, &data->initStatus);
-        
+
         TRAP_IGNORE(data->vm->DetachCurrentThread());
         freeTLSData(data);
         delete cleanup;
         cleanup = NULL;
-        
+
         return KErrNoMemory;
         }
-    
+
     // Notify the waiting thread that initialization has completed successfully
     notifyThreadInitStatus(KErrNone, data->initThreadId, &data->initStatus);
 
     // Call run() of the Java callback object. Inside this call the UI event
-    // loop will be executed. 
+    // loop will be executed.
     TRAPD(err, env->CallVoidMethod(data->runner, mid));
     if(err != KErrNone)
         {
-        // Something did leave. All Qt APIs are trapped so it might be a Java 
+        // Something did leave. All Qt APIs are trapped so it might be a Java
         // class library that has failed. This is a fatal error and the process
         // should die.
         User::Panic(KSwtUiThreadName, 0);
         }
-    
-    // The application allowed the UI thread to exit. Clean-up and die. 
-        
+
+    // The application allowed the UI thread to exit. Clean-up and die.
+
     // Remove the reference to the runner Java object
     TRAP_IGNORE(env->DeleteGlobalRef(data->runner));
     data->runner = NULL;
-    
+
     // Detach the UI thread from the VM
     TRAP_IGNORE(data->vm->DetachCurrentThread());
     freeTLSData(data);
     delete cleanup;
     cleanup = NULL;
-    
+
     return KErrNone;
     }
 
 /*
- * Don't trust the JNI implementation to trap everything properly but let's 
+ * Don't trust the JNI implementation to trap everything properly but let's
  * always have a top-level trap also in this thread to avoid panics such as
- * EUSER-CBase 66/69.  
+ * EUSER-CBase 66/69.
  */
 TInt SymbianUtils::supportThreadEntryPoint(TAny* aParams)
     {
@@ -410,25 +449,25 @@ TInt SymbianUtils::supportThreadEntryPoint(TAny* aParams)
 
 TInt SymbianUtils::trappedSupportThreadEntryPoint(TAny* aParams)
     {
-    // Prevent the library from getting detached when the VM closes its handle. 
+    // Prevent the library from getting detached when the VM closes its handle.
     // That would lead in the destruction of the Qt's global statics in a different
-    // thread than they were created in causing problems. Keep a handle to the 
-    // library in a thread until the process terminates. 
+    // thread than they were created in causing problems. Keep a handle to the
+    // library in a thread until the process terminates.
     RLibrary libRef;
 #ifdef _DEBUG
-    TInt addLibRef = 
+    TInt addLibRef =
 #endif
     libRef.Load(KSwtDllName);
     __ASSERT_DEBUG(addLibRef == KErrNone, User::Panic(KSwtDllName, 0));
 
-    // Store JavaVM pointer and UI thread id from the thread params. 
+    // Store JavaVM pointer and UI thread id from the thread params.
     SwtTlsData* data = reinterpret_cast<SwtTlsData*>(aParams);
-    TThreadId uiThreadId = data->uiThreadId; 
+    TThreadId uiThreadId = data->uiThreadId;
     JavaVM* vm = data->vm;
-    
+
     // Try attach using the JavaVM pointer. At this point there's a Java thread
     // waiting ensuring that the VM has not closed down and the JavaVM pointer
-    // must be valid. 
+    // must be valid.
     JNIEnv* env = NULL;
     void* args = NULL;
     jint attachStatus = vm->AttachCurrentThread((void**)&env, args);
@@ -436,8 +475,8 @@ TInt SymbianUtils::trappedSupportThreadEntryPoint(TAny* aParams)
 
     // Notify the waiting Java thread that we have attached and it can continue
     notifyThreadInitStatus(attachStatus, data->initThreadId, &data->initStatus);
-    
-    // Create a rendezvous request to detect if the UI thread dies. 
+
+    // Create a rendezvous request to detect if the UI thread dies.
     RThread uiThread;
     TInt openStatus = uiThread.Open(uiThreadId);
     __ASSERT_DEBUG(openStatus == KErrNone, User::Panic(KSwtDllName, 0));
@@ -447,8 +486,8 @@ TInt SymbianUtils::trappedSupportThreadEntryPoint(TAny* aParams)
         uiThread.Rendezvous(uiThreadRendezvous);
         }
 
-    // Wait until the process dies. If the UI thread dies notify MIDP 
-    // application management software that the MIDlet should die. 
+    // Wait until the process dies. If the UI thread dies notify MIDP
+    // application management software that the MIDlet should die.
     // This is a workaround until QTBUG-5284 is resolved.
     while(ETrue)
         {
@@ -456,21 +495,23 @@ TInt SymbianUtils::trappedSupportThreadEntryPoint(TAny* aParams)
         if(vm && openStatus == KErrNone) {
             if(uiThread.ExitType() != EExitPending)
                 {
-                // Notify once and detach the thread. 
-                notifyExitCmd(env);
+                // Notify once and detach the thread.
+                notifyUIThreadExit(env);
                 vm->DetachCurrentThread();
                 env = NULL;
                 vm = NULL;
                 }
             }
         }
-    return KErrNone;
+
+    // Because the thread is waiting until the process terminates,
+    // execution will neve reach here.
     }
 
 void SymbianUtils::startSupportThread(TAny* aParams)
     {
-    // Set the thread id that the support thread will notify when it has 
-    // attached to the VM. 
+    // Set the thread id that the support thread will notify when it has
+    // attached to the VM.
     SwtTlsData* data = reinterpret_cast<SwtTlsData*>(aParams);
     RThread initThread;
     data->initThreadId = initThread.Id();
@@ -481,28 +522,29 @@ void SymbianUtils::startSupportThread(TAny* aParams)
     RThread supportThread;
     TInt createStatus = supportThread.Create(supportThreadName, SymbianUtils::supportThreadEntryPoint,
             KSwtSupportThreadStackSize, NULL, aParams);
-    
-    // If the application disposed the Display and recreated it in the same 
-    // thread then support thread already exists. 
+
+    // If the application disposed the Display and recreated it in the same
+    // thread then support thread already exists.
     if(createStatus == KErrAlreadyExists) return;
-    
+
     if(createStatus == KErrNone) supportThread.Resume();
     __ASSERT_DEBUG(createStatus == KErrNone, User::Panic(KSwtSupportThreadName, 0));
-    
-    // Wait until the support thread is attached to the VM to ensure that 
-    // the VM doesn't have a chance to unload and invalidate the VM pointer. 
+
+    // Wait until the support thread is attached to the VM to ensure that
+    // the VM doesn't have a chance to unload and invalidate the VM pointer.
     User::WaitForRequest(data->initStatus);
     }
 
-void SymbianUtils::notifyExitCmd(JNIEnv* aEnv)
+void SymbianUtils::notifyUIThreadExit(JNIEnv* aEnv)
     {
     if(!aEnv) return;
-    
+    if(aEnv->ExceptionCheck() == JNI_TRUE) return;
+
     jclass clazz = aEnv->FindClass("org/eclipse/swt/internal/ExitNotificationWrapper");
     __ASSERT_DEBUG(clazz, User::Panic(KSwtUiThreadName, 0));
     if(clazz)
         {
-        jmethodID id = aEnv->GetStaticMethodID(clazz, "notifyExit", "()V");
+        jmethodID id = aEnv->GetStaticMethodID(clazz, "uiDisposed", "()V");
         __ASSERT_DEBUG(id, User::Panic(KSwtUiThreadName, 0));
         if(id)
             {

@@ -382,10 +382,9 @@ bool JavaApplicationSettingsViewPrivate::blanketAllowed(const JavaApplicationSet
                     == BLANKET)
             {
                 QString secWarning = SENSITIVE_SETTINGS;
-                if (settings.getName() == NET_ACCESS
-                        || highRiskList[i]->getName() == NET_ACCESS
-                        || settings.getName() == LOW_LEVEL_NET_ACCESS
-                        || highRiskList[i]->getName() == LOW_LEVEL_NET_ACCESS)
+                QString LOCAL_CONNECTIVITY = QString(hbTrId("txt_java_sett_setlabel_local_conn"));
+                if (settings.getName() != LOCAL_CONNECTIVITY
+                    && highRiskList[i]->getName() != LOCAL_CONNECTIVITY)
                 {
                     secWarning = SENSITIVE_SETTINGS_NET_USAGE;
                 }
@@ -574,15 +573,23 @@ void JavaApplicationSettingsViewPrivate::_q_dataItemDisplayed(const QModelIndex 
     HbWidget * widget = (qobject_cast<HbDataFormViewItem *> 
         (mainForm->itemByIndex(dataItemIndex)))->dataItemContentWidget();
     JavaApplicationSettings* settings = findSettings(widget);
-    if (settings == NULL || settings->isConnectedToUi())
+    if (settings == NULL)
     {
+        // stop right here
         return;
     }
-    settings->connectToUi();
     switch(HbDataFormModelItem::DataItemType(itemType))
     {
         case HbDataFormModelItem::ComboBoxItem:
             comboBox = static_cast<HbComboBox*>(widget);
+            if (settings->isConnectedToUi())
+            {
+                // need to do a reconnect: disconnect followed by a connect
+                iPublicView->disconnect(comboBox, 
+                        SIGNAL(currentIndexChanged(const QString &)), 
+                        iPublicView, 
+                        SLOT(_q_settingsChanged(const QString &)));
+            }
             iPublicView->connect(comboBox,
                                  SIGNAL(currentIndexChanged(const QString &)),
                                  iPublicView, SLOT(_q_settingsChanged(const QString &)),
@@ -590,12 +597,21 @@ void JavaApplicationSettingsViewPrivate::_q_dataItemDisplayed(const QModelIndex 
             break;
         case HbDataFormModelItem::ToggleValueItem:
             pushButton = static_cast< HbPushButton*>(widget);
+            if (settings->isConnectedToUi())
+            {
+                // need to do a reconnect: disconnect followed by a connect
+                iPublicView->disconnect(pushButton, 
+                        SIGNAL(clicked(bool)),
+                        iPublicView, 
+                        SLOT(_q_settingsChanged(bool)));
+            }
             iPublicView->connect(pushButton,
                                  SIGNAL(clicked(bool)),
                                  iPublicView, SLOT(_q_settingsChanged(bool)),
                                  Qt::UniqueConnection);
             break;
     }
+    settings->connectToUi();
 }
 
 void JavaApplicationSettingsViewPrivate::netConnSelected(uint netConnSelectionStatus)

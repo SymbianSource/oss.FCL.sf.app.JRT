@@ -78,7 +78,7 @@ public class ErrorView extends ConfirmationViewBase
         else
         {
             Label titleLabel = createLabel(title, getColumns(), SWT.WRAP);
-            titleLabel.setFont(iInstallerUi.getBoldFont());
+            setCssId(titleLabel, "heading");
         }
 
         int horizontalSpan = getColumns();
@@ -87,6 +87,7 @@ public class ErrorView extends ConfirmationViewBase
         // Begin widgets creation.
         Label errorLabel = createLabel(
             iException.getShortMessage(), horizontalSpan, labelStyle);
+        setCssId(errorLabel, "errorLabel");
         // End of widgets creation.
 
         if (iInstallerUi.getInstallInfo() != null)
