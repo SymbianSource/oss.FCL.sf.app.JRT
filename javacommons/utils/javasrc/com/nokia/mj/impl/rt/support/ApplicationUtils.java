@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -162,10 +162,13 @@ public abstract class ApplicationUtils
      * <p>
      * This method is meant ONLY for the UI and no other API are allowed
      * to use it. The UI must use this API ONLY when the user explicitly
-     * wants to close the application using some platform depedent feataure
+     * wants to close the application using some platform dependent feature
      * (e.g. red key in S60). If the user tries to close the application
      * using the mechanism provided by the application itself, this method
      * must not be called.
+     * <p>
+     * Note that calling this method might cause the UI framework to call
+     * uiDisposed method, depending on which UI framework is used.
      * <p>
      * This method is a problematic in such runtimes that may run more than one
      * application in same JVM instance (e.g. eRCP). If the application
@@ -175,6 +178,23 @@ public abstract class ApplicationUtils
      *
      */
     public abstract void notifyExitCmd();
+
+    /**
+     * Notifies the runtime that UI has been disposed. The runtime is
+     * responsible for killing the application if it doesn't close itself
+     * nicely after specified grace time. The specified grace time is
+     * runtime dependent.
+     * <p>
+     * This method is meant ONLY for the UI and no other API are allowed
+     * to use it.
+     * <p>
+     * It is possible that the method is called several times from different 
+     * phases of the UI exit sequence. 
+     */
+    public void uiDisposed()
+    {
+        notifyExitCmd();
+    }
 
     /**
      * Determines whether the access request indicated by the specified
@@ -221,7 +241,7 @@ public abstract class ApplicationUtils
      * @param listener the new listener.
      */
     public void addShutdownListener(ShutdownListener listener)
-{
+    {
         if (mListeners == null)
         {
             mListeners = new Vector();

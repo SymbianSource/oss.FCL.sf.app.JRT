@@ -277,7 +277,11 @@ public final class AuthenticationModule
         try
         {
             Vector allAuthCredentials = (Vector)iAuthCredentials.get(msUID);
-            String jarHash = _computeHash(appJARPath);
+            String jarHash = null;
+            try
+            {
+                jarHash = _computeHash(appJARPath);
+            }catch(AuthenticationException e) {}
             if (jarHash == null || jarHash.length() == 0)
             {
                 // could not compute hash for the given application
@@ -410,7 +414,11 @@ public final class AuthenticationModule
                 new String[] {"Unknown protection domain " + protectionDomain},
                 OtaStatusCode.INTERNAL_ERROR);
         }
-        String jarHash = _computeHash(appJARPath);
+        String jarHash = null;
+        try
+        {
+            jarHash = _computeHash(appJARPath);
+        }catch(AuthenticationException e) {}
         if (jarHash == null || jarHash.length() == 0)
         {
             // could not compute hash for the given application
@@ -825,7 +833,23 @@ public final class AuthenticationModule
                 && authStorageData.getJarHashValue().length() > 0)
         {
             Logger.log("  Doing tamper detection");
-            String computedJarHash = _computeHash(authStorageData.getJarPath());
+            String computedJarHash = null;            
+            try
+            {
+                computedJarHash = _computeHash(authStorageData.getJarPath());
+            }catch(AuthenticationException e) 
+            {
+                if (e.getErrorCode() 
+                    == AuthenticationException.JAR_NOT_FOUND)
+                {
+                    Logger.logWarning("    Jar not found while trying to compute hash");
+                    throw new RuntimeSecurityException(
+                        SecurityErrorMessage.JAR_NOT_FOUND,
+                        null, /* no params for short msg */
+                        SecurityDetailedErrorMessage.JAR_NOT_FOUND,
+                        null /* no params for detailed msg */);
+                }
+            }
             // do the tampering check: compute the hash and compare it with the stored hash
             if (computedJarHash == null || !computedJarHash.equals(
                         authStorageData.getJarHashValue()))
@@ -1120,6 +1144,7 @@ public final class AuthenticationModule
     private boolean isDriveProtected(int aMediaId)
     {
         DriveInfo[] allDrives = DriveUtilities.getAllDrives();
+        boolean driveFound = false;
         if (allDrives != null)
         {
             for (int i=0; i<allDrives.length; i++)
@@ -1134,11 +1159,11 @@ public final class AuthenticationModule
                     {
                         return false;
                     }
-                    return true;
+                    driveFound = true;
                 }
             }
         }
-        return false;
+        return driveFound;
     }
 
     private Credentials selectCredentials(String selectedJarHash, Vector allAuthCredentials, Vector validatedChainIndexes)

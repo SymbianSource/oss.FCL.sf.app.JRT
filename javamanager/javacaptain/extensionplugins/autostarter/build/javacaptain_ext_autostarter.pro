@@ -21,6 +21,6 @@ CONFIG += omj stl
 CONFIG -= qt
 
 
-LIBS += -ljavacomms -ljavastorage
+LIBS += -ljavacomms -ljavastorage -lapparc -lapgrfx
 
 include(../../../../../build/omj.pri)

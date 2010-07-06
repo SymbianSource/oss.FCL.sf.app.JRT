@@ -22,7 +22,7 @@
 #include <cmmaplayerevent.h>
 #include <cmmaaudioplayer.h>
 #include <cmmavideoplayer.h>
-#include <mmfcontroller.h>
+#include <mmf/common/mmfcontroller.h>
 #include <midiclientutility.h>
 #include <cammscustomcommandutility.h>
 #include <JniEnvWrapper.h>

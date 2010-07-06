@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -24,8 +24,6 @@ import java.util.Hashtable;
 /**
  * Base class for classes defining localized error messages.
  *
- * @author Nokia Corporation
- * @version 1.0
  * @see InstallerExceptionBase
  */
 abstract public class ErrorMessageBase
@@ -33,6 +31,19 @@ abstract public class ErrorMessageBase
     /*** ----------------------------- PUBLIC ------------------------------ */
 
     public static final int NO_MSG = 0; // Used when the error message is not available.
+
+    /** Start of Runtime error message ids range. */
+    public static final int RUNTIME_RANGE_START = 0;
+    /** End of Runtime error message ids range. */
+    public static final int RUNTIME_RANGE_END = 99;
+    /** Start of Installer error message ids range. */
+    public static final int INSTALLER_RANGE_START = 100;
+    /** End of Installer error message ids range. */
+    public static final int INSTALLER_RANGE_END = 199;
+    /** Start of Security error message ids range. */
+    public static final int SECURITY_RANGE_START = 200;
+    /** End of Security error message ids range. */
+    public static final int SECURITY_RANGE_END = 299;
 
     /**
      * Method for retrieving the message of a certain error.

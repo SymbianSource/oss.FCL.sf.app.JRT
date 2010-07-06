@@ -20,7 +20,7 @@
 
 //  INCLUDES
 #include "cmmaemcplayerbase.h"
-#include "mmfbase.h"
+#include <mmf/common/mmfbase.h>
 
 // CONSTANTS
 

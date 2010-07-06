@@ -16,6 +16,7 @@ import org.eclipse.ercp.swt.mobile.MobileDevice;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.qt.CommandArranger;
+import org.eclipse.swt.internal.qt.SymbianWindowVisibilityListener;
 import org.eclipse.swt.internal.qt.graphics.WindowSurface;
 
 /**
@@ -168,7 +169,7 @@ public static void qt_signal_abstractitemview_activated(Widget w, int row, int c
     w.qt_signal_abstractitemview_activated_pp(row, column);
 }
 public static void qt_swt_event_widgetResized(Widget w, int widgetHandle, int oldWidth, int oldHeight, int width, int height) {
-    w.qt_swt_event_widgetResized_pp(widgetHandle, oldWidth, oldHeight, width, height);
+    w.qt_swt_event_widgetResized_pp(widgetHandle, oldWidth, oldHeight, width, height, true);
 }
 public static void register(Widget w) {
     w.register_pp();
@@ -305,6 +306,12 @@ public static WindowSurface getWindowsurface(Shell s) {
 }
 public static int windowFlagsFromStyle(Shell s) {
     return s.windowFlagsFromStyle();
+}
+public static void addSymbianWindowVisibilityListener(Shell s, SymbianWindowVisibilityListener listener) {
+    s.addSymbianWindowVisibilityListener_pp(listener);
+}
+public static void removeSymbianWindowVisibilityListener(Shell s, SymbianWindowVisibilityListener listener) {
+    s.removeSymbianWindowVisibilityListener_pp(listener);
 }
 /*
  * From the class Table

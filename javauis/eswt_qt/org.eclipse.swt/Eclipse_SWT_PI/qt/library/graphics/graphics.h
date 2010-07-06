@@ -349,6 +349,11 @@ public:
     virtual CFbsBitmap* getSymbianBitmap() = 0;
 #endif    
     
+    /**
+     * Switches to software rendering if the window goes invisible
+     * and back to hardware rendering when becoming visible.
+     */
+    virtual void handleSymbianWindowVisibilityChange(bool aVisible) = 0;
 };
 
 

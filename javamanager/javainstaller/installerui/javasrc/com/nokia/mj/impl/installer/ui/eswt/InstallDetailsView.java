@@ -124,16 +124,11 @@ public class InstallDetailsView extends ConfirmationViewBase
                             new String[] { iInstallInfo.getName() }),
                            horizontalSpan, labelStyle);
 
-        if (identified)
-        {
-            // Vendor information must be displayed only for
-            // identified applications.
-            Label vendorLabel = createLabel
-                                (InstallerUiTexts.get
-                                 (InstallerUiTexts.VENDOR,
-                                  new String[] { iInstallInfo.getVendor() }),
-                                 horizontalSpan, labelStyle);
-        }
+        Label vendorLabel = createLabel
+            (InstallerUiTexts.get
+             (InstallerUiTexts.VENDOR,
+              new String[] { iInstallInfo.getVendor() }),
+             horizontalSpan, labelStyle);
 
         Label versionLabel = createLabel
                              (InstallerUiTexts.get

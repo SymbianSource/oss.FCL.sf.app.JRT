@@ -305,12 +305,12 @@ void GraphicsContextImpl::copyArea(Image* aImage, int aX, int aY)
             }
             else
             {
-                Q_ASSERT(false && "CopyArea image type not recognized");
+                Q_ASSERT_X(false, "Graphics", "CopyArea image type not recognized");
             }
             break;
         }
         default:
-            Q_ASSERT(false && "Surface type not recognized");
+            Q_ASSERT_X(false, "Graphics", "Surface type not recognized");
             break;
     }
 }
@@ -446,13 +446,13 @@ void GraphicsContextImpl::copyArea(int aSrcX, int aSrcY, int aWidth, int aHeight
             }
             else
             {
-                Q_ASSERT(false && "CopyArea image type not recognized");
+                Q_ASSERT_X(false, "Graphics", "CopyArea image type not recognized");
             }
             break;
         }
         default:
         {
-            Q_ASSERT(false && "Surface type not recognized");
+            Q_ASSERT_X(false, "Graphics", "Surface type not recognized");
         }
     }
 }
@@ -489,7 +489,7 @@ void GraphicsContextImpl::drawImage(Image* aImage, int x, int y)
             mPainter->drawPixmap(x, y, *(aImage->getPixmap()));
             break;
         default:
-            Q_ASSERT(false && "Image type not recognized");
+            Q_ASSERT_X(false, "Graphics", "Image type not recognized");
             break;
     }
 }
@@ -513,7 +513,7 @@ void GraphicsContextImpl::drawImage(Image* aImage, int aManipulation, int aTx, i
             mPainter->drawPixmap(QRect(aTx ,aTy, aTw, aTh), *(aImage->getPixmap()), QRect(aSx, aSy, aSw, aSh));
             break;
         default:
-            Q_ASSERT(false && "Image type not recognized");
+            Q_ASSERT_X(false, "Graphics", "Image type not recognized");
             break;
     }
 }
@@ -1074,7 +1074,7 @@ int GraphicsContextImpl::getBlendingMode()
         case QPainter::CompositionMode_Xor:
             return EXor;
         default:
-            Q_ASSERT(false && "Blendingmode not recognized");
+            Q_ASSERT_X(false, "Graphics", "Blendingmode not recognized");
             return 0;
     }
 }
@@ -1162,7 +1162,7 @@ int GraphicsContextImpl::getStrokeStyle()
         case Qt::DashDotDotLine:
             return EStrokeDashDotDot;
         default:
-            Q_ASSERT(false && "The stroke style is not recognized");
+            Q_ASSERT_X(false, "Graphics", "The stroke style is not recognized");
             return 0;
     }
 }
@@ -1218,7 +1218,7 @@ void GraphicsContextImpl::setBlendingMode(TBlendingMode aMode)
             mPainter->setCompositionMode(QPainter::CompositionMode_Xor);
             break;
         default:
-            Q_ASSERT(false && "Blendingmode not recognized");
+            Q_ASSERT_X(false, "Graphics", "Blendingmode not recognized");
             return;
     }
 }
@@ -1300,7 +1300,7 @@ void GraphicsContextImpl::setStrokeStyle(TStrokeStyle aStyle)
             mPen->setStyle(Qt::DashDotDotLine);
             break;
         default:
-            Q_ASSERT(false && "The stroke style is not recognized");
+            Q_ASSERT_X(false, "Graphics", "The stroke style is not recognized");
             return;
     }
     mPainter->setPen(*mPen);

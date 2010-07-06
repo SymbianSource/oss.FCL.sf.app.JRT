@@ -110,7 +110,7 @@ public class UsernamePasswordView extends ConfirmationViewBase
 
         Label titleLabel = createLabel
                            (InstallerUiTexts.get(InstallerUiTexts.CONNECT_TO), labelStyle);
-        titleLabel.setFont(iInstallerUi.getBoldFont());
+        setCssId(titleLabel, "heading");
 
         Label urlLabel = createLabel(iUrl, labelStyle);
 
@@ -118,18 +118,23 @@ public class UsernamePasswordView extends ConfirmationViewBase
                           (InstallerUiTexts.get
                            (InstallerUiTexts.DOWNLOAD_APPLICATION, new String[] { iAppName }),
                            labelStyle);
+        setCssId(authLabel, "authLabel");
 
         Label usernameLabel = createLabel
                               (InstallerUiTexts.get(InstallerUiTexts.USERNAME), labelStyle);
+        setCssId(usernameLabel, "usernamePasswordLabel");
 
         iUsernameText = new Text(getComposite(), SWT.BORDER);
+        setCssId(iUsernameText, "usernamePasswordInputField");
         iUsernameText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         addSoftKeyListenerFor(iUsernameText);
 
         Label passwordLabel = createLabel
                               (InstallerUiTexts.get(InstallerUiTexts.PASSWORD), labelStyle);
+        setCssId(passwordLabel, "usernamePasswordLabel");
 
         iPasswordText = new Text(getComposite(), SWT.PASSWORD | SWT.BORDER);
+        setCssId(iPasswordText, "usernamePasswordInputField");
         iPasswordText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         addSoftKeyListenerFor(iPasswordText);
     }

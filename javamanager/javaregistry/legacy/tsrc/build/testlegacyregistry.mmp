@@ -20,9 +20,10 @@ UID      0x00000000 0x03A6305A
 CAPABILITY all -tcb -allfiles -drm
 
 #include <../../../../../inc/java_stdcpp_support_for_exe.hrh>
-#include <domain/osextensions/platform_paths.hrh>
+#include <platform_paths.hrh>
 
-USERINCLUDE /epoc32/include/cpputest
+USERINCLUDE /epoc32/include/CppUTest    // Due to TestHarness.h et al
+
 USERINCLUDE ../src/utils
 USERINCLUDE ../../../../../inc // == (JAVA_SRC_ROOT)/inc
 USERINCLUDE ../../../../../jrt_plat/java_registry_api/inc

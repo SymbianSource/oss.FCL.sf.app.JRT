@@ -925,13 +925,23 @@ public class StorageHandler
         }
         else
         {
-            // Not an update ==> user is making uninstallation.
+            // Not an update ==> suite is being uninstalled.
             int oldPreinstallState = readPreinstallState(aSuiteInfo);
             if (oldPreinstallState == aSuiteInfo.STATE_PREINSTALLED)
             {
-                // User is uninstalling a preinstalled application,
-                // set preinstall state to STATE_NO_PREINSTALL.
-                setNoPreinstallState(aSuiteInfo);
+                if (aSuiteInfo.getResetPreinstall())
+                {
+                    // Preinstallation state should be reset,
+                    // remove existing data from
+                    // StorageNames.PREINSTALL_TABLE table.
+                    removePreinstallState(aSuiteInfo);
+                }
+                else
+                {
+                    // User is uninstalling a preinstalled application,
+                    // set preinstall state to STATE_NO_PREINSTALL.
+                    setNoPreinstallState(aSuiteInfo);
+                }
             }
             else if (oldPreinstallState == aSuiteInfo.STATE_INSTALLED)
             {
@@ -1081,13 +1091,11 @@ public class StorageHandler
 
     /**
      * Removes preinstall state for given suite from
-     * preinstall table but only if preinstall state
-     * in given SuiteInfo is SuiteInfo.STATE_INSTALLED.
+     * preinstall table 
      */
     private void removePreinstallState(SuiteInfo aSuiteInfo)
     {
-        if (aSuiteInfo == null ||
-                aSuiteInfo.iPreinstallState != aSuiteInfo.STATE_INSTALLED)
+        if (aSuiteInfo == null)
         {
             return;
         }

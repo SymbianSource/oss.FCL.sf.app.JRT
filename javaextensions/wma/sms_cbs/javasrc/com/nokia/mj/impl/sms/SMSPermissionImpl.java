@@ -21,6 +21,7 @@ import java.security.Permission;
 import java.security.PermissionCollection;
 import com.nokia.mj.impl.security.common.PermissionBase;
 import com.nokia.mj.impl.security.utils.SecurityPromptMessage;
+import com.nokia.mj.impl.utils.Formatter;
 
 public class SMSPermissionImpl extends PermissionBase
 {
@@ -76,15 +77,24 @@ public class SMSPermissionImpl extends PermissionBase
         }
         else if (iAction.compareTo("send") == 0)
         {
+            String prefix = "";
+            String formattedDestination = iDestination;
+            if (formattedDestination.startsWith("+"))
+            {
+                formattedDestination = iDestination.substring(1);
+                prefix = "+";
+            }
+            formattedDestination = prefix + Formatter.formatDigits(formattedDestination);
             if (iNumberOfSegments > 1)
             {
                 return (SecurityPromptMessage.getInstance()).getText(
                            SecurityPromptMessage.QUESTION_ID_SMS_SENDING,
-                           new Object[] {new Integer(iNumberOfSegments),iDestination});
+                           new Object[] {new Integer(iNumberOfSegments),
+                           formattedDestination});
             }
             return (SecurityPromptMessage.getInstance()).getText(
                        SecurityPromptMessage.QUESTION_ID_SMS_SINGLE_SENDING,
-                       new Object[] {iDestination});
+                       new Object[] {formattedDestination});
         }
         return null;
     }

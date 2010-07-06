@@ -369,7 +369,12 @@ int startJvm(int argc, char *argv[])
     jvm->appendSystemProperty(
         L"-Dcom.nokia.mj.impl.rt.ui="
         L"com.nokia.mj.impl.installer.ui.eswt2.InstallerRuntimeUi");
-#else
+#ifdef __SYMBIAN32__
+#ifndef __WINS__
+    jvm->appendSystemProperty(L"-Dcom.nokia.mj.impl.installer.ui.disableui=1");
+#endif //__WINS__
+#endif // __SYMBIAN32__
+#else // RD_JAVA_S60_RELEASE_10_1_ONWARDS
     jvm->appendSystemProperty(
         L"-Dcom.nokia.mj.impl.installer.ui="
         L"com.nokia.mj.impl.installer.ui.eswt.InstallerUiEswt");

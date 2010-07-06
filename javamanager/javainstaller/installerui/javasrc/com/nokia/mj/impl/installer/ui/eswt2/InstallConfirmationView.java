@@ -106,15 +106,7 @@ public class InstallConfirmationView extends ConfirmationViewBase
     protected void createView()
     {
         // Add header.
-        String title = InstallerUiTexts.get(InstallerUiTexts.INSTALL_QUERY);
-        if (iInstallInfo != null)
-        {
-            if (iInstallInfo.getOldVersion() != null)
-            {
-                title = InstallerUiTexts.get(InstallerUiTexts.UPDATE_QUERY);
-            }
-        }
-        addHeader(title, iInstallInfo, null);
+        addHeader(null, iInstallInfo, null);
 
         GridData gridData = null;
         int horizontalSpan = getColumns();
@@ -126,6 +118,7 @@ public class InstallConfirmationView extends ConfirmationViewBase
         {
             // Add installation drive selector.
             iDriveSelector = new Combo(getComposite(), SWT.READ_ONLY);
+            setCssId(iDriveSelector, "driveSelector");
             gridData = new GridData(GridData.FILL_HORIZONTAL);
             gridData.horizontalSpan = horizontalSpan;
             iDriveSelector.setLayoutData(gridData);
@@ -155,6 +148,7 @@ public class InstallConfirmationView extends ConfirmationViewBase
         {
             // Add retain user data option.
             iRetainDataButton = new Button(getComposite(), SWT.CHECK);
+            setCssId(iRetainDataButton, "retainDataButton");
             gridData = new GridData(GridData.FILL_HORIZONTAL);
             gridData.horizontalSpan = horizontalSpan;
             iRetainDataButton.setLayoutData(gridData);

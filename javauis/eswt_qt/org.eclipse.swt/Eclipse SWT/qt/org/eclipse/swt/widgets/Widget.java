@@ -51,13 +51,13 @@ import org.eclipse.swt.internal.qt.WidgetState;
  */
 public abstract class Widget {
     int handle, topHandle;
-    
+
     int style, state;
     Display display;
     EventTable eventTable;
     Object data;
     PackageProxy packageProxy;
-    
+
 static final int checkBits (int style, int int0, int int1, int int2, int int3, int int4, int int5) {
     int mask = int0 | int1 | int2 | int3 | int4 | int5;
     if ((style & mask) == 0) style |= int0;
@@ -111,10 +111,10 @@ public Widget (Widget parent, int style) {
 /**
  * <p>
  * <b>IMPORTANT:</b> This constructor is <em>not</em> part of the SWT
- * public API. It should never be referenced from application code. 
+ * public API. It should never be referenced from application code.
  * </p>
  */
-protected Widget (Widget parent, int style, int extraStyle, Object packageProxy, 
+protected Widget (Widget parent, int style, int extraStyle, Object packageProxy,
         boolean isExtended) {
     checkSubclass ();
     checkParent (parent);
@@ -190,27 +190,27 @@ final void addWidget (int handle) {
 
 final void checkOrientation (Widget parent) {
     style &= ~SWT.MIRRORED;
-    
+
     // If orientation explicitly specified then always use that
     if ((style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT)) == 0) {
         if (parent != null) {
             // Inherit the flag from parent
             if ((parent.style & SWT.LEFT_TO_RIGHT) != 0) style |= SWT.LEFT_TO_RIGHT;
             if ((parent.style & SWT.RIGHT_TO_LEFT) != 0) style |= SWT.RIGHT_TO_LEFT;
-            
+
             // If the parent follows the system language direction this widget
-            // does too (unless the user explicitly specified the direction). 
+            // does too (unless the user explicitly specified the direction).
             state |= (parent.state & WidgetState.FOLLOWS_SYSLANG_DIRECTION);
         } else {
-            // Use the default determined by a system property. 
-            // Setting RIGHT_TO_LEFT flag triggers the coordinate mirroring. 
+            // Use the default determined by a system property.
+            // Setting RIGHT_TO_LEFT flag triggers the coordinate mirroring.
             if(Display.defaultOrientation != SWT.LEFT_TO_RIGHT) {
                 style |= Display.defaultOrientation;
             }
-            
-            // If there's no parent this widget follows the system language 
-            // direction if that's the default behavior configured by a system 
-            // property. 
+
+            // If there's no parent this widget follows the system language
+            // direction if that's the default behavior configured by a system
+            // property.
             if(Display.defaultOrientationIsSysLangDirection)
                 state |= WidgetState.FOLLOWS_SYSLANG_DIRECTION;
         }
@@ -299,10 +299,10 @@ protected void checkWidget () {
 }
 
 /*
- * _pp means that some widgets want to "override" this method in another 
- * package. If this is such a widget then there is a 'package proxy' (pp) that 
- * must be called instead of the implementation in this package. 
- */ 
+ * _pp means that some widgets want to "override" this method in another
+ * package. If this is such a widget then there is a 'package proxy' (pp) that
+ * must be called instead of the implementation in this package.
+ */
 void createHandle_pp (int index) {
 }
 
@@ -313,7 +313,7 @@ void createWidget (int index) {
         createHandle_pp (index);
     }
     // If subclasses didn't specify topHandle then it's assumed that there's
-    // only one QWidget. I.e. handle is the root widget. 
+    // only one QWidget. I.e. handle is the root widget.
     if(topHandle == 0) topHandle = handle;
     if(packageProxy != null) {
         packageProxy.hookEvents();
@@ -641,7 +641,7 @@ final Event makeKeyEvent(int key, int modifier, int character, int nativeScanCod
     if (keypad) {
         event.keyLocation = SWT.KEYPAD;
     }
-    
+
     event.keyLocation |= Display.translateKeyLocation(nativeScanCode);
 
     return event;
@@ -869,7 +869,13 @@ void qt_swt_event_widgetMoved(int widgetHandle) {
 void qt_swt_event_widgetPainted(int widgetHandle, int x, int y, int width, int height, int regionHandle) {
 }
 
-void qt_swt_event_widgetResized_pp(int widgetHandle, int oldWidth, int oldHeight, int width, int height) {
+void qt_swt_event_widgetResized_pp(int widgetHandle, int oldWidth, int oldHeight, int width, int height, boolean sendResizeEvent) {
+}
+
+void qt_swt_event_symbianWindowHide() {
+}
+
+void qt_swt_event_symbianWindowShow() {
 }
 
 void register_pp () {
@@ -1120,7 +1126,7 @@ public void setData (Object data) {
 public void setData (String key, Object value) {
     checkWidget();
     if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
-    
+
     if (key.equals (WidgetConstant.SET_CANVAS_STATE_KEY)) {
         boolean enabled = ((Boolean)value).booleanValue();
         if (enabled) {
@@ -1177,11 +1183,11 @@ public void setData (String key, Object value) {
     }
 
     if(key.equals(WidgetConstant.CSS_ID)){
-    	OS.QObject_setObjectName(handle,(String)value);
+    	OS.QObject_setObjectName(topHandle,(String)value);
     	// Do not return here and let Widget store the key
     	// value.
     }
-    
+
     int index = 1;
     Object [] table = null;
     if ((state & WidgetState.KEYED_DATA) != 0) {
@@ -1229,12 +1235,12 @@ void setWidgetInternalOnly_pp(){
 }
 
 final void setPackageProxy(Object packageProxy) {
-    // If the subclass is in another package then it provides a proxy object 
+    // If the subclass is in another package then it provides a proxy object
     // which implements the methods that "override" the package private
     // implementations from this package. We must call the proxy object
-    // implementations if they are provided. 
+    // implementations if they are provided.
     if(packageProxy != null) {
-        PackageProxy proxyObject = (PackageProxy)packageProxy; 
+        PackageProxy proxyObject = (PackageProxy)packageProxy;
         proxyObject.setWidget(this);
         this.packageProxy = proxyObject;
     }

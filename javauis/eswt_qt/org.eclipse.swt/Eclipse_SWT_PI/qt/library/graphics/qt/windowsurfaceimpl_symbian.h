@@ -12,7 +12,7 @@
 #define WINDOWSURFACEQT_H_
 
 #include "graphics.h"
-#include "qwindowsurface_p.h"
+#include <QtGui/private/qwindowsurface_p.h>
 
 namespace Java { namespace GFX {
 
@@ -56,6 +56,7 @@ public:
     virtual void release();
     virtual void dispose();
     virtual CFbsBitmap* getSymbianBitmap();
+    virtual void handleSymbianWindowVisibilityChange(bool aVisible);
 
 private:
     
@@ -63,7 +64,7 @@ private:
      * Creates and activates local off-screen buffer for rendering 
      * in background mode
      */
-    void createLocalSurface(int aWidth, int aHeight);
+    void createLocalSurface();
     
     /**
      * Deletes local surface
@@ -110,13 +111,23 @@ private:
         WindowSurfaceType type;
         // Indicates if local surface is used
         bool localSurfaceInUse;
+        // indicates if the local surface is used as temp 
+        // surface for some client, i.e. used even though 
+        // we are not in background
+        bool localSurfaceUsedAsTemp;
+        // counter for the local surface which 
+        // prevents it being deleted in after each frame
+        // when its used as temp buffer for client
+        int tempLocalSurfaceInactivityCounter;
         surfaceData() : qSurface(NULL),
                         device(NULL), 
                         widget(NULL),
                         localSurface(NULL),
                         symbianBitmap(NULL),
                         type(WsTypeUnknown),
-                        localSurfaceInUse(false)
+                        localSurfaceInUse(false),
+                        localSurfaceUsedAsTemp(false),
+                        tempLocalSurfaceInactivityCounter(0)
         {}
     };
     
@@ -142,7 +153,11 @@ private:
     eglData mEgl;
     QPainter mPainter;
     bool mIsBound;
+    // Indicates that the local surface is
+    // used as temporary buffer for a client
+    // that does not support current widget surface
     bool mBufferedRendering;
+    bool mPreserveLocalSurface;
     bool mAutoRefresh;
     bool mPaintingStarted;
 };

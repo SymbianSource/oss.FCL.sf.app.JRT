@@ -28,5 +28,5 @@ public abstract class LocalizedTextProvider
      * @return           the text associated with the provided
      *                   identifier and parameters
      */
-    public abstract String getText(String aTextId, Object[] aTextParams);
+    public abstract String getText(Id aTextId, Object[] aTextParams);
 }

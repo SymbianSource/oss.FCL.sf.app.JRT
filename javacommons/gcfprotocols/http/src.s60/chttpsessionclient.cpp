@@ -22,7 +22,13 @@
 #include <httpstringconstants.h>
 #include <e32svr.h>
 #include "logger.h"
+
+#ifdef RD_JAVA_S60_RELEASE_9_2_ONWARDS
+#include <extendedconnpref.h> // extended connection preference
+#include <connpref.h>
+#else
 #include <commdbconnpref.h>
+#endif
 
 #include <http/cecomfilter.h>
 #include <httpfilterproxyinterface.h>
@@ -146,10 +152,19 @@ void HttpSessionClient::ConstructL(TInt aType, TInt aAPNId, TInt * apnerr)
                 *apnerr = ret;
                 return;
             }
-
+#ifdef RD_JAVA_S60_RELEASE_9_2_ONWARDS
+            TConnPrefList prefList;
+            TExtendedConnPref prefs;
+            prefs.SetSnapId(aAPNId);
+            prefList.AppendL(&prefs);
+            ret = iConnection.Start(prefList);
+#else
             TCommSnapPref connPref;
             connPref.SetSnap(aAPNId);
             ret = iConnection.Start(connPref);
+#endif
+
+            LOG(ESOCKET,EInfo,"+HttpSessionClient:: using extended connection prefernce in snap case");
             LOG1(ESOCKET,EInfo,"iConnection.Start returned %d",ret);
             if (ret < 0)
             {
@@ -172,6 +187,7 @@ void HttpSessionClient::ConstructL(TInt aType, TInt aAPNId, TInt * apnerr)
     {
         if (aType == 3) // IAP Id
         {
+            LOG(ESOCKET,EInfo,"+HttpSessionClient:: in iap case");
             if (aAPNId != -1)
             {
                 // Creates connection with selected IAP ID
@@ -189,18 +205,35 @@ void HttpSessionClient::ConstructL(TInt aType, TInt aAPNId, TInt * apnerr)
                     *apnerr = ret;
                     return;
                 }
+
+#ifdef RD_JAVA_S60_RELEASE_9_2_ONWARDS
+                // Create connection preferences
+                TConnPrefList prefList;
+                TExtendedConnPref prefs;
+                prefs.SetIapId(aAPNId);
+                prefList.AppendL(&prefs);
+                ret = iConnection.Start(prefList);
+                LOG(ESOCKET,EInfo,"+HttpSessionClient:: using extended connection prefernce in iap case");
+#else
                 TCommDbConnPref pref;
                 pref.SetIapId(aAPNId);
                 pref.SetDialogPreference(ECommDbDialogPrefDoNotPrompt);
                 ret = iConnection.Start(pref);
+#endif
+
                 if (ret < 0)
                 {
                     *apnerr = ret;
                     //return;
                 }
                 RHTTPConnectionInfo connInfo = iHttpSession.ConnectionInfo();
+                //connInfo.SetPropertyL(iHttpSession.StringPool().StringF(
+                //                          HttpFilterCommonStringsExt::EAccessPointID, HttpFilterCommonStringsExt::GetTable()), aAPNId);
                 connInfo.SetPropertyL(iHttpSession.StringPool().StringF(
-                                          HttpFilterCommonStringsExt::EAccessPointID, HttpFilterCommonStringsExt::GetTable()), aAPNId);
+                                          HTTP::EHttpSocketServ, RHTTPSession::GetTable()), THTTPHdrVal(iSocketServ.Handle()));
+                TInt connPtr = REINTERPRET_CAST(TInt, &iConnection);
+                connInfo.SetPropertyL(iHttpSession.StringPool().StringF(
+                                          HTTP::EHttpSocketConnection, RHTTPSession::GetTable()), THTTPHdrVal(connPtr));
             } // end of if ( aAPNId != -1)
         } // end of if(aType == 4)
         else
@@ -210,7 +243,7 @@ void HttpSessionClient::ConstructL(TInt aType, TInt aAPNId, TInt * apnerr)
 
     } // end of else
 
-    LOG1(ESOCKET,EInfo,"apnerr = ",*apnerr);
+    LOG1(ESOCKET,EInfo,"apnerr = %d",*apnerr);
 
     // This is special case when that IAP/SNAP is not found
     // Override the http stack's feaute of using device default
@@ -219,9 +252,19 @@ void HttpSessionClient::ConstructL(TInt aType, TInt aAPNId, TInt * apnerr)
         LOG(ESOCKET,EInfo,"ECommDbDialogPrefPrompt set for the http session");
         int ret = iSocketServ.Connect();
         ret = iConnection.Open(iSocketServ);
+#ifdef RD_JAVA_S60_RELEASE_9_2_ONWARDS
+        TConnPrefList prefList;
+        TExtendedConnPref prefs;
+        prefs.SetConnSelectionDialog(ETrue);
+        prefList.AppendL(&prefs);
+        ret = iConnection.Start(prefList);
+        LOG(ESOCKET,EInfo,"+HttpSessionClient:: using extended connection prefernce - error case ");
+#else
         TCommDbConnPref pref;
         pref.SetDialogPreference(ECommDbDialogPrefPrompt);
         ret = iConnection.Start(pref);
+        LOG(ESOCKET,EInfo,"+HttpSessionClient:: using commdb con pref - error case ");
+#endif
 
         RHTTPConnectionInfo connInfo = iHttpSession.ConnectionInfo();
         connInfo.SetPropertyL(iHttpSession.StringPool().StringF(
@@ -296,10 +339,25 @@ void HttpSessionClient::RestartConnection()
     iConnection.Close();
     TInt ret = iConnection.Open(iSocketServ);
 
+    //TCommSnapPref connPref;
+#ifdef RD_JAVA_S60_RELEASE_9_2_ONWARDS
+    TConnPrefList prefList;
+    TExtendedConnPref prefs;
+
+    if (iApnId!=-1)
+        prefs.SetSnapId(iApnId);
+    TRAPD(err,prefList.AppendL(&prefs));
+    if (err == KErrNone)
+        ret = iConnection.Start(prefList);
+    else
+        ret = iConnection.Start();
+#else
     TCommSnapPref connPref;
     if (iApnId!=-1)
         connPref.SetSnap(iApnId);
     ret = iConnection.Start(connPref);
+
+#endif
     LOG(ESOCKET,EInfo,"+HttpSessionClient::RestartConnection + ");
 
 }

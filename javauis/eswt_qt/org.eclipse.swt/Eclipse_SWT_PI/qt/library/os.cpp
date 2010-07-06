@@ -77,6 +77,7 @@
 #include <QLocale>
 #include <QInputContextFactory>
 #include <QChar>
+#include <QLibrary>
 
 #ifdef __SYMBIAN32__
 #include <xqservicerequest.h>
@@ -84,6 +85,7 @@
 #include <cntservicescontact.h>
 #include <qnetworkconfigmanager.h>
 #include <qnetworkconfiguration.h>
+#include <hbinputsettingproxy.h>
 #endif
 
 #include <org_eclipse_swt_internal_qt_OS.h>
@@ -167,6 +169,29 @@ JNIEXPORT jint JNICALL OS_NATIVE(QApplication_1swt_1new)
             jniUtils->Throw( aJniEnv, ESwtErrorUnspecified );
             }
         args->setParent( app );
+
+// Load qttestability plugin. Normally QApplication does this, but on Symbian it fails, so we need to
+// load the plugin manually. Will be fixed to Qt 4.7.
+#if !defined(QT_NO_LIBRARY)
+        QLibrary testLib("qttestability");
+        if (testLib.load())
+            {
+            typedef void (*TasInitialize)(void);
+            TasInitialize initFunction = (TasInitialize)testLib.resolve("qt_testability_init");
+#ifdef Q_OS_SYMBIAN
+            //not found so use ordinal
+            if (!initFunction)
+                {
+                initFunction = (TasInitialize)testLib.resolve("1");
+                }
+#endif
+            if (initFunction)
+                {
+                initFunction();
+                }
+            }
+#endif
+
         }
     catch(...)
         {
@@ -11304,6 +11329,27 @@ JNIEXPORT jstring JNICALL OS_NATIVE( QInputContextFactory_1swt_1key )
     return strKey;
     }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_extension_OS_HbInputSettingProxy_1availableHwKeyboard
+    (JNIEnv* aJniEnv, jclass)
+    {
+    jint result = 0;
+#ifdef __SYMBIAN32__
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        HbInputSettingProxy* hbisp = HbInputSettingProxy::instance();
+        QList<HbKeyboardType> keyBoards;
+        hbisp->availableHwKeyboard(keyBoards);
+        if(keyBoards.size()>0)
+            {
+            result = keyBoards[0];
+            }
+        }
+    SWT_CATCH
+#endif
+    return result;
+    }
+
 //
 // SwtApplication
 //
@@ -11467,136 +11513,215 @@ JNIEXPORT jobjectArray  JNICALL OS_NATIVE( CntServicesContactList_1swt_1contacts
 //
 
 JNIEXPORT jint JNICALL OS_NATIVE( MobileDevice_1new )
+#ifdef __SYMBIAN32__
+  (JNIEnv* aJniEnv, jclass)
+#else
   (JNIEnv*, jclass)
+#endif
     {
     jint handle = 0;
 #ifdef __SYMBIAN32__
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
         handle =  swtApp->initializeMobileDevice();
+        }
+    SWT_CATCH
 #endif
     return handle;    
     }
 
 JNIEXPORT void JNICALL OS_NATIVE( MobileDevice_1createFlipWatch )
 #ifdef __SYMBIAN32__
-  (JNIEnv*, jclass, jint aHandle)
+  (JNIEnv* aJniEnv, jclass, jint aHandle)
 #else
-(JNIEnv*, jclass, jint)
+  (JNIEnv*, jclass, jint)
 #endif
     {
 #ifdef __SYMBIAN32__
-    CSwtMobileDevice* mobileDevice =  reinterpret_cast<CSwtMobileDevice*>(aHandle);
-    mobileDevice->CreateFlipWatchL();
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        SWT_LOG_DATA_1( "handle=%x", aHandle );
+        CSwtMobileDevice* mobileDevice =  reinterpret_cast<CSwtMobileDevice*>(aHandle);
+        mobileDevice->CreateFlipWatchL();
+        }
+    SWT_CATCH
 #endif
     }
+    
 JNIEXPORT void JNICALL OS_NATIVE( MobileDevice_1destroy )
 #ifdef __SYMBIAN32__
-  (JNIEnv*, jclass, jint aHandle)
+  (JNIEnv* aJniEnv, jclass, jint /*aHandle*/)
 #else
-(JNIEnv*, jclass, jint)
+  (JNIEnv*, jclass, jint)
 #endif
     {
 #ifdef __SYMBIAN32__
-    swtApp->destroyMobileDevice();
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        SWT_LOG_DATA_1( "handle=%x", aHandle );
+        swtApp->destroyMobileDevice();
+        }
+    SWT_CATCH
 #endif
     }
 
 JNIEXPORT jint JNICALL OS_NATIVE( MobileDevice_1getUserInactivityTime )
 #ifdef __SYMBIAN32__
-  (JNIEnv*, jclass, jint aHandle)
+  (JNIEnv* aJniEnv, jclass, jint aHandle)
 #else
-(JNIEnv*, jclass, jint)
+  (JNIEnv*, jclass, jint)
 #endif
     {
     jint time=0;
 #ifdef __SYMBIAN32__
-    CSwtMobileDevice* mobileDevice =  reinterpret_cast<CSwtMobileDevice*>(aHandle);
-    time = mobileDevice->GetUserInactivityTime();
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        SWT_LOG_DATA_1( "handle=%x", aHandle );
+        CSwtMobileDevice* mobileDevice =  reinterpret_cast<CSwtMobileDevice*>(aHandle);
+        time = mobileDevice->GetUserInactivityTime();
+        }
+    SWT_CATCH
 #endif
     return time;
     }
 
 JNIEXPORT void JNICALL OS_NATIVE( MobileDevice_1resetUserInactivityTime )
 #ifdef __SYMBIAN32__
-  (JNIEnv*, jclass, jint aHandle)
+  (JNIEnv* aJniEnv, jclass, jint aHandle)
 #else
-(JNIEnv*, jclass, jint)
+  (JNIEnv*, jclass, jint)
 #endif
     {
 #ifdef __SYMBIAN32__
-    CSwtMobileDevice* mobileDevice =  reinterpret_cast<CSwtMobileDevice*>(aHandle);
-    mobileDevice->ResetUserInactivityTime();
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        SWT_LOG_DATA_1( "handle=%x", aHandle );
+        CSwtMobileDevice* mobileDevice =  reinterpret_cast<CSwtMobileDevice*>(aHandle);
+        mobileDevice->ResetUserInactivityTime();
+        }
+    SWT_CATCH
 #endif
     }
 
 JNIEXPORT void JNICALL OS_NATIVE( MobileDevice_1setLight )
 #ifdef __SYMBIAN32__
-  (JNIEnv*, jclass, jint aHandle, jint aDuration)
+  (JNIEnv* aJniEnv, jclass, jint aHandle, jint aDuration)
 #else
-(JNIEnv*, jclass, jint, jint)
+  (JNIEnv*, jclass, jint, jint)
 #endif
     {
 #ifdef __SYMBIAN32__
-    CSwtMobileDevice* mobileDevice =  reinterpret_cast<CSwtMobileDevice*>(aHandle);
-    mobileDevice->SetLights(static_cast<TInt>(aDuration));
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        SWT_LOG_DATA_2( "handle=%x duration=%x", aHandle, aDuration );
+        CSwtMobileDevice* mobileDevice =  reinterpret_cast<CSwtMobileDevice*>(aHandle);
+        mobileDevice->SetLights(static_cast<TInt>(aDuration));
+        }
+    SWT_CATCH
 #endif
     }
 
 JNIEXPORT jboolean JNICALL OS_NATIVE( MobileDevice_1flashLights )
 #ifdef __SYMBIAN32__
-  (JNIEnv *, jclass, jint aHandle, jint aDuration)
+  (JNIEnv* aJniEnv, jclass, jint aHandle, jint aDuration)
 #else
-(JNIEnv*, jclass, jint, jint)
+  (JNIEnv*, jclass, jint, jint)
 #endif
     {
     jboolean flashLights = JNI_FALSE;
 #ifdef __SYMBIAN32__
-    CSwtMobileDevice* mobileDevice =  reinterpret_cast<CSwtMobileDevice*>(aHandle);
-    TRAP_IGNORE(flashLights = mobileDevice->FlashBacklightL(static_cast<TInt>(aDuration)));
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        SWT_LOG_DATA_2( "handle=%x duration=%x", aHandle, aDuration );
+        CSwtMobileDevice* mobileDevice =  reinterpret_cast<CSwtMobileDevice*>(aHandle);
+        TRAP_IGNORE(flashLights = mobileDevice->FlashBacklightL(static_cast<TInt>(aDuration)));
+        }
+    SWT_CATCH
 #endif
     return ( flashLights ? JNI_TRUE : JNI_FALSE );
     }
 
 JNIEXPORT jboolean JNICALL OS_NATIVE( MobileDevice_1vibration )
 #ifdef __SYMBIAN32__
-  (JNIEnv*, jclass, jint aHandle, jint aDuration)
+  (JNIEnv* aJniEnv, jclass, jint aHandle, jint aDuration)
 #else
-(JNIEnv*, jclass, jint, jint)
+  (JNIEnv*, jclass, jint, jint)
 #endif
     {
     jboolean vibraSupport = JNI_FALSE;
 #ifdef __SYMBIAN32__
-    CSwtMobileDevice* mobileDevice =  reinterpret_cast<CSwtMobileDevice*>(aHandle);
-    vibraSupport = mobileDevice->Vibrate((TTimeIntervalMicroSeconds32)static_cast<TInt>(aDuration));
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        SWT_LOG_DATA_2( "handle=%x duration=%x", aHandle, aDuration );
+        CSwtMobileDevice* mobileDevice =  reinterpret_cast<CSwtMobileDevice*>(aHandle);
+        vibraSupport = mobileDevice->Vibrate((TTimeIntervalMicroSeconds32)static_cast<TInt>(aDuration));
+        }
+    SWT_CATCH
 #endif
     return ( vibraSupport ? JNI_TRUE : JNI_FALSE );
     }
 
 JNIEXPORT jint JNICALL OS_NATIVE( getScreenDeviceNumber )
+#ifdef __SYMBIAN32__
+  (JNIEnv* aJniEnv, jclass)
+#else
   (JNIEnv*, jclass)
+#endif
     {
     jint screenNumber = -1;
 #ifdef __SYMBIAN32__
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
         screenNumber = SymbianUtils::GetScreenDeviceNumber();
+        }
+    SWT_CATCH
 #endif
     return screenNumber;    
     }
 
 JNIEXPORT jint JNICALL OS_NATIVE( getColorDepth )
+#ifdef __SYMBIAN32__
+  (JNIEnv* aJniEnv, jclass)
+#else
   (JNIEnv*, jclass)
+#endif
     {
     jint colorDepth = 24;
 #ifdef __SYMBIAN32__
-    colorDepth = SymbianUtils::GetColorDepth();
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        colorDepth = SymbianUtils::GetColorDepth();
+        }
+    SWT_CATCH
 #endif
     return colorDepth;    
     }
 
 JNIEXPORT jint JNICALL OS_NATIVE( getHwInputs )
+#ifdef __SYMBIAN32__
+  (JNIEnv* aJniEnv, jclass)
+#else
   (JNIEnv*, jclass)
+#endif
     {
     jint hwInputs = 0;
 #ifdef __SYMBIAN32__
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
         hwInputs = SymbianUtils::GetHwInputs();
+        }
+    SWT_CATCH
 #endif
     return hwInputs;    
     }

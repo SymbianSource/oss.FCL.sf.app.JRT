@@ -26,23 +26,31 @@ SUBSYSTEMS = \
 COMPONENTS = \
 	preinstaller/build \
 	debugapi/build \
-	javalauncher/build
+	javalauncher/build \
+	javaupgradeapp/build
 
 NONQTSUBSYSTEMS = \
-	javasidchecker/build \
 	javarecognizer/build \
 	javaappschemeplugin/build
 
 SYMBIAN_ONLY = \
 	javaregistry \
 	javalauncher/build \
+	javaupgradeapp/build \
 	javabackup \
-	javasidchecker/build \
 	javarecognizer/build \
 	preinstaller/build \
 	debugapi/build \
 	javaappschemeplugin/build
 
+ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS    
+NONQTSUBSYSTEMS += javasidchecker/build
+SYMBIAN_ONLY += javasidchecker/build
 javasidchecker/build : javaregistry
+endif
+
+# Declare that release preparation removes subdirectories not in build, except
+# listed special cases
+REMOVE_NOTBUILT_EXCLUDING = inc
 
 include ${JAVA_SRC_ROOT}/build/Makefile.subsystem

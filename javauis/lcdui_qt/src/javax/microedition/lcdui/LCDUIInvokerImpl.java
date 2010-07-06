@@ -20,7 +20,6 @@ import org.eclipse.swt.graphics.Internal_GfxPackageSupport;
 import org.eclipse.swt.internal.qt.graphics.GraphicsContext;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Button;
 import com.nokia.mid.ui.DirectGraphics;
 import com.nokia.mj.impl.nokialcdui.LCDUIInvoker;
 import com.nokia.mj.impl.nokialcdui.ItemControlStateChangeListener;
@@ -30,11 +29,7 @@ final class LCDUIInvokerImpl extends LCDUIInvoker
 
     private boolean eswtReturn;
 
-    /**
-      * Constant for Soft Key Label Height
-      */
-    public static final int LABEL_HEIGHT = 30;
-
+   
     static void createInvoker()
     {
         LCDUIInvoker.setInvoker(
@@ -87,32 +82,7 @@ final class LCDUIInvokerImpl extends LCDUIInvoker
     */
     protected String getSoftKeyLabelLocationImpl(String softKeyId)
     {
-        String SoftKeyLabelLocation = null;
-
-        Displayable disp = javax.microedition.lcdui.Display.getDisplay().getCurrent();
-
-        if((disp != null) && (disp instanceof Canvas))
-        {
-            if(((Canvas) disp).IsFullScreenMode())
-            {
-
-                if("com.nokia.softkey1.label.location".equals(softKeyId))
-                {
-                    SoftKeyLabelLocation = "0," + String.valueOf(((Canvas) disp).getHeight()) + ","
-                                           + String.valueOf((((Canvas) disp).getWidth())/2) + ","
-                                           + String.valueOf(LABEL_HEIGHT);
-                }
-                else if("com.nokia.softkey2.label.location".equals(softKeyId))
-                {
-                    SoftKeyLabelLocation = String.valueOf((((Canvas) disp).getWidth())/2) + ","
-                                           + String.valueOf(((Canvas) disp).getHeight()) + ","
-                                           + String.valueOf((((Canvas) disp).getWidth())/2) + ","
-                                           + String.valueOf(LABEL_HEIGHT);
-                }
-            }
-        }
-
-        return SoftKeyLabelLocation;
+    	return SystemPropertyUtil.getSoftKeyLabelLocationImpl(softKeyId);
     }
 
     /*
@@ -122,30 +92,7 @@ final class LCDUIInvokerImpl extends LCDUIInvoker
     */
     protected String getSoftKeyLabelAnchorImpl(String softKeyId)
     {
-        String SoftKeyLabelAnchor = null;
-
-        Displayable disp = javax.microedition.lcdui.Display.getDisplay().getCurrent();
-
-        if((disp != null) && (disp instanceof Canvas))
-        {
-            if(null == ((Canvas) disp).getCanvasKeypad())
-            {
-                SoftKeyLabelAnchor = String.valueOf(Graphics.TOP | Graphics.HCENTER);
-            }
-            else
-            {
-                if("com.nokia.softkey1.label.anchor".equals(softKeyId))
-                {
-                    SoftKeyLabelAnchor = String.valueOf(Graphics.TOP | Graphics.LEFT);
-                }
-                else if("com.nokia.softkey2.label.anchor".equals(softKeyId))
-                {
-                    SoftKeyLabelAnchor = String.valueOf(Graphics.TOP | Graphics.RIGHT);
-                }
-            }
-        }
-
-        return SoftKeyLabelAnchor;
+    	return SystemPropertyUtil.getSoftKeyLabelAnchorImpl(softKeyId);
     }
 
     protected Display doGetEswtDisplay()
@@ -258,46 +205,7 @@ final class LCDUIInvokerImpl extends LCDUIInvoker
     
     protected String doGetDynamicProperty(String key)
     {
-        if("com.nokia.key.scancode".equals(key))
-        {
-            return String.valueOf(ESWTUIThreadRunner.getLastKeyScancode());
-        }
-        else if("com.nokia.key.modifier".equals(key))
-        {
-            return String.valueOf(ESWTUIThreadRunner.getLastKeyModifier());
-        }
-        else if("com.nokia.keyboard.type".equals(key))
-        {
-            // TODO: eSWT support required
-            /*
-            No keypad (for example a touch device without keypad)   - None
-            Standard ITU-T keypad (Phone keypad with 12 keys)       - PhoneKeypad
-            QWERTY (4x12 layout)                                    - FullKeyboard
-            QWERTY (limited, 4x10 layout)                           - LimitedKeyboard4x10
-            QWERTY (limited, 3x11 layout)                           - LimitedKeyboard3x11
-            Half QWERTY layout (aka Compact QWERTY keyboard).       - HalfKeyboard
-            Custom QWERTY layout                                    - Custom
-            Unknown layout                                          - Unknown
-            */
-            return "Unknown";
-        }
-        else if("com.nokia.softkey1.label.location".equals(key))
-        {
-            return getSoftKeyLabelLocationImpl(key);
-        }
-        else if("com.nokia.softkey1.label.anchor".equals(key))
-        {
-            return getSoftKeyLabelAnchorImpl(key);
-        }
-        else if("com.nokia.softkey2.label.location".equals(key))
-        {
-            return getSoftKeyLabelLocationImpl(key);
-        }
-        else if("com.nokia.softkey2.label.anchor".equals(key))
-        {
-            return getSoftKeyLabelAnchorImpl(key);
-        }
-        return "key not supported";
+    	return SystemPropertyUtil.doGetDynamicProperty(key);
     }
 
     protected boolean doDetectCollision(Image image1, int transform1, int p1x, int p1y,

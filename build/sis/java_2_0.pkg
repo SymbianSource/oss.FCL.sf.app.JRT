@@ -43,6 +43,17 @@ IF NOT exists("Z:\system\install\Series60v5.0.sis")
   ; Popup error on Non-S60 v 5.0 platforms. Do not allow continuing.
   "incompatible_platform.txt"-"", FILETEXT, FORCEABORT
 ENDIF
+
+; Check OpenC versions
+; 0x10282872 = Standard C++ library
+; 0x10281F34 = Open C LIBSSL
+; 0x20009a80 = Symbian OS PIPS
+IF( version(0x10282872, <, 1, 5, 0) ) OR
+  ( version(0x10281F34, <, 1, 5, 0) ) OR
+  ( version(0x20009a80, <, 1, 5, 0) )
+    "incompatible_openc.txt"-"", FT, TA
+ENDIF
+
 #endif // RD_JAVA_S60_RELEASE_5_0_IAD
 
 
@@ -95,6 +106,7 @@ ENDIF
 
 "\epoc32\release\armv5\urel\javacaptain.exe"-"c:\sys\bin\javacaptain.exe"
 "\epoc32\release\armv5\urel\javalauncher.exe"-"c:\sys\bin\javalauncher.exe"
+"\epoc32\release\armv5\urel\javaupgradeapp.exe"-"c:\sys\bin\javaupgradeapp.exe"
 
 
 
@@ -493,6 +505,7 @@ ENDIF
 "\epoc32\release\armv5\urel\javacaptain_ext_storageserverplugin.dll"    -"c:\sys\bin\javacaptain_ext_storageserverplugin.dll"
 "\epoc32\release\armv5\urel\javacaptain_ext_btdeviceclassmanager.dll"   -"c:\sys\bin\javacaptain_ext_btdeviceclassmanager.dll"
 "\epoc32\release\armv5\urel\javacaptain_ext_autostarter.dll"            -"c:\sys\bin\javacaptain_ext_autostarter.dll"
+"\epoc32\release\armv5\urel\javacaptain_ext_settingslistener.dll"       -"c:\sys\bin\javacaptain_ext_settingslistener.dll"
 ; PLUGIN_ID_JAVA_CERT_STORE_EXTENSION_C = 7
 "\epoc32\release\armv5\urel\javacaptain_ext_ondemand_7.dll"             -"c:\sys\bin\javacaptain_ext_ondemand_7.dll"
 #ifdef RD_JAVA_MIDPRMS_DB

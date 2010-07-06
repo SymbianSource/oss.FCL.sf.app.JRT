@@ -72,7 +72,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_VideoControl__1
 
 JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_VideoControl__1setDisplayProperty
 (JNIEnv*, jobject, jint aControlHandle, jint aEventSourceHandle,
- jint aPropertyA, jint aPropertyB, jint aPropertyType)
+ jint aPropertyA, jint aPropertyB, jint aPropertyType, jint aDisplayType)
 {
     LOG(EJavaMMAPI, EInfo, "Java_com_nokia_microedition_media_control_VideoControl__1setDisplayProperty");
 
@@ -88,19 +88,26 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_VideoControl__1
     __ASSERT_DEBUG(eventSource,
                    User::Panic(_L("videocontrol::eventsource is null"),
                                KErrArgument));
-
-    TInt error(eventSource->ExecuteTrap(&CMMAVideoControl::StaticSetPropertyL,
-                                        videoControl,
-                                        aPropertyType,
-                                        aPropertyA,
-                                        aPropertyB));
+    TInt error = 0;
+    if (aDisplayType == CMMAVideoControl::EDISPLAY_ESWT)
+    {
+        TRAP(error,CMMAVideoControl::StaticSetPropertyL(videoControl, aPropertyType, aPropertyA, aPropertyB));
+    }
+    else
+    {
+        error = eventSource->ExecuteTrap(&CMMAVideoControl::StaticSetPropertyL,
+                                         videoControl,
+                                         aPropertyType,
+                                         aPropertyA,
+                                         aPropertyB);
+    }
     LOG(EJavaMMAPI, EInfo, "Java_com_nokia_microedition_media_control_VideoControl__1setDisplayProperty -");
     return error;
 }
 
 JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_VideoControl__1getControlProperty
 (JNIEnv*, jobject, jint aControlHandle, jint aEventSourceHandle,
- jint aPropertyType)
+ jint aPropertyType, jint aDisplayType)
 {
     LOG(EJavaMMAPI, EInfo, "Java_com_nokia_microedition_media_control_VideoControl__1getControlProperty");
 
@@ -117,11 +124,19 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_VideoControl__1
                    User::Panic(_L("videocontrol::evetnsource is null"),
                                KErrArgument));
     TInt returnValue(KErrNone);
+    TInt error = 0;
 
-    TInt error(eventSource->ExecuteTrap(&CMMAVideoControl::StaticGetPropertyL,
-                                        videoControl,
-                                        aPropertyType,
-                                        &returnValue));
+    if (aDisplayType == CMMAVideoControl::EDISPLAY_ESWT)
+    {
+        TRAP(error,CMMAVideoControl::StaticGetPropertyL(videoControl, aPropertyType, &returnValue));
+    }
+    else
+    {
+        error = eventSource->ExecuteTrap(&CMMAVideoControl::StaticGetPropertyL,
+                                         videoControl,
+                                         aPropertyType,
+                                         &returnValue);
+    }
     LOG(EJavaMMAPI, EInfo, "Java_com_nokia_microedition_media_control_VideoControl__1getControlProperty - ");
     if (error == KErrNone)
     {
@@ -131,7 +146,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_VideoControl__1
 }
 
 JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_VideoControl__1getSnapshot
-(JNIEnv* aJni, jobject, jint aControlHandle, jint aEventSourceHandle,
+(JNIEnv* aJni, jobject, jint aControlHandle, jint /*aEventSourceHandle*/,
  jstring aProperties)
 {
     LOG(EJavaMMAPI, EInfo, "Java_com_nokia_microedition_media_control_VideoControl__1getSnapshot + ");
@@ -139,20 +154,26 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_VideoControl__1
     CMMAVideoControl* videoControl =
         reinterpret_cast< CMMAVideoControl* >(aControlHandle);
 
-    MMAFunctionServer* eventSource =
-        reinterpret_cast< MMAFunctionServer *>(aEventSourceHandle);
+    //MMAFunctionServer* eventSource =
+    //   reinterpret_cast< MMAFunctionServer *>(aEventSourceHandle);
 
     __ASSERT_DEBUG(videoControl,
                    User::Panic(_L("videocontrol::control is null"),
                                KErrArgument));
-    __ASSERT_DEBUG(eventSource,
-                   User::Panic(_L("videocontrol::evetnsource is null"),
-                               KErrArgument));
+//    __ASSERT_DEBUG(eventSource,
+//                   User::Panic(_L("videocontrol::evetnsource is null"),
+//                               KErrArgument));
 
     JStringUtils properties(*aJni, aProperties);
+
+    TInt error = 0;
+    TRAP(error,CMMAVideoControl::TakeSnapShotL(videoControl, (const TDesC*)&properties));
+
+    /*
     TInt error(eventSource->ExecuteTrap(&CMMAVideoControl::TakeSnapShotL,
                                         videoControl,
                                         (const TDesC*)&properties));
+     */
     LOG(EJavaMMAPI, EInfo, "Java_com_nokia_microedition_media_control_VideoControl__1getSnapshot - ");
     return error;
 }
@@ -161,20 +182,22 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_VideoControl__1
  * Initializes dynamic display mode
  * @return handle to MMMADirectContent or error code
  */
-/*
 LOCAL_C jint InitDynamicMode(MMAFunctionServer* aEventSource,
+                             JNIEnv* aJni,
                              CMMAVideoControl* aVideoControl,
                              jobject aGUIObject,
                              CMMAEvent* aDeleteRefEvent)
 {
     TInt contentHandle = 0;
-    TInt error = aEventSource->ExecuteTrap(
-                     &CMMAVideoControl::StaticInitDynamicModeL,
-                     aVideoControl,
-                     &contentHandle,
-                     aEventSource,
-                     aGUIObject,
-                     aDeleteRefEvent);
+    /* TInt error = aEventSource->ExecuteTrap(
+                      &CMMAVideoControl::StaticInitDynamicModeL,
+                      aVideoControl,
+                      &contentHandle,
+                      aEventSource,
+                      aGUIObject,
+                      aDeleteRefEvent);
+    */
+    TRAPD(error,CMMAVideoControl::StaticInitDynamicModeL(aVideoControl, aJni, &contentHandle, aEventSource, aGUIObject, aDeleteRefEvent));
 
     // if init failed return error code
     if (error != KErrNone)
@@ -183,18 +206,17 @@ LOCAL_C jint InitDynamicMode(MMAFunctionServer* aEventSource,
     }
     return contentHandle;
 }
-*/
 
 JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_VideoControl__1initDisplayMode
 (JNIEnv* aJni, jobject aJavaVideoControl, jint aControlHandle, jint aEventSourceHandle,
- jobject aJavaDisplayObj, jobject aComponent,jboolean aGuiType)
+ jobject aJavaDisplayObj, jobject aComponent,jint aGuiType)
 {
     LOG(EJavaMMAPI, EInfo, "Java_com_nokia_microedition_media_control_VideoControl__1initDisplayMode +");
     LOG1(EJavaMMAPI, EInfo, "aControlHandle = %d", aControlHandle);
     LOG1(EJavaMMAPI, EInfo, "aEventSourceHandle = %d", aEventSourceHandle);
 //    LOG1( EJavaMMAPI, EInfo, "aComponentHandle = %d", aComponentHandle);
 
-    TBool type = aGuiType;
+    TInt type = aGuiType;
     CMMAVideoControl* videoControl =
         reinterpret_cast< CMMAVideoControl* >(aControlHandle);
 
@@ -231,15 +253,16 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_control_VideoControl__1
         return KErrNoMemory;
     }
 
-    /*// other modes has component
-    if (aComponentHandle == 0)
+    // other modes has component
+    if (type == CMMAVideoControl::EDISPLAY_ESWT)
     {
         return InitDynamicMode(eventSource,
+                               aJni,
                                videoControl,
-                               componentRef,
+                               javaDisplayRef,
                                deleteRefEvent);
     }
-    */
+
     //  MMIDComponent* component = JavaUnhand< MMIDComponent >(aComponentHandle);
 
 

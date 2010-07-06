@@ -22,6 +22,7 @@ COMPONENTS = \
     extensionplugins/config/build \
     extensionplugins/javacertstore/build \
     extensionplugins/storageserver/build \
+    extensionplugins/settingslistener/build \
     $(LINUX_ONLY)
 
 

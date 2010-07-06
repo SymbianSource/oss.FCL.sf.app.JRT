@@ -22,6 +22,7 @@
 #include "midpauthenticationmoduleimpl.h"
 #include "storagehandler.h"
 #include "securityutils.h"
+#include "telutils.h"
 #include "javacertstorehandler.h"
 #include "securitycommsmessagedefs.h"
 #include "javastorage.h"
@@ -38,8 +39,8 @@
 #include <openssl/err.h>
 #include <openssl/rsa.h>
 #include <openssl/sha.h>
-#include <sys/time.h>
 #include <string.h>
+#include <errno.h>
 
 using namespace java::security;
 using namespace java::storage;
@@ -252,6 +253,13 @@ JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_security_midp_authentication_Au
         jar_hash_value = NULL;
         return hash;
     }
+    else
+    {
+        if (errno == ENOENT)
+        {
+            SecurityUtils::throw_exception(env, "JAR_NOT_FOUND");
+        }
+    }
     return NULL;
 }
 
@@ -455,9 +463,7 @@ int verifyCertChain(char **cert_chain, int no_certs,
             break;
         }
 
-        struct timeval tv;
-        int i = gettimeofday(&tv, NULL);
-        X509_STORE_CTX_set_time(x509_ctx, X509_V_FLAG_USE_CHECK_TIME, tv.tv_sec);
+        X509_STORE_CTX_set_time(x509_ctx, X509_V_FLAG_USE_CHECK_TIME, TelUtils::getSecureTime());
         // set the callback for validation - needed for the critical extension
         // used by developer certificates
         X509_STORE_CTX_set_verify_cb(x509_ctx, verify_callback);
@@ -475,7 +481,7 @@ int verifyCertChain(char **cert_chain, int no_certs,
         {
             bool extKeyUsageKnown = false;
             char EXT_KEY_USAGE_OID[80];
-            for (i = 0; i < sk_ASN1_OBJECT_num(extKeyUsage); i++)
+            for (int i = 0; i < sk_ASN1_OBJECT_num(extKeyUsage); i++)
             {
                 ASN1_OBJECT *usage = sk_ASN1_OBJECT_value(extKeyUsage,i);
                 OBJ_obj2txt(EXT_KEY_USAGE_OID,

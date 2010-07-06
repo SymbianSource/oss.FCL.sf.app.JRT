@@ -23,6 +23,7 @@
 #include "logger.h"
 #include "pushexception.h"
 #include "pusherrorcodes.h"
+#include "socketlocalhostinfo.h"
 
 using namespace java;
 
@@ -99,16 +100,18 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_datagram_UDPDatagramConnectionImpl
 }
 
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_datagram_UDPDatagramConnectionImpl__1getLocalAddress
-(JNIEnv *aJni, jobject, jint nativePeerHandle, jobjectArray aAddress)
+(JNIEnv *aJni, jobject, jint /* nativePeerHandle */, jobjectArray aAddress, jint aMidletIapId, jint aApType)
 {
     char * addr = new char[256];
-    NativeDatagramConnection* datagramConn = reinterpret_cast<NativeDatagramConnection*>(nativePeerHandle);
-    int retVal = datagramConn->getLocalAddress(addr);
+
+    int err = SocketLocalHostInfo::getLocalAddress(0,addr,aMidletIapId,aApType);
+    PLOG2(ESOCKET, "getLocalAddress, ret = %d, addr = %s" , err, addr);
     jstring jnistring = aJni->NewStringUTF(addr);
     aJni->SetObjectArrayElement(aAddress, 0, jnistring);
     aJni->DeleteLocalRef(jnistring);
     delete[] addr;
-    return retVal;
+
+    return err;
 }
 
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_datagram_UDPDatagramConnectionImpl__1getLocalPort

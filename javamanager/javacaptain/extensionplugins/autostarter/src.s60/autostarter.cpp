@@ -17,6 +17,7 @@
 *
 */
 
+#include <apgcli.h> // for RApaLsSession
 #include <e32base.h>
 #include <f32file.h>
 #include <javastorage.h>
@@ -28,6 +29,7 @@
 #include "coreinterface.h"
 #include "javaprocessconstants.h"
 #include "javasymbianoslayer.h"
+#include "javauid.h"
 #include "javauids.h"
 #include "logger.h"
 #include "preinstallerstartermessages.h"
@@ -50,9 +52,9 @@ java::captain::ExtensionPluginInterface* getExtensionPlugin()
     return new java::captain::AutoStarter();
 }
 
-namespace java
+namespace java  // codescanner::namespace
 {
-namespace captain
+namespace captain  // codescanner::namespace
 {
 
 /**
@@ -123,13 +125,6 @@ void AutoStarter::event(const std::string& eventProvider,
                 ELOG1(EJavaCaptain, "AutoStarter::checkMIDletsToBeStartedL: leaved (%d)", err);
             }
     }
-/*
-    else if ( MESSAGE TELLS THAT NEW MIDLET HAS BEEN INSTALLED )
-    {
-        // Auto-start the new MIDlet if it is auto-start MIDlet
-    }
-*/
-
 }
 
 /**
@@ -138,15 +133,13 @@ void AutoStarter::event(const std::string& eventProvider,
  */
 void AutoStarter::checkMIDletsToBeStartedL()
 {
-
-
     // Find all MIDlets with Nokia-MIDlet-auto-start
     // APPLICATION_TABLE, if (AUTORUN == AUTOSTART_TRUE) || (AUTORUN == AUTOSTART_ONCE),
     // call startMIDletL(ID)
 
     LOG(EJavaCaptain, EInfo, "AutoStarter::checkMIDletsToBeStartedL called");
 
-    std::auto_ptr<JavaStorage> js(JavaStorage::createInstance());    
+    std::auto_ptr<JavaStorage> js(JavaStorage::createInstance());
     try
     {
         js->open(JAVA_DATABASE_NAME);
@@ -246,7 +239,14 @@ void AutoStarter::checkMIDletsToBeStartedL()
  */
 bool AutoStarter::startMIDletL(const std::wstring& aUid)
 {
-    // start MIDlet
+    // Try to check whether the MIDlet is present (or whether it has been
+    // installed to a removable media that is not present now)
+    if (!isMIDletPresent(aUid))
+    {
+        return false;
+    }
+
+    // Start MIDlet
     rtcLaunchInfo launchInfo(aUid);
 
     bool launchSuccess = mCore->getRtc()->launch(launchInfo);
@@ -256,6 +256,71 @@ bool AutoStarter::startMIDletL(const std::wstring& aUid)
     }
 
     return launchSuccess;
+}
+
+
+/**
+ * Try to check whether the MIDlet is present (or whether it has been
+ * installed to a removable media that is not present now)
+ *
+ * @return false if it is certain that the MIDlet is not present, true otherwise
+ */
+bool AutoStarter::isMIDletPresent(const std::wstring& aUid)
+{
+    RApaLsSession apaSession;
+    TInt err = apaSession.Connect();
+    if (KErrNone != err)
+    {
+        // Cannot check presence from AppArc, try to start the MIDlet anyway
+        ELOG1(EJavaCaptain,
+              "AutoStarter::isMIDletPresent: RApaLsSession Connect error %d", err);
+        return true;
+    }
+    CleanupClosePushL(apaSession);
+
+    TUid appUid;
+    Uid javaUid(aUid);
+    err = uidToTUid(javaUid, appUid);
+    if (KErrNone != err)
+    {
+        WLOG1(EJavaCaptain,
+            "AutoStarter::isMIDletPresent: Cannot convert %S to TUid", aUid.c_str());
+        CleanupStack::PopAndDestroy(&apaSession); // apaSession
+        return true;
+    }
+
+    TUid appTypeUid;
+    err = apaSession.GetAppType(appTypeUid, appUid);
+    if (KErrNone != err)
+    {
+        if (KErrNotFound == err)
+        {
+            // The application is not present
+            WLOG1(EJavaCaptain,
+                "AutoStarter::isMIDletPresent: trying to start MIDlet %S that is not present",
+                aUid.c_str());
+            CleanupStack::PopAndDestroy(&apaSession); // apaSession
+            return false;
+        }
+
+        // Cannot check presence from AppArc, try to start the MIDlet anyway
+        ELOG1(EJavaCaptain,
+            "AutoStarter::isMIDletPresent: RApaLsSession GetAppType error %d", err);
+        CleanupStack::PopAndDestroy(&apaSession); // apaSession
+        return true;
+    }
+    else if (appTypeUid.iUid != KMidletApplicationTypeUid)
+    {
+        // The application is present but it is NOT a MIDlet
+        WLOG1(EJavaCaptain,
+            "AutoStarter::isMIDletPresent: tried to start application %S that is not MIDlet",
+            aUid.c_str());
+        CleanupStack::PopAndDestroy(&apaSession); // apaSession
+        return false;
+    }
+
+    CleanupStack::PopAndDestroy(&apaSession); // apaSession
+    return true;
 }
 
 

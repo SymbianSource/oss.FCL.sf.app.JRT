@@ -29,7 +29,7 @@
 #include "javacommonutils.h"
 #include "logger.h"
 
-#include <sbdefs.h>
+#include <connect/sbdefs.h>
 #include <s32mem.h>
 #include <s32file.h>
 #include <f32file.h>
@@ -474,13 +474,13 @@ void CMidp2BackupPlugin::RestoreMmcRegistryL()
         CleanupStack::PushL(fileMan);
 
         // Copy to new place
-        iFs.MkDir(path_new);
+        TInt err = iFs.MkDir(path_new);
+        ILOG2(EBackup, "MkDir, status: %d, path=%S", err, path_new.PtrZ());
+
         path_old.Append(KStarWildCard);
-        TInt  err = fileMan->Copy(path_old, path_new);
+        err = fileMan->Copy(path_old, path_new);
 
         ILOG1(EBackup, "File copy, status: %d", err);
-
-        User::LeaveIfError(err);
 
         CleanupStack::PopAndDestroy();
     }

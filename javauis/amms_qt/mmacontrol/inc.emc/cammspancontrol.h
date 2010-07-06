@@ -21,7 +21,7 @@
 
 //  INCLUDES
 #include <e32base.h>
-#include <mmfstandardcustomcommands.h>
+#include <mmf/common/mmfstandardcustomcommands.h>
 #include <midiclientutility.h>
 #include "cammscontrol.h"
 

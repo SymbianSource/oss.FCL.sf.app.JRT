@@ -35,12 +35,16 @@
 // Static constructor, leaves pointer to cleanup-stack
 CMMADCDisplay* CMMADCDisplay::NewLC(MMMAGuiPlayer* aPlayer,
                                     MMAFunctionServer* aEventSource,
+                                    JNIEnv* aJni,
                                     jobject aGUIObject)
 {
     CMMADCDisplay* self =
         new(ELeave) CMMADCDisplay(aPlayer, aEventSource, aGUIObject);
     CleanupStack::PushL(self);
     self->iRepaint = new(ELeave) CMMADCRepaintEvent(aGUIObject);
+    self->iIseSWT = ETrue;
+    self->Construct(aEventSource, aJni, aGUIObject);
+
     return self;
 }
 
@@ -75,7 +79,7 @@ void CMMADCDisplay::DrawFrameL(const CFbsBitmap* aBitmap)
         }
     }
 }
-
+/*
 // interface MMMADisplay
 void CMMADCDisplay::SetDisplaySizeL(const TSize& aSize)
 {
@@ -91,7 +95,7 @@ void CMMADCDisplay::SetDisplaySizeL(const TSize& aSize)
         iEventSource->PostEvent(event, CMMAEvent::EEventPriority);
     }
 }
-
+*/
 // interface MMMADisplay
 void CMMADCDisplay::SetDisplayLocationL(const TPoint& /*aPosition*/)
 {
@@ -110,19 +114,106 @@ TPoint CMMADCDisplay::DisplayLocation()
 }
 
 // interface MMMADisplay
+
 void CMMADCDisplay::SetFullScreenL(TBool aFullScreen)
 {
     LOG1(EJavaMMAPI, EInfo, "CMMADCDisplay::SetFullScreenL %d", aFullScreen);
     // This method tries to set eSWT Widget size to its parent size.
     // If real full screen mode is needed parent Composite must be in
     // fullscreen mode (for example with MobileShell's setFullScreenMode method).
-    if (iContainer)
+    //if (iContainer)
+    //{
+    //    CMMADCFullScreenEvent* event =
+    //        new(ELeave)CMMADCFullScreenEvent(iGUIObject, aFullScreen);
+    //    iEventSource->PostEvent(event, CMMAEvent::EEventPriority);
+    //}
+    iFullScreen = aFullScreen;
+    if (iContainerVisible)
     {
-        CMMADCFullScreenEvent* event =
-            new(ELeave)CMMADCFullScreenEvent(iGUIObject, aFullScreen);
-        iEventSource->PostEvent(event, CMMAEvent::EEventPriority);
+        RemoveClippingRegion();
+
+        if (aFullScreen)
+        {
+            // use new scaled rect
+            // iWindow->SetDrawRect(ScaleToFullScreen(fullScreenSize, iSourceSize));
+            LOG2(EJavaMMAPI, EInfo, "CMMADCDisplay::SetFullscreen iFullScreenSize.Width = %d iFullscreenSize.Height = %d",
+                 iFullScreenSize.iWidth, iFullScreenSize.iHeight);
+
+            iWindow->SetWindowRect(ScaleToFullScreen(iFullScreenSize, iSourceSize), MMMADisplay::EUiThread);
+            iWindow->SetRWindowRect(ScaleToFullScreen(iFullScreenSize, iSourceSize), MMMADisplay::EUiThread);
+            iWindow->SetDrawRectThread(ScaleToFullScreen(iFullScreenSize, iSourceSize));
+            //iWindow->SetDrawRect(ScaleToFullScreen(iFullScreenSize, iSourceSize));
+        }
+        else
+        {
+            // use size set from java
+            //iWindow->SetDrawRect(iUserRect);
+            iWindow->SetDrawRectThread(iUserRect);
+        }
+
+        AddClippingRegion();
     }
 }
+/*
+void CMMADCDisplay::SetFullScreenL(TBool aFullScreen)
+{
+    LOG(EJavaMMAPI, EInfo, "CMMADCDisplay::SetFullscreenL() +");
+
+       //  TSize canvasSize(aJavaControlWidth, aJavaControlHeight);
+       iSourceSize = SourceSize();
+       //iSourceSize=canvasSize;
+          LOG1(EJavaMMAPI, EInfo, "CMMADCDisplay::SetFullscreenL() asourcesize %d",iSourceSize );
+        #ifdef RD_JAVA_NGA_Enabled
+        if(iWindow)
+        {
+            iWindow->SetVideoCropRegion( TRect(iUserRect.iTl, iSourceSize));
+        }
+        #endif
+       //  TSize canvasSize(aJavaControlWidth, aJavaControlHeight);
+       //chnaged
+
+       //TSize canvasSize(iFullScreenSize.iWidth, iFullScreenSize.iHeight);
+       //TSize iUser(iUserRect.Width(),iUserRect.Height());
+        //iFullScreenSize = canvasSize;
+      // iFullScreenSize=iUser;
+      // if(aFullScreen)
+       //   {
+       //        iFullScreenSize = canvasSize;
+       //   }
+        TBool sourceIsBigger = (iSourceSize.iWidth > iFullScreenSize.iWidth ||
+                                iSourceSize.iHeight > iFullScreenSize.iHeight);
+
+        if(sourceIsBigger)
+        {
+
+              iWindow->SetWindowRect(iFullScreenSize,MMMADisplay::EMmaThread);
+            iWindow->SetRWindowRect(iFullScreenSize,MMMADisplay::EMmaThread);
+            iWindow->SetDrawRect(ScaleToFullScreen(iFullScreenSize, iSourceSize));
+        }
+        else
+        {
+             iWindow->SetWindowRect(iFullScreenSize,MMMADisplay::EMmaThread);
+            iWindow->SetRWindowRect(iFullScreenSize,MMMADisplay::EMmaThread);
+            //iWindow->SetVideoCropRegion( TRect(iUserRect.iTl,iFullScreenSize));
+            //;iWindow->SetDrawRect( TRect(iUserRect.iTl, iSourceSize));
+            iWindow->SetDrawRect( TRect(iUserRect.iTl,iFullScreenSize));
+
+        }
+       LOG1(EJavaMMAPI, EInfo, "CMMADCDisplay::SourceSizeChanged()1 - %d",iUserRect.Size());
+        SetClippingRegion();
+        LOG1(EJavaMMAPI, EInfo, "CMMADCDisplay::SourceSizeChanged()2 -%d",iUserRect.Size());
+        if(iUserRect.IsEmpty())
+        {
+            iUserRect = iWindow->DrawRect();
+
+            if(!sourceIsBigger)
+            {
+                iUserRect = TRect(iUserRect.Size());
+            }
+        }
+        LOG(EJavaMMAPI, EInfo, "CMMADCDisplay::SourceSizeChanged() -");
+        LOG1(EJavaMMAPI, EInfo, "CMMADCDisplay::SourceSizeChanged()3 -%d",iUserRect.Size());
+}*/
 
 // interface MMMADisplay
 void CMMADCDisplay::SourceSizeChanged(const TSize& aSourceSize)
@@ -154,8 +245,57 @@ void CMMADCDisplay::SourceSizeChanged(const TSize& aSourceSize)
         }
     }
 }
-void CMMADCDisplay::SourceSizeChanged(TInt /*aJavaControlWidth*/, TInt /*aJavaControlHeight*/,TInt /*x*/, TInt /*y*/, TRect /*aBoundsRect*/)
+
+
+void CMMADCDisplay::SourceSizeChanged(TInt aJavaControlWidth, TInt aJavaControlHeight,TInt /*x*/, TInt /*y*/, TRect /*aBoundsRect*/)
 {
+    LOG(EJavaMMAPI, EInfo, "CMMADCDisplay::SourceSizeChanged() +");
+    LOG2(EJavaMMAPI, EInfo, "CMMADCDisplay::SourceSizeChanged() aJavaControlWidth=%d aJavaControlHeight=%d", aJavaControlWidth, aJavaControlHeight);
+    //  TSize canvasSize(aJavaControlWidth, aJavaControlHeight);
+    iSourceSize = SourceSize();
+    //iSourceSize=canvasSize;
+    LOG2(EJavaMMAPI, EInfo, "CMMADCDisplay::SourceSizeChanged() asourcesize (%d,%d)",iSourceSize.iHeight,iSourceSize.iWidth);
+#ifdef RD_JAVA_NGA_Enabled
+    if (iWindow)
+    {
+        iWindow->SetVideoCropRegion(TRect(iUserRect.iTl, iSourceSize));
+    }
+#endif
+    //  TSize canvasSize(aJavaControlWidth, aJavaControlHeight);
+    //chnaged
+    TSize canvasSize(aJavaControlWidth, aJavaControlHeight);
+    iFullScreenSize = canvasSize;
+
+    TBool sourceIsBigger = (iSourceSize.iWidth > iFullScreenSize.iWidth ||
+                            iSourceSize.iHeight > iFullScreenSize.iHeight);
+
+    if (sourceIsBigger)
+    {
+        iWindow->SetWindowRect(iFullScreenSize,MMMADisplay::EMmaThread);
+        iWindow->SetRWindowRect(iFullScreenSize,MMMADisplay::EMmaThread);
+        iWindow->SetDrawRect(ScaleToFullScreen(iFullScreenSize, iSourceSize));
+    }
+    else
+    {
+        iWindow->SetWindowRect(iFullScreenSize,MMMADisplay::EMmaThread);
+        iWindow->SetRWindowRect(iFullScreenSize,MMMADisplay::EMmaThread);
+        //;iWindow->SetDrawRect( TRect(iUserRect.iTl, iSourceSize));
+        iWindow->SetDrawRect(TRect(iUserRect.iTl,iFullScreenSize));
+    }
+    LOG2(EJavaMMAPI, EInfo, "CMMADCDisplay::SourceSizeChanged()1 - %d , %d",iUserRect.Height(),iUserRect.Width());
+    SetClippingRegion();
+    LOG2(EJavaMMAPI, EInfo, "CMMADCDisplay::SourceSizeChanged()2 -%d , %d ",iUserRect.Height(),iUserRect.Width());
+    if (iUserRect.IsEmpty())
+    {
+        iUserRect = iWindow->DrawRect();
+
+        if (!sourceIsBigger)
+        {
+            iUserRect = TRect(iUserRect.Size());
+        }
+    }
+    LOG(EJavaMMAPI, EInfo, "CMMADCDisplay::SourceSizeChanged() -");
+    LOG2(EJavaMMAPI, EInfo, "CMMADCDisplay::SourceSizeChanged()3 -%d , %d",iUserRect.Height(),iUserRect.Width());
 }
 
 // interface MMMADisplay

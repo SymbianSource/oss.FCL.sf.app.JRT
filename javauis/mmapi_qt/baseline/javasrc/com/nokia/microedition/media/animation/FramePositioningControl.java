@@ -28,8 +28,7 @@ import com.nokia.mj.impl.utils.Logger;
 public class FramePositioningControl extends ControlImpl implements
         javax.microedition.media.control.FramePositioningControl
 {
-
-    private ImageData[] iImagedata;
+    private int iTotalNoOfFrames;
 
     /**
      * Constructor of this Control
@@ -39,7 +38,7 @@ public class FramePositioningControl extends ControlImpl implements
     FramePositioningControl(Player aPlayer)
     {
         iPlayer=aPlayer;
-        iImagedata=((AnimationPlayer)iPlayer).getImageData();
+        iTotalNoOfFrames=((AnimationPlayer)iPlayer).getTotalNumberFrames();
     }
 
     /**
@@ -49,18 +48,11 @@ public class FramePositioningControl extends ControlImpl implements
     public long mapFrameToTime(int aFrameNumber)
     {
         checkState();
-        long time=0;
-        int totalNoOfFrames=iImagedata.length;
+        int totalNoOfFrames=iTotalNoOfFrames;
         // if invalid parameter is passed
-        if (aFrameNumber<0 || aFrameNumber>totalNoOfFrames)
+        if (aFrameNumber < 0 || aFrameNumber > totalNoOfFrames)
             return -1;
-        for (int i=0; i<totalNoOfFrames; i++)
-        {
-            if (i==aFrameNumber)
-                break;
-            time+=iImagedata[i].delayTime;
-        }
-        return time*10000;
+        return ((AnimationPlayer)iPlayer).getMediaTimeForFrame(aFrameNumber);
     }
 
     /**
@@ -74,19 +66,7 @@ public class FramePositioningControl extends ControlImpl implements
     public int mapTimeToFrame(long aMediaTime)
     {
         checkState();
-        int frameNumber=-1;
-        int totalNoOfFrames=iImagedata.length;
-        long time=0;
-        for (int i=0; i<totalNoOfFrames; i++)
-        {
-            if (time > aMediaTime)
-            {
-                frameNumber=i-1;
-                break;
-            }
-            time+=iImagedata[i].delayTime*10000;
-        }
-        return frameNumber;
+        return ((AnimationPlayer)iPlayer).findFrame(aMediaTime);
     }
 
     /**
@@ -107,25 +87,19 @@ public class FramePositioningControl extends ControlImpl implements
         Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,DEBUG_STR + "+");
         checkState();
         int frameNumber = aFrameNumber;
-        int totalNoOfFrames = iImagedata.length;
+        int totalNoOfFrames = iTotalNoOfFrames;
         if (aFrameNumber < 0)
         {
             frameNumber = 0;
         }
-        else
+        else if (aFrameNumber >= totalNoOfFrames)
         {
-            if (aFrameNumber > totalNoOfFrames)
-            {
-                frameNumber = totalNoOfFrames;
-            }
+            frameNumber = totalNoOfFrames-1;
         }
-        long mediaTime = mapFrameToTime(frameNumber);
-        //if the frame number is equal to total number of frames, we will seek to last frame
-        // because it's array index, so last index will be total length -1
-        frameNumber=(frameNumber == totalNoOfFrames) ? (frameNumber-1) : frameNumber;
+        long mediaTime = ((AnimationPlayer)iPlayer).getMediaTimeForFrame(frameNumber);
         try
         {
-            long mediaTime1 = iPlayer.setMediaTime(mediaTime);
+            iPlayer.setMediaTime(mediaTime);
         }
         catch (MediaException e)
         {
@@ -154,28 +128,24 @@ public class FramePositioningControl extends ControlImpl implements
      */
     public int skip(int aFramesToSkip)
     {
-        final String DEBUG_STR = "FramePositionControl::skip";
-        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,DEBUG_STR+"+");
+//        final String DEBUG_STR = "FramePositionControl::skip";
+        //Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,DEBUG_STR+"+");
         // check the state of the player, if it closed throw exception
         checkState();
-        int frameNumberToJump;
-        if (aFramesToSkip < 0)
-        {
-            frameNumberToJump = 0;
-        }
-        // storing it in local variable, so that current frame index variable will be
-        // consistent throughout this function, calling to getiFrameIndex(), each time
-        // may return the different value.
+        //int frameNumberToJump;
         int currentFrameIndex=((AnimationPlayer) iPlayer).getiFrameIndex();
+        //If user provides the argument as Integer.max, adding any positive value to it will make it negative
+        //Since a player can't be skipped more than the total number of frames, here we are making it restrictive.
+        if (aFramesToSkip > iTotalNoOfFrames)
+        {
+            aFramesToSkip = iTotalNoOfFrames;
+        }
         // we are going to utilize the seek function here
         // just get the current frame index from player and
         // add it to the number of frame to skip
-        frameNumberToJump = currentFrameIndex + aFramesToSkip;
-        //if the frameNumberToJump > total no of frames, then skip to the last frame only
-        frameNumberToJump =frameNumberToJump > iImagedata.length ? iImagedata.length-1 : frameNumberToJump;
-        seek(frameNumberToJump);
-        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,DEBUG_STR+"-");
-        return frameNumberToJump - currentFrameIndex;
+        int seeked=seek(currentFrameIndex + aFramesToSkip);
+        int numberOfFrameSkipped=seeked-currentFrameIndex;
+        return numberOfFrameSkipped;
     }
 
 }

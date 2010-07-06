@@ -26,6 +26,7 @@
 
 #include "exceptionbase.h"
 #include "javaoslayer.h"
+#include "javacommonutils.h"
 #include "javaprocessconstants.h"
 #include "javasymbianoslayer.h"
 #include "javauids.h"
@@ -35,10 +36,10 @@
 using namespace java::util;
 
 
-_LIT(KHexValueStart, "0x");
-_LIT(KSemiColon, ";");
-_LIT(KUidArg, "uid=");
-_LIT(KFileArg, "file=");
+_LIT8(KHexValueStart, "0x");
+_LIT8(KSemiColon, ";");
+_LIT8(KUidArg, "uid=");
+_LIT8(KFileArg, "file=");
 
 const TInt KExtraLenForLogging = 2;
 const TInt KArgumentValueMaxLen = 1568;
@@ -53,9 +54,9 @@ const TInt KDelayWhenWaitingAppArc = 500000;
  * @param aArgName the name of the argument
  * @param aArgValue the value parsed from command line will be returned here
  */
-static void getArgValueL(const TPtrC &aCmdLine, const TDesC &aArgName, HBufC **aArgValue)
+static void getArgValueL(const TPtrC8 &aCmdLine, const TDesC8 &aArgName, HBufC **aArgValue)
 {
-    TBuf<KArgumentValueMaxLen> valueBuf;
+    TBuf8<KArgumentValueMaxLen> valueBuf;
     TInt argPos = aCmdLine.FindF(aArgName);
     if (argPos >= 0)
     {
@@ -81,9 +82,14 @@ static void getArgValueL(const TPtrC &aCmdLine, const TDesC &aArgName, HBufC **a
         valueBuf = aCmdLine.Mid(argPos + aArgName.Length(),  argLen);
     }
 
-    // Allocate new HBufC and return it
+    // Allocate new HBufC
     HBufC *pBufValue = HBufC::NewL(valueBuf.Length() + 2);
-    *pBufValue = valueBuf;
+
+    // Convert argument from UTF8 to UCS-2 (UTF16)
+    std::wstring tmp = JavaCommonUtils::utf8ToWstring((const char *)valueBuf.PtrZ());
+
+    // Return the argument inside the new HBufC
+    *pBufValue = (const TUint16 *)(tmp.c_str());
     *aArgValue = pBufValue;
 }
 
@@ -96,7 +102,7 @@ static void getArgValueL(const TPtrC &aCmdLine, const TDesC &aArgName, HBufC **a
  *  <other_args>;file=YYY;<other_args>
  * @param aFileName will contain the name parsed from command line
  */
-static void getNameFromCommandLineL(const TPtrC &aCmdLine, HBufC **aFileName)
+static void getNameFromCommandLineL(const TPtrC8 &aCmdLine, HBufC **aFileName)
 {
     TInt err = aCmdLine.FindF(KFileArg);
     User::LeaveIfError(err);
@@ -113,14 +119,14 @@ static void getNameFromCommandLineL(const TPtrC &aCmdLine, HBufC **aFileName)
  *  uid=YYY;<other_args>
  * @param aUid will contain the Uid parsed from command line
  */
-static void getUidFromCommandLineL(const TPtrC &aCmdLine, TInt32 &aUid)
+static void getUidFromCommandLineL(const TPtrC8 &aCmdLine, TInt32 &aUid)
 {
     TInt err(KErrNone);
     TInt argPos = aCmdLine.FindF(KUidArg);
     if (KErrNotFound != argPos)
     {
-        TPtrC uidToParse = aCmdLine.Mid(argPos + KUidArg.iTypeLength);
-        TLex parseUid(uidToParse);
+        TPtrC8 uidToParse = aCmdLine.Mid(argPos + KUidArg.iTypeLength);
+        TLex8 parseUid(uidToParse);
         if (uidToParse.FindF(KHexValueStart) == 0)
         {
             parseUid.Inc(2); // skip hex prefix
@@ -163,16 +169,31 @@ static void getUidFromCommandLineL(const TPtrC &aCmdLine, TInt32 &aUid)
  */
 void getFileAndUidL(HBufC **aFileName, TInt32 *aUid)
 {
-    HBufC *pBufCmdLine =
-        HBufC::NewLC(User::CommandLineLength() + KExtraLenForLogging);
-    TPtr cmdLineBuf = pBufCmdLine->Des();
-    User::CommandLine(cmdLineBuf);
+    CApaCommandLine* commandLine;
 
-    if (cmdLineBuf.Length() > 0)
+    // CApaCommandLine command line is used when this application has been
+    // launched using AppArc APIs.
+    TInt err = CApaCommandLine::GetCommandLineFromProcessEnvironment(commandLine);
+    if (KErrNone != err)
     {
-        LOG1WSTR(EUtils, EInfo,
-                 "javaupgradeapp: full java application cmd line is : %s",
-                 (wchar_t *)(cmdLineBuf.PtrZ()));
+        ELOG1(EUtils, "javaupgradeapp: Getting CApaCommandLine failed, err %d", err);
+        User::Leave(err);
+    }
+    CleanupStack::PushL(commandLine);
+
+    // Get the value of _application-args_
+    TPtrC8 args = commandLine->TailEnd();
+    HBufC8 *pBufCmdLine =
+        HBufC8::NewLC(args.Length() + KExtraLenForLogging);
+    if (args.Length() > 0)
+    {
+        // Copy the arguments to the new HBufC8
+        TPtr8 cmdLineBuf = pBufCmdLine->Des();
+        cmdLineBuf = args;
+
+        LOG1(EUtils, EInfo,
+            "javaupgradeapp: full cmd line is : %s",
+            cmdLineBuf.PtrZ());
 
         // Get the midlet uid from the commandline
         TRAPD(err, getUidFromCommandLineL(cmdLineBuf, *aUid));
@@ -208,6 +229,7 @@ void getFileAndUidL(HBufC **aFileName, TInt32 *aUid)
     }
 
     CleanupStack::PopAndDestroy(pBufCmdLine);
+    CleanupStack::PopAndDestroy(commandLine);
 }
 
 
@@ -233,7 +255,7 @@ void uninstallJavaAppL(TInt32 aUid)
     // be preinstalled again if the user uninstalls it
     commandLine.Append(_L(" uninstall -uid="));
     commandLine.AppendNum(aUid);
-    commandLine.Append(_L(" -forceuninstall -silent -preinstall_always"));
+    commandLine.Append(_L(" -forceuninstall -silent -resetpreinstall"));
 
     LOG1WSTR(EUtils, EInfo,
         "javaupgradeapp:uninstallJavaAppL Java Installer command line is %s",
@@ -304,7 +326,7 @@ void installAppPackageL(HBufC *aBufFileName)
             retryCounter--;
             if (retryCounter > 0)
             {
-                User::After(KDelayWhenWaitingAppArc);
+                User::After(KDelayWhenWaitingAppArc); // codescanner::userafter
                 continue;
             }
             else
@@ -344,21 +366,26 @@ void handleUpgradeL(void)
 
     if (uid != 0)
     {
-        LOG1(
-            EUtils,
-            EInfo,
-            "javaupgradeapp uninstalling app uid %d", uid);
+        PLOG1(EUtils, "javaupgradeapp uninstalling app uid %x", uid);
         uninstallJavaAppL(uid);
+    }
+    else
+    {
+        WLOG(EUtils, "javaupgradeapp: uid argument was not given");
     }
 
     if (pBufFileName != NULL)
     {
-        LOG1WSTR(EUtils, EInfo,
+        PLOG1WSTR(EUtils,
             "javaupgradeapp: installing new app package %s",
             (wchar_t *)(pBufFileName->Des().PtrZ()));
         installAppPackageL(pBufFileName);
 
         delete pBufFileName;
+    }
+    else
+    {
+        WLOG(EUtils, "javaupgradeapp: file argument was not given");
     }
 }
 

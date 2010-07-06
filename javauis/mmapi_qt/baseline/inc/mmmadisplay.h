@@ -202,6 +202,12 @@ public:
     * arg 'placeholder' is used to identify the function, to be called back from UI Thread
     */ 
     virtual void CalledBackInUiThread(TInt placeholder) = 0;
+    
+    /**
+     * To check if the Display is eSWT or not 
+     */
+    virtual TBool iseSWT() = 0;
+    virtual void SetFullscreenSize(TSize& aFullscreenSize) = 0;
 };
 
 #endif // MMMADISPLAY_H

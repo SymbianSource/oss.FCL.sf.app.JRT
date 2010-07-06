@@ -24,11 +24,82 @@
 
 int GetlocalIPAdressL(char *localaddr, int aMidletIapId, int aApType);
 
-int SocketLocalHostInfo::getLocalAddress(int /* aSd */, char *aLocalAddr,
+OS_EXPORT int SocketLocalHostInfo::getLocalAddress(int /* aSd */, char *aLocalAddr,
         int aMidletIapId, int aApType)
 {
     TRAPD(err,GetlocalIPAdressL(aLocalAddr,aMidletIapId, aApType););
     return err;
+
+}
+
+int getIPAddressL(const int aIapId, char *ipAddress)
+{
+    RSocketServ socketServ;
+    RSocket sock;
+    User::LeaveIfError(socketServ.Connect());
+    User::LeaveIfError(sock.Open(socketServ, KAfInet, KSockStream,
+                                 KProtocolInetTcp));
+
+    //  find the ip address of the active interface
+    TSoInetInterfaceInfo ifInfo;
+    TPckg<TSoInetInterfaceInfo> ifInfoPkg(ifInfo);
+    TSoInetIfQuery ifQuery;
+    TPckg<TSoInetIfQuery> ifQueryPkg(ifQuery);
+
+    // To find out which interfaces are using our current IAP, we must
+    // enumerate and go through all of them and make a query by name for each.
+    ILOG(ESOCKET, "Looping thru all the destinations and ap \n\n");
+    User::LeaveIfError(sock.SetOpt(KSoInetEnumInterfaces,
+                                   KSolInetIfCtrl));
+
+    while (sock.GetOpt(KSoInetNextInterface, KSolInetIfCtrl, ifInfoPkg)
+            == KErrNone)
+    {
+        ifQuery.iName = ifInfo.iName;
+        TInt err = sock.GetOpt(KSoInetIfQueryByName, KSolInetIfQuery,
+                               ifQueryPkg);
+        if ((err == KErrNone) && (ifQuery.iZone[1] == aIapId))
+        {
+            ILOG2(ESOCKET, "Network id = %d, IAP id = %d ",(TUint32)(ifQuery.iZone[15]),(TUint32)ifQuery.iZone[1]);
+
+            // IAP ID is index 1 of iZone
+            // We have found an interface using the IAP we are interested in.
+            if (ifInfo.iAddress.Address() > 0)
+            {
+                if (!ifInfo.iAddress.IsUnspecified()
+                        && !ifInfo.iAddress.IsLoopback()
+                        && !ifInfo.iAddress.IsLinkLocal())
+                {
+                    // found a IPv4 address
+                    TBuf8<20> aIP8;
+                    TBuf<20> aIP;
+                    TInetAddr aAddr;
+                    aAddr = ifInfo.iAddress;
+                    aAddr.ConvertToV4();
+                    aAddr.Output(aIP);
+                    aIP8.Copy(aIP);
+
+                    strncpy(ipAddress, (char*) aIP8.Ptr(),
+                            aIP8.Length());
+                    ipAddress[aIP8.Length()] = '\0';
+                    ILOG1(ESOCKET, "GetlocalIPAdressLLL , ip = %s",
+                          ipAddress);
+                    sock.Close();
+                    socketServ.Close();
+                    ILOG(ESOCKET, "returning from getIpAddr");
+                    return KErrNone;
+                }
+            }  // end if addr > 0
+            else if (err != KErrNone)
+            {
+                sock.Close();
+                return err; // return with error
+            }
+        }
+    }   // end while
+    sock.Close();
+    socketServ.Close();
+    return KErrNone;
 
 }
 
@@ -43,7 +114,7 @@ int SocketLocalHostInfo::getLocalAddress(int /* aSd */, char *aLocalAddr,
 int GetlocalIPAdressL(char *localaddr, int aMidletIapId, int aType)
 {
     JELOG2(ESOCKET);
-
+    int err = KErrNone;
     TUint32 activeIapId = 0;
     TConnectionInfoBuf connectionInfo;
     TUint count = 0;
@@ -103,66 +174,19 @@ int GetlocalIPAdressL(char *localaddr, int aMidletIapId, int aType)
                     continue; // go to the next active IAP
             }
 
-            //  find the ip address of the active interface
+            // find the ip address of the active IAP
+            err = getIPAddressL(activeIapId,localaddr);
+            break;  // once we find the IP addr, return
 
-            TSoInetInterfaceInfo ifInfo;
-            TPckg<TSoInetInterfaceInfo> ifInfoPkg(ifInfo);
-            TSoInetIfQuery ifQuery;
-            TPckg<TSoInetIfQuery> ifQueryPkg(ifQuery);
-            // To find out which interfaces are using our current IAP, we must
-            // enumerate and go through all of them and make a query by name for each.
-            ILOG(ESOCKET, "Looping thru all the destinations and ap \n\n");
-            User::LeaveIfError(sock.SetOpt(KSoInetEnumInterfaces,
-                                           KSolInetIfCtrl));
-            while (sock.GetOpt(KSoInetNextInterface, KSolInetIfCtrl, ifInfoPkg)
-                    == KErrNone)
-            {
-                ifQuery.iName = ifInfo.iName;
-                TInt err = sock.GetOpt(KSoInetIfQueryByName, KSolInetIfQuery,
-                                       ifQueryPkg);
-
-                if ((err == KErrNone) && (ifQuery.iZone[1] == activeIapId))
-                {
-                    //TUint32 t5 = (TUint32)(ifQuery.iZone[15]);                    
-                    ILOG2(ESOCKET, "Network id = %d, IAP id = %d ",(TUint32)(ifQuery.iZone[15]),(TUint32)ifQuery.iZone[1]);
-                    
-                    // IAP ID is index 1 of iZone
-                    // We have found an interface using the IAP we are interested in.
-                    if (ifInfo.iAddress.Address() > 0)
-                        if (!ifInfo.iAddress.IsUnspecified()
-                                && !ifInfo.iAddress.IsLoopback()
-                                && !ifInfo.iAddress.IsLinkLocal())
-                        {
-                            // found a IPv4 address
-                            TBuf8<20> aIP8;
-                            TBuf<20> aIP;
-                            TInetAddr aAddr;
-                            aAddr = ifInfo.iAddress;
-                            aAddr.ConvertToV4();
-                            aAddr.Output(aIP);
-                            aIP8.Copy(aIP);
-
-                            strncpy(localaddr, (char*) aIP8.Ptr(),
-                                    aIP8.Length());
-                            localaddr[aIP8.Length()] = '\0';
-                            ILOG1(ESOCKET, "GetlocalIPAdressL , ip = %s",
-                                  localaddr);
-                            sock.Close();
-                            return KErrNone;
-                        }
-                }
-                else if (err != KErrNone)
-                {
-                    sock.Close();
-                    return err; // return with error
-                }
-            } // end while
         } // end for loop
 
     } // end else active connection
-
+    ILOG(ESOCKET, "GetlocalIPAdressL , got ip ");
+    conn.Close();
     sock.Close();
-    return KErrNotFound; // return with KErrNotFound
+    socketServ.Close();
+
+    return err; // return with KErrNotFound
 
 
 }

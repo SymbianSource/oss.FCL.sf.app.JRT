@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description:  OMJ S60 preinstaller process
+* Description:  OMJ Symbian preinstaller process
  *
 */
 
@@ -19,6 +19,7 @@
 #ifndef SILENTMIDLETINSTALL_H
 #define SILENTMIDLETINSTALL_H
 
+#include <apgcli.h> // for RApaLsSession
 #include <f32file.h>
 #include <e32base.h>
 #include <javasymbianoslayer.h>
@@ -101,6 +102,9 @@ private:
     // Parses the application version string given in aAppVersionString
     //  and returns the corresponding Symbian TAppVersion.
     TAppVersion DesToAppVersion(const HBufC *aAppVersionString);
+    // Parses the Uid in iMIDletUid and returns ETrue if there is a native
+    // application with the same Uid installed into the device
+    TBool IsNativeAppPresent(const RApaLsSession& aApaSession);
 
 
 private:
@@ -123,6 +127,8 @@ private:
     HBufC* iMIDletVendor;
     // Variable used for parsing midlet version from jad file
     TAppVersion iMIDletVersion;
+    // Buffer used for parsing Uid of the first midlet from jad file
+    HBufC* iMIDletUid;
 
     // Drive status info for each non-remote, non-substed drive on device
     TUint iDriveStatuses[KMaxDrives];

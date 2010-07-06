@@ -194,7 +194,7 @@ public class HttpConnectionNative implements HttpConnection,
         iTransactionBlock = new BlockingOperation();
         iNativeDataReadyForRead = new BlockingOperation();
         iNativeDataReadyForRead.setResult(BlockingOperation.BLOCKED);
-        iFinalizer = registerForFinalization();        
+        iFinalizer = registerForFinalization();
         Logger.LOG(Logger.ESOCKET, Logger.EInfo, "- HttpConnectionNative new ");
 
         ApplicationInfo appInfo = ApplicationInfo.getInstance();
@@ -253,9 +253,9 @@ public class HttpConnectionNative implements HttpConnection,
         {
             close();
         }
-        catch(Exception e)
+        catch (Exception e)
         {
- 	
+
         }
         Logger.LOG(Logger.ESOCKET, Logger.EInfo,
                    "--HttpConnectionNative::doFinalize ");

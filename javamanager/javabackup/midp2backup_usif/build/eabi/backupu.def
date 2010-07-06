@@ -1,0 +1,9 @@
+EXPORTS
+	_Z24ImplementationGroupProxyRi @ 1 NONAME
+	_ZTIN4java6backup17CAppArcBackupUtilE @ 2 NONAME
+	_ZTIN4java6backup18CMidp2BackupPluginE @ 3 NONAME
+	_ZTIN4java6backup18CStorageBackupUtilE @ 4 NONAME
+	_ZTVN4java6backup17CAppArcBackupUtilE @ 5 NONAME
+	_ZTVN4java6backup18CMidp2BackupPluginE @ 6 NONAME
+	_ZTVN4java6backup18CStorageBackupUtilE @ 7 NONAME
+

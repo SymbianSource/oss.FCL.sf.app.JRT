@@ -40,17 +40,17 @@ catch(GfxException e) \
 
 
 jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1get_1windowsurface
-  (JNIEnv* aJniEnv, jclass, jint aHandle) 
-{   
+  (JNIEnv* aJniEnv, jclass, jint aHandle)
+{
     WindowSurface* ws = NULL;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         ws = gc->getWindowSurface();
     }
     GFX_CATCH
-    
+
     return POINTER_TO_HANDLE(ws);
 }
 
@@ -61,7 +61,7 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1init
     GraphicsContext* gc = 0;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         gc = GraphicsFactory::createGraphicsContext();
     }
     GFX_CATCH
@@ -70,12 +70,12 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1init
 }
 
 void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1dispose
-  (JNIEnv* aJniEnv , jclass, jint aHandle) 
+  (JNIEnv* aJniEnv , jclass, jint aHandle)
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
-        HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);  
+        SWT_LOG_JNI_CALL();
+        HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->dispose();
         gc = NULL;
     }
@@ -87,7 +87,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1bindT
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->bindTarget(aTarget, (TTargetType)aType, static_cast<int>(aBufferFlushTargetHandle));
     }
@@ -99,7 +99,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1rende
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         HANDLE_TO_POINTER(Buffer*, buffer, aBufferHandle);
         gc->render(buffer);
@@ -108,11 +108,11 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1rende
 }
 
 void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1releaseTarget
-  (JNIEnv* aJniEnv , jclass, jint aHandle) 
+  (JNIEnv* aJniEnv , jclass, jint aHandle)
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->releaseTarget();
     }
@@ -124,10 +124,10 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1copyA
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         HANDLE_TO_POINTER(Image*, image, aTargetHandle);
-    
+
         gc->copyArea(image, aX, aY);
     }
     GFX_CATCH
@@ -135,10 +135,10 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1copyA
 
 void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1copyArea__IIIIIIIZ
   (JNIEnv* aJniEnv , jclass, jint aHandle, jint aSrcX, jint aSrcY, jint aWidth, jint aHeight, jint aDestX, jint aDestY, jboolean aPaint)
-{   
+{
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->copyArea(aSrcX, aSrcY, aWidth, aHeight, aDestX, aDestY, aPaint == JNI_TRUE ? true : false);
     }
@@ -150,7 +150,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1drawA
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->drawArc(aX, aY, aWidth, aHeight, aStartAngle, aArcAngle);
     }
@@ -162,7 +162,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1drawE
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->drawEllipse(aX, aY, aWidth, aHeight);
     }
@@ -174,7 +174,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsCont
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->drawFocus(aX, aY, aWidth, aHeight);
     }
@@ -186,21 +186,21 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1drawI
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         HANDLE_TO_POINTER(Image*, image, aImageHandle);
         gc->drawImage(image, aX, aY);
     }
     GFX_CATCH
 }
-                                                                                      
+
 void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1drawImage__IIIIIIIIIII
-  (JNIEnv* aJniEnv , jclass, jint aHandle, jint aImageHandle, jint aTx, jint aTy, jint aTw, jint aTh, 
+  (JNIEnv* aJniEnv , jclass, jint aHandle, jint aImageHandle, jint aTx, jint aTy, jint aTw, jint aTh,
   jint aSx, jint aSy, jint aSw, jint aSh, jint aManipulation)
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         HANDLE_TO_POINTER(Image*, image, aImageHandle);
         gc->drawImage(image, aManipulation, aTx, aTy, aTw, aTh, aSx, aSy, aSw, aSh);
@@ -213,7 +213,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1drawL
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->drawLine(aX1, aY1, aX2, aY2);
     }
@@ -225,7 +225,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1drawP
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->drawPoint(aX, aY);
     }
@@ -237,7 +237,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1drawP
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         int length = aJniEnv->GetArrayLength(aPointArray);
         int* buffer = new int[length]; // might throw bad_alloc
@@ -253,7 +253,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1drawP
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         int length = aJniEnv->GetArrayLength(aPointArray);
         int* buffer = new int[length]; // might throw bad_alloc
@@ -269,7 +269,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1drawR
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->drawRect(aX, aY, aWidth, aHeight);
     }
@@ -277,12 +277,12 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1drawR
 }
 
 void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1drawRGB__I_3IIIIIIIZI
-  (JNIEnv* aJniEnv, jclass, jint aHandle, jintArray aRgbData, jint aOffset, jint aScanlength, 
+  (JNIEnv* aJniEnv, jclass, jint aHandle, jintArray aRgbData, jint aOffset, jint aScanlength,
     jint aX, jint aY, jint aWidth, jint aHeight, jboolean aProcessAlpha, jint aManipulation)
 {
-    GFX_TRY 
+    GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         int length = aJniEnv->GetArrayLength(aRgbData);
 
@@ -291,36 +291,36 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1drawR
         swtApp->jniUtils().GetJavaIntArrayRegionToIntArray(aJniEnv, aRgbData, 0, length, buffer); // might throw bad_alloc
 
         gc->drawRGB(buffer, length, aOffset, aScanlength, aX, aY, aWidth, aHeight, aProcessAlpha, aManipulation);
-    } 
+    }
     GFX_CATCH
 }
 
 void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1drawRGB__I_3B_3BIIIIIIII
-  (JNIEnv *aJniEnv, jclass, jint aHandle, jbyteArray aRgbData, jbyteArray aTransparencyMask, 
+  (JNIEnv *aJniEnv, jclass, jint aHandle, jbyteArray aRgbData, jbyteArray aTransparencyMask,
   jint aOffset, jint aScanLength, jint aX, jint aY, jint aWidth, jint aHeight, jint aTransform, jint aFormat)
   {
-    GFX_TRY 
+    GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
-        
+
         int dataLength = aJniEnv->GetArrayLength(aRgbData);
         int maskLength = aJniEnv->GetArrayLength(aTransparencyMask);
-        
+
         char* dataBuffer = new char[dataLength]; // might throw bad_alloc
         AutoRelease<char> releaseData(dataBuffer, true);
         swtApp->jniUtils().GetJavaByteArrayRegionToCharArray(aJniEnv, aRgbData, 0, dataLength, dataBuffer); // might throw bad_alloc
-        
+
         char* maskBuffer = NULL;
         AutoRelease<char> releaseMask(NULL, true); // Will delete mask or NULL if there's no mask
-        
+
         if(aTransparencyMask)
         {
             maskBuffer = new char[maskLength]; // might throw bad_alloc
             releaseMask.reset(maskBuffer);
-            swtApp->jniUtils().GetJavaByteArrayRegionToCharArray(aJniEnv, aTransparencyMask, 0, maskLength, maskBuffer); // might throw bad_alloc        
+            swtApp->jniUtils().GetJavaByteArrayRegionToCharArray(aJniEnv, aTransparencyMask, 0, maskLength, maskBuffer); // might throw bad_alloc
         }
-        
+
         gc->drawRGB(dataBuffer, maskBuffer, dataLength, aOffset, aScanLength, aX, aY, aWidth, aHeight, aTransform, aFormat);
     }
     GFX_CATCH
@@ -332,17 +332,17 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1drawR
  {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aImageHandle);
-        
+
         int length = aJniEnv->GetArrayLength(aRgbData);
-        
+
         short* buffer = new short[length];
         AutoRelease<short> release(buffer, true);
         ::memset(buffer, 0, sizeof(short)*length);
-        
+
         swtApp->jniUtils().GetJavaShortArrayRegionToShortArray(aJniEnv, aRgbData, 0, length, buffer); // might throw bad_alloc
-        
+
         gc->drawRGB(buffer, length, aOffset, aScanlength, aX, aY, aWidth, aHeight, aProcessAlpha, aManipulation, aFormat);
     }
     GFX_CATCH
@@ -353,7 +353,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1drawR
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->drawRoundRect(aX, aY, aWidth, aHeight, aArcWidth, aArcHeight);
     }
@@ -362,25 +362,25 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1drawR
 
 void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1drawString
   (JNIEnv* aJniEnv, jclass, jint aHandle, jstring aText, jint aX, jint aY, jint aWidth, jint aHeight,
-  jint aAlignments, jint aFlags, jboolean aIsTransparent) 
+  jint aAlignments, jint aFlags, jboolean aIsTransparent)
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
-        const jchar* chars; // unsigned short (2 bytes) 
+        SWT_LOG_JNI_CALL();
+        const jchar* chars; // unsigned short (2 bytes)
         int length;
-    
+
         length = aJniEnv->GetStringLength(aText);
         chars = aJniEnv->GetStringChars(aText, NULL);
         AutoReleaseStringChars release(aJniEnv, aText, chars);
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->drawString(
-            (const unsigned short*)chars, 
-            aX, 
+            (const unsigned short*)chars,
+            aX,
             aY,
             aWidth,
             aHeight,
-            length, 
+            length,
             aAlignments,
             aFlags,
             aIsTransparent);
@@ -389,11 +389,11 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1drawS
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1drawWindowSurface
-  (JNIEnv* aJniEnv, jclass, jint aHandle, jint aSurfaceHandle, jint aX, jint aY, jint aWidth, jint aHeight) 
+  (JNIEnv* aJniEnv, jclass, jint aHandle, jint aSurfaceHandle, jint aX, jint aY, jint aWidth, jint aHeight)
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         HANDLE_TO_POINTER(WindowSurface*, surface, aSurfaceHandle);
         gc->drawWindowSurface(surface, aX, aY, aWidth, aHeight);
@@ -406,7 +406,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1fillA
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->fillArc(aX, aY, aWidth, aHeight, aStartAngle, aArcAngle);
     }
@@ -414,13 +414,13 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1fillA
 }
 
 void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1fillEllipse
-  (JNIEnv* aJniEnv , jclass, jint aHandle, jint aX, jint aY, jint aWidth, jint aHeight) 
+  (JNIEnv* aJniEnv , jclass, jint aHandle, jint aX, jint aY, jint aWidth, jint aHeight)
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
-        gc->fillEllipse(aX, aY, aWidth, aHeight);   
+        gc->fillEllipse(aX, aY, aWidth, aHeight);
     }
     GFX_CATCH
 }
@@ -430,9 +430,9 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1fillG
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
-        gc->fillGradientRect(aX, aY, aWidth, aHeight, aVertical, aSwapColors);  
+        gc->fillGradientRect(aX, aY, aWidth, aHeight, aVertical, aSwapColors);
     }
     GFX_CATCH
 }
@@ -442,14 +442,14 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1fillP
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         int length = aJniEnv->GetArrayLength(aPointArray);
-        
+
         int* buffer = new int[length]; // might throw bad_alloc
         AutoRelease<int> release(buffer, true);
         swtApp->jniUtils().GetJavaIntArrayRegionToIntArray(aJniEnv, aPointArray, 0, length, buffer); // might throw bad_alloc
-        
+
         gc->fillPolygon(buffer, length);
     }
     GFX_CATCH
@@ -460,9 +460,9 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1fillR
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
-        gc->fillRect(aX, aY, aWidth, aHeight);  
+        gc->fillRect(aX, aY, aWidth, aHeight);
     }
     GFX_CATCH
 }
@@ -472,7 +472,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1fillR
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->fillRoundRect(aX, aY, aWidth, aHeight, aArcWidth, aArcHeight);
     }
@@ -485,7 +485,7 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1getBa
     jint bgAlpha = 0;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         bgAlpha = static_cast<jint>( gc->getBackgroundAlpha() );
     }
@@ -499,7 +499,7 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1getBa
     jint bgColor = 0;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         bgColor = static_cast<jint>( gc->getBackgroundColor() );
     }
@@ -513,7 +513,7 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1getCh
     jint charWidth = 0;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         charWidth = static_cast<jint>( gc->getCharacterWidth(aCh, aIsAdvanced) );
     }
@@ -524,9 +524,9 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1getCh
 void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1getFontMetricsData
   (JNIEnv* aJniEnv, jclass, jint aHandle, jintArray aDataArray, jint aFontHandle)
 {
-    GFX_TRY 
+    GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
 
         int length = aJniEnv->GetArrayLength(aDataArray);
@@ -555,9 +555,9 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1getBl
   (JNIEnv* aJniEnv , jclass, jint aHandle)
 {
     jint blendingMode = 0;
-    GFX_TRY 
+    GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         blendingMode = static_cast<jint>( gc->getBlendingMode() );
     }
@@ -570,16 +570,16 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1getCl
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
-        HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);        
+        SWT_LOG_JNI_CALL();
+        HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         int length = aJniEnv->GetArrayLength(aClipArray);
 
         int* buffer = new int[length]; // might throw bad_alloc
         AutoRelease<int> release(buffer, true);
         ::memset(buffer, 0, sizeof(int)*length);
-        
+
         gc->getClip(buffer);
-        
+
         swtApp->jniUtils().SetJavaIntArrayRegionFromIntArray(aJniEnv, aClipArray, 0, length, buffer);
     }
     GFX_CATCH
@@ -591,7 +591,7 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1getFo
     jint fgAlpha = 0;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         fgAlpha = static_cast<jint>( gc->getForegroundAlpha() );
     }
@@ -600,12 +600,12 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1getFo
 }
 
 jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1getForegroundColor
-  (JNIEnv* aJniEnv , jclass, jint aHandle) 
+  (JNIEnv* aJniEnv , jclass, jint aHandle)
 {
     jint fgColor = 0;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         fgColor = static_cast<jint>( gc->getForegroundColor() );
     }
@@ -614,28 +614,28 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1getFo
 }
 
 void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1getTextBoundingBox
-  (JNIEnv* aJniEnv, jclass, jint aHandle, jintArray aBoundingBox, jstring aText, 
+  (JNIEnv* aJniEnv, jclass, jint aHandle, jintArray aBoundingBox, jstring aText,
    jint aAlignments, jint aFlags, jint aRectX, jint aRectY, jint aRectWidth, jint aRectHeight)
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
-        
+
         int length = aJniEnv->GetArrayLength(aBoundingBox);
 
         int* buffer = new int[length]; // might throw bad_alloc
         AutoRelease<int> releaseBuffer(buffer, true);
         ::memset(buffer, 0, sizeof(int)*length);
-        
+
         const jchar* textPtr = aJniEnv->GetStringChars(aText, NULL);
         AutoReleaseStringChars releaseStringChars(aJniEnv, aText, textPtr);
 
         jint textLength = aJniEnv->GetStringLength(aText);
-        
+
         gc->getTextBoundingBox(
             buffer,
-            static_cast<const unsigned short*>(textPtr), 
+            static_cast<const unsigned short*>(textPtr),
             textLength,
             aAlignments,
             aFlags,
@@ -653,7 +653,7 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1getSt
     jint strokeWidth = 0;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         strokeWidth = static_cast<jint>( gc->getStrokeWidth() );
     }
@@ -667,7 +667,7 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1getSt
     jint strokeStyle = 0;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         strokeStyle = static_cast<jint>( gc->getStrokeStyle() );
     }
@@ -681,7 +681,7 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1getTr
     jint translateX = 0;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         translateX = static_cast<jint>( gc->getTranslateX() );
     }
@@ -695,7 +695,7 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1getTr
     jint translateY = 0;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         translateY = static_cast<jint>( gc->getTranslateY() );
     }
@@ -708,7 +708,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1setBa
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->setBackgroundAlpha(aAlpha);
     }
@@ -720,7 +720,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1setBa
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->setBackgroundColor(aArgb, aUpdateAlpha);
     }
@@ -728,11 +728,11 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1setBa
 }
 
 void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1setBlendingMode
-  (JNIEnv* aJniEnv , jclass, jint aHandle, jint aMode) 
+  (JNIEnv* aJniEnv , jclass, jint aHandle, jint aMode)
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->setBlendingMode((TBlendingMode)aMode);
     }
@@ -745,7 +745,7 @@ jboolean JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1h
     jboolean hasClipping = JNI_FALSE;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         hasClipping = static_cast<jboolean>( gc->hasClipping() );
     }
@@ -758,7 +758,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1cance
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->cancelClipping();
     }
@@ -770,7 +770,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1setCl
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->setClip(aX, aY, aWidth, aHeight, aIntersects);
     }
@@ -782,7 +782,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1setFo
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->setFont(aFontHandle);
     }
@@ -794,7 +794,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1setFo
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->setForegroundAlpha(aAlpha);
     }
@@ -806,7 +806,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1setFo
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->setForegroundColor(aArgb, aUpdateAlpha);
     }
@@ -818,7 +818,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1setSt
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->setStrokeWidth(aWidth);
     }
@@ -826,11 +826,11 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1setSt
 }
 
 void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1setStrokeStyle
-  (JNIEnv* aJniEnv , jclass, jint aHandle, jint aStyle) 
+  (JNIEnv* aJniEnv , jclass, jint aHandle, jint aStyle)
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->setStrokeStyle((TStrokeStyle)aStyle);
     }
@@ -842,7 +842,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsCont
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->translate(aX,aY);
     }
@@ -854,7 +854,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsCont
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->scale(aX,aY);
     }
@@ -867,7 +867,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsCont
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->resetTransform();
     }
@@ -879,7 +879,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1saveS
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->saveSettings();
     }
@@ -891,7 +891,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1resto
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(GraphicsContext*, gc, aHandle);
         gc->restoreSettings();
     }
@@ -908,9 +908,9 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1create__III
     Image* img = NULL;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         img = GraphicsFactory::createImage(aWidth, aHeight, aFillColor);
-    } 
+    }
     GFX_CATCH
     return POINTER_TO_HANDLE(img);
 }
@@ -921,7 +921,7 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1create__IIIII
     Image* newImage = NULL;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(Image*, image, aImageHandle);
         newImage = GraphicsFactory::createImage(image, aX, aY, aWidth, aHeight);
     }
@@ -935,8 +935,8 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1create___3IIIZ
     Image* img = NULL;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
-        
+        SWT_LOG_JNI_CALL();
+
         int length = aJniEnv->GetArrayLength(aRgbData);
 
         int* buffer = new int[length]; // might throw bad_alloc
@@ -944,7 +944,7 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1create___3IIIZ
         swtApp->jniUtils().GetJavaIntArrayRegionToIntArray(aJniEnv, aRgbData, 0, length, buffer); // might throw bad_alloc
 
         img = GraphicsFactory::createImage(buffer, aWidth, aHeight, aHasAlpha);
-    } 
+    }
     GFX_CATCH
     return POINTER_TO_HANDLE(img);
 }
@@ -955,7 +955,7 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1create__Lorg_ec
     Image* img = NULL;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();     
+        SWT_LOG_JNI_CALL();
         img = swtApp->jniUtils().CreateImage(aJniEnv, aImageData);
     }
     GFX_CATCH
@@ -968,7 +968,7 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1getFormat
     jint format = 0;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(Image*, image, aImageHandle);
         format = static_cast<jint>( image->getFormat() );
     }
@@ -982,7 +982,7 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1getHeight
     jint height = 0;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(Image*, image, aImageHandle);
         height = static_cast<jint>( image->getHeight() );
     }
@@ -991,12 +991,12 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1getHeight
 }
 
 jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1getWidth
-  (JNIEnv* aJniEnv , jclass, jint aImageHandle) 
+  (JNIEnv* aJniEnv , jclass, jint aImageHandle)
 {
     jint width = 0;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(Image*, image, aImageHandle);
         width = static_cast<jint>( image->getWidth() );
     }
@@ -1009,9 +1009,9 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1getRGB__I_3IIII
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
-        HANDLE_TO_POINTER(Image*, image, aImageHandle);   
-        
+        SWT_LOG_JNI_CALL();
+        HANDLE_TO_POINTER(Image*, image, aImageHandle);
+
         int length = aJniEnv->GetArrayLength(aRgbData);
 
         int* buffer = new int[length]; // might throw bad_alloc
@@ -1020,7 +1020,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1getRGB__I_3IIII
 
         // get the data (populated to data array)
         image->getRgb(buffer, aOffset, aScanlength, aX, aY, aWidth, aHeight);
-        
+
         // Copy data back to java
         swtApp->jniUtils().SetJavaIntArrayRegionFromIntArray(aJniEnv, aRgbData, 0, length, buffer);
     }
@@ -1032,22 +1032,22 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1getRGB__I_3B_3B
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(Image*, image, aImageHandle);
-        
+
         int dataLength = aJniEnv->GetArrayLength(aRgbData);
         int maskLength = aJniEnv->GetArrayLength(aTransparencyMask);
-        
+
         char* dataBuffer = new char[dataLength]; // might throw bad_alloc
         AutoRelease<char> releaseData(dataBuffer, true);
         char* maskBuffer = new char[maskLength]; // might throw bad_alloc
         AutoRelease<char> releaseMask(maskBuffer, true);
         ::memset(dataBuffer, 0, sizeof(char)*dataLength);
         ::memset(maskBuffer, 0, sizeof(char)*maskLength);
-        
+
         // get the data (populated to data array)
         image->getRgb(dataBuffer, maskBuffer, aOffset, aScanlength, aX, aY, aWidth, aHeight, aFormat);
-        
+
         // Copy data back to Java
         swtApp->jniUtils().SetJavaByteArrayRegionFromCharArray(aJniEnv, aRgbData, 0, dataLength, dataBuffer);
         swtApp->jniUtils().SetJavaByteArrayRegionFromCharArray(aJniEnv, aTransparencyMask, 0, maskLength, maskBuffer);
@@ -1059,17 +1059,17 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1getRGB__I_3SIII
   (JNIEnv * aJniEnv, jclass, jint aImageHandle, jshortArray aRgbData, jint aOffset, jint aScanlength, jint aX, jint aY, jint aWidth, jint aHeight, jint aFormat) {
     GFX_TRY
 {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(Image*, image, aImageHandle);
-        
+
         int length = aJniEnv->GetArrayLength(aRgbData);
         short* buffer = new short[length];
         AutoRelease<short> release(buffer, true);
         ::memset(buffer, 0, sizeof(short)*length);
-        
+
         // get the data (populated to data array)
         image->getRgb(buffer, aOffset, aScanlength, aX, aY, aWidth, aHeight, aFormat);
-        
+
         // Copy data back to java
         swtApp->jniUtils().SetJavaShortArrayRegionFromShortArray(aJniEnv, aRgbData, 0, length, buffer);
     }
@@ -1079,14 +1079,14 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1getRGB__I_3SIII
 jobject JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1getImageData
   (JNIEnv* aJniEnv , jclass, jint aImageHandle)
 {
-    GFX_LOG_JNI_CALL();
+    SWT_LOG_JNI_CALL();
     jobject imageData = 0;
     GFX_TRY
     {
         ImageDataWrapper* data = NULL;
-        HANDLE_TO_POINTER(Image*, image, aImageHandle);   
+        HANDLE_TO_POINTER(Image*, image, aImageHandle);
         data = GraphicsFactory::createImageData(image);
-        AutoRelease<ImageDataWrapper> release(data, false);    
+        AutoRelease<ImageDataWrapper> release(data, false);
         imageData = swtApp->jniUtils().CreateJavaImageData(aJniEnv, *data);
     }
     GFX_CATCH
@@ -1098,7 +1098,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1transform
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(Image*, image, aImageHandle);
         image->transform((TTransform)aTransform);
     }
@@ -1106,11 +1106,11 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1transform
 }
 
 void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1dispose
-  (JNIEnv* aJniEnv , jclass, jint aImageHandle) 
+  (JNIEnv* aJniEnv , jclass, jint aImageHandle)
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(Image*, image, aImageHandle);
         image->dispose();
         image = NULL;
@@ -1124,7 +1124,7 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1getPixmapHandle
     jint pixmapHandle = 0;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(Image*, image, aImageHandle);
         pixmapHandle = POINTER_TO_HANDLE(image->getPixmap());
     }
@@ -1136,12 +1136,12 @@ jboolean JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1detectColli
   (JNIEnv* aJniEnv, jclass, jint aImage1PixmapHandle, jint aTransform1, jint aP1x, jint aP1y, jint aR1x1, jint aR1y1, jint aR1x2, jint aR1y2,
                             jint aImage2PixmapHandle, jint aTransform2, jint aP2x, jint aP2y, jint aR2x1, jint aR2y1, jint aR2x2, jint aR2y2)
 {
-  	jboolean collides = JNI_FALSE;
-  	GFX_TRY
+    jboolean collides = JNI_FALSE;
+    GFX_TRY
     {
-    	  GFX_LOG_JNI_CALL();
-    	  collides = gfxUtils::detectCollision(aImage1PixmapHandle, aTransform1, aP1x, aP1y, aR1x1, aR1y1, aR1x2, aR1y2,
-    	                                       aImage2PixmapHandle, aTransform2, aP2x, aP2y, aR2x1, aR2y1, aR2x2, aR2y2);
+          SWT_LOG_JNI_CALL();
+          collides = gfxUtils::detectCollision(aImage1PixmapHandle, aTransform1, aP1x, aP1y, aR1x1, aR1y1, aR1x2, aR1y2,
+                                               aImage2PixmapHandle, aTransform2, aP2x, aP2y, aR2x1, aR2y1, aR2x2, aR2y2);
     }
     GFX_CATCH
     return collides;
@@ -1156,14 +1156,14 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_imageLoader_1append
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
-        jbyte* data = NULL; 
+        SWT_LOG_JNI_CALL();
+        jbyte* data = NULL;
         data = aJniEnv->GetByteArrayElements(aImageData, NULL);
         HANDLE_TO_POINTER(ImageLoader*, loader, aHandle);
         loader->append(reinterpret_cast<const char*>(data), aLenght, aOffset);
         // release arrays, don't copy back
         aJniEnv->ReleaseByteArrayElements(aImageData, data, JNI_ABORT);
-    } 
+    }
     GFX_CATCH
 }
 
@@ -1172,10 +1172,10 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_imageLoader_1beginStre
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(ImageLoader*, loader, aHandle);
         loader->beginStream(aBufferSize);
-    } 
+    }
     GFX_CATCH
 }
 
@@ -1185,7 +1185,7 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_imageLoader_1endStream
     Image* image = NULL;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(ImageLoader*, loader, aHandle);
         image = loader->endStream();
     }
@@ -1194,12 +1194,12 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_imageLoader_1endStream
 }
 
 jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_imageLoader_1init
-  (JNIEnv* aJniEnv , jclass) 
+  (JNIEnv* aJniEnv , jclass)
 {
     ImageLoader* loader = NULL;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();        
+        SWT_LOG_JNI_CALL();
         loader = GraphicsFactory::createImageLoader();
     }
     GFX_CATCH
@@ -1207,11 +1207,11 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_imageLoader_1init
 }
 
 void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_imageLoader_1dispose
-  (JNIEnv* aJniEnv , jclass, jint aHandle) 
+  (JNIEnv* aJniEnv , jclass, jint aHandle)
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(ImageLoader*, loader, aHandle);
         loader->dispose();
     }
@@ -1219,12 +1219,12 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_imageLoader_1dispose
 }
 
 jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_imageLoader_1load
-  (JNIEnv* aJniEnv , jclass, jint aHandle, jstring aFileName) 
+  (JNIEnv* aJniEnv , jclass, jint aHandle, jstring aFileName)
 {
     Image* image = NULL;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(ImageLoader*, loader, aHandle);
         image = loader->load(swtApp->jniUtils().JavaStringToQString(aJniEnv, aFileName));
     }
@@ -1233,11 +1233,11 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_imageLoader_1load
 }
 
 void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_imageLoader_1setLoadSize
-  (JNIEnv* aJniEnv , jclass, jint aHandle, jint aWidth, jint aHeight) 
+  (JNIEnv* aJniEnv , jclass, jint aHandle, jint aWidth, jint aHeight)
 {
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(ImageLoader*, loader, aHandle);
         loader->setLoadSize(aWidth, aHeight);
     }
@@ -1254,7 +1254,7 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_fontUtils_1getAscent
     jint ascent = 0;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(QFont*, font, aFontHandle);
         QFontMetrics fm(*font);
         ascent = static_cast<jint>( fm.ascent() );
@@ -1266,20 +1266,20 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_fontUtils_1getAscent
 void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_fontUtils_1getBoundingRect__I_3ILjava_lang_String_2
   (JNIEnv* aJniEnv, jclass, jint aFontHandle, jintArray aRectArray, jstring aStr)
 {
-    GFX_TRY 
+    GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         QString string = swtApp->jniUtils().JavaStringToQString(aJniEnv, aStr);
-        
+
         int length = aJniEnv->GetArrayLength(aRectArray);
 
         int* buffer = new int[length]; // might throw bad_alloc
         AutoRelease<int> release(buffer, true);
         ::memset(buffer, 0, sizeof(int)*length);
-        
-        HANDLE_TO_POINTER(QFont*, font, aFontHandle); 
+
+        HANDLE_TO_POINTER(QFont*, font, aFontHandle);
         QFontMetrics fm(*font);
-        
+
         buffer[0] = 0;
         buffer[1] = 0;
         buffer[2] = fm.width(string);
@@ -1294,24 +1294,24 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_fontUtils_1getBounding
 void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_fontUtils_1getBoundingRect__I_3ILjava_lang_String_2IIIIII
   (JNIEnv* aJniEnv, jclass, jint aFontHandle, jintArray aRectArray, jstring aStr, jint /*aRectX*/, jint /*aRectY*/, jint /*aRectW*/, jint /*aRectH*/, jint /*aAlignments*/, jint /*aFlags*/)
 {
-    GFX_TRY 
+    GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         QString string = swtApp->jniUtils().JavaStringToQString(aJniEnv, aStr);
         int length = aJniEnv->GetArrayLength(aRectArray);
 
         int* buffer = new int[length]; // might throw bad_alloc
         AutoRelease<int> release(buffer, true);
         ::memset(buffer, 0, sizeof(int)*length);
- 
-        HANDLE_TO_POINTER(QFont*, font, aFontHandle); 
+
+        HANDLE_TO_POINTER(QFont*, font, aFontHandle);
         QFontMetrics fm(*font);
-        
+
         buffer[0] = 0;
         buffer[1] = 0;
         buffer[2] = fm.width(string);
         buffer[3] = fm.height();
-        
+
         // Copy changes to rectArray
         swtApp->jniUtils().SetJavaIntArrayRegionFromIntArray(aJniEnv, aRectArray, 0, length, buffer);
     }
@@ -1324,8 +1324,8 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_fontUtils_1getDescent
     jint descent = 0;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
-        HANDLE_TO_POINTER(QFont*, font, aFontHandle); 
+        SWT_LOG_JNI_CALL();
+        HANDLE_TO_POINTER(QFont*, font, aFontHandle);
         QFontMetrics fm(*font);
         descent = static_cast<jint>( fm.descent() );
     }
@@ -1337,10 +1337,10 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_fontUtils_1getStringWi
   (JNIEnv* aJniEnv , jclass, jint aFontHandle, jstring aStr)
 {
     int strWidth = 0;
-    GFX_TRY 
+    GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
-        HANDLE_TO_POINTER(QFont*, font, aFontHandle); 
+        SWT_LOG_JNI_CALL();
+        HANDLE_TO_POINTER(QFont*, font, aFontHandle);
         QString string = swtApp->jniUtils().JavaStringToQString(aJniEnv,  aStr);
         QFontMetrics fm(*font);
         strWidth = fm.width(string);
@@ -1359,7 +1359,7 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_buffer_1init
     Buffer* buffer = 0;
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         buffer = GraphicsFactory::createBuffer();
     }
     GFX_CATCH
@@ -1371,6 +1371,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_buffer_1dispose
 {
     GFX_TRY
     {
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(Buffer*, buffer, aHandle);
         buffer->dispose();
     }
@@ -1378,18 +1379,19 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_buffer_1dispose
 }
 
 void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_buffer_1getInvalidRect
-  (JNIEnv* aJniEnv, jclass, jint aHandle, jintArray aRect) 
+  (JNIEnv* aJniEnv, jclass, jint aHandle, jintArray aRect)
 {
     GFX_TRY
     {
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(Buffer*, buffer, aHandle);
-        
+
         int length = aJniEnv->GetArrayLength(aRect);
 
         int* intBuffer = new int[length]; // might throw bad_alloc
         AutoRelease<int> release(intBuffer, true);
         ::memset(intBuffer, 0, sizeof(int)*length);
-        
+
         buffer->getInvalidRect(intBuffer);
 
         // Copy data back to java
@@ -1408,7 +1410,7 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_windowsurface_1create
     HANDLE_TO_POINTER(QWidget*, widget, aHandle);
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         surface = GraphicsFactory::createWindowSurface(widget, aAutoRefresh);
     }
     GFX_CATCH
@@ -1421,7 +1423,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_windowsurface_1beginPa
     HANDLE_TO_POINTER(WindowSurface*, wsurf, aHandle);
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         wsurf->beginPaint(aX, aY, aWidth, aHeight);
     }
     GFX_CATCH
@@ -1433,7 +1435,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_windowsurface_1endPain
     HANDLE_TO_POINTER(WindowSurface*, wsurf, aHandle);
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         wsurf->endPaint();
     }
     GFX_CATCH
@@ -1445,7 +1447,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_windowsurface_1flush
     HANDLE_TO_POINTER(WindowSurface*, wsurf, aHandle);
     GFX_TRY
     {
-        GFX_LOG_JNI_CALL();
+        SWT_LOG_JNI_CALL();
         wsurf->flush();
     }
     GFX_CATCH
@@ -1457,6 +1459,7 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_windowsurface_1getType
     jint type = 0;
     GFX_TRY
     {
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(WindowSurface*, wsurf, aHandle);
         type = static_cast<jint>( wsurf->getType() );
     }
@@ -1469,8 +1472,9 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_windowsurface_1dispose
 {
     GFX_TRY
     {
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(WindowSurface*, wsurf, aHandle);
-        wsurf->dispose();       
+        wsurf->dispose();
     }
     GFX_CATCH
 }
@@ -1480,12 +1484,21 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_windowsurface_1refresh
 {
     GFX_TRY
     {
+        SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(WindowSurface*, wsurf, aHandle);
-        wsurf->refresh();       
+        wsurf->refresh();
     }
-    GFX_CATCH 
+    GFX_CATCH
 }
 
-
-
-
+void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_windowsurface_1handleSymbianWindowVisibilityChange
+  (JNIEnv* aJniEnv, jclass, jint aHandle, jboolean aVisible)
+{
+    GFX_TRY
+    {
+        SWT_LOG_JNI_CALL();
+        HANDLE_TO_POINTER(WindowSurface*, wsurf, aHandle);
+        wsurf->handleSymbianWindowVisibilityChange(aVisible);
+    }
+    GFX_CATCH
+}

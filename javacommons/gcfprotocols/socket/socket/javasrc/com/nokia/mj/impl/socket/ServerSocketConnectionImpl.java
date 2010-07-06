@@ -141,8 +141,7 @@ public class ServerSocketConnectionImpl implements ServerSocketConnection
                     apId = -1;
                 }
                 Logger.LOG(Logger.ESOCKET, Logger.EInfo,
-                           "+SocketServerConnectionImpl:: getApplicationDefault returned,  \n"+apn.getNapId()+" type = "+apn.getType());
-                System.out.println(" type = "+apn.getType()+"  id = "+apId);
+                           "+SocketServerConnectionImpl:: getApplicationDefault returned,  \n"+apn.getNapId()+" type = "+apn.getType());                
             }
         }
         catch (Exception e)

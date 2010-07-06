@@ -16,11 +16,9 @@
 */
 
 #include <memory>
+#include <cpputest/TestHarness.h>
 
-#include "TestHarness.h"
-
-#include "../../inc.s60/mapnsettings.h"
-
+#include "mapnsettings.h"
 #include "javastorage.h"
 #include "javastorageexception.h"
 #include "javastoragenames.h"

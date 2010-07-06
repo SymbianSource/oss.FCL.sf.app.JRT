@@ -13,6 +13,8 @@
 #include <QWidget>
 #include <QPainter>
 #include <QPaintEngine>
+#include <fbs.h>
+#include <coemain.h>
 #include "windowsurfaceimpl_symbian.h"
 #include "gfxlog.h"
 
@@ -21,6 +23,7 @@ namespace Java { namespace GFX {
 WindowSurfaceImpl::WindowSurfaceImpl(QPaintDevice* aSurface, WindowSurfaceType aType)
 : mIsBound(false),
   mBufferedRendering(false),
+  mPreserveLocalSurface(false),
   mAutoRefresh(false),
   mPaintingStarted(false)
 {
@@ -32,6 +35,7 @@ WindowSurfaceImpl::WindowSurfaceImpl(QPaintDevice* aSurface, WindowSurfaceType a
 WindowSurfaceImpl::WindowSurfaceImpl(QWidget* aWidget, bool aAutoRefresh)
 : mIsBound(false),
   mBufferedRendering(false),
+  mPreserveLocalSurface(false),
   mAutoRefresh(false),
   mPaintingStarted(false)
 {
@@ -49,11 +53,7 @@ WindowSurfaceImpl::WindowSurfaceImpl(QWidget* aWidget, bool aAutoRefresh)
 WindowSurfaceImpl::~WindowSurfaceImpl()
 {
     GFX_LOG_FUNC_CALL();
-    if(mMainSurface.localSurface != NULL)
-    {
-        delete mMainSurface.localSurface;
-        mMainSurface.localSurface = NULL;
-    }
+    deleteLocalSurface();
 }
 
 void WindowSurfaceImpl::beginPaint(int aX, int aY, int aWidth, int aHeight)
@@ -68,11 +68,10 @@ void WindowSurfaceImpl::beginPaint(int aX, int aY, int aWidth, int aHeight)
         mMainSurface.qSurface->beginPaint(region);
         // In case local surface was used last round
         // and we now have Qt's window surface again
-        // delete the local surface to save memory
-        if(mMainSurface.localSurface != NULL)
-        {
-            delete mMainSurface.localSurface;
-            mMainSurface.localSurface = NULL;
+        // delete the local surface to save memory,
+        if(!mPreserveLocalSurface)
+        {    
+            deleteLocalSurface();
         }
     }
     mPaintingStarted = true;
@@ -102,23 +101,27 @@ void WindowSurfaceImpl::bind(int aCapabilies)
     // Bind is not allowed if beginPaint has not been called
     if(!mPaintingStarted)
     {
-        throw GfxException(EGfxErrorIllegalState, "beginPaint() not called before bind()");
+        return;
     }
     
     switch (mMainSurface.type)
     {
         case WsTypeQtImage:
         {
-            mBufferedRendering = true;
             break;
         }
-        
         case WsTypeEglSurface:
         {
             // If caller does not support EGL surface
-            // create temp buffer to be used as target and
-            // copy pixels from window surface to temp buffer
+            // create local surface to be used as target and
+            // copy pixels from window surface to local surface
             if ((aCapabilies & WsTypeEglSurface) == 0) {
+                if(!isLocalSurfaceValid())
+                {
+                    createLocalSurface();
+                }
+                mBufferedRendering = true;
+                mPreserveLocalSurface = true;
                 // TODO copy pixels from EGL surface to 
                 // QImage created here
                 
@@ -144,7 +147,15 @@ void WindowSurfaceImpl::bind(int aCapabilies)
 int WindowSurfaceImpl::getType()
 {
     GFX_LOG_FUNC_CALL();
-    return mMainSurface.type;
+    if(mBufferedRendering)
+    {
+        // only supported local buffer is QImage
+        return WsTypeQtImage;
+    }
+    else
+    {
+        return mMainSurface.type;
+    }
 }
 
 QPaintDevice* WindowSurfaceImpl::getDevice()
@@ -186,9 +197,15 @@ void WindowSurfaceImpl::release()
         return;
     }
 
+    // this means that we are using localSurface
+    // as intermediate buffer for caller due to 
+    // lacking support for the actual surface type
     if (mBufferedRendering)
     {
-        // TODO draw QImage with painter to actual target
+        mPainter.begin(mMainSurface.device);
+        mPainter.drawImage(QPoint(0,0),*mMainSurface.localSurface);
+        mPainter.end();
+        mBufferedRendering = false;
     }
     else
     {
@@ -206,6 +223,42 @@ void WindowSurfaceImpl::dispose()
 {
     GFX_LOG_FUNC_CALL();
     delete this;
+}
+
+void WindowSurfaceImpl::handleSymbianWindowVisibilityChange(bool aVisible)
+{
+    if(mPaintingStarted)
+    {
+        // TODO window getting invisible in the middle of paint
+        return;
+    }
+    
+    if (!aVisible)
+    {
+        // Switch to sw rendering
+        if(!isLocalSurfaceValid()) 
+        {
+            if(mMainSurface.localSurfaceInUse) 
+            {
+                deleteLocalSurface();
+            }
+            
+            CFbsBitmap* bitmap = new(ELeave) CFbsBitmap;
+            CleanupStack::PushL(bitmap);
+            int err = bitmap->Create(TSize(mMainSurface.widget->width(), mMainSurface.widget->height()), 
+                CCoeEnv::Static()->ScreenDevice()->DisplayMode());
+            eglCopyBuffers(mEgl.display, mEgl.readSurface, bitmap);
+            mMainSurface.localSurface = new QImage(QPixmap::fromSymbianCFbsBitmap(bitmap).toImage());
+            CleanupStack::Pop(bitmap);
+            
+            mMainSurface.qSurface = NULL;
+            mMainSurface.device = mMainSurface.localSurface;
+            mMainSurface.type = WsTypeQtImage;
+            mMainSurface.localSurfaceInUse = true;
+        }
+    }
+    
+    // Otherwise updateSurfaceData() will switch back to hw rendering
 }
 
 void WindowSurfaceImpl::saveEglState()
@@ -239,9 +292,9 @@ void WindowSurfaceImpl::restoreEglState()
 
 // Private methods
 
-void WindowSurfaceImpl::createLocalSurface(int aWidth, int aHeight)
+void WindowSurfaceImpl::createLocalSurface()
 {
-    mMainSurface.localSurface = new QImage(aWidth, aHeight, QImage::Format_ARGB32);
+    mMainSurface.localSurface = new QImage(mMainSurface.widget->width(), mMainSurface.widget->height(), QImage::Format_RGB32/*QImage::Format_ARGB32*/);
     if(mMainSurface.localSurface->isNull()) 
     {   
         throw GfxException(EGfxErrorNoMemory, "Local Surface creation failed");
@@ -281,14 +334,14 @@ void WindowSurfaceImpl::updateSurfaceData()
     if(mPaintingStarted)
     {
         return;
-    }   
+    }
     QWindowSurface* surface = mMainSurface.widget->windowSurface();
     
     // If window surface is null it means that the widget has been 
     // sent to background and widget's window surface has been deleted, 
     // in such case create own QImage as local surface in order to support 
     // rendering in background
-    if(surface == NULL || surface == 0)
+    if(surface == NULL)
     {
         // check if we already have local surface with valid size
         if(!isLocalSurfaceValid()) 
@@ -299,7 +352,7 @@ void WindowSurfaceImpl::updateSurfaceData()
             {
                 deleteLocalSurface();
             }
-            createLocalSurface(mMainSurface.widget->width(), mMainSurface.widget->height());
+            createLocalSurface();
             // set info
             mMainSurface.qSurface = NULL;
             mMainSurface.device = mMainSurface.localSurface;
@@ -319,7 +372,15 @@ void WindowSurfaceImpl::updateSurfaceData()
         // delete it as it's not used anymore
         if(mMainSurface.localSurfaceInUse)
         {
-            deleteLocalSurface();
+            // in case we have needed the local surface as temp
+            // buffer for a client, it is not deleted as we most likely
+            // will need it again. In any case the local surface 
+            // stops to be the main surface and is atleast demoted to 
+            // temp surface.
+            if(!mPreserveLocalSurface)
+            {
+                deleteLocalSurface();
+            }
         }
     }
     
@@ -357,7 +418,6 @@ void WindowSurfaceImpl::updateSurfaceData()
             break;
         default:
             throw GfxException(EGfxErrorIllegalArgument, "Unsupported widget window surface type");
-            break;
     }
     
     // release painter

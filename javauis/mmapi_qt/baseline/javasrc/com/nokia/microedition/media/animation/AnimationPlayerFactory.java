@@ -27,7 +27,6 @@ import javax.microedition.media.protocol.DataSource;
 import org.eclipse.swt.SWTException;
 
 import com.nokia.microedition.media.InternalPlayer;
-import com.nokia.microedition.media.Locator;
 import com.nokia.microedition.media.PlugIn;
 import com.nokia.mj.impl.utils.Logger;
 
@@ -36,21 +35,17 @@ import com.nokia.mj.impl.utils.Logger;
  * implements PlugIn interface which is used from ManagerImpl.
  * Entire Animation playing is written using eSWT API.
  * There is no call to native.
- *
  */
 public class AnimationPlayerFactory implements PlugIn
 {
 
     // Used to recognize supported locators.
     // private static final String ANIMATION_FILE_EXTENSION = ".gif";
-
     // Used to get supported protocols and content type.
     private static final String ANIMATION_CONTENT_TYPE = "image/gif";
     private static final String ANIMATION_HTTP_PROTOCOL = "http";
     private static final String ANIMATION_HTTPS_PROTOCOL = "https";
     private static final String ANIMATION_FILE_PROTOCOL = "file";
-    // There is no need to read the first 6 byte and compare it with following string
-//  private static final String ANIMATION_GIF_HEADER="GIF89a";
 
     /**
      * From PlugIn
@@ -73,12 +68,7 @@ public class AnimationPlayerFactory implements PlugIn
             {
                 player = new AnimationPlayer(aDataSource);
             }
-//          else{
-//              throw new MediaException("Content type not supported: " + contentType);
-//          }
         } //Since it was not possible to identify the player from content type, identify it from it's header
-        // Is there any need to create player through Locator?
-
         else
         {
             // We need only 6 bytes to identify whether it's GIF image data or not.
@@ -94,7 +84,7 @@ public class AnimationPlayerFactory implements PlugIn
             catch (SWTException e)
             {
                 // Simply ignore the exception
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
         Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,DEBUG_STR+"-");
@@ -102,9 +92,9 @@ public class AnimationPlayerFactory implements PlugIn
     }
 
     /**
-     * @param locator
-     * @return Interplayer object
-     * @throws IOException
+     * @param locator, path of the GIF file.
+     * @return InternalPlayer object
+     * @throws IOException if it is not possible to read the file from location specified
      */
     public InternalPlayer createPlayer(String locator) throws IOException
     {
@@ -117,13 +107,23 @@ public class AnimationPlayerFactory implements PlugIn
         }
         catch (SWTException e)
         {
-            // For all cases ImageLoader.load throws only SWTException
-            // here we are finding why it has throws this Exception
-            // if it is IOException we need to pass it to caller
-            if (e.getCause().toString().indexOf((IOException.class.getName()))!=-1)
-                throw new IOException();
-            // if exception is due to any other reason, just ignore it
+            Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,DEBUG_STR+" SWTException thrown "+e);
             e.printStackTrace();
+            if (e.throwable instanceof java.io.IOException)
+            {
+                // TODO remove hardcoding for checking whether it is permission
+                // related exceptioon
+                if (e.getCause().toString().indexOf("Permission") != -1)
+                    // TODO Copied the exception message from
+                    throw new SecurityException(
+                        "Application not authorized to access the restricted API");
+                // For all other remaining IOException throw it as it is
+                else
+                    // if
+                    // (e.getCause().toString().indexOf((IOException.class.getName()))!=-1)
+                    throw new IOException();
+            }
+            // if exception is due to any other reason, just ignore it
         }
         Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,DEBUG_STR+"-");
         return player;
@@ -135,6 +135,7 @@ public class AnimationPlayerFactory implements PlugIn
      */
     public String[] getSupportedContentTypes(String aProtocol)
     {
+        //if aProtocol is not supported, we need to return the string array of zero length
         String[] types = new String[0];
         if (aProtocol == null || aProtocol.equals(ANIMATION_HTTP_PROTOCOL)
                 || aProtocol.equals(ANIMATION_HTTPS_PROTOCOL)
@@ -151,6 +152,7 @@ public class AnimationPlayerFactory implements PlugIn
      */
     public String[] getSupportedProtocols(String aContentType)
     {
+        // if aContentType is not supported, we need to return the string array of zero length
         String[] protocols = new String[0];
         if ((aContentType == null)
                 || aContentType.equals(ANIMATION_CONTENT_TYPE))

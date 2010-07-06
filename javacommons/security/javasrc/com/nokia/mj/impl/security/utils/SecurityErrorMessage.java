@@ -23,18 +23,16 @@ import java.util.Hashtable;
 
 /**
  * Class defining Security short error messages.
- *
- * @author Nokia Corporation
- * @version 1.0
  */
 public final class SecurityErrorMessage extends ErrorMessageBase
 {
     // Security error codes.
-    public static final int JAR_TAMPERED = 1;
-    public static final int CERT_NOT_AVAILABLE = 2;
-    public static final int UNEXPECTED_ERR = 3;
-    public static final int NETWORK_RESTRICTION_VIOLATION = 4;
-    public static final int OCSP_GENERAL_ERR = 5;
+    public static final int JAR_TAMPERED = 1 + ErrorMessageBase.SECURITY_RANGE_START;
+    public static final int CERT_NOT_AVAILABLE = 2 + ErrorMessageBase.SECURITY_RANGE_START;
+    public static final int UNEXPECTED_ERR = 3 + ErrorMessageBase.SECURITY_RANGE_START;
+    public static final int NETWORK_RESTRICTION_VIOLATION = 4 + ErrorMessageBase.SECURITY_RANGE_START;
+    public static final int OCSP_GENERAL_ERR = 5 + ErrorMessageBase.SECURITY_RANGE_START;
+    public static final int JAR_NOT_FOUND = 6 + ErrorMessageBase.SECURITY_RANGE_START;
 
     /*** ----------------------------- PUBLIC ------------------------------ */
     /*** ---------------------------- PROTECTED --------------------------- */
@@ -56,6 +54,7 @@ public final class SecurityErrorMessage extends ErrorMessageBase
         messageTable.put(new Integer(UNEXPECTED_ERR), "unexpected_err");
         messageTable.put(new Integer(NETWORK_RESTRICTION_VIOLATION), "net_restr_violation");
         messageTable.put(new Integer(OCSP_GENERAL_ERR), "ocsp_general");
+        messageTable.put(new Integer(JAR_NOT_FOUND), "jar_not_found");
         iMessageTable = messageTable;
         return iMessageTable;
     }
