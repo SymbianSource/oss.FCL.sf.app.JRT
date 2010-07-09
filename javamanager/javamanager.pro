@@ -18,6 +18,7 @@ SUBDIRS += preinstaller/build/javapreinstaller.pro
 SUBDIRS += debugapi/build/debugapi.pro 
 SUBDIRS += javalauncher/build/javalauncher.pro 
 SUBDIRS += javaupgradeapp/build/javaupgradeapp.pro 
+SUBDIRS += javasettings_qt/build/javaapplicationsettingsview.pro 
 SUBDIRS += javacaptain 
 SUBDIRS += javainstaller 
 SUBDIRS += javaregistry 

@@ -49,6 +49,11 @@ SYMBIAN_ONLY += javasidchecker/build
 javasidchecker/build : javaregistry
 endif
 
+ifdef RD_JAVA_APPLICATION_SETTINGS_QT
+COMPONENTS += javasettings_qt/build
+SYMBIAN_ONLY += javasettings_qt/build
+endif
+
 # Declare that release preparation removes subdirectories not in build, except
 # listed special cases
 REMOVE_NOTBUILT_EXCLUDING = inc

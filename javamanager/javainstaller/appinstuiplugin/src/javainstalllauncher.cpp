@@ -228,7 +228,7 @@ void CJavaInstallLauncher::InstallL(RFile& aFile, TInstallReq& aInstallParams,
 
     // Do NOT close rJavaInstaller now -> the caller gets notification when the
     // process actually closes.
-    iHandlesToClose.Append(rJavaInstaller);
+    iHandlesToClose.AppendL(rJavaInstaller);
 }
 
 void CJavaInstallLauncher::SilentInstallL(RFile& aFile,
@@ -410,7 +410,7 @@ void CJavaInstallLauncher::SilentInstallL(RFile& aFile,
 
     // Do NOT close rJavaInstaller now -> the caller gets notification when the
     // process actually closes.
-    iHandlesToClose.Append(rJavaInstaller);
+    iHandlesToClose.AppendL(rJavaInstaller);
 }
 
 void CJavaInstallLauncher::UninstallL(const TUid& aUid, const TDesC8&, /*aMIME*/
@@ -451,7 +451,7 @@ void CJavaInstallLauncher::UninstallL(const TUid& aUid, const TDesC8&, /*aMIME*/
 
     // Do NOT close rJavaInstaller now -> the caller gets notification when the
     // process actually closes.
-    iHandlesToClose.Append(rJavaInstaller);
+    iHandlesToClose.AppendL(rJavaInstaller);
 }
 
 void CJavaInstallLauncher::SilentUninstallL(const TUid& aUid, const TDesC8&, /*aMIME*/
@@ -539,7 +539,7 @@ void CJavaInstallLauncher::SilentUninstallL(const TUid& aUid, const TDesC8&, /*a
 
     // Do NOT close rJavaInstaller now -> the caller gets notification when the
     // process actually closes.
-    iHandlesToClose.Append(rJavaInstaller);
+    iHandlesToClose.AppendL(rJavaInstaller);
 }
 
 TBool CJavaInstallLauncher::IsAppShellUpdate()

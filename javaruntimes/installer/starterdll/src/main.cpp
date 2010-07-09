@@ -348,6 +348,12 @@ int startJvm(int argc, char *argv[])
     const int oldHeapSize = 512;
     jvm->overrideOldHeapSize(oldHeapSize);
 
+#ifdef __WINSCW__
+    // Setting smaller max heap in the emulator.
+    const int maxHeapSize = 8 * 1024; // 8 MB
+    jvm->overrideMaxHeapSize(maxHeapSize);
+#endif  // __WINSCW__
+
     jvm->enableThreadDumping();
 
     jvm->setMainClass(INSTALLER_MAIN_CLASS);

@@ -63,9 +63,7 @@ public final class InstallerErrorMessage extends ErrorMessageBase
             return iMessageTable;
         }
         Hashtable messageTable = new Hashtable();
-        // Change this after Qt localisation files are in place.
-        //if (ResourceLoader.getLocaleIdQt() == null)
-        if (true)
+        if (getLocaleIdQt() == null)
         {
             messageTable.put(new Integer(INST_NO_MEM), "no_mem");
             messageTable.put(new Integer(INST_NO_NET), "no_net");
@@ -110,9 +108,7 @@ public final class InstallerErrorMessage extends ErrorMessageBase
     {
         if (iRes == null)
         {
-            // Change this after Qt localisation files are in place.
-            //if (ResourceLoader.getLocaleIdQt() == null)
-            if (true)
+            if (getLocaleIdQt() == null)
             {
                 iRes = ResourceLoader.getInstance("javainstallation", "qtn_java_inst_error_");
             }

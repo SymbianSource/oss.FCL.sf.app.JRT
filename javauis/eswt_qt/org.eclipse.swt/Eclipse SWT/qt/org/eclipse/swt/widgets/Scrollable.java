@@ -212,6 +212,12 @@ public abstract class Scrollable extends Control {
             }            
         }
         createBars();
+        if(Display.objectNames) {
+            if(scrollAreaHandle != 0 && scrollAreaHandle != topHandle && scrollAreaHandle != handle) {
+                OS.QObject_setObjectName(scrollAreaHandle, 
+                        this.getClass().getName() + " Scrollable.scrollAreaHandle");
+            }
+        }
     }
 
     private void createBars() {

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2009, 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -30,27 +30,19 @@ import com.nokia.mj.impl.rt.support.*;
 /**
  * Singleton class which is responsible to run the eSWT UI thread. This class is
  * also access-point to eSWT's Display-class.<br>
- * <br>
- * UI thread is started in static initialization block. If another UI Thread is
- * created before that the run()-method will fail and this class won't try to
- * run UI thread anymore. Instead, existing UI-thread will be used to run LCDUI.
- * <br>
- * <br>
- * Note that the method getDisplay() will still work normally.<br>
- * <br>
- * Also note that if the other thread which is running eSWT stops executing then
- * this class stops working too.
  */
 final class ESWTUIThreadRunner implements Listener, ShutdownListener, Runnable
 {
-
+    // States of the UI event loop
     private static final int NONE = 1;
     private static final int CREATING = 2;
     private static final int RUNNING = 4;
     private static final int EXITING = 8;
     private static final int ALL = NONE | CREATING | RUNNING | EXITING;
 
+    // Singleton instance
     private static ESWTUIThreadRunner instance;
+
     private static int lastKeyScancode;
     private static int lastKeyModifier;
     private static int keyRepeatCount;
@@ -59,6 +51,12 @@ final class ESWTUIThreadRunner implements Listener, ShutdownListener, Runnable
     private static Hashtable finalizers = new Hashtable();
 
     private Object lock = new Object();
+
+    // For synchronously shutting down
+    private Object uiThreadShutdownLock = new Object();
+    private boolean uiThreadStarted;
+    private boolean uiThreadShutdownRequested;
+    private boolean uiThreadExitNotified;
 
     private Display display;
     private int state = NONE;
@@ -70,12 +68,6 @@ final class ESWTUIThreadRunner implements Listener, ShutdownListener, Runnable
 
         // Create dispose storage to clean up newly created Fonts and Images.
         ds = new DisposeStorage();
-
-        // Starting thread here makes sure that eSWT services
-        // are always available when they are needed.
-
-        // uiThread = new Thread(getInstance(), UI_THREAD_NAME);
-        // uiThread.start();
     }
 
     /**
@@ -83,7 +75,7 @@ final class ESWTUIThreadRunner implements Listener, ShutdownListener, Runnable
      */
     private ESWTUIThreadRunner()
     {
-        Logger.info("Starting up");
+        Logger.info("ESWTUIThreadRunner: Starting up");
 
         // TODO: check if the startUI throws RuntimeException on already
         // existing UI thread
@@ -259,7 +251,7 @@ final class ESWTUIThreadRunner implements Listener, ShutdownListener, Runnable
         {
         case SWT.Close:
         {
-            Logger.info("Close event");
+            Logger.info("ESWTUIThreadRunner: Close event");
             // Check if the No-Exit attribute is set
             if(JadAttributeUtil.isValue(JadAttributeUtil.ATTRIB_NOKIA_MIDLET_NO_EXIT, JadAttributeUtil.VALUE_TRUE))
             {
@@ -302,20 +294,91 @@ final class ESWTUIThreadRunner implements Listener, ShutdownListener, Runnable
      */
     public void shuttingDown()
     {
-        Logger.info("Shutting Down");
-        EventDispatcher.instance().terminate(new Runnable()
+        Logger.info("ESWTUIThreadRunner: Shutdown requested, performing synchronous shutdown");
+
+        synchronized(uiThreadShutdownLock)
         {
-            public void run()
+            // Set a flag that prevents the UI thread from starting the event
+            // loop if it hasn't done that yet.
+            uiThreadShutdownRequested = true;
+
+            Logger.info("ESWTUIThreadRunner: Asynchronously signalling LCDUI event dispatcher to exit");
+            EventDispatcher.instance().terminate(new Runnable()
             {
-                changeState(EXITING);
+                public void run()
+                {
+                    Logger.info("ESWTUIThreadRunner: LCDUI event dispatcher signalled having completed its exit procedure, initiating UI event loop exit");
+                    changeState(EXITING);
+                }
+            });
+
+            // Wait until UI cleanup completes.
+            try {
+                // Don't wait if the UI thread hasn't started.
+                if(!uiThreadStarted)
+                {
+                    Logger.info("ESWTUIThreadRunner: The UI thread has not been started, shutdown complete");
+                    return;
+                }
+                // Don't wait if the UI thread already went past the exit
+                // notification phase.
+                if(uiThreadExitNotified)
+                {
+                    Logger.info("ESWTUIThreadRunner: The UI thread has notified having exited, no need to wait, shutdown complete");
+                    return;
+                }
+
+                // The UI thread is running, wait for it to exit
+                Logger.info("ESWTUIThreadRunner: Waiting for the UI thread to exit");
+                uiThreadShutdownLock.wait(3000);
+
+                if(uiThreadExitNotified)
+                {
+                    Logger.info("ESWTUIThreadRunner: The UI thread notified having completed its exit procedure");
+                }
+                else
+                {
+                    Logger.error("ESWTUIThreadRunner: UI thread exit wait timed out");
+                    return;
+                }
             }
-        });
+            catch(InterruptedException e)
+            {
+                Logger.error("ESWTUIThreadRunner: The wait for the UI thread to exit was interrupted");
+            }
+        }
+        Logger.info("ESWTUIThreadRunner: Synchronous UI shutdown is complete");
+    }
+
+    /*
+     * The entry point of the UI thread.
+     */
+    public void run() {
+        try {
+            synchronized(uiThreadShutdownLock)
+            {
+                uiThreadStarted = true;
+                if(uiThreadShutdownRequested)
+                {
+                    return;
+                }
+            }
+            runEventLoop();
+        }
+        finally
+        {
+            synchronized(uiThreadShutdownLock)
+            {
+                uiThreadExitNotified = true;
+                uiThreadShutdownLock.notifyAll();
+            }
+        }
     }
 
     /**
-     * Creates new eSWT Display and runs eSWT UI-thread.
+     * Creates new eSWT Display and runs eSWT UI event loop.
      */
-    public void run()
+    private void runEventLoop()
     {
         changeState(CREATING);
         onStartup();
@@ -340,19 +403,19 @@ final class ESWTUIThreadRunner implements Listener, ShutdownListener, Runnable
                     if(t != null && t instanceof RuntimeException)
                     {
                         // this might be an expected exception of safeSyncExec
-                        Logger.warning("eSWT Thread Exception: " + ex);
+                        Logger.warning("ESWTUIThreadRunner: eSWT Thread Exception: " + ex);
                         // t.printStackTrace();
                     }
                 }
                 else
                 {
-                    Logger.error("eSWT Thread Exception: " + ex);
+                    Logger.error("ESWTUIThreadRunner: eSWT Thread Exception: " + ex);
                     ex.printStackTrace();
                 }
             }
             catch(Error er)
             {
-                Logger.error("eSWT Thread Error" + er);
+                Logger.error("ESWTUIThreadRunner: eSWT Thread Error" + er);
                 er.printStackTrace();
             }
         }
@@ -370,7 +433,7 @@ final class ESWTUIThreadRunner implements Listener, ShutdownListener, Runnable
 
     private void changeState(int newstate)
     {
-        Logger.info(getStateString(state) + " --> " + getStateString(newstate));
+        Logger.info("ESWTUIThreadRunner: Event loop state: " + getStateString(state) + " --> " + getStateString(newstate));
         if(display != null)
         {
             try
@@ -454,6 +517,4 @@ final class ESWTUIThreadRunner implements Listener, ShutdownListener, Runnable
         }
         finalizers.clear();
     }
-
-
 }

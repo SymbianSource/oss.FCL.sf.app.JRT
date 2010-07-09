@@ -26,10 +26,6 @@
 
     <property name="java.src.paths" value="../src:../src_j2me"/>
 
-    <target name="compile">
-        <omj.javac classpath="${impl.cldc.jar}"/>
-    </target>
-
     <target name="system.properties">
         <properties>
             com.nokia.mid.ui.version=1.2
@@ -85,5 +81,12 @@
                                     com/nokia/mid/ui/FullCanvas.class,
                                     com/nokia/mid/ui/TactileFeedback.class"/>
     </target>
+    
+    
+  <target name="create.internal.api.jar">
+    <omj.internal.apis includes=
+                 "com/nokia/mj/impl/nokialcdui/LCDUIInvoker.class,
+                com/nokia/mj/impl/nokialcdui/ItemControlStateChangeListener.class"/>
+  </target>
 
 </project>

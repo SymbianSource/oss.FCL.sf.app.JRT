@@ -32,6 +32,11 @@ public class myClass
         return null;
     }
 
+    public boolean isActive()
+    {
+        return true;
+    }
+
     public int getCurrentInteractionMode()
     {
         return 0;

@@ -139,7 +139,14 @@ void CSensorBase::CloseChannel()
 void CSensorBase::AsyncCallback(TMethod aMethod)
 {
     JELOG2(ESensor);
-    iMethodArray.Append(aMethod);
+    TInt err = iMethodArray.Append(aMethod);
+    // if there was error when adding the method to array then just return
+    if ( err  )
+    {
+        ELOG2(ESensor, "CSensorBase::AsyncCallback - Error (code = %d) when "
+              "adding method (type = %d) to method buffer.", err, aMethod.iMethodType);
+        return;
+    }
 
     // If there is old request ongoing, wait it for completion
     if (iMethodArray.Count() > 1)

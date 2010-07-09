@@ -11,12 +11,11 @@
 *
 * Contributors:
 *
-* Description:  Sample
+* Description:  Implementation for creating system settings listener plugin
 *
 */
 
 #include "logger.h"
-
 #include "settingslistenerextension.h"
 #include "settingslistenerimpl.h"
 
@@ -35,40 +34,32 @@ namespace java
 namespace captain
 {
 
-    SettingsListenerExtension::SettingsListenerExtension() : mCore(0), mSettingsListenerImpl(0)
+SettingsListenerExtension::SettingsListenerExtension() : mCore(0), mSettingsListenerImpl(0)
 {
-    JELOG2(EJavaCaptain);
-    ILOG(EJavaCaptain, "SettingsListenerExtension::SettingsListenerExtension()");
 }
 
 SettingsListenerExtension::~SettingsListenerExtension()
 {
-    JELOG2(EJavaCaptain);
-    ILOG(EJavaCaptain, "SettingsListenerExtension::~SettingsListenerExtension()");
 }
 
 void SettingsListenerExtension::startPlugin(CoreInterface* core)
 {
-    JELOG2(EJavaCaptain);
-    ILOG(EJavaCaptain, "SettingsListenerExtension::startPlugin()");
-    if ( mSettingsListenerImpl || mCore )
+    if (mSettingsListenerImpl || mCore)
     {
         WLOG(EJavaCaptain, "Settingslistener plugin already running, terminating previous instance first!");
         stopPlugin();
     }
     mCore = core;
     mSettingsListenerImpl = new SettingsListenerImpl(mCore);
-    mSettingsListenerImpl->StartListening();
+    mSettingsListenerImpl->startListening();
 }
 
 void SettingsListenerExtension::stopPlugin()
 {
-    JELOG2(EJavaCaptain);
-    ILOG(EJavaCaptain, "SettingsListenerExtension::stopPlugin()");
     mCore = 0;
-    if ( mSettingsListenerImpl )
+    if (mSettingsListenerImpl)
     {
-        mSettingsListenerImpl->StopListening();
+        mSettingsListenerImpl->stopListening();
         delete mSettingsListenerImpl;
         mSettingsListenerImpl = 0;
     }

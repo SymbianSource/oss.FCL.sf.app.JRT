@@ -39,8 +39,8 @@ _LIT(KSwtDllName, "eswtqt.dll");
 // Stack size for the UI thread, 0x14000 = 80kB
 const TInt KSwtUiThreadStackSize = 0x14000;
 
-// Stack size for the support thread, 0x1F40 = 8kB
-const TInt KSwtSupportThreadStackSize = 0x1F40;
+// Stack size for the support thread
+const TInt KSwtSupportThreadStackSize = KSwtUiThreadStackSize;
 
 static const char* const EVENT_FILTER = "swt_event_filter";
 
@@ -164,7 +164,8 @@ int SymbianUtils::initUiThread(JNIEnv* aJniEnv, const TInt& aUid)
     // Launch the support thread
     startSupportThread(reinterpret_cast<TAny*>(data));
 
-    return KErrNone;
+    // Return the support thread initialization status
+    return data->initStatus.Int();
     }
 
 void SymbianUtils::cleanupUiThread()
@@ -471,7 +472,7 @@ TInt SymbianUtils::trappedSupportThreadEntryPoint(TAny* aParams)
     JNIEnv* env = NULL;
     void* args = NULL;
     jint attachStatus = vm->AttachCurrentThread((void**)&env, args);
-    __ASSERT_DEBUG(attachStatus == 0, User::Panic(KSwtDllName, 0));
+    // Continue even if attach failed ->
 
     // Notify the waiting Java thread that we have attached and it can continue
     notifyThreadInitStatus(attachStatus, data->initThreadId, &data->initStatus);
@@ -495,9 +496,11 @@ TInt SymbianUtils::trappedSupportThreadEntryPoint(TAny* aParams)
         if(vm && openStatus == KErrNone) {
             if(uiThread.ExitType() != EExitPending)
                 {
-                // Notify once and detach the thread.
-                notifyUIThreadExit(env);
-                vm->DetachCurrentThread();
+                if(attachStatus == 0) {
+                    // Notify once and detach the thread.
+                    notifyUIThreadExit(env);
+                    vm->DetachCurrentThread();
+                }
                 env = NULL;
                 vm = NULL;
                 }
@@ -505,7 +508,7 @@ TInt SymbianUtils::trappedSupportThreadEntryPoint(TAny* aParams)
         }
 
     // Because the thread is waiting until the process terminates,
-    // execution will neve reach here.
+    // execution will never reach here.
     }
 
 void SymbianUtils::startSupportThread(TAny* aParams)

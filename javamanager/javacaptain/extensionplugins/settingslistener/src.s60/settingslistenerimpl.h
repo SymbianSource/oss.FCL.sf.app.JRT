@@ -20,13 +20,12 @@
 #ifndef SETTINGSLISTENERIMPL_H
 #define SETTINGSLISTENERIMPL_H
 
-#include "javaosheaders.h"
-
-#include "settingslistenerinterface.h"
-
 #include <vector>
 #include <memory>
 #include <cenrepnotifyhandler.h>
+
+#include "javaosheaders.h"
+#include "settingslistenerinterface.h"
 
 namespace java
 {
@@ -43,15 +42,14 @@ public:
     virtual ~SettingsListenerImpl();
 
     // SystemSettingsChangeListenerInterface
-    virtual void StartListening();
-    virtual void StopListening();
+    virtual void startListening();
+    virtual void stopListening();
 
 private:
     void cleanUp();
-    int createCenRepKeyListener(TUid aRepoId, TUint32 aKeyId,
-                            CCenRepNotifyHandler::TCenRepKeyType aKeyType,
-                            std::auto_ptr<CenRepListener>& aListener);
-    int createCenRepListener(TUid aRepoId, CenRepListener*& aListener);
+    CenRepListener* createCenRepKeyListener(TUid aRepoId, TUint32 aKeyId,
+                                            CCenRepNotifyHandler::TCenRepKeyType aKeyType,
+                                            TInt& aErrorCode);
 
     CoreInterface* mCore;  // resource not owned
     typedef std::vector<CenRepListener*> crListeners_t;

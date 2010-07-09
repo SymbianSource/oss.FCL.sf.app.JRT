@@ -16,19 +16,14 @@
 */
 package com.nokia.microedition.media.animation;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javax.microedition.media.Control;
 import javax.microedition.media.MediaException;
-import javax.microedition.media.Player;
 import javax.microedition.media.PlayerListener;
 import javax.microedition.media.protocol.DataSource;
 
@@ -48,8 +43,6 @@ import com.nokia.microedition.media.InputStreamDataSource;
 import com.nokia.microedition.media.InputStreamSourceStream;
 import com.nokia.microedition.media.PlayerBase;
 import com.nokia.microedition.media.PlayerListenerImpl;
-import com.nokia.mj.impl.nokialcdui.LCDUIInvoker;
-import com.nokia.mj.impl.utils.Logger;
 
 public class AnimationPlayer extends PlayerBase implements ESWTinitializeListener
 {
@@ -98,7 +91,7 @@ public class AnimationPlayer extends PlayerBase implements ESWTinitializeListene
     // of VideoControl should return the actual width and height of the image
     private Point iSourceDimension;
     // Current dimension of the image, MIDlet developer may change the size of VideoControl
-//    private Point iCurrentVideoDimension;
+    private Point iCurrentVideoDimension;
     // Total time taken so far to player the animation, it keeps updating as player moves
     private long iMediaTime;
     // Time at which, player should be stopped
@@ -145,6 +138,7 @@ public class AnimationPlayer extends PlayerBase implements ESWTinitializeListene
                 e.printStackTrace();
             }
             iSourceDimension= new Point(imageLoader.logicalScreenWidth, imageLoader.logicalScreenHeight);
+            iCurrentVideoDimension= new Point(imageLoader.logicalScreenWidth, imageLoader.logicalScreenHeight);
             iBackgroundPixel= imageLoader.backgroundPixel;
         }
         populateControl();
@@ -163,6 +157,7 @@ public class AnimationPlayer extends PlayerBase implements ESWTinitializeListene
         // Following line may throw SWTException
         iImageData=imageLoader.load(locator);
         iSourceDimension= new Point(imageLoader.logicalScreenWidth, imageLoader.logicalScreenHeight);
+        iCurrentVideoDimension= new Point(imageLoader.logicalScreenWidth, imageLoader.logicalScreenHeight);
         iBackgroundPixel= imageLoader.backgroundPixel;
         populateControl();
     }
@@ -206,7 +201,8 @@ public class AnimationPlayer extends PlayerBase implements ESWTinitializeListene
     {
         // since after stopping the player the player state will move to pre-fetched state
         changePlayerState(PREFETCHED);
-        iPlayerListenerImpl.postEvent(PlayerListener.STOPPED, new Long(iMediaTime * 10000));
+        //iPlayerListenerImpl.postEvent(PlayerListener.STOPPED, new Long(iMediaTime * 10000));
+        iPlayerListenerImpl.postEvent(PlayerListener.STOPPED, new Long(iMediaTime));
     }
 
     /**
@@ -251,8 +247,7 @@ public class AnimationPlayer extends PlayerBase implements ESWTinitializeListene
     public long getMediaTime()
     {
         closeCheck();
-        // Since we have to return it in microsecond multiply it with 10000;
-        return iMediaTime*10000;
+        return iMediaTime;
     }
 
     public int getState()
@@ -272,12 +267,11 @@ public class AnimationPlayer extends PlayerBase implements ESWTinitializeListene
     /**
      *
      */
-
+    GC gc = null;
     public void start() throws MediaException
     {
         final String DEBUG_STR = "AnimationPlayer::start()";
-        final long inTime = System.currentTimeMillis();
-
+//        final long inTime = System.currentTimeMillis();
         prefetch();
         // Only prefetched player may be started. If player is already started
         // this method returns silently.
@@ -288,21 +282,21 @@ public class AnimationPlayer extends PlayerBase implements ESWTinitializeListene
             Thread thread = new Thread("Animation")
             {
                 int loopCount = iCurrentLoopCount;
-                GC gc = null;
                 public void run()
                 {
                     //changePlayerState(STARTED);
                     final int noOfFrames = iImageData.length;
                     while (iState == STARTED)
                     {
-                        final int delayTimeForNextFrame = iImageData[iFrameIndex].delayTime;
+                        final int delayTimeForNextFrame = iImageData[iFrameIndex].delayTime*10000 ;
                         // Since we are going to display first frame, notify all
                         // PlayerListener that Player has started
                         if (iFrameIndex == 0)
                         {
+                            iMediaTime=0;
                             iPlayerListenerImpl.postEvent(
-                                PlayerListener.STARTED, new Long(
-                                    iMediaTime * 10000));
+                                PlayerListener.STARTED, new Long(0));
+
                         }
                         if (iDisplay != null)
                         {
@@ -310,9 +304,15 @@ public class AnimationPlayer extends PlayerBase implements ESWTinitializeListene
                             {
                                 public void run()
                                 {
-                                    if (gc == null)
-                                        gc = new GC(iImage);
-                                    Image tempImage = new Image(iDisplay,iImageData[iFrameIndex]);
+                                    // For out of memory issue in case of full screen, we are scaling the image
+                                	// while displaying it. 
+                                    ImageData tempImageData =iImageData[iFrameIndex] ;
+                                    if (iSourceDimension.x!=iCurrentVideoDimension.x || iSourceDimension.x!=iCurrentVideoDimension.x)
+                                    {
+                                        tempImageData = iImageData[iFrameIndex].scaledTo(iCurrentVideoDimension.x , iCurrentVideoDimension.y);
+                                    }
+                                    Image tempImage = new Image(iDisplay,tempImageData);
+                                    //Image tempImage = new Image(iDisplay,iImageData[iFrameIndex]);
                                     gc.drawImage(tempImage, 0, 0);
                                     tempImage.dispose();
                                     iFrameIndex = (iFrameIndex + 1) % noOfFrames;
@@ -324,18 +324,17 @@ public class AnimationPlayer extends PlayerBase implements ESWTinitializeListene
                                 }
                             });
                         }
-                        else// if the initDisplayMode is not called yer
+                        else// if the initDisplayMode is not called yet
                         {
                             iFrameIndex = (iFrameIndex + 1) % noOfFrames;
                             iMediaTime += delayTimeForNextFrame;
                         }
                         try
                         {
-                            Thread.sleep(delayTimeForNextFrame * 10);
+                            Thread.sleep(delayTimeForNextFrame / 1000);
                         }
                         catch (InterruptedException e)
                         {
-                            // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
                         // post EOM event
@@ -352,22 +351,18 @@ public class AnimationPlayer extends PlayerBase implements ESWTinitializeListene
                             // listener
                             iPlayerListenerImpl.postEvent(
                                 PlayerListener.END_OF_MEDIA,
-                                new Long(iMediaTime * 10000));
-                            iMediaTime = 0;
+                                new Long(iMediaTime));
                         }
                         if (iAnimationObserver!=null)
                         {
-                            iAnimationObserver.animationAdvanced(iMediaTime*10000);
+                            iAnimationObserver.animationAdvanced(iMediaTime);
                         }
                     }// end of while loop
                     iCurrentLoopCount = loopCount;
-                    // Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo, DEBUG_STR
-
                 }
             };
             thread.start();
         }
-        // Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,DEBUG_STR + "-");
     }
 
     /**
@@ -573,7 +568,15 @@ public class AnimationPlayer extends PlayerBase implements ESWTinitializeListene
     public void notifyDisplayAvailable(Display aDisplay)
     {
         iDisplay= aDisplay;
-        iImage=new Image(iDisplay, iImageData[0]);
+        //iImage=new Image(iDisplay, iImageData[0]);
+        iImage=new Image(iDisplay, iImageData[iFrameIndex]);
+        iDisplay.syncExec(new Runnable()
+        {
+            public void run()
+            {
+                gc = new GC(iImage);
+            }
+        });
     }
     /**
      * Notified when the control is available
@@ -593,14 +596,17 @@ public class AnimationPlayer extends PlayerBase implements ESWTinitializeListene
      * @param width : to be set of the video(Animated GIF)
      * @param height : height to be set of video(Animated GIF)
      */
-    void updateImageData(int width, int height)
+    void updateImageData(int aWidth, int aHeight)
     {
-        int noOfFrames= iImageData.length;
-        for (int i=0; i<noOfFrames; i++)
-        {
-            iImageData[i]=iImageData[i].scaledTo(width, height);
-        }
-        iImage=new Image(iDisplay, iImageData[iFrameIndex]);
+//        int noOfFrames= iImageData.length;
+//        for (int i=0; i<noOfFrames; i++)
+//        {
+//            iImageData[i]=iImageData[i].scaledTo(aWidth, aHeight);
+//        }
+//        iImage=new Image(iDisplay, iImageData[iFrameIndex]);
+        iCurrentVideoDimension.x=aWidth;
+        iCurrentVideoDimension.y= aHeight;
+        iImage=new Image(iDisplay, iImageData[iFrameIndex].scaledTo(aWidth, aHeight));
     }
 
     /**
@@ -641,10 +647,10 @@ public class AnimationPlayer extends PlayerBase implements ESWTinitializeListene
      * Called from VideoControl to get the image width and height,
      * so that Item will be created exactly of same dimension
      */
-    Point getImageDimension()
+    Point getCurrentVideoDimension()
     {
-//      return iCurrentVideoDimension;
-        return new org.eclipse.swt.graphics.Point(iImageData[0].width, iImageData[0].height);
+        return iCurrentVideoDimension;
+        // return new org.eclipse.swt.graphics.Point(iImageData[0].width, iImageData[0].height);
     }
 
 
@@ -661,7 +667,6 @@ public class AnimationPlayer extends PlayerBase implements ESWTinitializeListene
         iDisplayLocation.x=aX;
         iDisplayLocation.y=aY;
     }
-
     /**
      * @return the position of the image to be displayed
      */
@@ -749,7 +754,7 @@ public class AnimationPlayer extends PlayerBase implements ESWTinitializeListene
         this.iIsControlVisible = iIsControlVisible;
     }
     /**
-     * Called from
+     * Called from StopTimeControl.animationAdvanced(long), once the stopped time is greater than or equal media time.
      */
     void postEvent(long aMediaTime)
     {

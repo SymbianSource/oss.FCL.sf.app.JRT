@@ -314,12 +314,13 @@ public final class SecurityStorage
                                 StorageNames.NAME);
                 String actionList = getStorageAttributeValue(permEntries[i],
                                     StorageNames.ACTION);
-                String fgName = getStorageAttributeValue(permEntries[i],
-                                StorageNames.FUNCTION_GROUP);
-                if (fgName != null)
+                FunctionGroup fg = decodeFunctionGroup(
+                                getStorageAttributeValue(permEntries[i],
+                                StorageNames.FUNCTION_GROUP));
+                if (fg != null)
                 {
                     UserSecuritySettings cachedSettings =
-                        (UserSecuritySettings)fGroups.get(fgName);
+                        (UserSecuritySettings)fGroups.get(fg.name);
                     if (cachedSettings != null)
                     {
                         permissions.addElement(
@@ -327,6 +328,7 @@ public final class SecurityStorage
                                 className,
                                 target,
                                 actionList,
+                                fg.type,
                                 cachedSettings));
                     }
                     else
@@ -338,7 +340,7 @@ public final class SecurityStorage
                                                  appUID.getStringValue()));
                         fgQuery.addAttribute(new StorageAttribute(
                                                  StorageNames.FUNCTION_GROUP,
-                                                 fgName));
+                                                 fg.name));
                         fgQuery.addAttribute(new StorageAttribute(
                                                  StorageNames.ALLOWED_SETTINGS,
                                                  ""));
@@ -364,17 +366,19 @@ public final class SecurityStorage
                                 String blanketPrompt = getStorageAttributeValue(fgEntries[0],
                                                        StorageNames.BLANKET_PROMPT);
                                 UserSecuritySettings settings = new UserSecuritySettingsImpl(
-                                    fgName,
+                                    fg.name,
                                     currentSetting,
                                     decodeAllowedSettings(allowedSettings),
-                                    ("1".equals(blanketPrompt) ? true : false));
+                                    ("1".equals(blanketPrompt) ? true : false),
+                                    fg.isActive);
                                 permissions.addElement(
                                     new PolicyBasedPermissionImpl(
                                         className,
                                         target,
                                         actionList,
+                                        fg.type,
                                         settings));
-                                fGroups.put(fgName, settings);
+                                fGroups.put(fg.name, settings);
                             }
                             catch (NumberFormatException e)
                             {
@@ -394,7 +398,10 @@ public final class SecurityStorage
                             null));
                 }
                 // cleanup the query, so it can be used at the next interation
-                query.removeAttribute(fgName);
+                if (fg != null)
+                {
+                    query.removeAttribute(fg.name);
+                }
             }
         }
         // add the non user permissions into the set of returned permissions
@@ -483,7 +490,33 @@ public final class SecurityStorage
                     StorageAttribute fgAttribute = new StorageAttribute(
                         StorageNames.FUNCTION_GROUP,
                         fgName);
-                    permEntry.addAttribute(fgAttribute);
+                    if (p.getType() == PolicyBasedPermission.USER_ASSIGNED_TYPE 
+                        || !settings.isActive())
+                    {
+                        // the inactive settings or the settings of assigned 
+                        // permissions with user settings should be activated 
+                        // only after the first usage of the permission. 
+                        // Otherwise it creates confusion for the user, 
+                        // like in the following use cases:
+                        // 1) the installation time dialog would include the assigned
+                        //    permissions even though the MIDlet did not request it
+                        // 2) after installing a MIDlet suite and before accessing 
+                        //    some protected functionality (which is guarder by 
+                        //    assigned permission with user setting) the user sees 
+                        //    the settings of the permissions in the MIDlet settings 
+                        //   (even though the MIDlet might never access such 
+                        //   functionality)
+                        //
+                        // disabling the settings = alter the name of the function 
+                        // group stored in PERMISSIONS table
+                        permEntry.addAttribute(new StorageAttribute(
+                            StorageNames.FUNCTION_GROUP,
+                            encodeFunctionGroup(p.getType(),fgName)));
+                    }
+                    else
+                    {
+                        permEntry.addAttribute(fgAttribute);
+                    }
                     // Do we need to check if the settings which already exist
                     // are equal to the ones which are to be inserted?
                     // This won't even happen, since all the settings are read
@@ -722,6 +755,10 @@ public final class SecurityStorage
                                    validCerts));
         }
         int securityWarningsMode = data.getSecurityWarningsMode();
+        if (update)
+        {
+            securityWarningsMode = readSecurityWarningsMode(appUID);
+        }
         if (securityWarningsMode == GeneralSecuritySettings.DEFAULT_SECURITY_MODE
                 || securityWarningsMode == GeneralSecuritySettings.USER_SECURITY_MODE)
         {
@@ -1014,6 +1051,42 @@ public final class SecurityStorage
             }
         }
     }
+    
+    /**
+     * Activates user security settings
+     *
+     * @param appUID       the UID of the application whose user 
+                           settings are activatesversion is read
+     * @param settingsName the name of permission whose settings 
+     *                     which are activated
+     */
+    public void activateUserSecuritySettings(
+        Uid msUID,
+        PolicyBasedPermission permission)
+    {
+        if (permission.getUserSecuritySettings() == null)
+        {
+            return;
+        }
+        StorageEntry oldEntry = new StorageEntry();
+        oldEntry.addAttribute(new StorageAttribute(
+                               StorageAttribute.ID,
+                               msUID.getStringValue()));
+        oldEntry.addAttribute(new StorageAttribute(
+                               StorageNames.FUNCTION_GROUP,
+                               encodeFunctionGroup(permission.getType(), 
+                               permission.getUserSecuritySettings().getName())));
+        StorageEntry newEntry = new StorageEntry();
+        newEntry.addAttribute(new StorageAttribute(
+                               StorageAttribute.ID,
+                               msUID.getStringValue()));
+        newEntry.addAttribute(new StorageAttribute(
+                               StorageNames.FUNCTION_GROUP,
+                               permission.getUserSecuritySettings().getName()));
+        doStorageUpdate(StorageNames.MIDP_PERMISSIONS_TABLE,
+                        newEntry,
+                        oldEntry);
+    }
 
     /**
      * Reads the value of the suite version attribute
@@ -1083,7 +1156,7 @@ public final class SecurityStorage
                                appUID.getStringValue()));
         query.addAttribute(new StorageAttribute(
                                StorageNames.NAME,
-                               "MIDlet-Operator-Allowed"));
+                               "Nokia-MIDlet-Operator-Allowed"));
         query.addAttribute(new StorageAttribute(
                                StorageNames.VALUE,
                                ""));
@@ -1213,16 +1286,24 @@ public final class SecurityStorage
                     if (oldSettings != null
                             && newSettings != null)
                     {
+                        boolean activeSettings = false;
+                        if (oldSettings.isActive() 
+                            || newSettings.isActive())
+                        {
+                            activeSettings = true;
+                        }
                         newGrantedPermissions.addElement(
                             new PolicyBasedPermissionImpl(
                                 p.getName(),
                                 p.getTarget(),
                                 p.getActionList(),
+                                p.getType(),
                                 new UserSecuritySettingsImpl(
                                     newSettings.getName(),
                                     oldSettings.getCurrentInteractionMode(),
                                     newSettings.getAllowedInteractionModes(),
-                                    oldSettings.getBlanketPrompt())));
+                                    oldSettings.getBlanketPrompt(),
+                                    activeSettings)));
                     }
                     else
                     {
@@ -1791,5 +1872,47 @@ public final class SecurityStorage
             }
         }
         return NOT_FOUND;
+    }
+    
+    private String encodeFunctionGroup(int type, String name)
+    {
+        return (type + ";" + name);
+    }
+    
+    private FunctionGroup decodeFunctionGroup(String fg)
+    {
+        boolean isActive = true;
+        if (fg != null)
+        {
+            int sepIndex = fg.indexOf(";");
+            int type = PolicyBasedPermission.USER_TYPE;
+            if (sepIndex != -1)
+            {
+                isActive = false;
+                try
+                {
+                    type = Integer.valueOf(
+                        fg.substring(0, sepIndex)).intValue();
+                }
+                catch (NumberFormatException e)
+                {
+                }
+            }
+            return new FunctionGroup(type, fg.substring(sepIndex + 1), isActive);
+        }
+        return null;
+    }
+    
+    private class FunctionGroup
+    {
+        FunctionGroup(int type, String name, boolean isActive)
+        {
+            this.type = type;
+            this.name = name;
+            this.isActive = isActive;
+        }
+        private boolean isActive;
+        private int type;
+        private String name;
     }
 }

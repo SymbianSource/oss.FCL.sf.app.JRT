@@ -38,7 +38,7 @@ import org.eclipse.swt.graphics.Point;
 
 /**
  * Installation step PrepareSplashScreen prepares splash
- * screen images from MIDlet-Splash-Screen-Image attribute.
+ * screen images from Nokia-MIDlet-Splash-Screen-Image attribute.
  */
 public class PrepareSplashScreen extends ExeStep
 {
@@ -70,7 +70,7 @@ public class PrepareSplashScreen extends ExeStep
             return;
         }
 
-        String attrName = "MIDlet-Splash-Screen-Image";
+        String attrName = "Nokia-MIDlet-Splash-Screen-Image";
         String attrValue = ball.getAttributeValue(attrName);
         if (attrValue != null && attrValue.length() > 0)
         {

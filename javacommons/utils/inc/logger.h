@@ -116,6 +116,7 @@ enum TComponents
     EJavaAppMngrPlugin, //  =35
     EJavaBroadcast,     //  =36
     EJavaAMMS,					//  =37
+    EJavaSettings,  		//  =38
     // add id of new components here
 };
 
@@ -173,6 +174,7 @@ const struct
     {"JavaAppMngrPlugin.log","[JavaAppMngrPlugin]"},  // EJavaAppMngrPlugin
     {"JavaBroadcast.log",    "[JavaBroadcast]"},      // EJavaBroadcast
     {"JavaMMAPI.log",         "[ MMAPPI ]"},					// EJavaAMMS
+    {"JavaSettings.log",     "[ JavaSettings ]"},			// EJavaSettings
     // add new component file name and nickname here
 };
 

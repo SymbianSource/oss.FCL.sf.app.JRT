@@ -449,7 +449,7 @@ void CSilentMIDletInstall::GetDirEntriesL(const TDesC& aDirectory,
         LOG1WSTR(EJavaPreinstaller, EInfo,
                  "CSilentMIDletInstall::GetDirEntriesL Adding file %s",
                  (wchar_t *)(pathPtr.PtrZ()));
-        aVector.Append(path);
+        aVector.AppendL(path);
         CleanupStack::Pop(path);
     }
 

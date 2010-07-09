@@ -146,7 +146,7 @@ void CSwtMobileDevice::SetLights(TInt aLevel)
     {
     if ((aLevel < 0) || (aLevel > KMIDMaxLightLevel))
         {
-        User::Leave(KErrArgument);
+        return;
         }
 
     if (!iHWRMLight)
@@ -226,14 +226,13 @@ TBool CSwtMobileDevice::FlashBacklightL(TInt aDuration)
 // ---------------------------------------------------------------------------
 //
 #if defined(__WINSCW__)
-TBool CSwtMobileDevice::Vibrate(const TTimeIntervalMicroSeconds32& /*aDuration*/)
+TBool CSwtMobileDevice::Vibrate(const TInt /*aDuration*/)
     {
     return EFalse;
     }
 #else // __WINSCW__
-TBool CSwtMobileDevice::Vibrate(const TTimeIntervalMicroSeconds32& aDuration)
+TBool CSwtMobileDevice::Vibrate(const TInt aDuration)
     {
-    TInt duration = aDuration.Int() / 1000; // convert micro to milli
     if (!iVibra)
         {
         TRAPD(err1, iVibra = CHWRMVibra::NewL());
@@ -244,9 +243,9 @@ TBool CSwtMobileDevice::Vibrate(const TTimeIntervalMicroSeconds32& aDuration)
         }
  
     TInt err2 = KErrNone;
-    if (duration)
+    if (aDuration)
         {
-        TRAP(err2, iVibra->StartVibraL(duration));
+        TRAP(err2, iVibra->StartVibraL(aDuration));
         }
     else
         {
@@ -265,16 +264,16 @@ TBool CSwtMobileDevice::Vibrate(const TTimeIntervalMicroSeconds32& aDuration)
 #endif // __WINSCW__
 
 // -----------------------------------------------------------------------------
-// CSwtMobileDevice::AppForegroundL
+// CSwtMobileDevice::AppForeground
 // -----------------------------------------------------------------------------
 //
 void CSwtMobileDevice::AppForeground()
     {
     if (iDuration > 0)
         {
-        TTime* now = new TTime();
-        now->HomeTime();
-        TInt nowDuration = now->MicroSecondsFrom(*iStartTime).Int64()/1000;
+        TTime now;
+        now.HomeTime();
+        TInt nowDuration = now.MicroSecondsFrom(*iStartTime).Int64()/1000;
         if (nowDuration >= iDuration)
             {
             iDuration = 0;

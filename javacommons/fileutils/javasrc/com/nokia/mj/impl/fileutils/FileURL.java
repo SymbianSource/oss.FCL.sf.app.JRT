@@ -23,7 +23,7 @@ package com.nokia.mj.impl.fileutils;
  * differences between URL and Absolute path and make it transparent to use
  * from.
  */
-final class FileURL
+public final class FileURL
 {
     private static String FILE_PREFIX = "file://";
 

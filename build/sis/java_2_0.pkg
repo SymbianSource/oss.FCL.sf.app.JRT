@@ -488,6 +488,7 @@ ENDIF
 "\epoc32\release\armv5\urel\jvmnativeport.dll"-"c:\sys\bin\jvmnativeport.dll"
 "\epoc32\release\armv5\urel\midp2backupplugin.dll"-"c:\sys\bin\midp2backupplugin.dll"
 "\epoc32\release\armv5\urel\javadebugapi.dll"-"c:\sys\bin\javadebugapi.dll"
+"\epoc32\release\armv5\urel\javastarter.dll"-"c:\sys\bin\javastarter.dll"
 
 #ifdef RD_JAVA_S60_RELEASE_5_0_IAD
 "\epoc32\release\armv5\urel\midp2cenrep.dll"-"c:\sys\bin\midp2cenrep.dll"
@@ -825,4 +826,10 @@ ENDIF
 
 ; javaappbackconverter is ran after uninstallation
 "\epoc32\release\armv5\urel\javaappbackconverter.exe"-"c:\sys\bin\javaappbackconverter.exe", FR, RR, RW
+#endif // RD_JAVA_S60_RELEASE_5_0_IAD
+
+
+#ifndef RD_JAVA_S60_RELEASE_5_0_IAD
+"\epoc32\release\armv5\urel\javaiconsizenotifplugin.dll"-"c:\sys\bin\javaiconsizenotifplugin.dll"
+"\epoc32\data\z\resource\plugins\javaiconsizenotifplugin.rsc"-"c:\resource\plugins\javaiconsizenotifplugin.rsc"
 #endif // RD_JAVA_S60_RELEASE_5_0_IAD

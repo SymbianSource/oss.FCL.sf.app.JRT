@@ -198,7 +198,6 @@ final class StorageAccessor
                         }
                         catch (NumberFormatException ne) 
                         {
-                            Log.logW("Error in getting localized name: " + nameStr, ne);
                         }
                     }
                 }

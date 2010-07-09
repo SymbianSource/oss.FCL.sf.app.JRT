@@ -1,0 +1,46 @@
+/*
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  ECOM resource definition
+*
+*/
+
+#include <ecom/registryinfov2.rh>
+#include <uikon.hrh>
+
+RESOURCE REGISTRY_INFO r_registry
+	{
+    resource_format_version = RESOURCE_FORMAT_VERSION_2;
+	dll_uid = 0x101FD689;
+	interfaces =
+		{
+		INTERFACE_INFO
+			{
+			interface_uid = KUikonUidPluginInterfaceNotifiers;
+			implementations =
+				{
+				IMPLEMENTATION_INFO
+					{
+					implementation_uid = 0x101FD68A;
+					version_no = 1;
+					display_name = "JavaIconSizeNotifPlugin";
+					default_data = "";
+					opaque_data = "0";
+					rom_only = 0; // This is not a ROM only plugin
+					}
+				};
+			}
+		};
+	}
+
+// End of File

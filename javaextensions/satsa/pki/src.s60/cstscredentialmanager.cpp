@@ -36,7 +36,6 @@
 #include <securityerr.h>
 
 
-
 // CONSTANTS
 _LIT(KSTSSymbianKeyStoreLabel, "Software key store");
 _LIT(KSTSSymbianCertificateStoreLabel, "Software certificate store");
@@ -67,10 +66,7 @@ CSTSCredentialManager::~CSTSCredentialManager()
 {
     delete iEncodedCert;
     delete iIssuerAndSerialNumber;
-    if (iPKIDialog)
-    {
-        iPKIDialog->Release();
-    }
+    
     delete iDistinguishedName;
     delete iDisplayName;
     delete iRequestEncoded;
@@ -533,8 +529,7 @@ CSTSCredentialManager::CSTSCredentialManager()
 //
 void CSTSCredentialManager::ConstructL()
 {
-    iPKIDialog = PKIDialogFactory::CreateNoteL();
-
+    
     User::LeaveIfError(iFileServer.Connect());
     iWait = new(ELeave) CActiveSchedulerWait;
     iStore = CUnifiedCertStore::NewL(iFileServer, ETrue);
@@ -619,8 +614,7 @@ void CSTSCredentialManager::AddRetrieveL()
     {
         // not found, ok to add
         iState = EAddDialog;
-        iPKIDialog->SaveCertificate(EX509Certificate, EUserCertificate,
-                                    iSubject, iStatus);
+                        
         SetActive();
         return;
     }
@@ -720,7 +714,8 @@ void CSTSCredentialManager::RemoveDialog()
     CCTCertInfo* certInfo = (*iCertInfoArray)[ 0 ];
     iState = ERemoveDialog;
     iHandle = certInfo->Handle();
-    iPKIDialog->DeleteCertificate(iHandle, iStatus);
+    
+    
     SetActive();
 }
 
@@ -783,7 +778,7 @@ void CSTSCredentialManager::CSRDialog()
     iState = ECSRDialog;
     iHandle = iKeyInfo->Handle();
 
-    iPKIDialog->CreateCSR(*iDisplayName, iHandle, iStatus);
+   
     SetActive();
 
 }

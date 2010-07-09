@@ -62,7 +62,12 @@ abstract public class ErrorMessageBase
         {
             return this.getClass().getName() + ": No message found for error " + errorCode;
         }
-        return getResourceLoader().format(msgId, errorMessageParameters);
+        ResourceLoader rl = getResourceLoader();
+        if (rl == null)
+        {
+            rl = getResourceLoader(errorCode);
+        }
+        return rl.format(msgId, errorMessageParameters);
     }
 
     /*** ---------------------------- PROTECTED --------------------------- */
@@ -76,10 +81,63 @@ abstract public class ErrorMessageBase
 
     /**
      * Method for retrieving the ResourceLoader instance that is used
-     * to localise error messages.
+     * to localise error messages. If this method returns null,
+     * the ResourceLoader is obtained with getResourceLoader(int)
+     * method variant which then must not return null.
+     *
      * This method must be overriden in inheriting class.
      */
     abstract protected ResourceLoader getResourceLoader();
+
+    /**
+     * Method for retrieving the ResourceLoader instance that is used
+     * to localise error message for specified error code.
+     * This method must be overriden in inheriting class if
+     * the getResourceLoader() method variant returns null.
+     *
+     * @param errorCode error code for which ResourceLoader is returned
+     */
+    protected ResourceLoader getResourceLoader(int errorCode)
+    {
+        return null;
+    }
+
+    /**
+     * Method for retrieving the ResourceLoader instance.
+     * This method is called from inheriting class
+     * getResourceLoader(int) method variant.
+     *
+     * @param textFilename name for text file
+     * @param textPrefix prefix for text ids
+     */
+    private static Hashtable iResourceLoaderTable = null;
+    protected static ResourceLoader getResourceLoader(String textFilename, String textPrefix)
+    {
+        String key = textFilename + "::" + textPrefix;
+        if (iResourceLoaderTable == null)
+        {
+            iResourceLoaderTable = new Hashtable();
+        }
+        ResourceLoader rl = (ResourceLoader)iResourceLoaderTable.get(key);
+        if (rl == null)
+        {
+            rl = ResourceLoader.getInstance(textFilename, textPrefix);
+            iResourceLoaderTable.put(key, rl);
+        }
+        return rl;
+    }
+
+    /**
+     * Gets the Qt locale ID currently being used on the phone.
+     *
+     * @return Qt locale ID as provided by the platform
+     */
+    protected static String getLocaleIdQt()
+    {
+        // Change this after Qt localisation files are taken into use.
+        //return ResourceLoader.getLocaleIdQt();
+        return null;
+    }
 
     /*** ----------------------------- PACKAGE ---------------------------- */
     /*** ----------------------------- PRIVATE ---------------------------- */

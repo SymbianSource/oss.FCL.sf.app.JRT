@@ -143,7 +143,7 @@ void CJadJarMatcherScanFromInbox::ScanFromInboxL(
                             TRAP(err, atta = iAttaMan->GetAttachmentFileL(attaInfo->Id()));
                             if (KErrNone == err)
                             {
-                                aResultArray.Insert(atta, 0);
+                                aResultArray.InsertL(atta, 0);
                             }
                         }
                     }
@@ -206,7 +206,7 @@ void CJadJarMatcherScanFromInbox::SeekRootEntriesL(RArray<TMsvId>& aRootEntryArr
             TMsvEntry index = (*entry)[loop];
             if (KUidMsgTypePOP3 == index.iMtm || KUidMsgTypeIMAP4 == index.iMtm)
             {
-                aRootEntryArray.Insert((*entry)[loop].Id(), 0);
+                aRootEntryArray.InsertL((*entry)[loop].Id(), 0);
             }
         }
     }
@@ -245,7 +245,7 @@ void CJadJarMatcherScanFromInbox::SeekEntriesL(TMsvId aId, RArray<TMsvId>& aEntr
                 if (index.Visible() && index.Complete() &&
                         !index.InPreparation() && !index.Deleted())
                 {
-                    aEntryArray.Insert(aId, 0);
+                    aEntryArray.InsertL(aId, 0);
                 }
             }
         }

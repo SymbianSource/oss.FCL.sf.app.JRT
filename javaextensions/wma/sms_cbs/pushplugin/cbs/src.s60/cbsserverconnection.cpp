@@ -524,7 +524,7 @@ void CbsServerConnection::readMessageFromStackL()
         }
         // Store the received page number, such that the message can
         // be reconstructed in the correct order later
-        mCbsMessagePagesRef.Append(currentPage);
+        mCbsMessagePagesRef.AppendL(currentPage);
 
         // Store the actual content of the message
         mCbsMessagePagesData->AppendL(messageData);

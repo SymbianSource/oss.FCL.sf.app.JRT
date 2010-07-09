@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="project" default="generate.jni.header" basedir="../../..">
+    <property file="Eclipse_SWT_PI/qt/library/build.properties"/>
+    <target name="generate.jni.header" >
+    	<javah outputfile="Eclipse SWT Animation/qt/library/os.h" classpath="bin" verbose="yes">
+    		<class name="org.eclipse.swt.animation.internal.qt.OS"/>
+    	</javah>
+    </target>
+</project>

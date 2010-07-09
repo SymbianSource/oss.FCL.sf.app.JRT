@@ -115,7 +115,7 @@ public final class PushRegistryPermissionImpl extends PermissionBase
      */
     public String toString()
     {
-        return "javax.microedition.io.PushRegistryPermission";
+        return "javax.microedition.io.PushRegistry";
     }
 
     /**

@@ -211,6 +211,7 @@ void SmsServerConnection::RunL()
         mIoctlBuf() = KSockSelectRead;
         mSocket.Ioctl(KIOctlSelect, iStatus, &mIoctlBuf, KSOLSocket);
         SetActive();
+        pthread_mutex_unlock(&mMutex);
         return;
     }
     switch (mState)
@@ -276,6 +277,7 @@ void SmsServerConnection::RunL()
         pthread_cond_signal(&mCondVar);
         mIsRunning = EFalse;
         CActiveScheduler::Stop();
+        break;
     }
     default:
     {

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -57,6 +57,14 @@ public final class SifRegistrator
     public static int getSifMode()
     {
         return _getUsifMode();
+    }
+
+    /**
+     * Returns SIF specific error category from given error id.
+     */
+    public static int getErrorCategory(int aErrorId)
+    {
+        return _getErrorCategory(aErrorId);
     }
 
     /**
@@ -157,7 +165,7 @@ public final class SifRegistrator
         if (ret < 0)
         {
             InstallerException.internalError(
-                "Creating session failed with code " + ret);
+                "Creating SIF session failed with code " + ret);
         }
         //Log.log("SifRegistrator session started");
         iSessionHandle = ret;
@@ -176,36 +184,18 @@ public final class SifRegistrator
      */
     public void registerSuite(SuiteInfo aSuiteInfo, boolean aIsUpdate)
     {
-        if (0 == iSessionHandle)
-        {
-            InstallerException.internalError("No valid SIF session.");
-        }
+        checkSession();
         Log.log("SifRegistrator registering application suite " +
                 aSuiteInfo.getGlobalId());
 
-        if (_getUsifMode() > 0)
+        // Register suite as a component.
+        registerComponent(aSuiteInfo, aIsUpdate);
+        registerLocalizedComponentName(aSuiteInfo, -1);
+        // Register applications within the component.
+        Vector apps = aSuiteInfo.getApplications();
+        for (int i = 0; i < apps.size(); i++)
         {
-            // USIF Phase 2 registration.
-            // Register suite as a component.
-            registerComponent(aSuiteInfo, aIsUpdate);
-            registerLocalizedComponentName(aSuiteInfo, -1);
-            // Register applications within the component.
-            Vector apps = aSuiteInfo.getApplications();
-            for (int i = 0; i < apps.size(); i++)
-            {
-                registerApplication(aSuiteInfo, i);
-            }
-        }
-        else
-        {
-            // USIF Phase 1 registration.
-            // Register each application in the suite.
-            Vector apps = aSuiteInfo.getApplications();
-            for (int i = 0; i < apps.size(); i++)
-            {
-                registerComponent(aSuiteInfo, i, aIsUpdate);
-                registerLocalizedComponentName(aSuiteInfo, i);
-            }
+            registerApplication(aSuiteInfo, i);
         }
         registerLocalizedProperties(aSuiteInfo);
     }
@@ -221,29 +211,12 @@ public final class SifRegistrator
      */
     public void unregisterSuite(SuiteInfo aSuiteInfo)
     {
-        if (0 == iSessionHandle)
-        {
-            InstallerException.internalError("No valid SIF session.");
-        }
+        checkSession();
         Log.log("SifRegistrator unregistering application suite " +
                 aSuiteInfo.getGlobalId());
 
-        if (_getUsifMode() > 0)
-        {
-            // USIF Phase 2 unregistration.
-            // Unregister suite as a component.
-            unregisterComponent(aSuiteInfo);
-        }
-        else
-        {
-            // USIF Phase 1 unregistration.
-            // Unregister each application in the suite.
-            Vector apps = aSuiteInfo.getApplications();
-            for (int i = 0; i < apps.size(); i++)
-            {
-                unregisterComponent(aSuiteInfo, i);
-            }
-        }
+        // Unregister suite as a component.
+        unregisterComponent(aSuiteInfo);
     }
 
     /**
@@ -256,15 +229,11 @@ public final class SifRegistrator
      */
     public void commitSession()
     {
-        if (0 == iSessionHandle)
-        {
-            InstallerException.internalError("No valid SIF session.");
-        }
-
+        checkSession();
         int err = _commitSession(iSessionHandle);
         if (err < 0)
         {
-            InstallerException.internalError("Commiting session failed with code " + err);
+            InstallerException.internalError("Commiting SIF session failed with code " + err);
         }
         // Current session has been closed
         iSessionHandle = 0;
@@ -279,17 +248,13 @@ public final class SifRegistrator
      */
     public void rollbackSession()
     {
-        if (0 == iSessionHandle)
-        {
-            InstallerException.internalError("No valid SIF session.");
-        }
-
+        checkSession();
         int err = _rollbackSession(iSessionHandle);
         // Session is closed always when rollback is called
         iSessionHandle = 0;
         if (err < 0)
         {
-            InstallerException.internalError("Rolling back the session failed with code " + err);
+            InstallerException.internalError("Rolling back SIF session failed with code " + err);
         }
         //Log.log("SifRegistrator session rolled back");
     }
@@ -305,7 +270,6 @@ public final class SifRegistrator
         {
             return;
         }
-
         _closeSession(iSessionHandle);
         // Current session has been closed
         iSessionHandle = 0;
@@ -322,11 +286,7 @@ public final class SifRegistrator
      */
     public ComponentId getComponentId(String aGlobalId)
     {
-        if (0 == iSessionHandle)
-        {
-            InstallerException.internalError("No valid SIF session.");
-        }
-
+        checkSession();
         ComponentId result = new ComponentId();
         int ret = _getComponentId(iSessionHandle, aGlobalId, result);
         if (-1 == ret)
@@ -354,11 +314,7 @@ public final class SifRegistrator
      */
     public ComponentId getComponentId(Uid aAppUid)
     {
-        if (0 == iSessionHandle)
-        {
-            InstallerException.internalError("No valid SIF session.");
-        }
-
+        checkSession();
         ComponentId result = new ComponentId();
         int ret = _getComponentIdForApp(
                       iSessionHandle, ((PlatformUid)aAppUid).getIntValue(), result);
@@ -384,15 +340,12 @@ public final class SifRegistrator
      */
     public void logComponent(String aGlobalId)
     {
-        if (0 == iSessionHandle)
-        {
-            InstallerException.internalError("No valid SIF session.");
-        }
-
+        checkSession();
         int ret = _logComponent(iSessionHandle, aGlobalId);
         if (ret < -1)
         {
-            Log.logError("SifRegistrator logComponent failed with code " + ret);
+            Log.logError("SifRegistrator logComponent for " + aGlobalId +
+                         " failed with code " + ret);
         }
     }
 
@@ -400,120 +353,19 @@ public final class SifRegistrator
     /*** ----------------------------- PRIVATE ---------------------------- */
 
     /**
-     * Registers one Java application to S60 USIF as a component.
-     * Used with USIF Phase 1.
-     *
-     * @param aSuiteInfo Information needed to register the application
-     * @param aIndex index of the application in the suite
-     * @param aIsUpdate true in case of an update, false in case of a new
-     * installation
-     * @throws InstallerException if registration cannot done or
-     *  startSession has not been called successfully
-     * @see startSession
-     * @see SuiteInfo
+     * Checks if SifRegistrator session has been started.
+     * @throws InstallerException if SifRegistrator session has not been started
      */
-    private void registerComponent(
-        SuiteInfo aSuiteInfo, int aIndex, boolean aIsUpdate)
+    private void checkSession()
     {
-        String globalId = aSuiteInfo.getGlobalId(aIndex);
-        if (globalId == null)
+        if (iSessionHandle == 0)
         {
-            Log.logWarning("SifRegistrator: Application with index " + aIndex +
-                           " not found from " + aSuiteInfo.getGlobalId());
-            return;
-        }
-        ApplicationInfo appInfo =
-            (ApplicationInfo)aSuiteInfo.getApplications().elementAt(aIndex);
-        String suiteName = aSuiteInfo.getName();
-        String vendor = aSuiteInfo.getVendor();
-        String version = aSuiteInfo.getVersion().toString();
-        String name = appInfo.getName();
-        int uid = ((PlatformUid)appInfo.getUid()).getIntValue();
-        String[] componentFiles = getComponentFiles(aSuiteInfo);
-        long componentSize = aSuiteInfo.getInitialSize();
-        String attrValue = aSuiteInfo.getAttributeValue("Nokia-MIDlet-Block-Uninstall");
-        boolean isRemovable = !(attrValue != null && attrValue.equalsIgnoreCase("true"));
-        boolean isDrmProtected = (aSuiteInfo.getContentInfo() == aSuiteInfo.CONTENT_INFO_DRM);
-        boolean isOriginVerified = aSuiteInfo.isTrusted();
-        String midletInfoUrl = aSuiteInfo.getAttributeValue("MIDlet-Info-URL");
-        String midletDescription = aSuiteInfo.getAttributeValue("MIDlet-Description");
-        String downloadUrl = aSuiteInfo.getAttributeValue("Nokia-MIDlet-Download-URL");
-        ComponentId componentId = new ComponentId();
-        int err = _registerComponent(
-                      iSessionHandle, uid,
-                      getScrString(suiteName), getScrString(vendor),
-                      getScrString(version), getScrString(name),
-                      getScrString(globalId), componentFiles,
-                      componentSize, isRemovable, isDrmProtected,
-                      isOriginVerified, aIsUpdate, aSuiteInfo.getMediaId(),
-                      getScrString(midletInfoUrl),
-                      getScrString(midletDescription),
-                      getScrString(downloadUrl),
-                      componentId);
-        if (err < 0)
-        {
-            InstallerException.internalError(
-                "Registering component " + globalId +
-                " failed with code " + err);
-        }
-        else
-        {
-            appInfo.setComponentId(componentId);
-            Log.log("SifRegistrator registered component " + globalId +
-                    " with id " + componentId.getId());
-        }
-    }
-
-    /**
-     * Unregisters one Java application from being S60 USIF component.
-     * Used with USIF Phase 1.
-     *
-     * @param aSuiteInfo Information needed to unregister the application,
-     * @param aIndex index of the application in the suite
-     * @throws InstallerException if unregistration cannot done or
-     *  startSession has not been called successfully
-     * @see startSession
-     * @see SuiteInfo
-     */
-    private void unregisterComponent(SuiteInfo aSuiteInfo, int aIndex)
-    {
-        String globalId = aSuiteInfo.getGlobalId(aIndex);
-        if (globalId == null)
-        {
-            Log.logWarning("SifRegistrator: Application with index " + aIndex +
-                           " not found from " + aSuiteInfo.getGlobalId());
-            return;
-        }
-        ComponentId componentId = getComponentId(globalId);
-        if (componentId == null)
-        {
-            Log.logWarning(
-                "SifRegistrator unregistration failed, application " +
-                globalId + " does not exist");
-            return;
-        }
-        // Save component id to ApplicationInfo.
-        ApplicationInfo appInfo =
-            (ApplicationInfo)aSuiteInfo.getApplications().elementAt(aIndex);
-        appInfo.setComponentId(componentId);
-        // Unregister application.
-        int err = _unregisterComponent(iSessionHandle, componentId.getId());
-        if (err < 0)
-        {
-            InstallerException.internalError(
-                "Unregistering component " + globalId +
-                " failed with code " + err);
-        }
-        else
-        {
-            Log.log("SifRegistrator unregistered component " + globalId +
-                    " with id " + componentId.getId());
+            InstallerException.internalError("No valid SIF session.");
         }
     }
 
     /**
      * Registers Java application suite to S60 USIF as a component.
-     * Used with USIF Phase 2.
      *
      * @param aSuiteInfo Suite information
      * @param aIsUpdate true in case of an update, false in case of a new
@@ -529,7 +381,6 @@ public final class SifRegistrator
         String suiteName = aSuiteInfo.getName();
         String vendor = aSuiteInfo.getVendor();
         String version = aSuiteInfo.getVersion().toString();
-        String name = null; // Set name to null so that suite name will be used.
         int uid = ((PlatformUid)aSuiteInfo.getUid()).getIntValue();
         String[] componentFiles = getComponentFiles(aSuiteInfo);
         long componentSize = aSuiteInfo.getInitialSize();
@@ -540,17 +391,20 @@ public final class SifRegistrator
         String midletInfoUrl = aSuiteInfo.getAttributeValue("MIDlet-Info-URL");
         String midletDescription = aSuiteInfo.getAttributeValue("MIDlet-Description");
         String downloadUrl = aSuiteInfo.getAttributeValue("Nokia-MIDlet-Download-URL");
+        String updateUrl = aSuiteInfo.getAttributeValue("Nokia-Update");
         ComponentId componentId = new ComponentId();
         int err = _registerComponent(
                       iSessionHandle, uid,
                       getScrString(suiteName), getScrString(vendor),
-                      getScrString(version), getScrString(name),
-                      getScrString(globalId), componentFiles,
-                      componentSize, isRemovable, isDrmProtected,
-                      isOriginVerified, aIsUpdate, aSuiteInfo.getMediaId(),
+                      getScrString(version), getScrString(globalId),
+                      componentFiles, componentSize,
+                      isRemovable, isDrmProtected,
+                      isOriginVerified, aIsUpdate,
+                      aSuiteInfo.getMediaId(),
                       getScrString(midletInfoUrl),
                       getScrString(midletDescription),
                       getScrString(downloadUrl),
+                      getScrString(updateUrl),
                       componentId);
         if (err < 0)
         {
@@ -568,7 +422,6 @@ public final class SifRegistrator
 
     /**
      * Unregisters Java application suite from being S60 USIF component.
-     * Used with USIF Phase 2.
      *
      * @param aSuiteInfo suite information
      * @throws InstallerException if unregistration cannot done or
@@ -610,7 +463,6 @@ public final class SifRegistrator
      * from given SuiteInfo object. The SuiteInfo must already have
      * been registered to USIF as a component with registerComponent()
      * method before this method is called.
-     * Used with USIF Phase 2.
      *
      * @param aSuiteInfo information needed to register the application
      * @param aIndex index of the application in the suite
@@ -797,7 +649,7 @@ public final class SifRegistrator
                 " failed with code " + err + " (" + nonlocalizedAttrValue + ")");
         }
         LocalizedName[] localizedAttrValues =
-            getLocalizedNames(aSuite, attrName + "-");
+            getLocalizedNames(aSuite, "Nokia-" + attrName + "-");
         for (int i = 0; i < localizedAttrValues.length; i++)
         {
             err = _setLocalizedComponentProperty(
@@ -816,51 +668,41 @@ public final class SifRegistrator
         // Register Domain-Category property.
         String protectionDomainProperty = "Domain-Category";
         String protectionDomainName = aSuite.getProtectionDomainName();
-        if (protectionDomainName != null)
+        err = _setLocalizedComponentProperty(
+            iSessionHandle, cid, protectionDomainProperty,
+            getProtectionDomainPropertyValue(protectionDomainName),
+            UNSPECIFIED_LOCALE);
+        if (err < 0)
         {
-            err = _setLocalizedComponentProperty(
-                iSessionHandle, cid, protectionDomainProperty,
-                getProtectionDomainPropertyValue(protectionDomainName),
-                UNSPECIFIED_LOCALE);
-            if (err < 0)
-            {
-                InstallerException.internalError(
-                    "Adding property " + protectionDomainProperty +
-                    " value " + protectionDomainName + " for component " +
-                    cid + " failed with code " + err);
-            }
-        }
-        else
-        {
-            Log.logWarning(
-                "SifRegistrator.registerLocalizedProperties: " +
-                protectionDomainProperty + " not set");
+            InstallerException.internalError(
+                "Adding property " + protectionDomainProperty +
+                " value " + protectionDomainName + " for component " +
+                cid + " failed with code " + err);
         }
     }
 
     /**
      * Returns the "Domain-Category" property value which contains
      * the text id and text file name for the localized domain category
-     * text.
+     * text. This method must never return null.
      */
     private String getProtectionDomainPropertyValue(String aProtectionDomain)
     {
-        String textId = null;
-        if (aProtectionDomain.equals("Manufacturer"))
+        String textId = "txt_java_inst_setlabel_cert_domain_val_untrusted_third_party";
+        if (aProtectionDomain != null)
         {
-            textId = "txt_java_inst_setlabel_cert_domain_val_manufacturer";
-        }
-        else if (aProtectionDomain.equals("Operator"))
-        {
-            textId = "txt_java_inst_setlabel_cert_domain_val_operator";
-        }
-        else if (aProtectionDomain.equals("IdentifiedThirdParty"))
-        {
-            textId = "txt_java_inst_setlabel_cert_domain_val_trusted_third_party";
-        }
-        else if (aProtectionDomain.equals("UnidentifiedThirdParty"))
-        {
-            textId = "txt_java_inst_setlabel_cert_domain_val_untrusted_third_party";
+            if (aProtectionDomain.equals("Manufacturer"))
+            {
+                textId = "txt_java_inst_setlabel_cert_domain_val_manufacturer";
+            }
+            else if (aProtectionDomain.equals("Operator"))
+            {
+                textId = "txt_java_inst_setlabel_cert_domain_val_operator";
+            }
+            else if (aProtectionDomain.equals("IdentifiedThirdParty"))
+            {
+                textId = "txt_java_inst_setlabel_cert_domain_val_trusted_third_party";
+            }
         }
         return textId + ",javaapplicationinstaller";
     }
@@ -892,6 +734,13 @@ public final class SifRegistrator
                     {
                         Log.logWarning(
                             "SifRegistrator ignored unknown locale: " +
+                            name + ": " + localizedName);
+                    }
+                    else if (localizedName.getName() == null ||
+                             localizedName.getName().length() == 0)
+                    {
+                        Log.logWarning(
+                            "SifRegistrator ignored empty localized text: " +
                             name + ": " + localizedName);
                     }
                     else
@@ -1015,7 +864,6 @@ public final class SifRegistrator
      * @param aSuiteName
      * @param aVendor
      * @param aVersion
-     * @param aName
      * @param aGlobalId
      * @param aComponentFiles
      * @param aComponentSize
@@ -1027,17 +875,19 @@ public final class SifRegistrator
      * @param aMidletInfoUrl
      * @param aMidletDescription
      * @param aDownloadUrl
+     * @param aUpdateUrl
      * @param aComponentId upon successful execution contains the
      * component id for the registered component
      * @return 0 if registration succeeded or Symbian error code
      */
     private static native int _registerComponent(
         int aSessionHandle, int aUid, String aSuiteName, String aVendor,
-        String aVersion, String aName, String aGlobalId,
+        String aVersion, String aGlobalId,
         String[] aComponentFiles, long aComponentSize,
         boolean aIsRemovable, boolean aIsDrmProtected,
         boolean aIsOriginVerified, boolean aIsUpdate, int aMediaId,
-        String aMidletInfoUrl, String aMidletDescription, String aDownloadUrl,
+        String aMidletInfoUrl, String aMidletDescription,
+        String aDownloadUrl, String aUpdateUrl,
         ComponentId aComponentId);
 
     /**
@@ -1145,4 +995,9 @@ public final class SifRegistrator
      * @return 1 if application data should be registered to USIF, 0 otherwise
      */
     private static native int _getUsifMode();
+
+    /**
+     * Returns SIF specific error category from given error id.
+     */
+    private static native int _getErrorCategory(int aErrorId);
 }

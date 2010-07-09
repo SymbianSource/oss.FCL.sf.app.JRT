@@ -49,6 +49,7 @@ using namespace java::comms;
 _LIT(KPrivateDataCage, "\\private\\");
 _LIT(KInboxDataCage, "\\private\\1000484b\\");
 _LIT(KJavaInstallerProcess, "Installer*");
+_LIT(KJavaInstallCopierProcess, "javainstallcopier.exe");
 _LIT(KJavaInstallerDataCage, "\\private\\102033e6\\");
 _LIT(KJavaInstallerTmp, "\\private\\102033E6\\installer\\tmp\\");
 _LIT(KAnyExtension, ".*");
@@ -93,7 +94,18 @@ const TInt KShortCmdLineLen = 256;
 // Java Installer is executed with same Uid as Java Runtime
 _LIT_SECURE_ID(KJavaInstallerSecureID, KJavaMidpSecureId);
 
-
+/**
+ * This function is called to hide the 'Preparing Installation' dialog.
+ */
+LOCAL_C TInt HidePrepInstDialog(TAny* aPlugin)
+{
+    CJavaSifPlugin *pPlugin = (CJavaSifPlugin *)aPlugin;
+    if (NULL != pPlugin)
+    {
+        TRAP_IGNORE(pPlugin->HidePrepInstDialogL());
+    }
+    return KErrNone;
+}
 
 // ============================ MEMBER FUNCTIONS ===============================
 
@@ -126,6 +138,15 @@ CJavaSifPlugin::~CJavaSifPlugin()
 
     delete mDummyInfo;
     mDummyInfo = NULL;
+
+    delete mPrepInstDialog;
+    mPrepInstDialog = NULL;
+
+    if (mWaitToHideDialog)
+    {
+        delete mWaitToHideDialog;
+        mWaitToHideDialog = NULL;
+    }
 }
 
 CJavaSifPlugin::CJavaSifPlugin()
@@ -139,6 +160,7 @@ void CJavaSifPlugin::ConstructL()
     mResultsServer = NULL;
     mDummyResults = COpaqueNamedParams::NewL(); // codescanner::forgottoputptroncleanupstack
     mDummyInfo = CComponentInfo::NewL();
+    mWaitToHideDialog = NULL;
 }
 
 void CJavaSifPlugin::GetComponentInfo(
@@ -277,7 +299,16 @@ void CJavaSifPlugin::GetComponentInfo(
 
     // Do NOT close rJavaInstaller now -> the caller gets notification when the
     // process actually closes.
-    mHandlesToClose.Append(rJavaInstaller);
+    err = mHandlesToClose.Append(rJavaInstaller);
+    if ( err )
+    {
+        rJavaInstaller.Close();
+        ELOG1(EJavaInstaller, "CJavaSifPlugin::GetComponentInfo  mHandles"
+              "ToClose.Append failed with error %d", err);
+        TRequestStatus *statusPtr(&aStatus);
+        User::RequestComplete(statusPtr, err);
+        return;
+    }
 }
 
 void CJavaSifPlugin::Install(
@@ -351,6 +382,17 @@ void CJavaSifPlugin::Install(
         }
 
         commandLine.Append(KSilent);
+    }
+    else
+    {
+        // Uncomment this to enable 'preparing installation' dialog.
+        //TRAP(err, CreatePrepInstDialogL());
+        //if (KErrNone != err)
+        //{
+        //    WLOG1(EJavaInstaller,
+        //          "CJavaSifPlugin::Install Creating preparing installation dialog failed, err=%d",
+        //          err);
+        //}
     }
 
     BuildInstallCommandLine(commandLine, aArguments);
@@ -440,11 +482,41 @@ void CJavaSifPlugin::Install(
         return;
     }
 
+    if (!silentInstall)
+    {
+        TRAP(err, mWaitToHideDialog =
+             CAsyncWaitCallBack::NewL(TCallBack(HidePrepInstDialog, this)));
+        if (KErrNone == err)
+        {
+            // The active object will wait until JavaInstaller process calls Rendezvous.
+            // If JavaInstaller specifies reason code EJavaInstaller, then
+            // the active object will call callback function that will hide the
+            // 'Preparing installation' dialog. If reason code is not EJavaInstaller,
+            // the wait object will automatically wait for the next rendezvous.
+            mWaitToHideDialog->Wait( rJavaInstaller, EJavaInstaller );
+        }
+        else
+        {
+            ELOG1(EJavaInstaller, "CJavaSifPlugin::Install: Creating "
+                  "mWaitToHideDialog failed, err %d", err);
+        }
+    }
     rJavaInstaller.Resume();
 
     // Do NOT close rJavaInstaller now -> the caller gets notification when the
     // process actually closes.
-    mHandlesToClose.Append(rJavaInstaller);
+    err = mHandlesToClose.Append(rJavaInstaller);
+    if ( err )
+    {
+        rJavaInstaller.Close();
+        ELOG1(EJavaInstaller, "CJavaSifPlugin::Install  mHandles"
+              "ToClose.Append failed with error %d", err);
+        TRAP_IGNORE(aResults.AddIntL(KSifOutParam_ErrCategory, ELowMemory));
+        TRequestStatus *statusPtr(&aStatus);
+        User::RequestComplete(statusPtr, err);
+        return;
+    }
+
 }
 
 void CJavaSifPlugin::Uninstall(
@@ -539,7 +611,17 @@ void CJavaSifPlugin::Uninstall(
 
     // Do NOT close rJavaInstaller now -> the caller gets notification when the
     // process actually closes.
-    mHandlesToClose.Append(rJavaInstaller);
+    err = mHandlesToClose.Append(rJavaInstaller);
+    if ( err )
+    {
+        rJavaInstaller.Close();
+        ELOG1(EJavaInstaller, "CJavaSifPlugin::Uninstall  mHandles"
+              "ToClose.Append failed with error %d", err);
+        TRAP_IGNORE(aResults.AddIntL(KSifOutParam_ErrCategory, ELowMemory));
+        TRequestStatus *statusPtr(&aStatus);
+        User::RequestComplete(statusPtr, err);
+        return;
+    }
 }
 
 void CJavaSifPlugin::Activate(
@@ -659,18 +741,36 @@ void CJavaSifPlugin::CopyFilesIfNeededL(TFileName &aFileName)
         // to Java Installer tmp dir.)
         TParse fp;
         mRFs.Parse(aFileName, fp);
-
-        CFileMan* fm = CFileMan::NewL(mRFs);
         TFileName filesToCopy = fp.DriveAndPath();
         filesToCopy.Append(fp.Name());
         filesToCopy.Append(KAnyExtension);
-        TInt err = fm->Copy(filesToCopy, KJavaInstallerTmp, CFileMan::ERecurse);
-        delete fm;
-        if (KErrNone != err)
+
+        // Use JavaInstallCopier.exe to copy the files.
+        RProcess rJavaInstallCopier;
+        TInt err = rJavaInstallCopier.Create(
+            KJavaInstallCopierProcess, filesToCopy);
+        if (KErrNone == err)
         {
+            TRequestStatus status;
+            rJavaInstallCopier.Logon(status);
+            rJavaInstallCopier.Resume();
+            User::WaitForRequest(status); // codescanner::userWaitForRequest
+            err = rJavaInstallCopier.ExitReason();
+            rJavaInstallCopier.Close();
+            if (KErrNone != err)
+            {
+                ELOG1(EJavaInstaller,
+                      "CJavaSifPlugin::CopyFilesIfNeededL: copying files "
+                      "to JavaInstaller data cage failed, err=%d", err);
+                User::Leave(err);
+            }
+        }
+        else
+        {
+            rJavaInstallCopier.Close();
             ELOG1(EJavaInstaller,
-                  "CJavaSifPlugin::CopyFilesIfNeededL: copying files "
-                  "to Java Installer data cage failed, err=%d", err);
+                  "CJavaSifPlugin::CopyFilesIfNeededL: starting "
+                  "JavaInstallCopier failed, err=%d", err);
             User::Leave(err);
         }
 
@@ -803,13 +903,8 @@ void CJavaSifPlugin::BuildInstallCommandLine(
     }
     // AskUser is not supported
 
-
-
-    // TODO: activate this code block when KSifInParam_UpgradeData has been
-    // defined in sifcommon.h
-/*
-    // KSifInParam_UpgradeData Yes/No/AskUser -> -upgrade_data=yes|no
-    intValue = GetPositiveIntParam(KSifInParam_UpgradeData, aArguments);
+    // KSifInParam_AllowUpgradeData Yes/No/AskUser -> -upgrade_data=yes|no
+    intValue = GetPositiveIntParam(KSifInParam_AllowUpgradeData, aArguments);
     if (intValue == 0) // Yes
     {
         aCommandLine.Append(KUpgradeData);
@@ -821,7 +916,6 @@ void CJavaSifPlugin::BuildInstallCommandLine(
         aCommandLine.Append(KNo);
     }
     // AskUser is not supported
-*/
 
     // KSifInParam_AllowUntrusted Yes/No/AskUser -> -untrusted=yes|no
     intValue = GetPositiveIntParam(KSifInParam_AllowUntrusted, aArguments);
@@ -1101,5 +1195,34 @@ TBool CJavaSifPlugin::ExitIfJavaInstallerRunning(
     return EFalse;
 }
 
+/**
+ * Creates 'preparing installation' dialog.
+ */
+void CJavaSifPlugin::CreatePrepInstDialogL()
+{
+    ILOG(EJavaInstaller, "CJavaSifPlugin::CreatePrepInstDialogL creating dialog");
+    mPrepInstDialog = CHbDeviceNotificationDialogSymbian::NewL();
+    _LIT(KPrepInstText, "Preparing installation...");
+    mPrepInstDialog->SetTitleL(KPrepInstText);
+    mPrepInstDialog->SetTimeout(20*1000); // ms
+    mPrepInstDialog->ShowL();
+    ILOG(EJavaInstaller, "CJavaSifPlugin::CreatePrepInstDialogL dialog created");
+}
+
+void CJavaSifPlugin::HidePrepInstDialogL()
+{
+    ILOG(EJavaInstaller, "CJavaSifPlugin::HidePrepInstDialogL hiding dialog");
+    // Stop further timed calls
+    if (mWaitToHideDialog)
+    {
+        mWaitToHideDialog->Cancel();
+    }
+    // Close wait dialog.
+    if (mPrepInstDialog)
+    {
+        mPrepInstDialog->Close();
+    }
+    ILOG(EJavaInstaller, "CJavaSifPlugin::HidePrepInstDialogL dialog hidden");
+}
 
 //  End of File

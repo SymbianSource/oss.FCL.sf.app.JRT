@@ -11,7 +11,8 @@
 *
 * Contributors:
 *
-* Description:  Sample
+* Description:  Extension plugin which is used for monitoring changes in various
+*                     system settings.
 *
 */
 
@@ -22,8 +23,6 @@
 
 #include "extensionplugininterface.h"
 #include "settingslistenerinterface.h"
-
-using namespace java::comms;
 
 namespace java
 {

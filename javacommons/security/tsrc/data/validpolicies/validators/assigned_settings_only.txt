@@ -1,0 +1,2 @@
+domain=operator
+user_assigned?Settings:oneshot:no?assigned.permission.invalid.settings

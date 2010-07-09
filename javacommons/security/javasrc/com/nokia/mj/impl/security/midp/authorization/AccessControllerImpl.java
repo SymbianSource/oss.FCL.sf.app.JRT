@@ -21,6 +21,7 @@ import java.security.Permission;
 import java.util.Vector;
 import java.security.AccessControlException;
 import com.nokia.mj.impl.utils.Uid;
+import com.nokia.mj.impl.security.midp.common.PolicyBasedPermission;
 import com.nokia.mj.impl.security.midp.common.PolicyBasedPermissionImpl;
 import com.nokia.mj.impl.security.midp.common.UserPermission;
 import com.nokia.mj.impl.security.midp.common.UserSecuritySettings;
@@ -256,7 +257,7 @@ public final class AccessControllerImpl
      */
     private void handleUserPermission(
         Permission checkedPermission,
-        UserPermission resolvedPermission,
+        PolicyBasedPermissionImpl resolvedPermission,
         SecurityStorage storage)
     {
         UserSecuritySettings settings = resolvedPermission
@@ -299,6 +300,14 @@ public final class AccessControllerImpl
                 e.getMessage(),
                 new java.security.AccessControlException(
                     "Permission " + checkedPermission + " not allowed"));
+        }
+        
+        // if the permission was assigned or the settings were not active, 
+        // then activate the user settings
+        if (resolvedPermission.getType() != PolicyBasedPermission.USER_TYPE 
+            || !settings.isActive())
+        {
+            storage.activateUserSecuritySettings(iAppUID, resolvedPermission);
         }
 
         // if settings have not changed, still do one check on the current

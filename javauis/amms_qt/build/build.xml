@@ -23,15 +23,6 @@
   <!--property name="java.src.paths" value="../javasrc:../src_tuner/javasrc"/-->
   <property name="java.src.paths" value="../javasrc"/>
 
-  <!-- Needed by the utilities.xml. See the description form the utilities.xml
-       file -->
-
-  <target name="compile">
-              <omj.javac classpath="${compile.result.root}/javamobilemedia/classes/first:${compile.result.root}/javautils/classes/first"/>
-  </target>
-
-  <!-- Needed by the utilities.xml. See the description form the utilities.xml
-       file -->
   <property name="javah.classnames" 
             value="com.nokia.amms.control.audioeffect.EqualizerControl,
                    com.nokia.amms.control.audioeffect.ReverbControl,

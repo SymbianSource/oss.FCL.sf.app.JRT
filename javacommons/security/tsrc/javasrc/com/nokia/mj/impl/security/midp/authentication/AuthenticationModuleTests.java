@@ -1046,8 +1046,8 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
         }
         catch (RuntimeSecurityException e)
         {
-            assertTrue(e.getShortMessage().equals(securityErrorMessage.get(SecurityErrorMessage.JAR_TAMPERED, null))
-                       && e.getDetailedMessage().equals(securityDetailedErrorMessage.get(SecurityDetailedErrorMessage.JAR_TAMPERED, null)));
+            assertTrue(e.getShortMessage().equals(securityErrorMessage.get(SecurityErrorMessage.JAR_NOT_FOUND, null))
+                       && e.getDetailedMessage().equals(securityDetailedErrorMessage.get(SecurityDetailedErrorMessage.JAR_NOT_FOUND, null)));
         }
         // root not enabled
         try
@@ -1105,7 +1105,7 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
                                appUID.getStringValue()));
         entry.addAttribute(new StorageAttribute(
                                StorageNames.NAME,
-                               "MIDlet-Operator-Allowed"));
+                               "Nokia-MIDlet-Operator-Allowed"));
         entry.addAttribute(new StorageAttribute(
                                StorageNames.VALUE,
                                "123-45 456-789 000-000"));
@@ -1126,7 +1126,7 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
                                appUID.getStringValue()));
         entry.addAttribute(new StorageAttribute(
                                StorageNames.NAME,
-                               "MIDlet-Operator-Allowed"));
+                               "Nokia-MIDlet-Operator-Allowed"));
         entry.addAttribute(new StorageAttribute(
                                StorageNames.VALUE,
                                "123-45"));
@@ -1147,7 +1147,7 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
                                appUID.getStringValue()));
         entry.addAttribute(new StorageAttribute(
                                StorageNames.NAME,
-                               "MIDlet-Operator-Allowed"));
+                               "Nokia-MIDlet-Operator-Allowed"));
         entry.addAttribute(new StorageAttribute(
                                StorageNames.VALUE,
                                "123-45"));

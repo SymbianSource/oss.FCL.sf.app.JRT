@@ -591,7 +591,13 @@ int cancelFunction(void *installer)
     // TEMP TEST
     // This thread does not have active scheduler,
     // create and install it
-    CActiveScheduler* as = new(ELeave) CActiveScheduler();   
+    CActiveScheduler* as = new CActiveScheduler();
+    if (NULL == as)
+    {
+        ELOG(EJavaConverters,
+            "testsifapi: cancelFunction: Cannot create active scheduler");
+            return 1;
+    }
     CActiveScheduler::Install(as);
 
     // Wait for 6 seconds so that the operation to be cancelled

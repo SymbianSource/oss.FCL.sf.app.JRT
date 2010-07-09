@@ -29,7 +29,7 @@ CMMAItemDisplay* CMMAItemDisplay::NewLC(MMAFunctionServer* aEventSource , jobjec
 {
     CMMAItemDisplay* self = new(ELeave) CMMAItemDisplay();
     CleanupStack::PushL(self);
-    self->Construct(aEventSource, aItemDispObj);
+    self->Construct(aEventSource, NULL, aItemDispObj);
     return self;
 }
 
@@ -111,45 +111,7 @@ TPoint CMMAItemDisplay::DisplayLocation()
     return TPoint(0, 0);
 }
 
-/*
-void CMMAItemDisplay::SourceSizeChanged(const TSize& aSourceSize)
-{
-    LOG1(EJavaMMAPI,EInfo,"MMA::CMMAItemDisplay::SourceSizeChanged %d",
-              aSourceSize.iWidth);
-    LOG1(EJavaMMAPI,EInfo,"MMA::CMMAItemDisplay::SourceSizeChanged %d",
-              aSourceSize.iHeight);
 
-    #ifdef RD_JAVA_NGA_ENABLED
-    if ( iWindow )
-    {
-    iWindow->SetVideoCropRegion( TRect( iUserRect.iTl, aSourceSize ) );
-    }
-    #endif
-
-    iSourceSize = aSourceSize;
-
-    if (iWindow)
-    {
-        TRect clientRect(iUserRect.iTl, aSourceSize);
-
-        iWindow->SetDrawRect(clientRect);
-        // Setting initial window size if not already set, actual size will
-        // be set in MdcItemContentRectChanged()
-        if (iWindow->WindowSize() == TSize())
-        {
-            iWindow->SetWindowRect(clientRect, MMMADisplay::EMmaThread);
-        }
-    }
-
-    SetClippingRegion();
-
-    if (iUserRect.IsEmpty())
-    {
-        // Java side hasn't set size.
-        iUserRect.SetSize(iSourceSize);
-    }
-}
-*/
 
 
 void CMMAItemDisplay:: SourceSizeChanged(TInt aJavaControlWidth, TInt aJavaControlHeight,TInt x, TInt y,TRect aBoundsRect)
@@ -282,6 +244,7 @@ void CMMAItemDisplay:: SourceSizeChanged(TInt aJavaControlWidth, TInt aJavaContr
 
     SetClippingRegion();
 
+    /*
     if (iUserRect.IsEmpty())
     {
         // Java side hasn't set size.
@@ -292,6 +255,13 @@ void CMMAItemDisplay:: SourceSizeChanged(TInt aJavaControlWidth, TInt aJavaContr
         // Addjusting rect to top left corner.
         iUserRect = TRect(iUserRect.Size());
         //}
+    }*/
+    if (iUserRect.IsEmpty())
+    {
+        // Java side hasn't set size.
+        LOG1(EJavaMMAPI,EInfo,"CMMAItemDisplay::SourceSizeChanged()iUserRect is set to source size iSourceSize - %d",iSourceSize.iHeight);
+        iUserRect.SetSize(iSourceSize);
+        LOG1(EJavaMMAPI,EInfo,"CMMAItemDisplay::SourceSizeChanged()iUserRect is set to source size iUserRect - %d",iUserRect.Size().iHeight);
     }
     LOG(EJavaMMAPI,EInfo,"CMMAItemDisplay::SourceSizeChanged(aJavaControlWidth,aJavaControlHeight)-");
 }

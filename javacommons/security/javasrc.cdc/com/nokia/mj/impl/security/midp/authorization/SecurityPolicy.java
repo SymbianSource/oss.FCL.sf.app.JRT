@@ -132,13 +132,14 @@ public final class SecurityPolicy
         int domainLength = buf[index];
         index++;
         protectionDomain = new String(buf, index, domainLength);
+        boolean activeSettings = true;
         index+= domainLength;
         int permissions = buf[index];
         index++;
         policyPermissions = new SecurityPolicyPermission[permissions];
         for (int i=0; i<permissions; i++)
         {
-            policyPermissions[i] = SecurityPolicyPermission.getFromBytes(buf);
+            policyPermissions[i] = SecurityPolicyPermission.getFromBytes(buf, activeSettings);
         }
     }
 }

@@ -180,6 +180,7 @@ data=JAVA_VM_RES_BLD\javalegacyutils.odc                                    JAVA
 file=ABI_DIR\BUILD_DIR\javaruntimeui.dll                                    SHARED_LIB_DIR\javaruntimeui.dll
 data=JAVA_VM_RES_BLD\javaruntimeui.odc                                      JAVA_VM_RES_IMG\javaruntimeui.odc
 file=ABI_DIR\BUILD_DIR\javaruntimestarterutils.dll                          SHARED_LIB_DIR\javaruntimestarterutils.dll
+file=ABI_DIR\BUILD_DIR\javastarter.dll                                      SHARED_LIB_DIR\javastarter.dll
 
 // MIDP runtime
 file=ABI_DIR\BUILD_DIR\javamidp.exe                                         PROGRAMS_DIR\javamidp.exe
@@ -363,5 +364,9 @@ data=ZRESOURCE\java\security\trustroots\midprootslist                       JAVA
 
 // Utility for Services team
 file=ABI_DIR\BUILD_DIR\javaupgradeapp.exe                                   PROGRAMS_DIR\javaupgradeapp.exe
+
+// Java icon size notifier ecom plugin
+ECOM_PLUGIN(javaiconsizenotifplugin.dll, javaiconsizenotifplugin.rsc)
+data=ZRESOURCE\plugins\javaiconsizenotifplugin.rsc ECOM_RESOURCE_DIR\javaiconsizenotifplugin.rsc
 
 #endif

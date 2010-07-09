@@ -5332,7 +5332,7 @@ JNIEXPORT void  JNICALL OS_NATIVE( ListModel_1append__ILjava_lang_String_2_3IILj
         jboolean isCopy;
         jint* imagesHandles = NULL;
 
-        const QPixmap** detailImages = const_cast<const QPixmap**>(new QPixmap*[aDetailImageCount]);
+        QPixmap** detailImages = new QPixmap*[aDetailImageCount];
         if( !detailImages )
             {
             throw std::bad_alloc();
@@ -5342,6 +5342,7 @@ JNIEXPORT void  JNICALL OS_NATIVE( ListModel_1append__ILjava_lang_String_2_3IILj
             imagesHandles = aJniEnv->GetIntArrayElements(aDetailImageHandles, &isCopy);
             if( !imagesHandles )
                 {
+                delete [] detailImages;
                 throw std::bad_alloc();
                 }
             for(int i = 0; i < aDetailImageCount; i++)
@@ -5351,9 +5352,10 @@ JNIEXPORT void  JNICALL OS_NATIVE( ListModel_1append__ILjava_lang_String_2_3IILj
             aJniEnv->ReleaseIntArrayElements(aDetailImageHandles, imagesHandles, JNI_ABORT);
             }
 
-        const QPixmap** headingImages =  const_cast<const QPixmap**>(new QPixmap*[aHeadingImageCount]);
+        QPixmap** headingImages = new QPixmap*[aHeadingImageCount];
         if( !headingImages )
             {
+            delete [] detailImages; // allocated earlier
             throw std::bad_alloc();
             }
         if(aHeadingImageHandles)
@@ -5361,6 +5363,8 @@ JNIEXPORT void  JNICALL OS_NATIVE( ListModel_1append__ILjava_lang_String_2_3IILj
             imagesHandles = aJniEnv->GetIntArrayElements(aHeadingImageHandles, &isCopy);
             if( !imagesHandles )
                 {
+                delete [] detailImages;
+                delete [] headingImages;
                 throw std::bad_alloc();
                 }
             for(int i = 0; i < aHeadingImageCount; i++)
@@ -5371,8 +5375,10 @@ JNIEXPORT void  JNICALL OS_NATIVE( ListModel_1append__ILjava_lang_String_2_3IILj
             }
 
         ListModel* listDataModel = reinterpret_cast< ListModel* > ( aHandle );
-        listDataModel->appendItem( swtApp->jniUtils().JavaStringToQString( aJniEnv, aDetailText ), detailImages, aDetailImageCount,
-            swtApp->jniUtils().JavaStringToQString( aJniEnv, aHeadingText ), headingImages, aHeadingImageCount );
+        listDataModel->appendItem( swtApp->jniUtils().JavaStringToQString( aJniEnv, aDetailText ), 
+            const_cast<const QPixmap**>(detailImages), aDetailImageCount,
+            swtApp->jniUtils().JavaStringToQString( aJniEnv, aHeadingText ), 
+            const_cast<const QPixmap**>(headingImages), aHeadingImageCount );
         }
     SWT_CATCH
     }
@@ -11662,7 +11668,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE( MobileDevice_1vibration )
         SWT_LOG_JNI_CALL();
         SWT_LOG_DATA_2( "handle=%x duration=%x", aHandle, aDuration );
         CSwtMobileDevice* mobileDevice =  reinterpret_cast<CSwtMobileDevice*>(aHandle);
-        vibraSupport = mobileDevice->Vibrate((TTimeIntervalMicroSeconds32)static_cast<TInt>(aDuration));
+        vibraSupport = mobileDevice->Vibrate(static_cast<TInt>(aDuration));
         }
     SWT_CATCH
 #endif

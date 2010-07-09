@@ -73,6 +73,9 @@ public class SuiteInfo
     private String iAccessPoint = null;
     // Flag telling if application suite is trusted
     private boolean iTrusted = false;
+    // Flag telling if preinstallation state should be
+    // reseted in uninstallation.
+    private boolean iResetPreinstall = false;
 
     /** Flag telling if default icon should be used. */
     private boolean iUseDefaultIcon = false;
@@ -783,6 +786,24 @@ public class SuiteInfo
     }
 
     /**
+     * Get the flag telling if preinstallation state should be reset.
+     * Used only in uninstallation.
+     */
+    public boolean getResetPreinstall()
+    {
+        return iResetPreinstall;
+    }
+
+    /**
+     * Set the flag telling if preinstallation state should be reset.
+     * Used only in uninstallation.
+     */
+    public void setResetPreinstall(boolean aResetPreinstall)
+    {
+        iResetPreinstall = aResetPreinstall;
+    }
+
+    /**
      * Calculates initial size from MIDlet-Data-Size and
      * MIDlet-Jar-Size attributes, or if they are not present
      * from jar file size.
@@ -865,6 +886,7 @@ public class SuiteInfo
         buf.append("  MediaId: ").append(getMediaId()).append("\n");
         buf.append("  InitialSize: ").append(getInitialSize()).append("\n");
         buf.append("  PreinstallState: ").append(iPreinstallState).append("\n");
+        buf.append("  ResetPreinstall: ").append(getResetPreinstall()).append("\n");
         buf.append("  OnScreenKeypad: ").append(getOnScreenKeypad()).append("\n");
         buf.append("  ConvertedIcon: ").append(getConvertedIconPath()).append("\n");
         buf.append("  Group: ").append(getInstallationGroup()).append("\n");

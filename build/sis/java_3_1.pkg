@@ -190,7 +190,9 @@
 "\epoc32\release\armv5\urel\javadebugapi.dll"-"c:\sys\bin\javadebugapi.dll"
 #ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 "\epoc32\release\armv5\urel\javasifplugin.dll"-"c:\sys\bin\javasifplugin.dll"
+"\epoc32\release\armv5\urel\javainstallcopier.exe"-"c:\sys\bin\javainstallcopier.exe"
 #endif
+"\epoc32\release\armv5\urel\javastarter.dll"-"c:\sys\bin\javastarter.dll"
 
 ; to enable JVM argument modifier - comment 1st line below and uncomment 2nd line below
 "\epoc32\release\armv5\urel\javajvmargsmodifier.dll"-"c:\sys\bin\javajvmargsmodifier.dll"
@@ -350,3 +352,5 @@
 "\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\openlcdui.odc"-"c:\resource\java\jvm\lib\jrt\openlcdui.odc"
 "\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javanokiaui.odc"-"c:\resource\java\jvm\lib\jrt\javanokiaui.odc"
 
+"\epoc32\release\armv5\urel\javaapplicationsettingsview.dll"-"c:\sys\bin\javaapplicationsettingsview.dll"
+"\epoc32\data\z\resource\qt\plugins\appsettings\javaapplicationsettingsview.qtplugin"-"c:\resource\qt\plugins\appsettings\javaapplicationsettingsview.qtplugin"

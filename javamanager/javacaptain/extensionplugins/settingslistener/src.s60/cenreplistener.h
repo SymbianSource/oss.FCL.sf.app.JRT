@@ -16,58 +16,39 @@
 *
 */
 
-#ifndef CENREP_LISTENER_H
-#define CENREP_LISTENER_H
-
-#include "javaosheaders.h"
-#include "settingschangeeventsprovidermessages.h"
+#ifndef CENREPLISTENER_H
+#define CENREPLISTENER_H
 
 #include <e32std.h>
 #include <cenrepnotifyhandler.h>
+
+#include "javaosheaders.h"
+#include "settingschangeeventsprovidermessages.h"
+#include "javaruntimeprivatecrkeys.h"
 
 namespace java
 {
 namespace captain
 {
 
-/**
- * Java Runtime environment Central Repository UID
- */
-const TUid    KCRUidJavaRuntime             = { 0x10282DFD };
-
-/**
- * Indicates classpath for MIDP runtimes. This key value is generated
- * from the values defined by extension libraries.
- */
-const TUint32 KJavaRuntimeMIDPClasspath     = 0x00000001;
-
-
 class CoreInterface;
 
 OS_NONSHARABLE_CLASS(CenRepListener) :
-public CBase, public MCenRepNotifyHandlerCallback
+        public CBase, public MCenRepNotifyHandlerCallback
 {
 public:
     enum TListenerType {GENERAL_LISTENER = -1};
 
-    static CenRepListener* NewLC(CoreInterface* aCore, TUid aRepoId, TUint32 aKeyId,
-                                 CCenRepNotifyHandler::TCenRepKeyType aKeyType);
     static CenRepListener* NewL(CoreInterface* aCore, TUid aRepoId, TUint32 aKeyId,
-                                  CCenRepNotifyHandler::TCenRepKeyType aKeyType);
-    static CenRepListener* NewLC(CoreInterface* aCore, TUid aRepoId);
-    static CenRepListener* NewL(CoreInterface* aCore, TUid aRepoId);
+                                CCenRepNotifyHandler::TCenRepKeyType aKeyType);
 
     virtual ~CenRepListener();
 
-    // MCenRepNotifyHandlerCallback
+    // MCenRepNotifyHandlerCallback (only partial implementation needed here for now)
     // These handler methods must know what to do in each case, i.e
     // how to handle the change in each particular key.
-    virtual void HandleNotifyString( TUint32 aKeyId, const TDesC16& aNewValue );
-    virtual void HandleNotifyInt(TUint32 aKeyId, TInt aNewValue);
-    virtual void HandleNotifyReal( TUint32 aId, TReal aNewValue );
-    virtual void HandleNotifyBinary( TUint32 aId, const TDesC8& aNewValue );
-    virtual void HandleNotifyGeneric(TUint32 aKeyId);
-    virtual void HandleNotifyError(TUint32 aKeyId, TInt error,
+    virtual void HandleNotifyString(TUint32 aKeyId, const TDesC16& aNewValue);
+    virtual void HandleNotifyError(TUint32 aKeyId, TInt aError,
                                    CCenRepNotifyHandler* aHandler);
 protected:
     CenRepListener();
@@ -76,10 +57,9 @@ protected:
                        const SettingsChangeEventType_t& aType) const;
 
 private:
-    void ConstructL(CoreInterface* aCore, TUid aRepoId);
     void ConstructL(CoreInterface* aCore, TUid aRepoId, TUint32 aKeyId,
                     CCenRepNotifyHandler::TCenRepKeyType aKeyType);
-    void Close();
+    void close();
     TInt mKeyType;
     CoreInterface* mCore;
     TUid mRepoId;
@@ -90,5 +70,5 @@ private:
 } // namespace captain
 } // namespace java
 
-#endif // CENREP_LISTENER_H
+#endif // CENREPLISTENER_H
 

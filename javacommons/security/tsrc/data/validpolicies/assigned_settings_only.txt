@@ -1,0 +1,4 @@
+domain operator;
+grant assigned "Settings" oneshot {
+    permission assigned.permission.invalid.settings;
+}

@@ -254,7 +254,7 @@ public final class FileConnectionImpl implements FileConnection
             curUrl = curUrl.substring(0, curUrl.length() - 1);
         }
         String newUrl = curUrl.substring(0, curUrl.lastIndexOf('/') + 1);
-        newUrl += iFileUtility.getName();
+        newUrl += FileUTF8Handler.encode(iFileUtility.getName());
 
         iFileConnectionUrl = new FileConnectionURL(newUrl);
     }

@@ -49,12 +49,24 @@ public final class SecurityErrorMessage extends ErrorMessageBase
             return iMessageTable;
         }
         Hashtable messageTable = new Hashtable();
-        messageTable.put(new Integer(JAR_TAMPERED), "jar_tampered");
-        messageTable.put(new Integer(CERT_NOT_AVAILABLE), "cert_not_available");
-        messageTable.put(new Integer(UNEXPECTED_ERR), "unexpected_err");
-        messageTable.put(new Integer(NETWORK_RESTRICTION_VIOLATION), "net_restr_violation");
-        messageTable.put(new Integer(OCSP_GENERAL_ERR), "ocsp_general");
-        messageTable.put(new Integer(JAR_NOT_FOUND), "jar_not_found");
+        if (getLocaleIdQt() == null)
+        {
+            messageTable.put(new Integer(JAR_TAMPERED), "jar_tampered");
+            messageTable.put(new Integer(CERT_NOT_AVAILABLE), "cert_not_available");
+            messageTable.put(new Integer(UNEXPECTED_ERR), "unexpected_err");
+            messageTable.put(new Integer(NETWORK_RESTRICTION_VIOLATION), "net_restr_violation");
+            messageTable.put(new Integer(OCSP_GENERAL_ERR), "ocsp_general");
+            messageTable.put(new Integer(JAR_NOT_FOUND), "jar_not_found");
+        }
+        else
+        {
+            messageTable.put(new Integer(JAR_TAMPERED), "jar_tampered");
+            messageTable.put(new Integer(CERT_NOT_AVAILABLE), "cert_not_available");
+            messageTable.put(new Integer(UNEXPECTED_ERR), "unexpected_error");
+            messageTable.put(new Integer(NETWORK_RESTRICTION_VIOLATION), "net_restr_violation");
+            messageTable.put(new Integer(OCSP_GENERAL_ERR), "there_is_a_security_issue_with_this");
+            messageTable.put(new Integer(JAR_NOT_FOUND), "error_jar_not_found");
+        }
         iMessageTable = messageTable;
         return iMessageTable;
     }
@@ -68,9 +80,37 @@ public final class SecurityErrorMessage extends ErrorMessageBase
     {
         if (iRes == null)
         {
-            iRes = ResourceLoader.getInstance("javausermessages", "qtn_java_secur_error_");
+            // This method returns ResourceLoader only when Qt
+            // localisation is not in use. When Qt localisation
+            // is in use this method returns null and
+            // ResourceLoader is obtained with getResourceLoader(int)
+            // method variant.
+            if (getLocaleIdQt() == null)
+            {
+                iRes = ResourceLoader.getInstance("javausermessages", "qtn_java_secur_error_");
+            }
         }
         return iRes;
+    }
+
+    /**
+     * Method for retrieving the ResourceLoader instance that is used
+     * to localise error message for specified error code.
+     *
+     * @param errorCode error code for which ResourceLoader is returned
+     */
+    protected ResourceLoader getResourceLoader(int errorCode)
+    {
+        String resFilename = "javaapplicationsecuritymessages";
+        String resPrefix = "txt_java_secur_info_";
+        switch (errorCode)
+        {
+        case OCSP_GENERAL_ERR:
+            resFilename = "common_errors";
+            resPrefix = "txt_error_info_";
+            break;
+        }
+        return getResourceLoader(resFilename, resPrefix);
     }
 
     /*** ----------------------------- PACKAGE ---------------------------- */

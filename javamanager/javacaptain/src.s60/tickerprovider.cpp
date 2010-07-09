@@ -91,8 +91,8 @@ void TickerProvider::cancel()
     }
     mNextTickAt = 0LL;
 }
-/*
-long long TickerProvider::getCurrentJavaTime()
+
+long long TickerProvider::getPlatformCurrentJavaTime()
 {
     JELOG2(EJavaCaptain);
     TTime currentTime;
@@ -101,7 +101,7 @@ long long TickerProvider::getCurrentJavaTime()
     // Current time - javaEpoc && uSeconds -> mSeconds
     return (currentTime.Int64()- TTime(TDateTime(1970,EJanuary,0,0,0,0,0)).Int64()) / 1000LL;
 }
-*/
+
 void TickerProvider::RunL()
 {
     JELOG2(EJavaCaptain);

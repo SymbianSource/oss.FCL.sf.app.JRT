@@ -81,6 +81,7 @@ public final class Logger
     public static final int EJavaAppMngrPlugin  = 35;
     public static final int EJavaBroadcast      = 36;
     public static final int EJavaAMMS	          = 37;
+    public static final int EJavaSettings       = 38;
     // add name of new components here
 
 
@@ -138,6 +139,7 @@ public final class Logger
         false,  //EJavaAppMngrPlugin = 35;
         false,  //EJavaBroadcast     = 36;
         false,  //EJavaAMMS					 = 37;
+        false,  //EJavaSettings 		 = 38;
         // add  new components here
     };
 

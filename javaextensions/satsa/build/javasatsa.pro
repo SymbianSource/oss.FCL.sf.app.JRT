@@ -16,8 +16,8 @@
 
 TARGET=javasatsa
 TEMPLATE=lib
-CONFIG += omj java  stl
-CONFIG -= qt
+CONFIG += hb omj java  stl
+# CONFIG -= qt
 
 symbian {
  			INCLUDEPATH +=  ../framework/inc	\
@@ -35,6 +35,8 @@ symbian {
                  							  								 
  								  			
  			LIBS +=    -ljavastorage	\
+                                 -lHbCore \
+                                 -lHbWidgets \
  								 -lCommonUI \
  								 -lrandom \
 								 -lx509	\
@@ -62,6 +64,7 @@ symbian {
 								 -lWimClient	\
 								 -lestlib	\
 								 -lcryptography \		
+                                 
 								   
  
  }

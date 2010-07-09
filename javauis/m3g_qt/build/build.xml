@@ -27,15 +27,6 @@
   <!-- Needed by the utilities.xml. See the description form the utilities.xml
        file -->
 
-
-  <target name="compile">
-    <omj.javac classpath="${impl.cldc.jar}" excludes="**/CDCCompatibilityDelegate.java"/>
-  </target>
-
-
-  <!-- Needed by the utilities.xml. See the description form the utilities.xml
-       file -->
-
   <property name="javah.classnames" 
             value="javax.microedition.m3g.AnimationController,
                    javax.microedition.m3g.AnimationTrack,

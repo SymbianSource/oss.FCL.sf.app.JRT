@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -359,11 +359,12 @@ public final class SysUtil
                                              " drives failed with code " + ret);
         }
         // Save the drives so that next time they are not fetched again.
-        iUserVisibleDrives = new Vector();
+        Vector drivesVector = new Vector();
         for (int i = 0; i < aVisibleDrives.size(); i++)
         {
-            iUserVisibleDrives.addElement(aVisibleDrives.elementAt(i));
+            drivesVector.addElement(aVisibleDrives.elementAt(i));
         }
+        iUserVisibleDrives = drivesVector;
     }
 
     /**

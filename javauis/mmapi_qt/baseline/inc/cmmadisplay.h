@@ -50,7 +50,7 @@ protected:  // Constructors and destructors
     // Default constructor, protected to allow derivation
     CMMADisplay();
 
-    void Construct(MMAFunctionServer* eventSource ,jobject javadisplayref);
+    void Construct(MMAFunctionServer* eventSource ,JNIEnv* aJni, jobject javadisplayref);
 
 public: // Methods derived from MMMADisplay
     void DrawFrameL(const CFbsBitmap* aBitmap);
@@ -66,7 +66,8 @@ public: // Methods derived from MMMADisplay
     void SetUIPlayer(MMMAGuiPlayer* player);
     TSize SourceSize();
     virtual void SourceSizeChanged(TInt aJavaControlWidth, TInt aJavaControlHeight,TInt x,TInt y, TRect aBoundsRect) = 0;
-
+    TBool iseSWT();
+    void SetFullscreenSize(TSize& aSize);
     /**
      * Gets notification that there is container to draw assigned
      *
@@ -267,9 +268,19 @@ protected:  // Data
     MMAFunctionServer* iEventSource;
     JNIEnv* iJni;
     jobject iJavaDisplayObject;
-		jclass iJavaDisplayClass;
-		TSize iFullScreenSize;
-		MMMAGuiPlayer* iUiPlayer;
+	jclass iJavaDisplayClass;
+	TSize iFullScreenSize;
+	MMMAGuiPlayer* iUiPlayer;
+	TBool iIseSWT;
+	jmethodID setRectID;
+	jfieldID iRectDimensionField;
+	jfieldID iDisplayboundarrField;
+	jmethodID setContentBoundID;
+	jmethodID removeContentBoundID;
+	jmethodID redrawControlID;
+	jmethodID getCallBackMethodID;
+	jobject iJavadisplayref;
+	jmethodID getBoundRectID;
 };
 
 #endif // CMMADISPLAY_H

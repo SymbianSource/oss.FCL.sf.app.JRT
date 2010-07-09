@@ -21,9 +21,7 @@ package com.nokia.mj.impl.rt.legacy;
 public interface ToolkitObserverNGAExtension extends ToolkitObserver
 {
     /**
-     * Notification about MIDlet going to background or coming foreground.
-     * @param foreground    true, when MIDlet came to foreground
-     *                      false, when MIDlet was sent to background
+     * Notification that observer should free all graphics memory immediately.
      */
-    void foregroundEvent(boolean foreground);
+    void freeGraphicsMemory();
 }

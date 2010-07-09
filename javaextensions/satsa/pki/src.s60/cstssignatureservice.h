@@ -19,19 +19,17 @@
 #ifndef CSTSSIGNATURESERVICE_H
 #define CSTSSIGNATURESERVICE_H
 
-//  INCLUDES
+
+#include "javaosheaders.h"
+#include <vector>
+
 #include <e32base.h>
 #include <badesca.h>
 #include <mctkeystore.h>
 #include "functionserver.h"
 
-// CONSTANTS
-
-
-
 // FORWARD DECLARATIONS
 class MSecurityDialog;
-class MPKIDialog;
 class CUnifiedCertStore;
 class CUnifiedKeyStore;
 class CCTCertInfo;
@@ -265,9 +263,6 @@ private:    // Data
 
     // security dialog, owned
     MSecurityDialog* iDialog;
-
-    // PKI Dialog, owned
-    MPKIDialog* iPKIDialog;
 
     // certificate store, owned
     CUnifiedCertStore* iCertStore;

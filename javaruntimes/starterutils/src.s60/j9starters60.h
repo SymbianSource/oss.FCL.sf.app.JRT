@@ -74,6 +74,11 @@ public:
     /**
      * @see jvmstarter.h
      */
+    virtual void overrideMaxHeapSize(int heapSize);
+
+    /**
+     * @see jvmstarter.h
+     */
     virtual void overrideNativeStackSize(int stackSize);
 
     /**
@@ -106,6 +111,15 @@ private:
      * @param odcFile Th ODC file to be appended.
      */
     void appendOdcFile(const std::wstring& odcFile);
+        
+    /**
+     * Internal utility for setting max heap sizes in kB. Used to
+	 * set -Xmx and -Xmox vm args.
+	 * @param arg String containing either -Xmx or -Xmox (not checked).
+	 * @param size Size of the heap as string in kilo bytes.
+     */
+    void doOverideHeap(const std::wstring& arg, const std::wstring& size);
+
 
 #ifdef __WINSCW__ // codescanner::ifpreprocessor
     /**

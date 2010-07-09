@@ -50,6 +50,11 @@ import org.eclipse.swt.internal.qt.WidgetState;
  * @see #checkSubclass
  */
 public abstract class Widget {
+    // The handles of the child-most and the root-most QObject within the
+    // Widget, respectively. For Controls these are QWidgets but for some 
+    // Widgets only QObjects (e.g. QActions for MenuItems). Both can be 
+    // assigned the same QObject. If the handles are nonzero and not equal then
+    // handle is always (directly or indirectly) a QObject child of topHandle. 
     int handle, topHandle;
 
     int style, state;
@@ -312,6 +317,14 @@ void createWidget (int index) {
     } else {
         createHandle_pp (index);
     }
+    if(Display.objectNames) {
+        if(handle != 0) {
+            OS.QObject_setObjectName(handle, this.getClass().getName() + " Widget.handle");
+        }
+        if(topHandle != 0 && topHandle != handle) {
+            OS.QObject_setObjectName(topHandle, this.getClass().getName() + " Widget.topHandle");
+        }
+    }
     // If subclasses didn't specify topHandle then it's assumed that there's
     // only one QWidget. I.e. handle is the root widget.
     if(topHandle == 0) topHandle = handle;
@@ -325,6 +338,7 @@ void createWidget (int index) {
     } else {
         register_pp();
     }
+    fixMousePropagation();
 }
 
 void deregister_pp () {
@@ -378,6 +392,9 @@ final void error (int code) {
 
 final boolean filters (int eventType) {
     return Display.filters (eventType);
+}
+
+void fixMousePropagation() {
 }
 
 static final Command[] getCommands(Control control) {
@@ -509,12 +526,6 @@ String getPhoneNumber_pp() {
 public int getStyle () {
     checkWidget ();
     return style;
-}
-
-// Experimental support for StyleSheets
-public String getStyleSheet(){
-    checkWidget();
-    return OS.QWidget_styleSheet(handle);
 }
 
 void hookEvents_pp () {
@@ -1183,9 +1194,9 @@ public void setData (String key, Object value) {
     }
 
     if(key.equals(WidgetConstant.CSS_ID)){
-    	OS.QObject_setObjectName(topHandle,(String)value);
-    	// Do not return here and let Widget store the key
-    	// value.
+        OS.QObject_setObjectName(topHandle,(String)value);
+        // Do not return here and let Widget store the key
+        // value.
     }
 
     int index = 1;

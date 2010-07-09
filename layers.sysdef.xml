@@ -12,26 +12,12 @@
               qmakeArgs="-r"
               filter="!sf_build" />
       </module>
-      
-<!--  When releasing to SF, change the sf_build to this.
       <module name="jrt_sf">
         <unit name="jrt_sf" unitID="jrt.jrt_sf" mrp=""
               bldFile="&layer_real_source_path;" proFile="jrt.pro"
               qmakeArgs="-r RD_JAVA_SF_BUILD=1"
               filter="sf_build" />
       </module>
--->
-      <module name="jrt">
-        <unit name="jrt_jrt_plat" unitID="jrt.jrt.jrt_plat" mrp=""
-              bldFile="&layer_real_source_path;/jrt_plat/group"
-              filter="sf_build"  />
-      </module>
-      <module name="jrt">
-        <unit name="jrt_jrt_stubs" unitID="jrt.jrt.java_stubs" mrp=""
-              bldFile="&layer_real_source_path;/java_stubs/group"
-              filter="sf_build" />
-      </module>
-      
     </layer>
   </systemModel>
 </SystemDefinition>

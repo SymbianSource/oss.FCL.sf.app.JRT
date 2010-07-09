@@ -17,10 +17,7 @@
 include $(JAVA_SRC_ROOT)/build/Makefile.defs
 
 
-ifdef RD_JAVA_APPLICATION_SETTINGS_QT
-COMPONENTS += appsettingsview_qt/build
-SYMBIAN_ONLY += appsettingsview_qt/build
-else
+ifndef RD_JAVA_APPLICATION_SETTINGS_QT
 ifndef RD_JAVA_S60_RELEASE_5_0_IAD
 NONQTSUBSYSTEMS += appmngrplugin/build
 SYMBIAN_ONLY += appmngrplugin/build

@@ -17,38 +17,20 @@
 
 package com.nokia.microedition.media.animation;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-
-import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.Item;
 import javax.microedition.media.MediaException;
 import javax.microedition.media.Player;
 import javax.microedition.media.PlayerListener;
 
-import org.eclipse.ercp.swt.mobile.MobileShell;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ProxyControl;
-import org.eclipse.swt.widgets.Shell;
 
-//import com.nokia.microedition.media.control.ApplicationUtils;
 import com.nokia.microedition.media.control.ControlImpl;
-import com.nokia.microedition.media.control.MMAGUIFactory;
-import com.nokia.mj.impl.rt.support.Finalizer;
-import com.nokia.mj.impl.media.PlayerPermission;
 import com.nokia.mj.impl.nokialcdui.ItemControlStateChangeListener;
-import com.nokia.mj.impl.nokialcdui.LCDUIInvoker;
-
-//import com.nokia.mj.impl.media.PlayerPermission;
-import com.nokia.mj.impl.rt.support.ApplicationUtils;
+import com.nokia.mj.impl.rt.support.Finalizer;
 import com.nokia.mj.impl.utils.Logger;
 
 
@@ -74,29 +56,46 @@ public class VideoControl extends ControlImpl implements
     private static String ESWT_CONTROL = ".control";
 
     private static final int NOT_INITIALIZED = -1;
-    protected int iStatus = NOT_INITIALIZED;
+    private int iStatus = NOT_INITIALIZED;
     private static final int UNDEFINED_RETURN_VALUE=0;
     // For integrating with eSWT API
     private Display iDisplay;
     // This is reference of eSWT Control, don't get confused with the Player Control
     private Control iControl;
+
+    /**
+     * This variable stores the information whether the VideoControl is in full screen mode or not.
+     * by default it's value is false
+     */
+    private boolean iFullScreenMode;
     /**
     * When video display is set to full screen mode, old
-    * video position & size is stored to this member. When
+    * video size is stored to this member. When
     * full screen mode is turned off, this member is used to
     * find out if display size has been changed during full
     * screen mode. This is needed to generate a SIZE_CHANGED
     * event.
     */
-    private Point iOldDisplaySize;
+    private Point iOldDisplaySize= new Point(0,0);
+    /**
+     * When video display is set to full screen mode, old
+    * video location is stored to this member. When
+    * full screen mode is turned off, this member is used to
+    * find out if display location has been changed during full
+    * screen mode.
+     */
+    private Point iOldDisplayLocation= new Point(0,0);
     /**
      * A CustomItem which needs to be returned in case USE_GUI_PRIMITIVE and null to MIDlet
      * from initDisplayMode function.
      */
     // Global??? yes because we need to remove it from player listener, while finalizer will be called
     private VideoItem iVideoItem;
-
-    ESWTinitializeListener iESWTinitializeListener;
+    /**
+     * An interface, which listen for eSWT Display and Control, here it is AnimationPlayer
+     * and is getting notified, as soon as the either of these is ready to use
+     */
+    private ESWTinitializeListener iESWTinitializeListener;
 
     /**
      * Constructor of VideoControl
@@ -156,7 +155,7 @@ public class VideoControl extends ControlImpl implements
                 "VideoControl.initDisplayMode() not called yet");
         }
         // Following function will always return Player's current height
-        return ((AnimationPlayer) iPlayer).getImageDimension().x;
+        return ((AnimationPlayer) iPlayer).getCurrentVideoDimension().y;
     }
 
     /**
@@ -172,7 +171,7 @@ public class VideoControl extends ControlImpl implements
             throw new IllegalStateException(
                 "VideoControl.initDisplayMode() not called yet");
         }
-        return ((AnimationPlayer) iPlayer).getImageDimension().x;
+        return ((AnimationPlayer) iPlayer).getCurrentVideoDimension().x;
     }
 
     /**
@@ -385,7 +384,7 @@ public class VideoControl extends ControlImpl implements
      */
     private Object initLCDUI()
     {
-        iVideoItem = new VideoItem(((AnimationPlayer)iPlayer).getImageDimension());
+        iVideoItem = new VideoItem(((AnimationPlayer)iPlayer).getCurrentVideoDimension());
         iPlayer.addPlayerListener(iVideoItem);
         iStatus = USE_GUI_PRIMITIVE;
         return iVideoItem;
@@ -480,7 +479,7 @@ public class VideoControl extends ControlImpl implements
             {
                 public void run()
                 {
-                    control=new ProxyControl(((AnimationPlayer)iPlayer).getImageDimension());
+                    control=new ProxyControl(((AnimationPlayer)iPlayer).getCurrentVideoDimension());
                 }
             });
         }
@@ -539,8 +538,12 @@ public class VideoControl extends ControlImpl implements
             // Before going to full screen mode, we need to store the current display size;
             // so that when user will exit from the full screen,
             // it will return to it's previous size
-            iOldDisplaySize = ((AnimationPlayer)iPlayer).getImageDimension();
-            Rectangle displayDimension=calculateFullScreenDimension();
+
+            iOldDisplaySize.x = ((AnimationPlayer)iPlayer).getCurrentVideoDimension().x;
+            iOldDisplaySize.y = ((AnimationPlayer)iPlayer).getCurrentVideoDimension().y;
+            iOldDisplayLocation.x= ((AnimationPlayer)iPlayer).getiDisplayLocation().x;
+            iOldDisplayLocation.y= ((AnimationPlayer)iPlayer).getiDisplayLocation().y;
+            Rectangle displayDimension = calculateFullScreenDimension();
             ((AnimationPlayer)iPlayer).updateImageData(displayDimension.width, displayDimension.height);
             setDisplayLocation(displayDimension.x, displayDimension.y);
             ((AnimationPlayer)iPlayer).getiPlayerListenerImpl().postEvent(PlayerListener.SIZE_CHANGED, this);
@@ -552,12 +555,14 @@ public class VideoControl extends ControlImpl implements
             if (iOldDisplaySize!=null)
             {
                 ((AnimationPlayer)iPlayer).updateImageData(iOldDisplaySize);
+                ((AnimationPlayer)iPlayer).setDisplayLocation(iOldDisplayLocation.x, iOldDisplayLocation.y);
                 // Do we need to make it null?
                 iOldDisplaySize=null;
                 // post event to player Listener
                 ((AnimationPlayer)iPlayer).getiPlayerListenerImpl().postEvent(PlayerListener.SIZE_CHANGED, this);
             }
         }
+        iFullScreenMode = aFullScreenMode;
     }
 
     /* (non-Javadoc)
@@ -582,6 +587,16 @@ public class VideoControl extends ControlImpl implements
         // notifyControlAvailable function is not get called)
         if (iControl==null)// || (iControl instanceof org.eclipse.swt.internal.extension.CanvasExtension))
             return ;
+        //if video control is in full screen mode
+        // this function should not take effect
+        // following block will store the location to be set
+        // so that when player will exit from full screen mode, this size will be effective
+        if (iFullScreenMode)
+        {
+            iOldDisplayLocation.x = aX;
+            iOldDisplayLocation.y = aY;
+            return;
+        }
         ((AnimationPlayer)iPlayer).setDisplayLocation(aX, aY);
     }
 
@@ -604,6 +619,16 @@ public class VideoControl extends ControlImpl implements
         {
             throw new IllegalArgumentException(
                 "Width and height must be positive");
+        }
+        //this function should not take effect, when the
+        if (iFullScreenMode)
+        {
+            // if video is playing in full screen mode, just store the size
+            // to changed in this variable, so that when full screen mode of videocontrol will exit
+            // we need to display the image size in this dimension
+            iOldDisplaySize.x = aWidth;
+            iOldDisplaySize.y = aHeight;
+            return;
         }
         // resize the all frames
         ((AnimationPlayer) iPlayer).updateImageData(aWidth, aHeight);
@@ -650,23 +675,6 @@ public class VideoControl extends ControlImpl implements
     }
     /*******************************FOLLOWING FUNCTIONS ARE USED FOR INTERNAL PURPOSE***********************/
     /**
-     *
-     * @return Display object retrieved from ESWT
-    //     */
-//    Display getiDisplay()
-//    {
-//        return iDisplay;
-//    }
-
-    /**
-     *
-     * @return
-     */
-//    Control getControl()
-//    {
-//        return iControl;
-//    }
-    /**
      * Function of ItemStateChangeListener
      * Notified by LCDUI implementation
      * @param ctrl
@@ -704,7 +712,7 @@ public class VideoControl extends ControlImpl implements
     private Rectangle deviceDimension;
     private Rectangle calculateFullScreenDimension()
     {
-        Point actualImageSize = ((AnimationPlayer)iPlayer).getImageDimension();
+        Point actualImageSize = ((AnimationPlayer)iPlayer).getSourceDimension();
         // initialize the deviceDimension, in local variable
         iDisplay.syncExec(new Runnable()
         {

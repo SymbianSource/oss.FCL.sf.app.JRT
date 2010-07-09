@@ -37,7 +37,8 @@ symbian {
     INCLUDEPATH += ../src.s60/applicationregistrator \
                    ../src.s60/iconconverter \
                    ../src.s60/jadjarmatcher \
-                   ../src.s60/utils
+                   ../src.s60/utils \
+                   ../../iconsizenotifplugin/inc
 
     SOURCES += ../src.s60/applicationregistrator/applicationregistrator.cpp \
                ../src.s60/applicationregistrator/sifnotifier.cpp \
@@ -53,7 +54,7 @@ symbian {
     LIBS += -lapgrfx -lbafl -lcentralrepository -lcharconv -lefsrv -lestor \
                -lezip -lfbscli -limageconversion -lmsgs  \
                -lsysutil -lplatformenv -lws32 -lapparc -lcentralrepository \
-               -lhal -lcaf -lcafutils
+               -lhal -lcaf -lcafutils -lbitmaptransforms
 
     contains(PROJECT_DEFINES,RD_JAVA_S60_50_REL2) {
         LIBS += -lmcsmenu
@@ -61,11 +62,7 @@ symbian {
 
     contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_10_1_ONWARDS) {
         CONFIG += hb
-        LIBS += -lxqservice
-    }
-
-    contains(PROJECT_DEFINES,RD_JAVA_USIF_NOTIFY_PROGRESS) {
-        LIBS += -lsifnotification
+        LIBS += -lsifnotification -lxqservice
     }
 
     MMP_RULES += \

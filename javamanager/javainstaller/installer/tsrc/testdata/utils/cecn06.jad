@@ -1,0 +1,12 @@
+MIDlet-Name: ‚X‚Y‚Z‚[
+MIDlet-Vendor: Nokia
+MIDlet-Version: 1.0
+MIDlet-Jar-URL: http://195.134.231.83:7070/java-server/resources/man_jam/cecn06/bin/CECN06.jar
+MIDlet-Jar-Size: 1415
+MicroEdition-Profile: MIDP-2.0
+MicroEdition-Configuration: CLDC-1.0
+MIDlet-1: ‚X‚Y‚Z‚[,,GBK.CECN06_01
+MIDlet-Install-Notify: http://195.134.231.83:7070/java-server/getresult.jsp?phone=79CD95B6352F8388513D6DDB699817CF&tID=cecn06
+
+
+

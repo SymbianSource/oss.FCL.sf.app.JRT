@@ -1,0 +1,12 @@
+MIDlet-Name: ??»
+MIDlet-Vendor: Nokia
+MIDlet-Version: 1.0
+MIDlet-Jar-URL: http://195.134.231.83:7070/java-server/resources/man_jam/ceis14/bin/CEIS14.jar
+MIDlet-Jar-Size: 1456
+MIDlet-1: ??», ,ISO8859_16.CEIS14_01
+MicroEdition-Configuration: CLDC-1.0
+MicroEdition-Profile: MIDP-2.0
+MIDlet-Install-Notify: http://195.134.231.83:7070/java-server/getresult.jsp?phone=336AA79A2E085DC20583865B841DBE6B&tID=ceis14
+
+
+

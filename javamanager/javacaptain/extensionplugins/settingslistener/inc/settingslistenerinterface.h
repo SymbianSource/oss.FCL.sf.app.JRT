@@ -11,7 +11,8 @@
 *
 * Contributors:
 *
-* Description:  ExtensionPluginInterface
+* Description:  Definition of interface, which is used for listening changes in
+*                     in system settings.
 *
 */
 
@@ -24,15 +25,13 @@ namespace java
 namespace captain
 {
 
-class CoreInterface;
-
 class SettingsListenerInterface
 {
 public:
     virtual ~SettingsListenerInterface() {}
 
-    virtual void StartListening() = 0;
-    virtual void StopListening() = 0;
+    virtual void startListening() = 0;
+    virtual void stopListening() = 0;
 
 };
 

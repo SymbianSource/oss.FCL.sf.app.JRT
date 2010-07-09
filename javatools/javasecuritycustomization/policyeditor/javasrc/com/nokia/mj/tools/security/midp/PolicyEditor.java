@@ -18,6 +18,7 @@
 package com.nokia.mj.tools.security.midp;
 
 import java.util.Vector;
+import java.util.Hashtable;
 import java.io.IOException;
 import java.io.FileInputStream;
 import java.util.StringTokenizer;
@@ -46,7 +47,7 @@ import com.nokia.mj.impl.security.midp.common.PermissionMappingTable;
  * domain: 'domain' Identifier ';' grant+;
  * grant: 'grant' (grant_user | grant_allowed | grant_assigned);
  * grant_allowed: 'allowed' permissions;
- * grant_assigned: 'assigned' permissions;
+ * grant_assigned: 'assigned' grant_name? (initial_mode other_modes permissions)? permissions;
  * grant_user: 'user' grant_name initial_mode other_modes permissions;
  * grant_name: '"' Identifier '"';
  * permissions: '{' permission+ '}';
@@ -70,6 +71,7 @@ public final class PolicyEditor
     private SecurityPolicy securityPolicy;
     private static String destPath;
     private static final String POLICY_FILE_EXTENSION = ".txt";
+    private Hashtable allSettings = new Hashtable();
 
     public static void main(String[] args)
     {
@@ -159,14 +161,17 @@ public final class PolicyEditor
         }
         domain = extractToken(';');
         Vector perms = new Vector();
+        Vector unconfirmedPerms = new Vector();
         find("grant");
         while (offset < policy.length)
         {
             SecurityPolicyPermissionSettings settings = null;
+            SecurityPolicyPermissionSettings unconfirmedSettings = null;
             int type = getType(extractToken());
+            String settingsName = null;
             if (type == PolicyBasedPermission.USER_TYPE)
             {
-                String settingsName = extractToken('"', '"');
+                settingsName = extractToken('"', '"');
                 check(settingsName, "User grant group without name");
                 // trim off the leading and trailing double-quotes
                 if (settingsName.startsWith("\""))
@@ -192,6 +197,44 @@ public final class PolicyEditor
                                                     interactionModes);
                 settings = new SecurityPolicyPermissionSettings(settingsName,
                         currentInteractionMode, allowedInteractionModes);
+                allSettings.put(settingsName, settings);
+            }
+            else if (type == PolicyBasedPermission.ASSIGNED_TYPE)
+            {
+                settingsName = extractToken('"', '"');
+                if (settingsName != null 
+                    && settingsName.length() > 0 
+                    && settingsName.indexOf("{") == -1)
+                {
+                    type = PolicyBasedPermission.USER_ASSIGNED_TYPE;
+                    settings = (SecurityPolicyPermissionSettings)allSettings.get(
+                        settingsName);
+                    if (settings == null)
+                    {
+                        // parse the rest of the settings and store it as 
+                        // unconfirmed settings: after all the parsing is 
+                        // done go through the unconfirmed settings and 
+                        // replace them with settings from user permissions
+                        // (if found) or use the unconfirmed settings if no
+                        // other user settings were found
+                        String strInteractionModes = extractToken('{');
+                        String[] interactionModes = split(strInteractionModes,",");
+                        if (interactionModes != null && interactionModes.length > 0)
+                        {
+                            int currentInteractionMode = getInteractionMode(
+                                                         interactionModes[0]);
+                            int[] allowedInteractionModes = getInteractionModes(
+                                                            interactionModes);
+                            unconfirmedSettings = new SecurityPolicyPermissionSettings(
+                                settingsName, currentInteractionMode, allowedInteractionModes);
+                        }
+                        else
+                        {
+                            unconfirmedSettings = new SecurityPolicyPermissionSettings(
+                                settingsName);
+                        }
+                    }
+                }
             }
             find("permission");
             while (offset < policy.length && policy[offset] != '}')
@@ -246,27 +289,74 @@ public final class PolicyEditor
                 // return multiple permissions with simple actions. This step is
                 // to be removed when APIs support composite actions
                 String[] actions = split(pActionList,",");
+                if (unconfirmedSettings != null 
+                    && unconfirmedSettings.getCurrentInteractionMode() 
+                    == UserSecuritySettings.UNDEFINED_INTERACTION_MODE)
+                {
+                    // discard the settings since they are not vald
+                    unconfirmedSettings = null;
+                }
                 if (actions != null)
                 {
                     for (int i=0; i<actions.length; i++)
                     {
-                        perms.add(getPermission(pName,
-                                                pTarget, actions[i], type, settings));
+                        if (unconfirmedSettings == null)
+                        {
+                            perms.add(getSecurityPolicyPermission(
+                                pName, pTarget, actions[i], type, settings));
+                        }
+                        else
+                        {
+                            unconfirmedPerms.add(getSecurityPolicyPermission(
+                                pName, pTarget, actions[i], type, unconfirmedSettings));
+                        }
                     }
                 }
                 else
                 {
-                    perms.add(getPermission(pName,
-                                            pTarget, pActionList, type, settings));
+                    if (unconfirmedSettings == null)
+                    {
+                        perms.add(getSecurityPolicyPermission(
+                            pName, pTarget, pActionList, type, settings));
+                    }
+                    else
+                    {
+                        unconfirmedPerms.add(getSecurityPolicyPermission(
+                            pName, pTarget, pActionList, type, unconfirmedSettings));
+                    }
                 }
                 find("permission");
             }
             find("grant", true);
         }
-        if (perms.size() == 0)
+        if (perms.size() == 0 && unconfirmedPerms.size() == 0)
         {
             throw new IllegalArgumentException(
                 "Invalid security policy - missing/invalid permissions information");
+        }
+        // confirm the unconfirmed permissions: look for settings in the perms -> 
+        // if found then use those settings, otherwise use the unconfirmed settings
+        for(int i=0; i<unconfirmedPerms.size(); i++)
+        {
+            SecurityPolicyPermission unconfirmedPerm = 
+                (SecurityPolicyPermission) unconfirmedPerms
+                .elementAt(i);
+            SecurityPolicyPermissionSettings confirmedSettings = 
+                (SecurityPolicyPermissionSettings)allSettings
+                .get(unconfirmedPerm.getUserSecuritySettings().getName());
+            if (confirmedSettings != null)
+            {
+                perms.add(getSecurityPolicyPermission(
+                    unconfirmedPerm.getName(), 
+                    unconfirmedPerm.getTarget(), 
+                    unconfirmedPerm.getActionList(), 
+                    unconfirmedPerm.getType(), 
+                    confirmedSettings));
+            }
+            else
+            {
+                perms.add(unconfirmedPerm); 
+            }
         }
         SecurityPolicyPermission[] permissions
         = new SecurityPolicyPermission[perms.size()];
@@ -463,22 +553,18 @@ public final class PolicyEditor
         tokens.copyInto(strTokens);
         return strTokens;
     }
-
-    private SecurityPolicyPermission getPermission(String pName,
-            String pTarget,
-            String pAction,
-            int pType,
-            SecurityPolicyPermissionSettings pSettings)
+    
+    private SecurityPolicyPermission getSecurityPolicyPermission(
+        String name,
+        String target,
+        String actionList,
+        int type,
+        SecurityPolicyPermissionSettings settings)
     {
-        if (pSettings == null)
+        if (settings == null && type == PolicyBasedPermission.USER_ASSIGNED_TYPE)
         {
-            return new SecurityPolicyPermission(
-                       pName, pTarget, pAction, pType);
+            return new SecurityPolicyPermission(name, target, actionList, PolicyBasedPermission.ASSIGNED_TYPE);
         }
-        else
-        {
-            return new SecurityPolicyPermission(
-                       pName, pTarget, pAction, pSettings);
-        }
+        return new SecurityPolicyPermission(name, target, actionList, type, settings);
     }
 }

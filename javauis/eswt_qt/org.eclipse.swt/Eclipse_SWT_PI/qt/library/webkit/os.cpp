@@ -15,13 +15,13 @@
 #include <QWebHistory>
 #endif
 
-#include "org_eclipse_swt_internal_qt_webkit_OS_0005fwebkit.h"
+#include "org_eclipse_swt_internal_qt_webkit_WebkitOS.h"
 #include "swt.h"
 #include "swtlog.h"
 #include "swtapplication.h"
 #include "jniutils.h"
 
-#define OS_NATIVE(func) Java_org_eclipse_swt_internal_qt_webkit_OS_1webkit_##func
+#define OS_NATIVE(func) Java_org_eclipse_swt_internal_qt_webkit_WebkitOS_##func
 
 using namespace Java::eSWT;
 

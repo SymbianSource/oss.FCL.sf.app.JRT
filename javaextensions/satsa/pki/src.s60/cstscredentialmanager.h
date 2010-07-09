@@ -31,7 +31,7 @@ using namespace java::util;
 
 // FORWARD DECLARATIONS
 class CCTKeyInfo;
-class MPKIDialog;
+
 class CUnifiedCertStore;
 class CUnifiedKeyStore;
 class CX500DistinguishedName;
@@ -349,8 +349,6 @@ private:    // Data
     // internal error variable
     TInt iError;
 
-    // PKI Dialog, owned
-    MPKIDialog* iPKIDialog;
 
     // The actual store, owned
     CUnifiedCertStore* iStore;

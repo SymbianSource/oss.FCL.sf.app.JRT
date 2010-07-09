@@ -11,7 +11,8 @@
 *
 * Contributors:
 *
-* Description:  BootEventProviderMessages
+* Description:  Definition of comms messages used for reporting chages in system
+*                    settings.
 *
 */
 
@@ -35,21 +36,21 @@ const char* const SETTINGS_CHANGE_EVENT_PROVIDER = "settingslistener";
 
 typedef enum
 {
-    UNDEFINED_CHANGE          = 0x00,
-    MIDP_CLASS_PATH_CHANGE          = 0x01,
+    UNDEFINED_CHANGE  = 0x00,
+    MIDP_CLASS_PATH_CHANGE = 0x01,
 
 } SettingsChangeEventType_t;
 
 
 inline void setSettingsChangeEventMessageParams(CommsMessage& aMessage,
-                                                      const int& aChangeEventType)
+        const int& aChangeEventType)
 {
     aMessage.setMessageId(SETTINGS_CHANGE_EVENT_MESSAGE_ID_C);
     aMessage << aChangeEventType;
 }
 
 inline void getSettingsChangeEventMessageParams(CommsMessage& aMessage,
-                                                      int& aChangeEventType)
+        int& aChangeEventType)
 {
     if (aMessage.getMessageId() == SETTINGS_CHANGE_EVENT_MESSAGE_ID_C)
     {
@@ -59,7 +60,7 @@ inline void getSettingsChangeEventMessageParams(CommsMessage& aMessage,
     {
         ELOG2(EJavaCaptain, "Received Settings Change Event with  wrong MessageId!: %d should be %d",
               aMessage.getMessageId(), SETTINGS_CHANGE_EVENT_MESSAGE_ID_C);
-        aChangeEventType = 0;
+        aChangeEventType = UNDEFINED_CHANGE;
     }
 }
 

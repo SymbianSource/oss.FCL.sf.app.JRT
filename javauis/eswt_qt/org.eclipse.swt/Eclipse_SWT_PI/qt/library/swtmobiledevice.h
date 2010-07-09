@@ -67,7 +67,7 @@ public:
      * Printing InfoMsg for the user for the duration given to vibrate
      * Must return true if the vibrator can be controlled by the application
      */
-    TBool Vibrate(const TTimeIntervalMicroSeconds32& aDuration);
+    TBool Vibrate(const TInt aDuration);
 
     void AppForeground();
 public: // From MHWRMLightObserver

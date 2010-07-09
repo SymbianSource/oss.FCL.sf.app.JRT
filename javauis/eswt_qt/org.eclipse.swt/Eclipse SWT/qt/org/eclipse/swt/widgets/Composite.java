@@ -200,16 +200,9 @@ void createHandle_pp (int index) {
 
 boolean doHandleMouseEvent(int type, int widgetHandle, int button, int x, int y, int state, int buttons) {
     boolean cancel = super.doHandleMouseEvent(type, widgetHandle, button, x, y, state, buttons);
+    // From the CANVAS flag it's known if this is a Shell/stand-alone Composite/Canvas. 
     if((this.state & WidgetState.CANVAS) != 0) {
-        // From the CANVAS flag it's known if this is a Shell/stand-alone
-        // Composite/Canvas. Those don't process the native mouse event but let it
-        // through to the widget below. If the widget below also passes the event
-        // to this Java widget then it will be getting multiple events. To avoid this 
-        // the native event must be canceled.
-        // Note: Also WA_NoMousePropagation could be used for this. 
-        cancel = true;
-        
-        // Set focus for a canvas with no children
+        // Set focus for a Canvas with no children. 
         if(type == SWT.MouseDown) {
             if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
                 Control[] children = getChildren();
@@ -510,7 +503,7 @@ Point minimumSize (int wHint, int hHint, boolean changed) {
     return new Point (width, height);
 }
 
-void qt_swt_event_widgetResized_pp(int widgetHandle, int oldWidth, int oldHeight, int width, int height) {
+void qt_swt_event_widgetResized_pp(int widgetHandle, int oldWidth, int oldHeight, int width, int height, boolean sendResizeEvent) {
     if (isDisposed ()) return;
     if((widgetHandle == handle) && isMirrored()) {
         // In real coordinate system the children need to be moved so that they
@@ -533,7 +526,7 @@ void qt_swt_event_widgetResized_pp(int widgetHandle, int oldWidth, int oldHeight
             }
         }
     }
-    super.qt_swt_event_widgetResized_pp(widgetHandle, oldWidth, oldHeight, width, height);
+    super.qt_swt_event_widgetResized_pp(widgetHandle, oldWidth, oldHeight, width, height, sendResizeEvent);
     if (layout != null) {
         markLayout (false, false);
         updateLayout (false);

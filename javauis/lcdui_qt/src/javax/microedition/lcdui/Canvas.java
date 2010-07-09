@@ -372,7 +372,7 @@ public abstract class Canvas extends Displayable
     Composite eswtConstructContent(int style)
     {
         // Get JAD attribute
-        setMode(NO_BACKGROUND, JadAttributeUtil.isValue(JadAttributeUtil.ATTRIB_NOKIA_UI_ENHANCEMENT,
+        setMode(NO_BACKGROUND, !JadAttributeUtil.isValue(JadAttributeUtil.ATTRIB_NOKIA_UI_ENHANCEMENT,
                                                 JadAttributeUtil.VALUE_CANVAS_HAS_BACKGROUND));
         if(isMode(NO_BACKGROUND))
         {
@@ -434,11 +434,12 @@ public abstract class Canvas extends Displayable
         canvasComp.setVisible(false);
 
         createOnScreenKeypad();
-
-        // create graphics buffer
-        graphicsBuffer = Buffer.createInstance(this, canvasComp);
-
         return canvasComp;
+    }
+
+    void eswtInitGraphics() {
+        // create graphics buffer
+       graphicsBuffer = Buffer.createInstance(this, canvasComp);
     }
 
     /**
@@ -760,18 +761,17 @@ public abstract class Canvas extends Displayable
      */
     public int getHeight()
     {
-        ESWTUIThreadRunner.syncExec(new Runnable()
+        if(onScreenkeypad != null)
         {
-            public void run()
+            ESWTUIThreadRunner.syncExec(new Runnable()
             {
-                if(onScreenkeypad != null)
+                public void run()
                 {
                     oskHeight = onScreenkeypad.getHeight();
                 }
-            }
-        });
+            });
+        }
         return (super.getHeight() - oskHeight);
-
     }
 
     /**

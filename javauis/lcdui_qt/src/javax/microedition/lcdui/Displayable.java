@@ -130,6 +130,7 @@ public abstract class Displayable
                 eswtSetTitle();
                 contentComp = eswtConstructContent(SWT.NONE);
                 contentArea = eswtLayoutShellContent();
+                eswtInitGraphics();
             }
         });
     }
@@ -183,6 +184,13 @@ public abstract class Displayable
         return comp;
     }
 
+    /**
+     * Initializes the Displayable for Graphics drawing. 
+     */
+    void eswtInitGraphics() {
+    
+    }
+    
     /**
      * Called by Display when Displayable should become visible.
      */

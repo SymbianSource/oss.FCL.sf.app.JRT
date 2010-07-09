@@ -19,7 +19,9 @@
 
 
 #include <e32base.h>
+#ifndef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 #include <apgcli.h> // for RApaLsSession
+#endif
 #include <hal_data.h>
 #include <hal.h>
 #include <sysutil.h>
@@ -320,6 +322,7 @@ void PreinstallerStarter::startPreinstaller(TBool aIadBoot)
  * Register 'javalauncher.exe' as the midlet application type handler
  * in AppArc. If necessary unregister old handler first.
  */
+#ifndef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 void PreinstallerStarter::registerMidletApplicationTypeHandler()
 {
     _LIT(KMidpAppArcPlugin, "javalauncher.exe");
@@ -381,6 +384,7 @@ void PreinstallerStarter::registerMidletApplicationTypeHandler()
               err);
     }
 }
+#endif
 
 void PreinstallerStarter::RunL()
 {

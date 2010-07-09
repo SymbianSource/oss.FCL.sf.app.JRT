@@ -13,8 +13,8 @@ grant user "Local Connectivity" session,oneshot,no {
 }
 
 grant user "Messaging" session,oneshot,no {
-    permission javax.microedition.io.Connector.sms "sms://*" "send";
-    permission javax.microedition.io.Connector.mms "mms://*" "send";
+    permission javax.microedition.io.Connector.sms "sms://*" "open,send,receive";
+    permission javax.microedition.io.Connector.mms "mms://*" "open,send,receive";
 }
 
 grant user "Multimedia Recording" session,oneshot,no {
@@ -24,9 +24,4 @@ grant user "Multimedia Recording" session,oneshot,no {
 
 grant user "Application Auto Invocation" session,oneshot,no {
     permission javax.microedition.io.PushRegistryPermission "*" "staticregistration,dynamicregistration,autoinvocation";
-}
-
-grant allowed {
-    permission javax.microedition.io.Connector.sms "sms://*" "open,receive";
-    permission javax.microedition.io.Connector.mms "mms://*" "open,receive";
 }

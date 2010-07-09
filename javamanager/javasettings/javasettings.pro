@@ -14,5 +14,4 @@
 # Description: Generated file - do not edit manually
 #
 TEMPLATE = subdirs
-SUBDIRS += appsettingsview_qt/build/javaapplicationsettingsview.pro 
 BLD_INF_RULES.prj_extensions += "prj_extensions" 

@@ -59,7 +59,9 @@ protected:
 
 private:
     void startPreinstaller(TBool aIadBoot);
+#ifndef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
     void registerMidletApplicationTypeHandler();
+#endif
 
     CoreInterface* mCore;
     RProcess*      mPreinstaller;

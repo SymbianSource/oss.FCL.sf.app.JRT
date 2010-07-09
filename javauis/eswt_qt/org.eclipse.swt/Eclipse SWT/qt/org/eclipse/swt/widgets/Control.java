@@ -811,6 +811,14 @@ void fixFocus (Control focusControl) {
     }
 }
 
+void fixMousePropagation() {
+    // In SWT mouse events are not supposed to propagate to the parent like in
+    // Qt. Thus, the default is never to propagate. 
+    if(handle != 0) {
+        OS.QWidget_setAttribute(handle, OS.QT_WA_NOMOUSEPROPAGATION, true);
+    }
+}
+
 void flushBuffers() {
     if (bufferedGcs != null) {
         for (int i = 0; i < bufferedGcs.size(); i++) {
@@ -1857,23 +1865,23 @@ boolean qt_event_contextmenu(int x, int y, int reason) {
         }
 
         // Add the actions that may be added by CommandArranger
-	     if(commandList != null) {
-	        CommandUtils.sort(commandList);
-	        for (int i = 0; i < commandList.length; i++) {
-	            OS.QMenu_addAction(menuHandle, Internal_PackageSupport.topHandle(commandList[i]));
-	        }
-	     }
+         if(commandList != null) {
+            CommandUtils.sort(commandList);
+            for (int i = 0; i < commandList.length; i++) {
+                OS.QMenu_addAction(menuHandle, Internal_PackageSupport.topHandle(commandList[i]));
+            }
+         }
 
         OS.QMenu_exec(menuHandle, event.x, event.y, 0);
 
         // Clean-up the QActions from CommandArranger and QMenu
         if(commandList != null && menuHandle != 0)   {
-	        for (int i = 0; i < commandList.length; i++) {
-	            int action = Internal_PackageSupport.topHandle(commandList[i]);
-	        	if(action != 0) {
-	        		OS.QWidget_removeAction(menuHandle, action);
-	        	}
-	        }
+            for (int i = 0; i < commandList.length; i++) {
+                int action = Internal_PackageSupport.topHandle(commandList[i]);
+                if(action != 0) {
+                    OS.QWidget_removeAction(menuHandle, action);
+                }
+            }
         }
         if (commandMenu) {
             QObjectDeleteWrapper.deleteSafely(menuHandle);
@@ -1977,10 +1985,10 @@ void qt_swt_event_widgetMoved(int widgetHandle) {
         sendEvent(SWT.Move);
 }
 
-void qt_swt_event_widgetResized_pp(int widgetHandle, int oldWidth, int oldHeight, int width, int height) {
+void qt_swt_event_widgetResized_pp(int widgetHandle, int oldWidth, int oldHeight, int width, int height, boolean sendResizeEvent) {
     // Resize events are sent only for top native widget,
     // as some Controls are made of multiple native widgets.
-    if (widgetHandle == topHandle)
+    if (widgetHandle == topHandle && sendResizeEvent)
         sendEvent(SWT.Resize);
 }
 
@@ -2008,9 +2016,8 @@ void qt_swt_event_focusWasGained() {
             Display.focusEvent = SWT.None;
         }
     }
-    if(display != null && !display.isDisposed()) {
-        Display.commandArranger.focusedControlChanged();
-    }
+    
+    
 }
 void qt_swt_event_focusWasLost() {
     try {

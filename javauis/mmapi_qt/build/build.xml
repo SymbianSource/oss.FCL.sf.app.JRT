@@ -21,13 +21,6 @@
   <import file="../../../build/utilities.xml"/>
 
  
-  <!-- Needed by the utilities.xml. See the description form the utilities.xml
-       file -->
-
-  <target name="compile">
-    <omj.javac classpath="${classpath}:${compile.result.root}/eswtqt/classes/first:${compile.result.root}/openlcdui/classes/first:${compile.result.root}/javautils/classes/first"/>
-  </target>
-
 <!-- conditional compilation variation depending upon the platform
 -->
   <target name="init.component.properties">
@@ -65,6 +58,8 @@
                    com.nokia.microedition.media.control.MMACanvasDisplay,
                    com.nokia.microedition.media.control.ItemDisplay,
                    com.nokia.microedition.media.control.BaseDisplay,
+		   com.nokia.microedition.media.control.MMAeSWTDisplay,
+		   org.eclipse.swt.widgets.ESWTProxyControl,
                    com.nokia.microedition.media.control.MMAGUIFactory,
                    com.nokia.microedition.media.control.PitchControl,
                    com.nokia.microedition.media.control.RateControl,
@@ -197,10 +192,21 @@
     </properties>
 
   </target>
+  
+  <target name="create.public.api.jar">
+    <omj.public.apis includes="javax/microedition/media/**/*.class"/>
+  </target>
 
   <target name="create.internal.api.jar">
     <omj.internal.apis includes="com/nokia/microedition/media/control/ControlImpl.class,
-                                 com/nokia/microedition/media/control/MMAGUIFactory.class"/>
+                                 com/nokia/microedition/media/control/MMAGUIFactory.class,
+                                 com/nokia/microedition/media/NativeError.class,
+                                 com/nokia/microedition/media/InternalPlayer.class,
+                                 com/nokia/microedition/media/PlayerImpl.class,
+                                 com/nokia/microedition/media/PlugIn.class,
+                                 com/nokia/microedition/media/MMAInvokeListener.class,
+                                 com/nokia/microedition/media/PlayerBase.class,
+                                 com/nokia/microedition/media/ManagerImpl.class"/>
   </target>
 
 </project>

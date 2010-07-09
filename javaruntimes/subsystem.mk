@@ -26,7 +26,8 @@ COMPONENTS = \
 	installer/starterexe/build \
 	jvmargmodifier/default/build \
 	jvmargmodifier/file/build \
-	starterutils/build
+	starterutils/build \
+	standalone/build \
 
 ifdef RD_JAVA_S60_RELEASE_5_0_IAD
 	COMPONENTS += starter/build.iad
@@ -37,5 +38,6 @@ endif
 starterutils/build: jvmargmodifier/default/build
 midp: starterutils/build
 installer/starterdll/build: starterutils/build
+standalone/build: starterutils/build
 
 include ${JAVA_SRC_ROOT}/build/Makefile.subsystem

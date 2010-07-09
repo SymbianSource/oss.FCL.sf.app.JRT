@@ -85,6 +85,7 @@ data=ZRESOURCE\plugins\javaappschemeplugin.rsc                              ECOM
 // Usif installer plugin
 ECOM_PLUGIN(javasifplugin.dll,javasifplugin.rsc)
 data=ZRESOURCE\plugins\javasifplugin.rsc                                    ECOM_RESOURCE_DIR\javasifplugin.rsc
+file=ABI_DIR\BUILD_DIR\javainstallcopier.exe                                PROGRAMS_DIR\javainstallcopier.exe
 #endif
 
 // Recognizers
@@ -165,6 +166,7 @@ data=JAVA_VM_RES_BLD\javalegacyutils.odc                                    JAVA
 file=ABI_DIR\BUILD_DIR\javaruntimeui.dll                                    SHARED_LIB_DIR\javaruntimeui.dll
 data=JAVA_VM_RES_BLD\javaruntimeui.odc                                      JAVA_VM_RES_IMG\javaruntimeui.odc
 file=ABI_DIR\BUILD_DIR\javaruntimestarterutils.dll                          SHARED_LIB_DIR\javaruntimestarterutils.dll
+file=ABI_DIR\BUILD_DIR\javastarter.dll                                      SHARED_LIB_DIR\javastarter.dll
 
 // MIDP runtime
 file=ABI_DIR\BUILD_DIR\javamidp.exe                                         PROGRAMS_DIR\javamidp.exe

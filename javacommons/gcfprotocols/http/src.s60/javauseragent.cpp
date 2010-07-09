@@ -17,38 +17,16 @@
 
 #include "javauseragent.h"
 #ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS
-#include <QWebpage.h>
-#include "javaenvinfo.h"
 #else
 #include <cuseragent.h>
 #endif
 
-#ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS
-class Page: public QWebPage
-{
-public:
-    QString  userAgentForUrl ( const QUrl & url ) const;
 
-};
-
-QString  Page::userAgentForUrl ( const QUrl & url ) const
-{
-    return url.toString();
-}
-#endif
 
 HBufC*  JavaUserAgent::GetUserAgentL()
 {
 #ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS
-    /*QApplication app();
-    QUrl uri;
-    Page page;
-    QString webUserAgent = page.userAgentForUrl(uri);
-    HBufC* agent = HBufC::NewMaxLC(webUserAgent.length());
-    agent->Des().Copy(webUserAgent.utf16());
-    agent->Des().Append(*(Java::JavaEnvInfo::GetUserAgentHeaderL()));
-    return agent;
-    */
+   
     _LIT(KString,"null");
     HBufC* agent = HBufC::NewLC(5);
     *agent = KString;

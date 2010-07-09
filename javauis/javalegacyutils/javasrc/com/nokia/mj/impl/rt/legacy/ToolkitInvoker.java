@@ -88,15 +88,6 @@ public abstract class ToolkitInvoker
      */
     public abstract boolean isNgaEnabled();
 
-
-    /**
-     * NGA specific change.
-     * LCDUI's client APIs (e.g M3G) can check are they on foreground or not. 
-     * @return <code>true</code> if MIDlet is on foreground.
-     * @since S60 9.2
-     */
-    public abstract boolean isForeground();
-    
     //
     // Image access
     //

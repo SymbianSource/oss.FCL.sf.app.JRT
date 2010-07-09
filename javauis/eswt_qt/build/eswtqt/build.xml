@@ -52,8 +52,10 @@
       </properties>
     </target>
 
+    <!-- Exclude CDCCompatibilityDelegate class from the build since we are
+         building for CLDC. -->
     <target name="compile">
-        <omj.javac classpath="${impl.cldc.jar}" excludes="**/CDCCompatibilityDelegate.java"/>
+        <omj.javac excludes="**/CDCCompatibilityDelegate.java"/>
     </target>
 
     <target name="create.public.api.jar">

@@ -136,6 +136,12 @@ static Widget lastWidget;
 static Widget[] widgetTable;
 final static int GROW_SIZE = 64;
 
+/*
+ * Set to have relevant QWidgets have their QObject names set to the SWT
+ * widget class names for easier debugging. 
+ */
+static boolean objectNames /*= true*/;
+
 static MobileDevice mobileDevice;
 static int mobileDeviceHandle;
 
@@ -2192,6 +2198,8 @@ protected void release () {
 	    lastWidget = null;
 	    indexTable = null;
 	    widgetTable = null;
+	    freeSlot = 0;
+	    lastHandle = 0;
     }
     thread = null;
     disposeList = null;

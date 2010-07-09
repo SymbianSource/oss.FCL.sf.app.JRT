@@ -92,6 +92,12 @@ int startJvm(int argc, char *argv[])
     // starterUtils->enableDevelopmentFeatures(*jvm.get());
     // jvm->enableThreadDumping();
 
+#ifdef __WINSCW__
+    // Setting smaller max heap in the emulator.
+    const int maxHeapSize = 2 * 1024; // 2 MB
+    jvm->overrideMaxHeapSize(maxHeapSize);
+#endif  // __WINSCW__
+
     jvm->appendSystemProperty(L"-Dcom.nokia.rt.port=tckrunner");
 
     jvm->setMainClass(TCK_RUNNER_MAIN_CLASS);

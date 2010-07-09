@@ -76,8 +76,9 @@ public class ConfirmUninstallation extends ExeStep
             int idxMinus = -1;
             do
             {
-                attrValue = ball.iSuite.getAttributeValue(attrName + "-" + locale);
-                Log.log(attrName + "-" + locale + ": " + attrValue);
+                String localizedAttrName = "Nokia-" + attrName + "-" + locale;
+                attrValue = ball.iSuite.getAttributeValue(localizedAttrName);
+                Log.log(localizedAttrName + ": " + attrValue);
                 idxMinus = locale.lastIndexOf('-');
                 // If attribute is not found using full locale, e.g. 'en-GB',
                 // strip the most specific part of the locale out

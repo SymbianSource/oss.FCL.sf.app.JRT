@@ -194,7 +194,6 @@ public class PermissionMappingTable
         PERMISSION_MAPPING_TABLE.put(
             "javax.microedition.io.Connector.vtag", new MIDPPermission(
                 "com.nokia.mj.impl.ccapi.utils.ContactlessCommunicationPermission", "vtag://*", "open"));
-        // add name of MIDP3 class permissions
         PERMISSION_MAPPING_TABLE.put(
             "javax.microedition.io.SocketProtocolPermission", new MIDPPermission(
                 "com.nokia.mj.impl.gcf.protocol.socket.SocketPermissionImpl", "socket://*"));
@@ -227,6 +226,9 @@ public class PermissionMappingTable
                 "com.nokia.mj.impl.location.LocationPermission", "*"));
        PERMISSION_MAPPING_TABLE.put(
             "javax.microedition.midlet.AutoStartPermission", new MIDPPermission(
+                "com.nokia.mj.impl.installer.utils.AutoStartPermission", null));
+       PERMISSION_MAPPING_TABLE.put(
+            "AutoStartPermission", new MIDPPermission(
                 "com.nokia.mj.impl.installer.utils.AutoStartPermission", null));
        PERMISSION_MAPPING_TABLE.put(
             "javax.microedition.midlet.CmdLineArgsPermission", new MIDPPermission(

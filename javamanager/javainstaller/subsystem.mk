@@ -23,9 +23,14 @@ COMPONENTS = \
 ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
     NONQTSUBSYSTEMS = javasifplugin/build
     SYMBIAN_ONLY = javasifplugin/build
+    COMPONENTS += installcopier/build
 else
     NONQTSUBSYSTEMS = appinstuiplugin/build
     SYMBIAN_ONLY = appinstuiplugin/build
+ifndef RD_JAVA_S60_RELEASE_5_0_IAD
+    NONQTSUBSYSTEMS += iconsizenotifplugin/build
+    SYMBIAN_ONLY += iconsizenotifplugin/build
+endif
 endif
 
 LINUX_ONLY =

@@ -59,7 +59,7 @@ void SmartCardCryptoTokenReader::RunL()
         NextState(Initialize());
         break;
     case EListTokenTypes:
-        NextState(ListTokenTypes());
+        NextState(ListTokenTypesL());
         break;
     case EOpenTokenType:
         NextState(OpenTokenType());
@@ -132,11 +132,11 @@ bool SmartCardCryptoTokenReader::Initialize()
     return true;
 }
 
-bool SmartCardCryptoTokenReader::ListTokenTypes()
+bool SmartCardCryptoTokenReader::ListTokenTypesL()
 {
     TCTTokenTypeAttribute att = { KCTRemovable , 1 };
-    iSmartCardTokensAttributes.Append(att);
-    iSmartCardTokensInterfaces.Append(TUid::Uid(KInterfaceCertStore));
+    iSmartCardTokensAttributes.AppendL(att);
+    iSmartCardTokensInterfaces.AppendL(TUid::Uid(KInterfaceCertStore));
     TCTFindTokenTypesByInterfaceAndAttribute findByIAndA(
         iSmartCardTokensInterfaces.Array(), iSmartCardTokensAttributes.Array());
     CCTTokenTypeInfo::ListL(iSmartCardTokenTypes, findByIAndA);

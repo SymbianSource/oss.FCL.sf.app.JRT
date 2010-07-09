@@ -902,13 +902,17 @@ boolean qt_event_close() {
 
 boolean qt_event_windowActivate(int widgetHandle) {
     if(widgetHandle == topHandle) {
-        sendEvent(SWT.Activate);
+        if (display != null && display.commandArranger != null) {
+            display.commandArranger.shellActivityChanged();
+            sendEvent(SWT.Activate);
+        }
     }
     return false;
 }
 
 boolean qt_event_windowDeactivate(int widgetHandle) {
     if(widgetHandle == topHandle) {
+        display.commandArranger.shellActivityChanged();
         sendEvent(SWT.Deactivate);
         saveFocus();
     }

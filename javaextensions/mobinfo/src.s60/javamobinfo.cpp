@@ -29,6 +29,8 @@
 #include <cmpluginpacketdatadef.h>
 #include <cmpluginwlandef.h>
 #include <cmpluginhscsddef.h>
+#include "connectionmanager.h"
+
 using namespace CMManager;
 
 #ifndef SYMBIAN_ENABLE_SPLIT_HEADERS
@@ -75,14 +77,15 @@ const TInt KJVMProcessUid = KJavaMidp;
 // ---------------------------------------------------------------------------
 //    forward declarations
 // ---------------------------------------------------------------------------
-HBufC* GetProperty(const TInt aProperty, const TUint32 aAppDefaultApn);
+HBufC* GetProperty(const TInt aProperty, const TUint32 aAppDefaultApn, const TUint32 aAppDefaultApType);
 HBufC* GetTelephonyPropertyL(const TInt aProperty);
 HBufC* GetDateTimePropertyL(const TInt aProperty);
-HBufC* GetNetworkAccessL(const TUint32 aAppDefaultApn);
+HBufC* GetNetworkAccessL(const TUint32 aAppDefaultApn, const TUint32 aAppDefaultApType);
 TUint32     GetUsedIapL();
 HBufC*      GetBearerTypeL(TUint32 aIapId);
+HBufC*      GetIapBearerTypeL(const TUint32 aAppDefaultApn, const TUint32 aAppDefaultApType);
 HBufC*      TranslateBearerInfoToNetworkAccessL(TConnMonBearerInfo aBearerInfo);
-HBufC*      GetDefIapBearerTypeL(TUint32 aMidSuiteId);
+HBufC*      GetAppDefIapBearerTypeL(const TUint32 aAppDefaultApn);
 
 /*
  * Class:     com_nokia_mj_impl_properties_mobinfo_MobileInfoProperties
@@ -95,16 +98,18 @@ HBufC*      GetDefIapBearerTypeL(TUint32 aMidSuiteId);
 //    Each mobinfo java property implementation calls the getPropertyMsid()
 //    function of the MobileInfoProperties class.
 //    @param aProperty name of the actual property
+//    @param aAppDefaultApn application default access point id
+//    @param aAppDefaultApType application default access point type ( SNAP, IAP)
 //    @param aAppDefaultApn Application default apn
 // -----------------------------------------------------------------------------
 JNIEXPORT jstring JNICALL
 Java_com_nokia_mj_impl_properties_mobinfo_MobileInfoProperties__1getPropertyApn
-(JNIEnv* aJni, jclass, jint aProperty, jint aAppDefaultApn)
+(JNIEnv* aJni, jclass, jint aProperty, jint aAppDefaultApn, jint aAppDefaultApType)
 {
     LOG1(ESOCKET, EInfo, "MOBINFO + getPropertyMsid(), msid: %D", aAppDefaultApn);
     HBufC* property = NULL;
     jstring str = NULL;
-    property = GetProperty(aProperty, aAppDefaultApn);
+    property = GetProperty(aProperty, aAppDefaultApn,aAppDefaultApType);
     if (NULL != property)
     {
         LOG(ESOCKET,EInfo,"_getPropertyApn, property is not null");
@@ -124,7 +129,7 @@ JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_properties_mobinfo_MobileInfoPr
     HBufC* property = NULL;
     jstring str = NULL;
 
-    property = GetProperty(aKey,NULL);
+    property = GetProperty(aKey,NULL,0);
     if (NULL != property)
     {
         TPtrC data(property->Des());
@@ -134,7 +139,7 @@ JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_properties_mobinfo_MobileInfoPr
     return str;
 }
 
-HBufC* GetProperty(const TInt aProperty, const TUint32 aAppDefaultApn)
+HBufC* GetProperty(const TInt aProperty, const TUint32 aAppDefaultApn, const TUint32 aAppDefaultApType)
 {
     JELOG2(ESOCKET);
     LOG(ESOCKET, EInfo, "MOBINFO + GetProperty()");
@@ -148,7 +153,7 @@ HBufC* GetProperty(const TInt aProperty, const TUint32 aAppDefaultApn)
         TRAP(err, property = GetDateTimePropertyL(aProperty));
         break;
     case NETWORK_ACCESS:
-        TRAP(err, property = GetNetworkAccessL(aAppDefaultApn));
+        TRAP(err, property = GetNetworkAccessL(aAppDefaultApn,aAppDefaultApType));
         LOG(ESOCKET, EInfo,"after GetNetworkAccessL");
         break;
 
@@ -785,21 +790,178 @@ HBufC* GetTelephonyPropertyL(const TInt aProperty)
 // Get type network access of currently used active connection
 // @return network access, ownership hand over
 // ---------------------------------------------------------------------------
-HBufC* GetNetworkAccessL(TUint32 aAppDefaultApn)
+HBufC* GetNetworkAccessL(TUint32 aAppDefaultApn, const TUint32 aAppDefaultApType)
 {
     LOG(ESOCKET, EInfo, "MOBINFO + GetNetworkAccessL");
     HBufC* bearerType = NULL;
     TUint32 iapId = GetUsedIapL();
-    if (iapId == 0)
+    if (iapId != 0)
     {
-        bearerType = GetDefIapBearerTypeL(aAppDefaultApn);
+        // active connection present, opened by MIDlet.
+        bearerType = GetBearerTypeL(iapId);
+
     }
     else
     {
-        bearerType = GetBearerTypeL(iapId);
+        // if there is no active connection by the application, return the app default bearer type.
+        if (aAppDefaultApType == 3)
+        {
+            // app default is IAP
+            bearerType = GetAppDefIapBearerTypeL(aAppDefaultApn);
+
+        }
+        else
+        {
+            bearerType = GetIapBearerTypeL(aAppDefaultApn,aAppDefaultApType);
+        }
+
     }
     LOG(ESOCKET, EInfo, "MOBINFO - GetNetworkAccessL");
     return bearerType;
+}
+
+
+//// ---------------------------------------------------------------------------
+//// Check if device default is set (SNAP or IAP)
+//// @return true if device default defined, else false
+//// ---------------------------------------------------------------------------
+
+bool isDeviceDefaultPresentL()
+{
+    TCmDefConnType type;
+    RCmManager * mgr = new(ELeave) RCmManager();
+    mgr->OpenL();
+
+    TCmDefConnValue obj;
+    mgr->ReadDefConnL(obj);
+    type = obj.iType;
+
+    if ((type!=ECmDefConnConnectionMethod) && (type!=ECmDefConnDestination))
+    {
+        // device default is other than SNAP or IAP
+        return false;
+    }
+    else
+    {
+        return true;
+
+    }
+
+
+
+}
+
+//// ---------------------------------------------------------------------------
+//// Get bearer type of Access point ID
+//// @return bearer type Acess point ID
+//// ---------------------------------------------------------------------------
+
+HBufC* GetIapBearerTypeL(const TUint32 aAppDefaultApn, const TUint32 aAppDefaultApType)
+{
+
+    LOG(ESOCKET, EInfo, "MOBINFO + GetIapBearerTypeL()");
+    RConnectionMonitor      monitor;
+    TUint                   connectionCount(0);
+    TUint                   iapId(0);
+    TRequestStatus          status(KErrNone);
+    HBufC*                  bearerType(NULL);
+    TUint                   connectionId(0);
+    TUint                   subConnectionCount(0);
+    TConnMonBearerInfo      bearerInfo(EBearerInfoUnknown);
+    bool                    flag = false;
+    TUint                   connIdx = 1;
+
+    User::LeaveIfError(monitor.ConnectL());
+    CleanupClosePushL(monitor);
+
+    status = KRequestPending;
+    monitor.GetConnectionCount(connectionCount, status);
+    User::WaitForRequest(status);
+    User::LeaveIfError(status.Int());
+    LOG1(ESOCKET, EInfo, "MOBINFO: GetIapBearerTypeL: Count of active connections: %D", connectionCount);
+
+    // Go through all connections
+    for (connIdx = 1; connIdx <= connectionCount;  ++connIdx)
+    {
+
+        connectionId = 0;
+        subConnectionCount = 0;
+        flag = false;
+
+        // Get connection ID
+        monitor.GetConnectionInfo(connIdx, connectionId, subConnectionCount);
+        User::LeaveIfError(connectionId);
+        // Get connection IAP ID
+        status = KRequestPending;
+        monitor.GetUintAttribute(connectionId, 0, KIAPId, iapId, status);
+        User::WaitForRequest(status);
+        User::LeaveIfError(status.Int());
+        LOG1(ESOCKET, EInfo, "MOBINFO: GetIapBearerTypeL Connection 's IAP ID found: %D", iapId);
+        if (aAppDefaultApType == 2)
+        {
+            LOG(ESOCKET, EInfo, "MOBINFO: Matching MIDlet defined SNAP to active IAP ID ");
+            // Midlet has a SNAP defined, so check if the active IAP is under this SNAP.
+            flag = ConnectionManager::isIapDefault(iapId, aAppDefaultApn,false);
+            if (!flag)
+            {
+                continue;  // active access point doesn't belong to MIDlet SNAP, check the next active access point.
+            }
+            else
+            {
+                break;
+            }
+        }
+        else
+        {
+            // No SNAP defined for the MIDlet, check for system default SNAP/IAP.
+            if (isDeviceDefaultPresentL())
+            {
+                LOG(ESOCKET, EInfo, "MOBINFO: Matching device default to active IAP ID ");
+                flag = ConnectionManager::isIapDefault(iapId, 0, true);
+                if (!flag)
+                {
+                    continue;  // active access point doesn't belong to MIDlet SNAP, check the next active access point.
+                }
+                else
+                {
+                    break;
+                }
+            }
+            else
+            {
+                LOG(ESOCKET, EInfo, "MOBINFO: Returning the bearer type of first active IAP ");
+                flag = true;
+                break; // no MIDlet SNAP, no device default, select this access point and return the bearer type
+
+            }
+        }
+
+    } // end of for loop
+
+    if (flag)
+    {
+        // we did not reach end of active connections, one of the conditions matched , find the bearer type
+        status = KRequestPending;
+        monitor.GetIntAttribute(connectionId,
+                                0,
+                                KBearerInfo,
+                                (TInt&)bearerInfo,
+                                status);
+        User::WaitForRequest(status);
+        User::LeaveIfError(status.Int());
+
+        // Translate bearer type to type of network access
+        bearerType = TranslateBearerInfoToNetworkAccessL(bearerInfo);
+    }
+    CleanupStack::PopAndDestroy(&monitor);
+    if (bearerType == NULL)
+    {
+        // No active connection (or) active IAP didn't match the conditions
+        bearerType = KNetworkAccessNa().AllocL();
+    }
+    return bearerType;
+
+
 }
 
 //// ---------------------------------------------------------------------------
@@ -1047,26 +1209,24 @@ HBufC* TranslateBearerInfoToNetworkAccessL(TConnMonBearerInfo aBearerInfo)
 
 // --------------------------------------------------------------------
 // Get network access type of default access point set in MIDlet settings
-// @param aAppDefaultApn MIDlet suite ID
+// @param aAppDefaultApn MIDlet default IAP
 // @return network access type, ownership hand over
-HBufC* GetDefIapBearerTypeL(TUint32 aAppDefaultApn)
+HBufC* GetAppDefIapBearerTypeL(const TUint32 aAppDefaultApn)
 {
-    LOG(ESOCKET, EInfo, "MOBINFO + GetDefIapBearerTypeL");
-    ELOG1(ESOCKET,  "GetDefIapBearerTypeL %d", aAppDefaultApn);
+    LOG1(ESOCKET, EInfo, "MOBINFO + GetAppDefIapBearerTypeL aId = %d ", aAppDefaultApn);
     HBufC* bearerType(NULL);
-    // MAPNSettings* apnTable = GetAPNSettingsLC(KAPNSettingsVersion);
-    //TUint32 apn = apnTable->GetAPNIdL( aMidSuiteId );
-    //CleanupStack::PopAndDestroy(); //apnTable
-    LOG1(ESOCKET, EInfo, "MIDlet specific IAP ID gotten: %D", aAppDefaultApn);
+
     if (aAppDefaultApn == 0 || aAppDefaultApn == (TUint32)-1)
     {
         bearerType = KNetworkAccessNa().AllocL();
     }
     else
     {
+
         RCmManager localCmManager;
         localCmManager.OpenL();
-        TUint32 tmpval = localCmManager.GetConnectionMethodInfoIntL(aAppDefaultApn,ECmBearerType);
+        TUint32 iap = aAppDefaultApn;
+        TUint32 tmpval = localCmManager.GetConnectionMethodInfoIntL(iap,ECmBearerType);
         ELOG1(ESOCKET,  "GetConnectionMethodInfoIntL: %d", tmpval);
         switch (tmpval)
         {
@@ -1084,11 +1244,8 @@ HBufC* GetDefIapBearerTypeL(TUint32 aAppDefaultApn)
         default :
             bearerType = KNetworkAccessNa().AllocL();
             break;
-
-
         }
-
     }
-    LOG(ESOCKET, EInfo, "MOBINFO - GetDefIapBearerTypeL");
+    LOG(ESOCKET, EInfo, "MOBINFO - GetAppDefIapBearerTypeL");
     return bearerType;
 }

@@ -18,15 +18,14 @@ include(../../../../inc/build_defines.pri)
 TARGET=javahttp
 TEMPLATE=lib
 CONFIG += omj java stl
+CONFIG -= qt
 
 symbian {
 
     LIBS += -leuser -lhttp -lecom -lbafl -linetprotutil -lhttpfiltercommon -lx509 -lx500 -lcrypto -lesock -lcommdb -lcentralrepository
 
     contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_10_1_ONWARDS) {
-        QT += webkit
-        QT -= gui
-        LIBS += -lQtWebKit -lplatformEnv -ljavaenvinfo
+      
     }
     else {
         LIBS += -lwebutils

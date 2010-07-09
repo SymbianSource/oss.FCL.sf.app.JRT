@@ -29,9 +29,7 @@
 
     <property name="java.src.paths" value="../src:../src_j2me"/>
 
-    <target name="compile">
-        <omj.javac classpath="${impl.cldc.jar}"/>
-    </target>
+
 
     <property name="javah.classnames" value="com.nokia.mid.ui.internal.OS"/>
 

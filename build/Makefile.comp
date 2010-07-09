@@ -119,7 +119,7 @@ endif
 # Symbian ----------------------------------
 ifeq ($(BUILDENV),symbian)
 
-all: qmake java native
+all: qmake java native codescanner
 
 # Extract basename of current component
 BASENAME = $(basename $(PRO_FILE))
@@ -151,11 +151,11 @@ ifneq ($(wildcard exports.inf),)
 	echo #include "exports.inf" >> bld.inf
 endif
 
+# Quick java releasables target
+RELEASABLE_PATH = $(EPOCROOT)epoc32/release/$(PLATFORM)/$(CFG)/z/resource/java/jvm/lib/jrt
 javareleasables:
 ifneq ($(ANT_FILE),)
-	$(ANT) -q -Dtarget.platform=$(PLATFORM) -Dtarget.cfg=$(VARIANT) $(ANT_PROJECT_DEFINES) releasables > $(DEVNULL)
-	$(call CATCOMMAND,java_releasables_$(PLATFORM)_$(VARIANT).tmp)
-	$(call RMFILE,java_releasables_$(PLATFORM)_$(VARIANT).tmp)
+	echo $(RELEASABLE_PATH)/$(BASENAME).odc
 endif
 
 # Remove all generated build files
@@ -169,6 +169,12 @@ endif
 
 clean_qmake:
 	-$(call RMFILES,abld.bat bld.inf* Makefile* $(BASENAME).mmp $(BASENAME)_*.mmp $(BASENAME)_*.pkg $(BASENAME)_reg.rss eabi_stl4/*)
+
+# Use Carbide CodeScanner to list high-level issues
+codescanner:
+ifneq ($(call PATHSEARCH,codescanner.exe),)
+	$(call CODESCANNER,..)
+endif
 
 # Symbian SBS ------------------------------
 ifdef USESBS

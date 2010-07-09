@@ -258,6 +258,13 @@ public:
     virtual void overrideNewHeapSize(int heapSize) = 0;
 
     /**
+     * Overrides the default max heap size.
+     * @param heapSize Heap size in kilo bytes.
+     * @throws std::exception on error cases
+     */
+    virtual void overrideMaxHeapSize(int heapSize) = 0;
+
+    /**
      * Overrides the default stack of the native thread.
      *
      * @param stackSize Stack size in kilo bytes.

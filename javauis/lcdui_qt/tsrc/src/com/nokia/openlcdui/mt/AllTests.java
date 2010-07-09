@@ -186,6 +186,7 @@ public class AllTests extends TestSuite implements InstallerMain
         addTest(com.nokia.openlcdui.mt.gauge.GaugeTest.suite());
         addTest(com.nokia.openlcdui.mt.graphics.DirectGraphicsTest.suite());
         addTest(com.nokia.openlcdui.mt.graphics.GraphicsTest.suite());
+        addTest(com.nokia.openlcdui.mt.graphics.CommandBufferingTest.suite());
         addTest(com.nokia.openlcdui.mt.image.ImageTest.suite());
         addTest(com.nokia.openlcdui.mt.imageitem.ImageItemTest.suite());
         addTest(com.nokia.openlcdui.mt.item.ItemTest.suite());

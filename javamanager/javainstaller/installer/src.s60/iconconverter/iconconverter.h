@@ -26,6 +26,10 @@
 #include <imageconversion.h>
 
 
+class CBitmapScaler;
+class TIconSizes;
+
+
 namespace java
 {
 
@@ -161,6 +165,15 @@ private:
         HBufC8*      apIconBuf,
         const TDesC &aOutputFile);
 
+    /**
+     * Scale the original icon into the current temporary icon.
+     */
+    void ScaleL(CBitmapScaler& aScaler, const TSize aSize);
+
+    /**
+     * Get the ideal icon sizes from UI, trough the ecom plugin notifier.
+     */
+    TIconSizes GetIdealIconSizes();
 
 private:
     /**
@@ -176,15 +189,24 @@ private:
     CBufferedImageDecoder* iImageDecoder;
 
     /**
-     * Pointer to bitmap generated from the icon
+     * Pointer to bitmap generated from the icon.
      */
     CFbsBitmap* iBitmap;
 
     /**
      * Pointer to the bitmap mask generated from the icon.
-     * May be NULL if the original icon not not have mask.
      */
     CFbsBitmap* iBitmapMask;
+
+    /**
+     * Scaled copy of the original icon bitmap.
+     */
+    CFbsBitmap* iBitmapScaledCopy;
+
+    /**
+     * Scaled copy of the original icon mask.
+     */
+    CFbsBitmap* iBitmapMaskScaledCopy;
 
     CActiveListener *iActiveListener;
 
