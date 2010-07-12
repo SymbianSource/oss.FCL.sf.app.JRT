@@ -158,7 +158,7 @@ LIBRARY		ws32.lib
 LIBRARY		hwrmlightclient.lib
 LIBRARY		gfxtrans.lib
 LIBRARY		CentralRepository.lib
-LIBRARY		libegl.lib
+LIBRARY		libegl_sw.lib
 LIBRARY		libglesv1_cm.lib
 LIBRARY		javautils.lib
 LIBRARY		libpthread.lib

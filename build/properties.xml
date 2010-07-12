@@ -41,12 +41,23 @@
       for reason why this property is defined"/> -->
   <property name="platform.utilities.xml.file" value="utilities.fake.xml"/>
 
-  <!--The cldc/cdc class file locations -->
-  <property name="bootclasspath.cldc" location="${java.src.root}/inc/classes.cldc.zip"/>
-  <property name="bootclasspath.cdc"  location="${java.src.root}/inc/classes.cdc.zip"/>
-  <property name="bootclasspath.fp"   location="${java.src.root}/inc/classes.fp.zip"/>
-  
-  
+  <!-- Set internal epoc root -->
+  <condition property="epocroot" value="${env.EPOCROOT}" else="">
+    <isset property="env.EPOCROOT"/>
+  </condition>
+
+  <!--The cldc/cdc class file locations, within the sources -->
+  <available file="${java.src.root}/inc/classes.cldc.zip" property="bootclasspath.cldc"
+             value="${java.src.root}/inc/classes.cldc.zip" />
+  <available file="${java.src.root}/inc/classes.cdc.zip" property="bootclasspath.cdc"
+             value="${java.src.root}/inc/classes.cdc.zip" />
+  <available file="${java.src.root}/inc/classes.fp.zip" property="bootclasspath.fp"
+             value="${java.src.root}/inc/classes.fp.zip" />
+
+  <!--The cldc/cdc class file locations, external if not found in default places -->
+  <property name="bootclasspath.cldc" location="${epocroot}epoc32/jrt/classes.cldc.zip"/>
+  <property name="bootclasspath.cdc"  location="${epocroot}epoc32/jrt/classes.cdc.zip"/>
+  <property name="bootclasspath.fp"   location="${epocroot}epoc32/jrt/classes.fp.zip"/>
   
   <!--NOTE!!! Properties defined below can be used only inside a target-->
 
@@ -58,13 +69,6 @@
                value="udeb"
                else="urel">
       <equals arg1="${target.cfg}" arg2="debug"/>
-	</condition>
-
-    <!-- Set internal epoc root -->
-	<condition property="epocroot"
-               value="${env.EPOCROOT}"
-               else="">
-      <isset property="env.EPOCROOT"/>
 	</condition>
 
     <!--Location of eswt.jar. This is not needed in S60 Avkon, 
