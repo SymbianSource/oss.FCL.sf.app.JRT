@@ -386,4 +386,43 @@ Java_com_nokia_mid_ui_TextEditorImpl__1setCaretXY(
     return error;
 }
 
+/**
+ * Local helper function for setting the touch enabled state of a text editor
+ *
+ * @param aTextEditor The text editor object to be modified.
+ * @param aEnabled The touch enabled status of the text editor to be set.
+ */
+LOCAL_C void SetTouchEnabled(
+    MMIDTextEditor* aTextEditor,
+    TBool aEnabled)
+{
+    aTextEditor->SetTouchEnabled(aEnabled);
+}
+
+/*
+ * Class:     com_nokia_mid_ui_TextEditorImpl
+ * Method:    _setTouchEnabled
+ * Signature: (IIZ)I
+ */
+JNIEXPORT jint JNICALL Java_com_nokia_mid_ui_TextEditorImpl__1setTouchEnabled(
+    JNIEnv* /* aJniEnv */,
+    jobject /* aPeer */,
+    jint aToolkitHandle,
+    jint aNativePeerHandle,
+    jboolean aEnabled)
+{
+    DEBUG("TextEditor.cpp - setTouchEnabled +");
+
+    CMIDToolkit* toolkit = JavaUnhand< CMIDToolkit >(aToolkitHandle);
+
+    MMIDTextEditor* editor =
+        MIDUnhandObject< MMIDTextEditor >(aNativePeerHandle);
+
+    toolkit->ExecuteV(&SetTouchEnabled, editor, (TBool)aEnabled);
+
+    DEBUG("TextEditor.cpp - setTouchEnabled -");
+
+    return KErrNone;
+}
+
 // End of file

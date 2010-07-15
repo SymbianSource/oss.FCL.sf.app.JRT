@@ -70,6 +70,14 @@ package com.nokia.mid.ui;
  * change and resize, move TextEditor to the visible area and adjust the
  * whole Canvas.
  * </p>
+ * 
+ * <h3>Touch settings</h3>
+ * <p>
+ * The TextEditor receives touch events in touch devices. This can be 
+ * disabled/enabled by {@link com.nokia.mid.ui.S60TextEditor#setTouchEnabled(boolean)}
+ * An editor with touch-event disabled won't be able to perform any
+ * touch-related functionality.
+ * </p>
  * @see TextEditor
  * @since 1.4
  */
@@ -314,7 +322,28 @@ public abstract interface S60TextEditor
      *      The y coordinate of the wanted caret position.
      */
     public void setCaretXY(int x, int y);
+    
+    /**
+     * Specifies whether or not the editor will receive touch-events.
+     * <p>
+     * This is enabled by default.
+     * An editor with touch-event disabled won't be able to perform any
+     * touch-related functionality such as scrolling or positioning the
+     * cursor. It may however still be controlled via the
+     * virtual keypad/control-panel if that is enabled, or receive other +
+     * input e.g. via physical keys
+     * <p>
+     * @param enabled
+     *              true to enabled touch-event, false to disable
+     */
+    public void setTouchEnabled(boolean enabled);
 
+    /**
+     * Gets the current touch-enabled state
+     * <p>
+     * @return true if the editor is touch-enabled, false otherwise
+     */
+    public boolean isTouchEnabled();
 }
 
 // End of file

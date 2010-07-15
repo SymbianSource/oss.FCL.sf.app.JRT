@@ -118,7 +118,13 @@ TBool CMIDCanvasGraphicsItemPainter::ProcessL(
         {
         case ESync:
             // We redraw the proper drawing rect.
-            DrawNow(TRect(iPosition, iViewSize));
+            // The top-left point is set to PositionRelativeToScreen
+            // in case that scaling is on.
+            DrawNow(
+                TRect(
+                    iContentRect.Size() != iViewSize ?
+                        PositionRelativeToScreen() : iPosition,
+                    iViewSize));
             break;
 
         case ESyncRect:

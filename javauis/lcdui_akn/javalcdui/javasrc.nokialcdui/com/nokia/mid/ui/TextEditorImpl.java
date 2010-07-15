@@ -82,6 +82,9 @@ class TextEditorImpl
         TOUCH_INPUT_HWR | TOUCH_INPUT_VKB | TOUCH_INPUT_FSQ |
         TOUCH_INPUT_ITUT | TOUCH_INPUT_FSC | TOUCH_INPUT_MINI_ITUT;
 
+    // Indicates receiving of pointer events by the editor
+    private boolean iTouchEnabled;
+
     /*
      * <P>
      * Creates a new <code>TextEditor</code> object with the given initial contents,
@@ -132,6 +135,8 @@ class TextEditorImpl
                    int aHeight)
     {
         super(aText, aMaxSize, aConstraints, aWidth, aHeight, false);
+        // Enabling receiving pointer events
+        iTouchEnabled = true;
     }
 
     /*
@@ -176,6 +181,8 @@ class TextEditorImpl
     TextEditorImpl(int aMaxSize, int aConstraints, int aWidth, int aRows)
     {
         super(null, aMaxSize, aConstraints, aWidth, aRows, true);
+        // Enabling receiving pointer events
+        iTouchEnabled = true;
     }
 
     /*
@@ -490,6 +497,41 @@ class TextEditorImpl
     }
 
     /*
+     * Specifies whether or not the editor will receive touch-events.
+     * <p>
+     * This is enabled by default.
+     * An editor with touch-event disabled won't be able to perform any
+     * touch-related functionality such as scrolling or positioning the
+     * cursor. It may however still be controlled via the
+     * virtual keypad/control-panel if that is enabled, or receive other +
+     * input e.g. via physical keys
+     * <p>
+     * @param enabled
+     *              true to enabled touch-event, false to disable
+     */
+    public void setTouchEnabled(boolean enabled)
+    {
+        if (iTouchEnabled != enabled)
+        {
+            synchronized (iToolkit)
+            {
+                _setTouchEnabled(getToolkitHandle(), iHandle, enabled);
+                iTouchEnabled = enabled;
+            }
+        }
+    }
+
+    /*
+     * Gets the current touch-enabled state
+     * <p>
+     * @return true if the editor is touch-enabled, false otherwise
+     */
+    public boolean isTouchEnabled()
+    {
+        return iTouchEnabled;
+    }
+
+    /*
      * Hidden default constructor.
      */
     private TextEditorImpl()
@@ -652,6 +694,22 @@ class TextEditorImpl
         int aNativePeerHandle,
         int x,
         int y);
+
+    /*
+     * Specifies whether or not the editor will receive touch-events.
+     *
+     * This is enabled by default.
+     * An editor with touch-event disabled won't be able to perform any
+     * touch-related functionality such as scrolling or positioning the
+     * cursor. It may however still be controlled via the
+     * virtual keypad/control-panel if that is enabled, or receive other +
+     * input e.g. via physical keys
+     *
+     * @param aEnabled
+     *              true to enabled touch-event, false to disable
+     */
+    private native int _setTouchEnabled(int aToolkitHandle,
+                                        int aNativePeerHandle, boolean aEnabled);
 }
 
 // End of file

@@ -120,14 +120,29 @@ public:
     inline TBool GetVisibilityInForm();
     inline void SetVisibilityInForm(const TBool aVisibility);
 
+    /**
+     * Sets the iHighlighted flag. Used by CMIDForm.
+     */
+    inline void SetHighlight(const TBool aHighlight);
+
+    /**
+     * Returns ETrue, if item is highlighted on Form.
+     */
+    inline TBool IsHighlighted();
+
 protected:
     CCoeEnv* iCoeEnv;
     CMIDItemLabel* iLabelControl; // The label for the control
 
-    //The background control context for when the item is highlighted
+    // The background control context for when the item is highlighted
     CAknsFrameBackgroundControlContext* iHighlightedBackgroundCc;
 
     TBool iVisibilityInForm;
+
+    // This flag is true, if item on Form is currently highlighted.
+    // Flag is used for returning correct background content
+    // (see MopSupplyObject).
+    TBool iHighlighted;
 };
 
 inline void CMIDControlItem::SetSizeQuiet(const TSize& aSize)
@@ -153,6 +168,16 @@ inline TBool CMIDControlItem::GetVisibilityInForm()
 inline void CMIDControlItem::SetVisibilityInForm(const TBool aVisibility)
 {
     iVisibilityInForm = aVisibility;
+}
+
+inline void CMIDControlItem::SetHighlight(const TBool aHighlight)
+{
+    iHighlighted = aHighlight;
+}
+
+inline TBool CMIDControlItem::IsHighlighted()
+{
+    return iHighlighted;
 }
 
 #endif // CMIDCONTROLITEM_H

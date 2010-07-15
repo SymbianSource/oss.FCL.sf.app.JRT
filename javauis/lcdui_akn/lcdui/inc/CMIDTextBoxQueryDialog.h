@@ -314,7 +314,7 @@ private:
 
     TTypeUid::Ptr MopSupplyObject(TTypeUid aId);
 
-    void CMIDTextBoxQueryDialog::SetRightScrollBarPosition();
+    void UpdateScrollBarPositionL();
 
 private:
     inline TUint GetConstraints() const;
@@ -394,14 +394,6 @@ private:
      * Used key event
      */
     const TKeyEvent*            iusedKeyEvent;
-    /**
-     * Count line of text in iEditor
-     */
-    TInt                        iLastCountLine;
-    /**
-     * Rect of Editor
-     */
-    TRect iEditorRect;
 
     /**
      * Used when ConstraintsValidForText decide

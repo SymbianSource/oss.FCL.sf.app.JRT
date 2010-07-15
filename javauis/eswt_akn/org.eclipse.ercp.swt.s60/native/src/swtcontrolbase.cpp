@@ -73,7 +73,12 @@ void ASwtControlBase::CreateFocusBackgroundL()
                         CSwtLafFacade::EInputFieldSkinPlacingGeneralLine5, rect, 0).Rect().iTl;
 
     iFocusFrame = CAknsFrameBackgroundControlContext::NewL(
-                      KAknsIIDQsnFrInput, rect, innerRect, EFalse /*parent absolute*/);
+#ifdef RD_JAVA_S60_RELEASE_9_2
+                      KAknsIIDQsnFrPopupPreview,
+#else
+                      KAknsIIDQsnFrInput,
+#endif // RD_JAVA_S60_RELEASE_9_2
+                      rect, innerRect, EFalse /*parent absolute*/);
 
     if (iBackgrdDefaultUsed)
     {

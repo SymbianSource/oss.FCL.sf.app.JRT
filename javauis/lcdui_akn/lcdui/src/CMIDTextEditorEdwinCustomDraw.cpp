@@ -252,6 +252,10 @@ TRgb CMIDTextEditorEdwinCustomDraw::SystemColor(
     {
         iEdwin.GetColor(EColorControlHighlightBackground, ret);
     }
+    else if (aColorIndex == TLogicalRgb::ESystemSelectionForegroundIndex)
+    {
+        iEdwin.GetColor(EColorControlHighlightText, ret);
+    }
     else
     {
         // Other colors use parent's SystemColor.

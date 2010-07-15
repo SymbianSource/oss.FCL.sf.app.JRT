@@ -1,5 +1,5 @@
 EXPORTS
-  ?jni_lookup@@YAP6AXXZPBD@Z @ 1 NONAME ; void (*)(void) jni_lookup(char const *)
+	?jni_lookup@@YAP6AXXZPBD@Z @ 1 NONAME ; void (*)(void) jni_lookup(char const *)
 	?readBytes@NativeSocketConnection@java@@UAEHAAUJNIEnv_@@PAV_jbyteArray@@@Z @ 2 NONAME ; int java::NativeSocketConnection::readBytes(struct JNIEnv_ &, class _jbyteArray *)
 	?setSocketOption@NativeSocketConnection@java@@QAEHHH@Z @ 3 NONAME ; int java::NativeSocketConnection::setSocketOption(int, int)
 	?socketClose@NativeSocketConnection@java@@QAEHXZ @ 4 NONAME ; int java::NativeSocketConnection::socketClose(void)
@@ -16,5 +16,5 @@ EXPORTS
 	?getLocalPort@NativeSocketConnection@java@@QAEHXZ @ 15 NONAME ; int java::NativeSocketConnection::getLocalPort(void)
 	?getPort@NativeSocketConnection@java@@QAEHXZ @ 16 NONAME ; int java::NativeSocketConnection::getPort(void)
 	?getSocketOption@NativeSocketConnection@java@@QAEHH@Z @ 17 NONAME ; int java::NativeSocketConnection::getSocketOption(int)
-	
+	?getLocalAddress@SocketLocalHostInfo@@SAHHPADHH@Z @ 18 NONAME ; int SocketLocalHostInfo::getLocalAddress(int, char *, int, int)
 

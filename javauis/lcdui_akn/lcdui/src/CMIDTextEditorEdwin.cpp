@@ -156,7 +156,14 @@ TKeyResponse CMIDTextEditorEdwin::OfferKeyEventL(
         response = HandleSpecialKeyEventsL(aKeyEvent, aType);
 
         // Not handled, try with CEikEdwin
-        if (response == EKeyWasNotConsumed)
+        // Consume down and up type of keyevents
+        if ((response == EKeyWasConsumed) || 
+                (aType != EEventKey && aKeyEvent.iScanCode != 
+                EStdKeyApplication0))
+        {
+            response = EKeyWasConsumed;
+        }
+        else
         {
             // Old text is needed if the new content is not valid for the
             // given set of constraints. This validation is made because
@@ -171,16 +178,31 @@ TKeyResponse CMIDTextEditorEdwin::OfferKeyEventL(
             CleanupStack::PushL(oldContent);
 
             response = CEikEdwin::OfferKeyEventL(aKeyEvent, aType);
-
-            // Validate new content and undo if not valid.
-            if (!iEdwinUtils.ConstraintsValidForText(
-                        Read(), iConstraints, EFalse))
-            {
-                CEikEdwin::SetTextL(oldContent);
-                // Notify about text change.
-                HandleTextChangedL();
-                // Restore cursor's original position.
-                SetCursorPosL(iCursorPosForAction, EFalse);
+            
+            if (response == EKeyWasConsumed) {
+                // Validate new content and undo if not valid.
+                if (!iEdwinUtils.ConstraintsValidForText(
+                            Read(), iConstraints, EFalse))
+                {
+                    CEikEdwin::SetTextL(oldContent);
+                    // Notify about text change.
+                    HandleTextChangedL();
+                    // Restore cursor's original position.
+                    SetCursorPosL(iCursorPosForAction, EFalse);
+                }
+            }
+            else
+            { 
+                // Consuming the up/down arrows, because edwin does not 
+                // consume them if at first/last line. 
+                if ((aType == EEventKey) &&
+                        (((aKeyEvent.iCode == EKeyUpArrow) ||
+                          (aKeyEvent.iCode == EKeyDownArrow)) ||
+                         ((aKeyEvent.iScanCode == EStdKeyUpArrow) ||
+                          (aKeyEvent.iScanCode == EStdKeyDownArrow))))
+                {
+                    response = EKeyWasConsumed;
+                }
             }
             CleanupStack::PopAndDestroy(oldContent);
         }
@@ -548,7 +570,7 @@ void CMIDTextEditorEdwin::HandleTextChangedL()
 //
 void CMIDTextEditorEdwin::HandleResourceChange(TInt aType)
 {
-    CCoeControl::HandleResourceChange(aType);
+    CEikEdwin::HandleResourceChange(aType);
     // Notification about language change
     if (aType == KEikInputLanguageChange)
     {

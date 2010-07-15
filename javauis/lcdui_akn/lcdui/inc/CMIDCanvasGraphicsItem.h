@@ -155,11 +155,13 @@ public: // From MMIDCustomComponent
     void HandleFullscreenModeChange();
 
     /**
-     * Handles changes of screen orientation.
+     * Handles system resource change messages.
+     *
+     * @param aType A message UID value.
      *
      * @since S60 5.0
      */
-    void HandleResolutionChange();
+    void HandleResourceChange(TInt aType);
 
 public: // From MMIDScalable
 
@@ -268,6 +270,16 @@ public: // From MMIDComponent
      */
     void Dispose();
 
+private: // own methods
+    /**
+     * This method is called when some change which can affect scaling
+     * of CanvasGraphicsItem.
+     *
+     * @param aChange Indicator what change was occurred.
+     * @since S60 5.0
+     */
+    void HandleChangeForScaling(TChange aChange);
+
 private: // Construtors
 
     /**
@@ -298,6 +310,11 @@ private: // Data
 
     // A non-scaled position of item. Needed by scaling.
     TPoint iNonScaledPosition;
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    // Indicates state of partial VKB
+    TBool iPartialVKBOpen;
+#endif
 };
 
 #endif // CMIDCANVASGRAPHICSITEM_H

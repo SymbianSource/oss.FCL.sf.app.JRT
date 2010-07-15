@@ -1172,10 +1172,21 @@ void CMIDChoiceGroupControl::DrawText(const TDesC& aText) const
     {
         // Get color from skin
         TRgb rgb = AKN_LAF_COLOR(215);
-        TInt textColor = IsFocused() ? EAknsCIQsnTextColorsCG8 : EAknsCIQsnTextColorsCG6;
+        TInt textColor;
+
+        // Set color for text according to item highlight
+        // (logical color constants are defined in lcdui.h)
+        if (iItem && iItem->IsHighlighted())
+        {
+            textColor = KHighlightedItemTextColor;
+        }
+        else
+        {
+            textColor = KNonHighlightedItemTextColor;
+        }
 
         AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
-                                  rgb,KAknsIIDQsnTextColors, textColor);
+                                  rgb, KAknsIIDQsnTextColors, textColor);
         iPopupTextLayout.DrawText(SystemGc(), aText, ETrue, rgb);
     }
 }

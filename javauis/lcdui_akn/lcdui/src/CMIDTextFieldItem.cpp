@@ -345,6 +345,7 @@ void CMIDTextFieldItem::FocusChanged(TDrawNow aDrawNow)
     CMIDControlItem::FocusChanged(aDrawNow);
     // DoLayout and change text color when focused
     SizeChanged();
+    TRAP_IGNORE(UpdateTextColorsL());
 }
 
 void CMIDTextFieldItem::HandleCurrentL(TBool aCurrent)
@@ -672,3 +673,21 @@ void CMIDTextFieldItem::SetCursorVisibility(TBool aVisible)
     }
 }
 
+void CMIDTextFieldItem::UpdateTextColorsL()
+{
+    if (iTextField)
+    {
+        // Set color for content text according to item highlight
+        // (logical color constants are defined in lcdui.h)
+        if (iHighlighted)
+        {
+            // Text colour from skin - highlighted
+            iTextField->SetTextSkinColorIdL(KHighlightedItemTextColor);
+        }
+        else
+        {
+            // Text colour from skin - unfocused
+            iTextField->SetTextSkinColorIdL(KNonHighlightedItemTextColor);
+        }
+    }
+}

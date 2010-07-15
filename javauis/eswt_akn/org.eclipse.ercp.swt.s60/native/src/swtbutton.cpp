@@ -213,18 +213,12 @@ void CSwtButton::CreateButtonL(const TDesC& aText)
     iButton->SetBackground(this);   // Back will be drawn by ASwtControlBase::Draw
 
     // Set default color
-    TRgb colorNormal;
+    TRgb color;
     AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
-                              colorNormal,
+                              color,
                               KAknsIIDQsnTextColors,
-                              EAknsCIQsnTextColorsCG13); // SK
-    TRgb colorPressed;
-    AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
-                              colorPressed,
-                              KAknsIIDQsnTextColors,
-                              EAknsCIQsnTextColorsCG69); // pressed SK
-    iButton->OverrideColorL(EColorButtonText, colorNormal);
-    iButton->OverrideColorL(EColorButtonTextPressed, colorPressed);
+                              EAknsCIQsnTextColorsCG6);
+    iButton->OverrideColorL(EColorButtonText, color);
 }
 
 // ---------------------------------------------------------------------------
@@ -646,13 +640,10 @@ void CSwtButton::SetForegroundL(const MSwtColor* aColor)
     }
     else
     {
-        // Reset to default color
-        TRgb colorNormal;
         AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
-                                  colorNormal,
+                                  color,
                                   KAknsIIDQsnTextColors,
-                                  EAknsCIQsnTextColorsCG13); // SK
-        iButton->OverrideColorL(EColorButtonText, colorNormal);
+                                  EAknsCIQsnTextColorsCG6);
     }
 
     if (iButton)

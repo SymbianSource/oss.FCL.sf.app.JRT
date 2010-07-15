@@ -181,6 +181,10 @@ public class UserSecuritySettingsImpl
         {
             id = URL_START_ID;
         }
+        else
+        {
+            return aSettingName;   
+        }
         return resLoader.format(id, null /*aTextParameters*/);
     }
 

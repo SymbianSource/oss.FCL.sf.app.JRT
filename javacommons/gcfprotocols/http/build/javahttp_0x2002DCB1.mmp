@@ -83,9 +83,10 @@ LIBRARY		x509.lib
 LIBRARY		x500.lib
 LIBRARY		crypto.lib
 LIBRARY		esock.lib
-LIBRARY		commdb.lib
 LIBRARY		centralrepository.lib
 LIBRARY		webutils.lib
+LIBRARY		extendedconnpref.lib
+LIBRARY		netmeta.lib
 LIBRARY		javautils.lib
 LIBRARY		libpthread.lib
 LIBRARY		libstdcppv5.lib

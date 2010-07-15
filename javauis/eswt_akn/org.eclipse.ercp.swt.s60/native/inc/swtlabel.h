@@ -56,6 +56,7 @@ private:
     TInt  MinimumHeight(TInt aLineCount) const;
     void  DoSetFontL(const CFont* aFont);
     void  SwtHandleResourceChangeL(TInt aType);
+    TInt  GetFontHeight(const CFont* aFont) const;
 
 // From CCoeControl
 public:

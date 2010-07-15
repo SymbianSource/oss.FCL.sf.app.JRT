@@ -181,6 +181,12 @@ void CMIDForm::InsertItemL(MMIDItem& aItem,TInt aIndex)
     {
         SetFocusedItem(ci.IsSelectable() ? aIndex : KErrNotFound);
     }
+    else if (aIndex <= iFocused)
+    {
+        // If new item is inserted to Form above the current item,
+        // index must increase
+        iFocused++;
+    }
 
     RequestLayoutL();
 }
@@ -1977,6 +1983,8 @@ void CMIDForm::SetFocusedItem(TInt aFocusIdx, TDirection aDirection /*= ENone*/,
     { // actions for the item loosing focus
         CMIDControlItem& control = ControlItem(iFocused);
         control.PostFocusTransferEvent(EFalse, aDirection);
+        // setting highlight must be called before setting focus
+        control.SetHighlight(EFalse);
         control.SetFocus(EFalse);
         UpdateItemCommands(NULL, NULL);
     }
@@ -2009,6 +2017,7 @@ void CMIDForm::SetFocusedItem(TInt aFocusIdx, TDirection aDirection /*= ENone*/,
         SetHighlightBackgroundRects();
 
         control.PostFocusTransferEvent(ETrue, aDirection);
+        control.SetHighlight(ETrue);
         control.SetFocus(ETrue);
         // msk: deliver also the possible MSK command to displayable
         UpdateItemCommands(control.CommandList(), control.GetMSKCommand());
@@ -2305,7 +2314,11 @@ void CMIDForm::ConstructL()
 
     // Background for highlighted item, frame rects are set later
     iHighlightedBackgroundCc = CAknsFrameBackgroundControlContext::NewL(
+#ifdef RD_JAVA_S60_RELEASE_9_2
+                                   KAknsIIDQsnFrPopupPreview,
+#else
                                    KAknsIIDQsnFrInput,
+#endif // RD_JAVA_S60_RELEASE_9_2
                                    TRect(), TRect(), ETrue);
 
     iDisplayable.SetComponentL(*this);

@@ -52,8 +52,9 @@ const TInt KMaxNumLines  = 10;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 CMIDControlItem::CMIDControlItem(MMIDItem::TLayout aLayout, CMIDUIManager* aUIManager)
-        : CMIDItem(aLayout, aUIManager),
-        iCoeEnv(CCoeEnv::Static())
+        : CMIDItem(aLayout, aUIManager)
+        , iCoeEnv(CCoeEnv::Static())
+        , iHighlighted(EFalse)
 {
 }
 
@@ -217,10 +218,20 @@ TTypeUid::Ptr CMIDControlItem::MopSupplyObject(TTypeUid aId)
 {
     if (aId.iUid == MAknsControlContext::ETypeId && iForm)
     {
-        return IsFocused() ?
-               MAknsControlContext::SupplyMopObject(aId, iForm->GetHighlightBackgroundCc()) :
-               MAknsControlContext::SupplyMopObject(aId,
-                                                    iForm->CurrentDisplayable().BackGroundControlContext());
+        if (iHighlighted)
+        {
+            // Highlighted background control context must be returned
+            // no matter if item is focused or not. Only then highlighted item
+            // will be displayed correctly, if Form is faded
+            // (e.g. Menu is shown).
+            return MAknsControlContext::SupplyMopObject(aId,
+                    iForm->GetHighlightBackgroundCc());
+        }
+        else
+        {
+            return MAknsControlContext::SupplyMopObject(aId,
+                    iForm->CurrentDisplayable().BackGroundControlContext());
+        }
     }
     return SupplyMopObject(aId, iMenuHandler->Cba(), iMenuHandler->MenuBar());
 }
@@ -249,10 +260,13 @@ void CMIDControlItem::GetCaptionForFep(TDes& aCaption) const
 void CMIDControlItem::SetLabelColor(CMIDItemLabel* aLabelControl)
 {
     TRgb color;
-        
-    TInt labelColor = (IsFocused() && 
-                       Type() != MMIDComponent::ECustomItem &&
-                       Type() != MMIDComponent::EImageItem) ? EAknsCIQsnTextColorsCG8 : EAknsCIQsnTextColorsCG6;
+
+    // Set color for label text according to item highlight
+    // (logical color constants are defined in lcdui.h)
+    TInt labelColor = (iHighlighted
+                       && Type() != MMIDComponent::ECustomItem
+                       && Type() != MMIDComponent::EImageItem)
+                      ? KHighlightedItemTextColor : KNonHighlightedItemTextColor;
 
     // Get color from skin
     if ((AknsUtils::GetCachedColor(AknsUtils::SkinInstance(), color,

@@ -149,9 +149,6 @@ public class TextEditor
     // The current font of this text editor component
     private Font iFont;
 
-    // Indicates receiving of pointer events by the editor
-    private boolean iTouchEnabled;
-
     // Text editor container for handling editor focusing.
     private static TextEditorContainer iEditorContainer;
 
@@ -195,9 +192,8 @@ public class TextEditor
      * </P>
      *
      * <P>
-     * On Series60-devices, if the MIDlet is manufacturer or operator-signed,
-     * the object returned by this method will also implement the
-     * com.nokia.mid.ui.s60.TextEditor
+     * On Series60-devices the object returned by this method will also
+     * implement the com.nokia.mid.ui.S60TextEditor.
      * </P>
      *
      * @param text
@@ -259,9 +255,8 @@ public class TextEditor
      * </P>
      *
      * <P>
-     * On Series60-devices, if the MIDlet is manufacturer or operator-signed,
-     * the object returned by this method will also implement the
-     * com.nokia.mid.ui.s60.TextEditor
+     * On Series60-devices the object returned by this method will also
+     * implement the com.nokia.mid.ui.S60TextEditor.
      * </P>
      *
      * @param maxSize
@@ -619,41 +614,6 @@ public class TextEditor
     }
 
     /**
-     * Specifies whether or not the editor will receive touch-events.
-     * <p>
-     * This is enabled by default.
-     * An editor with touch-event disabled won't be able to perform any
-     * touch-related functionality such as scrolling or positioning the
-     * cursor. It may however still be controlled via the
-     * virtual keypad/control-panel if that is enabled, or receive other +
-     * input e.g. via physical keys
-     * <p>
-     * @param enabled
-     *              true to enabled touch-event, false to disable
-     */
-    public void setTouchEnabled(boolean enabled)
-    {
-        if (iTouchEnabled != enabled)
-        {
-            synchronized (iToolkit)
-            {
-                _setTouchEnabled(getToolkitHandle(), iHandle, enabled);
-                iTouchEnabled = enabled;
-            }
-        }
-    }
-
-    /**
-     * Gets the current touch-enabled state
-     * <p>
-     * @return true if the editor is touch-enabled, false otherwise
-     */
-    public boolean isTouchEnabled()
-    {
-        return iTouchEnabled;
-    }
-
-    /**
      * <P>
      * Returns the Z-position, or the elevation, of the item. The Z-position
      * decides the stacking order of neighboring items.
@@ -885,17 +845,12 @@ public class TextEditor
             font = Font.getDefaultFont();
         }
 
-        int[] newSize = new int[2];
-
         synchronized (iToolkit)
         {
-            NativeError.check(_setFont(getToolkitHandle(), iHandle,
-                                       iLCDUIPackageInvoker.getFontHandle(font), newSize));
-
+            NativeError.check(_setFont(getToolkitHandle(),
+                                       iHandle,
+                                       iLCDUIPackageInvoker.getFontHandle(font)));
             iFont = font;
-
-            iWidth = newSize[0];
-            iHeight = newSize[1];
         }
     }
 
@@ -976,8 +931,6 @@ public class TextEditor
      * rendered using given color value. The default highlight background
      * color is fully opaque black.
      *
-     * This method is not supported on S40 platform.
-     *
      * @param color
      *            the color
      */
@@ -997,8 +950,6 @@ public class TextEditor
      * The text in a current selection range will be rendered
      * using given color value. The default highlight foreground color is fully
      * opaque white.
-     *
-     * This method is not supported on S40 platform.
      *
      * @param color
      *            the color
@@ -1442,6 +1393,42 @@ public class TextEditor
         }
     }
 
+    /**
+     * Gets the height of this <code>TextEditor</code> in pixels.
+     *
+     * @return height in pixels
+     */
+    public int getHeight()
+    {
+        int[] size = doGetSize();
+        return size[1];
+    }
+
+    /**
+     * Gets the width of this <code>TextEditor</code> in pixels.
+     *
+     * @return width in pixels
+     */
+    public int getWidth()
+    {
+        int[] size = doGetSize();
+        return size[0];
+    }
+
+    /*
+     * Gets TextEditor size in pixels - width, height. 
+     */
+    private int[] doGetSize()
+    {
+        int[] size = new int[2];
+        synchronized (iToolkit)
+        {
+            NativeError.check(_getSize(getToolkitHandle(), iHandle,
+                size));
+        }
+        return size;
+    }
+
     /*
      * Disposes the Landmark native peer object, if the handles are valid.
      * Invalid (negative) handles indicate that their creation failed in the
@@ -1529,17 +1516,12 @@ public class TextEditor
 
         int handle = 0;
 
-        // The size of the editor must be known after construction. Use return
-        // values to store the height and width of the editor after
-        // construction.
-        int[] size = new int[2];
-
         synchronized (iToolkit)
         {
             // Create native peer object for this Java object.
             handle =
                 _createNativePeer(getToolkitHandle(), maxSize, aWidth, aHeight,
-                                  aHeightInRows, size);
+                                  aHeightInRows);
         }
 
         // Check if construction failed and throw out of memory error.
@@ -1547,14 +1529,6 @@ public class TextEditor
         {
             throw new OutOfMemoryError();
         }
-
-        // Operation was a success, store size.
-        iWidth = size[0];
-        iHeight = size[1];
-        iMaxSize = maxSize;
-
-        // Enabling receiving pointer events
-        iTouchEnabled = true;
 
         // Sets parent to null
         iParent = null;
@@ -1573,12 +1547,15 @@ public class TextEditor
         // Set the constraints of the editor. The content is now empty.
         setConstraints(constraints);
 
-        // Set font to Java default font.
-        setFont(Font.getDefaultFont());
-
+        // Store the maxSize of the editor
+        iMaxSize = maxSize;
+        
         // Set the text. This now throws an exception if the content is not
         // valid for the current set of constraints.
         setContent(aContent);
+        
+        // Set font to Java default font.
+        setFont(Font.getDefaultFont());
     }
 
     // Private methods.
@@ -1678,8 +1655,7 @@ public class TextEditor
         int maxSize,
         int aWidth,
         int aHeight,
-        boolean aHeightInRows,
-        int[] aSize);
+        boolean aHeightInRows);
 
     /*
      * Disposes the native side peer object.
@@ -2114,16 +2090,13 @@ public class TextEditor
      * @param aFont The application preferred font to be used in this
      * TextEditor.
      *
-     * @param aNewSize On return, contains the new size of the editor.
-     *
      * @return NativeError.KErrNone if the operation was successful. Otherwise,
      * a system-wide error code is returned.
      */
     private native int _setFont(
         int aToolkitHandle,
         int aNativePeerHandle,
-        int aFont,
-        int[] aNewSize);
+        int aFont);
 
     /*
      * Sets a listener for this text editor.
@@ -2172,21 +2145,16 @@ public class TextEditor
     private native int _getZPosition(int aToolkitHandle, int aNativePeerHandle);
 
     /*
-     * Specifies whether or not the editor will receive touch-events.
+     * Gets the size of the text editor.
      *
-     * This is enabled by default.
-     * An editor with touch-event disabled won't be able to perform any
-     * touch-related functionality such as scrolling or positioning the
-     * cursor. It may however still be controlled via the
-     * virtual keypad/control-panel if that is enabled, or receive other +
-     * input e.g. via physical keys
+     * @param aToolkitHandle A handle to the LCDUI toolkit.
      *
-     * @param aEnabled
-     *              true to enabled touch-event, false to disable
+     * @param aNativePeerHandle A handle to the native side peer object.
+     *
+     * @return The size of the TextEditor in pixels.
      */
-    private native int _setTouchEnabled(int aToolkitHandle,
-                                        int aNativePeerHandle, boolean aEnabled);
-
+    private native int _getSize(int aToolkitHandle, int aNativePeerHandle, 
+        int[] aSize);
 }
 
 // End of file

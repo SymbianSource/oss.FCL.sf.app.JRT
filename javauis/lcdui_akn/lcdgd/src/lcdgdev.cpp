@@ -514,10 +514,9 @@ void CLcdGraphicsDeviceImpl::DoBlitLineForImage
         TUint32 srcColor = *(TUint32*)colorAddr;
 
         TUint32 mask = (TUint32)(((TInt32)srcColor) >> 24); // Sign extend down.
-        ASSERT(mask == 0 || mask == (TUint32)-1);
 
 #ifdef RD_JAVA_NGA_ENABLED
-        if (mask)
+        if (mask == (TUint32)-1)
         {
             // Note that the target is not always opaque anymore
             dstColor = srcColor;

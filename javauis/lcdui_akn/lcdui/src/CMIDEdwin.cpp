@@ -734,7 +734,8 @@ TKeyResponse CMIDEdwin::OfferKeyEventL(const TKeyEvent& aKeyEvent,TEventCode aTy
 #else
     if (IsConstraintSet(MMIDTextField::ENumeric) && (aType == EEventKeyUp) && !IsReadOnly() &&
 #endif // RD_SCALABLE_UI_V2
-            ((scanCode==EStdKeyNkpAsterisk) || (scanCode == EStdKeyMinus) || (scanCode==EStdKeyNkpMinus) || (scanCode == 0x2A) || (scanCode == 0x2D)))
+            ((scanCode==EStdKeyNkpAsterisk) || (scanCode == EStdKeyMinus) || (scanCode==EStdKeyNkpMinus) || (scanCode == 0x2A) || (scanCode == 0x2D) ||
+             (TChar(aKeyEvent.iCode) == TChar('-') && scanCode != EStdKeyMinus)))
     {
         HandleMinusCharEventL(EEventTextUpdate);
         CEikEdwin::ReportEdwinEventL(EEventTextUpdate);
@@ -752,20 +753,26 @@ TKeyResponse CMIDEdwin::OfferKeyEventL(const TKeyEvent& aKeyEvent,TEventCode aTy
     {
         CPlainText* res = CEikEdwin::Text();
         TInt textLength = CEikEdwin::TextLength();
-        if (scanCode == EStdKeyMinus)
+        if (scanCode == EStdKeyMinus && textLength < iMaxSize)
         {
             res->InsertL(CEikEdwin::CursorPos(), KMinusChar);
         }
-        else if (scanCode == EStdKeyFullStop)
+        else if (scanCode == EStdKeyFullStop && textLength < iMaxSize)
         {
             res->InsertL(CEikEdwin::CursorPos(), KFullStopChar);
         }
 
         HandleTextChangedL(); // notify editor about the text changes
         CEikEdwin::ReportEdwinEventL(EEventTextUpdate);
+        TInt cursorPos = CEikEdwin::CursorPos();
+
         if (CEikEdwin::TextLength() < iMaxSize)
         {
-            CEikEdwin::SetCursorPosL(CEikEdwin::CursorPos() + 1, EFalse);
+            CEikEdwin::SetCursorPosL(cursorPos + 1, EFalse);
+        }
+        else if (cursorPos == (iMaxSize - 1) && cursorPos == textLength && scanCode==EStdKeyFullStop)
+        {
+            CEikEdwin::SetCursorPosL(iMaxSize, EFalse);
         }
     }
     //Error tone playing case1:
@@ -902,6 +909,30 @@ TKeyResponse CMIDEdwin::OfferKeyEventL(const TKeyEvent& aKeyEvent,TEventCode aTy
 
             response = CEikEdwin::OfferKeyEventL(aKeyEvent,aType);
             UpdateTextCapacityIndicatorValueL();
+        }
+        else
+        {
+            // If minus char was entered in full querty editor mode
+            if (IsConstraintSet(MMIDTextField::EDecimal) &&
+                    (aType == EEventKey) && !IsReadOnly() &&
+                    (TChar(aKeyEvent.iCode) == TChar('-') && scanCode != EStdKeyMinus))
+            {
+                CPlainText* res = CEikEdwin::Text();
+
+                if (res && TChar(aKeyEvent.iCode) == TChar('-') &&
+                        TextLength() < iMaxSize)
+                {
+                    res->InsertL(GetCaretPosition(), KMinusChar);
+                    HandleTextChangedL(); // notify editor about the text changes
+                    CEikEdwin::ReportEdwinEventL(EEventTextUpdate);
+
+                    if (TextLength() < iMaxSize)
+                    {
+                        CEikEdwin::SetCursorPosL(GetCaretPosition() + 1, EFalse);
+                    }
+                }
+            }
+
         }
         return response;
     }
@@ -1047,6 +1078,7 @@ void CMIDEdwin::HandleEdwinEventL(CEikEdwin* aEdwin, TEdwinEvent aEventType)
             TInt illegalCharPos = -1;
             TPtr16 ptr = res->Des();
             TInt minusPos = ptr.LocateReverse(TChar('-'));
+            TInt endCursorPos = CEikEdwin::CursorPos();
 
             // check if minus sign is inserted on incorrect place
             // (not at the beginning)
@@ -1094,9 +1126,10 @@ void CMIDEdwin::HandleEdwinEventL(CEikEdwin* aEdwin, TEdwinEvent aEventType)
                     {
                         cursorPos--;
                     }
-                    CEikEdwin::SetCursorPosL(cursorPos, EFalse);
+                    endCursorPos = cursorPos;
                 }
             }
+            CEikEdwin::SetCursorPosL(endCursorPos, EFalse);
             CleanupStack::Pop(res);
             delete res;
         }

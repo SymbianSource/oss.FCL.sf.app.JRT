@@ -22,6 +22,11 @@
 #include <bitdev.h>
 #include <bitstd.h>
 #include <j2me/jdebug.h>
+#ifdef RD_JAVA_S60_RELEASE_9_2
+// Used with partial VKB
+#include <AknPriv.hrh>
+#endif // RD_JAVA_S60_RELEASE_9_2
+#include <AknDef.h>
 
 // INTERNAL INCLUDES
 #include "CMIDCanvasGraphicsItem.h"
@@ -82,6 +87,9 @@ CMIDCanvasGraphicsItem::~CMIDCanvasGraphicsItem()
         iComponentContainer->UnregisterComponent(this);
     }
 
+    iComponentContainer = NULL;
+    iUtils = NULL;
+    
     DEBUG("CMIDCanvasGraphicsItem::~CMIDCanvasGraphicsItem -");
 }
 
@@ -152,18 +160,20 @@ void CMIDCanvasGraphicsItem::SetParentL(
     // Store container. NULL is ok.
     iComponentContainer = aComponentContainer;
 
-    // Set item size and position is needed here.
-    TSize size = iItemPainter->Size();
-    SetSizeL(size.iWidth, size.iHeight);
-    TPoint position = iItemPainter->Position();
-    SetPosition(position.iX, position.iY);
-
-    if (iUtils)
+    if (iComponentContainer)
     {
-        // Set canvas fullscreen size is needed here.
-        iItemPainter->SetOnScreenCanvasRect(iUtils->GetOnScreenCanvasRect());
+        // Set item size and position is needed here.
+        TSize size = iItemPainter->Size();
+        SetSizeL(size.iWidth, size.iHeight);
+        TPoint position = iItemPainter->Position();
+        SetPosition(position.iX, position.iY);
+    
+        if (iUtils)
+        {
+            // Set canvas fullscreen size is needed here.
+            iItemPainter->SetOnScreenCanvasRect(iUtils->GetOnScreenCanvasRect());
+        }
     }
-
     DEBUG("CMIDCanvasGraphicsItem::SetParentL -");
 }
 
@@ -316,46 +326,84 @@ void CMIDCanvasGraphicsItem::Dispose()
 //
 void CMIDCanvasGraphicsItem::HandleFullscreenModeChange()
 {
-    // Calling all functions which set size and position.
-    TRAPD(err, SetSizeL(iNonScaledSize.iWidth, iNonScaledSize.iHeight));
-    if (err != KErrNone)
+    if (iUtils && iUtils->IsScalingEnabled())
     {
-        DEBUG_INT("CMIDCanvasGraphicsItem::HandleFullscreenModeChange: SetSizeL method leave with %d code", err);
-    }
-    SetPosition(iNonScaledPosition.iX, iNonScaledPosition.iY);
-
-    if (iUtils)
-    {
-        // Setting of fullscreen canvas rect.
-        iItemPainter->SetOnScreenCanvasRect(iUtils->GetOnScreenCanvasRect());
-    }
-}
-
-// ---------------------------------------------------------------------------
-// CMIDCanvasGraphicsItem::HandleResolutionChange
-// (other items are commented in the header file)
-// ---------------------------------------------------------------------------
-//
-void CMIDCanvasGraphicsItem::HandleResolutionChange()
-{
-    // Calling all functions which set size and position.
-    TRAPD(err, SetSizeL(iNonScaledSize.iWidth, iNonScaledSize.iHeight));
-    if (err != KErrNone)
-    {
-        DEBUG_INT("CMIDCanvasGraphicsItem::HandleFullscreenModeChange: SetSizeL method leave with %d code", err);
-    }
-    SetPosition(iNonScaledPosition.iX, iNonScaledPosition.iY);
-    if (iUtils)
-    {
-        // Setting of fullscreen canvas rect.
-        iItemPainter->SetOnScreenCanvasRect(iUtils->GetOnScreenCanvasRect());
+        // We need reposition text editor.
+        HandleChangeForScaling(EFullscreenChange);
     }
 }
 
 TBool CMIDCanvasGraphicsItem::IsScalingOn() const
 {
-    return iUtils && iComponentContainer && iUtils->IsScalingEnabled() &&
-           iComponentContainer->IsFullScreen();
+    return iUtils && iComponentContainer && iUtils->IsScalingEnabled()
+#ifdef RD_JAVA_S60_RELEASE_9_2
+           && !iPartialVKBOpen
+#endif // RD_JAVA_S60_RELEASE_9_2
+           && iComponentContainer->IsFullScreen();
+}
+
+void CMIDCanvasGraphicsItem::HandleResourceChange(TInt aType)
+{
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    if ((aType == KAknSplitInputEnabled) ||
+            (aType == KAknSplitInputDisabled))
+    {
+        iPartialVKBOpen = (aType == KAknSplitInputEnabled);
+
+        if (iUtils && iComponentContainer && iUtils->IsScalingEnabled() &&
+                iComponentContainer->IsFullScreen())
+        {
+            // We need reposition text editor.
+            HandleChangeForScaling(EPartialVKBChange);
+        }
+    }
+#endif // RD_JAVA_S60_RELEASE_9_2
+
+    if (KEikDynamicLayoutVariantSwitch)
+    {
+        if (iUtils && iComponentContainer && iUtils->IsScalingEnabled() &&
+                iComponentContainer->IsFullScreen())
+        {
+            // We need reposition text editor.
+            HandleChangeForScaling(EResolutionChange);
+        }
+    }
+}
+
+void CMIDCanvasGraphicsItem::HandleChangeForScaling(TChange aChange)
+{
+    // Calling functions which set size and position.
+    TRAPD(err, SetSizeL(iNonScaledSize.iWidth, iNonScaledSize.iHeight));
+    if (err != KErrNone)
+    {
+        DEBUG_INT("CMIDCanvasGraphicsItem::HandleFullscreenModeChange: SetSizeL method leave with %d code", err);
+    }
+    SetPosition(iNonScaledPosition.iX, iNonScaledPosition.iY);
+
+    if (aChange == EResolutionChange || aChange == EFullscreenChange)
+    {
+        if (iUtils)
+        {
+            // Setting of fullscreen canvas rect.
+            iItemPainter->SetOnScreenCanvasRect(iUtils->GetOnScreenCanvasRect());
+        }
+    }
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    if (aChange == EPartialVKBChange)
+    {
+        if (iPartialVKBOpen)
+        {
+            // When partial VKB is opening, stop scaling.
+            iItemPainter->SetOnScreenCanvasRect(iComponentContainer->Control().Rect());
+        }
+        else if (iUtils)
+        {
+            // When partial VKB is closing, restore scaling.
+            iItemPainter->SetOnScreenCanvasRect(iUtils->GetOnScreenCanvasRect());
+        }
+    }
+#endif // RD_JAVA_S60_RELEASE_9_2
 }
 
 // End of file

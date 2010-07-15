@@ -84,8 +84,7 @@ public class SMSPermissionImpl extends PermissionBase
                 formattedDestination = iDestination.substring(1);
                 prefix = "+";
             }
-            formattedDestination = Formatter.formatDigits(formattedDestination) 
-                + prefix;
+            formattedDestination = prefix + Formatter.formatDigits(formattedDestination);
             if (iNumberOfSegments > 1)
             {
                 return (SecurityPromptMessage.getInstance()).getText(

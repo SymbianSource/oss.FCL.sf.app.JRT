@@ -50,7 +50,7 @@
 #include <javasymbianoslayer.h>
 #ifdef RD_JAVA_S60_RELEASE_9_2
 // Used with partial VKB
-#include <aknpriv.hrh>
+#include <AknPriv.hrh>
 #endif // RD_JAVA_S60_RELEASE_9_2
 
 #include "javaoslayer.h"
@@ -1089,6 +1089,13 @@ void CMIDCanvas::MdcAddContent(MDirectContent* aContent)
 
         PostEvent(EPaint, posPacked, sizePacked);
     }
+
+    // If is added first direct content, then NGA is switched off
+    // and move of iViewRect is needed.
+    if (iFullScreen && iScalingOn && iDirectContents.Count() == 1)
+    {
+        iViewRect.Move(-iPositionRelativeToScreen);
+    }
 #endif // RD_JAVA_NGA_ENABLED
 }
 
@@ -1110,6 +1117,14 @@ void CMIDCanvas::MdcRemoveContent(MDirectContent* aContent)
         if (iDirectContents.Count() == 0)
         {
             iRestoreContentWhenUnfaded = EFalse;
+#ifdef RD_JAVA_NGA_ENABLED
+            // If is removed last direct content, then NGA is switched on
+            // and move of iViewRect is needed.
+            if (iScalingOn && iFullScreen)
+            {
+                iViewRect.Move(iPositionRelativeToScreen);
+            }
+#endif // RD_JAVA_NGA_ENABLED
         }
     }
 }
@@ -1461,6 +1476,7 @@ CMIDDisplayable* CMIDCanvas::GetDisplayable() const
     return iDisplayable;
 }
 #endif // RD_JAVA_S60_RELEASE_9_2
+
 // ---------------------------------------------------------------------------
 // CMIDCanvas::SetComponentIndexL
 // Changes the index of the specified custom component.
@@ -1758,7 +1774,7 @@ void CMIDCanvas::DrawWindowNgaL(const TRect& aRect)
     if (!IsEglAvailable())
     {
         // No M3G content, use pixel source
-        ActivatePixelSourceL();
+        ActivatePixelSourceL(EFalse);
         DEBUG("CMIDCanvas::Draw - Pixel Source activated");
     }
     else // M3G content, use EGL surface
@@ -2097,22 +2113,38 @@ void CMIDCanvas::DrawDirect(const TRect& aRect) const
 void CMIDCanvas::HandleResourceChange(TInt aType)
 {
 #ifdef RD_JAVA_S60_RELEASE_9_2
-    if ((aType == KEikInputLanguageChange) |
-            (aType == KAknSplitInputEnabled) |
+    if ((aType == KAknSplitInputEnabled) |
             (aType == KAknSplitInputDisabled))
+    {
+        // We need inform CanvasItems that partial virtual keyboard
+        // is open or closed. This is needed only when partial VKB changes
+        // its state.
+        TBool partialVKBOpen = (aType == KAknSplitInputEnabled);
+        if (partialVKBOpen != iPartialVKBOpen)
+        {
+            iPartialVKBOpen = partialVKBOpen;
+            for (int i = 0; i < iCustomComponents.Count(); i++)
+            {
+                iCustomComponents[i]->HandleResourceChange(aType);
+            }
+        }
+    }
+    else if (aType == KEikInputLanguageChange)
 #else
     if (aType == KEikInputLanguageChange)
 #endif // RD_JAVA_S60_RELEASE_9_2
     {
+        // We need inform TextEditor that input language is changed.
         if ((iFocusedComponent != KComponentFocusedNone) &&
-        (iFocusedComponent < iCustomComponents.Count()))
+                (iFocusedComponent < iCustomComponents.Count()))
         {
             iCustomComponents[iFocusedComponent]->
             CustomComponentControl(KComponentMainControl)->
             HandleResourceChange(aType);
         }
+
     }
-    if (aType == KEikDynamicLayoutVariantSwitch)
+    else if (aType == KEikDynamicLayoutVariantSwitch)
     {
         // If orientation change is done,
         // then we have to inform all components about it.
@@ -2120,7 +2152,7 @@ void CMIDCanvas::HandleResourceChange(TInt aType)
         {
             for (int i = 0; i < iCustomComponents.Count(); i++)
             {
-                iCustomComponents[i]->HandleResolutionChange();
+                iCustomComponents[i]->HandleResourceChange(aType);
             }
         }
     }
@@ -2288,9 +2320,11 @@ void CMIDCanvas::HandlePointerEventL(const TPointerEvent& aPointerEvent)
             // iViewRect.iBr - TSize(1, 1)  -> (iContentSize.iWidth - 1,
             //                                  iContentSize.iHeight - 1)
             point -= iViewRect.iTl;
-            
+
 #ifdef RD_JAVA_NGA_ENABLED
-            if (iFullScreen && iScalingOn)
+            // If NGA is started and scaling is on then the drawing rectangle
+            // is moved. Them we need move pointer events too.
+            if (iFullScreen && iScalingOn && iDirectContents.Count() == 0)
             {
                 // Fix coordinates
                 point += iPositionRelativeToScreen;
@@ -2432,7 +2466,9 @@ void CMIDCanvas::FocusChanged(TDrawNow /* aDrawNow */)
 
         // To have cursor on focused control.
         if ((iFocusedComponent != KComponentFocusedNone) &&
-                (iFocusedComponent < iCustomComponents.Count()))
+                (iFocusedComponent < iCustomComponents.Count()) &&
+                iCustomComponents[iFocusedComponent]->
+                CustomComponentControl(KComponentMainControl)->IsVisible())
         {
             iCustomComponents[iFocusedComponent]->
             CustomComponentControl(KComponentMainControl)->
@@ -2443,7 +2479,7 @@ void CMIDCanvas::FocusChanged(TDrawNow /* aDrawNow */)
         // To avoid situation when Canvas is redrawn but black area remains
         if (iAlfCompositionPixelSource)
         {
-            TRAPD(err, ActivatePixelSourceL());
+            TRAPD(err, ActivatePixelSourceL(EFalse));
             if (err != KErrNone)
             {
                 DEBUG_INT("CMIDCanvas::FocusChanged - ActivatePixelSourceL error %d", err);
@@ -2474,9 +2510,11 @@ void CMIDCanvas::FocusChanged(TDrawNow /* aDrawNow */)
             }
         }
 
-        // To  cursor on focused control.
+        // To remove cursor on focused control.
         if ((iFocusedComponent != KComponentFocusedNone) &&
-                (iFocusedComponent < iCustomComponents.Count()))
+                (iFocusedComponent < iCustomComponents.Count()) && 
+                iCustomComponents[iFocusedComponent]->
+                CustomComponentControl(KComponentMainControl)->IsVisible())
         {
             iCustomComponents[iFocusedComponent]->
             CustomComponentControl(KComponentMainControl)->
@@ -2524,7 +2562,12 @@ void CMIDCanvas::SizeChanged()
 
         TSize contentSize;
 
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        if (iFullScreen && (orientedOrgMIDletScrSize != controlSize)
+                && !iPartialVKBOpen)
+#else
         if (iFullScreen && (orientedOrgMIDletScrSize != controlSize))
+#endif // RD_JAVA_S60_RELEASE_9_2
         {
             contentSize = orientedOrgMIDletScrSize;
         }
@@ -2621,7 +2664,7 @@ void CMIDCanvas::Draw(const TRect& aRect) const
             myself->ClearUiSurface(ETrue);
             if (iAlfCompositionPixelSource)
             {
-                TRAP_IGNORE(myself->ActivatePixelSourceL());
+                TRAP_IGNORE(myself->ActivatePixelSourceL(ETrue));
             }
         }
         iWndUpdate = EFalse;
@@ -2910,6 +2953,10 @@ void CMIDCanvas::ConstructL(CCoeControl& aWindow)
 
     InitPixelSourceL();
 #endif // RD_JAVA_NGA_ENABLED        
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    iPartialVKBOpen = EFalse;
+#endif // RD_JAVA_S60_RELEASE_9_2
 }
 
 
@@ -3142,7 +3189,9 @@ void CMIDCanvas::Layout()
     if (iFullScreen)
     {
 #ifdef RD_JAVA_NGA_ENABLED
-        if (iScalingOn)
+        // If both NGA and scaling are on, then iViewRect is needed move
+        // for preverifing wrong position of Canvas.
+        if (iScalingOn && (!iFullScreen || iDirectContents.Count() == 0))
         {
             // Translate to screen coordinates.
             rect.Move(iPositionRelativeToScreen);
@@ -3165,6 +3214,15 @@ void CMIDCanvas::Layout()
         {
             viewSize = iTargetMIDletScrSize;
         }
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        // If partial VKB is open then MIDlet is not scaled.
+        // That we need set iViewRect to whole size of Canvas.
+        if (iPartialVKBOpen)
+        {
+            viewSize = Size();
+        }
+#endif //RD_JAVA_S60_RELEASE_9_2
 
         // If optional JAD parameter Nokia-MIDlet-Target-Display-Size is NOT
         // defined and Nokia-MIDlet-Original-Display-Size is defined to
@@ -3601,7 +3659,7 @@ void CMIDCanvas::DisposePixelSource()
 // In scaling case need to call SetExtent() again if pixel source was suspended.
 // ---------------------------------------------------------------------------
 //
-void CMIDCanvas::ActivatePixelSourceL()
+void CMIDCanvas::ActivatePixelSourceL(TBool aDrawingOngoing)
 {
     ASSERT(iAlfCompositionPixelSource);
 
@@ -3623,7 +3681,7 @@ void CMIDCanvas::ActivatePixelSourceL()
 
     if (iPixelSourceSuspended)
     {
-        ClearUiSurface(EFalse);
+        ClearUiSurface(aDrawingOngoing);
         iPixelSourceSuspended = EFalse;
         if (iFullScreen && iScalingOn)
         {

@@ -569,7 +569,7 @@ void CMIDToolkit::BringToForeground()
             mFirst = EFalse;
         }
     }
-    
+
     // Stop the start screen if it is still active.
     java::ui::CoreUiAvkonAppUi* appUi = java::ui::CoreUiAvkonLcdui::getInstance().getJavaUiAppUi();
     if (appUi && appUi->hasStartScreen())

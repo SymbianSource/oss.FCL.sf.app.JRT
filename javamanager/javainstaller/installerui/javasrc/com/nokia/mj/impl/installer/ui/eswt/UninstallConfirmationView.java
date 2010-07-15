@@ -119,16 +119,11 @@ public class UninstallConfirmationView extends ConfirmationViewBase
                             new String[] { iUninstallInfo.getName() }),
                            horizontalSpan, labelStyle);
 
-        if (identified)
-        {
-            // Vendor information must be displayed only for
-            // identified applications.
-            Label vendorLabel = createLabel
-                                (InstallerUiTexts.get
-                                 (InstallerUiTexts.VENDOR,
-                                  new String[] { iUninstallInfo.getVendor() }),
-                                 horizontalSpan, labelStyle);
-        }
+        Label vendorLabel = createLabel
+            (InstallerUiTexts.get
+             (InstallerUiTexts.VENDOR,
+              new String[] { iUninstallInfo.getVendor() }),
+             horizontalSpan, labelStyle);
 
         Label versionLabel = createLabel
                              (InstallerUiTexts.get

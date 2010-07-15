@@ -636,21 +636,18 @@ void CAppMngr2MidletAppInfo::ConstructL(
         iDataSize = attribute->Value().AllocL();
     }
     // Description
-    delete attribute;
     attribute = aEntry->AttributeL(KMIDletDescription()); // no ownership
     if (attribute)
     {
         iDescription = attribute->Value().AllocL();
     }
     // Info URL
-    delete attribute;
     attribute = aEntry->AttributeL(KMIDletInfoURL()); // no ownership
     if (attribute)
     {
         iInfoUrl = attribute->Value().AllocL();
     }
     // Update URL
-    delete attribute;
     attribute = aEntry->AttributeL(KNokiaUpdate()); // no ownership
     if (attribute)
     {
@@ -664,7 +661,6 @@ void CAppMngr2MidletAppInfo::ConstructL(
             iUpdateUrl = attribute->Value().AllocL();
         }
     }
-    delete attribute;
     // Use localized midlet suite name if it exists
     attribute = aEntry->AttributeL(KNokiaMIDletName()); // no ownership
     if (attribute)
@@ -676,7 +672,6 @@ void CAppMngr2MidletAppInfo::ConstructL(
         // Use non-localized name
         iLocalizedMIDletName = aEntry->Name().AllocL();
     }
-    delete attribute;
 
     RArray<TUid> midletUids;
     CleanupClosePushL(midletUids);
@@ -696,7 +691,6 @@ void CAppMngr2MidletAppInfo::ConstructL(
         if (attribute)
         {
             contentLength += attribute->Value().Length();
-            delete attribute;
         }
         else
         {
@@ -737,7 +731,6 @@ void CAppMngr2MidletAppInfo::ConstructL(
                 ptrContent.Append(KListSeparatorAndSpace);
                 ptrContent.Append(attribute->Value());
             }
-            delete attribute;
         }
         else
         {
@@ -795,7 +788,6 @@ void CAppMngr2MidletAppInfo::ConstructL(
             iPermissions = attribute->Value().AllocL();
             iPermissions->Des().TrimAll();
         }
-        delete attribute;
     }
 
     LOG(EJavaAppMngrPlugin, EInfo, "- CAppMngr2MidletAppInfo::ConstructL");

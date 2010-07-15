@@ -70,7 +70,9 @@ CMIDDateFieldItem::~CMIDDateFieldItem()
     }
     if (iEditor)
     {
+#ifndef RD_JAVA_S60_RELEASE_9_2
         iEditor->SetFocus(ETrue);   // needed to notify observers about editor destruction
+#endif // RD_JAVA_S60_RELEASE_9_2
         delete iEditor;
         iEditor = NULL;
     }
@@ -817,21 +819,19 @@ void CMIDDateFieldItem::FocusChanged(TDrawNow aDrawNow)
     iEditor->SetFocus(focus);
     if (focus)
     {
-        // Text colour from skin - focused
-        iEditor->SetSkinTextColorL(EAknsCIQsnTextColorsCG8);
         TRAP_IGNORE(iUIManager->OpenNaviPaneControllerL()->PauseTickerL(
                         TICKER_PAUSE_INTERVAL, this));
     }
     else
     {
-        // Text colour from skin - unfocused
-        iEditor->SetSkinTextColorL(EAknsCIQsnTextColorsCG6);
         TRAP_IGNORE(iUIManager->OpenNaviPaneControllerL()->PauseTickerL(
                         0, this));
 #ifdef RD_SCALABLE_UI_V2
         iGrabbingControl = NULL;
 #endif
     }
+
+    TRAP_IGNORE(UpdateTextColorsL());
 
     CMIDControlItem::FocusChanged(aDrawNow);
 
@@ -949,6 +949,22 @@ void CMIDDateFieldItem::CursorUpdate()
     if (IsFocused())
     {
         iEditor->SetFocus(ETrue);
+    }
+}
+
+void CMIDDateFieldItem::UpdateTextColorsL()
+{
+    // Set color for content text according to item highlight
+    // (logical color constants are defined in lcdui.h)
+    if (iHighlighted)
+    {
+        // Text colour from skin - highlighted
+        iEditor->SetSkinTextColorL(KHighlightedItemTextColor);
+    }
+    else
+    {
+        // Text colour from skin - unfocused
+        iEditor->SetSkinTextColorL(KNonHighlightedItemTextColor);
     }
 }
 

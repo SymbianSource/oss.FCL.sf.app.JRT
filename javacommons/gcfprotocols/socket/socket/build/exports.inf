@@ -11,13 +11,11 @@
 *
 * Contributors:
 *
-* Description: Generated bld.inf -file
+* Description: 
 *
 */
 
-PRJ_PLATFORMS
-default
+PRJ_EXPORTS
 
-PRJ_MMPFILES  
-javasocket_0x2002DCD4.mmp 
-#include "exports.inf" 
+../inc/socketlocalhostinfo.h                         |../../../../../inc/socketlocalhostinfo.h
+

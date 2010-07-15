@@ -87,7 +87,6 @@ void CMIDTextBoxQueryDialog::ConstructL(TInt aConstraints,
     iEdwinUtils = CMIDEdwinUtils::NewL(this, iDecimalSeparator);
 
     iConstraints = aConstraints;
-    iLastCountLine = 0;
     iStrict = ETrue;
 
     // if text is invalid according to constraints, throw IllegalArgumentException,
@@ -456,7 +455,7 @@ TSize CMIDTextBoxQueryDialog::ContentSize() const
 void CMIDTextBoxQueryDialog::FocusChanged(TDrawNow aDrawNow)
 {
     CAknTextQueryDialog::FocusChanged(aDrawNow);
-    SetRightScrollBarPosition();
+    TRAP_IGNORE(UpdateScrollBarPositionL());
 }
 //
 // We do not want to become visible if we are not showing
@@ -485,12 +484,7 @@ void CMIDTextBoxQueryDialog::SizeChanged()
     {
         CAknTextQueryDialog::SizeChanged();
     }
-    if (iEditor && iEditor->ScrollBarFrame() && iEditor->ScrollBarFrame()->VerticalScrollBar())
-    {
-        iEditorRect = iEditor->Rect();
-        iEditorRect.SetWidth(iEditorRect.Width() - iEditor->ScrollBarFrame()->VerticalScrollBar()->Rect().Width());
-        SetRightScrollBarPosition();
-    }
+    TRAP_IGNORE(UpdateScrollBarPositionL());
 }
 
 TKeyResponse CMIDTextBoxQueryDialog::OfferKeyEventL(const TKeyEvent& aKeyEvent,TEventCode aType)
@@ -662,7 +656,8 @@ TKeyResponse CMIDTextBoxQueryDialog::OfferKeyEventL(const TKeyEvent& aKeyEvent,T
 #else
     if (IsConstraintSet(MMIDTextField::ENumeric) && (aType == EEventKeyUp) && !iEditor->IsReadOnly() &&
 #endif // RD_SCALABLE_UI_V2
-            ((scanCode==EStdKeyNkpAsterisk) || (scanCode == EStdKeyMinus) || (scanCode==EStdKeyNkpMinus) || (scanCode == 0x2A) || (scanCode == 0x2D)))
+            ((scanCode==EStdKeyNkpAsterisk) || (scanCode == EStdKeyMinus) || (scanCode==EStdKeyNkpMinus) || (scanCode == 0x2A) || (scanCode == 0x2D) ||
+             (TChar(aKeyEvent.iCode) == TChar('-') && scanCode != EStdKeyMinus)))
     {
         HandleMinusCharEventL(MEikEdwinObserver::EEventTextUpdate);
         return EKeyWasConsumed;
@@ -688,10 +683,15 @@ TKeyResponse CMIDTextBoxQueryDialog::OfferKeyEventL(const TKeyEvent& aKeyEvent,T
         }
 
         iEditor->HandleTextChangedL(); // notify editor about the text changes
+        TInt cursorPos = GetCaretPosition();
 
         if (Size() < iMaxSize)
         {
-            SetCursorPositionL(GetCaretPosition() + 1);
+            SetCursorPositionL(cursorPos + 1);
+        }
+        else if (cursorPos == (iMaxSize - 1) && cursorPos == textLength && scanCode==EStdKeyFullStop)
+        {
+            SetCursorPositionL(iMaxSize);
         }
 
         HandleTextUpdateL(MEikEdwinObserver::EEventTextUpdate);
@@ -900,14 +900,6 @@ void CMIDTextBoxQueryDialog::HandleEdwinEventL(CEikEdwin* aEdwin, TEdwinEvent aE
 
         HandleTextUpdateL(MEikEdwinObserver::EEventTextUpdate);
 
-        if (iEditor && iEditor->TextLayout())
-        {
-            if (iLastCountLine != iEditor->TextLayout()->GetLineNumber(iEditor->TextLength() - 1))
-            {
-                iLastCountLine = iEditor->TextLayout()->GetLineNumber(iEditor->TextLength() - 1);
-                SetRightScrollBarPosition();
-            }
-        }
     }
 }
 
@@ -937,6 +929,7 @@ void CMIDTextBoxQueryDialog::HandleTextUpdateL(TEdwinEvent aEventType)
             TInt pointPosL = ptr.Locate(iDecimalSeparator);
             TInt pointPosR = ptr.LocateReverse(iDecimalSeparator);
             TInt cursorPos = GetCaretPosition();
+            TInt endCursorPos = cursorPos;
 
             // check if minus sign is inserted on incorrect place
             // (not at the beginning)
@@ -975,7 +968,7 @@ void CMIDTextBoxQueryDialog::HandleTextUpdateL(TEdwinEvent aEventType)
                     // Set correct cusros possition
                     if (pointPosL == 0 && minusPos == pointPosL)
                     {
-                        SetCursorPositionL(pointPosL + 1);
+                        endCursorPos = (pointPosL + 1);
                     }
                 }
             }
@@ -983,7 +976,6 @@ void CMIDTextBoxQueryDialog::HandleTextUpdateL(TEdwinEvent aEventType)
             // Locate decimal separator again
             pointPosL = ptr.Locate(iDecimalSeparator);
             pointPosR = ptr.LocateReverse(iDecimalSeparator);
-            cursorPos = GetCaretPosition();
 
             if ((minusPos != KErrNotFound) && (pointPosL == 0))
             {
@@ -1009,9 +1001,11 @@ void CMIDTextBoxQueryDialog::HandleTextUpdateL(TEdwinEvent aEventType)
                     {
                         cursorPos--;
                     }
-                    SetCursorPositionL(cursorPos);
+
+                    endCursorPos = cursorPos;
                 }
             }
+            SetCursorPositionL(endCursorPos);
         }
         else if (((iConstraints &
                    MMIDTextField::EConstraintMask) == MMIDTextField::EMailAddr) ||
@@ -1560,17 +1554,40 @@ void CMIDTextBoxQueryDialog::HandleResourceChange(TInt aType)
             aType == KEikColorResourceChange || aType == KAknsMessageSkinChange ||
             aType == KUidValueCoeColorSchemeChangeEvent)
     {
-        SetRightScrollBarPosition();
+        TRAP_IGNORE(UpdateScrollBarPositionL());
     }
-
 }
 
-void CMIDTextBoxQueryDialog::SetRightScrollBarPosition()
+/* UpdateScrollBarPositionL
+ *
+ * This method is called for placing scrollbar to correct place in edwin
+ */
+void CMIDTextBoxQueryDialog::UpdateScrollBarPositionL()
 {
-    // Editor Rect should not be set with empty values
-    if (iEditor && iEditorRect.Height() != 0 && iEditorRect.Width() != 0)
+    if(iEditor && iEditor->TextLayout())
     {
-        iEditor->SetRect(iEditorRect);
+        TInt numLines = iEditor->TextLayout()->NumFormattedLines();
+        if(numLines == iEditor->MaximumHeightInLines())
+        {
+            if(iEditor->ScrollBarFrame())
+            {
+                iEditor->ScrollBarFrame()->SetScrollBarVisibilityL(CEikScrollBarFrame::EOff, CEikScrollBarFrame::EOff);
+            }
+        }
+        else if(numLines > iEditor->MaximumHeightInLines())
+        {
+            if(!iEditor->ScrollBarFrame())
+            {
+                iEditor->CreatePreAllocatedScrollBarFrameL();
+                iEditor->ScrollBarFrame()->SetScrollBarVisibilityL(CEikScrollBarFrame::EOff, CEikScrollBarFrame::EAuto);
+            }
+            TRect editorRect = iEditor->Rect();
+            if(iEditor->ScrollBarFrame()->VerticalScrollBar())
+            {
+                editorRect.SetWidth(editorRect.Width() - iEditor->ScrollBarFrame()->VerticalScrollBar()->ScrollBarBreadth());
+                iEditor->SetRect(editorRect);
+            }
+        }
     }
 }
 // End of file

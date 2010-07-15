@@ -536,15 +536,10 @@ abstract public class ViewBase
         if (aFull)
         {
             // Add vendor.
-            if (aInstallInfo.getCertificates() != null)
-            {
-                // Vendor information must be displayed only for
-                // identified applications.
-                createAppInfoLabel(
-                    InstallerUiTexts.get(
-                        InstallerUiTexts.SUITE_VENDOR,
-                        new String[] { aInstallInfo.getVendor() }));
-            }
+            createAppInfoLabel(
+                InstallerUiTexts.get(
+                    InstallerUiTexts.SUITE_VENDOR,
+                    new String[] { aInstallInfo.getVendor() }));
         }
         // Add size.
         long size = 0;

@@ -40,8 +40,18 @@ class CCoeControl;
  */
 class MMIDCustomComponent
 {
-public: // New methods
+public: // new types
+    /**
+     * Datatype indicates what change was made.
+     */
+    enum TChange
+    {
+        EFullscreenChange,
+        EResolutionChange,
+        EPartialVKBChange
+    };
 
+public: // New methods
     /**
      * Returns the count of controls in this custom component.
      *
@@ -117,11 +127,13 @@ public: // New methods
     virtual void HandleFullscreenModeChange() = 0;
 
     /**
-     * Handles changes of screen orientation.
+     * Handles system resource change messages.
+     *
+     * @param aType A message UID value.
      *
      * @since S60 5.0
      */
-    virtual void HandleResolutionChange() = 0;
+    virtual void HandleResourceChange(TInt aType) = 0;
 
 protected: // Destructor
 

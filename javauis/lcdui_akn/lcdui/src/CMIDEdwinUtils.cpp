@@ -1221,9 +1221,9 @@ void CPasswordBoxGlobalText::SaveClearTextL(TInt aPos,const TDesC& aBuf)
 
     TInt totalLength = ptr.Length() + aBuf.Length();
     if (totalLength > ptr.MaxLength())
-    {
-        iClearText = iClearText->ReAllocL(totalLength);
-        ptr = iClearText->Des();
+    {    
+		iClearText = iClearText->ReAllocL(totalLength);
+		ptr.Set(iClearText->Des());
     }
 
     ptr.Insert(aPos,aBuf);

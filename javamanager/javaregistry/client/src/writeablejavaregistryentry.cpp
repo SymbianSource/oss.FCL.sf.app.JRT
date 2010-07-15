@@ -303,19 +303,15 @@ AttributeL(const TDesC& aName) const
         AttributesL();
     }
 
-    CJavaAttribute* regAttr = NULL;
 
     for (TInt i = 0; i < iAttributes.Count(); i++)
     {
         if (0 == (iAttributes[i])->Name().Compare(aName))
         {
-            regAttr = CJavaAttribute::NewL((iAttributes[i])->Name(),
-                                           (iAttributes[i])->Value(),
-                                           (iAttributes[i])->Trusted());
-            break;
+            return iAttributes[i];
         }
     }
-    return regAttr;
+    return NULL;
 }
 
 // ---------------------------------------------------------------------------

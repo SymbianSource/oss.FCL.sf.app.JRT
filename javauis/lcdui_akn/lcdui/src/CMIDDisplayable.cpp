@@ -276,10 +276,11 @@ void CMIDDisplayable::ConstructL()
         iSKPositionWithQwerty = ESoftkeysRight;
     }
 
+    // initialization of keypad information
+    ReadOnScreenKeypadTypeFromSuiteSettings();
+
     DEBUG("- CMIDDisplayable::ConstructL");
 }
-
-
 
 CMIDDisplayable::CMIDDisplayable(MMIDEnv& aEnv,CMIDUIManager& aUIManager)
         :CEikBorderedControl(TGulBorder(KMIDLetBorder)),

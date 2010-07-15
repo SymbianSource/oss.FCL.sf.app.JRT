@@ -139,6 +139,11 @@ private: // methods
      **/
     void UpdateMemberVariables();
 
+    /**
+     * Updates color for text in date editor when focus is changed.
+     */
+    void UpdateTextColorsL();
+
 private: // data
 
     CEikTTimeEditor* iEditor;

@@ -483,8 +483,7 @@ void CSwtLabel::WrapTextL(TInt aWHint, TInt aHHint)
     const CFont* font = iEikLabel->Font();
 
     // Estimate how many text rows within given rectangle
-    // Use HeightInPixels same as MinimumHeight
-    TInt textPaneHeight = font->HeightInPixels();
+    TInt textPaneHeight = GetFontHeight(font);
     const TInt gap = iEikLabel->PixelGapBetweenLines();
 
     // The last row in label does not add a gap after it. So...
@@ -620,7 +619,7 @@ TInt CSwtLabel::MinimumHeight(TInt aLineCount) const
     // This is to fix some fonts getting clipped from above.
     // Do not change this ever, as wrapping will surely brake.
     return aLineCount * iEikLabel->PixelGapBetweenLines()
-           + aLineCount * iEikLabel->Font()->HeightInPixels();
+           + aLineCount * GetFontHeight(iEikLabel->Font());
 }
 
 // ---------------------------------------------------------------------------
@@ -646,6 +645,24 @@ void CSwtLabel::DoSetFontL(const CFont* aFont)
 
         TRAP_IGNORE(ClipTextL(iEikLabel->Size().iWidth));
     }
+}
+
+// ---------------------------------------------------------------------------
+// CSwtLabel::GetFontHeight
+// ---------------------------------------------------------------------------
+//
+TInt CSwtLabel::GetFontHeight(const CFont* aFont) const
+{
+    if (!aFont)
+    {
+        return 0;
+    }
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    return aFont->FontMaxHeight();
+#else
+    return aFont->HeightInPixels();
+#endif
 }
 
 // ---------------------------------------------------------------------------

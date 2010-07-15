@@ -355,6 +355,18 @@ void CAMMSAudioOutputControl::DisconnectedL(CAccMonitorInfo*  aAccessoryInfo)
     if (deviceType == KAccMonHeadset)
     {
         DEBUG("AMMS::CAMMSAudioOutputControl::DisconnectedL: Headset Disconnected");
+        iArray.Reset();
+        iAccMonitor->GetConnectedAccessoriesL(iArray);   
+        TInt count = iArray.Count();
+        if (count != 0)
+        {   
+           for (TInt i = 0; i != count; i++)
+           {
+              TAccMonCapability deviceType = iArray[ i ]->AccDeviceType();
+              if (deviceType == KAccMonHeadset)
+                 return;
+           }
+        }
         // If audio o/p preference is default and no accessories is connected or
         // o/p preference is not private then set the preference as public to
         // volume control

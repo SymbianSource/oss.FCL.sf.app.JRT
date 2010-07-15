@@ -1290,9 +1290,10 @@ private:
     /**
      * Pixel source is activated when canvas has a frame ready to be passed
      * to Alf composition.
+     * @param aDrawingOngoing Flag if system drawing is on now.
      * @since S60 9.2
      */
-    void ActivatePixelSourceL();
+    void ActivatePixelSourceL(TBool aDrawingOngoing);
 
     /**
      * Suspending pixel source releases its resources on graphics HW.
@@ -1583,6 +1584,11 @@ private: // data
      * or when MIDlet goes to background.
      */
     TBool iForeground;
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    // Indicates state of partial VKB
+    TBool iPartialVKBOpen;
+#endif
 
 #ifdef RD_JAVA_NGA_ENABLED
 

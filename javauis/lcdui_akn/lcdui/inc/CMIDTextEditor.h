@@ -672,6 +672,15 @@ public: // own methods
     void HandleResolutionChange();
 
     /**
+     * Handles system resource change messages.
+     *
+     * @param aType A message UID value.
+     *
+     * @since S60 5.0
+     */
+    void HandleResourceChange(TInt aType);
+
+    /**
      * Sets the caret in the Editor at x, y location.
      *
      * @param x
@@ -803,6 +812,15 @@ private: // New methods
      */
     HBufC* ConvertedContentLC(const TDesC& aContent);
 
+    /**
+     * This method is called when some change affects scaling
+     * of CanvasGraphicsItem.
+     *
+     * @param aChange Indicator what change was occurred.
+     * @since S60 5.0
+     */
+    void HandleChangeForScaling(TChange aChange);
+
 private: // Construtors
 
     /**
@@ -857,6 +875,11 @@ private: // Data
     TPoint iNonScaledPosition;
     // Nonscaled editor size. This is needed for correct scaling.
     TSize iNonScaledEditorSize;
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    // Indicates state of partial VKB
+    TBool iPartialVKBOpen;
+#endif
 
 #ifdef RD_TACTILE_FEEDBACK
     // True if editor is already connected to the pen input server

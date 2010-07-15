@@ -146,6 +146,11 @@ private:
     void ConstructL(const TDesC& aLabel,const TDesC& aText,TInt aConstraints,TInt aMaxSize);
     CMIDEdwin* TextComponent() const;
 
+    /**
+     * Updates color for text in editor when focus is changed.
+     */
+    void UpdateTextColorsL();
+
 public:
     /**
      * Sets the cursor visiblity for the text field (=edwin) when this item is focused.

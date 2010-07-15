@@ -49,6 +49,7 @@
 #include <badesca.h>
 #include <gdi.h>
 #include <w32std.h>
+#include <aknsconstants.h>
 
 #ifdef RD_JAVA_NGA_ENABLED
 #include <EGL/egltypes.h>
@@ -132,6 +133,13 @@ _LIT(KPositionBottom,          "bottom");
 _LIT(KPositionRight,           "right");
 }
 
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+const TInt KHighlightedItemTextColor    = EAknsCIQsnTextColorsCG6;
+#else
+const TInt KHighlightedItemTextColor    = EAknsCIQsnTextColorsCG8;
+#endif // RD_JAVA_S60_RELEASE_9_2
+const TInt KNonHighlightedItemTextColor = EAknsCIQsnTextColorsCG6;
 
 
 /**

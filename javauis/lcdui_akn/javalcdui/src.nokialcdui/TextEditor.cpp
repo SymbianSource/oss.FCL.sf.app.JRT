@@ -92,8 +92,7 @@ LOCAL_C void CreateNativePeerL(
     TInt aMaxSize,
     TInt aWidth,
     TInt aHeight,
-    TBool aHeightInRows,
-    TSize* aSize)
+    TBool aHeightInRows)
 {
     // Get LCDUI component factory.
     MMIDComponentFactory* factory = aToolkit->ComponentFactory();
@@ -110,9 +109,6 @@ LOCAL_C void CreateNativePeerL(
 
     // Component can be popped from the cleanup stack.
     CleanupPopComponent(textEditor);
-
-    // Store the size of the text editor.
-    *aSize = textEditor->EditorSize();
 }
 
 /*
@@ -127,8 +123,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mid_ui_TextEditor__1createNativePeer(
     jint aMaxSize,
     jint aWidth,
     jint aHeight,
-    jboolean aHeightInRows,
-    jintArray aSize)
+    jboolean aHeightInRows)
 {
     DEBUG("TextEditor.cpp - createNativePeer +");
 
@@ -136,7 +131,6 @@ JNIEXPORT jint JNICALL Java_com_nokia_mid_ui_TextEditor__1createNativePeer(
 
     jobject peer = aJniEnv->NewWeakGlobalRef(aPeer);
     TInt handle = -1;
-    TSize size;
 
     TInt error = toolkit->ExecuteTrap(
                      &CreateNativePeerL,
@@ -146,19 +140,9 @@ JNIEXPORT jint JNICALL Java_com_nokia_mid_ui_TextEditor__1createNativePeer(
                      aMaxSize,
                      aWidth,
                      aHeight,
-                     (TBool)aHeightInRows,
-                     &size);
+                     (TBool)aHeightInRows);
 
-    // Store returned size.
-    if (error == KErrNone)
-    {
-        jint sizeArray[ 2 ] = { size.iWidth, size.iHeight };
-        aJniEnv->SetIntArrayRegion(aSize, 0, 2, sizeArray);
-
-        DEBUG_INT2("TextEditor.cpp - createNativePeer -, width=%d height=%d",
-                   size.iWidth, size.iHeight);
-    }
-    else
+    if (error != KErrNone)
     {
         // Global reference must be removed at this point if construction
         // failed for some reason.
@@ -431,45 +415,6 @@ JNIEXPORT jint JNICALL Java_com_nokia_mid_ui_TextEditor__1setPosition(
     toolkit->ExecuteV(&SetPosition, editor, aX, aY);
 
     DEBUG("TextEditor.cpp - setPosition -");
-
-    return KErrNone;
-}
-
-/**
- * Local helper function for setting the touch enabled state of a text editor
- *
- * @param aTextEditor The text editor object to be modified.
- * @param aEnabled The touch enabled status of the text editor to be set.
- */
-LOCAL_C void SetTouchEnabled(
-    MMIDTextEditor* aTextEditor,
-    TBool aEnabled)
-{
-    aTextEditor->SetTouchEnabled(aEnabled);
-}
-
-/*
- * Class:     com_nokia_mid_ui_TextEditor
- * Method:    _setTouchEnabled
- * Signature: (IIZ)I
- */
-JNIEXPORT jint JNICALL Java_com_nokia_mid_ui_TextEditor__1setTouchEnabled(
-    JNIEnv* /* aJniEnv */,
-    jobject /* aPeer */,
-    jint aToolkitHandle,
-    jint aNativePeerHandle,
-    jboolean aEnabled)
-{
-    DEBUG("TextEditor.cpp - setTouchEnabled +");
-
-    CMIDToolkit* toolkit = JavaUnhand< CMIDToolkit >(aToolkitHandle);
-
-    MMIDTextEditor* editor =
-        MIDUnhandObject< MMIDTextEditor >(aNativePeerHandle);
-
-    toolkit->ExecuteV(&SetTouchEnabled, editor, (TBool)aEnabled);
-
-    DEBUG("TextEditor.cpp - setTouchEnabled -");
 
     return KErrNone;
 }
@@ -1310,17 +1255,12 @@ JNIEXPORT jstring JNICALL Java_com_nokia_mid_ui_TextEditor__1getSelection(
  *
  * @param aEditor The editor.
  * @param aFont The font to be set.
- * @param aSize On return, contains the new size of the editor.
  */
 LOCAL_C void SetFontL(
     MMIDTextEditor* aEditor,
-    MMIDFont* aFont,
-    TSize* aSize)
+    MMIDFont* aFont)
 {
     aEditor->SetFontL(aFont);
-
-    // Store the size of the text editor.
-    *aSize = aEditor->EditorSize();
 }
 
 /*
@@ -1329,12 +1269,11 @@ LOCAL_C void SetFontL(
  * Signature: (III)I
  */
 JNIEXPORT jint JNICALL Java_com_nokia_mid_ui_TextEditor__1setFont(
-    JNIEnv* aJniEnv,
+    JNIEnv* /* aJniEnv */,
     jobject /* aPeer */,
     jint aToolkitHandle,
     jint aNativePeerHandle,
-    jint aFontHandle,
-    jintArray aNewSize)
+    jint aFontHandle)
 {
     DEBUG("TextEditor.cpp - setFont +");
 
@@ -1344,22 +1283,11 @@ JNIEXPORT jint JNICALL Java_com_nokia_mid_ui_TextEditor__1setFont(
         MIDUnhandObject< MMIDTextEditor >(aNativePeerHandle);
 
     MMIDFont* font = MIDUnhandObject< MMIDFont >(aFontHandle);
-    TSize size;
 
     TInt error = toolkit->ExecuteTrap(
                      &SetFontL,
                      editor,
-                     font,
-                     &size);
-
-    if (error == KErrNone)
-    {
-        jint sizeArray[ 2 ] = { size.iWidth, size.iHeight };
-        aJniEnv->SetIntArrayRegion(aNewSize, 0, 2, sizeArray);
-
-        DEBUG_INT2("TextEditor.cpp - setFont -, width=%d height=%d",
-                   size.iWidth, size.iHeight);
-    }
+                     font);
 
     DEBUG_INT("TextEditor.cpp - setFont -, error=%d", error);
 
@@ -1525,4 +1453,47 @@ JNIEXPORT void JNICALL Java_com_nokia_mid_ui_TextEditor__1dispose(
     DEBUG("TextEditor.cpp - dispose -");
 }
 
+/**
+ * Local helper function for getting the size of the text editor.
+ *
+ * @param aEditor The editor.
+ * @param aSize On return, contains the new size of the editor.
+ */
+LOCAL_C void EditorSize(
+    MMIDTextEditor* aEditor,
+    TSize* aSize)
+{
+    // Store the size of the text editor.
+    *aSize = aEditor->EditorSize();
+}
+
+/*
+ * Class:     com_nokia_mid_ui_TextEditor
+ * Method:    _getSize
+ * Signature: (III)V
+ */
+JNIEXPORT jint JNICALL Java_com_nokia_mid_ui_TextEditor__1getSize(
+        JNIEnv* aJniEnv,
+        jobject /* aPeer */,
+        jint aToolkitHandle,
+        jint aNativePeerHandle,
+        jintArray aNewSize)
+{
+    DEBUG("TextEditor.cpp - getSize +");
+
+    CMIDToolkit* toolkit = JavaUnhand< CMIDToolkit >(aToolkitHandle);
+
+    MMIDTextEditor* editor =
+        MIDUnhandObject< MMIDTextEditor >(aNativePeerHandle);
+
+    TSize size;
+
+    toolkit->ExecuteV(&EditorSize, editor, &size);
+
+    jint sizeArray[2] = {size.iWidth, size.iHeight};
+    aJniEnv->SetIntArrayRegion(aNewSize, 0, 2, sizeArray);
+
+    DEBUG("TextEditor.cpp - getSize");
+    return KErrNone;
+}
 // End of file

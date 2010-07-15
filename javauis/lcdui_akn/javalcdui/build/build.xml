@@ -77,7 +77,6 @@
                    com.nokia.mid.ui.TextEditorImpl,
                    com.nokia.mid.ui.Clipboard,
                    com.nokia.mid.ui.S60TextEditor,
-                   com.nokia.mid.ui.S40TextEditor,
                    com.nokia.mid.ui.TextEditorListener,
                    com.nokia.mid.ui.CanvasGraphicsItem,
                    com.nokia.mid.ui.CanvasGraphicsItemPainter,
@@ -96,7 +95,7 @@
         com.nokia.keyboard.type=:lcduib.DynamicPropertyHandler
         com.nokia.key.scancode=:lcduib.DynamicPropertyHandler
         com.nokia.key.modifier=:lcduib.DynamicPropertyHandler 
-        com.nokia.mid.ui.customfonts=true
+        com.nokia.mid.ui.customfontsize=true
         com.nokia.mid.ui.tactilefeedback=true
         com.nokia.mid.ui.screensaverprevention=true
     </properties>
