@@ -39,3 +39,7 @@ PRJ_EXPORTS
 ../conf/javainstaller_102824CE.crml   APP_LAYER_CRML(javainstaller_102824CE.crml)
 
 #endif
+
+//darios: this is needed by the midlet installer
+../data/resource/java_app_92.mif   /epoc32/winscw/c/resource/java/java_app_92.mif
+../data/resource/java_app_92.mif   /epoc32/data/z/resource/java/java_app_92.mif
