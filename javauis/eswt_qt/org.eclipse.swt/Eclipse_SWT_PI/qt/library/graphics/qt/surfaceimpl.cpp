@@ -138,7 +138,7 @@ void SurfaceImpl::setTarget(int aTarget, TTargetType aType)
         }
         default:
         {
-            Q_ASSERT(false && "TargetType not recognized");
+            Q_ASSERT_X(false, "Graphics", "TargetType not recognized");
         }
     }
     mTargetType = aType;

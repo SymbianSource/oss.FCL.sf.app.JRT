@@ -19,6 +19,6 @@ SUBDIRS += starterutils/build/javaruntimestarterutils.pro
 SUBDIRS += installer/starterdll/build/javainstallerstarter.pro 
 SUBDIRS += installer/starterexe/build/javainstaller.pro 
 SUBDIRS += jvmargmodifier/file/build/javajvmargsmodifierfile.pro 
-SUBDIRS += starter/build/java.pro 
+SUBDIRS += starter/build/javamidp.pro 
 SUBDIRS += midp 
 BLD_INF_RULES.prj_extensions += "prj_extensions" 

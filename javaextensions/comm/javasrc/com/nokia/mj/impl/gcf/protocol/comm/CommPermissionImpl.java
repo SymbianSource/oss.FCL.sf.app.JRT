@@ -47,7 +47,7 @@ public class CommPermissionImpl extends PermissionBase
 
     public String toString()
     {
-        return "javax.microedition.io.CommProtocolPermission";
+        return "javax.microedition.io.Connector.comm";
     }
 
     public boolean implies(Permission p)

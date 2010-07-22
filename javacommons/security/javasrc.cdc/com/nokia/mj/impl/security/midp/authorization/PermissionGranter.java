@@ -17,6 +17,7 @@
 
 package com.nokia.mj.impl.security.midp.authorization;
 
+import com.nokia.mj.impl.utils.Id;
 import com.nokia.mj.impl.utils.Uid;
 import com.nokia.mj.impl.utils.exception.InvalidAttributeException;
 import com.nokia.mj.impl.security.midp.common.MIDPPermission;
@@ -359,7 +360,8 @@ public final class PermissionGranter
                     ((PolicyBasedPermission)grantedPermissions.elementAt(i));
                 UserSecuritySettings settings =
                     permission.getUserSecuritySettings();
-                if (settings == null)
+                if (permission.getType() != PolicyBasedPermission.USER_TYPE 
+                    || settings == null)
                 {
                     // not a user permission -> move on to the next permission
                     Logger.log("Permission " + permission.getName() + " is not a user permission, therefore is is not returned as part of the group of blanket permissions");
@@ -456,7 +458,7 @@ public final class PermissionGranter
             if (permissions_from_sensitive_combination_list_1
                     && permissions_from_sensitive_combination_list_2)
             {
-                String blanketPermissionsDetails = ( 
+                /*String blanketPermissionsDetails = ( 
                     ((call_control == true && multimedia == true)
                     || (call_control == true && read_user_data == true) 
                     || (net_access == true && multimedia == true)
@@ -464,7 +466,18 @@ public final class PermissionGranter
                     || (messaging == true && multimedia == true)
                     || (messaging == true && read_user_data == true)) ? 
                     "settings_inst_query_perm_net" : 
-                    "settings_inst_query_perm_sec");
+                    "settings_inst_query_perm_sec");*/
+
+                Id blanketPermissionsDetails = ( 
+                    ((call_control == true && multimedia == true)
+                    || (call_control == true && read_user_data == true) 
+                    || (net_access == true && multimedia == true)
+                    || (net_access == true && read_user_data == true)
+                    || (messaging == true && multimedia == true)
+                    || (messaging == true && read_user_data == true)) ? 
+                    new Id("settings_inst_query_perm_net", "N/A") : 
+                    new Id("settings_inst_query_perm_sec", "N/A"));
+
                 iBlanketPermissionsDetails.put(msUidKey,
                                                UserSecuritySettingsImpl.getLocalizedString(
                                                    blanketPermissionsDetails));
@@ -586,7 +599,9 @@ public final class PermissionGranter
                 for (int i=0; i<policyPermissions.length; i++)
                 {
                     if (policyPermissions[i].getType()
-                            == PolicyBasedPermission.ASSIGNED_TYPE)
+                            == PolicyBasedPermission.ASSIGNED_TYPE 
+                            || policyPermissions[i].getType() 
+                            == PolicyBasedPermission.USER_ASSIGNED_TYPE)
                     {
                         PolicyBasedPermissionImpl p1 = new PolicyBasedPermissionImpl(
                             policyPermissions[i]);
@@ -609,6 +624,7 @@ public final class PermissionGranter
                                     policyPermissions[i].getName(),
                                     policyPermissions[i].getTarget(),
                                     policyPermissions[i].getActionList(),
+                                    policyPermissions[i].getType(),
                                     policyPermissions[i].getUserSecuritySettings()));
                         }
                     }

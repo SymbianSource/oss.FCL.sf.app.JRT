@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -25,7 +25,8 @@
 #include <usif/sif/sifplugin.h>
 
 #include "f32file.h"
-#include "resultsserver.h"
+
+class ResultsServer;
 
 using namespace Usif;
 
@@ -36,9 +37,9 @@ using namespace Usif;
 const int INSTALLER_CANCEL_MESSAGE_ID = 603;
 const int INSTALLER_CANCEL_RESPONSE_MESSAGE_ID = 604;
 
-namespace Java
+namespace java
 {
-namespace Installer
+namespace installer
 {
 
 /**
@@ -222,6 +223,69 @@ private:
     void CopyFilesIfNeededL(TFileName &aFileName);
 
     /**
+     * Check if the file is Jad file. Argument KSifInParam_MimeType is
+     * used for check if it exists.
+     *
+     * @param[in] aFileHandle the file to be checked
+     * @param[in] aArguments Install request arguments
+     * @param[out] aIsJad set to ETrue if the file is Jad file
+     * @return KErrNone or Symbian error code
+     */
+    TInt IsJadFile(RFile& aFileHandle, const COpaqueNamedParams& aArguments, TBool& aIsJad);
+
+    /**
+     * Check if the file is Jad file.
+     *
+     * @param[in] aFileHandle the file to be checked
+     * @param[out] aIsJad set to ETrue if the file is Jad file
+     * @return KErrNone or Symbian error code
+     */
+    TInt IsJadFile(RFile& aFileHandle, TBool& aIsJad);
+
+    /**
+     * Uses the information in aArguments to create the correct command line for
+     * Java Installer.
+     *
+     * @param[in][out] aCommandLine the buffer to be filled with command line arguments
+     * @param[in]      aArguments The array of opaque params for the plug-in. An empty
+     *   array may be passed.  The following param is defined for the "SCOMO Install
+     *   Inactive" operation:
+     *   Name: InstallInactive, Type: Int, Value: ETrue
+     *   If a plug-in receives this param, it must install a component normally but the SCOMO
+     *   State should remain EDeactivated.
+     */
+    void BuildInstallCommandLine(
+        TPtr& aCommandLine,
+        const COpaqueNamedParams& aArguments);
+
+    /**
+     * Returns the value of int param found from aArguments or -1 if
+     * the param is not found. Must be called only for int params
+     * that have positive value range!
+     *
+     * @param[in] aName The name of the integer param to be obtained.
+     * @param[in] aArguments The array of opaque params for the plug-in.
+     * @return -1 if the named param if not found, otherwise the value of the
+     */
+    TInt GetPositiveIntParam(
+        const TDesC& aName,
+        const COpaqueNamedParams& aArguments);
+
+    /**
+     * Start ResultsServer for receiving Comms message(s) from
+     * Java Installer
+     *
+     * @param[in][out] aResults If Comms message contains installation or
+     *  uninstallation operation results, they will be stored in this variable
+     * @param[in][out] aComponentInfo If Comms message contains contains details of
+     *  a component, they will be stored into this variable
+     * @return
+     */
+    TInt StartResultsServer(
+        COpaqueNamedParams& aResults,
+        CComponentInfo& aComponentInfo);
+
+    /**
      * If Java Installer is already running, set error category EInstallerBusy etc
      * to aResults, set aStatus to KErrAlreadyExists and return ETrue
      * @param[in][out] aResults
@@ -232,23 +296,14 @@ private:
         COpaqueNamedParams& aResults,
         TRequestStatus& aStatus);
 
-    /**
-     * If Java Installer is already running,
-     * set aStatus to KErrAlreadyExists and return ETrue
-     * @param[in][out] aStatus
-     * @return ETrue if Java Installer is running
-     */
-    TBool ExitIfJavaInstallerRunning(TRequestStatus& aStatus);
-
 private: //  Data
 
-    TRequestStatus* iStatus;
-    RFs iRFs;
-    RArray<RProcess> iHandlesToClose;
-    ResultsServer*   iResultsServer;
+    RFs mRFs;
+    RArray<RProcess> mHandlesToClose;
+    ResultsServer*   mResultsServer;
 
-    COpaqueNamedParams* iDummyResults;
-    CComponentInfo*     iDummyInfo;
+    COpaqueNamedParams* mDummyResults;
+    CComponentInfo*     mDummyInfo;
 };
 
 } // Installer

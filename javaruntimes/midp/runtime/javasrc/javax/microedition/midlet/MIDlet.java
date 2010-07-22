@@ -31,6 +31,7 @@ import com.nokia.mj.impl.security.midp.authorization.AccessControllerFactoryImpl
 import com.nokia.mj.impl.security.midp.authorization.AccessControllerImpl;
 import com.nokia.mj.impl.security.utils.SecurityPromptMessage;
 
+import com.nokia.mj.impl.utils.Id;
 import com.nokia.mj.impl.utils.Logger;
 
 /**
@@ -282,7 +283,7 @@ public abstract class MIDlet
     }
 
 
-    private boolean showNote(String aAppName,String aConfirmationQueryId)
+    private boolean showNote(String aAppName, Id aConfirmationQueryId)
     {
         SecurityPromptMessage msg = SecurityPromptMessage.getInstance();
         String queryTxt = msg.getText(aConfirmationQueryId,null);

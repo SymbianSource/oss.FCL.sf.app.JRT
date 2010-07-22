@@ -64,7 +64,7 @@ public class PermissionDetailsView extends ConfirmationViewBase
                              (InstallerUiTexts.get
                               (InstallerUiTexts.PERM_VIEW_DETAILS_TITLE),
                               horizontalSpan, labelStyle);
-        detailsLabel.setFont(iInstallerUi.getBoldFont());
+        setCssId(detailsLabel, "heading");
 
         // Add permission names.
         String[] permNames = iPermissionInfo.getPermissionNames();
@@ -84,6 +84,7 @@ public class PermissionDetailsView extends ConfirmationViewBase
             Label permissionDetailsLabel = createLabel(
                                                iPermissionInfo.getPermissionsDetails(),
                                                horizontalSpan, labelStyle);
+            setCssId(permissionDetailsLabel, "detailsWarningLabel");
         }
     }
 

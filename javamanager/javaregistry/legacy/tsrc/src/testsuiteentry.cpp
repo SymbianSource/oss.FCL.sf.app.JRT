@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <string>
 
-#include "TestHarness.h"
+#include <CppUTest/TestHarness.h>
 
 #include "javacommonutils.h"
 #include "javaoslayer.h"

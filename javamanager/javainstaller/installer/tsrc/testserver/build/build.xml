@@ -1,0 +1,54 @@
+<!--
+#
+# Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+<project name="InstallerTestServer" default="dist" basedir="..">
+    <property name="catalina.home" value="C:/apps/apache-tomcat-6.0.26"/>
+    <property name="build" value="${basedir}/build"/>
+    <property name="java.build" value="${build}/javabuild"/>
+    <property name="classes" value="${java.build}/WEB-INF/classes"/>
+    <property name="src" value="${basedir}/javasrc"/>
+    <property name="web" value="${basedir}/content"/>
+
+    <path id="compile.classpath">
+        <fileset dir="${catalina.home}/bin">
+            <include name="*.jar"/>
+        </fileset>
+        <pathelement location="${catalina.home}/lib"/>
+        <fileset dir="${catalina.home}/lib">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="compile">
+        <mkdir dir="${classes}"/>
+        <javac source="1.5" target="1.5" destdir="${classes}" srcdir="${src}">
+            <classpath refid="compile.classpath"/>
+        </javac>
+    </target>
+
+    <target name="dist" depends="compile">
+        <jar jarfile="${build}/installertest.war" basedir="${java.build}"
+            manifest="${web}/META-INF/MANIFEST.MF"/>
+        <jar jarfile="${build}/installertest.war" basedir="${web}"
+            update="true"/>
+    </target>
+
+    <target name="clean">
+        <delete dir="${java.build}"/>
+        <delete file="${build}/installertest.war"/>
+    </target>
+</project>

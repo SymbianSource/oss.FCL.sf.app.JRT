@@ -50,7 +50,7 @@ PRJ_EXPORTS
 
 #else // RD_JAVA_UI_QT
 
-../rom/java_2_1.iby                CORE_APP_LAYER_IBY_EXPORT_PATH(java.iby)
+../rom/java_2_2.iby                CORE_APP_LAYER_IBY_EXPORT_PATH(java.iby)
 
 // Export ODC list files
 ../rom/midpodclist	     /epoc32/release/winscw/udeb/z/resource/java/midpodclist

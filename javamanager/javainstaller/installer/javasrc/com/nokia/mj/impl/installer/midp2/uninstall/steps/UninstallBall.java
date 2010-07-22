@@ -21,6 +21,7 @@ package com.nokia.mj.impl.installer.midp2.uninstall.steps;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import com.nokia.mj.impl.installer.Installer;
 import com.nokia.mj.impl.installer.InstallationNotifier;
 import com.nokia.mj.impl.installer.applicationregistrator.ApplicationRegistrator;
 import com.nokia.mj.impl.installer.applicationregistrator.SifNotifier;
@@ -124,10 +125,11 @@ public final class UninstallBall extends ExeBall
         super.checkForCancel();
         if (isCancelled())
         {
-            throw new InstallerException
-            (InstallerErrorMessage.UNINST_CANCEL, null,
-             InstallerDetailedErrorMessage.NO_MSG, null,
-             OtaStatusCode.USER_CANCELLED);
+            throw new InstallerException(
+                Installer.ERR_CANCEL,
+                InstallerErrorMessage.UNINST_CANCEL, null,
+                InstallerDetailedErrorMessage.UNINST_CANCEL, null,
+                OtaStatusCode.USER_CANCELLED);
         }
     }
 

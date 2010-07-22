@@ -52,6 +52,7 @@ public:
     virtual void refresh();
     virtual void release();
     virtual void dispose();
+    virtual void handleSymbianWindowVisibilityChange(bool aVisible);
 
 private:
     

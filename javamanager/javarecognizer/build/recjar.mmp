@@ -32,7 +32,11 @@ VENDORID        VID_DEFAULT
 // Use bytepair compression to enable code paging
 PAGED
 
+APP_LAYER_SYSTEMINCLUDE
+
 USERINCLUDE     ../inc
+USERINCLUDE     ../../../inc 
+
 SOURCEPATH      ../src
 
 SOURCE          recjar.cpp
@@ -40,9 +44,6 @@ START RESOURCE  ../data/102031FB.rss
 TARGET          recjar.rsc
 END
 
-SYSTEMINCLUDE   ../../../inc 
-APP_LAYER_SYSTEMINCLUDE
-SYSTEMINCLUDE   /epoc32/include/ecom
 
 LIBRARY         euser.lib apmime.lib efsrv.lib
 

@@ -27,7 +27,9 @@ symbian {
             -lPlatformEnv \
             -ljavacomms \
             -lcharconv \
-            -ljavastorage
+            -ljavastorage \
+            -lapparc \
+            -lapgrfx
 }
 
 include(../../../build/omj.pri)

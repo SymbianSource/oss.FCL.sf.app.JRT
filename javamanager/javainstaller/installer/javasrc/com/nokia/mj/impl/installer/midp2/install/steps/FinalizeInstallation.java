@@ -304,7 +304,14 @@ public class FinalizeInstallation extends ExeStep
 
                 if (ball.iSifRegistrator.getSifMode() > 0 && launchApp)
                 {
-                    ball.iSifRegistrator.launchAppView();
+                    ball.getInstallerUi().syncExec(new Runnable()
+                    {
+                        // launchAppView() must be called in the UI thread.
+                        public void run()
+                        {
+                            ball.iSifRegistrator.launchAppView();
+                        }
+                    });
                 }
                 else
                 if (ball.iCaptainMsgs && launchApp &&

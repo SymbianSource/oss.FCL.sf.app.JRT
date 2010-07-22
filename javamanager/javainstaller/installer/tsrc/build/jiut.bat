@@ -1,5 +1,5 @@
 @rem
-@rem Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+@rem Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
 @rem All rights reserved.
 @rem This component and the accompanying materials are made available
 @rem under the terms of "Eclipse Public License v1.0"
@@ -16,8 +16,8 @@
 rem Script for running JavaInstaller unit tests from S60 eshell
 rem Start SifServer before running any tests
 sifserver
-rem javainstaller test -mainclass=com.nokia.mj.impl.installer.downloader.NotificationPosterTest
-rem javainstaller test -mainclass=com.nokia.mj.impl.installer.downloader.DownloaderTest
+javainstaller test -mainclass=com.nokia.mj.impl.installer.downloader.NotificationPosterTest
+javainstaller test -mainclass=com.nokia.mj.impl.installer.downloader.DownloaderTest
 javainstaller test -mainclass=com.nokia.mj.impl.installer.storagehandler.OtaStatusHandlerTest
 javainstaller test -mainclass=com.nokia.mj.impl.installer.integrityservice.IntegrityServiceTest
 javainstaller test -mainclass=com.nokia.mj.impl.installer.jadjarmatcher.JadJarMatcherTest
@@ -34,4 +34,7 @@ javainstaller test -mainclass=com.nokia.mj.impl.installer.customisationpropertie
 javainstaller test -mainclass=com.nokia.mj.impl.installer.utils.AttributeReaderTest
 javainstaller test -mainclass=com.nokia.mj.impl.installer.InstallerResultMessageTest
 javainstaller test -mainclass=com.nokia.mj.impl.installer.GetComponentInfoTest
-rem javainstaller test -mainclass=com.nokia.mj.impl.installer.InstallerEngineTest
+javainstaller test -mainclass=com.nokia.mj.impl.installer.InstallerEngineTest -param1=run1
+javainstaller test -mainclass=com.nokia.mj.impl.installer.InstallerEngineTest -param1=run2
+javainstaller test -mainclass=com.nokia.mj.impl.installer.InstallerEngineTest -param1=run3
+javainstaller test -mainclass=com.nokia.mj.impl.installer.InstallerEngineTest -param1=run4

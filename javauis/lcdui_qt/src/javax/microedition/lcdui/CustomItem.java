@@ -68,7 +68,7 @@ public abstract class CustomItem extends Item
 
     // Graphics command buffer for this instance
     Buffer graphicsBuffer;
-    Graphics CustomItemGraphics;
+    Graphics customItemGraphics;
 
     CustomItemLayouter layouter;
 
@@ -550,11 +550,11 @@ public abstract class CustomItem extends Item
                     widgetDisposed = true;
                     return;
                 }
-                if(CustomItemGraphics == null)
+                if(customItemGraphics == null)
                 {
                     graphicsBuffer = Buffer.createInstance(self, (Control)event.widget);
-                    CustomItemGraphics = graphicsBuffer.getGraphics();
-                    CustomItemGraphics.setSyncStrategy(Graphics.SYNC_LEAVE_SURFACE_SESSION_OPEN);
+                    customItemGraphics = graphicsBuffer.getGraphics();
+                    customItemGraphics.setSyncStrategy(Graphics.SYNC_LEAVE_SURFACE_SESSION_OPEN);
                 }
                 else
                 {
@@ -583,17 +583,18 @@ public abstract class CustomItem extends Item
                     contentHeight = this.contentHeight;
                 }
 
-                CustomItemGraphics.setClip(0, 0, contentWidth, contentHeight);
-                CustomItemGraphics.cleanBackground(new Rectangle(0, 0, contentWidth, contentHeight));
+                customItemGraphics.setClip(0, 0, contentWidth, contentHeight);
+                customItemGraphics.cleanBackground(new Rectangle(0, 0, contentWidth, contentHeight));
                 cleanupNeeded = false;
             }
         }
 
         // Clip must define the invalid area
-        CustomItemGraphics.setClip(redrawNowX, redrawNowY, redrawNowW, redrawNowH);
+        customItemGraphics.reset();
+        customItemGraphics.setClip(redrawNowX, redrawNowY, redrawNowW, redrawNowH);
 
         // The callback
-        paint(CustomItemGraphics, contentWidth, contentHeight);
+        paint(customItemGraphics, contentWidth, contentHeight);
 
         // Wait until the UI thread is available. Then in the UI thread
         // synchronously send a paint event.

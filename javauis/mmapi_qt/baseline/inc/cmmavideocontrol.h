@@ -102,6 +102,7 @@ public: // New methods
      * @param aDeleteRefEvent Event posted in the destructor.
      */
     static void StaticInitDynamicModeL(CMMAVideoControl* aVideoControl,
+                                       JNIEnv* aJni,
                                        TInt* aContentHandle,
                                        MMAFunctionServer* aEventSource,
                                        jobject aGUIObject,
@@ -171,7 +172,16 @@ protected:
 private:
 
     void SetForeground(TBool aForeground, TBool aUseEventServer);
-
+    
+public:
+    
+    enum TDisplaytype
+    {
+        EDISPLAY_CANVAS=0,
+        EDISPLAY_VIDEOITEM=1,
+        EDISPLAY_ESWT=2
+    };
+    
 protected:
     /**
      * Not owned.

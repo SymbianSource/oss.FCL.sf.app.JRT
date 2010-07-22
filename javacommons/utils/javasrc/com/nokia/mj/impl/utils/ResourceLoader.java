@@ -40,6 +40,11 @@ import java.util.*;
  */
 public class ResourceLoader
 {
+    /** AVKON UI identifier. */
+    public static final int AVKON = 1;
+    /** QT UI identifier. */
+    public static final int QT = 2;
+
     /** Localisation resource basepath */
     private static final String LOC_RESOURCE_BASE = "/resources/com/nokia/mj/impl/";
 
@@ -50,9 +55,29 @@ public class ResourceLoader
     private Hashtable resourceMap = new Hashtable();
 
     /** Resource name prefix */
-    private String prefix;
+    private String prefix = null;
+
+    /** Platform localisation type. */
+    private int locType = -1;
 
     /*** ----------------------------- PUBLIC ------------------------------ */
+
+    public static ResourceLoader getInstance(String avkonFileName,
+                                             String avkonPrefix,
+                                             String qtFileName,
+                                             String qtPrefix)
+    {
+        // Avkon name prefix pair is used as key and this is same between platforms.
+        String key = avkonFileName + ":" + avkonPrefix;
+        ResourceLoader result = (ResourceLoader)resourceLoaders.get(key);
+
+        if (result == null)
+        {
+            result = new ResourceLoader(avkonFileName, avkonPrefix, qtFileName, qtPrefix);
+            resourceLoaders.put(key, result);
+        }
+        return result;
+    }
 
     /**
      * Returns a resource loader instance.
@@ -74,6 +99,46 @@ public class ResourceLoader
     }
 
     /**
+     * Private constructor. Loads localisation resource file.
+     * On Avkon UI it's resources are loaded. On Qt platfor it's
+     * resource is first read and if that fails Avkon one is read.
+     *
+     * @param avkonFileName Avkon localisation resource file.
+     * @param avkonPrefix   Avkon logical string prefix.
+     * @param qtFileName    Qt localisation resource file.
+     * @param qtPrefix      Qt logical string prefix.
+     */
+    private ResourceLoader(String avkonFileName,
+                           String avkonPrefix,
+                           String qtFileName,
+                           String qtPrefix)
+    {
+        String localeId = getLocaleIdQt();
+
+        if (localeId == null)
+        {
+            locType = AVKON;
+            prefix = avkonPrefix;
+            loadFile(avkonFileName, true);
+        }
+        else
+        {
+            if (!loadFile(qtFileName, false))
+            {
+                // Fallback to Avkon
+                locType = AVKON;
+                prefix = avkonPrefix;
+                loadFile(avkonFileName, true);
+            }
+            else
+            {
+                locType = QT;
+                prefix = qtPrefix;
+            }
+        }
+    }
+
+    /**
      * Creates resource loader, using the current locale of the environment.
      *
      * @param resourceName name of the resource
@@ -82,7 +147,7 @@ public class ResourceLoader
     public ResourceLoader(String resourceName, String aPrefix)
     {
         prefix = aPrefix;
-        loadFile(resourceName);
+        loadFile(resourceName, true);  // Avkon
     }
 
     /**
@@ -98,6 +163,59 @@ public class ResourceLoader
     }
 
     /**
+     * Get a string formatter of a given resource id.
+     *
+     * @param avkonId Avkon resource id.
+     * @param qtId Qt resource id.
+     * @return formatter instance
+     * @see Formatter
+     */
+    public Formatter format(String avkonId, String qtId)
+    {
+        if (locType == AVKON)
+        {
+            return new Formatter(string(avkonId));
+        }
+        else
+        {
+            return new Formatter(string(qtId));        
+        }
+    }
+
+    /**
+     * Formats localised text with specified parameters from an array.
+     *
+     * @param avkonId Avkon resource id.
+     * @param qtId Qt resource id.
+     * @param textParameters parameters to be filled into the text.
+     * @return localised text formatted with the provided parameters.
+     * @see Formatter
+     */
+    public String format(String avkonId, String qtId, Object[] textParameters)
+    {
+        if (locType == AVKON)
+        {
+            return new Formatter(string(avkonId)).format(textParameters);
+        }
+        else
+        {
+            return new Formatter(string(qtId)).format(textParameters);
+        }
+    }
+
+    /**
+     * Get a string formatter of a given resource id.
+     *
+     * @param id resource id
+     * @return formatter instance
+     * @see Formatter
+     */
+    public Formatter format(Id id)
+    {
+        return new Formatter(id.getString(locType));
+    }
+
+    /**
      * Formats localised text with specified parameters from an array.
      *
      * @param id resource id
@@ -109,6 +227,20 @@ public class ResourceLoader
     {
         return new Formatter(string(id)).format(textParameters);
     }
+
+    /**
+     * Formats localised text with specified parameters from an array.
+     *
+     * @param id resource id
+     * @param textParameters parameters to be filled into the text
+     * @return localised text formatted with the provided parameters
+     * @see Formatter
+     */
+    public String format(Id id, Object[] textParameters)
+    {
+        return new Formatter(string(id.getString(locType))).format(textParameters);
+    }
+
 
     /**
      * Get a plain string resource with a given resource id.
@@ -172,35 +304,77 @@ public class ResourceLoader
         return "sc";
     }
 
+    /**
+     * Return locale id string on Qt platform.
+     *
+     * @return Qt Locale Id String, null if not in Qt.
+     */
+    public static String getLocaleIdQt()
+    {
+        return _getLocaleIdQt();
+    }
+
+
     /*** ----------------------------- PRIVATE ---------------------------- */
 
     /**
-     * Loads the resources from .loc type file
+     * Loads the resources from .loc type file.
+     *
+     * @param resourceName name of the resource file.
+     * @param aIs InputStream pointing to resource. It will be closed after use.
+     * @param true if operation succeed.
      */
-    private void loadFile(String resourceName)
+    private boolean loadFile(String resourceName, boolean avkon)
     {
         InputStream is = null;
 
-        // Load with real locale id
-        is = this.getClass().getResourceAsStream(
+        if (!avkon)  // Qt resources.
+        {
+            String langName = getLocaleIdQt();
+           
+            // Emulator returns falsely en_GB as engineering English locale name.
+            if (langName.equals("en_GB"))
+            {
+                langName = "en";
+            }
+            
+            // Load with real locale id
+            is = this.getClass().getResourceAsStream(
+                LOC_RESOURCE_BASE + resourceName + "_" + langName + ".loc");
+
+            if (is == null)
+            {
+                /*
+                 * Does not exist. No need to continue as avkon file cannot
+                 * found using qt name.
+                 */
+                return false;
+            }
+        }
+        else  // Avkon resources.
+        {
+            // Load with real locale id
+            is = this.getClass().getResourceAsStream(
                  LOC_RESOURCE_BASE + resourceName + "_" + getLocaleId() + ".loc");
-        if (is == null)
-        {
-            // Load the engineering english
-            is = this.getClass().getResourceAsStream(
-                     LOC_RESOURCE_BASE + resourceName + "_sc" + ".loc");
-        }
-        if (is == null)
-        {
-            // Load the reference engineering english
-            is = this.getClass().getResourceAsStream(
-                     LOC_RESOURCE_BASE + resourceName + ".loc");
-        }
-        if (is == null)
-        {
-            Logger.WLOG(Logger.EUtils,
-                        "Cannot load resource file: " + resourceName);
-            return;
+
+            if (is == null)
+            {
+                // Load the engineering english
+                is = this.getClass().getResourceAsStream(
+                         LOC_RESOURCE_BASE + resourceName + "_sc" + ".loc");
+            }
+            if (is == null)
+            {
+                // Load the reference engineering english
+                is = this.getClass().getResourceAsStream(
+                         LOC_RESOURCE_BASE + resourceName + ".loc");
+            }
+            if (is == null)
+            {
+                Logger.WLOG(Logger.EUtils,
+                            "Cannot load resource file: " + resourceName);
+                return false;
+            }
         }
 
         try
@@ -248,6 +422,8 @@ public class ResourceLoader
                         "Resource file " + resourceName + " handling failed: "
                         + ex.getMessage());
         }
+
+        return true;
     }
 
     /**
@@ -365,5 +541,12 @@ public class ResourceLoader
      * @return languege code.
      */
     private native int _getLocaleId();
+
+    /**
+     * Get Locale Id on Qt platform.
+     *
+     * @return locale Id string. If not in Qt null.
+     */
+    private static native String _getLocaleIdQt();
 
 }

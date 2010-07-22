@@ -52,6 +52,7 @@ public:
     virtual EventConsumerInterface* getEventConsumer();
 
 private:
+    bool isMIDletPresent(const std::wstring& aUid);
     bool startMIDletL(const std::wstring& aUid);
     void checkMIDletsToBeStartedL();
 

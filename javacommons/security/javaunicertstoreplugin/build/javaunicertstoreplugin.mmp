@@ -33,8 +33,6 @@ VENDORID        VID_DEFAULT
 // Use bytepair compression to enable code paging
 PAGED
 
-systeminclude   /epoc32/include/ecom
-
 userinclude   ../../../../inc
 
 sourcepath      ../src.s60

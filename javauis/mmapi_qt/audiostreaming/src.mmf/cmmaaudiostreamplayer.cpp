@@ -21,10 +21,10 @@
 #include <audiopreference.h>
 #include <logger.h>
 
-#include "CMMAAudioStreamPlayer.h"
-#include "CMMADataSourceStream.h"
-#include "MMAFunctionServer.h"
-#include "CMMAStreamHandler.h"
+#include "cmmaaudiostreamplayer.h"
+#include "cmmadatasourcestream.h"
+#include "mmafunctionserver.h"
+#include "cmmastreamhandler.h"
 
 const TInt KPlayerPriority = KAudioPriorityRecording;
 _LIT(KMMAStreamErrorMessage, "Internal error: %d");

@@ -1,0 +1,24 @@
+IGP-BS: MP3D=MP3D_BS;SCDA=SCDA_BS;ASP3=ASP3_BS;PSDK=PSDK_BS;
+IGP-CATEGORIES: WN=WN;BS=BS;PROMO=0;OP=OP;
+IGP-DEMOS: DEMOPG=DEL;
+IGP-PROMOS: MB3D=MB3D;PB07=PB07;BBRK=BBRK;
+IGP-VERSION: 2.5.0
+IGP-WN: RBPF=RBPF_WN;MMN=MMN_WN;BRBO=BRBO_WN;ASCR=ASCR_WN;
+MIDLET-FULLVERSION-URL: http://advers.bestgamfts.com/redir/?from=D725&game=MD3D&op=GONG&game_type=DM&lg=EN
+MIDlet-1: Sun Shines 3D Demo, /icon.png, HightS3D
+MIDlet-Data-Size: 8192
+MIDlet-Description: Sun Shines 3D, Emulated sun shine in full 3D!
+MIDlet-Icon: /icon.png
+MIDlet-Jar-Size: 754864
+MIDlet-Jar-URL: SunShines3D_DEMO_nokia_N900_EN_IGP_ATandT_901.jar
+MIDlet-Name: Sun Shines 3D Demo
+MIDlet-Vendor: Celedons Two
+MIDlet-Version: 1.0.4
+Nokia-MIDlet-Block-Uninstall: true
+Nokia-MIDlet-Category: Applications
+Nokia-MIDlet-UID-1: 0x20012293
+Nokia-Scalable-Icon: /icon.svg
+Nokia-Scalable-Icon-MIDlet-1: /icon.svg
+URL-OPERATOR: http://bestgamfts.hereis.com/redir/?from=D725&op=GONG&game_type=DM&lg=EN&ver=2.5.0
+URL-PT: 0
+URL-TEMPLATE-GAME: http://bestgamfts.hereis.com/redir/?from=D725&op=GONG&game=XXXX&game_type=DM&lg=EN&emb=1&ver=2.5.0

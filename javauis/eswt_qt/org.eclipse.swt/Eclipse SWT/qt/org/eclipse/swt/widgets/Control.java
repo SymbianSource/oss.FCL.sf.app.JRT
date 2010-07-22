@@ -1977,10 +1977,10 @@ void qt_swt_event_widgetMoved(int widgetHandle) {
         sendEvent(SWT.Move);
 }
 
-void qt_swt_event_widgetResized_pp(int widgetHandle, int oldWidth, int oldHeight, int width, int height) {
+void qt_swt_event_widgetResized_pp(int widgetHandle, int oldWidth, int oldHeight, int width, int height, boolean sendResizeEvent) {
     // Resize events are sent only for top native widget,
     // as some Controls are made of multiple native widgets.
-    if (widgetHandle == topHandle)
+    if (widgetHandle == topHandle && sendResizeEvent)
         sendEvent(SWT.Resize);
 }
 
@@ -2008,9 +2008,8 @@ void qt_swt_event_focusWasGained() {
             Display.focusEvent = SWT.None;
         }
     }
-    if(display != null && !display.isDisposed()) {
-        Display.commandArranger.focusedControlChanged();
-    }
+    
+    
 }
 void qt_swt_event_focusWasLost() {
     try {

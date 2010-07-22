@@ -468,25 +468,25 @@ public class ManagerImpl implements PlugIn
         }
         InternalPlayer player =null;
         /// Implementation done for java ui 3.x req
-        // in case of AnimationPlayer, we won't be using the ProtocolFactory class.
-        //
-        Enumeration plugins = iPlugIns.elements();
-        AnimationPlayerFactory apf=null;
-        while (plugins.hasMoreElements() && (player == null))
-        {
-            PlugIn temp = (PlugIn) plugins.nextElement();
-            if (temp instanceof AnimationPlayerFactory)
-            {
-                apf = (AnimationPlayerFactory) temp;
-                break;
-            }
-        }
-        if (apf!=null)
-        {
-            player=apf.createPlayer(aLocator);
-        }
+        // in case of AnimationPlayer file protocol, we won't be using the ProtocolFactory class.
+        // We need to do this kind of work out, only if it is file protocol 
+		if (new Locator(aLocator).getProtocol().equals("file")) {
+			Enumeration plugins = iPlugIns.elements();
+			AnimationPlayerFactory apf = null;
+			while (plugins.hasMoreElements() && (player == null)) {
+				PlugIn temp = (PlugIn) plugins.nextElement();
+				if (temp instanceof AnimationPlayerFactory) {
+					apf = (AnimationPlayerFactory) temp;
+					break;
+				}
+			}
+			if (apf != null) {
+				player = apf.createPlayer(aLocator);
+			}
+		}
         ////////////////////////////////////////////////////////
         // if player is still null, try to create the native player
+		System.out.println("ManagerImpl::createPlayer(String locator )locator is "+aLocator );
         if (player==null)
             player =iProtocolFactory.createPlayer(
                         new Locator(aLocator));

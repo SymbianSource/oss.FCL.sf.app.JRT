@@ -385,6 +385,13 @@ public class InstallerUi
     }
 
     /**
+     * Executes given Runnable synchronously in the UI thread. 
+     */
+    public void syncExec(Runnable aRunnable)
+    {
+    }
+
+    /**
      * Writes an info log entry to JavaInstaller log.
      *
      * @param aMsg message to be logged

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -85,6 +85,11 @@ public class ApplicationUtilsImpl extends ApplicationUtils
         Installer.cancel();
     }
 
+    public void uiDisposed()
+    {
+        Log.log("ApplicationUtilsImpl.uiDisposed");
+    }
+
     public void checkPermission(Permission aPermission)
     throws AccessControlException, NullPointerException
     {
@@ -112,7 +117,7 @@ public class ApplicationUtilsImpl extends ApplicationUtils
 
         boolean userPromptAllowed = false;
         if (aPermission.toString().equals(
-                    "javax.microedition.io.PushRegistryPermission"))
+                    "javax.microedition.io.PushRegistry"))
         {
             // PushRegistryPermission is the only permission which
             // must be prompted from the user during installation.

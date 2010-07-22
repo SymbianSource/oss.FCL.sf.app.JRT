@@ -1,0 +1,4 @@
+domain operator;
+grant assigned "Settings" {
+    permission assigned.permission.orphaned;
+}

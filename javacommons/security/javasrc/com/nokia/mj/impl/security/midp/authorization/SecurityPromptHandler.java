@@ -23,6 +23,7 @@ import com.nokia.mj.impl.security.midp.common.UserSecuritySettingsImpl;
 import com.nokia.mj.impl.security.midp.common.UserPermission;
 import com.nokia.mj.impl.security.common.PermissionBase;
 import com.nokia.mj.impl.security.utils.SecurityPromptMessage;
+import com.nokia.mj.impl.security.utils.Logger;
 import com.nokia.mj.impl.rt.ui.RuntimeUiFactory;
 import com.nokia.mj.impl.rt.ui.RuntimeUi;
 import com.nokia.mj.impl.rt.ui.ConfirmData;
@@ -170,6 +171,12 @@ public class SecurityPromptHandler
                 promptText = userPermission.getPromptDetails()
                              .getSecurityPromptQuestion(currentInteractionMode);
                 break;
+            }
+            if (promptText == null)
+            {
+                // no text to show -> hande it as deny
+                Logger.logWarning("User permission was denied by platform since it did not provide any security prompt question " + userPermission);
+                return handleDenyAnswer(settings);
             }
             // check if the two texts are equal
             if ((mostPowerfulInteractionModeText != null

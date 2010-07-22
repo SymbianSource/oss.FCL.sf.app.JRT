@@ -95,15 +95,19 @@ public class Graphics
     
     private DirectGraphics directGraphics;
     private Buffer graphicsBuffer;
-
-    // Current font for rendering texts.
+    
+    // Cache for settings
+    // these members have package visibility,
+    // however they meant to be accessed only by 
+    // this (Graphics) instance or related (Buffer) 
+    // greaphicsBuffer instance
     Font currentFont;
     int currentColor;
     int translateX;
     int translateY;
     int[] currentClip = new int[4];
     int currentStrokeStyle;
-
+    
     private com.nokia.mj.impl.rt.support.Finalizer finalizer;
 
     //Constructor
@@ -135,8 +139,8 @@ public class Graphics
         currentClip[1] = clipRect.y;
         currentClip[2] = clipRect.width;
         currentClip[3] = clipRect.height;
+        setDefaultSettings();
         graphicsBuffer = buffer;
-        reset();
     }
 
 
@@ -154,8 +158,21 @@ public class Graphics
 
     /**
      * Resets Graphics state to initial.
+     * Reset does not set the clip.
      */
     void reset()
+    {
+    	synchronized(graphicsBuffer) {
+    		// setDefaultSettings() must be called 
+    		// before the setGraphicsDefaults() since
+    		// graphicsBuffer (Buffer implementation) uses 
+    		// the member values of this instance when setting the defaults
+    		setDefaultSettings();
+    		graphicsBuffer.setGraphicsDefaults(this);
+    	}
+    }
+
+    void setDefaultSettings() 
     {
         currentFont = Buffer.defaultFont;
         currentColor = Buffer.defaultColor;
@@ -163,7 +180,7 @@ public class Graphics
         translateX = Buffer.defaultTranslateX;
         translateY = Buffer.defaultTranslateY;
     }
-
+    
     /**
      * Cleans the Canvas background.
      */
@@ -193,11 +210,11 @@ public class Graphics
      */
     void setSyncStrategy(int strategy)
     {
-    	if((strategy != SYNC_LEAVE_SURFACE_SESSION_CLOSED) && (strategy != SYNC_LEAVE_SURFACE_SESSION_OPEN)) 
-    	{
-    		throw new IllegalArgumentException("Internal: Invalid strategy value");
-    	}
-    	syncStrategy = strategy;
+        if((strategy != SYNC_LEAVE_SURFACE_SESSION_CLOSED) && (strategy != SYNC_LEAVE_SURFACE_SESSION_OPEN)) 
+        {
+            throw new IllegalArgumentException("Internal: Invalid strategy value");
+        }
+        syncStrategy = strategy;
     }
 
     /**
@@ -264,7 +281,7 @@ public class Graphics
     {
         synchronized(graphicsBuffer)
         {
-            return currentColor >> 16;
+            return (currentColor >> 16) & COMPONENT_MASK;
         }
     }
 
@@ -875,20 +892,15 @@ public class Graphics
             {
                 final Image localLcduiImage = image;
                 final org.eclipse.swt.internal.qt.graphics.Image localCgfxImage = 
-                	Internal_GfxPackageSupport.getImage(Image.getESWTImage(image));
+                    Internal_GfxPackageSupport.getImage(Image.getESWTImage(image));
                 final int localX = x;
                 final int localY = y;
                 final Graphics self = this;
                 
-                ESWTUIThreadRunner.safeSyncExec(new Runnable() 
-    			{
-    				public void run()
-    				{
-    					localLcduiImage.sync(false);
-    					graphicsBuffer.drawImage(localCgfxImage, localX, localY, self);
-    				}
-    			});
-                
+                if(image.graphicsBuffer.containsDrawnPrimitives()) {
+                    localLcduiImage.sync(true);
+                }
+                graphicsBuffer.drawImage(localCgfxImage, localX, localY, self);
             }
         }
     }
@@ -1182,26 +1194,22 @@ public class Graphics
             final int gcTransform = Image.getCgTransformValue(transform);
             synchronized(srcImage.graphicsBuffer)
             {
-            	final Image localLcduiSrcImage = srcImage;
-            	final org.eclipse.swt.internal.qt.graphics.Image localCgfxImage = 
-                	Internal_GfxPackageSupport.getImage(Image.getESWTImage(srcImage));
-            	final int localX = x;
-            	final int localY = y;
-            	final int localW = width;
-            	final int localH = height;
-            	final int localXSrc = xSrc;
-            	final int localYSrc = ySrc;
-            	final int localGcTransform = gcTransform;
-            	final Graphics self = this;
-            	ESWTUIThreadRunner.safeSyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                    	localLcduiSrcImage.sync(false);
-                        graphicsBuffer.drawImage(localCgfxImage,
-                        		localX, localY, localW, localH, localXSrc, localYSrc, localW, localH, localGcTransform, self);
-                    }
-                });
+                final Image localLcduiSrcImage = srcImage;
+                final org.eclipse.swt.internal.qt.graphics.Image localCgfxImage = 
+                    Internal_GfxPackageSupport.getImage(Image.getESWTImage(srcImage));
+                final int localX = x;
+                final int localY = y;
+                final int localW = width;
+                final int localH = height;
+                final int localXSrc = xSrc;
+                final int localYSrc = ySrc;
+                final int localGcTransform = gcTransform;
+                final Graphics self = this;
+                if(srcImage.graphicsBuffer.containsDrawnPrimitives()) {
+                    localLcduiSrcImage.sync(true);
+                }
+                graphicsBuffer.drawImage(localCgfxImage,
+                    localX, localY, localW, localH, localXSrc, localYSrc, localW, localH, localGcTransform, self);
             }
         }
     }
@@ -1212,21 +1220,21 @@ public class Graphics
      */
     void sync()
     {
-    	synchronized(graphicsBuffer) 
-    	{
-    		if(syncStrategy == SYNC_LEAVE_SURFACE_SESSION_OPEN)
-    		{
-    			// This instance is used only with paint callbacks, thus  
-    			// sync is called with the indication that surface paint  
-    			// session can be left open as it will be closed when the 
-    			// callback returns.
-    		    graphicsBuffer.sync(false);
-    		}
-    		else 
-    		{
-    			graphicsBuffer.sync(true);
-    		} 
-    	}
+        synchronized(graphicsBuffer) 
+        {
+            if(syncStrategy == SYNC_LEAVE_SURFACE_SESSION_OPEN)
+            {
+                // This instance is used only with paint callbacks, thus  
+                // sync is called with the indication that surface paint  
+                // session can be left open as it will be closed when the 
+                // callback returns.
+                graphicsBuffer.sync(false);
+            }
+            else 
+            {
+                graphicsBuffer.sync(true);
+            } 
+        }
     }
     
     
@@ -1243,14 +1251,14 @@ public class Graphics
     }
 
     /**
-	 * Getter for graphics buffer.
-	 * @return The Buffer.
-	 */
+     * Getter for graphics buffer.
+     * @return The Buffer.
+     */
     Buffer getGraphicsBuffer()
     {
         return graphicsBuffer;
     }
-	
+    
     /**
      * Maps stroke style constant from values used by
      * Graphics to values defined in GraphicsContext

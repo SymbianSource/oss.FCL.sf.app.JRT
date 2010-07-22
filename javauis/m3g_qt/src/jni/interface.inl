@@ -39,6 +39,14 @@ static int createInterface(M3Gparams* aCs)
  */
 JNIEXPORT jint JNICALL Java_javax_microedition_m3g_Interface__1ctor(JNIEnv* aEnv, jclass)
 {
+    EGLDisplay oldDisplay = eglGetCurrentDisplay();
+    EGLSurface oldDrawSurface = eglGetCurrentSurface(EGL_DRAW);
+    EGLSurface oldReadSurface = eglGetCurrentSurface(EGL_READ);
+    EGLContext oldContext = eglGetCurrentContext();
+    EGLenum oldAPI = eglQueryAPI();
+    eglMakeCurrent( EGL_DEFAULT_DISPLAY, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT );
+    eglBindAPI( EGL_OPENGL_ES_API );
+    
     M3Gparams cs;
     memset(&cs, 0, sizeof(cs));
     cs.mallocFunc = malloc;
@@ -51,6 +59,10 @@ JNIEXPORT jint JNICALL Java_javax_microedition_m3g_Interface__1ctor(JNIEnv* aEnv
     //jint handle = eventSource->Execute(&createInterface, &cs);
     jint handle = (unsigned)m3gCreateInterface(&cs);
     M3G_DO_UNLOCK(aEnv);
+    
+    eglMakeCurrent( EGL_DEFAULT_DISPLAY, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT );
+    eglBindAPI( oldAPI );
+    eglMakeCurrent( oldDisplay, oldDrawSurface, oldReadSurface, oldContext );
     return handle;
 }
 

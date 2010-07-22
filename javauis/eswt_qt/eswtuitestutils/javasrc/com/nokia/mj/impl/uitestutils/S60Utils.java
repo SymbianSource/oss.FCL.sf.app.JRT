@@ -6,7 +6,7 @@ final class S60Utils {
 	static {
 		// Should use vmport, this is CDC/J2SE API
 		//System.loadLibrary("s60uitestutils");
-		org.eclipse.swt.internal.Library.loadLibrary("s60uitestutils");
+		org.eclipse.swt.internal.Library.loadLibrary("eswtuitestutils");
 	}
 
     /**

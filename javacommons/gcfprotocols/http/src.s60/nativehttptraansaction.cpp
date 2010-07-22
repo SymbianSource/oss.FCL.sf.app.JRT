@@ -57,7 +57,7 @@ void CleanUpResetAndDestroy(TAny *aArray)
 NativeHttpTransaction::NativeHttpTransaction(HttpSessionClient& aSession, FunctionServer* aFuncServer)
         :iSessionClient(aSession) //, java::util::FunctionServer("MyhttpServer2")
 {
-  
+
     iFuncServer = aFuncServer;
 }
 
@@ -72,7 +72,7 @@ TInt NativeHttpTransaction::NewL(JNIEnv &aJni, jobject aPeer, HttpSessionClient&
 {
     NativeHttpTransaction* self =   new(ELeave) NativeHttpTransaction(aSession,aFuncServer);
 
-    
+
     self->ConstructL(aJni, aPeer, /*aServer, */ aUri, aRequestMethod);
 
 
@@ -93,9 +93,9 @@ void NativeHttpTransaction::ConstructL(JNIEnv& aJni, jobject aPeer,/* TJavaEvent
     int urihandle = reinterpret_cast<int>(aUri);
     int methodhandle = reinterpret_cast<int>(aRequestMethod);
     //open the transaction
-    
+
     CallMethodL(this, &NativeHttpTransaction::ExecuteCreateTransactionL,handle,urihandle , methodhandle, iFuncServer);
-    
+
 }
 
 void NativeHttpTransaction::ExecuteCreateTransactionL(int aSelfhandle, int aUrihandle, int aMethodhandle)
@@ -115,7 +115,7 @@ void NativeHttpTransaction::SubmitL(JNIEnv* aJni, jobject* /*aPeer*/,const jobje
     RPointerArray<HBufC8> rawHeaderArray;
     CleanupStack::PushL(TCleanupItem(CleanUpResetAndDestroy,&rawHeaderArray));
     iJniObject = aJni;
-    
+
 
     if (aHeaders!=NULL)
     {
@@ -173,7 +173,7 @@ void NativeHttpTransaction::SubmitL(JNIEnv* aJni, jobject* /*aPeer*/,const jobje
 
 void NativeHttpTransaction::ExecuteSubmitL(int aSelfhandle , int aRawHeadershandle , int aPostBufhandle, int aResponseTimeout)
 {
-    
+
     NativeHttpTransaction *aSelf = reinterpret_cast<NativeHttpTransaction*>(aSelfhandle);
     RPointerArray<HBufC8>* aRawHeaders = reinterpret_cast<RPointerArray<HBufC8>*>(aRawHeadershandle);
     HBufC8* aPostBuf = reinterpret_cast<HBufC8*>(aPostBufhandle);
@@ -186,12 +186,12 @@ jobjectArray NativeHttpTransaction::GetResponseL(JNIEnv* aJni)
     jobjectArray objArray=NULL;
     RPointerArray<HBufC8> rawHeaders(KResponseGranularity);
     CleanupStack::PushL(TCleanupItem(CleanUpResetAndDestroy,&rawHeaders));
-    
+
     int handle = reinterpret_cast<int>(this);
 
     int arrayhandle = reinterpret_cast<int>(&rawHeaders);
     CallMethodL(this, &NativeHttpTransaction::ExecuteGetResponseL,handle,arrayhandle , iFuncServer);
-    
+
     const TInt headerCount = rawHeaders.Count();
     if (headerCount>KErrNone)
     {
@@ -232,7 +232,7 @@ void NativeHttpTransaction::ExecuteGetResponseL(int aSelfhandle, int aRawHeaders
 */
 TInt NativeHttpTransaction::ReadBytes(TUint8* aBytes, TInt aLength)
 {
-    
+
     int handle = reinterpret_cast<int>(this);
     int uinthandle = reinterpret_cast<int>(aBytes);
 
@@ -240,7 +240,7 @@ TInt NativeHttpTransaction::ReadBytes(TUint8* aBytes, TInt aLength)
     CallMethod(ret,this, &NativeHttpTransaction::ExecuteReadBytes,handle,uinthandle,aLength,iFuncServer);
 
     return ret;
-    
+
 }
 
 TInt NativeHttpTransaction::ExecuteReadBytes(int aSelfhandle, int aByteshandle, TInt aLength)

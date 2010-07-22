@@ -80,6 +80,7 @@ void ConfigExtensionPlugin::loadExtensionPlugins()
 #endif // __SYMBIAN32__
     mCore->loadExtensionPlugin("boot");
     mCore->loadExtensionPlugin("mmc");
+    mCore->loadExtensionPlugin("settingslistener");
 }
 
 } // namespace captain

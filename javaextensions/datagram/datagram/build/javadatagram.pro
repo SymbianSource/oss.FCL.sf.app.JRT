@@ -21,6 +21,6 @@ CONFIG -= qt
 
 INCLUDEPATH += ../../inc
 
-LIBS += -ljavadatagramscplugin -ljavagcf
+LIBS += -ljavadatagramscplugin -ljavagcf -ljavasocket
 
 include(../../../../build/omj.pri)

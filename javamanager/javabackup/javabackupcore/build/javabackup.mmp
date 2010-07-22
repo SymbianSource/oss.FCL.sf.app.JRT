@@ -43,11 +43,13 @@ SOURCEPATH              ../src.s60
 SOURCE                  jsbcactive.cpp
 SOURCE                  jsbcdataowner.cpp
 
+#ifdef RD_JAVA_S60_RELEASE_5_0
+SYSTEMINCLUDE	/epoc32/include/connect    // Due to abclient.h in S60 5.0
+#endif
+
 USERINCLUDE             ../src.s60
 USERINCLUDE             ../../inc.s60
 USERINCLUDE             ../../../../inc
-
-SYSTEMINCLUDE           /epoc32/include/connect
 
 LIBRARY                 ecom.lib
 LIBRARY                 abclient.lib

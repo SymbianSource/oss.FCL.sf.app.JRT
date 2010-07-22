@@ -21,9 +21,9 @@
 #include <audiopreference.h>
 #include <logger.h>
 
-#include "CMMAStreamHandler.h"
-#include "CMMADataSourceStream.h"
-#include "MMAFunctionServer.h"
+#include "cmmastreamhandler.h"
+#include "cmmadatasourcestream.h"
+#include "mmafunctionserver.h"
 
 CMMAStreamHandler* CMMAStreamHandler::NewL(
     MMMAStreamHandlerListener& aListener,

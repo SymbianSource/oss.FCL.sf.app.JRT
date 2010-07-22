@@ -21,12 +21,12 @@ CAPABILITY all -tcb -allfiles -drm
 
 #include <../../../../inc/java_stdcpp_support_for_exe.hrh>
 #include <platform_paths.hrh>
- APP_LAYER_SYSTEMINCLUDE
-MW_LAYER_SYSTEMINCLUDE
 
-USERINCLUDE /epoc32/include/cpputest
+APP_LAYER_SYSTEMINCLUDE
+
+USERINCLUDE /epoc32/include/CppUTest    // Due to TestHarness.h et al
+
 USERINCLUDE ../src/utils
-
 USERINCLUDE ../../../../inc // == (JAVA_SRC_ROOT)/inc
 
 // Using main() as entry point

@@ -156,6 +156,14 @@ public class AlertTests extends Form implements CommandListener
                 errorAlert.setTimeout(Alert.FOREVER);
                 Display.getDisplay(parent).setCurrent(errorAlert);
             }
+            catch (IllegalArgumentException e)
+            {
+                System.out.println("Exception: " + e.toString());
+                Alert errorAlert = new Alert("Exception", e.toString(), null,
+                                             AlertType.ERROR);
+                errorAlert.setTimeout(Alert.FOREVER);
+                Display.getDisplay(parent).setCurrent(errorAlert);
+            }
         }
         else if (c == cmdExit)
         {

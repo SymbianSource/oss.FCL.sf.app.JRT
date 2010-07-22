@@ -1,0 +1,3 @@
+domain=mydomain
+user_assigned?Settings:blanket:no?assigned.user.permission
+user?Settings:blanket:no?user.permission

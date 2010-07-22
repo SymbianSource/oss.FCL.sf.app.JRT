@@ -36,6 +36,8 @@
 #include "javastorage.h"
 #include "javastoragenames.h"
 
+#include "settingschangeeventsprovidermessages.h"
+
 #include "midprtcplugin.h"
 #ifdef RD_JAVA_CAPTAIN_TESTRUNTIME
 #include "testrtcplugin.h"
@@ -498,15 +500,31 @@ bool Rtc::routeMessage(CommsMessage& aMessage, const int& aRuntimeAddress)
 }
 
 void Rtc::event(const std::string& eventProvider,
-                java::comms::CommsMessage& /* aMsg */)
+                java::comms::CommsMessage& aMsg )
 {
     ILOG(EJavaCaptain, "+Rtc::event()");
     if (BOOT_EVENT_PROVIDER == eventProvider)
     {
         if (mSupportPreWarming && isThereInstalledMidlets())
         {
-            ILOG(EJavaCaptain, "Rtc::event() - Boot event received, Starting prewarm VM since found Installed MIDlets");
-            launchPrewarm(); //New prewarm VM instance is will be created only if it did not exist already
+            ILOG(EJavaCaptain, "Rtc::event() - Boot event received, Starting "
+                 "prewarm VM since found Installed MIDlets");
+            launchPrewarm(); //New prewarm VM instance is will be created only
+                                      //if it did not exist already
+        }
+    } else if ( SETTINGS_CHANGE_EVENT_PROVIDER == eventProvider )
+    {
+        int changeEventType = 0;
+        getSettingsChangeEventMessageParams(aMsg, changeEventType);
+        if ( MIDP_CLASS_PATH_CHANGE == changeEventType &&
+             (mRuntimes.find(PREWARM_UID) != mRuntimes.end()) )
+        {
+            // Java libraries have been modified in the system.
+            //Prewarm instance must be restarted
+            ILOG(EJavaCaptain, "Rtc::event() - Restarting prewarm VM instance "
+                 "since MIDP classpath has changed");
+            stopPrewarm();
+            launchPrewarm();
         }
     }
 }

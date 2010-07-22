@@ -22,6 +22,11 @@ public class myClass
     private class myInnerClass
             implements com.nokia.mj.impl.security.midp.common.UserSecuritySettings
     {
+        
+        public boolean isActive()
+        {
+            return true;
+        }
 
         public String getName()
         {

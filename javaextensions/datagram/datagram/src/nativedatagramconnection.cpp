@@ -98,6 +98,11 @@ int NativeDatagramConnection::openConnection(int aType, int aApn, int * err)
 
         LOG(ESOCKET, EInfo, "Datagram client connection");
         mSockDesc = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+        struct sockaddr_in addr;
+        addr.sin_family = AF_INET;
+        addr.sin_addr.s_addr = htonl(INADDR_ANY);
+        int res = bind(mSockDesc, (struct sockaddr*) &addr, sizeof(addr));
+        LOG1(ESOCKET, EInfo, "Datagram client connection, bind returned %d",res);
 
         if (aApn != -1)
         {

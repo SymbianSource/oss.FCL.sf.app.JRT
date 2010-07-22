@@ -45,6 +45,7 @@ void CMMAEvent::SetEventData(TInt aEventData)
 void CMMAEvent::Dispatch(JNIEnv& aJni)
 {
     LOG1(EJavaMMAPI, EInfo, "MMA::CMMAEvent::Dispatch iEventData=%d", iEventData);
+    LOG1(EJavaMMAPI, EInfo, "MMA::CMMAEvent::Dispatch iListenerObject=%d", iEventData);
 
     aJni.CallVoidMethod(iListenerObject,
                         iHandleEventMethod,

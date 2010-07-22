@@ -12,13 +12,16 @@ package org.eclipse.swt.internal;
 import org.eclipse.swt.widgets.Display;
 
 
-public class ExitNotificationWrapper {	
-	
-	public static void notifyExit() {
-	    Display display = Display.getCurrent();
-	    if(display != null) {
-	        display.dispose();
-		}
- 	}
-	
+public final class ExitNotificationWrapper {	
+    
+    public static void notifyExit() {
+        Display display = Display.getCurrent();
+        if(display != null) {
+            display.dispose();
+        }
+    }
+    
+    public static void uiDisposed() {
+        notifyExit();
+    }
 }

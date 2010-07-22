@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -36,7 +36,7 @@ import j2meunit.framework.TestSuite;
  */
 public class NotificationPosterTest extends TestCase implements InstallerMain
 {
-    private static final String TEST_URL = "http://195.134.231.83:7070/java-server/getresult.jsp?phone=CE0CBA106ADB77A9298A143E5136CD2B&tID=900_success";
+    private static final String TEST_URL = "/installertest/notify?tID=900_success";
 
     // Begin j2meunit test framework setup
 
@@ -361,13 +361,18 @@ public class NotificationPosterTest extends TestCase implements InstallerMain
         testNotifyPendingFailureLimit(poster);
     }
 
-    private static OtaStatusNotification createNotification(int aIndex)
+    private OtaStatusNotification createNotification(int aIndex)
     {
+        String server = System.getProperty(
+                            "com.nokia.mj.impl.installer.test.server");
+        assertNotNull("-server=<address>:<port> argument required.", server);
+
         OtaStatusNotification notification = new OtaStatusNotification
         (PlatformUid.createUid(Integer.toString(aIndex)),
          System.currentTimeMillis(),
          OtaStatusNotification.TYPE_INSTALL, OtaStatusCode.SUCCESS,
-         TEST_URL + aIndex, System.currentTimeMillis(), 0);
+         "http://" + server + TEST_URL + aIndex, System.currentTimeMillis(),
+         0);
         return notification;
     }
 

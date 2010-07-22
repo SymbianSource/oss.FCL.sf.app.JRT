@@ -236,6 +236,9 @@ public final class OS {
     public static final int QSWTEVENT_MOBILEDEVICECLOSED = QSWTEVENT_ID_RANGE_FIRST + 8;
     public static final int QSWTEVENT_SCREENACTIVATED = QSWTEVENT_ID_RANGE_FIRST + 9;
     public static final int QSWTEVENT_SCREENDEACTIVATED = QSWTEVENT_ID_RANGE_FIRST + 10;
+    public static final int QSWTEVENT_SYMBIAN_WINDOW_FULLY_VISIBLE = QSWTEVENT_ID_RANGE_FIRST + 11;
+    public static final int QSWTEVENT_SYMBIAN_WINDOW_PARTIALLY_VISIBLE = QSWTEVENT_ID_RANGE_FIRST + 12;
+    public static final int QSWTEVENT_SYMBIAN_WINDOW_NOT_VISIBLE = QSWTEVENT_ID_RANGE_FIRST + 13;
 
     // Qt connection types for signal-slot connections
     public static final int QT_AUTOCONNECTION = 0;

@@ -34,6 +34,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.qt.WidgetConstant;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -42,6 +43,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Widget;
 
 /**
  * Base class for different InstallerUi views.
@@ -101,6 +103,7 @@ abstract public class ViewBase
         iParent = (Shell)aParent;
 
         iContainer = new Composite(iParent, 0);
+        setCssId(iContainer, "dialogArea");
         iContainer.setVisible(false);
 
         iColumns = aColumns;
@@ -438,6 +441,14 @@ abstract public class ViewBase
     }
 
     /**
+     * Sets CSS id for given widget.
+     */
+    protected void setCssId(Widget aWidget, String aCssId)
+    {
+        aWidget.setData(WidgetConstant.CSS_ID, aCssId);
+    }
+
+    /**
      * Adds header used in installation views.
      */
     protected void addHeader(
@@ -454,26 +465,28 @@ abstract public class ViewBase
         boolean aSecurityButton)
     {
         // Add title.
-        String title = InstallerUiTexts.get(InstallerUiTexts.INSTALL_QUERY);
-        if (aInstallInfo != null)
+        if (aTitle == null)
         {
-            if (aInstallInfo.getOldVersion() != null)
+            aTitle = InstallerUiTexts.get(InstallerUiTexts.INSTALL_QUERY);
+            if (aInstallInfo != null && aInstallInfo.getOldVersion() != null)
             {
-                title = InstallerUiTexts.get(InstallerUiTexts.UPDATE_QUERY);
+                aTitle = InstallerUiTexts.get(InstallerUiTexts.UPDATE_QUERY);
             }
-            iCertificates = aInstallInfo.getCertificates();
-        }
-        if (aUninstallInfo != null)
-        {
-            title = "Uninstall?";
-            iCertificates = aUninstallInfo.getCertificates();
         }
         Label titleLabel = createLabel(aTitle, getColumns() - 1, SWT.WRAP);
-        titleLabel.setFont(iInstallerUi.getBoldFont());
+        setCssId(titleLabel, "heading");
 
+        if (aInstallInfo != null)
+        {
+            iCertificates = aInstallInfo.getCertificates();
+        }
+        else if (aUninstallInfo != null)
+        {
+            iCertificates = aUninstallInfo.getCertificates();
+        }
         if (aSecurityButton)
         {
-            // Add security icon.
+            // Add security button.
             createSecurityButton();
         }
         else
@@ -505,11 +518,12 @@ abstract public class ViewBase
         {
             iconColumns = 2;
             Label iconLabel = createLabel(iSuiteIcon, iconColumns, SWT.NONE);
+            setCssId(iconLabel, "contentIcon");
         }
 
         // Create a Composite for displaying application info.
         iAppInfoScrolledComposite =
-            new ScrolledComposite(getComposite(), SWT.H_SCROLL | SWT.V_SCROLL);
+            new ScrolledComposite(getComposite(), SWT.V_SCROLL);
         iAppInfoScrolledComposite.setAlwaysShowScrollBars(false);
         iAppInfoScrolledComposite.setExpandHorizontal(true);
         GridData gridData = new GridData(GridData.FILL_BOTH);
@@ -518,6 +532,7 @@ abstract public class ViewBase
         iAppInfoComposite = new Composite(iAppInfoScrolledComposite, SWT.NONE);
         iAppInfoComposite.setLayout(new GridLayout(1, true));
         iAppInfoScrolledComposite.setContent(iAppInfoComposite);
+        setCssId(iAppInfoScrolledComposite, "appInfoArea");
     }
 
     /**
@@ -540,15 +555,10 @@ abstract public class ViewBase
         if (aFull)
         {
             // Add vendor.
-            if (aInstallInfo.getCertificates() != null)
-            {
-                // Vendor information must be displayed only for
-                // identified applications.
-                createAppInfoLabel(
-                    InstallerUiTexts.get(
-                        InstallerUiTexts.SUITE_VENDOR,
-                        new String[] { aInstallInfo.getVendor() }));
-            }
+            createAppInfoLabel(
+                InstallerUiTexts.get(
+                    InstallerUiTexts.SUITE_VENDOR,
+                    new String[] { aInstallInfo.getVendor() }));
         }
         // Add size.
         long size = 0;
@@ -658,7 +668,7 @@ abstract public class ViewBase
         GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
         gridData.horizontalSpan = aColumns;
         gridData.horizontalAlignment = SWT.CENTER;
-        gridData.verticalAlignment = SWT.CENTER;
+        gridData.verticalAlignment = SWT.TOP;
         label.setLayoutData(gridData);
         return label;
     }
@@ -690,6 +700,7 @@ abstract public class ViewBase
     protected Label createSecurityLabel(boolean aIdentified)
     {
         Label label = createLabel((Image)null, 1, SWT.NONE);
+        setCssId(label, "securityLabel");
         Image securityIcon = null;
         if (iInstallerUi != null)
         {
@@ -710,6 +721,7 @@ abstract public class ViewBase
     protected Button createSecurityButton()
     {
         Button button = new Button(getComposite(), SWT.PUSH);
+        setCssId(button, "securityButton");
         GridData gridData = new GridData(
             GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
         gridData.horizontalSpan = 1;

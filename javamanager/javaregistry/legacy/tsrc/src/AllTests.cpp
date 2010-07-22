@@ -15,8 +15,8 @@
 *
 */
 
-#include "Platform.h"
-#include "CommandLineTestRunner.h"
+#include <CppUTest/Platform.h>
+#include <CppUTest/CommandLineTestRunner.h>
 
 int main(int ac, char** av)
 {

@@ -28,9 +28,11 @@ public abstract class BaseDisplay
 {
     // represents native side of display and initialized by derived class
     protected int nativeDisplayHandle;
-    protected org.eclipse.swt.widgets.Control eswtCanvasControl;
+    protected org.eclipse.swt.widgets.Control iControl;
     private Rectangle rect;
     private int[] rectDimension = new int[ 4 ];
+    protected boolean iseSWT;
+
     public BaseDisplay()
     {
         rect = new Rectangle(0,0,0,0);
@@ -42,12 +44,20 @@ public abstract class BaseDisplay
         */
     public void GetCallbackInUiThread(int aPlaceHolder)
     {
-        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"_+inside BaseDisplay : GetCallbackInUiThread");
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"_+inside BaseDisplay : GetCallbackInUiThread ++");
         final int val = aPlaceHolder;
         Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"_+inside BaseDisplay : GetCallbackInUiThread - aPlaceHolder = "+aPlaceHolder+"nativeDisplayHandle = "+nativeDisplayHandle);
         try
         {
-            final org.eclipse.swt.widgets.Display disp = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtDisplay();
+            org.eclipse.swt.widgets.Display disp = null;
+            if (iseSWT)
+            {
+                disp = org.eclipse.swt.widgets.Display.getDefault();
+            }
+            else
+            {
+                disp = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtDisplay();
+            }
             Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"_+inside BaseDisplay : GetCallbackInUiThread - got eswtdisplay");
             disp.syncExec(new Runnable()
             {
@@ -62,82 +72,112 @@ public abstract class BaseDisplay
         {
             Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside BaseDisplay : GetCallbackInUiThread....exception is " + e.toString());
         }
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"_+inside BaseDisplay : GetCallbackInUiThread --");
 
     }
 
     public void setContentBound()
     {
-        System.out.println("inside BaseDisplay : setContentBound +");
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside BaseDisplay : setContentBound +");
         try
         {
 
-            final org.eclipse.swt.widgets.Display disp = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtDisplay();
+            org.eclipse.swt.widgets.Display disp = null;
+            if (iseSWT)
+            {
+                disp = org.eclipse.swt.widgets.Display.getDefault();
+            }
+            else
+            {
+                disp = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtDisplay();
+            }
             disp.syncExec(new Runnable()
             {
                 public void run()
                 {
-                    eswtCanvasControl.setBounds(rect);
+                    Rectangle arect = iControl.getBounds();
+                    rect.x = rect.x + arect.x;
+                    rect.y = rect.y + arect.y;
+                    iControl.setBounds(rect);
                 }
             });
         }
         catch (Exception e)
         {
-            System.out.println("inside BaseDisplay : setContentBound....exception is  " + e.toString());
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside BaseDisplay : setContentBound....exception is  " + e.toString());
         }
-        System.out.println("inside BaseDisplay : setContentBound -");
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside BaseDisplay : setContentBound -");
     }
 
 
     public void removeContentBound()
     {
-        System.out.println("inside BaseDisplay : removeContentBound +");
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside BaseDisplay : removeContentBound +");
         try
         {
 
-            final org.eclipse.swt.widgets.Display disp = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtDisplay();
+            org.eclipse.swt.widgets.Display disp = null;
+            if (iseSWT)
+            {
+                disp = org.eclipse.swt.widgets.Display.getDefault();
+            }
+            else
+            {
+                disp = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtDisplay();
+            }
             disp.syncExec(new Runnable()
             {
                 public void run()
                 {
                     Rectangle emptyRect = new Rectangle(0,0,0,0);
-                    eswtCanvasControl.setBounds(emptyRect);
+                    iControl.setBounds(emptyRect);
                 }
             });
         }
         catch (Exception e)
         {
-            System.out.println("inside BaseDisplay : removeContentBound....exception is  " + e.toString());
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside BaseDisplay : removeContentBound....exception is  " + e.toString());
         }
-        System.out.println("inside BaseDisplay : removeContentBound -");
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside BaseDisplay : removeContentBound -");
     }
 
     public void redrawControl()
     {
-        System.out.println("inside BaseDisplay : redrawControl +");
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside BaseDisplay : redrawControl +");
         try
         {
 
-            final org.eclipse.swt.widgets.Display disp = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtDisplay();
+            org.eclipse.swt.widgets.Display disp = null;
+            if (iseSWT)
+            {
+                disp = org.eclipse.swt.widgets.Display.getDefault();
+            }
+            else
+            {
+                disp = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtDisplay();
+            }
             disp.syncExec(new Runnable()
             {
                 public void run()
                 {
+                    Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside BaseDisplay : redrawControl before redraw");
                     // redraw entire bounds of receiver
-                    eswtCanvasControl.redraw();
+                    iControl.redraw();
                 }
             });
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside BaseDisplay : redrawControl after redraw");
         }
         catch (Exception e)
         {
-            System.out.println("inside BaseDisplay : redrawControl....exception is  " + e.toString());
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside BaseDisplay : redrawControl....exception is  " + e.toString());
         }
-        System.out.println("inside BaseDisplay : redrawControl -");
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside BaseDisplay : redrawControl -");
     }
     /* called from native to reset the java side rect
-       Before the call of this function array is updated from native side
-       which can be used to refresh the UI screen rect and/or
-       set/remove bound rect
-      */
+    Before the call of this function array is updated from native side
+    which can be used to refresh the UI screen rect and/or
+    set/remove bound rect
+    */
     public void setRect()
     {
 
@@ -146,10 +186,39 @@ public abstract class BaseDisplay
         rect.width = rectDimension[2];
         rect.height = rectDimension[3];
 
-        System.out.println("BaseDisplay : setRect rect is reset with values: x =" + rect.x +"y ="+ rect.y +"width ="+rect.width+"height = "+ rect.height);
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"BaseDisplay : setRect rect is reset with values: x =" + rect.x +"y ="+ rect.y +"width ="+rect.width+"height = "+ rect.height);
 
     }
 
+    public Rectangle getBounds()
+    {
+        try
+        {
+
+            org.eclipse.swt.widgets.Display disp = null;
+            if (iseSWT)
+            {
+                disp = org.eclipse.swt.widgets.Display.getDefault();
+            }
+            else
+            {
+                disp = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtDisplay();
+            }
+            disp.syncExec(new Runnable()
+            {
+                public void run()
+                {
+
+                    rect = iControl.getBounds();
+                }
+            });
+        }
+        catch (Exception e)
+        {
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"  " + e.toString());
+        }
+        return rect;
+    }
     // abstract functions implemented by concrete class
     protected abstract void setDisplaySize(int aWidth, int aHeight);
     protected abstract void setDisplayFullScreen(final boolean aFullScreenMode);
@@ -162,7 +231,7 @@ public abstract class BaseDisplay
     protected abstract int getSourceWidth();
     protected abstract int getSourceHeight();
     protected abstract void getBoundRect();
-    protected abstract void setWindowResources(VideoItem aVideoItem);
+    public abstract void setWindowResources(VideoItem aVideoItem);
     protected abstract void setNativeHandle(int handle);
     public abstract void setContainerVisibilityToNative(final boolean active);
     // Native methods

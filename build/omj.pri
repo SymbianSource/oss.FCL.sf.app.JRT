@@ -73,7 +73,7 @@ omj {
       include(symbian_uids.pri)
 
       DEFINES += __SYMBIAN32__
-      DEFINES += J9EPOC32 RD_JAVA_OMJ_FSERVER
+      DEFINES += J9EPOC32
 
       LIBS += -llibpthread
 

@@ -27,6 +27,8 @@ import java.util.TimerTask;
 
 import java.security.AccessControlException;
 
+import com.nokia.mj.impl.gcf.PushSecurityUtils;
+
 import com.nokia.mj.impl.rt.utils.ExtensionUtil;
 import com.nokia.mj.impl.rt.utils.CmdLineArgsPermission;
 
@@ -992,15 +994,34 @@ final class MidletLifeCycle
             DrmUtil.consumeRightsStart();
         }
 
-        // If the MIDlet launch is a result of auto invocation we need to
+        // If the MIDlet launch is a result of push auto invocation we need to
         // ensure that user allows the start up.
-        if ((mMainArgs.findArgument("-autoinvocation") != null) ||
-                mAutoinvocationFromUrl)
+        if (mMainArgs.findArgument("-autoinvocation") != null)
         {
-            if (Log.mOn) Log.logI("Ensuring autoinvocation.");
+            if (Log.mOn) Log.logI("Ensuring push autoinvocation.");
             String pushAdditionalInfo =
                 mMainArgs.findArgument("-autoInvocationAdditional");
             if (Log.mOn) Log.logI("  addInfo: '" + pushAdditionalInfo + "'");
+
+            try
+            {
+                PushSecurityUtils.ensurePermission("autoinvocation",
+                                                   pushAdditionalInfo);
+            }catch(SecurityException e)
+            {
+                // The user didn't allow starting. Throw StartupException and
+                // mark it as non fatal.
+                if (Log.mOn) Log.logI("Push autoinvocation NOT allowed.");                
+                throw new StartupException(e.toString(),
+                                           false);
+            }
+        }
+        
+        // If the MIDlet launch is triggered from url we need to
+        // ensure that user allows the start up.
+        if (mAutoinvocationFromUrl)
+        {
+            if (Log.mOn) Log.logI("Ensuring web start invocation.");
 
             // ensure security
             try
@@ -1009,10 +1030,10 @@ final class MidletLifeCycle
                 CmdLineArgsPermission cmdLineArgsPermission = 
                     new CmdLineArgsPermission();
                 appUtils.checkPermission(cmdLineArgsPermission);
-                if (Log.mOn) Log.logI("Autoinvocation allowed.");
+                if (Log.mOn) Log.logI("Web start invocation allowed.");
             }catch(AccessControlException e)
             {
-                if (Log.mOn) Log.logI("Autoinvocation NOT allowed.");                
+                if (Log.mOn) Log.logI("Web start invocation NOT allowed.");                
                 throw new StartupException(e.toString(),
                                            false);
             }

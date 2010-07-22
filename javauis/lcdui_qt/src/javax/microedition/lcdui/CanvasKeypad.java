@@ -189,10 +189,9 @@ final class CanvasKeypad implements MouseListener, MouseMoveListener
              * Constructs a canvas kepad based on the JAD attribute
              *
              * @param canvas - canvas for which the keypad is required.
-             * @param canvasComp - Composite corresponding to the canvas.
              * @param mode- the jad attribute as a string.
              */
-    CanvasKeypad(Canvas canvas, Composite canvasComp, String mode)
+    CanvasKeypad(Canvas canvas, String mode)
     {
 
         this.canvas = canvas;
@@ -244,7 +243,7 @@ final class CanvasKeypad implements MouseListener, MouseMoveListener
         canvasData.left = new FormAttachment(0);
         canvasData.top = new FormAttachment(0);
         canvasData.bottom = new FormAttachment(keypadComposite);
-        canvasComp.setLayoutData(canvasData);
+        canvas.getContentComp().setLayoutData(canvasData);
 
         FormData navKeyData = new FormData();
         navKeyData.right = new FormAttachment(100);
@@ -438,12 +437,23 @@ final class CanvasKeypad implements MouseListener, MouseMoveListener
         gameKeysComposite.layout();
     }
 
+
     /**
              * Handles orientation changes.
              */
     void handleOrientationChange(int mode)
     {
         //change the layout as per orientation mode
+    }
+
+
+    /**
+             * Sets the currect Canvas for Key events.
+             * @param canvas - Current Canvas to which the key events needs to be delivered.
+             */
+    void setCurrentCanvas(Canvas canvas)
+    {
+        this.canvas = canvas;
     }
 
 

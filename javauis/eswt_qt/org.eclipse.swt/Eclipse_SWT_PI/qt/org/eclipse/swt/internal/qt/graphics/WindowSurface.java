@@ -160,6 +160,17 @@ public final class WindowSurface {
     	OS.windowsurface_refresh(handle);
     }
     
+    /**
+     * Switch to software rendering when the window is going invisible 
+     * and back to hardware accelerated rendering when going visible.
+     * @param goingVisible True if the window is about to become visible (partially or fully).
+     *                     False if the window is about to become invisible (fully).
+     */
+    public void handleSymbianWindowVisibilityChange(boolean goingVisible)
+    {
+        OS.windowsurface_handleSymbianWindowVisibilityChange(handle, goingVisible);
+    }
+    
     private void checkState() {
     	Utils.validateUiThread();
     	if (disposed) {

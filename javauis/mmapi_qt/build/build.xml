@@ -65,6 +65,8 @@
                    com.nokia.microedition.media.control.MMACanvasDisplay,
                    com.nokia.microedition.media.control.ItemDisplay,
                    com.nokia.microedition.media.control.BaseDisplay,
+		   com.nokia.microedition.media.control.MMAeSWTDisplay,
+		   org.eclipse.swt.widgets.ESWTProxyControl,
                    com.nokia.microedition.media.control.MMAGUIFactory,
                    com.nokia.microedition.media.control.PitchControl,
                    com.nokia.microedition.media.control.RateControl,
@@ -196,6 +198,10 @@
         video.snapshot.encodings=encoding=png encoding=jpeg encoding=image/png encoding=image/jpeg encoding=image/jpg encoding=image/gif encoding=image/bmp
     </properties>
 
+  </target>
+  
+  <target name="create.public.api.jar">
+    <omj.public.apis includes="javax/microedition/media/**/*.class"/>
   </target>
 
   <target name="create.internal.api.jar">

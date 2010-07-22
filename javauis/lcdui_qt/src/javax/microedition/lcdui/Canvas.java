@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2009, 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -16,9 +16,11 @@
 */
 package javax.microedition.lcdui;
 
+import java.util.Enumeration;
 import java.util.Vector;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.microedition.lcdui.game.GameCanvas;
 import javax.microedition.lcdui.EventDispatcher.LCDUIEvent;
 import org.eclipse.ercp.swt.mobile.MobileShell;
 import org.eclipse.swt.SWT;
@@ -28,6 +30,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.extension.CompositeExtension;
 import org.eclipse.swt.internal.qt.graphics.WindowSurface;
+import org.eclipse.swt.internal.extension.MobileShellExtension;
+import org.eclipse.swt.internal.qt.SymbianWindowVisibilityListener;
 
 
 /**
@@ -148,6 +152,21 @@ public abstract class Canvas extends Displayable
      */
     public static final int KEY_POUND = 35;
 
+
+    private static final int GAME_CANVAS = 1;
+    private static final int NO_BACKGROUND = 1 << 1;
+    private static final int FULLSCREEN_MODE = 1 << 2;
+
+    private static final int DISABLE_TAPDETECTION = 1 << 3;
+    private static final int SUPPRESS_GAMEKEYS = 1 << 4;
+    private static final int SUPPRESS_DRAGEVENT = 1 << 5;
+    private static final int CLEANUP_NEEDED = 1 << 6;
+    private static final int REPAINT_PENDING = 1 << 7;
+    private static final int SELECTIONKEY_COMPATIBILITY = 1 << 8;
+
+    private static final int CURRENTLY_VISIBLE = 1 << 9;
+
+
     // Listeners for various events.
     private org.eclipse.swt.events.PaintListener paintListener =
         new CanvasShellPaintListener();
@@ -155,32 +174,42 @@ public abstract class Canvas extends Displayable
     private CanvasShellMouseListener mouseListener =
         new CanvasShellMouseListener();
 
+    private CanvasShellVisibilityListener shellVisibilityListener =
+        new CanvasShellVisibilityListener();
+
     // Canvas Graphics object passed to paint(Graphics g)
     private Graphics canvasGraphics;
 
     // Graphics object for transferring return values
     // from UI thread
     private Graphics tempGraphics;
-    
+
     // Graphics command buffer for this instance
-	Buffer graphicsBuffer;
-	
+    Buffer graphicsBuffer;
+
     //On Screen Keypad
     //private Composite keypadComposite;
     private CanvasKeypad onScreenkeypad;
+    private static CanvasKeypad sharedKeypad;
     private int oskHeight;
 
     // Vector of flags that a certain key was pressed but was not released.
     // Used to implement keyRepeated since eSWT does not support
     // key repeat events.
     private Vector keysPressed;
-
-    private boolean suppressGameKeys;
-    private boolean suppressDragEvent;
-    private boolean cleanupNeeded;
-    private Object cleanupLock;
-    private boolean noBackground;
     private int gameKeyState;
+
+    private static int objectCount;
+    private static Shell sharedShell;
+    private Shell mShell;
+    private Composite canvasComp;
+    private Label tickerLabel;
+
+    private int mode;
+    private Object modeLock;
+    private Object cleanupLock;
+    private Object repaintLock;
+    private Object flushLock;
 
     private Timer timer = new Timer();
     private CanvasTimerTask timerTask;
@@ -192,27 +221,77 @@ public abstract class Canvas extends Displayable
     private int pointerDownY;
     private int twips;
     private int timeout;
-    private boolean disableTapDetection;
 
-    private boolean repaintPending;
     private int repaintX1;
     private int repaintY1;
     private int repaintX2;
     private int repaintY2;
-    private Object repaintLock;
 
-    private boolean selectionKeyCompatibility;
-    private boolean finalMode;
+
     /**
      * Constructs <code>Canvas</code> object.
      */
     public Canvas()
     {
         super(null);
+        synchronized(this)
+        {
+            objectCount++;
+        }
+
+        modeLock = new Object();
         repaintLock = new Object();
         cleanupLock = new Object();
+        flushLock = new Object();
+        setMode(GAME_CANVAS, this instanceof GameCanvas);
         construct();
         keysPressed = new Vector();
+    }
+
+    /**
+     * Disposes this instance
+     * Called when finalizer is destroying this instance.
+     */
+    void dispose()
+    {
+        ESWTUIThreadRunner.update(getClass().getName(), -1);
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        {
+            public void run()
+            {
+                if(graphicsBuffer != null)
+                {
+                    graphicsBuffer.dispose();
+                    graphicsBuffer = null;
+                }
+
+                synchronized(this)
+                {
+                    objectCount--;
+
+                    if((objectCount == 0) || isMode(GAME_CANVAS))
+                    {
+                        mShell.dispose();
+                        sharedShell = null;
+                        sharedKeypad = null;
+                    }
+                    else
+                    {
+                        Ticker ticker = getTicker();
+                        if (ticker != null)
+                        {
+                            ticker.removeLabel(tickerLabel);
+                        }
+                        if(tickerLabel != null)
+                        {
+                            tickerLabel.dispose();
+                        }
+
+                        canvasComp.dispose();
+                    }
+                }
+            }
+        });
     }
 
     /* (non-Javadoc)
@@ -220,7 +299,71 @@ public abstract class Canvas extends Displayable
      */
     Shell eswtConstructShell(int style)
     {
-        return super.eswtConstructShell(style /*| SWT.RESIZE*/);
+        if(isMode(GAME_CANVAS))
+        {
+            mShell = super.eswtConstructShell(style);
+        }
+        else
+        {
+            if(sharedShell == null)
+            {
+                sharedShell = super.eswtConstructShell(style);
+            }
+            mShell = sharedShell;
+        }
+
+        // Give the Shell the maximized size already before it becomes visible
+        // so that it will return the correct size.
+        mShell.setBounds(org.eclipse.swt.widgets.Display.getCurrent().getClientArea());
+
+        // Make the Shell maximized. On Symbian it's automatically maximized
+        // so this has no effect but on other platforms explicit maximizing
+        // might be needed.
+        mShell.setMaximized(true);
+
+        return mShell;
+    }
+
+    /**
+     * Sets ticker. If ticker is added already to other canvas(es),
+     * it continues running from position where it was. Otherwise
+     * it will start running from beginning when this method returns.
+     *
+     * @param newTicker New ticker. If null, current ticker is removed.
+     */
+    public void setTicker(Ticker newTicker)
+    {
+        super.setTicker(newTicker);
+
+        ESWTUIThreadRunner.syncExec(new Runnable()
+        {
+            public void run()
+            {
+                tickerLabel.setVisible(isMode(CURRENTLY_VISIBLE));
+            }
+        });
+    }
+
+    /**
+     * Creates singleton Label instance used by Ticker.
+     * Creates tickerLabel on shell and sets the visibility of the same.
+     */
+    Label getTickerLabel()
+    {
+        tickerLabel = super.getTickerLabel();
+
+        if (!isMode(CURRENTLY_VISIBLE))
+        {
+            ESWTUIThreadRunner.syncExec(new Runnable()
+            {
+                public void run()
+                {
+                    tickerLabel.setVisible(false);
+                }
+            });
+        }
+
+        return tickerLabel;
     }
 
     /* (non-Javadoc)
@@ -229,16 +372,16 @@ public abstract class Canvas extends Displayable
     Composite eswtConstructContent(int style)
     {
         // Get JAD attribute
-        noBackground = JadAttributeUtil.isValue(JadAttributeUtil.ATTRIB_NOKIA_UI_ENHANCEMENT,
-                                                JadAttributeUtil.VALUE_CANVAS_HAS_BACKGROUND);
-        if(noBackground)
+        setMode(NO_BACKGROUND, JadAttributeUtil.isValue(JadAttributeUtil.ATTRIB_NOKIA_UI_ENHANCEMENT,
+                                                JadAttributeUtil.VALUE_CANVAS_HAS_BACKGROUND));
+        if(isMode(NO_BACKGROUND))
         {
             style |= SWT.NO_BACKGROUND;
         }
 
         // Get JAD attribute for S60 Selection Key Compatibility
-        selectionKeyCompatibility = JadAttributeUtil.isValue(JadAttributeUtil.ATTRIB_NOKIA_MIDLET_S60_SELECTION_KEY_COMPATIBILITY,
-                                    JadAttributeUtil.VALUE_TRUE);
+        setMode(SELECTIONKEY_COMPATIBILITY, JadAttributeUtil.isValue(JadAttributeUtil.ATTRIB_NOKIA_MIDLET_S60_SELECTION_KEY_COMPATIBILITY,
+                                    JadAttributeUtil.VALUE_TRUE));
 
         // Get JAD attribute for MIDlet Tap Detection
         String tapAttr = JadAttributeUtil.getValue(JadAttributeUtil.ATTRIB_NOKIA_MIDLET_TAP_DETECTION_OPTIONS);
@@ -266,7 +409,7 @@ public abstract class Canvas extends Displayable
 
                     if((twips == 0)  && (timeout == 0))
                     {
-                        disableTapDetection = true;
+                        setMode(DISABLE_TAPDETECTION, true);
                     }
 
                     // if any one of the value is zero, set defaults
@@ -287,8 +430,23 @@ public abstract class Canvas extends Displayable
             setDefaultTapValues();
         }
 
-        Composite canvasComp = super.eswtConstructContent(style);
+        canvasComp = super.eswtConstructContent(style);
+        canvasComp.setVisible(false);
 
+        createOnScreenKeypad();
+
+        // create graphics buffer
+        graphicsBuffer = Buffer.createInstance(this, canvasComp);
+
+        return canvasComp;
+    }
+
+    /**
+     * Creates OSK(OnScreenKeypad), shared Keypad will be created for Canvas,
+     * seperate OSK will be created for each GameCanvas.
+     */
+    CanvasKeypad createOnScreenKeypad()
+    {
         // Read the on screen keypad settings from the jad attribute
         String oskAttr = JadAttributeUtil
                          .getValue(JadAttributeUtil.ATTRIB_NOKIA_MIDLET_ON_SCREEN_KEYPAD);
@@ -298,16 +456,37 @@ public abstract class Canvas extends Displayable
                      .equalsIgnoreCase(JadAttributeUtil.VALUE_GAMEACTIONS)) || (oskAttr
                              .equalsIgnoreCase(JadAttributeUtil.VALUE_NAVIGATIONKEYS))))
         {
-
             // On screen keypad is required, On devices without keyboard it can
             // be either navigation keys or navigation and game keys
-            onScreenkeypad = new CanvasKeypad(this, canvasComp, oskAttr);
+
+            if(isMode(GAME_CANVAS))
+            {
+                onScreenkeypad = new CanvasKeypad(this, oskAttr);
+                return onScreenkeypad;
+            }
+
+            if(sharedKeypad == null)
+            {
+                sharedKeypad = new CanvasKeypad(this, oskAttr);
+            }
+            onScreenkeypad = sharedKeypad;
+            return onScreenkeypad;
         }
 
-        // create graphics buffer
-        graphicsBuffer = Buffer.createInstance(this, canvasComp);
+        return null;
+    }
 
-        return canvasComp;
+    Rectangle eswtLayoutShellContent()
+    {
+        Rectangle shellArea = mShell.getClientArea();
+        int oskHeight = (onScreenkeypad != null ? onScreenkeypad.getHeight() : 0);
+        int tickerHeight = (tickerLabel != null ? tickerLabel.getBounds().height : 0);
+
+        canvasComp.setBounds(0, tickerHeight,
+                              shellArea.width, shellArea.height - tickerHeight - oskHeight);
+
+        canvasComp.setFocus();
+        return canvasComp.getClientArea();
     }
 
     /* (non-Javadoc)
@@ -315,10 +494,28 @@ public abstract class Canvas extends Displayable
      */
     void eswtHandleShowCurrentEvent()
     {
+        setMode(CURRENTLY_VISIBLE, true);
+        eswtSetTitle();
+        ((MobileShell) mShell).setFullScreenMode(isMode(FULLSCREEN_MODE));
+        if(onScreenkeypad != null)
+        {
+            if(!isMode(GAME_CANVAS))
+            {
+                onScreenkeypad.setCurrentCanvas(this);
+            }
+            onScreenkeypad.setFullScreenMode(isMode(FULLSCREEN_MODE));
+        }
+        canvasComp.setVisible(true);
+        if(tickerLabel != null)
+        {
+            tickerLabel.setVisible(!isMode(FULLSCREEN_MODE));
+        }
+        addCommands();
         super.eswtHandleShowCurrentEvent();
         getContentComp().addPaintListener(paintListener);
         getContentComp().addMouseListener(mouseListener);
         getContentComp().addMouseMoveListener(mouseListener);
+        ((MobileShellExtension)getShell()).addSymbianWindowVisibilityListener(shellVisibilityListener);
     }
 
     /* (non-Javadoc)
@@ -326,10 +523,60 @@ public abstract class Canvas extends Displayable
      */
     void eswtHandleHideCurrentEvent()
     {
+        setMode(CURRENTLY_VISIBLE, false);
+        canvasComp.setVisible(false);
+        if(tickerLabel != null)
+        {
+            tickerLabel.setVisible(false);
+        }
+        removeCommands();
         super.eswtHandleHideCurrentEvent();
         getContentComp().removePaintListener(paintListener);
         getContentComp().removeMouseListener(mouseListener);
         getContentComp().removeMouseMoveListener(mouseListener);
+        ((MobileShellExtension)getShell()).removeSymbianWindowVisibilityListener(shellVisibilityListener);
+    }
+
+    /**
+     * eSWT callback to add a Command.
+     */
+    void eswtAddCommand(Command cmd) {
+        if (isMode(CURRENTLY_VISIBLE)) {
+            cmd.eswtAddESWTCommand(mShell, false);
+        }
+        if (eswtIsShown()) {
+            cmd.eswtAddCommandSelectionListener(mShell, getCommandListener());
+        }
+    }
+
+    /**
+     * Adds the commands to this Canvas.
+     * Adds all the commands of displayable to the shell.
+     */
+    void addCommands()
+    {
+        Command cmd = null;
+        for (Enumeration e = getCommands().elements(); e.hasMoreElements();)
+        {
+            cmd = (Command) e.nextElement();
+            final Command finalCommand = cmd;
+            finalCommand.eswtAddESWTCommand(mShell, false);
+        }
+    }
+
+    /**
+     * Removes the commands from this Canvas.
+     * Removes all the commands of displayable from the shell.
+     */
+    void removeCommands()
+    {
+        Command cmd = null;
+        for (Enumeration e = getCommands().elements(); e.hasMoreElements();)
+        {
+            cmd = (Command) e.nextElement();
+            final Command finalCommand = cmd;
+            finalCommand.eswtRemoveESWTCommand(mShell);
+        }
     }
 
     /**
@@ -368,14 +615,14 @@ public abstract class Canvas extends Displayable
                 // removed from the queue but repaintPending is still true. In
                 // that case it's currently being processed and we can still
                 // add to the invalid area.
-                if(!repaintPending)
+                if(!isMode(REPAINT_PENDING))
                 {
                     EventDispatcher eventDispatcher = EventDispatcher.instance();
                     LCDUIEvent event = eventDispatcher.newEvent(
                                            LCDUIEvent.CANVAS_PAINT_MIDLET_REQUEST, this);
                     event.widget = getContentComp();
                     eventDispatcher.postEvent(event);
-                    repaintPending = true;
+                    setMode(REPAINT_PENDING, true);
                 }
             }
         }
@@ -386,18 +633,39 @@ public abstract class Canvas extends Displayable
      *
      * @param mode - true switches the Canvas to the full-screen mode.
      */
-    public void setFullScreenMode(boolean mode)
+    public void setFullScreenMode(boolean aMode)
     {
-        finalMode = mode;
+        setMode(FULLSCREEN_MODE, aMode);
         ESWTUIThreadRunner.syncExec(new Runnable()
         {
             public void run()
             {
-                ((MobileShell) getShell()).setFullScreenMode(finalMode);
-                //set the CanvasKeypad to the required mode
-                if(onScreenkeypad != null)
+                if(tickerLabel != null)
                 {
-                    onScreenkeypad.setFullScreenMode(finalMode);
+                    if(isMode(FULLSCREEN_MODE))
+                    {
+                        tickerLabel.setBounds(Integer.MIN_VALUE, 0, 0, 0);
+                    }
+                    else
+                    {
+                        tickerLabel.pack();
+                        tickerLabel.setLocation(Integer.MIN_VALUE, 0);
+                    }
+
+                    if(isMode(CURRENTLY_VISIBLE))
+                    {
+                        tickerLabel.setVisible(!isMode(FULLSCREEN_MODE));
+                    }
+                }
+
+                if(isMode(CURRENTLY_VISIBLE))
+                {
+                    ((MobileShell)mShell).setFullScreenMode(isMode(FULLSCREEN_MODE));
+                    //set the CanvasKeypad to the required mode
+                    if(onScreenkeypad != null)
+                    {
+                        onScreenkeypad.setFullScreenMode(isMode(FULLSCREEN_MODE));
+                    }
                 }
             }
         });
@@ -505,7 +773,6 @@ public abstract class Canvas extends Displayable
         return (super.getHeight() - oskHeight);
 
     }
-
 
     /**
      * Callback to be implemented by the application to render the
@@ -619,7 +886,17 @@ public abstract class Canvas extends Displayable
      */
     final void initGameCanvas(boolean suppressKeys)
     {
-        this.suppressGameKeys = suppressKeys;
+        setMode(SUPPRESS_GAMEKEYS, suppressKeys);
+    }
+
+    /**
+     * Gets composite that contains Canvas content.
+     *
+     * @return Composite.
+     */
+    Composite getContentComp()
+    {
+        return canvasComp;
     }
 
     /**
@@ -627,15 +904,15 @@ public abstract class Canvas extends Displayable
      */
     final Graphics getGameBufferGraphics()
     {
-    	tempGraphics = null;
-   		ESWTUIThreadRunner.safeSyncExec(new Runnable() 
-		{
-			public void run()
-			{
-				tempGraphics =  graphicsBuffer.getGraphics();
-			}
-		});
-    	return tempGraphics;
+        tempGraphics = null;
+        ESWTUIThreadRunner.safeSyncExec(new Runnable()
+        {
+            public void run()
+            {
+                tempGraphics =  graphicsBuffer.getGraphics();
+            }
+        });
+        return tempGraphics;
     }
 
     CanvasKeypad getCanvasKeypad()
@@ -645,7 +922,7 @@ public abstract class Canvas extends Displayable
 
     boolean IsFullScreenMode()
     {
-        return finalMode;
+        return isMode(FULLSCREEN_MODE);
     }
 
     /**
@@ -679,18 +956,23 @@ public abstract class Canvas extends Displayable
     void flushGameBuffer(final int x, final int y, final int width,
                          final int height)
     {
-    	synchronized(graphicsBuffer)
+        // This is serialized with the
+        // paint callback processing
+        synchronized(flushLock)
         {
-    		ESWTUIThreadRunner.safeSyncExec(new Runnable() 
-			{
-				public void run()
-				{
-					graphicsBuffer.sync();
-					graphicsBuffer.blitToDisplay(null, getContentComp());
-				}
-            });
+            synchronized(graphicsBuffer)
+            {
+                 ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                    public void run()
+                    {
+                        graphicsBuffer.sync();
+                        graphicsBuffer.blitToDisplay(null, getContentComp());
+                    }
+                });
+            }
         }
-    }	
+    }
 
     /**
      * Called by ShellListener when shell gets activated.
@@ -704,7 +986,7 @@ public abstract class Canvas extends Displayable
 
         synchronized(cleanupLock)
         {
-            cleanupNeeded = true;
+            setMode(CLEANUP_NEEDED, true);
         }
 
         LCDUIEvent event = EventDispatcher.instance().newEvent(LCDUIEvent.CANVAS_SHOWNOTIFY, this);
@@ -728,12 +1010,12 @@ public abstract class Canvas extends Displayable
     {
         super.eswtHandleResizeEvent(width, height);
         // update new bounds to graphicsBuffer
-        // this call must not be synchronized as we 
+        // this call must not be synchronized as we
         // cannot use locking in UI thread
         graphicsBuffer.setControlBounds(getContentComp());
         synchronized(cleanupLock)
         {
-            cleanupNeeded = true;
+            setMode(CLEANUP_NEEDED, true);
         }
     }
 
@@ -753,6 +1035,26 @@ public abstract class Canvas extends Displayable
         }
     }
 
+    private void setMode(final int aMode, boolean value)
+    {
+        synchronized(modeLock)
+        {
+            if(value)
+            {
+                mode |= aMode;
+            }
+            else
+            {
+                mode &= ~aMode;
+            }
+        }
+    }
+
+    private boolean isMode(final int aMode)
+    {
+        return ((mode & aMode) != 0);
+    }
+
     /*
      * UI thread calls. Paint listener of the eSWT widget.
      */
@@ -761,12 +1063,12 @@ public abstract class Canvas extends Displayable
         public void paintControl(PaintEvent pe)
         {
             // Check if we got here from buffer flush
-        	if(graphicsBuffer.isPaintingActive()) 
-        	{
-        	    graphicsBuffer.blitToDisplay(pe.gc.getGCData().internalGc, null);
-        	}
-        	else
-        	{
+            if(graphicsBuffer.isPaintingActive())
+            {
+                graphicsBuffer.blitToDisplay(pe.gc.getGCData().internalGc, null);
+            }
+            else
+            {
                 // Native toolkit is requesting an update of an area that has
                 // become invalid. Can't do anything here because the contents
                 // need to be queried from the MIDlet in another thread by
@@ -784,7 +1086,7 @@ public abstract class Canvas extends Displayable
                 event.height = pe.height;
                 event.widget = pe.widget;
                 eventDispatcher.postEvent(event);
-        	}
+            }
         }
     }
 
@@ -834,97 +1136,104 @@ public abstract class Canvas extends Displayable
      */
     private final void doPaintCallback(final LCDUIEvent event)
     {
-        // Decide the area going to be painted by the callback.
-        final int redrawNowX;
-        final int redrawNowY;
-        final int redrawNowW;
-        final int redrawNowH;
-        // Before this thread obtains the repaintLock any repaint() calls
-        // will still be adding to the invalid area that is going to be
-        // painted by this callback.
-        synchronized(repaintLock)
+        synchronized(flushLock)
         {
-            if(event.type == LCDUIEvent.CANVAS_PAINT_NATIVE_REQUEST)
-            {
-                // Merge with possibly existing repaint() requests
-                invalidate(event.x, event.y, event.width, event.height);
-            }
-            else
-            {
-                // Need to add a new event to the queue in subsequent repaint()
-                // calls.
-                repaintPending = false;
-            }
-
-            // Store the current area to be painted
-            redrawNowX = repaintX1;
-            redrawNowY = repaintY1;
-            redrawNowW = repaintX2-repaintX1;
-            redrawNowH = repaintY2-repaintY1;
-
-
-            // After releasing the lock the repaint() calls will start with
-            // new invalid area.
-            repaintX1 = repaintX2 = repaintY1 = repaintY2 = 0;
-
-            // Don't do the callback if there's nothing to paint
-            if(!((redrawNowW > 0) && (redrawNowH > 0)))
+            // It's possible that this Canvas is sent to background
+            // right after the visibility is checked here, however
+            // it is okay as in such case we just do one extra paint
+            // callback. The visibility change cannot be synchronized with
+            // this method, since it would expose implementation to deadlock
+            if(!isMode(CURRENTLY_VISIBLE))
             {
                 return;
             }
-        }
 
-        // Create instance of Graphics if not created yet
-        if(canvasGraphics == null)
-        {
-        	 ESWTUIThreadRunner.safeSyncExec(new Runnable() 
-             {
-          	    public void run()
-         	    {
-                    canvasGraphics = graphicsBuffer.getGraphics();
-                    canvasGraphics.setSyncStrategy(Graphics.SYNC_LEAVE_SURFACE_SESSION_OPEN);
-         	    }
-             });
-        }
-
-        // Clean the background if dirty, buffer the operations.
-        synchronized(cleanupLock)
-        {
-            if(cleanupNeeded && noBackground)
+            // Decide the area going to be painted by the callback.
+            final int redrawNowX;
+            final int redrawNowY;
+            final int redrawNowW;
+            final int redrawNowH;
+            // Before this thread obtains the repaintLock any repaint() calls
+            // will still be adding to the invalid area that is going to be
+            // painted by this callback.
+            synchronized(repaintLock)
             {
-                // UI thread can change the contentArea object reference at
-                // any time. Store the object reference locally to ensure it
-                // points to the same rectangle all the time.
-                Rectangle contentArea = getContentArea();
-
-                canvasGraphics.setClip(contentArea.x, contentArea.y,
-                                       contentArea.width, contentArea.height);
-                canvasGraphics.cleanBackground(contentArea);
-                cleanupNeeded = false;
-            }
-        }
-
-        // Clip must define the invalid area
-        canvasGraphics.setClip(redrawNowX, redrawNowY, redrawNowW, redrawNowH);
-
-        // The callback
-        paint(canvasGraphics);
-
-        // Blit frame to display
-        synchronized(graphicsBuffer) 
-        {
-            ESWTUIThreadRunner.safeSyncExec(new Runnable() 
-            {
-         	    public void run()
-        	    {
-        		    if(event.widget.isDisposed())
-        		    {
-        			    return;
-        		    }
-        		    graphicsBuffer.sync();
-        		    graphicsBuffer.blitToDisplay(null, event.widget);
+                if(event.type == LCDUIEvent.CANVAS_PAINT_NATIVE_REQUEST)
+                {
+                    // Merge with possibly existing repaint() requests
+                    invalidate(event.x, event.y, event.width, event.height);
                 }
-            });
+                else
+                {
+                    // Need to add a new event to the queue in subsequent repaint()
+                    // calls.
+                    setMode(REPAINT_PENDING, false);
+                }
+
+                // Store the current area to be painted
+                redrawNowX = repaintX1;
+                redrawNowY = repaintY1;
+                redrawNowW = repaintX2-repaintX1;
+                redrawNowH = repaintY2-repaintY1;
+
+                // After releasing the lock the repaint() calls will start with
+                // new invalid area.
+                repaintX1 = repaintX2 = repaintY1 = repaintY2 = 0;
+
+                // Don't do the callback if there's nothing to paint
+                if(!((redrawNowW > 0) && (redrawNowH > 0)))
+                {
+                    return;
+                }
+            }
+
+            // Create instance of Graphics if not created yet
+            if(canvasGraphics == null)
+            {
+                canvasGraphics = graphicsBuffer.getGraphics();
+                canvasGraphics.setSyncStrategy(Graphics.SYNC_LEAVE_SURFACE_SESSION_OPEN);
+            }
+
+            // Clean the background if dirty, buffer the operations.
+            synchronized(cleanupLock)
+            {
+                if(isMode(CLEANUP_NEEDED) && isMode(NO_BACKGROUND))
+                {
+                    // UI thread can change the contentArea object reference at
+                    // any time. Store the object reference locally to ensure it
+                    // points to the same rectangle all the time.
+                    Rectangle contentArea = getContentArea();
+
+                    canvasGraphics.setClip(contentArea.x, contentArea.y,
+                                           contentArea.width, contentArea.height);
+                    canvasGraphics.cleanBackground(contentArea);
+                    setMode(CLEANUP_NEEDED, false);
+                }
+            }
+
+            // Clip must define the invalid area
+            canvasGraphics.reset();
+            canvasGraphics.setClip(redrawNowX, redrawNowY, redrawNowW, redrawNowH);
+
+            // The callback
+            paint(canvasGraphics);
+
+            // Blit frame to display
+            synchronized(graphicsBuffer)
+            {
+                ESWTUIThreadRunner.safeSyncExec(new Runnable()
+                {
+                     public void run()
+                    {
+                        if(event.widget.isDisposed())
+                        {
+                            return;
+                        }
+                        graphicsBuffer.sync();
+                        graphicsBuffer.blitToDisplay(null, event.widget);
+                    }
+                });
+            }
         }
     }
 
@@ -944,11 +1253,11 @@ public abstract class Canvas extends Displayable
         Logger.method(this, "doKeyPressed", String.valueOf(keyCode));
         boolean sendCallback = false;
 
-        if(!(updateGameKeyState(keyCode, true) && suppressGameKeys))
+        if(!(updateGameKeyState(keyCode, true) && isMode(SUPPRESS_GAMEKEYS)))
         {
-            if((selectionKeyCompatibility == true) && (keyCode == -5))
+            if(isMode(SELECTIONKEY_COMPATIBILITY) && (keyCode == -5))
             {
-                if(finalMode == true)
+                if(isMode(FULLSCREEN_MODE))
                 {
                     if(!((getNumCommands() > 0) && hasCommandListener()))
                     {
@@ -964,7 +1273,7 @@ public abstract class Canvas extends Displayable
                     sendCallback = true;
                 }
             }
-            else if((selectionKeyCompatibility == false) && (keyCode == -5))
+            else if((!isMode(SELECTIONKEY_COMPATIBILITY)) && (keyCode == -5))
             {
                 sendCallback = false;
             }
@@ -996,7 +1305,6 @@ public abstract class Canvas extends Displayable
         }
     }
 
-
     /*
      * UI thread calls.
      */
@@ -1004,11 +1312,11 @@ public abstract class Canvas extends Displayable
     {
         Logger.method(this, "doKeyReleased", String.valueOf(keyCode));
         boolean sendCallback = false;
-        if(!(updateGameKeyState(keyCode, true) && suppressGameKeys))
+        if(!(updateGameKeyState(keyCode, true) && isMode(SUPPRESS_GAMEKEYS)))
         {
-            if((selectionKeyCompatibility == true) && (keyCode == -5))
+            if(isMode(SELECTIONKEY_COMPATIBILITY) && (keyCode == -5))
             {
-                if(finalMode == true)
+                if(isMode(FULLSCREEN_MODE))
                 {
                     if(!((getNumCommands() > 0) && hasCommandListener()))
                     {
@@ -1024,7 +1332,7 @@ public abstract class Canvas extends Displayable
                     sendCallback = true;
                 }
             }
-            else if((selectionKeyCompatibility == false) && (keyCode == -5))
+            else if((!isMode(SELECTIONKEY_COMPATIBILITY)) && (keyCode == -5))
             {
                 sendCallback = false;
             }
@@ -1097,10 +1405,10 @@ public abstract class Canvas extends Displayable
             e.y = event.y;
             EventDispatcher.instance().postEvent(e);
 
-            if(!disableTapDetection)
+            if(!isMode(DISABLE_TAPDETECTION))
             {
                 // Supress Drag events
-                suppressDragEvent = true;
+                setMode(SUPPRESS_DRAGEVENT, true);
 
                 pointerDownX = event.x;
                 pointerDownY = event.y;
@@ -1116,7 +1424,7 @@ public abstract class Canvas extends Displayable
             int pointerUpX = event.x;
             int pointerUpY = event.y;
 
-            if(!disableTapDetection)
+            if(!isMode(DISABLE_TAPDETECTION))
             {
                 if(timerTask != null)
                 {
@@ -1126,11 +1434,11 @@ public abstract class Canvas extends Displayable
 
                 // If Timer not expired and Mouseup is withing rectangle assign
                 // PointercDown to Pinter Up
-                if(suppressDragEvent && checkWithinRect(event.x, event.y))
+                if(isMode(SUPPRESS_DRAGEVENT) && checkWithinRect(event.x, event.y))
                 {
                     pointerUpX = pointerDownX;
                     pointerUpY = pointerDownY;
-                    suppressDragEvent = false;
+                    setMode(SUPPRESS_DRAGEVENT, false);
                 }
             }
 
@@ -1144,7 +1452,7 @@ public abstract class Canvas extends Displayable
         public void mouseMove(MouseEvent event)
         {
             // Check for timeout expiration and if PointerUp falls outside the rectangle
-            if(disableTapDetection || (!suppressDragEvent) || !checkWithinRect(event.x, event.y))
+            if(isMode(DISABLE_TAPDETECTION) || (!isMode(SUPPRESS_DRAGEVENT)) || !checkWithinRect(event.x, event.y))
             {
                 LCDUIEvent e = EventDispatcher.instance().newEvent(LCDUIEvent.CANVAS_POINTERDRAGGED,
                                javax.microedition.lcdui.Canvas.this);
@@ -1243,32 +1551,22 @@ public abstract class Canvas extends Displayable
         return valid;
     }
 
-    /**
-     * Disposes this instance
-     * Called when finalizer is destroying this instance.
-     */
-    void dispose()
-    {
-        super.dispose();
-        ESWTUIThreadRunner.safeSyncExec(new Runnable()
-        {
-            public void run()
-            {
-                if(graphicsBuffer != null)
-                {
-                    graphicsBuffer.dispose();
-                    graphicsBuffer = null;
-                }
-            }
-        });
-    }
-
     class CanvasTimerTask extends TimerTask
     {
 
         public void run()
         {
-            suppressDragEvent = false;
+            setMode(SUPPRESS_DRAGEVENT, false);
+        }
+    }
+
+    class CanvasShellVisibilityListener implements SymbianWindowVisibilityListener
+    {
+        public void handleSymbianWindowVisibilityChange(Widget widget, boolean visible) {
+            if (javax.microedition.lcdui.Canvas.this.getShell() == widget)
+            {
+                graphicsBuffer.getWindowSurface().handleSymbianWindowVisibilityChange(visible);
+            }
         }
     }
 }

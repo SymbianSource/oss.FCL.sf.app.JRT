@@ -28,7 +28,7 @@ import com.nokia.microedition.media.control.ControlImpl;
  * <p>
  */
 public class StopTimeControl extends ControlImpl implements
-        javax.microedition.media.control.StopTimeControl
+        javax.microedition.media.control.StopTimeControl, AnimationObserver
 {
 
     private long iStopTime=RESET;
@@ -38,6 +38,7 @@ public class StopTimeControl extends ControlImpl implements
     public StopTimeControl(Player aPlayer)
     {
         this.iPlayer=aPlayer;
+        ((AnimationPlayer)iPlayer).setiAnimationObserver(this);
     }
 
     /**
@@ -101,6 +102,19 @@ public class StopTimeControl extends ControlImpl implements
                 "Player is STARTED or setStopTime() is already called successfully");
         }
         iStopTime = aStopTime;
-        ((AnimationPlayer)iPlayer).setiStopTime(iStopTime);
+        //((AnimationPlayer)iPlayer).setiStopTime(iStopTime);
+    }
+
+    /**
+     * Method of AnimationObserver
+     */
+    public void animationAdvanced(long aMediaTime)
+    {
+        if (aMediaTime >= iStopTime)
+        {
+            iStopTime=RESET;
+            ((AnimationPlayer)iPlayer).postEvent(aMediaTime);
+
+        }
     }
 }

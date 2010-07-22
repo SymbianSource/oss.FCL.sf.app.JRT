@@ -55,7 +55,7 @@ ServerConnection* MmsServerConnection::getServerConnection(const wstring& aUri,
     return mmsConn;
 }
 
-S60MmsServerConnection::~S60MmsServerConnection()
+OS_EXPORT S60MmsServerConnection::~S60MmsServerConnection()
 {
     JELOG2(EWMA);
     delete mOpenMonitor;

@@ -29,6 +29,7 @@ final class ImageBuffer extends Buffer
     ImageBuffer(Image image)
     {
         host = image;
+        setImageBounds(image.getWidth(), image.getHeight());
     }
 
     int getHostType()

@@ -1,0 +1,2 @@
+domain=operator
+assigned?assigned.permission.orphaned

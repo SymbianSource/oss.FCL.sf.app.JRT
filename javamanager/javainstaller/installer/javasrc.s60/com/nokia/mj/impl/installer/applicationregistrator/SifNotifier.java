@@ -107,19 +107,15 @@ public final class SifNotifier
         iIconDir = aIconDir;
         iComponentIcon = aComponentIcon;
 
-        if (iHandle == 0)
-        {
-            InstallerException.internalError(
-                "SifNotifier.notifyStart: notifier has not been initialized");
-        }
+        checkHandle();
         int ret = _notifyStart(
                       iHandle, aGlobalComponentId, aComponentName,
                       aApplicationNames, aApplicationIcons,
                       aComponentSize, aIconDir, aComponentIcon);
         if (ret < 0)
         {
-            Log.logError("Notifying SIF start failed with code " + ret +
-                         ", " + getInfoString());
+            Log.log("Notifying SIF start failed with code " + ret +
+                    ", " + getInfoString());
             InstallerException.internalError(
                 "Notifying SIF start failed with code " + ret);
         }
@@ -138,11 +134,7 @@ public final class SifNotifier
     public void notifyEnd(
         int aErrCategory, int aErrCode, String aErrMsg, String aErrMsgDetails)
     {
-        if (iHandle == 0)
-        {
-            InstallerException.internalError(
-                "SifNotifier.notifyEnd: notifier has not been initialized");
-        }
+        checkHandle();
         if (aErrCategory == 0 && iLastProgressSent < MAX_PROGRESS)
         {
             // Before sending end notification, update progress to max if
@@ -162,8 +154,8 @@ public final class SifNotifier
             ", ErrMsgDetails: " + aErrMsgDetails;
         if (ret < 0)
         {
-            Log.logError("Notifying SIF end failed with code " + ret +
-                         ", " + getInfoString() + ", " + logMsg);
+            Log.log("Notifying SIF end failed with code " + ret +
+                    ", " + getInfoString() + ", " + logMsg);
             InstallerException.internalError(
                 "Notifying SIF end failed with code " + ret);
         }
@@ -184,11 +176,7 @@ public final class SifNotifier
         {
             return;
         }
-        if (iHandle == 0)
-        {
-            InstallerException.internalError(
-                "SifNotifier.notifyProgress: notifier has not been initialized");
-        }
+        checkHandle();
         if (aSubOperation == SUB_OP_NO)
         {
             iLastProgressSent = aCurrent;
@@ -202,8 +190,8 @@ public final class SifNotifier
             ", Total: " + aTotal;
         if (ret < 0)
         {
-            Log.logError("Notifying SIF progress failed with code " + ret +
-                         ", " + getInfoString() + ", " + logMsg);
+            Log.log("Notifying SIF progress failed with code " + ret +
+                    ", " + getInfoString() + ", " + logMsg);
             InstallerException.internalError(
                 "Notifying SIF progress failed with code " + ret);
         }
@@ -221,11 +209,7 @@ public final class SifNotifier
      */
     public void destroy()
     {
-        if (iHandle == 0)
-        {
-            InstallerException.internalError(
-                "SifNotifier.destroy: notifier has not been initialized");
-        }
+        checkHandle();
         int ret = _destroy(iHandle);
         if (ret < 0)
         {
@@ -263,6 +247,19 @@ public final class SifNotifier
     }
 
     /*** ----------------------------- PRIVATE ---------------------------- */
+
+    /**
+     * Checks if notifier instance has been initialized.
+     * @throws InstallerException if notifier has not been initialized
+     */
+    private void checkHandle()
+    {
+        if (iHandle == 0)
+        {
+            InstallerException.internalError(
+                "SifNotifier.destroy: notifier has not been initialized");
+        }
+    }
 
     /**
      * Returns notification info string used in logging.

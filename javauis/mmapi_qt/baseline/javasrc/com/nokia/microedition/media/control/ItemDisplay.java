@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -36,12 +36,13 @@ public class ItemDisplay extends BaseDisplay implements ItemControlStateChangeLi
 {
 
     private int iEventSourceHandle;
-    private org.eclipse.swt.widgets.Control iEswtItemControl;
+
     private MMAPIeSWTObserver iEswtObserver;
     private int x;
     private int y;
     private int qwidgetHandle;
     Rectangle iFormRect;
+    private boolean iQWidgetHandleSet = false;
 
     // index 0 : x-coordinate of topleft corner of display
     // index 1 : y-coordinate of topleft corner of display
@@ -65,7 +66,7 @@ public class ItemDisplay extends BaseDisplay implements ItemControlStateChangeLi
 
 
         iEswtObserver = new MMAPIeSWTObserver();
-        //iEswtItemControl = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtControl(item);
+        //iControl = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtControl(item);
         com.nokia.mj.impl.nokialcdui.LCDUIInvoker.setItemControlStateChangeListener((ItemControlStateChangeListener)this,(javax.microedition.lcdui.Item) aVideoItem);
         Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"ItemDisplay.java - ");
 
@@ -74,9 +75,9 @@ public class ItemDisplay extends BaseDisplay implements ItemControlStateChangeLi
 
     private void addListeners()
     {
-        iEswtObserver.addControlListenerToControl(iEswtItemControl);
-        iEswtObserver.addShellListenerToControl(iEswtItemControl);
-        iEswtObserver.addDisposeListenerToControl(iEswtItemControl);
+        iEswtObserver.addControlListenerToControl(iControl);
+        iEswtObserver.addShellListenerToControl(iControl);
+        iEswtObserver.addDisposeListenerToControl(iControl);
     }
 
     public void setNativeHandle(int handle)
@@ -107,13 +108,13 @@ public class ItemDisplay extends BaseDisplay implements ItemControlStateChangeLi
                 public void run()
                 {
                     org.eclipse.swt.graphics.Point size = new org.eclipse.swt.graphics.Point(width,height);
-                    iEswtItemControl.setSize(size);
+                    iControl.setSize(size);
                 }
             });
         }
         catch (Exception e)
         {
-            System.out.println("inside videoControl's setDisplaySize....exception is " + e.toString());
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize....exception is " + e.toString());
             e.printStackTrace();
         }
         Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"ItemDisplay.java: setDisplaySize - ");
@@ -130,7 +131,7 @@ public class ItemDisplay extends BaseDisplay implements ItemControlStateChangeLi
             {
                 public void run()
                 {
-                    iEswtItemControl.setBounds(disp.getClientArea());
+                    iControl.setBounds(disp.getClientArea());
                     new MobileShell(disp).setFullScreenMode(aFullScreenMode);
                     // instruct native to switch to full screen mode
                     _setFullScreenMode(nativeDisplayHandle,aFullScreenMode);
@@ -160,13 +161,13 @@ public class ItemDisplay extends BaseDisplay implements ItemControlStateChangeLi
             {
                 public void run()
                 {
-                    iEswtItemControl.setLocation(x , y);
+                    iControl.setLocation(x , y);
                 }
             });
         }
         catch (Exception e)
         {
-            System.out.println("inside videoControl's setDisplaySize....exception is " + e.toString());
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize....exception is " + e.toString());
             e.printStackTrace();
         }
         Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"ItemDisplay.java: setDisplayLocation - ");
@@ -177,6 +178,9 @@ public class ItemDisplay extends BaseDisplay implements ItemControlStateChangeLi
     public void setVisible(boolean aVisible)
     {
         Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"ItemDisplay.java: setVisible + ");
+        // call native side to set the visibiity
+        _setVisible(nativeDisplayHandle,aVisible);
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"ItemDisplay.java: setVisible after _setVisible ");
         try
         {
             final boolean visible = aVisible;
@@ -185,15 +189,16 @@ public class ItemDisplay extends BaseDisplay implements ItemControlStateChangeLi
             {
                 public void run()
                 {
-                    // iEswtItemControl.setVisible(visible);
-                    // call native side to set the visibiity
-                    _setVisible(nativeDisplayHandle,visible);
+
+
+                    Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"before calling iControl.setVisible");
+                    iControl.setVisible(visible);
                 }
             });
         }
         catch (Exception e)
         {
-            System.out.println("inside videoControl's setDisplaySize....exception is " + e.toString());
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize....exception is " + e.toString());
             e.printStackTrace();
         }
         Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"ItemDisplay.java: setVisible - ");
@@ -211,13 +216,13 @@ public class ItemDisplay extends BaseDisplay implements ItemControlStateChangeLi
 
                 public void run()
                 {
-                    y = iEswtItemControl.getSize().y;
+                    y = iControl.getSize().y;
                 }
             });
         }
         catch (Exception e)
         {
-            System.out.println("inside videoControl's setDisplaySize....exception is " + e.toString());
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize....exception is " + e.toString());
             e.printStackTrace();
         }
         Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"ItemDisplay.java: getDisplayHeight - ");
@@ -235,14 +240,14 @@ public class ItemDisplay extends BaseDisplay implements ItemControlStateChangeLi
             {
                 public void run()
                 {
-                    x = iEswtItemControl.getSize().x;
+                    x = iControl.getSize().x;
 
                 }
             });
         }
         catch (Exception e)
         {
-            System.out.println("inside videoControl's setDisplaySize....exception is " + e.toString());
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize....exception is " + e.toString());
             e.printStackTrace();
         }
         Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"ItemDisplay.java: getDisplayWidth - ");
@@ -259,14 +264,14 @@ public class ItemDisplay extends BaseDisplay implements ItemControlStateChangeLi
             {
                 public void run()
                 {
-                    x = iEswtItemControl.getLocation().x;
+                    x = iControl.getLocation().x;
 
                 }
             });
         }
         catch (Exception e)
         {
-            System.out.println("inside videoControl's setDisplaySize....exception is " + e.toString());
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize....exception is " + e.toString());
             e.printStackTrace();
         }
         Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"ItemDisplay.java: getDisplayX - ");
@@ -286,14 +291,14 @@ public class ItemDisplay extends BaseDisplay implements ItemControlStateChangeLi
             {
                 public void run()
                 {
-                    y = iEswtItemControl.getLocation().y;
+                    y = iControl.getLocation().y;
 
                 }
             });
         }
         catch (Exception e)
         {
-            System.out.println("inside videoControl's setDisplaySize....exception is " + e.toString());
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize....exception is " + e.toString());
             e.printStackTrace();
         }
         Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"ItemDisplay.java: getDisplayY - ");
@@ -326,13 +331,13 @@ public class ItemDisplay extends BaseDisplay implements ItemControlStateChangeLi
             {
                 public void run()
                 {
-                    Rectangle boundrect  = iEswtItemControl.getBounds();
+                    Rectangle boundrect  = iControl.getBounds();
                     displayboundarr[0] = boundrect.x ;
                     displayboundarr[1] = boundrect.y ;
                     displayboundarr[2] = boundrect.width ;
                     displayboundarr[3] = boundrect.height ;
 
-                    Shell shell = iEswtItemControl.getShell();
+                    Shell shell = iControl.getShell();
                     iFormRect = shell.getBounds();
 
 
@@ -348,7 +353,7 @@ public class ItemDisplay extends BaseDisplay implements ItemControlStateChangeLi
         }
         catch (Exception e)
         {
-            System.out.println("inside videoControl's setDisplaySize....exception is " + e.toString());
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize....exception is " + e.toString());
             e.printStackTrace();
         }
         Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"ItemDisplay.java :getBoundRect() x =" + displayboundarr[0] + "y ="+ displayboundarr[1] +"width ="+ displayboundarr[2] +"height =" + displayboundarr[3]);
@@ -373,6 +378,8 @@ public class ItemDisplay extends BaseDisplay implements ItemControlStateChangeLi
     public void setWindowResources(VideoItem aVideoItem)
     {
         Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"ItemDisplay.java: setWindowResources windowHandle ");
+
+        iQWidgetHandleSet = true;
         if (aVideoItem == null)
             Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"ItemDisplay.java: setWindowResources aVideoItem is null");
         // set the item size to be that of the video size if the video size is known.
@@ -382,9 +389,9 @@ public class ItemDisplay extends BaseDisplay implements ItemControlStateChangeLi
 
         Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"ItemDisplay.java: after setting the size of item to source size ");
 
-        if (iEswtItemControl == null)
+        if (iControl == null)
         {
-            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"+ItemDisplay() -  iEswtItemControl is null");
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"+ItemDisplay() -  iControl is null");
         }
         try
         {
@@ -394,10 +401,10 @@ public class ItemDisplay extends BaseDisplay implements ItemControlStateChangeLi
             {
                 public void run()
                 {
-                    Shell shell = iEswtItemControl.getShell();
+                    Shell shell = iControl.getShell();
                     qwidgetHandle = Internal_PackageSupport.topHandle(shell);
-                    x = iEswtItemControl.getSize().x;
-                    y = iEswtItemControl.getSize().y;
+                    x = iControl.getSize().x;
+                    y = iControl.getSize().y;
                     _setWindowToNative(nativeDisplayHandle,qwidgetHandle);
                     Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"ItemDisplay.java: setWindowResources qwidgetHandle is " + qwidgetHandle);
                 }
@@ -405,7 +412,7 @@ public class ItemDisplay extends BaseDisplay implements ItemControlStateChangeLi
         }
         catch (Exception e)
         {
-            System.out.println("inside videoControl's setDisplaySize....exception is " + e.toString());
+            Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"inside videoControl's setDisplaySize....exception is " + e.toString());
             e.printStackTrace();
         }
         Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"ItemDisplay.java: setWindowResources qwidgetHandle(x,y) " +x+"," +y);
@@ -440,12 +447,15 @@ public class ItemDisplay extends BaseDisplay implements ItemControlStateChangeLi
     public void notifyControlAvailable(org.eclipse.swt.widgets.Control ctrl,Item item)
     {
         Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"ItemDisplay.java : notifyControlAvailable + ");
-        iEswtItemControl = ctrl;
+        iControl = ctrl;
         /* now use the control and addobserver to the control
         and setwindowresources
         */
-        NativeResources nativeres = new NativeResources(this,iVideoItem);
-        nativeres.start();
+        if (iQWidgetHandleSet == false)
+        {
+            NativeResources nativeres = new NativeResources(this,iVideoItem);
+            nativeres.start();
+        }
 
         Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"ItemDisplay.java : notifyControlAvailable - ");
     }
@@ -472,8 +482,8 @@ public class ItemDisplay extends BaseDisplay implements ItemControlStateChangeLi
                 final org.eclipse.swt.widgets.Display disp = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtDisplay();
                  disp.syncExec(new Runnable() {
                                  public void run() {
-                                      x = iEswtItemControl.getSize().x;
-                                      y = iEswtItemControl.getSize().y;
+                                      x = iControl.getSize().x;
+                                      y = iControl.getSize().y;
 
                                  }
                     });

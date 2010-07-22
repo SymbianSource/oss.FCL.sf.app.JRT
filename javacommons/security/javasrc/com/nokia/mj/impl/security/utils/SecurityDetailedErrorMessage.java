@@ -39,6 +39,7 @@ public final class SecurityDetailedErrorMessage extends ErrorMessageBase
     public static final int OCSP_GENERAL_ERR = 7;
     public static final int OCSP_SETTINGS_ERR = 8;
     public static final int OCSP_REVOKED_ERR = 9;
+    public static final int JAR_NOT_FOUND = 10;
 
 
     /*** ----------------------------- PUBLIC ------------------------------ */
@@ -65,6 +66,7 @@ public final class SecurityDetailedErrorMessage extends ErrorMessageBase
         messageTable.put(new Integer(OCSP_GENERAL_ERR), "ocsp_general_details");
         messageTable.put(new Integer(OCSP_SETTINGS_ERR), "ocsp_settings");
         messageTable.put(new Integer(OCSP_REVOKED_ERR), "ocsp_revoked");
+        messageTable.put(new Integer(JAR_NOT_FOUND), "jar_not_found_details");
         iMessageTable = messageTable;
         return iMessageTable;
     }

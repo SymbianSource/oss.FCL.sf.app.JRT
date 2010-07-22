@@ -19,12 +19,14 @@
 #ifndef SOCKETLOCALHOSTINFO_H
 #define SOCKETLOCALHOSTINFO_H
 
+#include "javaosheaders.h"
+
 class SocketLocalHostInfo
 {
 
 public:
 
-    static int getLocalAddress(int aSd, char *aLocalAddr, int aMidletIapId, int aApType);
+    OS_IMPORT static int getLocalAddress(int aSd, char *aLocalAddr, int aMidletIapId, int aApType);
 
 
 };

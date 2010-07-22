@@ -19,6 +19,7 @@
 #include "javastoragebackuputil.h"
 #include "midp2backupplugin.h"
 #include "midp2backupdataids.h"
+#include "mediaidupdater.h"
 
 #include "javastorageentry.h"
 #include "javastorage.h"
@@ -170,6 +171,10 @@ void CStorageBackupUtil::RestoreStorageDataL(RDesReadStream& aStream, TInt& aRes
             CleanupStack::PopAndDestroy(&aStream);
             User::Leave(KErrGeneral);
         }
+
+        // ensure that storage contains correct removable media ids
+        MediaIdUpdater updater;
+        updater.update();
 
         // Storage restore is over; Set state to EAppArc
         aRestoreState = EAppArc;
@@ -880,6 +885,9 @@ int CStorageBackupUtil::WriteDataToStorage()
             insertEntry.insert(attribute);
 
             attribute.setEntry(ON_SCREEN_KEYPAD, iStringVector[count++]);
+            insertEntry.insert(attribute);
+            
+            attribute.setEntry(SECURITY_WARNINGS, iStringVector[count++]);
             insertEntry.insert(attribute);
 
             try
@@ -1612,6 +1620,16 @@ int CStorageBackupUtil::FillVectorwithMidpPackageTableData(JavaStorageApplicatio
         iStringVector.push_back(str);
 
         attribute.setEntry(ON_SCREEN_KEYPAD, L"");
+        str = emptyString;
+        findIterator = (*applications).find(attribute);
+
+        if (findIterator != (*applications).end())
+        {
+            str = (*findIterator).entryValue();
+        }
+        iStringVector.push_back(str);
+        
+        attribute.setEntry(SECURITY_WARNINGS, L"");
         str = emptyString;
         findIterator = (*applications).find(attribute);
 

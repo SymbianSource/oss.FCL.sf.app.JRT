@@ -54,23 +54,24 @@ SOURCES += \
 symbian {
     CONFIG += mobility
     MOBILITY += bearer
-    
+
+    CONFIG +=hb
     HEADERS += \
         swts60.h \
-    	swtmobiledevice.h \
+        swtmobiledevice.h \
         swtflipwatch.h
-    
+
     SOURCES += \
         swts60.cpp \
-    	swtmobiledevice.cpp \
+        swtmobiledevice.cpp \
         swtflipwatch.cpp
-        
+
     LIBS += \
         -leikcore \
         -lapparc \
-        -lavkon \
         -lefsrv \
         -lcone \
+        -lavkon \
         -leikcoctl \
         -lapgrfx \
         -lHWRMVibraClient \
@@ -80,5 +81,7 @@ symbian {
         -lQtContacts \
         -lhal \
         -lws32 \
-        -lgdi
+        -lgdi \
+        -lHbCore \
+        -lfbscli
 }

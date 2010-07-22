@@ -15,7 +15,7 @@
 *
 */
 
-#include "Utest.h"
+#include "cpputest/Utest.h"
 
 //Include this in the test main to execute these tests
 IMPORT_TEST_GROUP(TestAPNSettings);

@@ -740,7 +740,27 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
                                                                                                                          UserSecuritySettings.SESSION_INTERACTION_MODE})),
                                                     new PolicyBasedPermissionImpl("java.util.PropertyPermission", "microedition.*", "read", null),
                                                     new PolicyBasedPermissionImpl(p4.getName(), "mobinfo.publicinfo", "read", null),
-                                                    new PolicyBasedPermissionImpl(p4.getName(), "mobinfo.cellid", "read", null),
+                                                    new PolicyBasedPermissionImpl(p4.getName(), "mobinfo.cellid", "read",
+                                                                                  new UserSecuritySettingsImpl("Location",
+                                                                                                               UserSecuritySettings.SESSION_INTERACTION_MODE,
+                                                                                                               new int[]{UserSecuritySettings.BLANKET_INTERACTION_MODE,
+                                                                                                                         UserSecuritySettings.NO_INTERACTION_MODE,
+                                                                                                                         UserSecuritySettings.ONESHOT_INTERACTION_MODE,
+                                                                                                                         UserSecuritySettings.SESSION_INTERACTION_MODE})),
+                                                    new PolicyBasedPermissionImpl(p4.getName(), "mobinfo.countrycode", "read",
+                                                                                  new UserSecuritySettingsImpl("Location",
+                                                                                                               UserSecuritySettings.SESSION_INTERACTION_MODE,
+                                                                                                               new int[]{UserSecuritySettings.BLANKET_INTERACTION_MODE,
+                                                                                                                         UserSecuritySettings.NO_INTERACTION_MODE,
+                                                                                                                         UserSecuritySettings.ONESHOT_INTERACTION_MODE,
+                                                                                                                         UserSecuritySettings.SESSION_INTERACTION_MODE})),
+                                                    new PolicyBasedPermissionImpl(p4.getName(), "mobinfo.networkid", "read",
+                                                                                  new UserSecuritySettingsImpl("Location",
+                                                                                                               UserSecuritySettings.SESSION_INTERACTION_MODE,
+                                                                                                               new int[]{UserSecuritySettings.BLANKET_INTERACTION_MODE,
+                                                                                                                         UserSecuritySettings.NO_INTERACTION_MODE,
+                                                                                                                         UserSecuritySettings.ONESHOT_INTERACTION_MODE,
+                                                                                                                         UserSecuritySettings.SESSION_INTERACTION_MODE})),
                                                     new PolicyBasedPermissionImpl("com.nokia.ext2.internal.Ext2Perm", "ext2.target4", "ext2.action4", null),
                                                 }));
         // getBlanketPermissions: while installing V1 the permissions are not put to blanket, while installing V2 there are some blanket permissions returned
@@ -779,6 +799,8 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
                                          StorageNames.VALUE,
                                          "MIICWDCCAcECBEhQwOgwDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX1RoaXJkX1BhcnR5X1RydXN0ZWQwHhcNMDgwNjEyMDYyMzM2WhcNMTgwNjEwMDYyMzM2WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfVGhpcmRfUGFydHlfVHJ1c3RlZDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEArAesh03rswICRUjexWMoIH9ZZqUtlx+tfhZhuzuYhiL6cLdhxNlU8yuIdw4f17XP3yxVIB8rz1EEagCMd0Y5ZleNFZ992ReLcf9VH13RxaZ88PRxBLLROm1jcwTknYSS6AxGMup77DMwwFSN8XPnOHWt4aLGUrecMeUyI2c5UbsCAwEAATANBgkqhkiG9w0BAQQFAAOBgQAylJ+3aSq6a7AAL7UM8V8JhGZlLneErF7A/BJGDi7Vmr5gmlGyf6RCJJIg4qCp+J3Tv3eCRNNuphQaSRdFpaulwCmtfCzSZNtvZg0VhMOVsZqTwQgmP6NzKoIbqqzlgm5U+yUJw8FmX17vgdeSEdJ/oL/WT4AKrWFJYl8MdQ9ZnQ=="));
         session.write(StorageNames.APPLICATION_PACKAGE_ATTRIBUTES_TABLE, appPackageEntry);
+        permissionGranter.cleanup();
+        PermissionResolver.testClearCache();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICWDCCAcECBEhQwOgwDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX1RoaXJkX1BhcnR5X1RydXN0ZWQwHhcNMDgwNjEyMDYyMzM2WhcNMTgwNjEwMDYyMzM2WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfVGhpcmRfUGFydHlfVHJ1c3RlZDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEArAesh03rswICRUjexWMoIH9ZZqUtlx+tfhZhuzuYhiL6cLdhxNlU8yuIdw4f17XP3yxVIB8rz1EEagCMd0Y5ZleNFZ992ReLcf9VH13RxaZ88PRxBLLROm1jcwTknYSS6AxGMup77DMwwFSN8XPnOHWt4aLGUrecMeUyI2c5UbsCAwEAATANBgkqhkiG9w0BAQQFAAOBgQAylJ+3aSq6a7AAL7UM8V8JhGZlLneErF7A/BJGDi7Vmr5gmlGyf6RCJJIg4qCp+J3Tv3eCRNNuphQaSRdFpaulwCmtfCzSZNtvZg0VhMOVsZqTwQgmP6NzKoIbqqzlgm5U+yUJw8FmX17vgdeSEdJ/oL/WT4AKrWFJYl8MdQ9ZnQ=="));

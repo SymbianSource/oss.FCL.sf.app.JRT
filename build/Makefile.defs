@@ -57,6 +57,7 @@ ifeq ($(BUILDENV),symbian)
     MKDIR = if [ ! -d $(1)]; then mkdir $(1); fi
     RMDIR = if [ -d $(1)]; then rmdir $(1); fi
     DELTREE = if [ -d $(1)]; then rm -fr $(1); fi
+    PATHSEARCH = $(firstword $(wildcard $(addsuffix /$(1),$(subst :, ,$(PATH)))))
 
   else
     # CMD.exe definitions
@@ -74,6 +75,7 @@ ifeq ($(BUILDENV),symbian)
     MKDIR = if not exist $(1) mkdir  $(1)
     RMDIR = if exist $(1) rmdir  $(1)
     DELTREE = if exist $(1) rmdir /S/Q $(1)
+    PATHSEARCH = $(firstword $(wildcard $(addsuffix /$(1),$(subst ;, ,$(PATH)))))
 
   endif
 
@@ -103,6 +105,7 @@ ifeq ($(BUILDENV),symbian)
   export ANT_OPTS=
   BLDMAKE = perl -S bldmake.pl
   ABLDMAKE = set MAKELEVEL=&&set MAKEFLAGS=&&set MFLAGS=&&make -r
+  CODESCANNER = codescanner -c $(JAVA_SRC_ROOT)/build/codescanner_high.xml  -o std $(1) | perl -ne "print if /error:/;"
 
   ifdef NODEP
   # Makmake does not make dependency checks with this flag

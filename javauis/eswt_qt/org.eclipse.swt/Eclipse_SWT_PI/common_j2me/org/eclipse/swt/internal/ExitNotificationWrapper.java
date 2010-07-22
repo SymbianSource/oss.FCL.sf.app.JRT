@@ -14,10 +14,13 @@ package org.eclipse.swt.internal;
  * Note that this might be called directly from native code. 
  * Be careful renaming or moving it.
  */ 
-public class ExitNotificationWrapper {  
+public final class ExitNotificationWrapper {  
     
     public static void notifyExit() {
         com.nokia.mj.impl.rt.support.ApplicationUtils.getInstance().notifyExitCmd();
     }
     
+    public static void uiDisposed() {
+        com.nokia.mj.impl.rt.support.ApplicationUtils.getInstance().uiDisposed();
+    }
 }
