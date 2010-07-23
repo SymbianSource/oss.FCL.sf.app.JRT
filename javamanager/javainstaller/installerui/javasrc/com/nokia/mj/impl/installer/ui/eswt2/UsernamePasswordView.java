@@ -108,20 +108,20 @@ public class UsernamePasswordView extends ConfirmationViewBase
 
         int labelStyle = SWT.WRAP;
 
-        Label titleLabel = createLabel
-                           (InstallerUiTexts.get(InstallerUiTexts.CONNECT_TO), labelStyle);
+        Label titleLabel = createLabel(
+            InstallerUiTexts.get(InstallerUiTexts.CONNECT_TO), labelStyle);
         setCssId(titleLabel, "heading");
 
-        Label urlLabel = createLabel(iUrl, labelStyle);
+        Label urlLabel = createLabel(getServer(iUrl), labelStyle);
+        setCssId(urlLabel, "urlLabel");
 
-        Label authLabel = createLabel
-                          (InstallerUiTexts.get
-                           (InstallerUiTexts.DOWNLOAD_APPLICATION, new String[] { iAppName }),
-                           labelStyle);
+        Label authLabel = createLabel(
+            InstallerUiTexts.get(InstallerUiTexts.DOWNLOAD_APPLICATION,
+                                 new String[] { iAppName }), labelStyle);
         setCssId(authLabel, "authLabel");
 
-        Label usernameLabel = createLabel
-                              (InstallerUiTexts.get(InstallerUiTexts.USERNAME), labelStyle);
+        Label usernameLabel = createLabel(
+            InstallerUiTexts.get(InstallerUiTexts.USERNAME), labelStyle);
         setCssId(usernameLabel, "usernamePasswordLabel");
 
         iUsernameText = new Text(getComposite(), SWT.BORDER);
@@ -129,8 +129,8 @@ public class UsernamePasswordView extends ConfirmationViewBase
         iUsernameText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         addSoftKeyListenerFor(iUsernameText);
 
-        Label passwordLabel = createLabel
-                              (InstallerUiTexts.get(InstallerUiTexts.PASSWORD), labelStyle);
+        Label passwordLabel = createLabel(
+            InstallerUiTexts.get(InstallerUiTexts.PASSWORD), labelStyle);
         setCssId(passwordLabel, "usernamePasswordLabel");
 
         iPasswordText = new Text(getComposite(), SWT.PASSWORD | SWT.BORDER);
@@ -155,5 +155,32 @@ public class UsernamePasswordView extends ConfirmationViewBase
     protected int getStyle()
     {
         return SWT.V_SCROLL;
+    }
+
+    /**
+     * Returns server part from HTTP URL.
+     */
+    private String getServer(String aUrl)
+    {
+        String server = aUrl;
+        int i = server.indexOf("://");
+        if (i != -1)
+        {
+            server = server.substring(i + 3);
+            i = server.indexOf(":");
+            if (i != -1)
+            {
+                server = server.substring(0, i);
+            }
+            else
+            {
+                i = server.indexOf("/");
+                if (i != -1)
+                {
+                    server = server.substring(0, i);
+                }
+            }
+        }
+        return server;
     }
 }

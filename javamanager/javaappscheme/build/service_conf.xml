@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<service>
+  <name>javaappscheme</name>
+  <filepath>No path</filepath>
+  <description>Launch Java app service</description>
+  <interface>
+     <name>com.nokia.symbian.IUriView</name>
+     <version>1.0</version>
+     <description>Interface for showing URIs</description>
+     <customproperty key="schemes">javaapp</customproperty>
+     <customproperty key="deprecatedsn">com.nokia.services.serviceapp</customproperty>
+  </interface>
+</service>

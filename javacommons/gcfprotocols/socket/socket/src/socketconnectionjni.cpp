@@ -17,8 +17,10 @@
 
 
 #include "com_nokia_mj_impl_socket_SocketConnectionImpl.h"
+#include "com_nokia_mj_impl_properties_socket_SocketDynamicPropertyHandler.h"
 #include "nativesocketconnection.h"
-
+#include "socketlocalhostinfo.h"
+#include "logger.h"
 
 using namespace java;
 
@@ -140,4 +142,14 @@ Java_com_nokia_mj_impl_socket_SocketConnectionImpl__1dispose
 {
     NativeSocketConnection* nativeConn = reinterpret_cast<NativeSocketConnection* >(aNativePeerHandle);
     delete nativeConn;
+}
+
+JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_properties_socket_SocketDynamicPropertyHandler__1getLocalhostname
+(JNIEnv *aJni, jclass)
+{
+    char* addr;
+    addr = SocketLocalHostInfo::getLocalHostName();
+    jstring jnistring = aJni->NewStringUTF(addr);
+    delete[] addr;
+    return jnistring;
 }

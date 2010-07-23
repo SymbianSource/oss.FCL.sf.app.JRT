@@ -78,8 +78,8 @@ data=DATAZ_\private\102033E6\installer\inst_plugins.cfg                     \pri
 
 // Launchers
 file=ABI_DIR\BUILD_DIR\javalauncher.exe                                     PROGRAMS_DIR\javalauncher.exe
-ECOM_PLUGIN(javaappschemeplugin.dll,javaappschemeplugin.rsc)
-data=ZRESOURCE\plugins\javaappschemeplugin.rsc                              ECOM_RESOURCE_DIR\javaappschemeplugin.rsc
+file=ABI_DIR\BUILD_DIR\javaappscheme.exe                                    PROGRAMS_DIR\javaappscheme.exe
+file=ABI_DIR\BUILD_DIR\javaqtrequest.exe                                    PROGRAMS_DIR\javaqtrequest.exe
 
 #ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 // Usif installer plugin

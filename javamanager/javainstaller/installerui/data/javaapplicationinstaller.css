@@ -88,6 +88,15 @@ QLabel#detailsWarningLabel{
 	font-size: 23.45px; /*hb-param-text-height-secondary; /*3.5un*/
 }
 
+QLabel#urlLabel{
+	/* Text in authentication dialog (UsernamePasswordView) */
+	/* Note that this dialog is always in portrait */
+	font-size: 23.45px; /*hb-param-text-height-secondary; /*3.5un*/
+	margin-top: 13.4px; /*hb-param-margin-gene-popup; /*2un*/
+	margin-left: 13.4px; /*hb-param-margin-gene-popup; /*2un*/
+	margin-right: 13.4px; /*hb-param-margin-gene-popup; /*2un*/
+}
+
 QLabel#authLabel{
 	/* Text in authentication dialog (UsernamePasswordView) */
 	/* Note that this dialog is always in portrait */

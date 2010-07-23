@@ -11,6 +11,11 @@
 #include <QFont>
 #include <QFontMetrics>
 #include <QSharedDataPointer>
+#include <QByteArray>
+#include <QBuffer>
+#include <QImageReader>
+#include <QSize>
+#include <QSvgRenderer>
 
 #include <org_eclipse_swt_internal_qt_graphics_OS.h>
 #include "graphics.h"
@@ -1244,6 +1249,46 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_imageLoader_1setLoadSi
     GFX_CATCH
 }
 
+JNIEXPORT jobject JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_imageLoader_1getImageSize
+  (JNIEnv *aJniEnv, jclass, jbyteArray aData)
+{
+    jobject size = NULL;
+    GFX_TRY
+    {
+        SWT_LOG_JNI_CALL();
+        
+        jbyte* data = NULL;
+        data = aJniEnv->GetByteArrayElements(aData, NULL);
+        int length = aJniEnv->GetArrayLength(aData);
+        
+        QByteArray array = QByteArray::fromRawData(reinterpret_cast<const char*>(data), length);
+        QBuffer buffer(&array);
+        buffer.open(QIODevice::ReadOnly);
+
+        // Initialize imageReader
+        QImageReader imgReader(&buffer);
+        QSize imageSize(-1,-1);
+        
+        if (imgReader.supportsOption(QImageIOHandler::Size))
+        {
+            imageSize = imgReader.size();
+        }
+        else //if (imgReader.format() == "svg") 
+        {
+            // Qt SVG plugin does not support QImageIOHandler::Size option, 
+            // use QSvgRenderer to get the default size of the image instead.
+            QSvgRenderer svg(array);
+            imageSize = svg.defaultSize();
+        }
+        
+        size = swtApp->jniUtils().NewJavaPoint( aJniEnv, QPoint(imageSize.width(), imageSize.height()));
+        
+        aJniEnv->ReleaseByteArrayElements(aData, data, JNI_ABORT);
+    }
+    GFX_CATCH
+    
+    return size;
+}
 //
 // FontUtils
 //

@@ -99,6 +99,11 @@ public class Installer
      */
     static final int RET_NO_SYSTEM_EXIT = 100;
 
+    /** Id for installer cancel Comms message. */
+    private static final int INSTALLER_CANCEL_MESSAGE_ID = 603;
+    /** Id for installer cancel Comms response message. */
+    private static final int INSTALLER_CANCEL_RESPONSE_MESSAGE_ID = 604;
+
     // ThreadDumper instance.
     private static ThreadDumper iThreadDumper = null;
 
@@ -323,7 +328,7 @@ public class Installer
         }
 
         StartUpTrace.doTrace("Installer.mainWithResult " + aArgs[0] + " begins");
-        StringBuffer buf = new StringBuffer("Java install process started with command: ");
+        StringBuffer buf = new StringBuffer("Java install process started with command:");
         for (int i = 0; i < aArgs.length; i++)
         {
             buf.append(" ").append(aArgs[i]);
@@ -1235,6 +1240,8 @@ public class Installer
             "  -commsresult=endpoint         In the end of operation, send\n"+
             "                                InstallerResultMessage to specified comms\n"+
             "                                endpoint.\n"+
+            "  -base64=base64options         Comma separated list of base64 encoded\n"+
+            "                                options.\n"+
             "\n"+
             "Either -jad or -jar must be specified, other options are optional.\n";
 
@@ -1264,10 +1271,13 @@ public class Installer
             "  -captainmsgs=yes|no           If set to no, JavaInstaller will not send\n"+
             "                                any messages to JavaCaptain during\n"+
             "                                uninstallation. Default is yes.\n"+
+            "  -resetpreinstall              Reset preinstall state.\n"+
             "  -skipotastatus                Skip OTA status handling.\n"+
             "  -commsresult=endpoint         In the end of operation, send\n"+
             "                                InstallerResultMessage to specified comms\n"+
             "                                endpoint.\n"+
+            "  -base64=base64options         Comma separated list of base64 encoded\n"+
+            "                                options.\n"+
             "\n"+
             "The -uid option must be specified, other options are optional.\n";
 
@@ -1466,7 +1476,7 @@ public class Installer
                 if (aMessage.hasPermission(CommsPermission.INSTALL_APPLICATION))
                 {
                     int msgId = aMessage.getMessageId();
-                    if (msgId == 603)
+                    if (msgId == INSTALLER_CANCEL_MESSAGE_ID)
                     {
                         Installer.cancel();
                         result = ERR_NONE;
@@ -1479,7 +1489,7 @@ public class Installer
                 }
                 CommsMessage response = new CommsMessage();
                 response.replyTo(aMessage);
-                response.setMessageId(604);
+                response.setMessageId(INSTALLER_CANCEL_RESPONSE_MESSAGE_ID);
                 response.write(result);
                 iInstallerServer.send(response);
                 Log.log("InstallerListener sent " + response);

@@ -334,7 +334,7 @@ void CMMAVideoControl::StaticSetPropertyL(CMMAVideoControl* aControl,
     case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_SIZE:
     {
         TSize displaySize(aPropertyA, aPropertyB);
-        LOG2(EJavaMMAPI, EInfo, "CMMAVideoControl::statepropertyl %d , %d",displaySize.iHeight,displaySize.iWidth);
+        LOG1(EJavaMMAPI, EInfo, "CMMAVideoControl::statepropertyl %d",displaySize);
         display->SetDisplaySizeL(displaySize);
         LOG(EJavaMMAPI, EInfo, "CMMAVideoControl::SetDisplayProperty:: setDisplaySizeL Completed");
         // inform java side
@@ -370,27 +370,25 @@ void CMMAVideoControl::StaticSetPropertyL(CMMAVideoControl* aControl,
              aPropertyA);
         LOG1(EJavaMMAPI, EInfo, "MMA::CMMAVideoControl::StaticSetPropertyL b property %d",
              aPropertyB);
-        //TSize fullscreenSize(aPropertyA, aPropertyB);
-        //display->SetFullscreenSize(fullscreenSize);
-        //display->SetDisplaySizeL(fullscreenSize);
-        //display->SetFullScreenL(ETrue);
-        display->SourceSizeChanged(aPropertyA, aPropertyB,0,0,TRect(0,0,0,0));
+        TSize fullscreenSize(aPropertyA, aPropertyB);
+        display->SetFullscreenSize(fullscreenSize);
+        //display->SetDisplaySizeL(fullsclreenSize);
+        display->SetFullScreenL(ETrue);
+        //display->SourceSizeChanged(aPropertyA, aPropertyB,0,0,TRect(0,0,0,0));
         break;
     }
     case com_nokia_microedition_media_control_VideoControl_SET_DISPLAY_FULLSCREEN_FALSE:
     {
-        TSize fullscreenSize = aControl->iOldDisplaySize;
-        display->SetFullscreenSize(fullscreenSize);
         display->SetFullScreenL(EFalse);
 
         // Send SIZE_CHANGED event when fullscreen is turned off if
         // size of the video display has changed. Possible position
         // change is however disregarded
-        /* if (aControl->iOldDisplaySize != display->DisplaySize())
-         {
-             aControl->iGuiPlayer->NotifyWithStringEvent(
-                 CMMAPlayerEvent::ESizeChanged, KControlName);
-         }*/
+        if (aControl->iOldDisplaySize != display->DisplaySize())
+        {
+            aControl->iGuiPlayer->NotifyWithStringEvent(
+                CMMAPlayerEvent::ESizeChanged, KControlName);
+        }
 
         break;
     }

@@ -29,6 +29,7 @@ import com.nokia.mj.impl.installer.integrityservice.IntegrityService;
 import com.nokia.mj.impl.installer.jsrpluginnotifier.JsrPluginNotifier;
 import com.nokia.mj.impl.installer.storagehandler.StorageHandler;
 import com.nokia.mj.impl.installer.utils.Args;
+import com.nokia.mj.impl.installer.utils.DriveInfo;
 import com.nokia.mj.impl.installer.utils.FileRoots;
 import com.nokia.mj.impl.installer.utils.FileUtils;
 import com.nokia.mj.impl.installer.utils.InstallerException;
@@ -39,6 +40,8 @@ import com.nokia.mj.impl.security.midp.authentication.AuthenticationModule;
 import com.nokia.mj.impl.security.midp.authentication.OcspSettings;
 import com.nokia.mj.impl.fileutils.FileURL;
 import com.nokia.mj.impl.utils.Uid;
+
+import java.util.Vector;
 
 public class PrepareInstallation extends ExeStep
 {
@@ -277,6 +280,7 @@ public class PrepareInstallation extends ExeStep
         if (arg != null)
         {
             aBall.iInstallationDrive = args.parseDrive(arg);
+            checkInstallationDrive(aBall.iInstallationDrive);
         }
     }
 
@@ -388,5 +392,29 @@ public class PrepareInstallation extends ExeStep
             InstallerException.internalError("Invalid file URL: " + aUrl, t);
         }
         return filePath;
+    }
+
+    /**
+     * Checks that given installation drive is a valid one.
+     *
+     * @param aDrive installation drive
+     * @throws InstallerException if installation drive is not valid
+     */
+    private static void checkInstallationDrive(int aDrive)
+    {
+        Vector drives = new Vector();
+        SysUtil.getUserVisibleDrives(drives);
+        for (int i = 0; i < drives.size(); i++)
+        {
+            DriveInfo driveInfo = (DriveInfo)drives.elementAt(i);
+            if (driveInfo.getNumber() == aDrive)
+            {
+                // Installation drive found from user visible drives.
+                return;
+            }
+        }
+        InstallerException.internalError(
+            "Invalid installation drive: " + aDrive +
+            " (" + (char)('A' + aDrive) + ")");
     }
 }

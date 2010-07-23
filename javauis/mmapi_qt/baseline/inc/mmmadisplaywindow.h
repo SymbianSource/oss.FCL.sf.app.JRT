@@ -246,6 +246,10 @@ public:
     virtual void UICallback( TInt /*aCallbackId*/ )
     {
     }
+    
+    virtual void DoSetVisibleL()
+    {
+    }
 };
 
 #endif // MMMADISPLAYWINDOW_H

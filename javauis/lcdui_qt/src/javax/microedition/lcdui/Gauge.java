@@ -52,6 +52,7 @@ public class Gauge extends Item
     private int maxValue;
     private int value;
     private boolean interactive;
+    private boolean isGaugeCreation;
 
     /**
      * Constructor.
@@ -64,9 +65,11 @@ public class Gauge extends Item
     public Gauge(String name, boolean interactive, int maxVal, int initVal)
     {
         setLabel(name);
+        isGaugeCreation = true;
         this.interactive = interactive;
         setMaxValue(maxVal);
         setValue(initVal);
+        isGaugeCreation = false;
     }
 
     /**
@@ -76,22 +79,30 @@ public class Gauge extends Item
      * @param maxVal the maximum value.
      * @return validated value.
      */
-    private static int checkValue(int value, int maxVal)
+    private int checkValue(int value, int maxVal)
     {
         if(maxVal == INDEFINITE)
         {
-            switch(value)
+            if(isGaugeCreation)
             {
-            case CONTINUOUS_IDLE:
-            case INCREMENTAL_IDLE:
-            case CONTINUOUS_RUNNING:
-            case INCREMENTAL_UPDATING:
-                break;
-            default:
-                throw new IllegalArgumentException(
-                    MsgRepository.GAUGE_EXCEPTION_INVALID_VALUE);
+                switch(value)
+                {
+                case CONTINUOUS_IDLE:
+                case INCREMENTAL_IDLE:
+                case CONTINUOUS_RUNNING:
+                case INCREMENTAL_UPDATING:
+                    break;
+                default:
+                    throw new IllegalArgumentException(
+                        MsgRepository.GAUGE_EXCEPTION_INVALID_VALUE);
+                }
+                
+                return value;
             }
-            return value;
+            else
+            {
+            	return CONTINUOUS_IDLE;
+            }
         }
         else
         {
@@ -111,17 +122,13 @@ public class Gauge extends Item
      */
     private static int checkMaxValue(int maxVal, boolean interactive)
     {
-        if(!interactive)
+        if(interactive)
         {
-            if(maxVal == INDEFINITE)
+            if(maxVal <= 0)
             {
-                return maxVal;
+                throw new IllegalArgumentException(
+                    MsgRepository.GAUGE_EXCEPTION_INVALID_MAXVALUE);
             }
-        }
-        if(maxVal <= 0)
-        {
-            throw new IllegalArgumentException(
-                MsgRepository.GAUGE_EXCEPTION_INVALID_MAXVALUE);
         }
         return maxVal;
     }
@@ -257,7 +264,7 @@ public class Gauge extends Item
     {
         return (!isInteractive()
                 && getParent() == null
-                && !hasLabel()
+                && getLabel() == null
                 && getLayout() == Item.LAYOUT_DEFAULT
                 && !isSizeLocked()
                 && getNumCommands() == 0

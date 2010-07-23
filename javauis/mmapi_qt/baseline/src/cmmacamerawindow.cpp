@@ -103,7 +103,7 @@ void CMMACameraWindow::SetStarted(TBool aStarted)
             //      *this, CMMACameraWindow::EShowViewFinder);
             LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetStarted : before GetCallbackInUiThread + EShowViewFinder");
             iDisplay->GetCallbackInUiThread((TInt)CMMACameraWindow::EShowViewFinder);
-            LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetStarted : before GetCallbackInUiThread  - EShowViewFinder");
+            LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetStarted : after GetCallbackInUiThread  - EShowViewFinder");
         }
         else
         {
@@ -111,7 +111,7 @@ void CMMACameraWindow::SetStarted(TBool aStarted)
             //       *this, CMMACameraWindow::EHideViewFinder);
             LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetStarted : before GetCallbackInUiThread + EHideViewFinder");
             iDisplay->GetCallbackInUiThread((TInt)CMMACameraWindow::EHideViewFinder);
-            LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetStarted : before GetCallbackInUiThread  - EHideViewFinder");
+            LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetStarted : after GetCallbackInUiThread  - EHideViewFinder");
         }
     }
 }
@@ -150,7 +150,7 @@ void CMMACameraWindow::SetDisplay(MMMADisplay *aDisplay)
             //MMAPI UI 3.x req.
             LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetDisplay : before GetCallbackInUiThread +");
             iDisplay->GetCallbackInUiThread((TInt)CMMACameraWindow::EDeleteViewFinder);
-            LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetDisplay : before GetCallbackInUiThread  -");
+            LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetDisplay : after GetCallbackInUiThread  -");
         }
 
         // Set the new Display
@@ -212,7 +212,7 @@ void CMMACameraWindow::SetDrawRect(const TRect& aRect)
         //iDisplay->UIGetCallback(*this, CMMACameraWindow::EResetViewFinder);
         LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetDisplay : before GetCallbackInUiThread + EResetViewFinder");
         iDisplay->GetCallbackInUiThread((TInt)CMMACameraWindow::EResetViewFinder);
-        LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetDisplay : before GetCallbackInUiThread  - EResetViewFinder");
+        LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetDisplay : after GetCallbackInUiThread  - EResetViewFinder");
 
     }
 }
@@ -308,7 +308,7 @@ void CMMACameraWindow::SetVisible(TBool aVisible, TBool aUseEventServer)
                 //    *this, CMMACameraWindow::EShowViewFinder);
                 LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetVisible : before GetCallbackInUiThread - EShowViewFinder");
                 iDisplay->GetCallbackInUiThread((TInt)CMMACameraWindow::EShowViewFinder);
-                LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetVisible : before GetCallbackInUiThread  - EShowViewFinder");
+                LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetVisible : after GetCallbackInUiThread  - EShowViewFinder");
             }
             else
             {
@@ -316,7 +316,7 @@ void CMMACameraWindow::SetVisible(TBool aVisible, TBool aUseEventServer)
                 //     *this, CMMACameraWindow::EHideViewFinder);
                 LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetVisible : before GetCallbackInUiThread - EHideViewFinder");
                 iDisplay->GetCallbackInUiThread((TInt)CMMACameraWindow::EHideViewFinder);
-                LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetVisible : before GetCallbackInUiThread  - EHideViewFinder");
+                LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetVisible : after GetCallbackInUiThread  - EHideViewFinder");
             }
         }
     }
@@ -352,7 +352,7 @@ void CMMACameraWindow::SetWindowRect(
             //      *this, CMMACameraWindow::EResetViewFinder);
             LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetWindowRect : before GetCallbackInUiThread + EResetViewFinder");
             iDisplay->GetCallbackInUiThread((TInt)CMMACameraWindow::EHideViewFinder);
-            LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetWindowRect : before GetCallbackInUiThread  - EResetViewFinder");
+            LOG(EJavaMMAPI,EInfo,"CMMACameraWindow::SetWindowRect : after GetCallbackInUiThread  - EResetViewFinder");
         }
     }
 

@@ -754,25 +754,6 @@ public abstract class Canvas extends Displayable
     {
         return KeyTable.getKeyName(keyCode);
     }
-    /**
-     * Gets height.
-     *
-     * @return Height of the Displayable in pixels.
-     */
-    public int getHeight()
-    {
-        if(onScreenkeypad != null)
-        {
-            ESWTUIThreadRunner.syncExec(new Runnable()
-            {
-                public void run()
-                {
-                    oskHeight = onScreenkeypad.getHeight();
-                }
-            });
-        }
-        return (super.getHeight() - oskHeight);
-    }
 
     /**
      * Callback to be implemented by the application to render the
@@ -1563,9 +1544,11 @@ public abstract class Canvas extends Displayable
     class CanvasShellVisibilityListener implements SymbianWindowVisibilityListener
     {
         public void handleSymbianWindowVisibilityChange(Widget widget, boolean visible) {
-            if (javax.microedition.lcdui.Canvas.this.getShell() == widget)
+            if (javax.microedition.lcdui.Canvas.this.getShell() == widget && graphicsBuffer != null)
             {
-                graphicsBuffer.getWindowSurface().handleSymbianWindowVisibilityChange(visible);
+                WindowSurface surface = graphicsBuffer.getWindowSurface();
+                if (surface != null)
+                    surface.handleSymbianWindowVisibilityChange(visible);
             }
         }
     }

@@ -444,7 +444,7 @@ public class InstallerResultMessage
             addValue(NAME_ERROR_CATEGORY,
                      SifRegistrator.getErrorCategory(aEb.getShortMessageId()));
             addValue(NAME_ERROR_CODE,
-                     aEb.getShortMessageId() + aEb.getDetailedMessageId());
+                     aEb.getShortMessageId()*1000 + aEb.getDetailedMessageId());
         }
         else if (aEb.getShortMessageId() >= ErrorMessageBase.SECURITY_RANGE_START &&
                  aEb.getShortMessageId() <= ErrorMessageBase.SECURITY_RANGE_END)
@@ -453,7 +453,7 @@ public class InstallerResultMessage
                      SifRegistrator.getErrorCategory(
                          InstallerErrorMessage.INST_AUTHORIZATION_ERR));
             addValue(NAME_ERROR_CODE,
-                     aEb.getShortMessageId() + aEb.getDetailedMessageId());
+                     aEb.getShortMessageId()*1000 + aEb.getDetailedMessageId());
         }
         else
         {

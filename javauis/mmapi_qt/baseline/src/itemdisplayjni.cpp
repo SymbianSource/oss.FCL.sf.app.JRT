@@ -37,15 +37,20 @@ JNIEXPORT void JNICALL Java_com_nokia_microedition_media_control_ItemDisplay__1s
     LOG(EJavaMMAPI,EInfo,"ItemDisplayJni : setVisible -");
 }
 
+LOCAL_C void LocalSetContainerVisible(CMMADisplay* display,TBool visible)
+{
+    display ->SetContainerVisibility(visible);
+}
 
 JNIEXPORT void JNICALL Java_com_nokia_microedition_media_control_ItemDisplay__1setContainerVisible
-(JNIEnv *, jobject, jint nativeDisplayHandle, jboolean isActive)
+(JNIEnv *, jobject, jint aEventSourceHandle,jint nativeDisplayHandle, jboolean aIsActive)
 {
     LOG(EJavaMMAPI,EInfo,"ItemDisplayJni : setContainerVisible +");
+    MMAFunctionServer* eventSource =  reinterpret_cast<MMAFunctionServer *>(aEventSourceHandle);
     CMMADisplay* display = reinterpret_cast<CMMADisplay*>(nativeDisplayHandle);
-    TBool visible = (TBool)isActive;
-    display ->SetContainerVisibility(visible);
-    LOG(EJavaMMAPI,EInfo,"JNI_canvasdisplay.cpp : setContainerVisible -");
+    TBool visible = (TBool)aIsActive;
+    eventSource->ExecuteTrap(&LocalSetContainerVisible,display,visible);
+    LOG(EJavaMMAPI,EInfo,"itemdisplayjni.cpp : setContainerVisible -");
 }
 
 JNIEXPORT void JNICALL Java_com_nokia_microedition_media_control_ItemDisplay__1setFullScreenMode
@@ -96,7 +101,7 @@ JNIEXPORT void JNICALL Java_com_nokia_microedition_media_control_ItemDisplay__1s
     TInt b = formbounds[1];
     TInt w = formbounds[2];
     TInt h = formbounds[3];
-    aJni->ReleaseIntArrayElements(aFormArray,formbounds,JNI_COMMIT);
+    aJni->ReleaseIntArrayElements(aFormArray,formbounds,0);
     TRect formRect(TPoint(a,b),TPoint(w,h));
     MMAFunctionServer* eventSource =  reinterpret_cast<MMAFunctionServer *>(aEventSourceHandle);
     // need to call in Function server thread context because CMMADisplay's JNI pointer

@@ -170,24 +170,31 @@ void CMMACanvasDisplay::SetFullScreenL(TBool aFullScreen)
     iFullScreen = aFullScreen;
     if (iContainerVisible)
     {
+        LOG2(EJavaMMAPI,EInfo,"CMMACanvasDisplay::SetFullScreenL widht=%d height=%d", iFullScreenSize.iWidth,
+             iFullScreenSize.iHeight);
         RemoveClippingRegion();
-
+        LOG2(EJavaMMAPI,EInfo,"CMMACanvasDisplay::SetFullScreenL widht=%d height=%d", iFullScreenSize.iWidth,
+             iFullScreenSize.iHeight);
+        LOG2(EJavaMMAPI,EInfo,"CMMACanvasDisplay::SetFullScreenL::iSourceSize widht=%d height=%d", iSourceSize.iWidth,
+             iSourceSize.iHeight);
         if (aFullScreen)
         {
             // use new scaled rect
             // iWindow->SetDrawRect(ScaleToFullScreen(fullScreenSize, iSourceSize));
-            iWindow->SetDrawRectThread(ScaleToFullScreen(iFullScreenSize, iSourceSize));
+            LOG(EJavaMMAPI,EInfo,"CMMACanvasDisplay::SetFullScreenL -  true scale to fullscreen");
+            iWindow->SetDrawRect(ScaleToFullScreen(iFullScreenSize, iSourceSize));
         }
         else
         {
             // use size set from java
-            //iWindow->SetDrawRect(iUserRect);
-            iWindow->SetDrawRectThread(iUserRect);
+            LOG(EJavaMMAPI,EInfo,"CMMACanvasDisplay::SetFullScreenL -  false - draw the user rect set previously");
+            LOG2(EJavaMMAPI,EInfo,"CMMACanvasDisplay::SetFullScreenL iUserRect = (%d,%d) ",iUserRect.Width(),iUserRect.Height());
+            iWindow->SetDrawRect(iUserRect);
         }
 
         AddClippingRegion();
     }
-    LOG(EJavaMMAPI,EInfo,"CMMACanvasDisplay::SetFullScreenL +");
+    LOG(EJavaMMAPI,EInfo,"CMMACanvasDisplay::SetFullScreenL -");
 }
 
 void CMMACanvasDisplay::SetWindowL(MMMADisplayWindow* aWindow)
@@ -270,7 +277,7 @@ TRect CMMACanvasDisplay::BoundRect()
     TPoint topleft(xcoordinate,ycoordinate);
     TSize rectsize(width,height);
     TRect boundRect(topleft,rectsize);
-    iJni->ReleaseIntArrayElements(javaboundinfoarr, nativeboundinfoarr, JNI_COMMIT);
+    iJni->ReleaseIntArrayElements(javaboundinfoarr, nativeboundinfoarr,0);
     LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::BoundRect -");
     return boundRect;
 }

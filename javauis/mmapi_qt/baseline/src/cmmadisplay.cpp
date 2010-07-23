@@ -50,16 +50,59 @@ CMMADisplay::CMMADisplay():
         iFullScreen(EFalse),
         iContainerVisible(ETrue),
         iIsForeground(ETrue),
-        iResetDrawRect(EFalse)
+        iResetDrawRect(EFalse),
+        iIseSWT(EFalse)
 {
 }
 
-void CMMADisplay::Construct(MMAFunctionServer* eventSource , jobject javadisplayref)
+void CMMADisplay::Construct(MMAFunctionServer* eventSource ,JNIEnv* aJni, jobject javadisplayref)
 {
     iEventSource = eventSource;
-    iJni = iEventSource->getValidJniEnv();
+    iJavadisplayref = javadisplayref;
+    LOG1(EJavaMMAPI,EInfo,"CMMADisplay::Construct=%d",iIseSWT);
+    if (iIseSWT)
+    {
+        iJni = aJni;
+    }
+    else
+    {
+        iJni = iEventSource->getValidJniEnv();
+    }
     iJavaDisplayObject = iJni->NewGlobalRef(javadisplayref);
     iJavaDisplayClass = iJni->GetObjectClass(iJavaDisplayObject);
+
+    setRectID = iJni->GetMethodID(iJavaDisplayClass,
+                                  "setRect",
+                                  "()V");
+    iRectDimensionField = iJni->GetFieldID(iJavaDisplayClass, "rectDimension", "[I");
+
+    redrawControlID = iJni->GetMethodID(
+                          iJavaDisplayClass,
+                          "redrawControl",
+                          "()V");
+
+    removeContentBoundID = iJni->GetMethodID(
+                               iJavaDisplayClass,
+                               "removeContentBound",
+                               "()V");
+
+    setContentBoundID = iJni->GetMethodID(
+                            iJavaDisplayClass,
+                            "setContentBound",
+                            "()V");
+
+    getCallBackMethodID = iJni->GetMethodID(
+                              iJavaDisplayClass,
+                              "GetCallbackInUiThread",
+                              "(I)V");
+
+    getBoundRectID = iJni->GetMethodID(
+                         iJavaDisplayClass,
+                         "getBoundRect",
+                         "()V");
+
+    iDisplayboundarrField = iJni->GetFieldID(iJavaDisplayClass, "displayboundarr", "[I");
+
     // Components must have direct content.
     /* __ASSERT_LOG(EJavaMMAPI,EInfo,"aDirectContainer, User::Invariant());
 
@@ -69,8 +112,8 @@ void CMMADisplay::Construct(MMAFunctionServer* eventSource , jobject javadisplay
      // Get component visibility. Later visibility changes will
      // be informed through MDirectContent observer.
      iContainerVisible = iDirectContainer->MdcContainerVisibility();
-     LOG1(EJavaMMAPI,EInfo,"MID::CMMADisplay::Construct iContainerVisible = %d", iContainerVisible);
-     LOG1(EJavaMMAPI,EInfo,"MID::CMMADisplay::Construct iVisible = %d", iVisible);
+     LOG1(EJavaMMAPI,EInfo,"CMMADisplay::Construct iContainerVisible = %d", iContainerVisible);
+     LOG1(EJavaMMAPI,EInfo,"CMMADisplay::Construct iVisible = %d", iVisible);
 
      // Add this MDirectContent to the MDirectContainer. Cannot fail.
      iDirectContainer->MdcAddContent(this);
@@ -123,6 +166,7 @@ TRect CMMADisplay::ScaleToFullScreen(const TSize& aFullScreenSize,
     }
 
     drawRect.Move(position);
+    LOG2(EJavaMMAPI, EInfo, "CMMADisplay::ScaleToFullScreen::drawRect.Width=%d, drawRect.Height=%d",drawRect.Width(), drawRect.Height());
     LOG(EJavaMMAPI,EInfo,"CMMADisplay::ScaleToFullScreen() -");
     return drawRect;
 }
@@ -158,6 +202,7 @@ void CMMADisplay::SetClippingRegion()
     {
         LOG(EJavaMMAPI,EInfo,"CMMADisplay::SetClippingRegion: Removing old rect");
         //iDirectContainer->MdcRemoveContentBounds(iClipRect);
+        RemoveContentBoundFromJavaControl(iClipRect);
         iClipRect.SetRect(0, 0, 0, 0);
         refreshScreen = ETrue;
     }
@@ -243,12 +288,15 @@ void CMMADisplay::AddClippingRegion()
 // from MMMADisplay
 TSize CMMADisplay::DisplaySize()
 {
+    LOG(EJavaMMAPI,EInfo,"CMMADisplay::DisplaySize +");
     if (iWindow && iFullScreen)
     {
+        LOG(EJavaMMAPI,EInfo,"CMMADisplay::DisplaySize if loop ");
         return iWindow->DrawRect().Size();
     }
     else
     {
+        LOG1(EJavaMMAPI,EInfo,"CMMADisplay::DisplaySize else loop %d",iUserRect.Size().iHeight);
         return iUserRect.Size();
     }
 }
@@ -258,21 +306,21 @@ void CMMADisplay::SetDisplaySizeL(const TSize& aSize)
 {
     // user rect contains size set from java.
     iUserRect.SetSize(aSize);
-    LOG2(EJavaMMAPI,EInfo,"MID::CMMADisplay::SetDisplaySizeL iUserRect = %d X %d", iUserRect.Width() ,iUserRect.Height());
+    LOG2(EJavaMMAPI,EInfo,"CMMADisplay::SetDisplaySizeL iUserRect = %d X %d", iUserRect.Width() ,iUserRect.Height());
     // Size change has no effect if fullscreen mode is on.
     // New size could be used when fullscreen is turned off.
     if (iContainerVisible && !iFullScreen && iWindow)
     {
-        LOG1(EJavaMMAPI,EInfo,"MID::CMMADisplay::SetVisible + iContainerVisible = %d", iContainerVisible);
+        LOG1(EJavaMMAPI,EInfo,"CMMADisplay::SetVisible + iContainerVisible = %d", iContainerVisible);
         RemoveClippingRegion();
-        LOG2(EJavaMMAPI,EInfo,"MID::CMMADisplay::SetDisplaySizeL iUserRect after removingClipRegion = %d X %d", iUserRect.Width() ,iUserRect.Height());
+        LOG2(EJavaMMAPI,EInfo,"CMMADisplay::SetDisplaySizeL iUserRect after removingClipRegion = %d X %d", iUserRect.Width() ,iUserRect.Height());
         iWindow->SetDrawRect(iUserRect);
         AddClippingRegion();
-        LOG2(EJavaMMAPI,EInfo,"MID::CMMADisplay::SetDisplaySizeL iUserRect after AddingClipRegion = %d X %d", iUserRect.Width() ,iUserRect.Height());
+        LOG2(EJavaMMAPI,EInfo,"CMMADisplay::SetDisplaySizeL iUserRect after AddingClipRegion = %d X %d", iUserRect.Width() ,iUserRect.Height());
     }
     else
     {
-        LOG1(EJavaMMAPI,EInfo,"MID::CMMADisplay::SetVisible + iContainerVisible = %d", iContainerVisible);
+        LOG1(EJavaMMAPI,EInfo,"CMMADisplay::SetVisible + iContainerVisible = %d", iContainerVisible);
         iResetDrawRect = ETrue;
     }
 }
@@ -283,11 +331,11 @@ void CMMADisplay::SetVisible(TBool aValue)
     iVisible = aValue;
     // Window may be set visible only if container is on screen,
 
-    LOG1(EJavaMMAPI,EInfo,"MID::CMMADisplay::SetVisible + iContainerVisible = %d", iContainerVisible);
-    LOG1(EJavaMMAPI,EInfo,"MID::CMMADisplay::SetVisible iVisible = %d", iVisible);
+    LOG1(EJavaMMAPI,EInfo,"CMMADisplay::SetVisible + iContainerVisible = %d", iContainerVisible);
+    LOG1(EJavaMMAPI,EInfo,"CMMADisplay::SetVisible iVisible = %d", iVisible);
     if (!iIsForeground)
     {
-        LOG(EJavaMMAPI,EInfo,"MID::CMMADisplay::SetVisible - iIsForeground = 0");
+        LOG(EJavaMMAPI,EInfo,"CMMADisplay::SetVisible - iIsForeground = 0");
         return;
     }
     // if not it can not be set visible.
@@ -295,9 +343,17 @@ void CMMADisplay::SetVisible(TBool aValue)
     {
         // iWindow->SetVisible(aValue, EFalse);
         //MMAPI UI 3.x req. (had to comment above line and add below line which excutes in FS thread)
-        iWindow->SetVisible(aValue, ETrue);
+        if (iIseSWT == true)
+        {
+            iWindow->SetVisible(aValue, ETrue);
+        }
+        else
+        {
+            iWindow->SetVisible(aValue, EFalse);
+        }
+        LOG(EJavaMMAPI,EInfo,"CMMADisplay::SetVisible after iWindow->SetVisible()");
         SetClippingRegion();
-        LOG(EJavaMMAPI,EInfo,"MID::CMMADisplay::SetVisible -");
+        LOG(EJavaMMAPI,EInfo,"CMMADisplay::SetVisible -");
     }
 }
 
@@ -328,8 +384,8 @@ MMMADisplayWindow* CMMADisplay::Window()
 
 TBool CMMADisplay::IsVisible()
 {
-    LOG1(EJavaMMAPI,EInfo,"MID::CMMADisplay::IsVisible iContainerVisible = %d", iContainerVisible);
-    LOG1(EJavaMMAPI,EInfo,"MID::CMMADisplay::IsVisible iVisible = %d", iVisible);
+    LOG1(EJavaMMAPI,EInfo,"CMMADisplay::IsVisible iContainerVisible = %d", iContainerVisible);
+    LOG1(EJavaMMAPI,EInfo,"CMMADisplay::IsVisible iVisible = %d", iVisible);
     // display is visible if container is on screen and
     // java side has set it visible
     return iVisible && iContainerVisible;
@@ -366,33 +422,36 @@ void CMMADisplay::HandleContainerVisibilityChanged(TBool aVisible)
         if (aVisible != iWindow->IsVisible())
         {
             // Allow
-            LOG(EJavaMMAPI,EInfo,"MID::CMMADisplay::MdcContainerVisibilityChanged Allow ");
+            LOG(EJavaMMAPI,EInfo,"CMMADisplay::MdcContainerVisibilityChanged Allow ");
         }
         else if (iContainerVisible == aVisible)
         {
-            LOG(EJavaMMAPI,EInfo,"MID::CMMADisplay::MdcContainerVisibilityChanged iContainerVisible == aVisible ");
+            LOG(EJavaMMAPI,EInfo,"CMMADisplay::MdcContainerVisibilityChanged iContainerVisible == aVisible ");
             // if state is not changed, we do not need to do it again
             return;
         }
     }
 
-    LOG(EJavaMMAPI,EInfo,"MID::CMMADisplay::MdcContainerVisibilityChanged After condition2");
+    LOG(EJavaMMAPI,EInfo,"CMMADisplay::MdcContainerVisibilityChanged After condition2");
 
     if (iWindow)
     {
-        LOG(EJavaMMAPI,EInfo,"MID::CMMADisplay::MdcContainerVisibilityChanged iWindow is valid ");
+        LOG(EJavaMMAPI,EInfo,"CMMADisplay::MdcContainerVisibilityChanged iWindow is valid ");
         // change is only needed if java side has set display visible or
         // if container loses focus
         if (!iContainerVisible || iVisible)
         {
+            LOG(EJavaMMAPI,EInfo,"CMMADisplay::MdcContainerVisibilityChanged container is invisible and window is visible");
             if (iResetDrawRect && aVisible && !iFullScreen)
             {
+                LOG(EJavaMMAPI,EInfo,"CMMADisplay::MdcContainerVisibilityChanged resetdrawrect is true");
                 iWindow->SetDrawRectThread(iUserRect);
                 iResetDrawRect = EFalse;
             }
             if (iIsForeground)
             {
-                iWindow->SetVisible(aVisible);
+                LOG(EJavaMMAPI,EInfo,"CMMADisplay::MdcContainerVisibilityChanged container foreground is true");
+                iWindow->SetVisible(aVisible,false);
             }
             SetClippingRegion();
         }
@@ -468,21 +527,31 @@ void CMMADisplay::UIGetCallback(
 
 void CMMADisplay::GetCallbackInUiThread(TInt placeholder)
 {
+    JNIEnv* validJni = iEventSource->getValidJniEnv();
+    jobject javaDisplayObject;
+    jclass javaDisplayClass;
     LOG(EJavaMMAPI,EInfo,"CMMADisplay::GetCallbackInUiThread +");
-
-
-
-
-
-
-
-
-    jmethodID getCallBackMethodID = iJni->GetMethodID(
-                                        iJavaDisplayClass,
-                                        "GetCallbackInUiThread",
-                                        "(I)V");
-    // LOG1(EJavaMMAPI,EInfo,"CMMADisplay::GetCallbackInUiThread getCallBackMethodID = %d",getCallBackMethodID);
-    iJni->CallVoidMethod(iJavaDisplayObject,getCallBackMethodID,placeholder);
+    /**
+     * In case of eSWT iJavaDisplayClass and iJavaDisplayObject were initialized with JNI
+     * in UI Thread. Since this function is called from FunctionServer Thread so we need to get
+     * valid JNI for FunctionServer Thread and need to initialize iJavaDisplayClass and iJavaDisplayObject
+     * again for FunctionServer Thread rather than using the one that was created in Constructor(UI Thread).
+     */
+    if (iIseSWT)
+    {
+        javaDisplayObject = validJni->NewGlobalRef(iJavadisplayref);
+        javaDisplayClass =  validJni->GetObjectClass(iJavaDisplayObject);
+    }
+    else
+    {
+        javaDisplayObject = iJavaDisplayObject;
+        javaDisplayClass = iJavaDisplayClass;
+    }
+    getCallBackMethodID = validJni->GetMethodID(javaDisplayClass,
+                          "GetCallbackInUiThread",
+                          "(I)V");
+    LOG1(EJavaMMAPI,EInfo,"CMMADisplay::GetCallbackInUiThread getCallBackMethodID = %d",getCallBackMethodID);
+    validJni->CallVoidMethod(javaDisplayObject,getCallBackMethodID,placeholder);
     LOG(EJavaMMAPI,EInfo,"CMMADisplay::GetCallbackInUiThread -");
 }
 
@@ -514,6 +583,7 @@ void CMMADisplay::SetWindowResources(QWidget* qtWidget)
         return;
     }
     iWindow->ProcureWindowResourcesFromQWidget(iWs,iScreenDevice,window);
+    iWindow->SetVisible(ETrue,ETrue);
     LOG(EJavaMMAPI,EInfo,"CMMADisplay::SetWindowResources -");
 }
 
@@ -629,27 +699,28 @@ void CMMADisplay::SetDisplayPosition(TInt /*uiControlLocationX*/,TInt /*uiContro
 void CMMADisplay::ResetJavaRectObject(const TRect& aRect)
 {
     LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::ResetJavaRectObject +");
-    JNIEnv* validJni = iEventSource->getValidJniEnv();
-    jmethodID setRectID = validJni->GetMethodID(
-                              iJavaDisplayClass,
-                              "setRect",
-                              "()V");
-
+    //TRect rect = aRect;
+    JNIEnv* validJni = iJni;//iEventSource->getValidJniEnv();//iJni;
+    /*jmethodID setRectID = validJni->GetMethodID(
+                                                 iJavaDisplayClass,
+                                                 "setRect",
+                                             "()V");
+    */
     LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::ResetJavaRectObject --1");
     // set the value to java,so that we can access those from array
-    jfieldID field = validJni->GetFieldID(iJavaDisplayClass, "rectDimension", "[I");
-    if (field == NULL)
+
+    //jfieldID iRectDimensionField = validJni->GetFieldID(iJavaDisplayClass, "rectDimension", "[I");
+    if (iRectDimensionField == NULL)
     {
         // handle error
     }
     /* Write to the instance fields */
-    jintArray javaDimensionarr = (jintArray)validJni->GetObjectField(iJavaDisplayObject, field);
+    jintArray javaDimensionarr = (jintArray)validJni->GetObjectField(iJavaDisplayObject, iRectDimensionField);
     LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::ResetJavaRectObject --2");
     jint* nativeRectDimensionArr = validJni->GetIntArrayElements(javaDimensionarr, NULL);
     LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::ResetJavaRectObject --3");
     if (!nativeRectDimensionArr)
-    {
-        // inputBuffer was already allocated
+    {    // inputBuffer was already allocated
         validJni->ReleaseIntArrayElements(javaDimensionarr, nativeRectDimensionArr, JNI_ABORT);
         LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::ResetJavaRectObject Error in resetting rect dimension to java");
         return;
@@ -659,9 +730,10 @@ void CMMADisplay::ResetJavaRectObject(const TRect& aRect)
     nativeRectDimensionArr[2] = aRect.Width();
     nativeRectDimensionArr[3] = aRect.Height();
     // Now the dimension array in java is updated hence reset the java rect
+
+    validJni->ReleaseIntArrayElements(javaDimensionarr, nativeRectDimensionArr, 0);
     validJni->CallVoidMethod(iJavaDisplayObject,setRectID);
 
-    validJni->ReleaseIntArrayElements(javaDimensionarr, nativeRectDimensionArr, JNI_COMMIT);
     LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::ResetJavaRectObject -");
 }
 
@@ -669,13 +741,14 @@ void CMMADisplay::ResetJavaRectObject(const TRect& aRect)
 void CMMADisplay::SetContentBoundToJavaControl(const TRect& aRect)
 {
     LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::SetContentBoundToJavaControl +");
-    JNIEnv* validJni = iEventSource->getValidJniEnv();
+    JNIEnv* validJni = iJni;//iEventSource->getValidJniEnv();//iJni;
     // Reset the java rect
     ResetJavaRectObject(aRect);
-    jmethodID setContentBoundID = validJni->GetMethodID(
-                                      iJavaDisplayClass,
-                                      "setContentBound",
-                                      "()V");
+    /*jmethodID setContentBoundID = validJni->GetMethodID(
+                                         iJavaDisplayClass,
+                                         "setContentBound",
+                                     "()V");
+    */
     // call java function
     validJni->CallVoidMethod(iJavaDisplayObject,setContentBoundID);
     LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::SetContentBoundToJavaControl -");
@@ -684,13 +757,14 @@ void CMMADisplay::SetContentBoundToJavaControl(const TRect& aRect)
 void CMMADisplay::RemoveContentBoundFromJavaControl(const TRect& aRect)
 {
     LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::RemoveContentBoundFromJavaControl +");
-    JNIEnv* validJni = iEventSource->getValidJniEnv();
+    JNIEnv* validJni = iJni;//iEventSource->getValidJniEnv();
     // Reset the java rect
     ResetJavaRectObject(aRect);
-    jmethodID removeContentBoundID = validJni->GetMethodID(
+    /*jmethodID removeContentBoundID = validJni->GetMethodID(
                                          iJavaDisplayClass,
                                          "removeContentBound",
-                                         "()V");
+                                     "()V");
+    */
     // call java function
     validJni->CallVoidMethod(iJavaDisplayObject,removeContentBoundID);
     LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::RemoveContentBoundFromJavaControl -");
@@ -699,16 +773,26 @@ void CMMADisplay::RemoveContentBoundFromJavaControl(const TRect& aRect)
 void CMMADisplay::RefreshJavaControl()
 {
     LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::RefreshJavaControl +");
-    JNIEnv* validJni = iEventSource->getValidJniEnv();
+    JNIEnv* validJni = iJni;//iEventSource->getValidJniEnv();//iJni;
     // Reset the java rect
     //ResetJavaRectObject(aRect);
-    jmethodID redrawControlID = validJni->GetMethodID(
-                                    iJavaDisplayClass,
-                                    "redrawControl",
-                                    "()V");
+    /*jmethodID redrawControlID = validJni->GetMethodID(
+                                         iJavaDisplayClass,
+                                         "redrawControl",
+                                     "()V");
+    */
     // call java function
     validJni->CallVoidMethod(iJavaDisplayObject,redrawControlID);
     LOG(EJavaMMAPI,EInfo,"MMA::CMMACanvasDisplay::RefreshJavaControl -");
 }
 
+TBool CMMADisplay::iseSWT()
+{
+    return iIseSWT;
+}
+
+void CMMADisplay::SetFullscreenSize(TSize &aFullscreenSize)
+{
+    iFullScreenSize = aFullscreenSize;
+}
 //  END OF FILE

@@ -11,6 +11,8 @@
 
 package org.eclipse.swt.graphics;
 
+import java.io.InputStream;
+
 /**
  * <p>
  * <b>IMPORTANT:</b> This class is <em>not</em> part of the SWT public API. It
@@ -63,4 +65,13 @@ public static Image createImageWithoutSecurityCheck(Device device,
         String filename) {
     return Image.createImageWithoutSecurityCheck(device, filename);
 }
+
+public static Point getImageSize(Device device, String filename) {
+    return Image.getImageSize(device, filename);
+}
+
+public static Point getImageSize(InputStream stream) {
+    return Image.getImageSize(stream);
+}
+
 }

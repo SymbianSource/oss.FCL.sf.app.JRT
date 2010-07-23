@@ -50,6 +50,8 @@
 "\epoc32\release\armv5\urel\javabackup.exe"-"c:\sys\bin\javabackup.exe"
 "\epoc32\release\armv5\urel\javacaptain.exe"-"c:\sys\bin\javacaptain.exe"
 "\epoc32\release\armv5\urel\javalauncher.exe"-"c:\sys\bin\javalauncher.exe"
+"\epoc32\release\armv5\urel\javaappscheme.exe"-"c:\sys\bin\javaappscheme.exe"
+"\epoc32\release\armv5\urel\javaqtrequest.exe"-"c:\sys\bin\javaqtrequest.exe"
 "\epoc32\release\armv5\urel\javaupgradeapp.exe"-"c:\sys\bin\javaupgradeapp.exe"
 
 ;Odc file lists
@@ -165,7 +167,6 @@
 
 ; Misc dlls
 
-"\epoc32\release\armv5\urel\javaappschemeplugin.dll"-"c:\sys\bin\javaappschemeplugin.dll"
 "\epoc32\release\armv5\urel\javabtl2capscplugin.dll"-"c:\sys\bin\javabtl2capscplugin.dll"
 "\epoc32\release\armv5\urel\javabtsppscplugin.dll"-"c:\sys\bin\javabtsppscplugin.dll"
 "\epoc32\release\armv5\urel\javabtgoepscplugin.dll"-"c:\sys\bin\javabtgoepscplugin.dll"
@@ -217,7 +218,6 @@
 #endif
 
 ; resources
-"\epoc32\data\z\resource\plugins\javaappschemeplugin.rsc"     -"c:\resource\plugins\javaappschemeplugin.rsc"
 "\epoc32\winscw\c\private\102033E6\installer\inst_plugins.cfg"-"c:\private\102033E6\installer\inst_plugins.cfg"
 "\epoc32\data\Z\Resource\versions\java.txt"-"c:\resource\versions\java.txt"
 "\epoc32\data\z\resource\java\java_app_92.mif"-"c:\resource\java\java_app.mif"

@@ -472,7 +472,21 @@ int verifyCertChain(char **cert_chain, int no_certs,
         if (X509_verify_cert(x509_ctx) != 1)
         {
             ret_code = getErrCode(X509_STORE_CTX_get_error(x509_ctx));
-            break;
+            // If the secure time of the device has not yet been set
+            // (can happen some times during the first device boot),
+            // allow installing with not yet valid certificates
+            if (KCertNotYetValidFailure == ret_code)
+            {
+                if (!TelUtils::isSecureTimeSet())
+                {
+                    ret_code = KCertAndSignatureOk;
+                }
+            }
+
+            if (KCertAndSignatureOk != ret_code)
+            {
+                break;
+            }
         }
         // verify the extended key usage: it must point to id-kp-codeSigning (RFC3280 code signing)
         // or 1.3.6.1.4.1.94.1.49.1.2.2.3 (Nokia Java Code Signing Extension)

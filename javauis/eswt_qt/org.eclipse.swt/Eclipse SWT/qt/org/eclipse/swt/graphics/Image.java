@@ -20,6 +20,7 @@ import org.eclipse.swt.internal.qt.OS;
 import org.eclipse.swt.internal.qt.graphics.GraphicsContext;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Internal_PackageSupport;
+import org.eclipse.swt.graphics.Point;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -431,6 +432,43 @@ public final class Image implements Drawable {
     
     static Image createImageWithoutSecurityCheck(Device device, String filename) {
         return new Image(device, filename, false);
+    }
+    
+    /*
+     * Returns the bounds of an image without creating an Image instance.
+     */
+    static Point getImageSize(Device device, String filename) {
+        
+        if (filename == null) {
+            SWT.error(SWT.ERROR_NULL_ARGUMENT);
+        }
+        
+        InputStream is = device.getClass().getResourceAsStream(filename);
+        
+        if (is == null) {
+            SWT.error(SWT.ERROR_IO);
+        }
+        
+        return getImageSize(is);
+    }
+    
+    /*
+     * Returns the bounds of an image without creating an Image instance.
+     */
+    static Point getImageSize(InputStream stream) {
+        Point point = null;
+        
+        try {
+            point = org.eclipse.swt.internal.qt.graphics.ImageLoader.getImageSize(stream);
+        } catch (IOException e) {
+            SWT.error(SWT.ERROR_IO);
+        } catch (NullPointerException e) {
+            SWT.error(SWT.ERROR_NULL_ARGUMENT);
+        } catch (IllegalArgumentException e) {
+            SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+        }
+        
+        return point;
     }
 
     /**

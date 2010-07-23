@@ -36,6 +36,7 @@ import com.nokia.mj.impl.utils.exception.InstallerExceptionBase;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.Hashtable;
 
 import org.eclipse.ercp.swt.midp.UIThreadSupport;
@@ -219,10 +220,7 @@ public class InstallerUiEswt extends InstallerUi
                     display.sleep();
                 }
             }
-            if (iBoldFont != null && !iBoldFont.isDisposed())
-            {
-                iBoldFont.dispose();
-            }
+            disposeResources();
             display.dispose();
             log("uiMain: display disposed");
             synchronized (iExitWaitObject)
@@ -674,9 +672,10 @@ public class InstallerUiEswt extends InstallerUi
                 {
                     public void run()
                     {
-                        iOcspProgressView = new ProgressView(self, iDialog,
-                                                             InstallerUiTexts.get(InstallerUiTexts.OCSP_CHECK_PROGRESS),
-                                                             true);
+                        iOcspProgressView = new ProgressView(
+                            self, iDialog,
+                            InstallerUiTexts.get(InstallerUiTexts.OCSP_CHECK_PROGRESS),
+                            true);
                     }
                 });
                 iOcspProgressView.addCancelCommand();
@@ -803,45 +802,6 @@ public class InstallerUiEswt extends InstallerUi
             iErrorDetailsView = null;
         }
     }
-
-    /**
-     * Notify user that an error has occurred using RuntimeUI.
-     *
-     * @param aInstallerException exception indicating the error reason
-     */
-    /*
-    private void showRuntimeUiError(InstallerExceptionBase aInstallerException)
-    {
-        boolean identified = false;
-        if (iInstallInfo != null)
-        {
-            if (iInstallInfo.getCertificates() != null)
-            {
-                identified = true;
-            }
-        }
-        else if (iUninstallInfo != null)
-        {
-            if (iUninstallInfo.getCertificates() != null)
-            {
-                identified = true;
-            }
-        }
-        String tmpTitle = InstallerUiTexts.get(InstallerUiTexts.INSTALL_FAILED);
-
-        // Ensure that no confirmations are being displayed.
-        cancelConfirmations();
-        // Hide progress view before displaying error message.
-        if (iProgressView != null)
-        {
-            iProgressView.setVisible(false);
-        }
-        // Use RuntimeUi to display uninstallation error message.
-        RuntimeUi runtimeUi = RuntimeUiFactory.getRuntimeUi(identified);
-        runtimeUi.error(tmpTitle, aInstallerException);
-        runtimeUi.destroy();
-    }
-    */
 
     /**
      * Seeks confirmation from the user.
@@ -1032,20 +992,23 @@ public class InstallerUiEswt extends InstallerUi
      */
     protected String getTitle()
     {
-        String result = null;
-        if (iMode == MODE_INSTALL)
+        String result = super.getTitle();
+        if (isUiReady())
         {
-            result = InstallerUiTexts.get(InstallerUiTexts.INSTALLING);
-        }
-        else if (iMode == MODE_UNINSTALL)
-        {
-            result = InstallerUiTexts.get("Uninstalling");
-        }
-        else if (iMode == MODE_APP_CONVERSION)
-        {
-            result = InstallerUiTexts.get(
-                "Converting data for application " +
-                iAppConversionCurrent + "/" + iAppConversionTotal);
+            if (iMode == MODE_INSTALL)
+            {
+                result = InstallerUiTexts.get(InstallerUiTexts.INSTALLING);
+            }
+            else if (iMode == MODE_UNINSTALL)
+            {
+                result = InstallerUiTexts.get("Uninstalling");
+            }
+            else if (iMode == MODE_APP_CONVERSION)
+            {
+                result = InstallerUiTexts.get(
+                    "Converting data for application " +
+                    iAppConversionCurrent + "/" + iAppConversionTotal);
+            }
         }
         return result;
     }
@@ -1070,11 +1033,19 @@ public class InstallerUiEswt extends InstallerUi
         {
             iconFilename = "java_3_trusted.png";
         }
-        String resourceDir = ResourceUtil.getResourceDir(0);
-        for (int i = 1; iSecurityIcon == null && resourceDir != null; i++)
+        try
         {
-            iSecurityIcon = loadImage(aDisplay, resourceDir + iconFilename, false);
-            resourceDir = ResourceUtil.getResourceDir(i);
+            String resourceDir = ResourceUtil.getResourceDir(0);
+            for (int i = 1; iSecurityIcon == null && resourceDir != null; i++)
+            {
+                iSecurityIcon = loadImage(
+                    aDisplay, resourceDir + iconFilename, false);
+                resourceDir = ResourceUtil.getResourceDir(i);
+            }
+        }
+        catch (Throwable t)
+        {
+            log("Can not load security icon: " + t);
         }
         return iSecurityIcon;
     }
@@ -1361,6 +1332,26 @@ public class InstallerUiEswt extends InstallerUi
         catch (Throwable t)
         {
             logError("Loading CSS from " + cssPath + " failed", t);
+        }
+    }
+
+    private void disposeResources() {
+        if (iBoldFont != null && !iBoldFont.isDisposed())
+        {
+            iBoldFont.dispose();
+        }
+        if (iSecurityIcon != null && !iSecurityIcon.isDisposed())
+        {
+            iSecurityIcon.dispose();
+        }
+        Enumeration e = iImageTable.elements();
+        while (e.hasMoreElements())
+        {
+            Image img = (Image)e.nextElement();
+            if (img != null && !img.isDisposed())
+            {
+                img.dispose();
+            }
         }
     }
 }

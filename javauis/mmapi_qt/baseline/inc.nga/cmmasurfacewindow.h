@@ -65,7 +65,8 @@ public:
         EResetSurfaceParameters,
         ESetChangedSurfaceParameters,
         ECleanVideoDisplay,
-        EDestroyWindow
+        EDestroyWindow,
+        EChangeVisibility        
     };
 
 private:
@@ -158,6 +159,7 @@ public: // Methods derived from MMMADisplayWindow
     const TRect& WindowRect();
     void ContainerDestroyed();
     void ContainerSet();
+    void DoSetVisibleL();
 /*
 public: // from base class MUiEventConsumer
     void MdcDSAResourcesCallback(RWsSession &aWs,

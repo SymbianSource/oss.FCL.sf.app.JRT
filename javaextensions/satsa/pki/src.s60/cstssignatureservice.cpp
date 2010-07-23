@@ -31,6 +31,10 @@
 #include <CCMSEncapsulatedContentInfo.h>
 #include <CCMSSignedData.h>
 
+#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
+#include <PKIDlg.h>
+#endif
+
 #include "cstsseprompt.h"
 
 #include <hash.h>
@@ -39,9 +43,6 @@
 #include "satsajnitools.h"
 #include "logger.h"
 #include "jstringutils.h"
-
-#include <hbdevicemessageboxsymbian.h>
-#include <hbpopup.h>
 
 
 const TInt KDefaultGranularity = 1;
@@ -81,7 +82,12 @@ CSTSSignatureService::~CSTSSignatureService()
     {
         iDialog->Release(); // Release deletes the object
     }
-    
+#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS	
+    if (iPKIDialog)
+    {
+        iPKIDialog->Release();
+    }
+#endif	
     iCertificateArray.Close();
     iCertInfos.Close();
     delete iFilter;
@@ -274,34 +280,9 @@ void CSTSSignatureService::RunL()
         {
             iState = EFinalNote;
             iStatus = KErrNone;
-            
-            // Using Orbit API 
-            CHbDeviceMessageBoxSymbian* messageBox
-                = CHbDeviceMessageBoxSymbian::NewL(CHbDeviceMessageBoxSymbian::EWarning);
-            CleanupStack::PushL(messageBox);
-
-            _LIT(KQuestion, "Do you want to sign the data?");
-            messageBox->SetTextL(KQuestion);
-            messageBox->SetTimeout(HbPopup::NoTimeout);
-
-            // Read localised versions instead of hard coded values.
-            _LIT(KAllowButtonText, "Allow");
-            _LIT(KDenyButtonText, "Deny");
-
-            messageBox->SetButtonTextL(CHbDeviceMessageBoxSymbian::EAcceptButton, KAllowButtonText);
-            messageBox->SetButton(CHbDeviceMessageBoxSymbian::EAcceptButton, ETrue);
-            messageBox->SetButtonTextL(CHbDeviceMessageBoxSymbian::ERejectButton, KDenyButtonText);
-            messageBox->SetButton(CHbDeviceMessageBoxSymbian::ERejectButton, ETrue);
-
-            // by default the answer is Allow
-            if (messageBox->ExecL() == CHbDeviceMessageBoxSymbian::ERejectButton)
-            {
-                
-            }
-
-            messageBox->Close();
-            CleanupStack::PopAndDestroy(messageBox);
-            
+#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS			
+            iPKIDialog->Note(MPKIDialog::ESigningCancelled, iStatus);
+#endif			
             SetActive();
          }
         else
@@ -504,7 +485,9 @@ void CSTSSignatureService::ConstructL()
 {
     User::LeaveIfError(iFileServer.Connect());
     iDialog = SecurityDialogFactory::CreateL();
-        
+#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS	
+    iPKIDialog = PKIDialogFactory::CreateNoteL();
+#endif
     iFilter = CCertAttributeFilter::NewL();
 
     iWait = new(ELeave) CActiveSchedulerWait;
@@ -651,60 +634,18 @@ void CSTSSignatureService::HandlesFromCertInfosL()
     {
     case EAuthWithoutText:
     {
-        // Use Orbit API
-        CHbDeviceMessageBoxSymbian* messageBox
-            = CHbDeviceMessageBoxSymbian::NewL(CHbDeviceMessageBoxSymbian::EWarning);
-        CleanupStack::PushL(messageBox);
-
-        _LIT(KQuestion, "Do you want to sign the data?");
-        messageBox->SetTextL(KQuestion);
-        messageBox->SetTimeout(HbPopup::NoTimeout);
-
-        // Read localised versions instead of hard coded values.
-        _LIT(KAllowButtonText, "Allow");
-        _LIT(KDenyButtonText, "Deny");
-
-        messageBox->SetButtonTextL(CHbDeviceMessageBoxSymbian::EAcceptButton, KAllowButtonText);
-        messageBox->SetButton(CHbDeviceMessageBoxSymbian::EAcceptButton, ETrue);
-        messageBox->SetButtonTextL(CHbDeviceMessageBoxSymbian::ERejectButton, KDenyButtonText);
-        messageBox->SetButton(CHbDeviceMessageBoxSymbian::ERejectButton, ETrue);
-
-        // by default the answer is Allow
-        if (messageBox->ExecL() == CHbDeviceMessageBoxSymbian::ERejectButton)
-        {
-        
-        }
-        messageBox->Close();
-        CleanupStack::PopAndDestroy(messageBox);
+#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS        
+        iPKIDialog->UserAuthentication(iCertificateArray, iCertificateHandle,
+                                       iStatus);
+#endif 
         break;
     }
     case EAuthWithText:
     {
-        // Use Orbit API
-        CHbDeviceMessageBoxSymbian* messageBox
-            = CHbDeviceMessageBoxSymbian::NewL(CHbDeviceMessageBoxSymbian::EWarning);
-        CleanupStack::PushL(messageBox);
-
-        _LIT(KQuestion, "Do you want to sign the data?");
-        messageBox->SetTextL(KQuestion);
-        messageBox->SetTimeout(HbPopup::NoTimeout);
-
-        // Read localised versions instead of hard coded values.
-        _LIT(KAllowButtonText, "Allow");
-        _LIT(KDenyButtonText, "Deny");
-
-        messageBox->SetButtonTextL(CHbDeviceMessageBoxSymbian::EAcceptButton, KAllowButtonText);
-        messageBox->SetButton(CHbDeviceMessageBoxSymbian::EAcceptButton, ETrue);
-        messageBox->SetButtonTextL(CHbDeviceMessageBoxSymbian::ERejectButton, KDenyButtonText);
-        messageBox->SetButton(CHbDeviceMessageBoxSymbian::ERejectButton, ETrue);
-
-        // by default the answer is Allow
-        if (messageBox->ExecL() == CHbDeviceMessageBoxSymbian::ERejectButton)
-        {
-        
-        }
-        messageBox->Close();
-        CleanupStack::PopAndDestroy(messageBox);
+#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
+        iPKIDialog->UserAuthenticationText(*iTextToDisplay, iCertificateArray,
+                                           iCertificateHandle, iStatus);
+#endif
         break;
     }
     case ESignWithText:
@@ -991,32 +932,9 @@ void CSTSSignatureService::CreateSignedDataL()
     if (iShowNotes)
     {
         iState = EFinalNote;
-     
-        //proper string for user prompt
-        CHbDeviceMessageBoxSymbian* messageBox
-        = CHbDeviceMessageBoxSymbian::NewL(CHbDeviceMessageBoxSymbian::EWarning);
-        CleanupStack::PushL(messageBox);
-
-        _LIT(KQuestion, "Do you want to sign the data?");
-        messageBox->SetTextL(KQuestion);
-        messageBox->SetTimeout(HbPopup::NoTimeout);
-
-        // Read localised versions instead of hard coded values.
-        _LIT(KAllowButtonText, "Allow");
-        _LIT(KDenyButtonText, "Deny");
-
-        messageBox->SetButtonTextL(CHbDeviceMessageBoxSymbian::EAcceptButton, KAllowButtonText);
-        messageBox->SetButton(CHbDeviceMessageBoxSymbian::EAcceptButton, ETrue);
-        messageBox->SetButtonTextL(CHbDeviceMessageBoxSymbian::ERejectButton, KDenyButtonText);
-        messageBox->SetButton(CHbDeviceMessageBoxSymbian::ERejectButton, ETrue);
-
-        // by default the answer is Allow
-        if (messageBox->ExecL() == CHbDeviceMessageBoxSymbian::ERejectButton)
-        {
-        
-        }
-        messageBox->Close();
-        CleanupStack::PopAndDestroy(messageBox);
+#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS		
+        iPKIDialog->Note(MPKIDialog::ESignatureDone, iStatus);
+#endif		
         SetActive();
     }
     else

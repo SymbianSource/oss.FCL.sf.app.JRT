@@ -96,7 +96,7 @@ public class AnimationPlayerFactory implements PlugIn
      * @return InternalPlayer object
      * @throws IOException if it is not possible to read the file from location specified
      */
-    public InternalPlayer createPlayer(String locator) throws IOException
+    public InternalPlayer createPlayer(String locator) throws IOException, MediaException
     {
         final String DEBUG_STR="AnimationPlayerFactory::createPlayer(String locator )";
         Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,DEBUG_STR+"+");

@@ -35,6 +35,8 @@ public:
     static TelUtils* createInstance();
     void getNetworkCodes(std::string& mnc, std::string& mcc);
     void getImei(std::string& imei);
+    static signed int getSecureTime();
+    static int isSecureTimeSet();
     virtual ~TelUtils();
 
 private: //Methods

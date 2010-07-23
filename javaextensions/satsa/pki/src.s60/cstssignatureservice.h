@@ -20,8 +20,6 @@
 #define CSTSSIGNATURESERVICE_H
 
 
-#include "javaosheaders.h"
-#include <vector>
 
 #include <e32base.h>
 #include <badesca.h>
@@ -30,6 +28,9 @@
 
 // FORWARD DECLARATIONS
 class MSecurityDialog;
+#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS 
+class MPKIDialog;
+#endif
 class CUnifiedCertStore;
 class CUnifiedKeyStore;
 class CCTCertInfo;
@@ -263,6 +264,11 @@ private:    // Data
 
     // security dialog, owned
     MSecurityDialog* iDialog;
+
+#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
+    // PKI Dialog, owned
+    MPKIDialog* iPKIDialog;
+#endif	
 
     // certificate store, owned
     CUnifiedCertStore* iCertStore;

@@ -33,6 +33,8 @@ import j2meunit.framework.TestSuite;
  */
 public class SysUtilTest extends TestCase implements InstallerMain
 {
+    private int iPropertyValue = 0; // Used in testPropertyListener test case.
+
     // Begin j2meunit test framework setup
 
     public void installerMain(String[] args)
@@ -169,6 +171,14 @@ public class SysUtilTest extends TestCase implements InstallerMain
 
         if (Platform.isS60())
         {
+        suite.addTest(new SysUtilTest("testPropertyListener", new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((SysUtilTest)tc).testPropertyListener();
+            }
+        }));
+
         suite.addTest(new SysUtilTest("testGetProcessState", new TestMethod()
         {
             public void run(TestCase tc)
@@ -266,13 +276,12 @@ public class SysUtilTest extends TestCase implements InstallerMain
     {
         try
         {
-            // Test PS keys defined in ScreensaverInternalPSKeys.h
-            Uid uid = PlatformUid.createUid("0x101F8771");  // KPSUidScreenSaver
-            int key = 0x00000001; // KScreenSaverPreviewMode
-            // Set screensaver preview mode on (stays on for 10 secs).
+            Uid uid = SysUtil.PROP_CATEGORY_SYSTEM;
+            long key = SysUtil.PROP_KEY_JAVA_LATEST_INSTALLATION_PROGRESS;
             SysUtil.setPropertyValue(uid, key, 1);
             int value = SysUtil.getPropertyValue(uid, key);
-            assertTrue("KScreenSaverPreviewMode(!=1): " + value, value == 1);
+            assertTrue("PROP_KEY_JAVA_LATEST_INSTALLATION_PROGRESS(!=1): " +
+                       value, value == 1);
         }
         catch (InstallerException ie)
         {
@@ -285,9 +294,8 @@ public class SysUtilTest extends TestCase implements InstallerMain
     {
         try
         {
-            // Test PS keys defined in ScreensaverInternalPSKeys.h
-            Uid uid = PlatformUid.createUid("0x101F8771");  // KPSUidScreenSaver
-            int key = 0x00000010; // Undefined key
+            Uid uid = SysUtil.PROP_CATEGORY_SYSTEM;
+            int key = 0x00000100; // Undefined key
             SysUtil.setPropertyValue(uid, key, 1);
             assertTrue("Setting undefined property value did not fail", false);
         }
@@ -374,11 +382,12 @@ public class SysUtilTest extends TestCase implements InstallerMain
     {
         try
         {
-            // Test CenRep keys defined in ScreensaverInternalCRKeys.h
-            Uid uid = PlatformUid.createUid("0x101F8770"); // KCRUidScreenSaver
-            long key = 0x00000004; // KScreenSaverInvertedColors
+            // Test CenRep keys defined in Java security.
+            Uid uid = PlatformUid.createUid("0x2001B289"); // KJavaSecurity
+            long key = 0x00000004; // KJavaSecurity/KWarningsMode
             int value = SysUtil.getRepositoryValue(uid, key);
-            assertTrue("KScreenSaverInvertedColors(!=0): " + value, value == 0);
+            assertTrue("KJavaSecurity/KWarningsMode(!=2): " + value,
+                       value == 2);
         }
         catch (InstallerException ie)
         {
@@ -606,6 +615,81 @@ public class SysUtilTest extends TestCase implements InstallerMain
         catch (InstallerException ie)
         {
             // OK, expected exception.
+        }
+    }
+
+    public void testPropertyListener()
+    {
+        final int category = 0x101f75b6;
+        final int key = 0x20019546;
+        final int value = 15;
+        final Object synchObject = this;
+        PropertyListener listener = new PropertyListener()
+        {
+            public void valueChanged(int aCategory, int aKey, int aValue)
+            {
+                try
+                {
+                    if (aValue == 0)
+                    {
+                        // Ignore the first event which is sent when
+                        // subscription is made.
+                        return;
+                    }
+                    synchronized (synchObject)
+                    {
+                        iPropertyValue = aValue;
+                        Log.log("PropertyListener.valueChanged: " + aValue +
+                                " (" + aCategory + ", " + aKey + ")");
+                        if (aCategory != category)
+                        {
+                            Log.logError("PropertyListener.valueChanged: " +
+                                         "invalid category " + aCategory);
+                        }
+                        if (aKey != key)
+                        {
+                            Log.logError("PropertyListener.valueChanged: " +
+                                         "invalid key " + aKey);
+                        }
+                        synchObject.notify();
+                    }
+                }
+                catch (Throwable t)
+                {
+                    Log.logError("PropertyListener.valueChanged exception", t);
+                }
+            }
+        };
+        try
+        {
+            iPropertyValue = 0;
+            SysUtil.setPropertyValue(
+                PlatformUid.createUid(category), key, iPropertyValue);
+            PropertyProvider provider = new PropertyProvider();
+            provider.subscribe(category, key, listener);
+            SysUtil.setPropertyValue(
+                PlatformUid.createUid(category), key, value);
+            try
+            {
+                synchronized (synchObject)
+                {
+                    if (iPropertyValue == 0)
+                    {
+                        synchObject.wait(2000);
+                    }
+                }
+            }
+            catch (InterruptedException ie)
+            {
+            }
+            provider.unsubscribe();
+            assertTrue("Unexpected property value after test: " +
+                       iPropertyValue, iPropertyValue == value);
+        }
+        catch (Throwable t)
+        {
+            Log.logError("testPropertyListener exception", t);
+            assertTrue("Unexpected exception " + t, false);
         }
     }
 

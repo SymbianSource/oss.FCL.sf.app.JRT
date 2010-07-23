@@ -409,10 +409,6 @@ public final class FileConnectionImpl implements FileConnection
         checkConnection();
         checkConnectionMode(Connector.WRITE);
 
-        if (Connector.READ == iMode)
-        {
-            return false;
-        }
         return iFileUtility.canWrite();
     }
 

@@ -221,7 +221,7 @@ abstract public class ViewBase
     /** Set title for this view. */
     public void setTitle(String aTitle)
     {
-        // Dialog shells have no title anymore
+        // Dialog shells have no title.
     }
 
     /** Disposes this view. */
@@ -549,7 +549,7 @@ abstract public class ViewBase
         // Add suite name and version.
         createAppInfoLabel(
             InstallerUiTexts.get(
-                InstallerUiTexts.SUITE_NAME,
+                InstallerUiTexts.SUITE_NAME_VERSION,
                 new String[] { aInstallInfo.getName(),
                                aInstallInfo.getVersion() }));
         if (aFull)
@@ -577,14 +577,14 @@ abstract public class ViewBase
                 createAppInfoLabel(
                     InstallerUiTexts.get(
                         InstallerUiTexts.SIZE_MB,
-                        new String[] { Long.toString(1 + size/(1024*1024)) }));
+                        new Object[] { new Integer((int)(1 + size/(1024*1024))) }));
             }
             else
             {
                 createAppInfoLabel(
                     InstallerUiTexts.get(
                         InstallerUiTexts.SIZE_KB,
-                        new String[] { Long.toString(1 + size/1024) }));
+                        new Object[] { new Integer((int)(1 + size/1024)) }));
             }
         }
         if (aFull)

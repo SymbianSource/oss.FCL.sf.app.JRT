@@ -295,9 +295,9 @@ final class ChoiceImpl
         validateSelectedArray(selectedArray);
         final int size = size();
         int numSelected = 0;
-        for(int i = 0; i < size; i++)
+        for(int i = 0; i < selectedArray.length; i++)
         {
-            if(((ChoiceData) items.elementAt(i)).sel)
+            if( (i < size) && (((ChoiceData) items.elementAt(i)).sel))
             {
                 selectedArray[i] = true;
                 numSelected++;
@@ -306,7 +306,8 @@ final class ChoiceImpl
             {
                 selectedArray[i] = false;
             }
-        }
+        }      
+
         return numSelected;
     }
 

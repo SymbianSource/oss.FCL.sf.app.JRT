@@ -368,10 +368,18 @@ public class ItemDisplay extends BaseDisplay implements ItemControlStateChangeLi
 
     }
 
-    public void setContainerVisibilityToNative(boolean active)
+    public void setContainerVisibilityToNative(final boolean active)
     {
         Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"ItemDisplay.java : SetContainerVisibilityToNative + ");
-        _setContainerVisible(nativeDisplayHandle,active);
+        new Thread()
+        {
+            public void run()
+            {
+                Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"ItemDisplay.java : SetContainerVisibilityToNative execute the native function in new thread ");
+                _setContainerVisible(iEventSourceHandle,nativeDisplayHandle,active);
+            }
+        } .start();
+        //_setContainerVisible(nativeDisplayHandle,active);
         Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"ItemDisplay.java : SetContainerVisibilityToNative - ");
     }
 
@@ -504,7 +512,7 @@ public class ItemDisplay extends BaseDisplay implements ItemControlStateChangeLi
     private native void _setVisible(int nativeDisplayHandle,
                                     boolean value);
 
-    private native void _setContainerVisible(int nativeDisplayHandle,
+    private native void _setContainerVisible(int iEventSourceHandle,int nativeDisplayHandle,
             boolean value);
     private native void _setFullScreenMode(int nativeDisplayHandle, boolean value);
     private native void _setWindowToNative(int nativeDisplayHandle,int qwidgetHandle);

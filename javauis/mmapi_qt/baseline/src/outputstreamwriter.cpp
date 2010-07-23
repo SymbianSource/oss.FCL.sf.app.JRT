@@ -77,8 +77,8 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_protocol_OutputStreamWr
                                         outputBufferSize, // returns readed size
                                         &readStatus);
 
-    aJni->ReleaseByteArrayElements(aOutputBuffer, outputBuffer, JNI_COMMIT);
-    aJni->ReleaseIntArrayElements(aOutputBufferSize, outputBufferSize, JNI_COMMIT);
+    aJni->ReleaseByteArrayElements(aOutputBuffer, outputBuffer, 0);
+    aJni->ReleaseIntArrayElements(aOutputBufferSize, outputBufferSize, 0);
 
     if (err != KErrNone)
     {

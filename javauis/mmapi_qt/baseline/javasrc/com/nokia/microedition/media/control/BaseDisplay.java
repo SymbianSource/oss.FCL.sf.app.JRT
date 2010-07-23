@@ -219,6 +219,17 @@ public abstract class BaseDisplay
         }
         return rect;
     }
+
+    public Rectangle getFullScreenBounds()
+    {
+        //return new Rectangle(0,0,0,0);
+        org.eclipse.swt.widgets.Display disp = com.nokia.mj.impl.nokialcdui.LCDUIInvoker.getEswtDisplay();
+        Rectangle temp = disp.getBounds();
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"  getBounds returns width = "+temp.width+"height= "+temp.height);
+        temp = disp.getClientArea();
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"  getBounds returns width = "+temp.width+"height= "+temp.height);
+        return temp;
+    }
     // abstract functions implemented by concrete class
     protected abstract void setDisplaySize(int aWidth, int aHeight);
     protected abstract void setDisplayFullScreen(final boolean aFullScreenMode);

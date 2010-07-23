@@ -73,7 +73,8 @@ public class CheckJarPackages extends ExeStep
         // Application touch support detection is not needed
         // if Nokia-MIDlet-On-Screen-Keypad has been defined.
         boolean touchDetection = true;
-        if (ball.iSuite.getOnScreenKeypad() != SuiteInfo.OSK_UNDEFINED)
+        if (ball.getAttributeValue("Nokia-MIDlet-On-Screen-Keypad") != null &&
+            ball.iSuite.getOnScreenKeypad() != SuiteInfo.OSK_UNDEFINED)
         {
             touchDetection = false;
         }

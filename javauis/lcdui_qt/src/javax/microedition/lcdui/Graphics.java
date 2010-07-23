@@ -750,7 +750,7 @@ public class Graphics
     public void drawSubstring(java.lang.String string, int offset, int length,
                               int xPos, int yPos, int anch)
     {
-        drawString(string.substring(offset, length), xPos, yPos, anch);
+        drawString(string.substring(offset, offset+length), xPos, yPos, anch);
     }
 
     /**

@@ -229,20 +229,16 @@ public class MMAeSWTDisplay extends BaseDisplay
         {
 
             final org.eclipse.swt.widgets.Display display = org.eclipse.swt.widgets.Display.getDefault();
-
-            //display.syncExec(new Runnable() {
-            //public void run() {
-            iControl.setBounds(display.getClientArea());
-            System.out.println("enetr in to the full screen mode setDisplayFullScreen %d"+iControl.getBounds());
-//                  new MobileShell(display).setFullScreenMode(aFullScreenMode);
-            //((MobileShell)iControl.getShell()).setFullScreenMode(aFullScreenMode);
-            //  new Shell(display).setFullScreenMode(aFullScreenMode);
-            //((Shell)iControl.getShell()).setFullScreenMode(aFullScreenMode);
-            //TODO
-            // instruct native to switch to full screen mode
-            //_setFullScreenMode(nativeDisplayHandle, aFullScreenMode);
-            //}
-            //});
+            if (iControl.getParent() instanceof MobileShell)
+            {
+                System.out.println("is instance of MobileShell");
+                MobileShell mobileShell = (MobileShell) iControl.getParent();
+                mobileShell.setFullScreenMode(aFullScreenMode);
+            }
+            else
+            {
+                System.out.println("is not instance of MobileShell");
+            }
         }
         catch (Exception e)
         {
@@ -361,9 +357,9 @@ public class MMAeSWTDisplay extends BaseDisplay
                 public void run()
                 {
                     Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMAPI: MMAeSWTDisplay.java: setVisible() inside asyncExec run()");
-                    //eswtCanvasControl.setVisible(visible);
+                    iControl.setVisible(visible);
                     // call native side to set the visibiity
-                    _setVisible(nativeDisplayHandle, visible);
+                    //_setVisible(nativeDisplayHandle, visible);
                     Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMAPI: MMAeSWTDisplay.java: _setVisible() native call completed");
                 }
             });
@@ -421,10 +417,27 @@ public class MMAeSWTDisplay extends BaseDisplay
         Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMAPI: MMAeSWTDisplay.java: getCallbackSourceSizeChanged() +");
     }
 
-    public void setContainerVisibilityToNative(boolean active)
+    public void setContainerVisibilityToNative(final boolean active)
     {
-        // TODO Auto-generated method stub
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMACanvasDisplay.java : SetContainerVisibilityToNative + ");
+        new Thread()
+        {
+            public void run()
+            {
+                Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMACanvasDisplay.java : SetContainerVisibilityToNative execute the native function in new thread ");
+                _setContainerVisible(nativeDisplayHandle,active);
+            }
+        } .start();
 
+        Logger.LOG(Logger.EJavaMMAPI,Logger.EInfo,"MMACanvasDisplay.java : SetContainerVisibilityToNative - ");
+
+    }
+
+    public Rectangle getFullScreenBounds()
+    {
+
+        final org.eclipse.swt.widgets.Display display = org.eclipse.swt.widgets.Display.getDefault();
+        return display.getClientArea();
     }
 
     private native void _setVisible(int nativeDisplayHandle, boolean value);

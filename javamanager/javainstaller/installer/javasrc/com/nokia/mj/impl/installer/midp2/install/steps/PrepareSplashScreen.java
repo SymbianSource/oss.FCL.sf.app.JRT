@@ -35,6 +35,7 @@ import java.util.jar.JarEntry;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.internal.extension.ImageUtil;
 
 /**
  * Installation step PrepareSplashScreen prepares splash
@@ -106,15 +107,21 @@ public class PrepareSplashScreen extends ExeStep
             for (int i = 0; i < tokens.length; i++)
             {
                 tokens[i] = tokens[i].trim();
-                currentImage = loadImage(tokens[i], ball.iJarFilename);
-                if (currentImage == null)
+                imageSizes[i] = getImageSize(tokens[i], ball.iJarFilename);
+                if (imageSizes[i] == null)
                 {
-                    // Image loading failed, proceed to the next image.
-                    imageSizes[i] = new Point(0, 0);
-                    continue;
+                    // Couldn't get image size, try to get it by loading
+                    // the image.
+                    currentImage = loadImage(tokens[i], ball.iJarFilename);
+                    if (currentImage == null)
+                    {
+                        // Image loading failed, proceed to the next image.
+                        imageSizes[i] = new Point(0, 0);
+                        continue;
+                    }
+                    imageSizes[i] = new Point(
+                        currentImage[0].width, currentImage[0].height);
                 }
-                imageSizes[i] = new Point(
-                    currentImage[0].width, currentImage[0].height);
             }
             // Choose the images which best fill the portrait and
             // landscape screens.
@@ -237,6 +244,74 @@ public class PrepareSplashScreen extends ExeStep
     }
 
     /**
+     * Gets image size for specified image from given jar file.
+     *
+     * @param aResource image file name
+     * @param aJar jar file name
+     * @return image size, or null if getting image size fails
+     */
+    private static Point getImageSize(String aResource, String aJar)
+    {
+        Point result = null;
+        JarFile jarFile = null;
+        InputStream is = null;
+        try
+        {
+            // Open jar file and input stream.
+            jarFile = new JarFile(aJar);
+            is = jarFile.getInputStream(
+                new JarEntry(FileUtils.trimJarEntry(aResource)));
+            if (is != null)
+            {
+                result = ImageUtil.getImageSize(is);
+                if (result != null)
+                {
+                    Log.log("Image size for " + aResource + " from " +
+                            aJar + ": " + result);
+                }
+            }
+            else
+            {
+                Log.logWarning("Image " + aResource + " not found from " + aJar);
+            }
+        }
+        catch (Throwable t)
+        {
+            Log.logWarning("Loading image " + aResource + " from " +
+                           aJar + " failed", t);
+        }
+        finally
+        {
+            // Close streams and jar file.
+            if (is != null)
+            {
+                try
+                {
+                    is.close();
+                    is = null;
+                }
+                catch (IOException ioe)
+                {
+                    Log.logWarning("Closing InputStream failed", ioe);
+                }
+            }
+            if (jarFile != null)
+            {
+                try
+                {
+                    jarFile.close();
+                    jarFile = null;
+                }
+                catch (IOException ioe)
+                {
+                    Log.logWarning("Closing " + aJar + " failed", ioe);
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
      * Loads image from specified resource from given jar file.
      *
      * @param aResource resource file name
@@ -252,8 +327,8 @@ public class PrepareSplashScreen extends ExeStep
         {
             // Open jar file and input stream.
             jarFile = new JarFile(aJar);
-            is = jarFile.getInputStream
-                 (new JarEntry(FileUtils.trimJarEntry(aResource)));
+            is = jarFile.getInputStream(
+                new JarEntry(FileUtils.trimJarEntry(aResource)));
             if (is != null)
             {
                 result = (new ImageLoader()).load(is);
@@ -319,8 +394,8 @@ public class PrepareSplashScreen extends ExeStep
         {
             // Open jar file and input and output streams.
             jarFile = new JarFile(aJar);
-            is = jarFile.getInputStream
-                 (new JarEntry(FileUtils.trimJarEntry(aResource)));
+            is = jarFile.getInputStream(
+                new JarEntry(FileUtils.trimJarEntry(aResource)));
             os = FileUtils.getOutputStream(imageFilename);
             // Copy the image data from InputStream to OutputStream.
             byte[] buf = new byte[16384];

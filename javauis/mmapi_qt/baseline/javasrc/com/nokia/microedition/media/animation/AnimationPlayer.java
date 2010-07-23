@@ -114,8 +114,9 @@ public class AnimationPlayer extends PlayerBase implements ESWTinitializeListene
     /**
      *
      * @param ds DataSource which contains the data to be displayed
+     * @throws MediaException
      */
-    public AnimationPlayer(DataSource ds)
+    public AnimationPlayer(DataSource ds) throws MediaException
     {
         iPlayerListenerImpl= new PlayerListenerImpl(this);
         //TODO check if we can do it in better way
@@ -128,7 +129,14 @@ public class AnimationPlayer extends PlayerBase implements ESWTinitializeListene
         if (is!=null)
         {
             ImageLoader imageLoader= new ImageLoader();
+
+            // If it is any other format other than the image(jpeg, png and gif),
+            // following line will throw the SWT exception
             iImageData=imageLoader.load(is);
+            // If the image is loaded properly, we need to check whether it is GIF image or not.
+            // It can be PNG and JPEG as well
+            if (iImageData[0].type!=SWT.IMAGE_GIF)
+                throw new MediaException("Could not create player");
             try
             {
                 is.close();
@@ -150,12 +158,17 @@ public class AnimationPlayer extends PlayerBase implements ESWTinitializeListene
      * @param locator
      * @throws SWTException
      */
-    public AnimationPlayer(String locator) throws SWTException
+    public AnimationPlayer(String locator) throws SWTException, MediaException
     {
-        iPlayerListenerImpl= new PlayerListenerImpl(this);
         ImageLoader imageLoader= new ImageLoader();
-        // Following line may throw SWTException
+        // If it is any other format other than the image(jpeg, png and gif),
+        // following line will throw the SWT exception
         iImageData=imageLoader.load(locator);
+        // If the image is loaded properly, we need to check whether it is GIF image or not.
+        // It can be PNG and JPEG as well
+        if (iImageData[0].type!=SWT.IMAGE_GIF)
+            throw new MediaException("Could not create player");
+        iPlayerListenerImpl= new PlayerListenerImpl(this);
         iSourceDimension= new Point(imageLoader.logicalScreenWidth, imageLoader.logicalScreenHeight);
         iCurrentVideoDimension= new Point(imageLoader.logicalScreenWidth, imageLoader.logicalScreenHeight);
         iBackgroundPixel= imageLoader.backgroundPixel;
@@ -305,7 +318,7 @@ public class AnimationPlayer extends PlayerBase implements ESWTinitializeListene
                                 public void run()
                                 {
                                     // For out of memory issue in case of full screen, we are scaling the image
-                                	// while displaying it. 
+                                    // while displaying it.
                                     ImageData tempImageData =iImageData[iFrameIndex] ;
                                     if (iSourceDimension.x!=iCurrentVideoDimension.x || iSourceDimension.x!=iCurrentVideoDimension.x)
                                     {

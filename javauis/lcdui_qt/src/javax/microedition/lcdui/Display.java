@@ -201,12 +201,12 @@ public class Display
      */
     public int eswtNumColors()
     {
-
-        final int MAX_SHIFT = 30;
+        final int MAX_SHIFT = 24;
 
         Screen[] screens = MobileDevice.getMobileDevice().getScreens();
         Screen activeScreen = null;
         int depth = 0;
+
         if(screens != null)
         {
             for(int i = 0; i < screens.length; i++)
@@ -216,22 +216,20 @@ public class Display
                     activeScreen = screens[i];
                 }
             }
+
             depth = activeScreen.getColorDepth();
-            if(depth > MAX_SHIFT)
+
+            if(depth >= MAX_SHIFT)
             {
-                numColors = Integer.MAX_VALUE;
+            	   // For 16 Million Colors
+                 numColors = (1 << 24);
             }
             else
             {
                 numColors = (1 << depth);
             }
         }
-        else
-        {
-            numColors = 0;
-        }
 
-        numColors = 2 << 16;
         return numColors;
     }
 
@@ -552,6 +550,9 @@ public class Display
      */
     public int getBestImageWidth(int imgType)
     {
+        if ((imgType < LIST_ELEMENT) || (imgType > ALERT))
+            throw new IllegalArgumentException();
+
         return DisplayExtension.getBestImageWidth(imgType);
     }
 
@@ -563,6 +564,9 @@ public class Display
      */
     public int getBestImageHeight(int imgType)
     {
+        if ((imgType < LIST_ELEMENT) || (imgType > ALERT))
+            throw new IllegalArgumentException();
+
         return DisplayExtension.getBestImageHeight(imgType);
     }
 
