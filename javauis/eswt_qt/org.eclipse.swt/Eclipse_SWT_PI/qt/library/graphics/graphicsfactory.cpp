@@ -78,6 +78,14 @@ namespace Java { namespace GFX {
     return static_cast<Image*>(pixmap);
 }
 
+/*static*/ Image* GraphicsFactory::createImage(const QPixmap& aPixmap)
+{
+    GFX_LOG_FUNC_CALL();
+    Pixmap* pixmap = new Pixmap();
+    pixmap->createFromQPixmap(aPixmap);
+    return static_cast<Image*>(pixmap);
+}
+
 /*static*/ Image* GraphicsFactory::createImage(int* aRgbData, int aWidth, int aHeight, bool aHasAlpha)
 {
     Pixmap* pixmap = new Pixmap();

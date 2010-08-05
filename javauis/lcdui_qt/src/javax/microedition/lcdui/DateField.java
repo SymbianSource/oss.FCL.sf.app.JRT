@@ -25,7 +25,6 @@ import org.eclipse.swt.graphics.Point;
  */
 public class DateField extends Item
 {
-
     /**
      * Input mode that displays only date.
      */
@@ -40,6 +39,13 @@ public class DateField extends Item
      * Input mode which display both date and time.
      */
     public static final int DATE_TIME = 3;
+
+    /**
+     * If DateField is changed, reasons for Re-layouting.
+     */
+	static final int UPDATE_DATE = UPDATE_ITEM_MAX << 1;
+	static final int UPDATE_INPUTMODE = UPDATE_ITEM_MAX << 2;
+
 
     private Date date;
 
@@ -102,7 +108,7 @@ public class DateField extends Item
             calendar.set(Calendar.SECOND,0);
             calendar.set(Calendar.MILLISECOND,0);
         }
-        return calendar.getTime();//date;
+        return calendar.getTime();
     }
 
     /**
@@ -113,7 +119,7 @@ public class DateField extends Item
     public void setDate(Date newDate)
     {
         internalSetDate(newDate);
-        updateParent(UPDATE_CONTENT);
+        updateParent((newDate == null ? UPDATE_DATE | UPDATE_SIZE_CHANGED : UPDATE_DATE)); 
     }
 
     /**
@@ -143,8 +149,12 @@ public class DateField extends Item
             throw new IllegalArgumentException(
                 MsgRepository.DATEFIELD_EXCEPTION_INVALID_MODE);
         }
-        mode = inputMode;
-        updateParent(UPDATE_SIZE_CHANGED);
+
+		if(getInputMode() != inputMode)
+		{
+	        mode = inputMode;
+	        updateParent(UPDATE_INPUTMODE | UPDATE_SIZE_CHANGED);
+		}
     }
 
     /**
@@ -208,12 +218,16 @@ public class DateField extends Item
                 }
                 else
                 {
+                    calendar.set(Calendar.SECOND,0);
+	                calendar.set(Calendar.MILLISECOND,0);
                     date = calendar.getTime();
                 }
                 break;
             case DATE:
                 calendar.set(Calendar.HOUR_OF_DAY, 0);
                 calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar.SECOND,0);
+                calendar.set(Calendar.MILLISECOND,0);
                 date = calendar.getTime();
                 break;
             case DATE_TIME:

@@ -967,6 +967,21 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1create__Lorg_ec
     return POINTER_TO_HANDLE(img);
 }
 
+jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1create__I
+  (JNIEnv* aJniEnv , jclass, jint aPixmapHandle)
+{
+    Image* img = NULL;
+    GFX_TRY
+    {
+        SWT_LOG_JNI_CALL();
+        HANDLE_TO_POINTER(QPixmap*, pixmap, aPixmapHandle);
+        if (pixmap)
+            img = GraphicsFactory::createImage(*pixmap);
+    }
+    GFX_CATCH
+    return POINTER_TO_HANDLE(img);
+}
+
 jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1getFormat
   (JNIEnv* aJniEnv, jclass, jint aImageHandle)
 {

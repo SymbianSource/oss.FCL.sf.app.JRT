@@ -58,11 +58,11 @@ class TextFieldLayouter extends ItemLayouter
     /**
      * Constructor.
      *
-     * @param dflp DefaultFormLayoutPolicy`
+     * @param aFormLayouter FormLayouter used for layouting.
      */
-    TextFieldLayouter(DefaultFormLayoutPolicy dflp)
+    TextFieldLayouter(FormLayouter aFormLayouter)
     {
-        super(dflp);
+        super(aFormLayouter);
     }
 
     /**
@@ -112,6 +112,24 @@ class TextFieldLayouter extends ItemLayouter
     static boolean checkText(final int constraint, final String text)
     {
         isCorrectText = true;
+
+        try
+        {   
+         	  if(constraint == TextField.NUMERIC && !text.equals(""))
+            {
+                Integer.parseInt(text);
+            }
+            else if(constraint == TextField.DECIMAL && !text.equals(""))
+            {
+                Float.parseFloat(text);
+            }
+        }
+        catch( NumberFormatException e )
+        {   
+        	  // Illegal text
+            return false;
+        }
+
         ESWTUIThreadRunner.syncExec(new Runnable()
         {
             public void run()
@@ -149,7 +167,7 @@ class TextFieldLayouter extends ItemLayouter
 
         if(textfield.getInitialInputMode() != null)
         {
-            eswtUpdateItem(textfield, te, TextField.UPDATE_INITIAL_INPUT_MODE,
+            eswtUpdateItem(textfield, te, TextField.UPDATE_INITIALINPUTMODE,
                            null);
         }
         return te;
@@ -178,15 +196,15 @@ class TextFieldLayouter extends ItemLayouter
     void eswtUpdateItem(Item item, Control control, int reason, Object param)
     {
         TextField textfield = (TextField) item;
-        if(reason == Item.UPDATE_CONTENT)
-        {
-            TextWrapper.eswtSetContent(control, textfield.getString());
-        }
-        else if(reason == TextField.UPDATE_INITIAL_INPUT_MODE)
+        if(reason == TextField.UPDATE_INITIALINPUTMODE)
         {
             TextWrapper.eswtSetInputMode(control,
                                          textfield.getInitialInputMode(),
                                          textfield.getConstraints());
+        }
+        else
+        {
+            TextWrapper.eswtSetContent(control, textfield.getString());
         }
     }
 
@@ -413,7 +431,7 @@ class TextFieldLayouter extends ItemLayouter
                 textfield.internalSetLinesCount(lines);
                 Control control = eswtGetFirstControl(textfield);
                 if(control.getSize().y + te.getLineHeight()
-                        + Config.TEXTFIELD_MARGIN <= dfi.getFormHeight())
+                        + Config.TEXTFIELD_MARGIN <= formLayouter.getFormHeight())
                 {
                     textfield.updateParent(Item.UPDATE_HEIGHT_CHANGED);
                 }
@@ -490,9 +508,9 @@ class TextFieldLayouter extends ItemLayouter
         {
             // this is needed if focus was changed with touch.
             // so ne scrolling was done in DFI.
-            if(!dfi.isItemFullyVisible(textfield))
+            if(!formLayouter.isItemFullyVisible(textfield))
             {
-                dfi.eswtScrollToItem(textfield);
+                formLayouter.eswtScrollToItem(textfield);
             }
             textfield.internalSetCaretPosition(
                 TextWrapper.eswtGetCaretPosition((Control) keyEvent.widget));

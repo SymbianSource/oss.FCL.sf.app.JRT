@@ -15,7 +15,7 @@
 *
 */
 
-
+#include "javacommonutils.h"
 #include "javajniutils.h"
 #include "com_nokia_mj_impl_security_midp_authentication_AuthenticationModule.h"
 #include "midpauthenticationmodule.h"
@@ -473,11 +473,12 @@ int verifyCertChain(char **cert_chain, int no_certs,
         {
             ret_code = getErrCode(X509_STORE_CTX_get_error(x509_ctx));
             // If the secure time of the device has not yet been set
-            // (can happen some times during the first device boot),
+            // to correct value (This can happen some times during
+            // the first device boot),
             // allow installing with not yet valid certificates
             if (KCertNotYetValidFailure == ret_code)
             {
-                if (!TelUtils::isSecureTimeSet())
+                if (JavaCommonUtils::isFirstBoot())
                 {
                     ret_code = KCertAndSignatureOk;
                 }

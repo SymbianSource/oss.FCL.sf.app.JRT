@@ -78,10 +78,15 @@ public class TextField extends Item
     public static final int CONSTRAINT_MASK = 65535; // 0xFFFF
 
     /**
-     * Constant used by layouter to update TextField when setInitialInputMode
-     * was called.
+     * If TextField is changed, reasons for Re-layouting.
      */
-    static final int UPDATE_INITIAL_INPUT_MODE = 8;
+	static final int UPDATE_REASON_DELETE = UPDATE_ITEM_MAX << 1;
+	static final int UPDATE_REASON_INSERT = UPDATE_ITEM_MAX << 2;
+	static final int UPDATE_CHARS = UPDATE_ITEM_MAX << 3;
+	static final int UPDATE_CONSTRAINTS = UPDATE_ITEM_MAX << 4;
+	static final int UPDATE_INITIALINPUTMODE = UPDATE_ITEM_MAX << 5;
+	static final int UPDATE_MAXSIZE = UPDATE_ITEM_MAX << 6;
+	static final int UPDATE_STRING = UPDATE_ITEM_MAX << 7;
 
 
     private TextWrapper textWrapper;
@@ -132,7 +137,7 @@ public class TextField extends Item
     {
         textWrapper.setContent(newTxt);
         linesCount = 0;
-        updateParent(Item.UPDATE_CONTENT | Item.UPDATE_HEIGHT_CHANGED);
+        updateParent(UPDATE_STRING);
     }
 
     /**
@@ -182,7 +187,7 @@ public class TextField extends Item
         }
         textWrapper.setContent(extractedString);
         linesCount = 0;
-        updateParent(Item.UPDATE_CONTENT | Item.UPDATE_HEIGHT_CHANGED);
+        updateParent(UPDATE_CHARS);
     }
 
     /**
@@ -195,7 +200,7 @@ public class TextField extends Item
     {
         textWrapper.insert(newTxt, position);
         linesCount = 0;
-        updateParent(Item.UPDATE_CONTENT | Item.UPDATE_HEIGHT_CHANGED);
+        updateParent(UPDATE_REASON_INSERT);
     }
 
     /**
@@ -225,7 +230,7 @@ public class TextField extends Item
         }
         textWrapper.insert(extractedString, position);
         linesCount = 0;
-        updateParent(Item.UPDATE_CONTENT | Item.UPDATE_HEIGHT_CHANGED);
+        updateParent(UPDATE_REASON_INSERT);
     }
 
     /**
@@ -238,7 +243,7 @@ public class TextField extends Item
     {
         textWrapper.delete(offset, length);
         linesCount = 0;
-        updateParent(Item.UPDATE_CONTENT | Item.UPDATE_HEIGHT_CHANGED);
+        updateParent(UPDATE_REASON_DELETE);
     }
 
     /**
@@ -262,7 +267,7 @@ public class TextField extends Item
     {
         textWrapper.setMaxSize(newMaxSize);
         linesCount = 0;
-        updateParent(Item.UPDATE_CONTENT | Item.UPDATE_HEIGHT_CHANGED);
+        updateParent(UPDATE_MAXSIZE);
         return textWrapper.getMaxSize();
     }
 
@@ -284,7 +289,10 @@ public class TextField extends Item
     public void setConstraints(int newConstraints)
     {
         textWrapper.setConstraints(newConstraints);
-        updateParent(Item.UPDATE_CONTENT | Item.UPDATE_SIZE_CHANGED);
+        updateParent(UPDATE_CONSTRAINTS);
+        if(!textWrapper.isValidText(getString() , textWrapper.getTypeConstraint(newConstraints)))
+    	          setString("");
+        updateParent(UPDATE_STRING | UPDATE_SIZE_CHANGED);
     }
 
     /**
@@ -305,7 +313,7 @@ public class TextField extends Item
     public void setInitialInputMode(String inputMode)
     {
         textWrapper.setInputMode(inputMode);
-        updateParent(UPDATE_INITIAL_INPUT_MODE);
+        updateParent(UPDATE_INITIALINPUTMODE);
     }
 
     /**

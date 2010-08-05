@@ -23,6 +23,18 @@ import org.eclipse.swt.graphics.Point;
  */
 public class ChoiceGroup extends Item implements Choice
 {
+    /**
+     * If ChoiceGroup is changed, reasons for Re-layouting.
+     */
+	static final int UPDATE_REASON_APPEND = UPDATE_ITEM_MAX << 1;
+	static final int UPDATE_REASON_DELETE = UPDATE_ITEM_MAX << 2;
+	static final int UPDATE_REASON_DELETEALL = UPDATE_ITEM_MAX << 3;
+	static final int UPDATE_REASON_INSERT = UPDATE_ITEM_MAX << 4;
+	static final int UPDATE_REASON_SET = UPDATE_ITEM_MAX << 5;
+	static final int UPDATE_FITPOLICY = UPDATE_ITEM_MAX << 6;
+	static final int UPDATE_FONT = UPDATE_ITEM_MAX << 7;
+	static final int UPDATE_SELECTEDFLAGS = UPDATE_ITEM_MAX << 8;
+	static final int UPDATE_SELECTEDINDEX = UPDATE_ITEM_MAX << 9;
 
     private ChoiceImpl choiceImpl;
     private int type;
@@ -90,7 +102,7 @@ public class ChoiceGroup extends Item implements Choice
     public int append(String text, Image img)
     {
         int ret = choiceImpl.append(text, img);
-        updateParent(UPDATE_SIZE_CHANGED);
+        updateParent(UPDATE_REASON_APPEND);
         return ret;
     }
 
@@ -104,7 +116,7 @@ public class ChoiceGroup extends Item implements Choice
     public void insert(int position, String text, Image img)
     {
         choiceImpl.insert(position, text, img);
-        updateParent(UPDATE_SIZE_CHANGED);
+        updateParent(UPDATE_REASON_INSERT);
     }
 
     /**
@@ -117,7 +129,7 @@ public class ChoiceGroup extends Item implements Choice
     public void set(int position, String text, Image img)
     {
         choiceImpl.set(position, text, img);
-        updateParent(UPDATE_CONTENT);
+        updateParent(UPDATE_REASON_SET);
     }
 
     /**
@@ -128,7 +140,7 @@ public class ChoiceGroup extends Item implements Choice
     public void delete(int position)
     {
         choiceImpl.delete(position);
-        updateParent(UPDATE_SIZE_CHANGED);
+        updateParent(UPDATE_REASON_DELETE);
     }
 
     /**
@@ -137,7 +149,7 @@ public class ChoiceGroup extends Item implements Choice
     public void deleteAll()
     {
         choiceImpl.deleteAll();
-        updateParent(UPDATE_SIZE_CHANGED);
+        updateParent(UPDATE_REASON_DELETEALL);
     }
 
     /**
@@ -223,7 +235,7 @@ public class ChoiceGroup extends Item implements Choice
     public void setFitPolicy(int newFitPolicy)
     {
         choiceImpl.setFitPolicy(newFitPolicy);
-        updateParent(UPDATE_SIZE_CHANGED);
+        updateParent(UPDATE_FITPOLICY);
     }
 
     /**
@@ -235,7 +247,7 @@ public class ChoiceGroup extends Item implements Choice
     public void setFont(int position, Font font)
     {
         choiceImpl.setFont(position, font);
-        updateParent(UPDATE_SIZE_CHANGED);
+        updateParent(UPDATE_FONT);
     }
 
     /**
@@ -246,7 +258,7 @@ public class ChoiceGroup extends Item implements Choice
     public void setSelectedFlags(boolean[] selectedArray)
     {
         choiceImpl.setSelectedFlags(selectedArray);
-        updateParent(UPDATE_CONTENT);
+        updateParent(UPDATE_SELECTEDFLAGS);
     }
 
     /**
@@ -258,7 +270,7 @@ public class ChoiceGroup extends Item implements Choice
     public void setSelectedIndex(int position, boolean select)
     {
         choiceImpl.setSelected(position, select);
-        updateParent(UPDATE_CONTENT);
+        updateParent(UPDATE_SELECTEDINDEX);
     }
 
     /**

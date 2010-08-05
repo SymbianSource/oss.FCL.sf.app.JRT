@@ -122,6 +122,33 @@ public:
      */
     OS_IMPORT static std::wstring percentDecode(const std::wstring& str);
 
+    /**
+     * This function checks whether is it called during the first device boot
+     * and stores the information to static data so that isFirstBoot() can
+     * return it.
+     *
+     * Call this function always when the process is starting.
+     *
+     * This function creates a flag file to the private data cage / work directory
+     * of the process.
+     *
+     * In Symbian this method can be called only from Java Installer or
+     * Java MIDP processes.
+     *
+     * Return 0 if check was made successfully. Otherwise it returns errno
+     * defined in STDLIBS errno.h
+     */
+    OS_IMPORT static int initIsFirstBoot();
+
+    /**
+     * This function returns true if it called during the first boot.
+     * Otherwise it returns false.
+     *
+     * initIsFirstBoot() must be called before this function can be called.
+     */
+    OS_IMPORT static bool isFirstBoot();
+
+
 public:
     /**
      * Decodes one %<X><Y> sequence.
@@ -131,6 +158,10 @@ public:
      * @throws ExceptionBase if <X> and <Y> are not hexadecimal characters
      */
     static char decodeOnePercentSeq(wchar_t first, wchar_t sec);
+
+private:
+    static bool mFirstBoot;
+
 };
 
 // A simple class for storing char array that is deleted automatically

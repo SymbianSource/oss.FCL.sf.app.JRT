@@ -65,7 +65,7 @@ public final class BtDynamicPropertyHandler implements SystemPropertyProvider
 
     private static final int MASTER_SWITCH = 7;
 
-    private static final int SD_TRANS_MAX = 8;
+    private static final int SD_TRANS_MAX = 1;
 
     private static final int SD_ATTR_RETRIEVE_MAX = 9;
 

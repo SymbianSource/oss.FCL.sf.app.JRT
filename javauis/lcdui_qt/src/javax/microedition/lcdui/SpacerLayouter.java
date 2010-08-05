@@ -29,11 +29,27 @@ class SpacerLayouter extends ItemLayouter
     /**
      * Constructor.
      *
-     * @param dflp DefaultFormLayoutPolicy.
+     * @param aFormLayouter FormLayouter used for layouting.
      */
-    SpacerLayouter(DefaultFormLayoutPolicy dflp)
+    SpacerLayouter(FormLayouter aFormLayouter)
     {
-        super(dflp);
+        super(aFormLayouter);
+    }
+
+    /**
+     * Creates LayoutObject for the given Item.
+     *
+     * @param item Item to layout
+     * @return LayoutObject
+     */
+    LayoutObject getLayoutObject(Item item)
+    {
+    	LayoutObject lo = formLayouter.getLayoutObject(item);
+    	if(lo == null)
+    	{
+        	lo = new LayoutObject(item, eswtGetControl(formComposite, item));
+    	}
+		return lo;
     }
 
     /**
@@ -58,7 +74,7 @@ class SpacerLayouter extends ItemLayouter
      */
     boolean eswtIsSpecificControl(Item item, Control control)
     {
-        return true;
+	    return (control instanceof Composite);
     }
 
     /**
@@ -68,9 +84,38 @@ class SpacerLayouter extends ItemLayouter
      * @param control eSWT control.
      * @param reason reason to update.
      */
-    void eswtUpdateItem(Item item, Control control, int reason, Object param)
+    void eswtUpdateItem(Item item, Control control, int aReason, Object param)
     {
-        // no implementation needed.
+		/*if(control instanceof  Composite)
+		{
+			control.setSize(item.getMinimumWidth(), item.getMinimumHeight());
+		}*/
+
+   		if(!(control instanceof  Composite))
+		{
+			return;
+		}
+			
+    	Spacer spacer = (Spacer)item;
+		int reason = aReason & Item.UPDATE_SIZE_MASK;
+
+		switch(reason)
+		{
+		case Item.UPDATE_NONE:
+			break;
+
+		case Spacer.UPDATE_MINIMUMSIZE:
+		{
+			Control sCtrl = eswtFindSpecificControl(spacer, control);
+			sCtrl.setSize(item.getMinimumWidth(), item.getMinimumHeight());
+			break;
+		}
+
+		default:
+		{
+			break;
+		}
+		}
     }
 
 }

@@ -127,10 +127,11 @@ public class Label extends Control {
         }
 
         checkWidget();
+        
         if (changed) {
             OS.QWidget_updateGeometry(handle);
         }
-
+        
         /**
          * ComputeSize in super class is not able to handle the situation that
          * preferred height depends on the width. So ask QLabel for preferred
@@ -167,6 +168,7 @@ public class Label extends Control {
             else
                 height = defaultLength;
         }
+        
         return new Point(width, height);
     }
 
@@ -329,6 +331,25 @@ public class Label extends Control {
             OS.QPixmap_delete(pixmapHandle);
         }
     }
+    
+    void setThemeIcon(String name) {
+        checkWidget();
+        if ((style & SWT.SEPARATOR) != 0)
+            return;
+        int iconHandle = 0;
+        int pixmapHandle = 0;
+        try {
+            iconHandle = OS.HbIcon_new(name);
+            if (iconHandle != 0)
+                pixmapHandle = OS.HbIcon_pixmap(iconHandle);
+            if (pixmapHandle != 0)
+                OS.QLabel_setPixmap(topHandle, pixmapHandle);
+        } finally {
+            OS.HbIcon_delete(iconHandle);
+            OS.QPixmap_delete(pixmapHandle);
+        }
+    }
+    
 
     void setStyle(int style) {
         int qStyle = 0;

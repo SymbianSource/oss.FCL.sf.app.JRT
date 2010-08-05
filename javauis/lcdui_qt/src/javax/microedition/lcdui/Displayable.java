@@ -28,7 +28,6 @@ import org.eclipse.swt.internal.extension.CompositeExtension;
 import org.eclipse.swt.internal.extension.MobileShellExtension;
 import org.eclipse.swt.widgets.*;
 import com.nokia.mj.impl.rt.support.ApplicationUtils;
-import com.nokia.mj.impl.rt.support.ApplicationInfo;
 
 /**
  * Implementation of LCDUI <code>Displayable</code> class.

@@ -286,6 +286,9 @@ public class TextBox extends Screen
     public void setConstraints(int newConstraints)
     {
         textWrapper.setConstraints(newConstraints);
+
+        if(!textWrapper.isValidText(getString() , textWrapper.getTypeConstraint(newConstraints)))
+    	          setString("");        
     }
 
     /**

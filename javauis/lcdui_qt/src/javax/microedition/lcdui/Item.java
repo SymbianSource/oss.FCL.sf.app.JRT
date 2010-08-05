@@ -17,6 +17,7 @@
 package javax.microedition.lcdui;
 
 import java.util.Vector;
+import java.lang.ref.WeakReference;
 
 import javax.microedition.lcdui.EventDispatcher.LCDUIEvent;
 import com.nokia.mj.impl.nokialcdui.ItemControlStateChangeListener;
@@ -136,35 +137,27 @@ public abstract class Item
 
     static final int LAYOUT_VERTICAL_MASK = LAYOUT_VCENTER; // 48;
 
-
-    static final int UPDATE_NONE = 0;
-
-    static final int UPDATE_ADDCOMMAND = 1;
-
-    static final int UPDATE_REMOVECOMMAND = 2;
-
     /**
-     * Item content has changed. Re-layouting not needed.
+     * If Item is changed, reasons for Re-layouting.
      */
-    static final int UPDATE_CONTENT = 3; // general update value
+	static final int UPDATE_NONE = 0;
 
-    static final int UPDATE_REASON_MASK = 255;
+	static final int UPDATE_ADDCOMMAND = 1;
+	static final int UPDATE_REMOVECOMMAND = 1 << 1;
+	static final int UPDATE_DEFAULTCOMMAND = 1 << 2;
+	static final int UPDATE_ITEMCOMMANDLISTENER = 1 << 3;
+	static final int UPDATE_LABEL = 1 << 4;
+	static final int UPDATE_LAYOUT = 1 << 5;
+	static final int UPDATE_PREFERREDSIZE = 1 << 6;
 
-    /**
-     * Item height has changed. Re-layouting not needed.
-     */
-    static final int UPDATE_HEIGHT_CHANGED = 256;
-
-    /**
-     * Item width is changed. Re-layouting asap.
-     */
-    static final int UPDATE_WIDTH_CHANGED = 512;
-
-    /**
-     * Item width and height changed. Re-layouting asap.
-     */
+    static final int UPDATE_HEIGHT_CHANGED = 1 << 7;
+    static final int UPDATE_WIDTH_CHANGED = 1 << 8;
     static final int UPDATE_SIZE_CHANGED =
         UPDATE_HEIGHT_CHANGED | UPDATE_WIDTH_CHANGED;
+    static final int UPDATE_SIZE_MASK = ~UPDATE_SIZE_CHANGED;
+
+	static final int UPDATE_ITEM_MAX = 1 << 15;
+
 
     private String label;
 
@@ -177,7 +170,7 @@ public abstract class Item
     private ItemControlStateChangeListener controlListener;
 
     private Command defaultCommand;
-    private Screen parent;
+	private WeakReference wParent;
 
     private int layout;
     private int lockedPrefWidth = -1;
@@ -191,11 +184,18 @@ public abstract class Item
 
     /**
      * Sets the parent of this Item.
-     * @param parent new Parent. If null, current parent is removed.
+     * @param parent new Parent. If null, current parent is to be removed.
      */
     void setParent(Screen parent)
     {
-        this.parent = parent;
+    	if(parent != null)
+    	{
+    		wParent = new WeakReference(parent);
+    	}
+		else
+		{
+			clearParent();
+		}
     }
 
     /**
@@ -205,7 +205,27 @@ public abstract class Item
      */
     Screen getParent()
     {
-        return parent;
+    	if(wParent != null)
+    	{
+    		return (Screen)wParent.get();
+    	}
+		else
+		{
+			return null;
+		}
+    }
+
+    /**
+     * Clears the Item's parent.
+     *
+     */
+    void clearParent()
+    {
+    	if(wParent != null)
+    	{
+    		wParent.clear();
+			wParent = null;
+    	}
     }
 
     /**
@@ -221,8 +241,12 @@ public abstract class Item
             throw new IllegalStateException(
                 MsgRepository.ITEM_EXCEPTION_OWNED_BY_ALERT);
         }
+    	if((newLabel == null) && (label == null))
+		{
+			return;
+		}
         label = newLabel;
-        updateParent(UPDATE_SIZE_CHANGED);
+        updateParent(UPDATE_LABEL | UPDATE_SIZE_CHANGED);
     }
 
     /**
@@ -276,7 +300,7 @@ public abstract class Item
         }
         layout = newLayout;
         Logger.method(this, "setLayout", String.valueOf(layout));
-        updateParent(UPDATE_SIZE_CHANGED);
+        updateParent(UPDATE_LAYOUT | UPDATE_SIZE_CHANGED);
     }
 
     /**
@@ -302,19 +326,7 @@ public abstract class Item
         if(!commands.contains(command))
         {
             commands.addElement(command);
-
-            int reason = UPDATE_ADDCOMMAND;
-
-            if(this instanceof StringItem && commands.size() == 1)
-            {
-                reason |= UPDATE_SIZE_CHANGED;
-            }
-            if(this instanceof ImageItem && commands.size() == 1)
-            {
-                reason |= UPDATE_SIZE_CHANGED;
-            }
-
-            updateParent(reason, command);
+            updateParent(UPDATE_ADDCOMMAND, command);
         }
     }
 
@@ -332,21 +344,11 @@ public abstract class Item
         {
             // Remove command from commands-vector
             commands.removeElement(command);
-
-            defaultCommand = null;
-
-            int reason = UPDATE_REMOVECOMMAND;
-
-            if(this instanceof StringItem && commands.size() == 0)
-            {
-                reason |= UPDATE_SIZE_CHANGED;
-            }
-            if(this instanceof ImageItem && commands.size() == 0)
-            {
-                reason |= UPDATE_SIZE_CHANGED;
-            }
-
-            updateParent(reason, command);
+			if(defaultCommand == command)
+			{
+            	defaultCommand = null;
+			}
+            updateParent(UPDATE_REMOVECOMMAND, command);
         }
     }
 
@@ -519,7 +521,7 @@ public abstract class Item
         Logger.method(this, "setPrefSize",
                       String.valueOf(lockedPrefWidth),
                       String.valueOf(lockedPrefHeight));
-        updateParent(UPDATE_SIZE_CHANGED);
+        updateParent(UPDATE_PREFERREDSIZE | UPDATE_SIZE_CHANGED);
     }
 
     /**
@@ -568,7 +570,7 @@ public abstract class Item
                 MsgRepository.ITEM_EXCEPTION_NOT_OWNED_BY_FORM);
         }
         // Notify item state listener
-        ((Form) parent).notifyItemStateChanged(this);
+        ((Form) getParent()).notifyItemStateChanged(this);
     }
 
     /**
@@ -628,7 +630,7 @@ public abstract class Item
      */
     boolean isContainedInAlert()
     {
-        return (parent != null && parent instanceof Alert);
+        return ((wParent != null) && (getParent() instanceof Alert));
     }
 
     /**
@@ -636,7 +638,7 @@ public abstract class Item
      */
     boolean isContainedInForm()
     {
-        return (parent != null && parent instanceof Form);
+        return ((wParent != null) && (getParent() instanceof Form));
     }
 
     /**
@@ -670,7 +672,7 @@ public abstract class Item
         }
         if(isContainedInForm())
         {
-            ((Form) parent).updateItemState(this, updateReason, param);
+        	((Form) getParent()).updateItemState(this, updateReason, param);
         }
     }
 

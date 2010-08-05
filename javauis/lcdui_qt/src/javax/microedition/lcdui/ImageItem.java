@@ -26,7 +26,6 @@ import org.eclipse.swt.graphics.Point;
  */
 public class ImageItem extends Item
 {
-
     /**
      * Left here for source compatibility purposes. Use layout directives from
      * Item class instead.
@@ -62,6 +61,13 @@ public class ImageItem extends Item
      * Item class instead.
      */
     public static final int LAYOUT_NEWLINE_AFTER = Item.LAYOUT_NEWLINE_AFTER;
+
+    /**
+     * If ImageItem is changed, reasons for Re-layouting.
+     */
+	static final int UPDATE_ALTTEXT = UPDATE_ITEM_MAX << 1;
+	static final int UPDATE_IMAGE = UPDATE_ITEM_MAX << 2;
+
 
     private Image image;
     private int appearanceMode;
@@ -129,8 +135,12 @@ public class ImageItem extends Item
      */
     public void setImage(Image image)
     {
+    	if((image == null) && (this.image == null))
+		{
+			return;
+		}
         this.image = image;
-        updateParent(UPDATE_SIZE_CHANGED);
+        updateParent(UPDATE_IMAGE | UPDATE_SIZE_CHANGED);
     }
 
     /**
@@ -151,7 +161,7 @@ public class ImageItem extends Item
     public void setAltText(String newAltText)
     {
         alternateText = newAltText;
-        updateParent(UPDATE_SIZE_CHANGED);
+        updateParent(UPDATE_ALTTEXT);
     }
 
     /**
@@ -170,6 +180,44 @@ public class ImageItem extends Item
     boolean isFocusable()
     {
         return (getNumCommands() > 0);
+    }
+
+    /**
+     * Adds command to this ImageItem. If same command is already added to this item,
+     * nothing happens.
+     *
+     * @param command A command to be added.
+     * @throws NullPointerException if cmd is null.
+     */
+    public void addCommand(Command command)
+    {
+    	int numCmds = getNumCommands();
+
+    	super.addCommand(command);
+		
+		if((getNumCommands() != numCmds) && (getNumCommands() == 1))
+		{
+			updateParent(UPDATE_SIZE_CHANGED);
+		}
+    }
+
+    /**
+     * Removes command from the ImageItem. If command doesn't exists in this item,
+     * nothing happens.
+     *
+     * @param command The command to be removed.
+     */
+    public void removeCommand(Command command)
+    {
+    	int numCmds = getNumCommands();
+
+    	super.removeCommand(command);
+		
+		if((getNumCommands() != numCmds) && (getNumCommands() == 0))
+
+		{
+			updateParent(UPDATE_SIZE_CHANGED);
+		}
     }
 
     /**

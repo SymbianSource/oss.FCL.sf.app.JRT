@@ -26,41 +26,28 @@ public final class Internal_GfxPackageSupport {
 public static int getNullIconHandle() {
     return Image.getNullIconHandle();
 }
-public static Image new_Image(Device device, org.eclipse.swt.internal.qt.graphics.Image cgImage) {
-    return Image.new_Image(device, cgImage);
+
+public static Image new_Image(Device device, 
+        org.eclipse.swt.internal.qt.graphics.Image cgImage) {
+    return Image.qt_new(device, cgImage);
 }
+
 public static int getIconHandle(Image i) {
     return i.getIconHandle();
 }
+
 public static org.eclipse.swt.internal.qt.graphics.Image getImage(Image i) {
     return i.getImage();
 }
+
 public static int getImageHandle(Image i) {
     return i.getImageHandle();
 }
+
 public static int getPixmapHandle(Image i) {
     return i.getPixmapHandle();
 }
-/*
- * From the class Device
- */
-public static boolean internal(Device d) {
-	return d.internal;
-}
-public static boolean initialized() {
-	return Device.initialized;
-}
 
-public static Color newColor(Device device, int handle) {
-    return Color.qt_new(device, handle);
-}
-public static Font newFont(Device device, int handle) {
-    return Font.qt_new(device, handle);
-}
-
-/*
- * From the class Image
- */
 public static Image createImageWithoutSecurityCheck(Device device,
         String filename) {
     return Image.createImageWithoutSecurityCheck(device, filename);
@@ -72,6 +59,25 @@ public static Point getImageSize(Device device, String filename) {
 
 public static Point getImageSize(InputStream stream) {
     return Image.getImageSize(stream);
+}
+
+/*
+ * From the class Device
+ */
+public static boolean internal(Device d) {
+	return d.internal;
+}
+
+public static boolean initialized() {
+	return Device.initialized;
+}
+
+public static Color newColor(Device device, int handle) {
+    return Color.qt_new(device, handle);
+}
+
+public static Font newFont(Device device, int handle) {
+    return Font.qt_new(device, handle);
 }
 
 }

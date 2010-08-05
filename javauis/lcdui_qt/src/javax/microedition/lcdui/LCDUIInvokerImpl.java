@@ -62,7 +62,7 @@ final class LCDUIInvokerImpl extends LCDUIInvoker
             if(item.isContainedInForm())
             {
                 Form parentForm = (Form) item.getParent();
-                return parentForm.getLayoutPolicy().getItemControl(item);
+                return parentForm.getFormLayouter().getItemControl(item);
             }
         }
         return null;

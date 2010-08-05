@@ -23,6 +23,10 @@ import org.eclipse.swt.graphics.Point;
  */
 public class Spacer extends Item
 {
+    /**
+     * If Spacer is changed, reasons for Re-layouting.
+     */
+	static final int UPDATE_MINIMUMSIZE = UPDATE_ITEM_MAX << 1;
 
     private int minimumWidth = -1;
     private int minimumHeight = -1;
@@ -90,14 +94,17 @@ public class Spacer extends Item
             if(minW != getMinimumWidth())
             {
                 minimumWidth = minW;
-                updateReason |= Item.UPDATE_WIDTH_CHANGED;
+                updateReason |= UPDATE_MINIMUMSIZE | UPDATE_SIZE_CHANGED;
             }
             if(minH != getMinimumHeight())
             {
                 minimumHeight = minH;
-                updateReason |= Item.UPDATE_HEIGHT_CHANGED;
+                updateReason |= UPDATE_MINIMUMSIZE | UPDATE_SIZE_CHANGED;
             }
-            updateParent(updateReason);
+			if(updateReason != Item.UPDATE_NONE)
+            {
+            	updateParent(updateReason);
+			}
         }
     }
 

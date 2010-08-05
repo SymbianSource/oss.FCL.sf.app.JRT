@@ -39,7 +39,7 @@ final class CustomItemBufferSymbian extends Buffer
     protected void init() 
     {
     	super.init();
-    	surface = Internal_PackageSupport.getWindowsurface(host.layouter.dfi.getForm().getContentComp().getShell());
+    	surface = Internal_PackageSupport.getWindowsurface(host.layouter.formLayouter.getForm().getContentComp().getShell());
     }
     
     int getHostType()

@@ -149,6 +149,15 @@ int dllMain(int argc, char *argv[])
         return INSTALLER_ALREADY_RUNNING;
     }
 
+    // Check whether executing this process during first boot.
+    ret = JavaCommonUtils::initIsFirstBoot();
+    if (0 != ret)
+    {
+        ELOG1(EJavaRuntime, 
+            "INSTALLER main() Cannot create first_boot_done.dat flag file, errno.h err %d",
+            ret);
+    }
+
     int result = -1;
     try
     {

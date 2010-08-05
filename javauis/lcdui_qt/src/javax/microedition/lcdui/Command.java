@@ -132,11 +132,7 @@ public class Command
         this.shortLabel = shortLabel;
         this.longLabel = longLabel;
         this.priority = priority;
-
-        if(EMPTY_STRING.equals(this.shortLabel))
-        {
-            this.shortLabel = getDefaultLabel(this.type);
-        }
+        
     }
 
     /**

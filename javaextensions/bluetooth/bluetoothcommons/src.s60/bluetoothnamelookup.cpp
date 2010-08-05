@@ -63,9 +63,8 @@ OS_EXPORT std::wstring * BluetoothNameLookup::doDeviceNameLookupL(
         mLookupMonitor = new CActiveSchedulerWait();
     }
     LOG1(EJavaBluetooth, EInfo,
-         "+ BluetoothNameLookup::doDeviceNameLookupL DeviceAddress:%x",
+         "+ BluetoothNameLookup::doDeviceNameLookupL DeviceAddress:%llx",
          aDevAddr);
-
     TProtocolDesc pdesc;
     User::LeaveIfError(mSocketServ.FindProtocol(KBTLinkManagerTxt(), pdesc));
 

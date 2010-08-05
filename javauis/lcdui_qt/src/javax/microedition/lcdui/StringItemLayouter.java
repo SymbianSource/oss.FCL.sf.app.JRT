@@ -46,11 +46,11 @@ class StringItemLayouter extends ItemLayouter
     /**
      * Constructor.
      *
-     * @param dflp DefaultFormLayoutPolicy
+     * @param aFormLayouter FormLayouter used for layouting.
      */
-    StringItemLayouter(DefaultFormLayoutPolicy dflp)
+    StringItemLayouter(FormLayouter aFormLayouter)
     {
-        super(dflp);
+        super(aFormLayouter);
     }
 
     /**
@@ -162,8 +162,9 @@ class StringItemLayouter extends ItemLayouter
             if(stringItem.getAppearanceMode() == StringItem.BUTTON)
             {
                 // BUTTON
-                dfi.eswtAddNewLayoutObject(
-                    new LayoutObject(item, eswtGetCaptionedControl(item)));
+                LayoutObject lo = formLayouter.getLayoutObject(item);
+                formLayouter.eswtAddNewLayoutObject(lo == null ? 
+					new LayoutObject(item, eswtGetCaptionedControl(item)) : lo);
             }
             else
             {
@@ -203,7 +204,7 @@ class StringItemLayouter extends ItemLayouter
         String label = item.getLabel();
 
         Vector strings = StringWrapper.wrapString(item.getText(),
-                         item.getFont(), dfi.getForm().getLeftRightLanguage(),
+                         item.getFont(), formLayouter.getForm().getLeftRightLanguage(),
                          row.getRowWidth(), row.getFreeSpace());
 
         if(strings != null)
@@ -212,7 +213,7 @@ class StringItemLayouter extends ItemLayouter
             {
                 // create primitive StringItem
                 Control control = eswtCreateLabeledPrimitiveStringItem(
-                                      dfi.getForm().getFormComposite(),
+                                      formLayouter.getForm().getFormComposite(),
                                       (String) strings.elementAt(i),
                                       label, item.getFont(), isHyperlink,
                                       getMaximumItemWidth(item));
@@ -221,8 +222,9 @@ class StringItemLayouter extends ItemLayouter
                 label = null;
 
                 // layoutObject which represent primitive StringItem
-                dfi.eswtAddNewLayoutObject(
-                    new LayoutObject(item, control), i != 0);
+                LayoutObject lo = formLayouter.getLayoutObject(item);
+                formLayouter.eswtAddNewLayoutObject((lo == null ?
+                    new LayoutObject(item, control) : lo), i != 0);
             }
         }
     }
@@ -246,7 +248,7 @@ class StringItemLayouter extends ItemLayouter
         int height = item.getPreferredHeight();
 
         Vector strings = StringWrapper.wrapString(item.getText(),
-                         item.getFont(), dfi.getForm().getLeftRightLanguage(),
+                         item.getFont(), formLayouter.getForm().getLeftRightLanguage(),
                          width, width);
 
         // Create composite which will contain the lines of locked stringitem:
@@ -301,7 +303,8 @@ class StringItemLayouter extends ItemLayouter
                 label = null;
             }
         }
-        dfi.eswtAddNewLayoutObject(new LayoutObject(item, comp), false);
+		LayoutObject lo = formLayouter.getLayoutObject(item);
+        formLayouter.eswtAddNewLayoutObject((lo == null ? new LayoutObject(item, comp) : lo), false);
     }
 
     /**
@@ -354,10 +357,10 @@ class StringItemLayouter extends ItemLayouter
             int objectWidth = Math.max(textWidth, headerWidth);
 
             header.setLocation(ItemLayouter.getXLocation(objectWidth,
-                               headerWidth, dfi.getLanguageSpecificLayoutDirective()), 0);
+                               headerWidth, formLayouter.getLanguageSpecificLayoutDirective()), 0);
 
             text.setLocation(ItemLayouter.getXLocation(objectWidth, textWidth,
-                             dfi.getLanguageSpecificLayoutDirective()),
+                             formLayouter.getLanguageSpecificLayoutDirective()),
                              header.getBounds().height);
 
             comp.pack();
@@ -657,7 +660,7 @@ class StringItemLayouter extends ItemLayouter
     {
         LayoutObject lo = null;
         Control c = null;
-        while((lo = dfi.getNextLayoutObjectOfItem(lo, item)) != null)
+        while((lo = formLayouter.getNextLayoutObjectOfItem(lo, item)) != null)
         {
             if((c = lo.getControl()) != null)
             {
@@ -778,7 +781,7 @@ class StringItemLayouter extends ItemLayouter
         {
             Logger.method(this, "widgetSelected");
             e.doit = false;
-            Item item = dfi.getCurrentSelectedItem();
+            Item item = formLayouter.getCurrentSelectedItem();
             item.callCommandAction(item.getMSKCommand());
         }
     }

@@ -179,4 +179,6 @@ EXPORTS
 	_ZTIN4java7runtime16RuntimeExceptionE @ 178 NONAME
 	_ZTVN4java7runtime16RuntimeExceptionE @ 179 NONAME
 	_ZN4java4util15JavaCommonUtils13wbase64encodeERKSbIwSt11char_traitsIwESaIwEE @ 180 NONAME
+	_ZN4java4util15JavaCommonUtils11isFirstBootEv @ 181 NONAME
+	_ZN4java4util15JavaCommonUtils15initIsFirstBootEv @ 182 NONAME
 

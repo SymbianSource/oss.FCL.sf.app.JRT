@@ -1675,6 +1675,13 @@ public:
     static Image* createImage(const QImage& aImage);
 
     /**
+     * Create image from a QPixmap.
+     * 
+     * @param aImage The source QPixmap
+     */
+    static Image* createImage(const QPixmap& aPixmap);
+
+    /**
      * Creates an image based on the given ARGB data array.
      * @param aRgbData ARGB data array. One pixel is specified as 0xAARRGGBB.
      * @param aWidth Image width

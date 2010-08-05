@@ -466,7 +466,14 @@ public class List extends Screen implements Choice
     {
         if(type == Choice.IMPLICIT)
         {
-            if(cmd != SELECT_COMMAND)
+            if(cmd == null)
+            {
+            	if(selectCommand != null)
+            	{
+            		super.removeCommand(selectCommand);
+            	}
+            }
+            else if(cmd != SELECT_COMMAND)
             {
                 addCommand(cmd);
             }

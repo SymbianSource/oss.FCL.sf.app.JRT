@@ -45,9 +45,9 @@ class ChoiceGroupLayouter extends ItemLayouter
     /**
      * Constructor.
      */
-    ChoiceGroupLayouter(DefaultFormLayoutPolicy dflp)
+    ChoiceGroupLayouter(FormLayouter aFormLayouter)
     {
-        super(dflp);
+        super(aFormLayouter);
     }
 
     /**
@@ -259,7 +259,7 @@ class ChoiceGroupLayouter extends ItemLayouter
      */
     boolean eswtOfferKeyPressed(Item item, int key)
     {
-        LayoutObject lo = dfi.getFirstLayoutObjectOfItem(item);
+        LayoutObject lo = formLayouter.getFirstLayoutObjectOfItem(item);
         TableExtension tempExt;
         ChoiceGroup chgr = (ChoiceGroup) item;
         tempExt = (TableExtension) eswtFindSpecificControl(item,
@@ -478,7 +478,7 @@ class ChoiceGroupLayouter extends ItemLayouter
 
         private void update(SelectionEvent se)
         {
-            //int vPosition = dfi.vPosition;
+            //int vPosition = formLayouter.vPosition;
             int index = ((Table) se.widget).indexOf((TableItem) se.item);
             choiceGroup.internalSetSelectedIndex(index,
                                                  !choiceGroup.isSelected(index));
@@ -546,20 +546,20 @@ class ChoiceGroupLayouter extends ItemLayouter
             int topOfTable = table.getLocation().y;
             if(choicegroup.hasLabel())
             {
-                LayoutObject lo = dfi.getFirstLayoutObjectOfItem(choicegroup);
+                LayoutObject lo = formLayouter.getFirstLayoutObjectOfItem(choicegroup);
                 topOfTable += lo.getY();
             }
             int topYOfSelectedItem = topOfTable + (focusedIndex * itemHeight);
             if(te.keyCode == SWT.ARROW_DOWN)
             {
                 topYOfSelectedItem += itemHeight;
-                dfi.eswtScrollIfNeeded(topYOfSelectedItem,
+                formLayouter.eswtScrollIfNeeded(topYOfSelectedItem,
                                        topYOfSelectedItem + itemHeight);
             }
             else if(te.keyCode == SWT.ARROW_UP)
             {
                 topYOfSelectedItem -= itemHeight;
-                dfi.eswtScrollIfNeeded(topYOfSelectedItem,
+                formLayouter.eswtScrollIfNeeded(topYOfSelectedItem,
                                        topYOfSelectedItem + itemHeight);
             }
         }
@@ -582,7 +582,7 @@ class ChoiceGroupLayouter extends ItemLayouter
         public void focusGained(FocusEvent focusEvent)
         {
             TableExtension te = (TableExtension) focusEvent.widget;
-            int direction = dfi.getDirection();
+            int direction = formLayouter.getDirection();
             if(choicegroup.getType() != ChoiceGroup.POPUP)
             {
                 if(direction == -1)
@@ -608,7 +608,7 @@ class ChoiceGroupLayouter extends ItemLayouter
             int topOfTable = te.getLocation().y;
             if(choicegroup.hasLabel())
             {
-                LayoutObject lo = dfi.getFirstLayoutObjectOfItem(choicegroup);
+                LayoutObject lo = formLayouter.getFirstLayoutObjectOfItem(choicegroup);
                 topOfTable += lo.getY();
             }
 
@@ -616,13 +616,13 @@ class ChoiceGroupLayouter extends ItemLayouter
             if(direction == SWT.ARROW_DOWN || direction == SWT.ARROW_RIGHT)
             {
                 topYOfSelectedItem += itemHeight;
-                dfi.eswtScrollIfNeeded(topYOfSelectedItem,
+                formLayouter.eswtScrollIfNeeded(topYOfSelectedItem,
                                        topYOfSelectedItem + itemHeight);
             }
             else if(direction == SWT.ARROW_UP || direction == SWT.ARROW_LEFT)
             {
                 topYOfSelectedItem -= itemHeight;
-                dfi.eswtScrollIfNeeded(topYOfSelectedItem,
+                formLayouter.eswtScrollIfNeeded(topYOfSelectedItem,
                                        topYOfSelectedItem + itemHeight);
             }
         }

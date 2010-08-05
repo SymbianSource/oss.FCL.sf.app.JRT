@@ -385,6 +385,9 @@ public static int untranslateKey (int key) {
 public static void setStandardIcon(Label l, int iconType, int iconWidth, int iconHeight) {
     l.setStandardIcon(iconType, iconWidth, iconHeight);
 }
+public static void setThemeIcon(Label l, String iconName) {
+    l.setThemeIcon(iconName);
+}
 
 public static void setMobileDevice(Display display, MobileDevice mobileDevice){
 	Display.mobileDevice = mobileDevice;

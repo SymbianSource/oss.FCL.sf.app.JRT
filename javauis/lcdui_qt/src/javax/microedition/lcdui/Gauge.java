@@ -23,7 +23,6 @@ import org.eclipse.swt.graphics.Point;
  */
 public class Gauge extends Item
 {
-
     /**
      * Indefinite constant.
      */
@@ -48,6 +47,13 @@ public class Gauge extends Item
      * Incremental updating constant.
      */
     public static final int INCREMENTAL_UPDATING = 3;
+
+    /**
+     * If Gauge is changed, reasons for Re-layouting.
+     */
+	static final int UPDATE_MAXVALUE = UPDATE_ITEM_MAX << 1;
+	static final int UPDATE_VALUE = UPDATE_ITEM_MAX << 2;
+	
 
     private int maxValue;
     private int value;
@@ -147,7 +153,7 @@ public class Gauge extends Item
          * that requires eSWT extension.
          */
         this.value = checkValue(value, this.maxValue);
-        updateParent(UPDATE_CONTENT);
+        updateParent(UPDATE_VALUE);
     }
 
     /**
@@ -169,7 +175,7 @@ public class Gauge extends Item
     {
         this.maxValue = checkMaxValue(maxValue, interactive);
         this.value = checkValue(getValue(), this.maxValue);
-        updateParent(UPDATE_CONTENT);
+        updateParent(UPDATE_MAXVALUE);
     }
 
     /**

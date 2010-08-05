@@ -18,7 +18,6 @@ package javax.microedition.lcdui;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ercp.swt.mobile.CaptionedControl;
 
@@ -31,29 +30,28 @@ class ImageItemLayouter extends ItemLayouter
     /**
      * Constructor.
      *
-     * @param dflp - DefaultFormLayoutPolicy used for layouting.
+     * @param aFormLayouter FormLayouter used for layouting.
      */
-    ImageItemLayouter(DefaultFormLayoutPolicy dflp)
+    ImageItemLayouter(FormLayouter aFormLayouter)
     {
-        super(dflp);
-    }
-
-    int eswtGetLabelAlignmentDirective()
-    {
-        return Item.LAYOUT_BOTTOM;
+        super(aFormLayouter);
     }
 
     /**
-     * Layout Item in a row.
+     * Creates LayoutObject for the given Item.
      *
-     * @param row current Row
      * @param item Item to layout
+     * @return LayoutObject
      */
-    void eswtLayoutItem(Row row, Item item)
+    LayoutObject getLayoutObject(Item item)
     {
-        LayoutObject lo = new LayoutObject(item, eswtGetControl(formComposite, item));
-        dfi.eswtAddNewLayoutObject(lo);
-    }
+    	LayoutObject lo = formLayouter.getLayoutObject(item);
+    	if(lo == null)
+    	{
+        	lo = new LayoutObject(item, eswtGetControl(formComposite, item));
+    	}
+		return lo;
+    }	
 
     /**
      * Creates the eSWT CaptionedControl or Composite for this item.
@@ -61,10 +59,7 @@ class ImageItemLayouter extends ItemLayouter
     Control eswtGetControl(Composite parent, Item item)
     {
         Control ret = eswtCreateControl(parent, item);
-        Point size = new Point(0,0);
-        size.x = item.getLayoutWidth();
-        size.y = item.getLayoutHeight();
-        eswtCaptionedResize(item, ret, size.x, size.y);
+        eswtCaptionedResize(item, ret, item.getLayoutWidth(), item.getLayoutHeight());
         return ret;
     }
 
@@ -73,18 +68,22 @@ class ImageItemLayouter extends ItemLayouter
      */
     static Control eswtCreateControl(Composite parent, Item item)
     {
-        if(item.hasLabel())
-        {
-            CaptionedControl captioned = new CaptionedControl(parent, SWT.VERTICAL);
-            captioned.setText(item.getLabel());
-            eswtSpecificControl(captioned, item);
-            return captioned;
-        }
-        else
-        {
-            Control ret = eswtSpecificControl(parent, item);
-            return ret;
-        }
+        CaptionedControl captioned = new CaptionedControl(parent, SWT.VERTICAL);
+		if(item.hasLabel())
+		{
+        	captioned.setText(item.getLabel());
+		}
+
+		if(((ImageItem)item).getImage() != null)
+		{
+			eswtSpecificControl(captioned, item);
+		}
+		else
+		{
+			updateControlSize(null, captioned, (ImageItem)item);
+		}
+
+        return captioned;
     }
 
     /**
@@ -94,38 +93,10 @@ class ImageItemLayouter extends ItemLayouter
     {
         ImageItem imgItem = (ImageItem) item;
 
-        if(item.getNumCommands() == 0)
+        if(imgItem.getNumCommands() == 0)
         {
             Label imageLabel = new Label(parent, SWT.CENTER);
-            imageLabel.setImage(Image.getESWTImage(imgItem.getImage()));
-            imageLabel.pack();
-            int imageWidth = imageLabel.getBounds().width;
-            int imageHeight = imageLabel.getBounds().height;
-            int maxWidth = getMaximumItemWidth(item);
-            if(imageWidth > maxWidth)
-            {
-                Point size = imageLabel.computeSize(maxWidth, SWT.DEFAULT);
-                //Image Resize has to be done.
-                imageLabel.setSize(size.x, size.y);
-                imageWidth = size.x;
-                imageHeight = size.y;
-            }
-
-            if(imgItem.hasLabel())
-            {
-                int labelWidth = Font.getDefaultFont().stringWidth(imgItem.getLabel());
-
-                if(labelWidth > imageWidth)
-                {
-                    Point size = parent.computeSize(Math.min(labelWidth, maxWidth), SWT.DEFAULT);
-                    parent.setSize(size.x, size.y);
-                }
-                else
-                {
-                    parent.pack();
-                }
-            }
-
+			constructLabel(imageLabel, parent, imgItem);
             return imageLabel;
         }
         else
@@ -143,54 +114,176 @@ class ImageItemLayouter extends ItemLayouter
                 button = new Button(parent, SWT.FLAT | SWT.NONE);
                 break;
             }
-            button.setImage(Image.getESWTImage(imgItem.getImage()));
-            button.pack();
-            int buttonWidth = button.getBounds().width;
-            int buttonHeight = button.getBounds().height;
-            int maxWidth = getMaximumItemWidth(item);
-            if(buttonWidth > maxWidth)
-            {
-                Point size = button.computeSize(maxWidth, SWT.DEFAULT);
-                //Image Resize has to be done.
-                button.setSize(size.x, size.y);
-                buttonWidth = size.x;
-                buttonHeight = size.y;
-            }
-
-            if(imgItem.hasLabel())
-            {
-                int labelWidth = Font.getDefaultFont().stringWidth(imgItem.getLabel());
-
-                if(labelWidth > buttonWidth)
-                {
-                    Point size = parent.computeSize(Math.min(labelWidth, maxWidth), SWT.DEFAULT);
-                    parent.setSize(size.x, size.y);
-                }
-                else
-                {
-                    parent.pack();
-                }
-            }
-
+			constructButton(button, parent, imgItem);
             return button;
         }
     }
+
+	static private void constructLabel(Label imageLabel, Composite parent, ImageItem imgItem)
+	{
+        imageLabel.setImage(Image.getESWTImage(imgItem.getImage()));
+        imageLabel.pack();
+		updateControlSize(imageLabel, parent, imgItem);
+	}
+
+	static private void constructButton(Button button, Composite parent, ImageItem imgItem)
+	{
+		button.setImage(Image.getESWTImage(imgItem.getImage()));
+		button.pack();
+		updateControlSize(button, parent, imgItem);
+	}
+
+	static private void updateControlSize(Control control, Composite parent, ImageItem imgItem)
+	{
+		int controlWidth;
+		int controlHeight;
+		int maxWidth = getMaximumItemWidth(imgItem);
+
+		if(control != null)
+		{
+			controlWidth = control.getBounds().width;
+			controlHeight = control.getBounds().height;
+			
+			if(controlWidth > maxWidth)
+			{
+				//Image Resize has to be done.
+				Point size = control.computeSize(maxWidth, SWT.DEFAULT);
+				control.setSize(size.x, size.y);
+				controlWidth = size.x;
+				controlHeight = size.y;
+			}
+		}
+		else
+		{
+			controlWidth = maxWidth;
+		}
+		
+		if(imgItem.hasLabel())
+		{
+			int labelWidth = Font.getDefaultFont().stringWidth(imgItem.getLabel());
+		
+			if(labelWidth > controlWidth)
+			{
+				Point size = parent.computeSize(Math.min(labelWidth, maxWidth), SWT.DEFAULT);
+				parent.setSize(size.x, size.y);
+				return;
+			}
+		}
+		else if(control == null)
+		{
+			parent.setSize(0, 0);
+			return;
+		}
+
+		parent.pack();
+	}
 
     /**
      * Returns if this eSWT control is Layouter specific.
      */
     boolean eswtIsSpecificControl(Item item, Control control)
     {
-        // No implementation needed
         return ((control instanceof Label) || (control instanceof Button));
     }
 
     /**
      * Updates the values of ImageItem.
      */
-    void eswtUpdateItem(Item item, Control control, int reason, Object param)
+    void eswtUpdateItem(Item item, Control control, int aReason, Object param)
     {
-        // No implementation needed
+   		if(!(control instanceof  CaptionedControl))
+		{
+			return;
+		}
+			
+    	ImageItem imgItem = (ImageItem)item;
+		int reason = aReason & Item.UPDATE_SIZE_MASK;
+
+		switch(reason)
+		{
+		case Item.UPDATE_NONE:
+		case ImageItem.UPDATE_ALTTEXT:
+			break;
+
+		case Item.UPDATE_LABEL:
+		{
+			String label = imgItem.getLabel();
+			if(label == null)
+			{
+				label = "";
+			}
+
+			((CaptionedControl)control).setText(label);
+			Control sCtrl = eswtFindSpecificControl(imgItem, control);
+			updateControlSize(sCtrl, (Composite)control, imgItem);
+			break;
+		}
+
+		case ImageItem.UPDATE_IMAGE:
+		{
+			Control sCtrl = eswtFindSpecificControl(imgItem, control);
+			if(sCtrl != null)
+			{
+				if(imgItem.getImage() != null)
+				{
+					if(sCtrl instanceof Label)
+					{
+						constructLabel((Label)sCtrl, (Composite)control, imgItem);
+					}
+					else if(sCtrl instanceof Button)
+					{
+						constructButton((Button)sCtrl, (Composite)control, imgItem);
+					}
+				}
+				else
+				{
+					sCtrl.dispose();
+					updateControlSize(null, (Composite)control, imgItem);						
+				}
+			}
+			else
+			{
+				if(imgItem.getImage() != null)
+				{
+					eswtSpecificControl((Composite)control, imgItem);
+				}
+			}
+			break;
+		}
+
+		case Item.UPDATE_ADDCOMMAND:
+		{
+			Control sCtrl = eswtFindSpecificControl(imgItem, control);
+			if(sCtrl != null)
+			{
+				if((sCtrl instanceof Label) && (imgItem.getNumCommands()==1))
+				{
+					sCtrl.dispose();
+					eswtSpecificControl((Composite)control, imgItem);
+				}
+			}
+		}
+		break;
+		
+		case Item.UPDATE_REMOVECOMMAND:
+		{
+			Control sCtrl = eswtFindSpecificControl(imgItem, control);
+			if(sCtrl != null)
+			{
+				if((sCtrl instanceof Button) && (imgItem.getNumCommands()==0))
+				{
+					sCtrl.dispose();
+					eswtSpecificControl((Composite)control, imgItem);
+				}
+			}
+		}
+		break;
+
+		default:
+		{
+			break;
+		}
+		}
     }
 
     /**

@@ -86,6 +86,7 @@
 #include <qnetworkconfigmanager.h>
 #include <qnetworkconfiguration.h>
 #include <hbinputsettingproxy.h>
+#include <hbicon.h>
 #endif
 
 #include <org_eclipse_swt_internal_qt_OS.h>
@@ -6343,7 +6344,60 @@ JNIEXPORT jint JNICALL OS_NATIVE( QIcon_1pixmap )
     return reinterpret_cast< jint >(pixmap);
     }
 
+//
+// HbIcon
+//
 
+JNIEXPORT jint JNICALL OS_NATIVE ( HbIcon_1new )
+    (JNIEnv* aJniEnv , jclass, jstring aName)
+    {
+#ifdef __SYMBIAN32__
+    HbIcon* icon = NULL;
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        icon = new HbIcon(swtApp->jniUtils().JavaStringToQString(aJniEnv, aName));
+        }
+    SWT_CATCH
+    return reinterpret_cast< jint >( static_cast< HbIcon* >( icon ) );
+#else
+    return 0;
+#endif
+    }
+
+JNIEXPORT jint JNICALL OS_NATIVE( HbIcon_1pixmap )
+    (JNIEnv* aJniEnv , jclass, jint aHandle)
+    {
+#ifdef __SYMBIAN32__
+    QPixmap* pixmap = NULL;
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        HbIcon* icon = reinterpret_cast< HbIcon* >( aHandle );
+        pixmap = new QPixmap(icon->pixmap());
+        }
+    SWT_CATCH
+    return reinterpret_cast< jint >(pixmap);
+#else
+    return 0;
+#endif
+    }
+
+JNIEXPORT void JNICALL OS_NATIVE( HbIcon_1delete )
+    (JNIEnv* aJniEnv , jclass, jint aHandle)
+    {
+#ifdef __SYMBIAN32__
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        SWT_LOG_DATA_1("handle=%x", aHandle);
+        HbIcon* icon = reinterpret_cast< HbIcon* >( aHandle );
+        delete icon;
+        icon = NULL;
+        }
+    SWT_CATCH
+#endif
+    }
 
 //
 // QSlider

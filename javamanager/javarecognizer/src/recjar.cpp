@@ -100,7 +100,7 @@ void CApaJarRecognizer::DoRecognizeL(const TDesC& aName, const TDesC8& aBuffer)
                     weOwnFileHandle = ETrue;
                 }
 
-                TInt fileRemaining;
+                TInt fileRemaining = 0;
                 User::LeaveIfError(file->Size(fileRemaining));
                 if (fileRemaining > aBuffer.Length())
                 {

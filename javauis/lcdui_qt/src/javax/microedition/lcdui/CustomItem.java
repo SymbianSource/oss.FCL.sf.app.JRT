@@ -20,16 +20,13 @@ import javax.microedition.lcdui.EventDispatcher.LCDUIEvent;
 
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.extension.CanvasExtension;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Scrollable;
 
 /**
  * Implementation of LCDUI abstract <code>CustomItem</code> class.
  */
 public abstract class CustomItem extends Item
 {
-
     protected static final int NONE = 0;
     protected static final int TRAVERSE_HORIZONTAL = 1;
     protected static final int TRAVERSE_VERTICAL = 2;
@@ -43,9 +40,10 @@ public abstract class CustomItem extends Item
     protected static final int POINTER_DRAG = 0x80;
 
     /**
-     * Constant used by layouter to repaint CustomItem's rectangle section.
+     * If CustomItem is changed, reasons for Re-layouting.
      */
-    static final int UPDATE_REPAINT_RECT = 4;
+	static final int UPDATE_REASON_REPAINT = UPDATE_ITEM_MAX << 1;
+
 
     private boolean cleanupNeeded;
     private int contentWidth;
@@ -68,7 +66,7 @@ public abstract class CustomItem extends Item
 
     // Graphics command buffer for this instance
     Buffer graphicsBuffer;
-    Graphics CustomItemGraphics;
+    Graphics customItemGraphics;
 
     CustomItemLayouter layouter;
 
@@ -154,7 +152,7 @@ public abstract class CustomItem extends Item
     {
         Rectangle rect = new Rectangle(aX, aY, aWidth, aHeight);
         // From here it goes to updateItem()
-        updateParent(UPDATE_REPAINT_RECT, rect);
+        updateParent(UPDATE_REASON_REPAINT, rect);
     }
 
     /**
@@ -308,7 +306,7 @@ public abstract class CustomItem extends Item
                 contentHeight = newHeight;
             }
             EventDispatcher eventDispatcher = EventDispatcher.instance();
-            LCDUIEvent event = eventDispatcher.newEvent(LCDUIEvent.CUSTOMITEM_SIZECHANGED, layouter.dfi.getForm());
+            LCDUIEvent event = eventDispatcher.newEvent(LCDUIEvent.CUSTOMITEM_SIZECHANGED, layouter.formLayouter.getForm());
             event.item = this;
             eventDispatcher.postEvent(event);
             synchronized(cleanupLock)
@@ -356,7 +354,7 @@ public abstract class CustomItem extends Item
         else
         {
             // Item was added to a Form
-            layouter = ((CustomItemLayouter)((Form)parent).getLayoutPolicy().getLayouter(this));
+            layouter = ((CustomItemLayouter)((Form)parent).getFormLayouter().getItemLayouter(this));
         }
     }
 
@@ -432,7 +430,7 @@ public abstract class CustomItem extends Item
                 {
                     EventDispatcher eventDispatcher = EventDispatcher.instance();
                     LCDUIEvent event = eventDispatcher.newEvent(
-                                           LCDUIEvent.CUSTOMITEM_PAINT_MIDLET_REQUEST, layouter.dfi.getForm());
+                                           LCDUIEvent.CUSTOMITEM_PAINT_MIDLET_REQUEST, layouter.formLayouter.getForm());
                     event.widget = control;
                     event.item = this;
                     eventDispatcher.postEvent(event);
@@ -550,11 +548,11 @@ public abstract class CustomItem extends Item
                     widgetDisposed = true;
                     return;
                 }
-                if(CustomItemGraphics == null)
+                if(customItemGraphics == null)
                 {
                     graphicsBuffer = Buffer.createInstance(self, (Control)event.widget);
-                    CustomItemGraphics = graphicsBuffer.getGraphics();
-                    CustomItemGraphics.setSyncStrategy(Graphics.SYNC_LEAVE_SURFACE_SESSION_OPEN);
+                    customItemGraphics = graphicsBuffer.getGraphics();
+                    customItemGraphics.setSyncStrategy(Graphics.SYNC_LEAVE_SURFACE_SESSION_OPEN);
                 }
                 else
                 {
@@ -583,17 +581,18 @@ public abstract class CustomItem extends Item
                     contentHeight = this.contentHeight;
                 }
 
-                CustomItemGraphics.setClip(0, 0, contentWidth, contentHeight);
-                CustomItemGraphics.cleanBackground(new Rectangle(0, 0, contentWidth, contentHeight));
+                customItemGraphics.setClip(0, 0, contentWidth, contentHeight);
+                customItemGraphics.cleanBackground(new Rectangle(0, 0, contentWidth, contentHeight));
                 cleanupNeeded = false;
             }
         }
 
         // Clip must define the invalid area
-        CustomItemGraphics.setClip(redrawNowX, redrawNowY, redrawNowW, redrawNowH);
+        customItemGraphics.reset();
+        customItemGraphics.setClip(redrawNowX, redrawNowY, redrawNowW, redrawNowH);
 
         // The callback
-        paint(CustomItemGraphics, contentWidth, contentHeight);
+        paint(customItemGraphics, contentWidth, contentHeight);
 
         // Wait until the UI thread is available. Then in the UI thread
         // synchronously send a paint event.

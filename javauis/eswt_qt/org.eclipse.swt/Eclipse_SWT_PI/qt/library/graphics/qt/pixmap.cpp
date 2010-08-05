@@ -60,6 +60,19 @@ void Pixmap::createFromQImage(const QImage& aImage)
     }
 }
 
+void Pixmap::createFromQPixmap(const QPixmap& aPixmap)
+{
+    GFX_LOG_FUNC_CALL();
+    Q_ASSERT(mPixmap.isNull());
+
+    mPixmap = QPixmap(aPixmap);
+
+    // Validate allocation
+    if(mPixmap.isNull())
+    {
+        throw GfxException(EGfxErrorNoMemory, "Image (Pixmap) creation failed");
+    }
+}
 
 void Pixmap::createFromImage(Image* aImage, int aX, int aY, int aWidth, int aHeight)
 {

@@ -36,11 +36,11 @@ abstract class ItemLayouter
     /**
      * Key name for paint listener.
      */
-    private static final String FOCUS_LISTENER = "itemfocus";
+    private static final String FOCUS_LISTENER = "FocusListener";
 
     protected static final String MIN_TEXT = "...";
 
-    protected DefaultFormInteraction dfi;
+    protected FormLayouter formLayouter;
 
     protected Composite formComposite;
 
@@ -112,12 +112,12 @@ abstract class ItemLayouter
     /**
      * Constructor.
      *
-     * @param dflp - DefaultFormLayoutPolicy used for layouting.
+     * @param aFormLayouter FormLayouter used for layouting.
      */
-    ItemLayouter(DefaultFormLayoutPolicy dflp)
+    ItemLayouter(FormLayouter aFormLayouter)
     {
-        this.dfi = (DefaultFormInteraction) dflp;
-        formComposite = dflp.getForm().getFormComposite();
+        formLayouter = aFormLayouter;
+        formComposite = formLayouter.getForm().getFormComposite();
         ESWTUIThreadRunner.syncExec(new Runnable()
         {
             public void run()
@@ -132,7 +132,7 @@ abstract class ItemLayouter
      */
     int eswtGetLabelAlignmentDirective()
     {
-        return dfi.getLanguageSpecificLayoutDirective();
+        return formLayouter.getLanguageSpecificLayoutDirective();
     }
 
     /**
@@ -143,8 +143,8 @@ abstract class ItemLayouter
      */
     void eswtLayoutItem(Row row, Item item)
     {
-        LayoutObject lo = new LayoutObject(item, eswtGetCaptionedControl(item));
-        dfi.eswtAddNewLayoutObject(lo);
+    	LayoutObject lo = getLayoutObject(item);
+        formLayouter.eswtAddNewLayoutObject(lo);
         if(item instanceof CustomItem)
         {
             ItemControlStateChangeListener listener = item.getItemControlStateChangeListener();
@@ -154,6 +154,22 @@ abstract class ItemLayouter
                 lo.getControl().addListener(SWT.Dispose, new EventListener(item));
             }
         }
+    }
+
+    /**
+     * Creates LayoutObject for the given Item.
+     *
+     * @param item Item to layout
+     * @return LayoutObject
+     */
+    LayoutObject getLayoutObject(Item item)
+    {
+    	LayoutObject lo = formLayouter.getLayoutObject(item);
+    	if(lo == null)
+    	{
+        	lo = new LayoutObject(item, eswtGetCaptionedControl(item));
+    	}
+		return lo;
     }
 
     /**
@@ -169,20 +185,14 @@ abstract class ItemLayouter
      */
     final Control eswtGetCaptionedControl(Item item)
     {
+        CaptionedControl captioned = new CaptionedControl(formComposite, SWT.VERTICAL);
         if(item.hasLabel())
         {
-            CaptionedControl captioned = new CaptionedControl(formComposite, SWT.VERTICAL);
-            captioned.setText(item.getLabel());
-            eswtGetControl(captioned, item);
-            eswtCaptionedResize(item, captioned, item.getLayoutWidth(), item.getLayoutHeight());
-            return captioned;
-        }
-        else
-        {
-            Control ret = eswtGetControl(formComposite, item);
-            eswtCaptionedResize(item, ret, item.getLayoutWidth(), item.getLayoutHeight());
-            return ret;
-        }
+	        captioned.setText(item.getLabel());
+		}
+        eswtGetControl(captioned, item);
+        eswtCaptionedResize(item, captioned, item.getLayoutWidth(), item.getLayoutHeight());
+        return captioned;
     }
 
     /**
@@ -244,7 +254,10 @@ abstract class ItemLayouter
      */
     void eswtResizeControl(Item item, Control control, int width, int height)
     {
-        control.setSize(width, height);
+    	if(control != null)
+    	{
+        	control.setSize(width, height);
+    	}
     }
 
     /**
@@ -337,12 +350,11 @@ abstract class ItemLayouter
         {
             public void run()
             {
-                Control specific = eswtFindSpecificControl(item, control);
-                if(specific != null)
+                if(control != null)
                 {
-                    if(!specific.isDisposed())
+                    if(!control.isDisposed())
                     {
-                        eswtUpdateItem(item, specific, reason, param);
+                        eswtUpdateItem(item, control, reason, param);
                     }
                     else
                     {
@@ -430,7 +442,7 @@ abstract class ItemLayouter
      */
     Control eswtGetFirstControl(Item item)
     {
-        LayoutObject lo = dfi.getFirstLayoutObjectOfItem(item);
+        LayoutObject lo = formLayouter.getFirstLayoutObjectOfItem(item);
         if(lo != null)
         {
             return lo.getControl();
@@ -446,7 +458,7 @@ abstract class ItemLayouter
      */
     Control eswtGetFirstSpecificControl(Item item)
     {
-        LayoutObject lo = dfi.getFirstLayoutObjectOfItem(item);
+        LayoutObject lo = formLayouter.getFirstLayoutObjectOfItem(item);
         if(lo != null)
         {
             Control control = lo.getControl();
@@ -707,7 +719,7 @@ abstract class ItemLayouter
             if(!item.isFocused())
             {
                 // Logger.method(item, "focusGained");
-                dfi.eswtSetCurrentSelectedItem(item);
+                formLayouter.eswtSetCurrentSelectedItem(item);
             }
         }
 

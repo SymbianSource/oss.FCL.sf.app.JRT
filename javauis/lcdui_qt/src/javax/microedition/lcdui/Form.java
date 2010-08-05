@@ -34,7 +34,7 @@ public class Form extends Screen
     /**
      * Abstract layouting policy.
      */
-    private FormLayoutPolicy layoutPolicy;
+    private FormLayouter formLayouter;
 
     /**
      * Item vector.
@@ -69,7 +69,7 @@ public class Form extends Screen
     {
         super(title);
         construct();
-        layoutPolicy = new DefaultFormInteraction(this);
+        formLayouter = new FormLayouter(this);
     }
 
     /**
@@ -117,7 +117,7 @@ public class Form extends Screen
         {
             vBar.addSelectionListener(fsbl);
         }
-        layoutPolicy.handleShowCurrentEvent();
+        formLayouter.handleShowCurrentEvent();
     }
 
     /* (non-Javadoc)
@@ -132,7 +132,7 @@ public class Form extends Screen
         {
             vBar.removeSelectionListener(fsbl);
         }
-        layoutPolicy.handleHideCurrentEvent();
+        formLayouter.handleHideCurrentEvent();
     }
 
     /* (non-Javadoc)
@@ -147,7 +147,7 @@ public class Form extends Screen
             formComposite.setOrigin(0, 0, true);
             formComposite.setSize(width, height);
             formComposite.setRedraw(true);
-            layoutPolicy.handleResizeEvent(width, height);
+            formLayouter.handleResizeEvent(width, height);
             resetLayoutTimer(0);
         }
     }
@@ -166,7 +166,7 @@ public class Form extends Screen
         }
         else
         {
-            layoutPolicy.handleKeyEvent(e.keyCode, e.type);
+            formLayouter.handleKeyEvent(e.keyCode, e.type);
         }
     }
 
@@ -189,7 +189,7 @@ public class Form extends Screen
                 MsgRepository.FORM_EXCEPTION_ITEM_OWNED_BY_CONTAINER);
         }
         int returnValue = -1;
-        synchronized(layoutPolicy)
+        synchronized(formLayouter)
         {
             item.setParent(this);
             items.addElement(item);
@@ -255,7 +255,7 @@ public class Form extends Screen
             throw new IndexOutOfBoundsException(
                 MsgRepository.FORM_EXCEPTION_INVALID_ITEM_INDEX);
         }
-        synchronized(layoutPolicy)
+        synchronized(formLayouter)
         {
             item.setParent(this);
             items.insertElementAt(item, position);
@@ -276,9 +276,11 @@ public class Form extends Screen
             throw new IndexOutOfBoundsException(
                 MsgRepository.FORM_EXCEPTION_INVALID_ITEM_INDEX);
         }
-        synchronized(layoutPolicy)
+        synchronized(formLayouter)
         {
-            ((Item) items.elementAt(position)).setParent(null);
+        	Item item = ((Item) items.elementAt(position));
+            item.clearParent();
+        	formLayouter.removeLayoutObject(item);			
             items.removeElementAt(position);
             resetLayoutTimer(position - 1);
         }
@@ -289,11 +291,13 @@ public class Form extends Screen
      */
     public void deleteAll()
     {
-        synchronized(layoutPolicy)
+        synchronized(formLayouter)
         {
             for(int i = 0; i < items.size(); i++)
             {
-                ((Item) items.elementAt(i)).setParent(null);
+	        	Item item = ((Item) items.elementAt(i));
+                item.clearParent();
+	        	formLayouter.removeLayoutObject(item);
             }
             items.removeAllElements();
             resetLayoutTimer(0);
@@ -324,11 +328,13 @@ public class Form extends Screen
             throw new IndexOutOfBoundsException(
                 MsgRepository.FORM_EXCEPTION_INVALID_ITEM_INDEX);
         }
-        synchronized(layoutPolicy)
+        synchronized(formLayouter)
         {
             newItem.setParent(this);
             // clear reference to a form for "old" item.
-            get(position).setParent(null);
+            Item oldItem = get(position);
+			oldItem.clearParent();
+			formLayouter.removeLayoutObject(oldItem);
             items.setElementAt(newItem, position);
             resetLayoutTimer(position);
         }
@@ -344,7 +350,7 @@ public class Form extends Screen
     public Item get(int position)
     {
         Item returnItem = null;
-        synchronized(layoutPolicy)
+        synchronized(formLayouter)
         {
             try
             {
@@ -386,7 +392,7 @@ public class Form extends Screen
      */
     void setCurrentItem(Item item)
     {
-        layoutPolicy.setCurrentItem(item);
+        formLayouter.setCurrentItem(item);
     }
 
     /**
@@ -419,30 +425,24 @@ public class Form extends Screen
      * @param updateReason
      * @param param additional parameter
      */
-    void updateItemState(Item item, int updateReason, Object param)
-    {
-        if(item != null && item.getParent() == this)
-        {
-            if((updateReason & Item.UPDATE_WIDTH_CHANGED) != 0)
-            {
-                synchronized(layoutPolicy)
-                {
-                    resetLayoutTimer(items.indexOf(item));
-                }
-            }
-            else
-            {
-                if(layoutPolicy instanceof DefaultFormInteraction)
-                {
-                    if(layoutTimer != null)
-                    {
-                        ((DefaultFormInteraction) layoutPolicy)
-                        .updateItemState(item, updateReason, param);
-                    }
-                }
-            }
-        }
-    }
+	void updateItemState(Item item, int updateReason, Object param)
+	{
+		if(item != null && item.getParent() == this)
+		{
+			if(layoutTimer != null)
+			{
+				formLayouter.updateItemState(item, updateReason, param);
+			}
+			
+			if((updateReason & Item.UPDATE_SIZE_CHANGED) != 0)
+			{
+				synchronized(formLayouter)
+				{
+					resetLayoutTimer(items.indexOf(item));
+				}
+			}
+		}
+	}
 
     /**
      * Get Vector of items.
@@ -464,13 +464,13 @@ public class Form extends Screen
 
 
     /**
-     * Returns form layout policy.
+     * Returns form Form Layouter.
      * @return Reference to layout policy.
      *
      */
-    FormLayoutPolicy getLayoutPolicy()
+    FormLayouter getFormLayouter()
     {
-        return layoutPolicy;
+        return formLayouter;
     }
 
     // =========================================================================
@@ -483,7 +483,7 @@ public class Form extends Screen
         super(title);
         construct();
         layoutLR = leftRightLanguage;
-        layoutPolicy = new DefaultFormInteraction(this);
+        formLayouter = new FormLayouter(this);
     }
 
     // =========================================================================
@@ -510,9 +510,26 @@ public class Form extends Screen
             }
             // schedule new timer
             startIndex = Math.max(0, Math.min(newStartIndex, startIndex));
-            // layoutPolicy.layoutForm(startIndex);
+            // formLayouter.layoutForm(startIndex);
             formTimerTask = new FormTimerTask(startIndex);
             layoutTimer.schedule(formTimerTask, Config.FORM_LAYOUT_TIMER_DELAY);
+        }
+    }
+
+    /**
+     * Cancel Layout Timer.
+     */
+    private void cancelLayoutTimer()
+    {
+        if(layoutTimer != null)
+        {
+            if(formTimerTask != null)
+            {
+                formTimerTask.cancel();
+                formTimerTask = null;
+            }
+            layoutTimer.cancel();
+			layoutTimer = null;
         }
     }
 
@@ -532,7 +549,7 @@ public class Form extends Screen
         public void run()
         {
             Logger.method(Form.this, "layout");
-            layoutPolicy.layoutForm(index);
+            formLayouter.layoutForm(index);
             startIndex = items.size();
         }
 
@@ -550,7 +567,7 @@ public class Form extends Screen
                 Point p = ((Control) e.widget).toDisplay(new Point(e.x, e.y));
                 // translate display coordinates to composite coordinates
                 p = formComposite.toControl(p);
-                layoutPolicy.handlePointerEvent(p.x, p.y, e.type);
+                formLayouter.handlePointerEvent(p.x, p.y, e.type);
             }
         }
     }*/
@@ -568,7 +585,7 @@ public class Form extends Screen
         public void widgetSelected(SelectionEvent se)
         {
             ScrollBar sb = (ScrollBar) se.widget;
-            layoutPolicy.updateScrolling(sb.getSelection(), false);
+            formLayouter.updateScrolling(sb.getSelection(), false);
         }
     }
 
@@ -577,12 +594,12 @@ public class Form extends Screen
      */
     void dispose()
     {
+        cancelLayoutTimer();
         super.dispose();
-        layoutTimer.cancel();
-        layoutTimer = null;
         deleteAll();
-        ((DefaultFormInteraction) layoutPolicy).dispose();
-        layoutPolicy = null;
+        formLayouter.dispose();
+		items = null;
+        formLayouter = null;
     }
 
     /*
@@ -593,7 +610,7 @@ public class Form extends Screen
         if((event.type & LCDUIEvent.CUSTOMITEMBIT) != 0)
         {
             // Synchronize with Form content modification operations.
-            synchronized(layoutPolicy)
+            synchronized(formLayouter)
             {
                 // If the eSWT widget has been explicitly disposed while the event
                 // was in the queue then ignore the event.

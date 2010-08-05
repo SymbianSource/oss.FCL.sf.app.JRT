@@ -108,32 +108,25 @@ final class LayoutObject
         Control ret = null;
 
         //If the Control is focusable add the commands to the same.
-        if((ctrl instanceof CaptionedControl) || (ctrl.isFocusControl()))
+        if((ctrl instanceof CaptionedControl) || (ctrl instanceof Button) 
+			|| (ctrl.isFocusControl()))
         {
             return ctrl;
         }
 
-
-        if(ctrl != null)
+        if(ctrl instanceof Composite)
         {
-            if(ctrl instanceof Button)
+            Control[] children = ((Composite) ctrl).getChildren();
+            for(int i = 0; i < children.length; i++)
             {
-                ret = ctrl;
-            }
-            else if(ctrl instanceof Composite)
-            {
-                Control[] children = ((Composite) ctrl).getChildren();
-                for(int i = 0; i < children.length; i++)
+                ret = eswtGetCommandControl(children[i]);
+                if(ret != null)
                 {
-                    Control result = eswtGetCommandControl(children[i]);
-                    if(result != null)
-                    {
-                        ret = result;
-                        break;
-                    }
+                    break;
                 }
             }
         }
+
         return ret;
     }
 
@@ -146,6 +139,7 @@ final class LayoutObject
         {
             public void run()
             {
+            	owningItem = null;
                 control.dispose();
                 control = null;
                 commandControl = null;

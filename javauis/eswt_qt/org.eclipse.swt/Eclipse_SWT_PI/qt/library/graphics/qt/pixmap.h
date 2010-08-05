@@ -35,6 +35,7 @@ public:
      */
     virtual void createBySize(int aWidth, int aHeight, int aFillColor, TImageFormat aFormat);
     virtual void createFromQImage(const QImage& aImage);
+    virtual void createFromQPixmap(const QPixmap& aPixmap);
     virtual void createFromImage(Image* aImage, int aX, int aY, int aWidth, int aHeight);
     virtual void createFromImageData(ImageDataWrapper* aData);
     virtual void createFromRGB(int* aRgbdata, int aWidth, int aHeight, bool aHasAlpha);

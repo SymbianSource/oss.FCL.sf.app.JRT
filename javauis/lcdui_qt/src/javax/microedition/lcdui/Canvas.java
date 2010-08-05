@@ -28,7 +28,6 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.extension.CompositeExtension;
 import org.eclipse.swt.internal.qt.graphics.WindowSurface;
 import org.eclipse.swt.internal.extension.MobileShellExtension;
 import org.eclipse.swt.internal.qt.SymbianWindowVisibilityListener;
@@ -191,7 +190,6 @@ public abstract class Canvas extends Displayable
     //private Composite keypadComposite;
     private CanvasKeypad onScreenkeypad;
     private static CanvasKeypad sharedKeypad;
-    private int oskHeight;
 
     // Vector of flags that a certain key was pressed but was not released.
     // Used to implement keyRepeated since eSWT does not support

@@ -489,7 +489,21 @@ void L2CAPServerConnection::HandleAcceptCompleteL(TInt err)
     if (KErrNone == err)
     {
         mAcceptedSocket->RemoteName(btRemoteAddr);
-        if (mAsyncAccept && (!mAvoidFilter) && (false == isConnectionAllowed(btRemoteAddr)))
+        TBuf<20> addr;
+        TInt64 longBtAddr = 0;
+        TBTDevAddr btDeviceAddress = btRemoteAddr.BTAddr();
+        LOG4(EJavaBluetooth,EInfo,"TBTDevAddr Address is %x %x %x %x ",
+                                   btDeviceAddress[0],btDeviceAddress[1], 
+                                   btDeviceAddress[2],btDeviceAddress[3]);
+        LOG2(EJavaBluetooth,EInfo,"%x %x",btDeviceAddress[4], 
+                                          btDeviceAddress[5]);
+        btDeviceAddress.GetReadable(addr);
+        LOG1(EJavaBluetooth,EInfo,"BT: Readable address is %S",&addr);
+        TLex16 toParse(addr);
+        toParse.Val(longBtAddr, EHex);
+        LOG1(EJavaBluetooth, EInfo,
+             "L2CAPServerConnection::HandleAcceptCompleteL: Address: %llx", longBtAddr);
+        if ((longBtAddr == 0) ||(mAsyncAccept && (!mAvoidFilter) && (false == isConnectionAllowed(btRemoteAddr))))
         {
             mAcceptedSocket->CancelAll();
             mAcceptedSocket->Shutdown(RSocket::EImmediate);
@@ -500,14 +514,7 @@ void L2CAPServerConnection::HandleAcceptCompleteL(TInt err)
             AcceptL();
             return;
         }
-        TBuf<20> addr;
-        TInt64 longBtAddr = 0;
-        TBTDevAddr btDeviceAddress = btRemoteAddr.BTAddr();
-        btDeviceAddress.GetReadable(addr);
-        TLex16 toParse(addr);
-        toParse.Val(longBtAddr, EHex);
-        LOG1(EJavaBluetooth, EInfo,
-             "L2CAPServerConnection::HandleAcceptCompleteL: Address: %ld", longBtAddr);
+        
         mBtClientConn = new BluetoothClientConnection(mAcceptedSocket, mServer);
         mAcceptedSocket->GetOpt(KL2CAPInboundMTU, KSolBtL2CAP, negotiatedReceiveMtu);
         mAcceptedSocket->GetOpt(KL2CAPNegotiatedOutboundMTU, KSolBtL2CAP, negotiatedTransmitMtu);

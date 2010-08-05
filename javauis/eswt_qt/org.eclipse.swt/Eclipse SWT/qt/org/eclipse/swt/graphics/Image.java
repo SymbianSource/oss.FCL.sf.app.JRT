@@ -73,44 +73,6 @@ import java.io.InputStream;
  * @see ImageLoader
  */
 public final class Image implements Drawable {
-
-    static int getNullIconHandle() {
-        if( Device.nullIconHandle == 0 ){
-            Device.nullIconHandle = OS.QIcon_new();
-        }
-        return Device.nullIconHandle;
-    }
-
-    /*
-     * Creates new Image instance.
-     * <p>
-     * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
-     * API for <code>Image</code>. It is marked public only so that it
-     * can be shared within the packages provided by SWT. It is not
-     * available on all platforms, and should never be called from
-     * application code.
-     * </p>
-     * @param device the device on which to create the image
-     * @param cgImage the internal image instance
-     *
-     * @exception IllegalArgumentException <ul>
-     *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
-     *    <li>ERROR_NULL_ARGUMENT - if the iternal image is null</li>
-     * </ul>
-     * @exception SWTException <ul>
-     *    <li>ERROR_INVALID_IMAGE - if the given internal image is not valid</li>
-     * </ul>
-     * @exception SWTError <ul>
-     *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
-     * </ul>
-     */
-    static Image new_Image(
-        Device device, org.eclipse.swt.internal.qt.graphics.Image cgImage) {
-        Image image = new Image(device);
-        image.init(cgImage);
-        return image;
-    }
-
     /**
      * specifies whether the receiver is a bitmap or an icon
      * (one of <code>SWT.BITMAP</code>, <code>SWT.ICON</code>)
@@ -368,7 +330,7 @@ public final class Image implements Drawable {
      */
     public Image(Device device, String filename) {
         this(device, filename, true);
-     }
+    }
     
     private Image(Device device, String filename, boolean securityCheck) {
         this(device);
@@ -858,5 +820,42 @@ public final class Image implements Drawable {
      */
     private void track() {
         if (Device.tracking) device.new_Object(this);
+    }
+
+    static int getNullIconHandle() {
+        if( Device.nullIconHandle == 0 ){
+            Device.nullIconHandle = OS.QIcon_new();
+        }
+        return Device.nullIconHandle;
+    }
+    
+    /**
+     * Creates new Image instance.
+     * <p>
+     * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+     * API for <code>Image</code>. It is marked public only so that it
+     * can be shared within the packages provided by SWT. It is not
+     * available on all platforms, and should never be called from
+     * application code.
+     * </p>
+     * @param device the device on which to create the image
+     * @param cgImage the internal image instance
+     *
+     * @exception IllegalArgumentException <ul>
+     *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+     *    <li>ERROR_NULL_ARGUMENT - if the iternal image is null</li>
+     * </ul>
+     * @exception SWTException <ul>
+     *    <li>ERROR_INVALID_IMAGE - if the given internal image is not valid</li>
+     * </ul>
+     * @exception SWTError <ul>
+     *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
+     * </ul>
+     */
+    static Image qt_new(
+        Device device, org.eclipse.swt.internal.qt.graphics.Image cgImage) {
+        Image image = new Image(device);
+        image.init(cgImage);
+        return image;
     }
 }

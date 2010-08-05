@@ -15,9 +15,11 @@
 *
 */
 
-
+#include <errno.h>
+#include <fcntl.h>
 #include <iostream>
 #include <sstream>
+#include <unistd.h>
 #include <vector>
 
 #include <string.h>
@@ -32,6 +34,16 @@
 #include "convertutf.h"
 
 using namespace java::util;
+
+// In Symbian working directory should be initalized to C:\private\<UID> by OpenC
+// But for some reason this does not seem to work if process binary is in rom.
+#ifdef __SYMBIAN32__
+const char* const FIRST_BOOT_FILE = "c:\\private\\102033E6\\first_boot_done.dat";
+#else
+const char* const FIRST_BOOT_FILE = "first_boot_done.dat";
+#endif /* __SYMBIAN32__ */
+
+bool JavaCommonUtils::mFirstBoot = false;
 
 OS_EXPORT int JavaCommonUtils::stringToInt(const std::string& str)
 {
@@ -369,6 +381,40 @@ OS_EXPORT std::wstring JavaCommonUtils::percentDecode(const std::wstring& str)
     res.append(str.substr(cur, str.length() - cur));
 
     return res;
+}
+
+
+OS_EXPORT int JavaCommonUtils::initIsFirstBoot()
+{
+    struct stat fileStatBuf;
+    if (stat(FIRST_BOOT_FILE, &fileStatBuf) == 0)
+    {
+        mFirstBoot = false;
+    }
+    else
+    {
+        mFirstBoot = true;
+
+        // Create flag file so that next time we detect that first boot 
+        // has already been done
+        int fd = open(FIRST_BOOT_FILE, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+        if (fd < 0)
+        {
+            return errno;
+        }
+        else
+        {
+            close(fd);
+        }
+    }
+    
+    return 0;
+}
+
+
+OS_EXPORT bool JavaCommonUtils::isFirstBoot()
+{
+    return mFirstBoot;
 }
 
 

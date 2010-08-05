@@ -19,13 +19,18 @@
 #include <e32def.h>
 #include <centralrepository.h>
 
+#ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS
+#include <cuseragent.h>
+#else
+#include <cuseragent.h>
+#endif
+
 #include "com_nokia_mj_impl_http_HttpConnectionNative.h"
 #include "nativehttptransaction.h"
 #include "nativehttpsession.h"
 #include "monitor.h"
 #include "logger.h"
 #include "s60commonutils.h"
-#include "javauseragent.h"
 
 using namespace java::util;
 
@@ -215,14 +220,23 @@ JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_http_HttpConnectionNative__1get
 
 jstring GetUserAgentL(JNIEnv *aJni, jboolean aMidpRuntime)
 {
-    LOG(ESOCKET,EInfo,"GetUserAgentL() +");
     jstring header = NULL;
 
     if (aMidpRuntime == false)
     {
-        HBufC* stringBufPtr  = JavaUserAgent::GetUserAgentL();
-        header = S60CommonUtils::NativeToJavaString(*aJni,stringBufPtr->Des());
-        delete stringBufPtr;
+        CUserAgent* userAgent = CUserAgent::NewL();
+        CleanupStack::PushL(userAgent);
+
+        HBufC8* agent8 = userAgent->UserAgentL();
+        CleanupStack::PushL(agent8);
+        HBufC* agent = HBufC::NewMaxLC(agent8->Length());
+        agent->Des().Copy(*agent8);
+        header = S60CommonUtils::NativeToJavaString(*aJni, agent->Des());
+
+        CleanupStack::PopAndDestroy(agent);
+        CleanupStack::PopAndDestroy(agent8);
+        CleanupStack::PopAndDestroy(userAgent);
+
         return header;
     }
 
@@ -242,9 +256,18 @@ jstring GetUserAgentL(JNIEnv *aJni, jboolean aMidpRuntime)
             {
             case KHTTPUserAgentBrowserHeader:
             {
-                HBufC* stringBufPtr = (JavaUserAgent::GetUserAgentL());
-                header = S60CommonUtils::NativeToJavaString(*aJni, stringBufPtr->Des());
-                delete stringBufPtr;
+                CUserAgent* userAgent = CUserAgent::NewL();
+                CleanupStack::PushL(userAgent);
+
+                HBufC8* agent8 = userAgent->UserAgentL();
+                CleanupStack::PushL(agent8);
+                HBufC* agent = HBufC::NewMaxLC(agent8->Length());
+                agent->Des().Copy(*agent8);
+                header = S60CommonUtils::NativeToJavaString(*aJni, agent->Des());
+
+                CleanupStack::PopAndDestroy(agent);
+                CleanupStack::PopAndDestroy(agent8);
+                CleanupStack::PopAndDestroy(userAgent);
             }
             break;
 

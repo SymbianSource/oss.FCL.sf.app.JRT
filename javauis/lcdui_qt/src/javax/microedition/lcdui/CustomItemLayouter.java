@@ -64,11 +64,11 @@ class CustomItemLayouter extends ItemLayouter
     /**
      * Constructor.
      *
-     * @param dflp DefaultFormLayoutPolicy used for layouting.
+     * @param aFormLayouter FormLayouter used for layouting.
      */
-    public CustomItemLayouter(DefaultFormLayoutPolicy dflp)
+    public CustomItemLayouter(FormLayouter aFormLayouter)
     {
-        super(dflp);
+        super(aFormLayouter);
 
         noBackground = JadAttributeUtil.isValue(JadAttributeUtil.ATTRIB_NOKIA_UI_ENHANCEMENT,
                                                 JadAttributeUtil.VALUE_CANVAS_HAS_BACKGROUND);
@@ -205,7 +205,7 @@ class CustomItemLayouter extends ItemLayouter
      */
     void eswtUpdateItem(Item item, Control control, int reason, Object param)
     {
-        if(reason == CustomItem.UPDATE_REPAINT_RECT)
+        if(reason == CustomItem.UPDATE_REASON_REPAINT)
         {
             Rectangle rect = (Rectangle) param;
             ((CustomItem)item).updateItem(rect, control);
@@ -267,7 +267,7 @@ class CustomItemLayouter extends ItemLayouter
         if(!((selectionKeyCompatibility == true) && (key == -5)))
         {
             EventDispatcher eventDispatcher = EventDispatcher.instance();
-            LCDUIEvent e = eventDispatcher.newEvent(LCDUIEvent.CUSTOMITEM_KEYPRESSED, dfi.getForm());
+            LCDUIEvent e = eventDispatcher.newEvent(LCDUIEvent.CUSTOMITEM_KEYPRESSED, formLayouter.getForm());
             e.item = customItem;
             e.keyCode = key;
             eventDispatcher.postEvent(e);
@@ -282,13 +282,13 @@ class CustomItemLayouter extends ItemLayouter
             int[] visRect = getVisRect(ctrl);
             // Offer event for inner traversal
             consumed = customItem.traverse(direction,
-                                           dfi.getFormWidth(), dfi.getFormHeight(), visRect);
+                                           formLayouter.getFormWidth(), formLayouter.getFormHeight(), visRect);
             if(consumed)
             {
                 // if inner focus is on - scroll to inner focus
                 Point loc = new Point(0, 0);
-                dfi.getControlPositionOnComposite(ctrl, loc);
-                dfi.eswtScrolltoRegion(loc.y + visRect[1],
+                formLayouter.getControlPositionOnComposite(ctrl, loc);
+                formLayouter.eswtScrolltoRegion(loc.y + visRect[1],
                                        loc.y + visRect[1] + visRect[3], key);
             }
             control.redraw();
@@ -306,7 +306,7 @@ class CustomItemLayouter extends ItemLayouter
         if(!((selectionKeyCompatibility == true) && (key == -5)))
         {
             EventDispatcher eventDispatcher = EventDispatcher.instance();
-            LCDUIEvent e = eventDispatcher.newEvent(LCDUIEvent.CUSTOMITEM_KEYRELEASED, dfi.getForm());
+            LCDUIEvent e = eventDispatcher.newEvent(LCDUIEvent.CUSTOMITEM_KEYRELEASED, formLayouter.getForm());
             e.item = customItem;
             e.keyCode = key;
             eventDispatcher.postEvent(e);
@@ -332,12 +332,12 @@ class CustomItemLayouter extends ItemLayouter
             Control ctrl = eswtFindSpecificControl(item, control);
             int[] visRect = getVisRect(ctrl);
             if(customItem.traverse(getCanvasDirection(swtDir),
-                                   dfi.getFormWidth(), dfi.getFormHeight(), visRect))
+                                   formLayouter.getFormWidth(), formLayouter.getFormHeight(), visRect))
             {
                 // if inner focus is on - scroll to inner focus
                 Point loc = new Point(0, 0);
-                dfi.getControlPositionOnComposite(ctrl, loc);
-                dfi.eswtScrolltoRegion(loc.y + visRect[1],
+                formLayouter.getControlPositionOnComposite(ctrl, loc);
+                formLayouter.eswtScrolltoRegion(loc.y + visRect[1],
                                        loc.y + visRect[1] + visRect[3], swtDir);
             }
             control.redraw();
@@ -360,7 +360,7 @@ class CustomItemLayouter extends ItemLayouter
     void eswtHandleShow(Item item)
     {
         EventDispatcher eventDispatcher = EventDispatcher.instance();
-        LCDUIEvent event = eventDispatcher.newEvent(LCDUIEvent.CUSTOMITEM_SHOWNOTIFY, dfi.getForm());
+        LCDUIEvent event = eventDispatcher.newEvent(LCDUIEvent.CUSTOMITEM_SHOWNOTIFY, formLayouter.getForm());
         event.item = item;
         eventDispatcher.postEvent(event);
         CustomItem customItem = (CustomItem) item;
@@ -373,7 +373,7 @@ class CustomItemLayouter extends ItemLayouter
     void eswtHandleHide(Item item)
     {
         EventDispatcher eventDispatcher = EventDispatcher.instance();
-        LCDUIEvent event = eventDispatcher.newEvent(LCDUIEvent.CUSTOMITEM_HIDENOTIFY, dfi.getForm());
+        LCDUIEvent event = eventDispatcher.newEvent(LCDUIEvent.CUSTOMITEM_HIDENOTIFY, formLayouter.getForm());
         event.item = item;
         eventDispatcher.postEvent(event);
     }
@@ -445,7 +445,7 @@ class CustomItemLayouter extends ItemLayouter
                 // the paint callback has been executed.
                 EventDispatcher eventDispatcher = EventDispatcher.instance();
                 LCDUIEvent event = eventDispatcher.newEvent(
-                                       LCDUIEvent.CUSTOMITEM_PAINT_NATIVE_REQUEST, dfi.getForm());
+                                       LCDUIEvent.CUSTOMITEM_PAINT_NATIVE_REQUEST, formLayouter.getForm());
                 event.x = pe.x;
                 event.y = pe.y;
                 event.width = pe.width;
@@ -473,7 +473,7 @@ class CustomItemLayouter extends ItemLayouter
         public void mouseDown(MouseEvent event)
         {
             EventDispatcher eventDispatcher = EventDispatcher.instance();
-            LCDUIEvent e = eventDispatcher.newEvent(LCDUIEvent.CUSTOMITEM_POINTERPRESSED, dfi.getForm());
+            LCDUIEvent e = eventDispatcher.newEvent(LCDUIEvent.CUSTOMITEM_POINTERPRESSED, formLayouter.getForm());
             e.item = customItem;
             e.x = event.x;
             e.y = event.y;
@@ -513,7 +513,7 @@ class CustomItemLayouter extends ItemLayouter
                 }
             }
             EventDispatcher eventDispatcher = EventDispatcher.instance();
-            LCDUIEvent e = eventDispatcher.newEvent(LCDUIEvent.CUSTOMITEM_POINTERRELEASED, dfi.getForm());
+            LCDUIEvent e = eventDispatcher.newEvent(LCDUIEvent.CUSTOMITEM_POINTERRELEASED, formLayouter.getForm());
             e.item = customItem;
             e.x = pointerUpX;
             e.y = pointerUpY;
@@ -526,7 +526,7 @@ class CustomItemLayouter extends ItemLayouter
             if(disableTapDetection || (!suppressDragEvent) || !checkWithinRect(event.x, event.y))
             {
                 EventDispatcher eventDispatcher = EventDispatcher.instance();
-                LCDUIEvent e = eventDispatcher.newEvent(LCDUIEvent.CUSTOMITEM_POINTERDRAGGED, dfi.getForm());
+                LCDUIEvent e = eventDispatcher.newEvent(LCDUIEvent.CUSTOMITEM_POINTERDRAGGED, formLayouter.getForm());
                 e.item = customItem;
                 e.x = event.x;
                 e.y = event.y;

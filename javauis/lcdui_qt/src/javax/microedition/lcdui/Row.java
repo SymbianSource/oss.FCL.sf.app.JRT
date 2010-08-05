@@ -190,7 +190,6 @@ class Row
             else
             {
                 layoutObjects.removeElement(lo);
-                lo.dispose();
             }
         }
         updateRowInternals();
@@ -199,7 +198,7 @@ class Row
 
     /**
      * Update item positions in a row.<br>
-     * This method called by Layouters or FormLayoutPolicy when row is full and
+     * This method called by FormLayouter when row is full and
      * ready for layout.
      */
     void updateRowLayout(boolean isLeftToRight)

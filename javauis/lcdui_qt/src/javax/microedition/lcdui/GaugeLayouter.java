@@ -38,11 +38,11 @@ class GaugeLayouter extends ItemLayouter
     /**
      * Constructor.
      *
-     * @param dflp DefaultFormLayoutPolicy
+     * @param aFormLayouter FormLayouter used for layouting.
      */
-    GaugeLayouter(DefaultFormLayoutPolicy dflp)
+    GaugeLayouter(FormLayouter aFormLayouter)
     {
-        super(dflp);
+        super(aFormLayouter);
     }
 
     /**

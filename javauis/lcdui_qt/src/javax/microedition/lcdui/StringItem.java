@@ -23,6 +23,11 @@ import org.eclipse.swt.graphics.Point;
  */
 public class StringItem extends Item
 {
+    /**
+     * If StringItem is changed, reasons for Re-layouting.
+     */
+	static final int UPDATE_FONT = UPDATE_ITEM_MAX << 1;
+	static final int UPDATE_TEXT = UPDATE_ITEM_MAX << 2;
 
     private String text;
     private int appearanceMode;
@@ -90,7 +95,7 @@ public class StringItem extends Item
         {
             text = newTxt;
         }
-        updateParent(UPDATE_SIZE_CHANGED);
+        updateParent(UPDATE_TEXT);
     }
 
     /**
@@ -113,7 +118,7 @@ public class StringItem extends Item
     public void setFont(Font f)
     {
         font = (f == null ? Font.getDefaultFont() : f);
-        updateParent(UPDATE_SIZE_CHANGED);
+        updateParent(UPDATE_FONT);
     }
 
     /**
@@ -133,6 +138,39 @@ public class StringItem extends Item
     boolean isFocusable()
     {
         return (getNumCommands() > 0);
+    }
+
+    /**
+     * Adds command to this StringItem. If same command is already added to this item,
+     * nothing happens.
+     *
+     * @param command A command to be added.
+     * @throws NullPointerException if cmd is null.
+     */
+    public void addCommand(Command command)
+    {
+    	super.addCommand(command);
+		
+		if(getCommands().size() == 1)
+		{
+			updateParent(UPDATE_SIZE_CHANGED);
+		}
+    }
+
+    /**
+     * Removes command from the StringItem. If command doesn't exists in this item,
+     * nothing happens.
+     *
+     * @param command The command to be removed.
+     */
+    public void removeCommand(Command command)
+    {
+    	super.removeCommand(command);
+		
+		if(getCommands().size() == 0)
+		{
+			updateParent(UPDATE_SIZE_CHANGED);
+		}
     }
 
     /**
