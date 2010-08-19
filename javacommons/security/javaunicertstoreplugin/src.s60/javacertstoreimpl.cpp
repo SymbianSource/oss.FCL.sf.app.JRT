@@ -75,7 +75,6 @@ CJavaCertStoreImpl::~CJavaCertStoreImpl()
         Cancel();
     }
 
-    mComms.unregisterListener(PLUGIN_ID_JAVA_CERT_STORE_ECOM_C,this);
     mComms.unregisterDefaultListener(this);
     mComms.disconnect();
     mCertsData.ResetAndDestroy();
@@ -176,7 +175,7 @@ void CJavaCertStoreImpl::RunL()
     case EPreDeleting:
         SendDeleteMsg(status);
         return;
-        
+
     default:
         //Do nothing.
         break;
@@ -251,7 +250,7 @@ void CJavaCertStoreImpl::Remove(const CCTCertInfo& aCertInfo,TRequestStatus& aSt
         User::RequestComplete(pRequestStatus,KErrArgument);
         return;
     }
-    
+
     mState = EPreDeleting;
     mTempCertData = certData;
     HandleDeleteDisableQuery(aStatus, false /* disableCertQuery */);
@@ -388,7 +387,7 @@ void CJavaCertStoreImpl::List(RMPointerArray<CCTCertInfo>& aCerts,
     TBool validRequest = validateCertAttrFilter(aFilter);
     if (!validRequest)
     {
-        ELOG(EJavaSecurity,"No certificates matching the filter supplied");
+        LOG(EJavaSecurity, EInfo, "No certificates matching the filter supplied");
         User::RequestComplete(pRequestStatus,KErrNone);
         return;
     }
@@ -490,12 +489,13 @@ void CJavaCertStoreImpl::Applications(const CCTCertInfo& aCertInfo,RArray<TUid>&
         return;
     }
 
+    TInt err = KErrNone;
     if (!certData->mIsDisabled)
     {
-        aApplications.Append(KMidletInstallApplicabilityUid);
+        err = aApplications.Append(KMidletInstallApplicabilityUid);
     }
 
-    User::RequestComplete(pRequestStatus,KErrNone);
+    User::RequestComplete(pRequestStatus, err);
 }
 
 /**
@@ -836,7 +836,7 @@ TBool CJavaCertStoreImpl::SendDeleteCommsMsg(const std::string& aId,
         User::RequestComplete(aRequestStatus,KErrCommsBreak);
         return EFalse;
     }
-    
+
     return ETrue;
 }
 
@@ -972,7 +972,7 @@ void CJavaCertStoreImpl::HandleSendingDeleteMsg(TRequestStatus* aRequestStatus,
         //operation in the error situation.
         return;
     }
-    aCertDataObj.mDeleted = ETrue;    
+    aCertDataObj.mDeleted = ETrue;
 
     User::RequestComplete(aRequestStatus,KErrNone);
 }

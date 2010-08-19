@@ -28,6 +28,9 @@
 // FORWARD DECLARATIONS
 class CMMAEventSource;
 
+//Can not open audio device or lost control of audio device
+const TInt KErrMMAudioDevice = -12014;
+
 //  CLASS DECLARATION
 /**
 *   This class is used for playing video.

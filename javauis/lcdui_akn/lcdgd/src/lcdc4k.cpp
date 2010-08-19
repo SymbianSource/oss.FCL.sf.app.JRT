@@ -16,7 +16,7 @@
 */
 
 #include <graphicsaccelerator.h>
-#include <implementationproxy.h>
+#include <ecom/implementationproxy.h>
 #include <j2me/jdebug.h>
 
 

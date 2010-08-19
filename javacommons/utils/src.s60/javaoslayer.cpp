@@ -39,6 +39,7 @@ using namespace java::util;
 const char * const BOOT_CLASSPATH_MIDP_FILE = "midpodclist";
 const char * const BOOT_CLASSPATH_INSTALLER_FILE = "installerodclist";
 const char * const BOOT_CLASSPATH_TCKRUNNER_FILE = "tckrunnerodclist";
+const char * const BOOT_CLASSPATH_JAVACONTROLPANEL_FILE = "javacontrolpanelodclist";
 
 _LIT(KStartUpTraceDir, "java\\full");
 _LIT(KStartUpTraceFile, "startup.txt");
@@ -302,6 +303,10 @@ OS_EXPORT void JavaOsLayer::bootClassPath(std::list<std::wstring>& odcFiles,
     else if (BOOT_CLASSPATH_TCKRUNNER == pathType)
     {
         path.append(BOOT_CLASSPATH_TCKRUNNER_FILE);
+    }
+    else if (BOOT_CLASSPATH_JAVACONTROLPANEL == pathType)
+    {
+        path.append(BOOT_CLASSPATH_JAVACONTROLPANEL_FILE);
     }
     else
     {

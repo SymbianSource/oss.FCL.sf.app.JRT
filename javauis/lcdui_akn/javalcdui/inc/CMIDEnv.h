@@ -60,6 +60,7 @@ public:
     virtual TUid MidletUid() const;
     virtual TPtrC MidletHome() const;
     virtual void DisplayableIsDestructed(const MMIDDisplayable* displayable);
+    const MMIDDisplayable* LastFullscreenDisplayable() const;
 
 #ifdef RD_SCALABLE_UI_V2
     // This function can be moved out from RD_SCALABLE_UI_V2 flag if needed.
@@ -157,6 +158,20 @@ public:
     virtual TBool IsHardwareAcceleratedL(
         MMIDEnv::THardwareType aHardwareType = MMIDEnv::EHardware3D);
 
+    /**
+     * @see MMIDEnv#HandleFullOrPartialForegroundL()
+     */
+    virtual void HandleFullOrPartialForegroundL(TBool aFullOrPartialFg);
+
+    /**
+     * @see MMIDEnv#HandleFreeGraphicsMemory()
+     */
+    virtual void HandleFreeGraphicsMemory();
+
+    /**
+     * @see MMIDEnv#HasFullOrPartialForeground()
+     */
+    virtual TBool HasFullOrPartialForeground() const;
 private:
     /**
      * Checks and initializes 2D & 3D harware status
@@ -262,6 +277,7 @@ private:
 
 #ifdef RD_JAVA_NGA_ENABLED
     TInt                        iHardwareStatus;
+    TBool                       iFullOrPartialFg;
 #endif // RD_JAVA_NGA_ENABLED
 };
 

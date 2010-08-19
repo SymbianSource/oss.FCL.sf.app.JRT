@@ -589,7 +589,7 @@ void CSwtDisplay::DestroyInNativeUiThread()
 CSwtDialogBroker* CSwtDisplay::CreateDialogBrokerL()
 {
     CSwtDialogBroker* dlgBroker =  new(ELeave) CSwtDialogBroker(this, CSwtDialogBroker::ENoRequest);
-    iDialogBrokers.Append(dlgBroker);
+    iDialogBrokers.AppendL(dlgBroker);
     return dlgBroker;
 }
 

@@ -76,6 +76,19 @@ signed int TelUtils::getSecureTime()
     return sec.Int();
 }
 
+/**
+ * Return 0 if secure time has not been set
+ */
+int TelUtils::isSecureTimeSet()
+{
+    TTime t;
+    if (KErrNoSecureTime == t.UniversalTimeSecure())
+    {
+        return 0;
+    }
+    return 1;
+}
+
 void TelUtils::ConstructL()
 {
     RMobilePhone::TMobilePhoneIdentityV1        phoneId;

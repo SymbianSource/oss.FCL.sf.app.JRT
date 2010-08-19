@@ -43,6 +43,17 @@ IF NOT exists("Z:\system\install\Series60v5.0.sis")
   ; Popup error on Non-S60 v 5.0 platforms. Do not allow continuing.
   "incompatible_platform.txt"-"", FILETEXT, FORCEABORT
 ENDIF
+
+; Check OpenC versions
+; 0x10282872 = Standard C++ library
+; 0x10281F34 = Open C LIBSSL
+; 0x20009a80 = Symbian OS PIPS
+IF( version(0x10282872, <, 1, 5, 0) ) OR
+  ( version(0x10281F34, <, 1, 5, 0) ) OR
+  ( version(0x20009a80, <, 1, 5, 0) )
+    "incompatible_openc.txt"-"", FT, TA
+ENDIF
+
 #endif // RD_JAVA_S60_RELEASE_5_0_IAD
 
 
@@ -95,6 +106,7 @@ ENDIF
 
 "\epoc32\release\armv5\urel\javacaptain.exe"-"c:\sys\bin\javacaptain.exe"
 "\epoc32\release\armv5\urel\javalauncher.exe"-"c:\sys\bin\javalauncher.exe"
+"\epoc32\release\armv5\urel\javaupgradeapp.exe"-"c:\sys\bin\javaupgradeapp.exe"
 
 
 
@@ -102,6 +114,7 @@ ENDIF
 "\epoc32\data\z\resource\java\midpodclist"-"c:\resource\java\midpodclist"
 "\epoc32\data\z\resource\java\tckrunnerodclist"-"c:\resource\java\tckrunnerodclist"
 "\epoc32\data\z\resource\java\installerodclist"-"c:\resource\java\installerodclist"
+"\epoc32\data\z\resource\java\javacontrolpanelodclist"-"c:\resource\java\javacontrolpanelodclist"
 
 
 
@@ -378,7 +391,7 @@ ENDIF
 "\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javawmamms.odc"-"c:\resource\java\jvm\lib\jrt\javawmamms.odc"
 
 "\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\tckrunner.odc"-"c:\resource\java\jvm\lib\jrt\tckrunner.odc"
-
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javacontrolpanel.odc"-"c:\resource\java\jvm\lib\jrt\javacontrolpanel.odc"
 
 
 ; Misc dlls
@@ -475,6 +488,7 @@ ENDIF
 "\epoc32\release\armv5\urel\jvmnativeport.dll"-"c:\sys\bin\jvmnativeport.dll"
 "\epoc32\release\armv5\urel\midp2backupplugin.dll"-"c:\sys\bin\midp2backupplugin.dll"
 "\epoc32\release\armv5\urel\javadebugapi.dll"-"c:\sys\bin\javadebugapi.dll"
+"\epoc32\release\armv5\urel\javastarter.dll"-"c:\sys\bin\javastarter.dll"
 
 #ifdef RD_JAVA_S60_RELEASE_5_0_IAD
 "\epoc32\release\armv5\urel\midp2cenrep.dll"-"c:\sys\bin\midp2cenrep.dll"
@@ -491,6 +505,8 @@ ENDIF
 "\epoc32\release\armv5\urel\javacaptain_ext_pushregistryplugin.dll"     -"c:\sys\bin\javacaptain_ext_pushregistryplugin.dll"
 "\epoc32\release\armv5\urel\javacaptain_ext_storageserverplugin.dll"    -"c:\sys\bin\javacaptain_ext_storageserverplugin.dll"
 "\epoc32\release\armv5\urel\javacaptain_ext_btdeviceclassmanager.dll"   -"c:\sys\bin\javacaptain_ext_btdeviceclassmanager.dll"
+"\epoc32\release\armv5\urel\javacaptain_ext_autostarter.dll"            -"c:\sys\bin\javacaptain_ext_autostarter.dll"
+"\epoc32\release\armv5\urel\javacaptain_ext_settingslistener.dll"       -"c:\sys\bin\javacaptain_ext_settingslistener.dll"
 ; PLUGIN_ID_JAVA_CERT_STORE_EXTENSION_C = 7
 "\epoc32\release\armv5\urel\javacaptain_ext_ondemand_7.dll"             -"c:\sys\bin\javacaptain_ext_ondemand_7.dll"
 #ifdef RD_JAVA_MIDPRMS_DB
@@ -810,4 +826,10 @@ ENDIF
 
 ; javaappbackconverter is ran after uninstallation
 "\epoc32\release\armv5\urel\javaappbackconverter.exe"-"c:\sys\bin\javaappbackconverter.exe", FR, RR, RW
+#endif // RD_JAVA_S60_RELEASE_5_0_IAD
+
+
+#ifndef RD_JAVA_S60_RELEASE_5_0_IAD
+"\epoc32\release\armv5\urel\javaiconsizenotifplugin.dll"-"c:\sys\bin\javaiconsizenotifplugin.dll"
+"\epoc32\data\z\resource\plugins\javaiconsizenotifplugin.rsc"-"c:\resource\plugins\javaiconsizenotifplugin.rsc"
 #endif // RD_JAVA_S60_RELEASE_5_0_IAD

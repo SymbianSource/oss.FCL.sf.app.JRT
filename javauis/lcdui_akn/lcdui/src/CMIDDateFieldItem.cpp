@@ -492,11 +492,20 @@ TKeyResponse CMIDDateFieldItem::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEven
             // Show Menu or activate one command
             else
             {
+                TInt numScreenOrHelpCommands = displayable.NumCommandsForScreenOrHelpOptionsMenu();
+
                 // Active Command Show Menu
                 // if ( cntOpt > 1 ) will run menu, else execute ProcessCommandL( CommandOffset )
                 if (cntOpt > 1)
                 {
                     displayable.MenuHandler()->ShowMenuL(CMIDMenuHandler::EOkMenu);
+                    return EKeyWasConsumed;
+                }
+                else if (cntOpt == 0 && numScreenOrHelpCommands > 1)
+                {
+                    // If there is more than one screen command on form
+                    // and there is no ok/item commands then show menu
+                    displayable.MenuHandler()->ShowMenuL(CMIDMenuHandler::EOptionsMenu);
                     return EKeyWasConsumed;
                 }
                 else if (command && command->CommandType() != MMIDCommand::EBack &&
@@ -517,7 +526,8 @@ TKeyResponse CMIDDateFieldItem::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEven
     //
     // End Enter Key
     //
-    if (code == EKeyDownArrow || code == EKeyUpArrow || code == EKeyApplication0)
+    if (code == EKeyDownArrow || code == EKeyUpArrow ||
+            (code == EKeyApplication0 || aKeyEvent.iScanCode == EStdKeyApplication0))
         return EKeyWasNotConsumed;
 
     if (!iInitialised && aType == EEventKey && !CMIDUtils::IgnoreKeyEvent(aKeyEvent.iCode))
@@ -954,17 +964,15 @@ void CMIDDateFieldItem::CursorUpdate()
 
 void CMIDDateFieldItem::UpdateTextColorsL()
 {
-    // Set color for content text according to item highlight
-    // (logical color constants are defined in lcdui.h)
     if (iHighlighted)
     {
         // Text colour from skin - highlighted
-        iEditor->SetSkinTextColorL(KHighlightedItemTextColor);
+        iEditor->SetSkinTextColorL(EAknsCIQsnTextColorsCG8);
     }
     else
     {
         // Text colour from skin - unfocused
-        iEditor->SetSkinTextColorL(KNonHighlightedItemTextColor);
+        iEditor->SetSkinTextColorL(EAknsCIQsnTextColorsCG6);
     }
 }
 

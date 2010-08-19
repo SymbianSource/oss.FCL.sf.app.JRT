@@ -174,13 +174,6 @@ endif
 ifdef RD_JAVA_USIF_ENABLED
   SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK = 1
   PROJECT_DEFINES += SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
-  # Following flag enables application registrations to USIF
-  # and disables application registrations to AppArc.
-  PROJECT_DEFINES += RD_JAVA_USIF_APP_REG
-  # Following flag enables application notifications to AppArc.
-  #PROJECT_DEFINES += RD_JAVA_USIF_NOTIFY_APP_ARC
-  # Following flag enables installation progress notifications through USIF.
-  #PROJECT_DEFINES += RD_JAVA_USIF_NOTIFY_PROGRESS
 endif
 
 # Java proximity Listener support exsist in 9.2 only(can not be used if 5.0 untill IAD dependecy mentioned)

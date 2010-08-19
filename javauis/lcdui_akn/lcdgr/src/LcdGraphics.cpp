@@ -613,7 +613,11 @@ void CLcdGraphics::FillArc(const TPoint& aPosition, const TSize& aSize, TInt aSt
         TPoint start;
         TPoint end;
         ArcVectors(start, end, rect, aStartAngle, aArcAngle);
-        iContext->DrawPie(rect,start,end);
+        // Ignore very small arc
+        if (aArcAngle >= 180 || (Abs(start.iX - end.iX) > 2 || Abs(start.iY - end.iY) > 2))
+        {
+            iContext->DrawPie(rect, start, end);
+        }
     }
 }
 
@@ -845,7 +849,7 @@ void CLcdGraphics::DrawBackground(MMIDCanvas* aCanvas, const TPoint& aPosition, 
     iSurface->End(iCount);
 
     CHECK_BITMAP_LOCK();
-    
+
     // MMIDCanvas::DrawBackground modifies settings of iContext.
     // Reset pen and brush settings here, so they
     // are re-applied again when needed.

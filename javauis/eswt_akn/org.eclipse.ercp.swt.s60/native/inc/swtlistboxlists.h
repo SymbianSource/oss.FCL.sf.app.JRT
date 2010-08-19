@@ -235,7 +235,7 @@ public:
      * @param aListType see TSwtLbType
      * @return ETrue if listbox is formatted.
      */
-    static void Cells(TInt aListType, RArray<TInt>& aCellArray);
+    static void CellsL(TInt aListType, RArray<TInt>& aCellArray);
 
     /**
      * Check if a int value is in the range of listbox types.

@@ -15,7 +15,6 @@
 *
 */
 
-
 #include <eikenv.h>
 #include <eiksrvc.h>
 #include <eikappui.h>
@@ -25,14 +24,15 @@
 #include <javaregistryentry.h>
 #include <javaregistry.h>
 #include <javaattribute.h>
-
+#ifdef RD_JAVA_NGA_ENABLED
+#include <goommonitorsession.h>
+#include <goommonitorplugin.hrh>
+#endif // RD_JAVA_NGA_ENABLED
 #include "CMIDAppUi.h"
 // using CMIDApplication API for iApp
 #include "CMIDApplication.h"
 // needed for creating CMIDComponentFactory
 #include "CMIDComponentFactory.h"
-// constants for repeating key events
-#include "S60LCDUICustomEvents.h"
 // CMIDDisplayable class for iCurrentDisplayable
 #include "CMIDDisplayable.h"
 
@@ -44,7 +44,8 @@ using namespace java::ui;
 using namespace Java;
 
 // class CMIDAppUi
-CMIDAppUi::CMIDAppUi() : iCurrentDisplayable(NULL)
+CMIDAppUi::CMIDAppUi() : iCurrentDisplayable(NULL),
+    iPendingOrientationChange(EFalse), iPauseApp(EFalse)
 {
     mJavaAppUi = java::ui::CoreUiAvkonLcdui::getInstance().getJavaAknAppUi();
     mCoreAppUi = java::ui::CoreUiAvkonLcdui::getInstance().getJavaUiAppUi();
@@ -132,22 +133,16 @@ void CMIDAppUi::HandleResourceChangeL(TInt aType)
     }
     else
     {
-        //
-        //
-        //
+        if (aType == KEikDynamicLayoutVariantSwitch)
+        {
+            // Observer not set yet. Storing it for use after it is set.
+            iPendingOrientationChange= ETrue;
+        }
     }
 }
 
-void CMIDAppUi::HandleApplicationSpecificEventL(TInt aType,const TWsEvent& /*aEvent*/)
+void CMIDAppUi::HandleApplicationSpecificEventL(TInt /*aType*/, const TWsEvent& /*aEvent*/)
 {
-    if (EEnableMultipleKeyPressedEvent == aType)
-    {
-        mCoreAppUi->glueSetKeyBlockMode(ENoKeyBlock);
-    }
-    else if (EDisableMultipleKeyPressedEvent == aType)
-    {
-        mCoreAppUi->glueSetKeyBlockMode(EDefaultBlockMode);
-    }
 }
 
 TBool CMIDAppUi::HandleWsEventL(const TWsEvent& aEvent,
@@ -174,24 +169,35 @@ TBool CMIDAppUi::HandleWsEventL(const TWsEvent& aEvent,
 
     if (aEvent.Type() == EEventUser)
     {
-        if ((*reinterpret_cast<TApaSystemEvent*>(aEvent.EventData())) == EApaSystemEventShutdown)
+        TApaSystemEvent* eventData = reinterpret_cast<TApaSystemEvent*>(aEvent.EventData());
+        if ((*eventData) == EApaSystemEventShutdown)
         {
+#ifdef RD_JAVA_NGA_ENABLED
+            // Check the reason
+            eventData++;
+            if ((*eventData) == KGoomMemoryLowEvent)
+            {
+                return HandleGoomMemoryLowEventL();
+            }
+#endif // RD_JAVA_NGA_ENABLED    
             // Oom or exit from task-list. Ask the CoreUi to shutdown the MIDlet.
             java::ui::CoreUiAvkonLcdui::getInstance().shutDownRequestFromWindowServer();
         }
     }
 
     // Workaround to send pauseApp with long-press of the Menu key
+    // if no event was send yet
     if (aEvent.Type() == EEventKey)
     {
         if (aEvent.Key()->iScanCode == EStdKeyApplication0
-                && aEvent.Key()->iRepeats == 1)
+                && aEvent.Key()->iRepeats == 1 && !iPauseApp)
         {
             if (iEnv && iEnv->MidletAttributeIsSetToVal(
                         LcduiMidletAttributes::KAttribFlipClose,
                         LcduiMidletAttributeValues::KPauseValue))
             {
                 iEnv->PostMidletEvent(EPause);
+                SetPauseAppState(ETrue);
             }
         }
     }
@@ -233,6 +239,13 @@ TBool CMIDAppUi::HandleWsEventL(const TWsEvent& aEvent,
     if ((aEvent.Type() == KAknFullOrPartialForegroundLost)
             || (aEvent.Type() == EEventFocusLost))
     {
+#ifdef RD_JAVA_NGA_ENABLED
+        if (aEvent.Type() == KAknFullOrPartialForegroundLost && iObserver)
+        {
+            iObserver->HandleFullOrPartialForegroundL(EFalse);
+        }
+#endif // RD_JAVA_NGA_ENABLED
+
         if (iCurrentDisplayable && (iDisplayables.Count() > 0))
         {
             iCurrentDisplayable->HandleApplicationBackground();
@@ -248,6 +261,13 @@ TBool CMIDAppUi::HandleWsEventL(const TWsEvent& aEvent,
         }
     }
 
+#ifdef RD_JAVA_NGA_ENABLED
+    if (aEvent.Type() == KAknFullOrPartialForegroundGained && iObserver)
+    {
+        iObserver->HandleFullOrPartialForegroundL(ETrue);
+    }
+#endif // RD_JAVA_NGA_ENABLED
+
     return EFalse;
 }
 
@@ -262,12 +282,36 @@ void CMIDAppUi::UnSetEnv()
     iEnv = 0;
 }
 
+#ifdef RD_JAVA_NGA_ENABLED
+TBool CMIDAppUi::HandleGoomMemoryLowEventL()
+{
+    if (iObserver)
+    {
+        iObserver->HandleFreeGraphicsMemory();
+        RGOomMonitorSession session;
+        User::LeaveIfError(session.Connect());
+        session.ThisAppIsNotExiting(CCoeEnv::Static()->RootWin().Identifier());
+        session.Close();
+        return ETrue;
+    }
+    return EFalse;
+}
+#endif // RD_JAVA_NGA_ENABLED
+
 //
 // From MLcduiPlugin
 //
-void CMIDAppUi::SetObserver(MMIDObserver* aObserver)
+void CMIDAppUi::SetObserverL(MMIDObserver* aObserver)
 {
     iObserver = aObserver;
+    if (iPendingOrientationChange)
+    {
+        // We have received orientation change during the construction phase.
+        // Resending it again in order to ensure correct layout and
+        // orientation.
+        iObserver->HandleResourceChangeL(KEikDynamicLayoutVariantSwitch);
+        iPendingOrientationChange = EFalse;
+    }
 }
 
 //
@@ -276,6 +320,14 @@ void CMIDAppUi::SetObserver(MMIDObserver* aObserver)
 MMIDComponentFactory* CMIDAppUi::CreateComponentFactoryL()
 {
     return new(ELeave) CMIDComponentFactory;
+}
+
+//
+// From MLcduiPlugin
+//
+void CMIDAppUi::SetEnv(MMIDEnv* aEnv)
+{
+    iEnv = aEnv;
 }
 
 RPointerArray<CMIDDisplayable>& CMIDAppUi::Displayables()
@@ -317,5 +369,17 @@ CEikStatusPane* CMIDAppUi::StatusPane()
 {
     JELOG2(EJavaUI);
     return mJavaAppUi->StatusPane();
+}
+
+void CMIDAppUi::SetPauseAppState(TBool aState)
+{
+    JELOG2(EJavaUI);
+    iPauseApp = aState;
+}
+
+TBool CMIDAppUi::GetPauseAppState()
+{
+    JELOG2(EJavaUI);
+    return iPauseApp;
 }
 

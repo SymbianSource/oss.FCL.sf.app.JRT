@@ -20,6 +20,7 @@ package com.nokia.mj.impl.installer.midp2.install.steps;
 
 import java.util.Hashtable;
 
+import com.nokia.mj.impl.installer.Installer;
 import com.nokia.mj.impl.installer.InstallationNotifier;
 import com.nokia.mj.impl.installer.applicationregistrator.ApplicationRegistrator;
 import com.nokia.mj.impl.installer.applicationregistrator.SifNotifier;
@@ -303,10 +304,11 @@ public final class InstallBall extends ExeBall
                     Log.logWarning("checkForCancel: Stopping downloader failed", t);
                 }
             }
-            throw new InstallerException
-            (InstallerErrorMessage.INST_CANCEL, null,
-             InstallerDetailedErrorMessage.NO_MSG, null,
-             OtaStatusCode.USER_CANCELLED);
+            throw new InstallerException(
+                Installer.ERR_CANCEL,
+                InstallerErrorMessage.INST_CANCEL, null,
+                InstallerDetailedErrorMessage.INST_CANCEL, null,
+                OtaStatusCode.USER_CANCELLED);
         }
     }
 

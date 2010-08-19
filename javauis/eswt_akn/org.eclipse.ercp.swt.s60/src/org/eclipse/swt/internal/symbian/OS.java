@@ -224,11 +224,13 @@ public class OS
      */
     public static final native int Image_New(int deviceHandle, int width, int height);
     public static final native int Image_NewFromData(int deviceHandle, ImageData data);
+    public static final native int Image_NewFromTheme(int deviceHandle, int id);
     public static final native void Image_Dispose(int deviceHandle, int handle);
     public static final native Rectangle Image_GetBounds(int handle);
     public static final native ImageData Image_GetData(int handle);
     public static final native void Image_AddRef(int handle);
     public static final native void Image_RemoveRef(int handle);
+    public static final native int Image_Scale(int deviceHandle, int srcImageHandle, int destWidth, int destHeight, boolean keepAspectRatio);
 
     /*
      * Class Link

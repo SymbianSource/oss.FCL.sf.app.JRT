@@ -19,9 +19,14 @@
 //  INCLUDE FILES
 #include <jdebug.h>
 
+#ifndef RD_JAVA_S60_RELEASE_5_0
+#include <caf/cafplatform.h>
+#endif
+
+#include <caf/stringattributeset.h>
+
 #include <DRMCommon.h>
 #include <DRMHelper.h>
-#include <caf/stringattributeset.h>
 
 #include "cmmadrmplayerfactory.h"
 #include "cmmadrmaudioplayer.h"

@@ -26,6 +26,12 @@ UID         0x10009D8D 0x2002875F
 // Use bytepair compression to enable code paging
 PAGED
 
+APP_LAYER_SYSTEMINCLUDE
+
+#ifndef RD_JAVA_S60_RELEASE_9_2
+SYSTEMINCLUDE   /epoc32/include/ecom    // Due to SchemeHandler.inl in 5.0 2009w18 and 10.1 builds
+#endif
+
 SOURCEPATH  ../src
 
 SOURCE  javaapphandler.cpp
@@ -36,9 +42,6 @@ TARGET javaappschemeplugin.rsc
 END
 
 USERINCLUDE     ../inc
-
-SYSTEMINCLUDE   /epoc32/include/ecom
-APP_LAYER_SYSTEMINCLUDE
 
 
 LIBRARY     euser.lib

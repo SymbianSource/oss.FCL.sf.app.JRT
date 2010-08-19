@@ -18,5 +18,7 @@ SUBDIRS += build/javacaptain.pro
 SUBDIRS += extensionplugins/config/build/javacaptain_ext_config.pro 
 SUBDIRS += extensionplugins/javacertstore/build/javacaptain_ext_javacertstore.pro 
 SUBDIRS += extensionplugins/storageserver/build/javacaptain_ext_storageserverplugin.pro 
+SUBDIRS += extensionplugins/settingslistener/build/javacaptain_ext_settingslistener.pro 
 SUBDIRS += extensionplugins/preinstallerstarter/build/javacaptain_ext_preinstallerstarter.pro 
+SUBDIRS += extensionplugins/autostarter/build/javacaptain_ext_autostarter.pro 
 BLD_INF_RULES.prj_extensions += "prj_extensions" 

@@ -220,7 +220,8 @@ void CoreUiAvkonImpl::createUi()
     {
         uidToTUid(mMidletUid, mMidletTUid);
         if (mMidletUid == Uid(L"[2001843a]") || // Is it installer.
-                mMidletUid == Uid(L"[2002121e]"))    // Is it TCK runner.
+            mMidletUid == Uid(L"[2002121e]") || // Is it TCK runner.
+            mMidletUid == Uid(L"[2002FF61]"))   // Is it Java Control Panel.
         {
             mShowStartScreen = false;
         }

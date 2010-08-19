@@ -244,9 +244,11 @@ bool CAppMngr2MidletSettingsHandler::OnScreenKeypadValuePreDefinedL()
 
     findEntry(queryResult, VALUE, value);
 
-    if (value.size() > 0)
+    if (value.size() > 0 
+        && ((value == L"no")
+        || (value == L"navigationkeys") 
+        || (value == L"gameactions")))
     {
-        // default is KValueGameactions if value is not defined
         predefined = true;
     }
     LOG(EJavaAppMngrPlugin, EInfo, " - CAppMngr2MidletSettingsHandler::OnScreenKeypadValuePreDefinedL ");

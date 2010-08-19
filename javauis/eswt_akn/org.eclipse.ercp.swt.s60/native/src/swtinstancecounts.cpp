@@ -61,13 +61,13 @@ void TSwtInstanceCounts::CheckForLeaks()
     CheckLeak(iTreeItem);
 
     // Controls deserve a special treatment as we don't know precisely which has been disposed
-    const TInt ctrlSum = iButton         + iCanvas            + iCaptionedControl  + iCombo
-                         + iComposite      + iConstrainedText   + iDateEditor        + iDecorations
-                         + iHyperLink      + iLabel             + iList              + iListBox
-                         + iListView       + iMultiPagePager    + iMultiPageTabGroup + iMultiPageDialog
-                         + iProgressBar    + iShell             + iSlider            + iSortedList
-                         + iText           + iTextExtension     + iTable             + iTree
-                         + iBrowser        + iMobileShell       + iDCControl;
+    const TInt ctrlSum =   iButton         + iCanvas            + iCaptionedControl  + iCombo
+                           + iComposite      + iConstrainedText   + iDateEditor        + iDecorations
+                           + iHyperLink      + iLabel             + iList              + iListBox
+                           + iListView       + iMultiPagePager    + iMultiPageTabGroup + iMultiPageDialog
+                           + iProgressBar    + iShell             + iSlider            + iSortedList
+                           + iText           + iTextExtension     + iTable             + iTree
+                           + iBrowser        + iMobileShell       + iDCControl         + iLink;
     CheckLeak(iDisposedControls, ctrlSum);
 }
 

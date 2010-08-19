@@ -140,6 +140,9 @@ public class MobileInfoProperties implements SystemPropertyProvider
 
         int value = ((Integer)iPropertyKeys.get(aKey)).intValue();
         Uid appSuiteUid;
+        int apId = APP_DEFAULT_APN_NOT_SPECIFIED;        // access point id
+        int apType = APP_DEFAULT_APN_NOT_SPECIFIED;      // MIDlet access point type, can be SNAP or IAP
+
         ConnectionManager CmInstance = null;
         String result = null;
         // Only network access seems to have another way to handle it.
@@ -160,29 +163,25 @@ public class MobileInfoProperties implements SystemPropertyProvider
                     AccessPoint apn = CmInstance.getApplicationDefault(appSuiteUid);
                     if (apn != null)
                     {
-                        if (apn.getType() == AccessPoint.NAP_IAP) // IAP ID
+                        apId = apn.getNapId();
+                        apType = apn.getType();
+
+
+                        if ((apType!=AccessPoint.NAP_SNAP) && (apType!=AccessPoint.NAP_IAP))
                         {
-                            result = _getPropertyApn(NETWORK_ACCESS_V, apn.getNapId());
+                            apType = APP_DEFAULT_APN_NOT_SPECIFIED;
+                            apId = APP_DEFAULT_APN_NOT_SPECIFIED;
                         }
-                        else
-                        {
-                            result = _getPropertyApn(NETWORK_ACCESS_V, APP_DEFAULT_APN_NOT_SPECIFIED);
-                        }
+
                     }
-                    else
-                    {
-                        result = _getPropertyApn(NETWORK_ACCESS_V, APP_DEFAULT_APN_NOT_SPECIFIED);
-                    }
+
                 }
-                else
-                {
-                    result = _getPropertyApn(NETWORK_ACCESS_V, APP_DEFAULT_APN_NOT_SPECIFIED);
-                }
+                result = _getPropertyApn(NETWORK_ACCESS_V, apId,apType);
             }
             catch (Exception e)
             {
                 Logger.LOG(Logger.ESOCKET, Logger.EInfo,"MobilInfoProperties :: getSuiteUid exception ");
-                result = _getPropertyApn(NETWORK_ACCESS_V, APP_DEFAULT_APN_NOT_SPECIFIED);
+                result = _getPropertyApn(NETWORK_ACCESS_V, apId,apType);
             }
             return result;
         }
@@ -202,6 +201,6 @@ public class MobileInfoProperties implements SystemPropertyProvider
     }
 
     private native String _getProperty(int value);
-    private static native String _getPropertyApn(int property, int aAppDefaultApn);
+    private static native String _getPropertyApn(int property, int aAppDefaultApn, int apType);
 
 }

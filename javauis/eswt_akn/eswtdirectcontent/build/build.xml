@@ -26,10 +26,6 @@
   <property name="java.src.paths" value="../src"/>
 
 
-  <target name="compile">
-      <omj.javac classpath="${compile.result.root}/javautils/classes/first"/>
-  </target>
-
   <property name="javah.classnames" 
             value="org.eclipse.swt.widgets.DCControl"/>
 </project>

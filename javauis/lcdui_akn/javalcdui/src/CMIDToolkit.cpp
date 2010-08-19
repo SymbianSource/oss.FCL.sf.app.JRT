@@ -123,8 +123,8 @@ class TRevertCurrent
 {
 public:
     TRevertCurrent(MMIDDisplayable*& aCurrentPointer)
-            : iCurrentPointer(aCurrentPointer)
-            , iPrevious(aCurrentPointer)
+        : iCurrentPointer(aCurrentPointer)
+        , iPrevious(aCurrentPointer)
     {
     }
     static void Revert(TAny*);
@@ -166,8 +166,8 @@ TInt CMIDToolkit::RegisterComponentL(MMIDComponent* aComponent, TJavaPeer aPeer)
  * CONSTRUCTION PHASE 1 . Java side.
  */
 CMIDToolkit::CMIDToolkit()
-        : iPhase(EPhase1)
-        , iOldFullScreenDisplayable(NULL), iObjects(EGranularity), iSentToBgTime(0), mFirst(ETrue)
+    : iPhase(EPhase1)
+    , iOldFullScreenDisplayable(NULL), iObjects(EGranularity), iSentToBgTime(0), mFirst(ETrue)
 {
     LCDUI_DEBUG_INT("CMIDToolkit::CMIDToolkit(%d) CONSTRUCTION PHASE 1", (TInt)this);
     iFinalizeMutex.CreateLocal();
@@ -249,6 +249,18 @@ void CMIDToolkit::HandleSwitchOnEventL()
     iEnv->HandleSwitchOnL(ETrue);
 }
 
+#ifdef RD_JAVA_NGA_ENABLED
+void CMIDToolkit::HandleFullOrPartialForegroundL(TBool aFullOrPartialFg)
+{
+    iEnv->HandleFullOrPartialForegroundL(aFullOrPartialFg);
+}
+
+void CMIDToolkit::HandleFreeGraphicsMemory()
+{
+    iEnv->HandleFreeGraphicsMemory();
+}
+#endif
+
 /**
  * CONSTRUCTION PHASE 2.
  * Java Side.
@@ -276,9 +288,9 @@ void CMIDToolkit::ConstructL
     iHandleDisplayEvent = aJni.GetMethodID(clz, "handleDisplayEvent", "(Ljavax/microedition/lcdui/Toolkit;IIII)V");
     iHandleNotifyMethod = aJni.GetMethodID(clz, "handleAsyncEvent", "(Ljava/lang/Object;I)V");
     iHandleCanavsGraphicsItemPainterEvent = aJni.GetMethodID(
-                                                clz,
-                                                "handleCanvasGraphicsItemPainterEvent",
-                                                "(Ljavax/microedition/lcdui/CanvasGraphicsItemPainter;IIII)V");
+            clz,
+            "handleCanvasGraphicsItemPainterEvent",
+            "(Ljavax/microedition/lcdui/CanvasGraphicsItemPainter;IIII)V");
 
     aJni.DeleteLocalRef(clz);
 
@@ -390,6 +402,17 @@ void CMIDToolkit::LoadLibrariesL()
     iEnv->SetUtils(iUtils);
 }
 
+MMIDCanvas* CMIDToolkit::GetCurrentCanvas() const
+{
+    MMIDCanvas* ret = NULL;
+    MMIDComponent* content = iCurrentDisplayable ? iCurrentDisplayable->Component() : NULL;
+    if (content && content->Type() == MMIDComponent::ECanvas)
+    {
+        ret = static_cast<MMIDCanvas*>(content);
+    }
+    return ret;
+}
+
 //
 // Enables events
 //
@@ -397,7 +420,7 @@ void CMIDToolkit::ActivateL()
 {
     iOpen=ETrue;
     SetTaskListEntry(ETrue);
-    RLcdui::Get()->Plugin()->SetObserver(this);
+    RLcdui::Get()->Plugin()->SetObserverL(this);
     iCoeEnv->RootWin().EnableReceiptOfFocus(ETrue);
 }
 
@@ -578,13 +601,25 @@ void CMIDToolkit::BringToForeground()
 
         TBool isCanvas = EFalse;
         TBool isCanvasReadyToBlit = EFalse;
+        TBool isFullscreenUI = ETrue;
         if (content)
         {
-            if (content->Type() == MMIDComponent::ECanvas)
+            MMIDComponent::TType contentType = content->Type();
+
+            if (contentType == MMIDComponent::ECanvas)
             {
                 isCanvas = ETrue;
                 MMIDCanvas* canvas = static_cast<MMIDCanvas*>(content);
                 isCanvasReadyToBlit = canvas->ReadyToBlit();
+            }
+            else
+            {
+                if (contentType == MMIDComponent::EAlert ||
+                        (contentType == MMIDComponent::ETextBox &&
+                         iCurrentDisplayable->IsPopupTextBox()))
+                {
+                    isFullscreenUI = EFalse;
+                }
             }
         }
 
@@ -594,7 +629,8 @@ void CMIDToolkit::BringToForeground()
             {
                 iCurrentDisplayable->DrawNow();
             }
-            appUi->stopStartScreen();
+
+            appUi->stopStartScreen(isFullscreenUI);
         }
     }
 }
@@ -685,6 +721,13 @@ void CMIDToolkit::DestroyUi()
 
     iGrLibrary.Close();
 
+    // Null MMIDEnv pointer from CMIDAppUi before
+    // destroying iEnv
+    if (RLcdui::Get()->Plugin())
+    {
+        RLcdui::Get()->Plugin()->SetEnv(NULL);
+    }
+
     delete iEnv;
     iEnv = NULL;
 }
@@ -734,6 +777,17 @@ void CMIDToolkit::FinalizeSvr()
         break;
     }
 
+#ifdef RD_JAVA_NGA_ENABLED
+    // Notify canvas about exit, so that canvas MIDlets
+    // get system effect in exit
+    MMIDCanvas* canvas = GetCurrentCanvas();
+    if (canvas)
+    {
+        canvas->MidletExiting();
+    }
+#endif // RD_JAVA_NGA_ENABLED    
+
+
     // Always use exit effect when exiting midlet
     GfxTransEffect::BeginFullScreen(AknTransEffect::EApplicationExit, TRect(),
                                     AknTransEffect::EParameterType, AknTransEffect::GfxTransParam(iAppUid));
@@ -765,7 +819,8 @@ void CMIDToolkit::FinalizeSvr()
 
     if (RLcdui::Get()->Plugin())
     {
-        RLcdui::Get()->Plugin()->SetObserver(NULL);
+        // The leave can occur only when starting MIDlet
+        TRAP_IGNORE(RLcdui::Get()->Plugin()->SetObserverL(NULL));
     }
 
     DestroyUi();
@@ -899,8 +954,8 @@ void CMIDFinalizeEvent::Dispatch(JNIEnv& aJni)
 }
 
 CMIDToolkit::TObjectEntry::TObjectEntry(MMIDComponent* aComponent)
-        : iComponent(aComponent)
-        , iDisposed(NULL)
+    : iComponent(aComponent)
+    , iDisposed(NULL)
 {
 }
 
@@ -969,7 +1024,7 @@ void CMIDToolkit::FinalizeReferences(JNIEnv& aEnv)
 }
 
 CMIDletSuite::CMIDletSuite()
-        :iAttributes()
+    :iAttributes()
 {
 }
 

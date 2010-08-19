@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -22,9 +22,6 @@ import java.util.Hashtable;
 
 /**
  * Class defining Installer detailed error messages.
- *
- * @author Nokia Corporation
- * @version 1.0
  */
 public final class InstallerDetailedErrorMessage extends ErrorMessageBase
 {
@@ -42,6 +39,8 @@ public final class InstallerDetailedErrorMessage extends ErrorMessageBase
     public static final int UNINST_BLOCKED = 11;
     public static final int INTERNAL_ERROR = 12;
     public static final int NO_MEM_MB = 13;
+    public static final int INST_CANCEL = 14;
+    public static final int UNINST_CANCEL = 15;
 
     /*** ----------------------------- PUBLIC ------------------------------ */
     /*** ---------------------------- PROTECTED --------------------------- */
@@ -58,19 +57,42 @@ public final class InstallerDetailedErrorMessage extends ErrorMessageBase
             return iMessageTable;
         }
         Hashtable messageTable = new Hashtable();
-        messageTable.put(new Integer(NO_MEM), "no_mem_detail");
-        messageTable.put(new Integer(NO_MEM_MB), "no_mem_detail_mb");
-        messageTable.put(new Integer(NO_NET), "no_net_detail");
-        messageTable.put(new Integer(ATTR_BAD_SYNTAX), "attr_bad_syntax");
-        messageTable.put(new Integer(ATTR_MISSING), "attr_missing");
-        messageTable.put(new Integer(ATTR_MISMATCH), "attr_mismatch");
-        messageTable.put(new Integer(ATTR_UNSUPPORTED), "attr_unsupported_value");
-        messageTable.put(new Integer(ATTR_HANDLING_FAILED), "attr_handling_failed");
-        messageTable.put(new Integer(CERT_UNSUPPORTED), "cert_unsupported");
-        messageTable.put(new Integer(PROT_PKG_MISUSE), "protected_pkg_misuse");
-        messageTable.put(new Integer(DIFFERENT_SIGNERS), "different_signers");
-        messageTable.put(new Integer(UNINST_BLOCKED), "uninst_blocked");
-        messageTable.put(new Integer(INTERNAL_ERROR), "internal");
+        if (getLocaleIdQt() == null)
+        {
+            messageTable.put(new Integer(NO_MEM), "no_mem_detail");
+            messageTable.put(new Integer(NO_MEM_MB), "no_mem_detail_mb");
+            messageTable.put(new Integer(NO_NET), "no_net_detail");
+            messageTable.put(new Integer(ATTR_BAD_SYNTAX), "attr_bad_syntax");
+            messageTable.put(new Integer(ATTR_MISSING), "attr_missing");
+            messageTable.put(new Integer(ATTR_MISMATCH), "attr_mismatch");
+            messageTable.put(new Integer(ATTR_UNSUPPORTED), "attr_unsupported_value");
+            messageTable.put(new Integer(ATTR_HANDLING_FAILED), "attr_handling_failed");
+            messageTable.put(new Integer(CERT_UNSUPPORTED), "cert_unsupported");
+            messageTable.put(new Integer(PROT_PKG_MISUSE), "protected_pkg_misuse");
+            messageTable.put(new Integer(DIFFERENT_SIGNERS), "different_signers");
+            messageTable.put(new Integer(UNINST_BLOCKED), "uninst_blocked");
+            messageTable.put(new Integer(INTERNAL_ERROR), "internal");
+            messageTable.put(new Integer(INST_CANCEL), "Installation cancelled.");
+            messageTable.put(new Integer(UNINST_CANCEL), "Uninstallation cancelled.");
+        }
+        else
+        {
+            messageTable.put(new Integer(NO_MEM), "error_no_mem_detail");
+            messageTable.put(new Integer(NO_MEM_MB), "error_no_mem_detail_mb");
+            messageTable.put(new Integer(NO_NET), "error_no_net_detail");
+            messageTable.put(new Integer(ATTR_BAD_SYNTAX), "error_bad_syntax");
+            messageTable.put(new Integer(ATTR_MISSING), "error_attr_missing");
+            messageTable.put(new Integer(ATTR_MISMATCH), "error_attr_mismatch");
+            messageTable.put(new Integer(ATTR_UNSUPPORTED), "error_attr_unsupported_value");
+            messageTable.put(new Integer(ATTR_HANDLING_FAILED), "error_attr_handling_failed");
+            messageTable.put(new Integer(CERT_UNSUPPORTED), "error_cert_unsupported");
+            messageTable.put(new Integer(PROT_PKG_MISUSE), "error_pkg_misuse");
+            messageTable.put(new Integer(DIFFERENT_SIGNERS), "error_different_signers");
+            messageTable.put(new Integer(UNINST_BLOCKED), "uninst_blocked");
+            messageTable.put(new Integer(INTERNAL_ERROR), "internal_error");
+            messageTable.put(new Integer(INST_CANCEL), "error_cancel");
+            messageTable.put(new Integer(UNINST_CANCEL), "error_uninst_cancel");
+        }
         iMessageTable = messageTable;
         return iMessageTable;
     }
@@ -84,7 +106,14 @@ public final class InstallerDetailedErrorMessage extends ErrorMessageBase
     {
         if (iRes == null)
         {
-            iRes = ResourceLoader.getInstance("javainstallation", "qtn_java_inst_error_");
+            if (getLocaleIdQt() == null)
+            {
+                iRes = ResourceLoader.getInstance("javainstallation", "qtn_java_inst_error_");
+            }
+            else
+            {
+                iRes = ResourceLoader.getInstance("javaapplicationinstaller", "txt_java_inst_info_");
+            }
         }
         return iRes;
     }

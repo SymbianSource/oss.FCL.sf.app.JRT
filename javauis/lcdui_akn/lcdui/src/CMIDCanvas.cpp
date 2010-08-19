@@ -134,6 +134,16 @@ struct TBitBltData
     TRect iRect;
 };
 
+// ---------------------------------------------------------------------------
+// TLcduiEvent
+// ---------------------------------------------------------------------------
+//
+enum TLcduiEvent
+{
+    EFixUIOrientation,
+    EUnFixUIOrientation,
+    EVideoAdded
+};
 
 // ======== LOCAL FUNCTIONS ========
 
@@ -159,9 +169,15 @@ inline const TBitBltData& BitBltData(const TMIDBufferOp* aOp)
 // @param aDestRect Destination rect.
 // ---------------------------------------------------------------------------
 //
-inline TBool IsDownScaling(const TSize& aSourceSize, const TRect& aDestRect, TBool aM3GContent)
+TBool CMIDCanvas::IsDownScaling(const TSize& aSourceSize, const TRect& aDestRect,TBool aM3GContent) const
 {
     // if m3G is drawing then downscaling is turn off
+    // Send event in case of the M3G draw.
+    if (iM3GContent != iPrevM3GContent)
+    {
+        PostEvent(EM3GDraw, iM3GContent, 0);
+    }
+    iPrevM3GContent=iM3GContent;
     if (aM3GContent)
     {
         return EFalse;
@@ -176,7 +192,7 @@ inline TBool IsDownScaling(const TSize& aSourceSize, const TRect& aDestRect, TBo
 // @param aSourceSize Source rect size.
 // @param aDestRect Destination rect.
 // ---------------------------------------------------------------------------
-inline TBool IsDownScaling(const TSize& aSourceSize, const TRect& aDestRect)
+TBool CMIDCanvas::IsDownScaling(const TSize& aSourceSize, const TRect& aDestRect) const
 {
     return (aSourceSize.iWidth > aDestRect.Width() ||
             aSourceSize.iHeight > aDestRect.Height());
@@ -304,7 +320,7 @@ CMIDCanvas::~CMIDCanvas()
     }
 
 #ifdef RD_JAVA_NGA_ENABLED
-    CloseEgl();
+    CloseEgl(EFalse);
     DisposePixelSource();
     delete[] iTexturePixels;
     delete[] iVertexArray;
@@ -832,9 +848,9 @@ TBool CMIDCanvas::ProcessL(
     TInt& /* aCycles */,
     java::util::Monitor* aMonitor)
 {
-    if (!iForeground)
+
+    if (!iForeground && iFirstPaintState == EFirstPaintNeverOccurred)
     {
-        DEBUG("CMIDCanvas::ProcessL() - not foreground");
         ASSERT(!iAlfMonitor);
         aRead = aEnd;
         return EFalse;
@@ -844,9 +860,12 @@ TBool CMIDCanvas::ProcessL(
     {
     case EDrwOpcM3GContentStart:
     {
+        // EGL surface is created if canvas window is currently visible
+        // even if MIDlet would be on background.
         if (!iM3GContent &&
                 i3DAccelerated &&
-                iDirectContents.Count() == 0)
+                iDirectContents.Count() == 0 &&
+                IsWindowVisible())
         {
             DEBUG("CMIDCanvas::ProcessL - M3G content start");
             iM3GContent = ETrue;
@@ -911,7 +930,7 @@ TBool CMIDCanvas::ProcessL(
     return iFrameReady;
 }
 
-#else // RD_JAVA_NGA_ENABLED 
+#else // RD_JAVA_NGA_ENABLED
 
 // ---------------------------------------------------------------------------
 // From class MMIDBufferProcessor.
@@ -1090,11 +1109,9 @@ void CMIDCanvas::MdcAddContent(MDirectContent* aContent)
         PostEvent(EPaint, posPacked, sizePacked);
     }
 
-    // If is added first direct content, then NGA is switched off
-    // and move of iViewRect is needed.
-    if (iFullScreen && iScalingOn && iDirectContents.Count() == 1)
+    if (iDirectContents.Count() > 0)
     {
-        iViewRect.Move(-iPositionRelativeToScreen);
+        iEnv.ToLcduiObserver().InvokeLcduiEvent(*this, EVideoAdded);
     }
 #endif // RD_JAVA_NGA_ENABLED
 }
@@ -1117,14 +1134,6 @@ void CMIDCanvas::MdcRemoveContent(MDirectContent* aContent)
         if (iDirectContents.Count() == 0)
         {
             iRestoreContentWhenUnfaded = EFalse;
-#ifdef RD_JAVA_NGA_ENABLED
-            // If is removed last direct content, then NGA is switched on
-            // and move of iViewRect is needed.
-            if (iScalingOn && iFullScreen)
-            {
-                iViewRect.Move(iPositionRelativeToScreen);
-            }
-#endif // RD_JAVA_NGA_ENABLED
         }
     }
 }
@@ -1284,11 +1293,55 @@ void CMIDCanvas::MdcGetUICallback(
 //
 void CMIDCanvas::MdcNotifyContentAdded()
 {
-    DisposePixelSource();
-    CloseEgl();
+    // no implementation
 }
 #endif // RD_JAVA_NGA_ENABLED
 
+// ---------------------------------------------------------------------------
+// From class MDirectContainer.
+// CMIDCanvas::MdcFixUIOrientation(TBool aEnableFix)
+// ---------------------------------------------------------------------------
+//
+void CMIDCanvas::MdcFixUIOrientation(TBool aEnableFix)
+{
+    if (aEnableFix)
+    {
+        iEnv.ToLcduiObserver().InvokeLcduiEvent(*this, EFixUIOrientation);
+    }
+    else
+    {
+        iEnv.ToLcduiObserver().InvokeLcduiEvent(*this, EUnFixUIOrientation);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// From class MMIDLcduiEventConsumer.
+// CMIDCanvas::HandleLcduiEvent(int aType)
+// ---------------------------------------------------------------------------
+//
+void CMIDCanvas::HandleLcduiEvent(int aType)
+{
+    if (!iDisplayable)
+    {
+        return;
+    }
+
+    switch (aType)
+    {
+    case EFixUIOrientation:
+        iDisplayable->FixOrientation();
+        break;
+    case EUnFixUIOrientation:
+        iDisplayable->ReleaseOrientation();
+        break;
+    case EVideoAdded:
+#ifdef RD_JAVA_NGA_ENABLED
+        DisposePixelSource();
+        CloseEgl(IsGameCanvas());
+#endif // RD_JAVA_NGA_ENABLED
+        break;
+    }
+}
 
 // ---------------------------------------------------------------------------
 // From class MMIDMediaKeysListener.
@@ -1399,7 +1452,7 @@ void CMIDCanvas::RegisterComponentL(MMIDCustomComponent* aComponent)
     {
         DEBUG("CMIDCanvas::RegisterComponentL, registering new");
 
-        iCustomComponents.Append(aComponent);
+        iCustomComponents.AppendL(aComponent);
 
         // Update custom components count in order to improve
         // the performance when counting components
@@ -1523,12 +1576,7 @@ void CMIDCanvas::SetComponentIndexL(
         // Remove the old index from the components array.
         iCustomComponents.Remove(index);
 
-        // Add the component to the new index. Note that the array
-        // should contain memory for all the components since
-        // Remove should not decrease the memory used by the array
-        // Therefore, the following operation is leave-safe and
-        // return value is ignored intentionally.
-        iCustomComponents.Insert(aComponent, aNewIndex);
+        iCustomComponents.InsertL(aComponent, aNewIndex);
 
         // Redraw the whole canvas.
         DrawDeferred();
@@ -1577,19 +1625,34 @@ TBool CMIDCanvas::PostEvent(
 //
 void CMIDCanvas::UpdateL(const TRect& aRect)
 {
+    if (!IsWindowVisible())
+    {
+        return;
+    }
+
+    // Don't update screen after canvas size has been changed,
+    // if there is no valid content from Java side yet
+    if (iWndUpdate &&
+            (iContentSize.iWidth  > aRect.Size().iWidth ||
+             iContentSize.iHeight > aRect.Size().iHeight))
+    {
+        return;
+    }
+
+    iWndUpdate = EFalse;
+
     // Drawing Network indicator only when Update is called.
     if (iFullScreen && iNetworkIndicator)
     {
         iNetworkIndicator->SetDrawIndicator(ETrue);
     }
 
-    // iRestoreContentWhenUnfaded is used when Canvas should be faded
-    // DrawNow need to be called, otherwise  Canvas will be unfaded
-    if (iDirectContents.Count() == 0 && !iRestoreContentWhenUnfaded && IsFocused())
+    if (iDirectContents.Count() == 0)
     {
         // In case direct content content was removed
         // from canvas, recreate pixel source here
-        if (!iAlfCompositionPixelSource && !IsEglAvailable())
+        if (!iAlfCompositionPixelSource &&
+                !IsEglAvailable())
         {
             InitPixelSourceL();
         }
@@ -1606,9 +1669,8 @@ void CMIDCanvas::UpdateL(const TRect& aRect)
         {
             DrawNow(aRect);
         }
-#ifdef RD_JAVA_NGA_ENABLED
+
         iCoeEnv->WsSession().Finish();
-#endif
 
         if (iFirstPaintState == EFirstPaintInitiated ||
                 iFirstPaintState == EFirstPaintPrepared)
@@ -1624,12 +1686,6 @@ void CMIDCanvas::UpdateL(const TRect& aRect)
         }
     }
 
-    // This is needed to avoid artifacting after orientation switch.
-    // It is called once after orientation change.
-    if (iWndUpdate)
-    {
-        iWndUpdate = EFalse;
-    }
 }
 
 #else // !RD_JAVA_NGA_ENABLED
@@ -1779,16 +1835,6 @@ void CMIDCanvas::DrawWindowNgaL(const TRect& aRect)
     }
     else // M3G content, use EGL surface
     {
-        // Invalidates window so that wserv does not
-        // draw window content on top our EGL surface.
-        // This is needed only once when starting to use EGL surface.
-        if (iM3GStart)
-        {
-            DEBUG("CMIDCanvas::DrawWindow - invalidate");
-            Window().Invalidate();
-            iM3GStart = EFalse;
-        }
-
         if (iScalingOn && iFullScreen)
         {
             SetCurrentEglType(EEglPbuffer);
@@ -1814,6 +1860,16 @@ void CMIDCanvas::DrawWindowNgaL(const TRect& aRect)
         }
 
         SetCurrentEglType(EEglNone);
+
+        // Invalidates window so that wserv does not
+        // draw window content on top our EGL surface.
+        // This is needed only once when starting to use EGL surface.
+        if (iM3GStart)
+        {
+            DEBUG("CMIDCanvas::DrawWindow - invalidate");
+            Window().Invalidate();
+            iM3GStart = EFalse;
+        }
 
         if (iFirstPaintState != EFirstPaintOccurred)
         {
@@ -2122,10 +2178,17 @@ void CMIDCanvas::HandleResourceChange(TInt aType)
         TBool partialVKBOpen = (aType == KAknSplitInputEnabled);
         if (partialVKBOpen != iPartialVKBOpen)
         {
+            // setting member variable
             iPartialVKBOpen = partialVKBOpen;
+
+            // First we need inform focused item, after other.
+            iCustomComponents[iFocusedComponent]->HandleResourceChange(aType);
             for (int i = 0; i < iCustomComponents.Count(); i++)
             {
-                iCustomComponents[i]->HandleResourceChange(aType);
+                if (i != iFocusedComponent)
+                {
+                    iCustomComponents[i]->HandleResourceChange(aType);
+                }
             }
         }
     }
@@ -2136,7 +2199,7 @@ void CMIDCanvas::HandleResourceChange(TInt aType)
     {
         // We need inform TextEditor that input language is changed.
         if ((iFocusedComponent != KComponentFocusedNone) &&
-                (iFocusedComponent < iCustomComponents.Count()))
+        (iFocusedComponent < iCustomComponents.Count()))
         {
             iCustomComponents[iFocusedComponent]->
             CustomComponentControl(KComponentMainControl)->
@@ -2321,16 +2384,6 @@ void CMIDCanvas::HandlePointerEventL(const TPointerEvent& aPointerEvent)
             //                                  iContentSize.iHeight - 1)
             point -= iViewRect.iTl;
 
-#ifdef RD_JAVA_NGA_ENABLED
-            // If NGA is started and scaling is on then the drawing rectangle
-            // is moved. Them we need move pointer events too.
-            if (iFullScreen && iScalingOn && iDirectContents.Count() == 0)
-            {
-                // Fix coordinates
-                point += iPositionRelativeToScreen;
-            }
-#endif // RD_JAVA_NGA_ENABLED
-
             if (javaMaxCoords != nativeMaxCoords)
             {
                 point.iX = (point.iX * javaMaxCoords.iWidth) /
@@ -2477,7 +2530,7 @@ void CMIDCanvas::FocusChanged(TDrawNow /* aDrawNow */)
 
 #ifdef RD_JAVA_NGA_ENABLED
         // To avoid situation when Canvas is redrawn but black area remains
-        if (iAlfCompositionPixelSource)
+        if (iAlfCompositionPixelSource && iDirectContents.Count() == 0)
         {
             TRAPD(err, ActivatePixelSourceL(EFalse));
             if (err != KErrNone)
@@ -2512,7 +2565,7 @@ void CMIDCanvas::FocusChanged(TDrawNow /* aDrawNow */)
 
         // To remove cursor on focused control.
         if ((iFocusedComponent != KComponentFocusedNone) &&
-                (iFocusedComponent < iCustomComponents.Count()) && 
+                (iFocusedComponent < iCustomComponents.Count()) &&
                 iCustomComponents[iFocusedComponent]->
                 CustomComponentControl(KComponentMainControl)->IsVisible())
         {
@@ -2521,14 +2574,13 @@ void CMIDCanvas::FocusChanged(TDrawNow /* aDrawNow */)
             SetFocus(EFalse);
         }
 
-#ifdef RD_JAVA_NGA_ENABLED
-        // Avoid the situation when the content is drawn over the menu
-        SuspendPixelSource();
-#endif // RD_JAVA_NGA_ENABLED
-
         // Repaint to ensure that fading will be displayed correctly for Alert
-        // or PopupTextBox when DSA is paused.
-        DrawDeferred();
+        // or PopupTextBox when DSA is paused. No redraw, if canvas is using
+        // background surfaces i.e. EGL or pixel source
+        if (iDirectContents.Count() > 0)
+        {
+            DrawDeferred();
+        }
     }
 
     DEBUG("- CMIDCanvas::FocusChanged");
@@ -2579,12 +2631,42 @@ void CMIDCanvas::SizeChanged()
 
         if ((contentSize != iContentSize) || iScalingOn)
         {
+#ifdef RD_JAVA_NGA_ENABLED
+            TSize oldContentSize = iContentSize;
             iContentSize = contentSize;
 
-#ifdef RD_JAVA_NGA_ENABLED
-            HandleSizeChanged();
-#endif // RD_JAVA_NGA_ENABLED
+            TBool landscape = Layout_Meta_Data::IsLandscapeOrientation();
+
+            if (IsWindowVisible() &&
+                    (oldContentSize.iWidth < iContentSize.iWidth ||
+                     oldContentSize.iHeight < iContentSize.iHeight ||
+                     landscape != iLandscape))
+            {
+                iWndUpdate = ETrue;
+                if (IsEglAvailable())
+                {
+                    // Clear with black to avoid incorrectly sized
+                    // surface flashing on screen in orientation switch
+                    TRgb color(KOpaqueBlackColor);
+                    ClearEglSurface(EEglWindow, &color);
+                }
+            }
+
+            HandleSizeChanged(landscape != iLandscape);
+            iLandscape = landscape;
+
             PostEvent(ESizeChanged, iContentSize.iWidth, iContentSize.iHeight);
+
+            if (IsWindowVisible() && iWndUpdate)
+            {
+                // Post forced paint to enable Canvas repaint behind
+                // Alert or Pop-up TextBox
+                PostForcedPaint();
+            }
+#else
+            iContentSize = contentSize;
+            PostEvent(ESizeChanged, iContentSize.iWidth, iContentSize.iHeight);
+#endif // RD_JAVA_NGA_ENABLED
         }
 
 #ifdef CANVAS_DIRECT_ACCESS
@@ -2631,50 +2713,39 @@ void CMIDCanvas::PositionChanged()
 //
 void CMIDCanvas::Draw(const TRect& aRect) const
 {
-    if (!iStartUpTraceDone)
-    {
-        java::util::JavaOsLayer::startUpTrace("MIDP: CMIDCanvas::Draw starts", -1, -1);
-    }
     DEBUG("CMIDCanvas::Draw ++");
 
-    // While changing the orientation method DrawWindow() not called,
-    // variable iWndUpdate is set to True. If iWndUpdate is True
-    // DrawWindow() is called from method Update()
-    // This is needed to avoid artifacting after orientation switch.
-    TBool landscape = Layout_Meta_Data::IsLandscapeOrientation();
-
-    if (iLandscape != landscape && !iAlfCompositionPixelSource)
+    if (iWndUpdate)
     {
-        iLandscape = landscape;
-        iWndUpdate = ETrue;
+        return;
+    }
+
+    if (iDirectContents.Count() > 0)
+    {
+        DrawWindow(aRect);
     }
     else
     {
-        // iRestoreContentWhenUnfaded is used when Canvas should be faded
-        // DrawWindow need to be called, otherwise  Canvas will be unfaded
-        // Sometimes iRestoreContentWhenUnfaded is not set yet and Canvas
-        // already lost focus, then IsFocused is used
-        if (iDirectContents.Count() > 0 || iRestoreContentWhenUnfaded || !IsFocused())
+        CMIDCanvas* myself = const_cast<CMIDCanvas*>(this);
+
+        if (IsEglAvailable())
         {
-            DrawWindow(aRect);
+            myself->ClearUiSurface(ETrue);
+        }
+        else if (iAlfCompositionPixelSource)
+        {
+            myself->ClearUiSurface(ETrue);
+            TRAP_IGNORE(myself->ActivatePixelSourceL(ETrue));
         }
         else
         {
-            CMIDCanvas* myself = const_cast<CMIDCanvas*>(this);
-            myself->ClearUiSurface(ETrue);
-            if (iAlfCompositionPixelSource)
-            {
-                TRAP_IGNORE(myself->ActivatePixelSourceL(ETrue));
-            }
+            // This is the case when M3G midlet is
+            // coming back to foreground and EGL
+            // surface is not re-created yet
+            DrawWindow(aRect);
         }
-        iWndUpdate = EFalse;
     }
 
-    if (!iStartUpTraceDone)
-    {
-        java::util::JavaOsLayer::startUpTrace("MIDP: CMIDCanvas::Draw ends", -1, -1);
-        iStartUpTraceDone = ETrue;
-    }
     DEBUG("CMIDCanvas::Draw --");
 }
 #else // !RD_JAVA_NGA_ENABLED
@@ -2687,10 +2758,6 @@ void CMIDCanvas::Draw(const TRect& aRect) const
 //
 void CMIDCanvas::Draw(const TRect& aRect) const
 {
-    if (!iStartUpTraceDone)
-    {
-        java::util::JavaOsLayer::startUpTrace("MIDP: CMIDCanvas::Draw starts", -1, -1);
-    }
     DEBUG("+ CMIDCanvas::Draw");
 
 #ifdef CANVAS_DOUBLE_BUFFER
@@ -2744,11 +2811,6 @@ else
 #endif // CANVAS_DOUBLE_BUFFER
 #endif // CANVAS_ASYNC_PAINT
 
-    if (!iStartUpTraceDone)
-    {
-        java::util::JavaOsLayer::startUpTrace("MIDP: CMIDCanvas::Draw ends", -1, -1);
-        iStartUpTraceDone = ETrue;
-    }
     DEBUG("- CMIDCanvas::Draw");
 }
 #endif // RD_JAVA_NGA_ENABLED
@@ -2952,7 +3014,7 @@ void CMIDCanvas::ConstructL(CCoeControl& aWindow)
         iEnv.IsHardwareAcceleratedL(MMIDEnv::EHardware3D) > 0;
 
     InitPixelSourceL();
-#endif // RD_JAVA_NGA_ENABLED        
+#endif // RD_JAVA_NGA_ENABLED
 
 #ifdef RD_JAVA_S60_RELEASE_9_2
     iPartialVKBOpen = EFalse;
@@ -2980,6 +3042,7 @@ void CMIDCanvas::SetContainerWindowL(const CCoeControl& aWindow)
     iDisplayable = (CMIDDisplayable*) &aWindow;
     CCoeControl::SetContainerWindowL(aWindow);
     Window().SetBackgroundColor();
+    MakeVisible(aWindow.IsVisible());
 
 #ifdef RD_SCALABLE_UI_V2
     Window().SetPointerGrab(ETrue);
@@ -3188,16 +3251,6 @@ void CMIDCanvas::Layout()
 
     if (iFullScreen)
     {
-#ifdef RD_JAVA_NGA_ENABLED
-        // If both NGA and scaling are on, then iViewRect is needed move
-        // for preverifing wrong position of Canvas.
-        if (iScalingOn && (!iFullScreen || iDirectContents.Count() == 0))
-        {
-            // Translate to screen coordinates.
-            rect.Move(iPositionRelativeToScreen);
-        }
-#endif // RD_JAVA_NGA_ENABLED
-
         if (iNetworkIndicator)
         {
             // Refresh the layout data for network indicator.
@@ -3208,13 +3261,6 @@ void CMIDCanvas::Layout()
         // orientation.
         TSize orientedOrgMIDletScrSize(OrientedOrgMIDletScrSize());
 
-        // If Nokia-MIDlet-Target-Display-Size is defined, Canvas will be
-        // scaled to that size.
-        if (iTargetMIDletScrSize != KZeroSize)
-        {
-            viewSize = iTargetMIDletScrSize;
-        }
-
 #ifdef RD_JAVA_S60_RELEASE_9_2
         // If partial VKB is open then MIDlet is not scaled.
         // That we need set iViewRect to whole size of Canvas.
@@ -3222,8 +3268,15 @@ void CMIDCanvas::Layout()
         {
             viewSize = Size();
         }
-#endif //RD_JAVA_S60_RELEASE_9_2
-
+        else if (iTargetMIDletScrSize != KZeroSize)
+#else
+        if (iTargetMIDletScrSize != KZeroSize)
+#endif //RD_JAVA_S60_RELEASE_9_2            
+        {
+            // If Nokia-MIDlet-Target-Display-Size is defined, Canvas will be
+            // scaled to that size.
+            viewSize = iTargetMIDletScrSize;
+        }
         // If optional JAD parameter Nokia-MIDlet-Target-Display-Size is NOT
         // defined and Nokia-MIDlet-Original-Display-Size is defined to
         // smaller size than the device's screen size, we will scale the
@@ -3322,14 +3375,6 @@ void CMIDCanvas::Layout()
 #ifdef CANVAS_DIRECT_ACCESS
     StartDirectAccess();
 #endif // CANVAS_DIRECT_ACCESS
-#ifdef RD_JAVA_NGA_ENABLED
-    // To avoid situation when Orientation was changed and black screen is shown
-    TRAPD(err, UpdateL(iViewRect));
-    if (err != KErrNone)
-    {
-        DEBUG_INT("CMIDCanvas::Layout - update error %d", err);
-    }
-#endif // RD_JAVA_NGA_ENABLED
 
     TInt contentsCount(iDirectContents.Count());
 
@@ -3565,25 +3610,22 @@ void CMIDCanvas::HandleForeground(TBool aForeground)
 {
     DEBUG_INT("CMIDCanvas::HandleForeground(%d) ++", aForeground);
 
+    // If foreground/background state is changed,
+    // then we need resize all custom components.
+    if (iForeground != aForeground && iCustomComponents.Count() > 0)
+    {
+        for (int i = 0; i < iCustomComponents.Count(); i++)
+        {
+            iCustomComponents[i]->HandleForeground(aForeground);
+        }
+    }
+
     iForeground = aForeground;
 
 #ifdef RD_JAVA_NGA_ENABLED
-    if (!iForeground)
+    if (!aForeground)
     {
-        if (IsEglAvailable())
-        {
-            if (iEglOccupied)
-            {
-                DEBUG("CMIDCanvas::HandleForeground() - egl - pending dispose");
-                iEglPendingDispose = ETrue;
-            }
-            else
-            {
-                CloseEgl();
-            }
-        }
-
-        SuspendPixelSource();
+        FreeGraphicsMemory(EFalse);
     }
 #endif // RD_JAVA_NGA_ENABLED
 
@@ -3591,6 +3633,60 @@ void CMIDCanvas::HandleForeground(TBool aForeground)
 }
 
 #ifdef RD_JAVA_NGA_ENABLED
+// ---------------------------------------------------------------------------
+// CMIDCanvas::HandleFullOrPartialForegroundL
+// ---------------------------------------------------------------------------
+//
+void CMIDCanvas::HandleFullOrPartialForegroundL(
+    TBool aFullOrPartialFg, TBool aCurrentDisplayable)
+{
+    if (!aFullOrPartialFg && aCurrentDisplayable)
+    {
+        FreeGraphicsMemory(ETrue);
+    }
+    else if (!iPrevM3GContent && iAlfCompositionPixelSource)
+    {
+        SuspendPixelSource();
+        ActivatePixelSourceL(ETrue);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// CMIDCanvas::FreeGraphicsMemory
+// Free GPU memory if the canvas is not visible anymore. If aForced is true,
+// visibility is not checked.
+// ---------------------------------------------------------------------------
+//
+void CMIDCanvas::FreeGraphicsMemory(TBool aForced)
+{
+    // No freeing in exit case to avoid flickering
+    if ((!aForced && IsWindowVisible()) || iExiting)
+    {
+        return;
+    }
+
+    if (IsEglAvailable())
+    {
+        if (iEglOccupied)
+        {
+            DEBUG("CMIDCanvas::FreeGraphcisMemory() - egl - pending dispose");
+            iEglPendingDispose = ETrue;
+        }
+        else
+        {
+            CloseEgl(ETrue);
+            // If MIDlet is not visible on foreground post event to Java
+            // so that M3G is notfied and frees the m3gCore memory
+            if (!iEnv.HasFullOrPartialForeground())
+            {
+                iEnv.PostMidletEvent(EFreeGraphicsMemory);
+                eglReleaseThread();
+            }
+        }
+    }
+
+    SuspendPixelSource();
+}
 
 // ---------------------------------------------------------------------------
 // CMIDCanvas::InitPixelSourceL()
@@ -3668,8 +3764,14 @@ void CMIDCanvas::ActivatePixelSourceL(TBool aDrawingOngoing)
         return;
     }
 
-    // ProduceNewFrameL() is called in some cases
-    // directly from ActivateSyncL(), need to set iFrameReady
+    // Don't activate, if there is no valid content from Java yet
+    if (!ReadyToBlit())
+    {
+        return;
+    }
+
+    // ProduceNewFrameL() is called directly from ActivateSyncL()
+    // if pixel source is suspended, need to set iFrameReady
     // before ActivateSyncL()
     iFrameReady = ETrue;
     TRAPD(err, iAlfCompositionPixelSource->ActivateSyncL());
@@ -3681,11 +3783,21 @@ void CMIDCanvas::ActivatePixelSourceL(TBool aDrawingOngoing)
 
     if (iPixelSourceSuspended)
     {
-        ClearUiSurface(aDrawingOngoing);
         iPixelSourceSuspended = EFalse;
         if (iFullScreen && iScalingOn)
         {
-            iAlfCompositionPixelSource->SetExtent(iViewRect, KPhoneScreen);
+            TRect targetRect = iViewRect;
+            targetRect.Move(iPositionRelativeToScreen);
+            iAlfCompositionPixelSource->SetExtent(targetRect, KPhoneScreen);
+            // Flag is set to in order that screen gets updated at least once
+            // after SetExtent() call
+            iFrameReady = ETrue;
+        }
+
+        if (!aDrawingOngoing)
+        {
+            ClearUiSurface(aDrawingOngoing);
+            iCoeEnv->WsSession().Finish();
         }
     }
 }
@@ -3705,14 +3817,53 @@ void CMIDCanvas::ClearUiSurface(TBool aDrawing)
     gc.SetBrushColor(KTransparentClearColor);
     gc.SetDrawMode(CGraphicsContext::EDrawModeWriteAlpha);
     gc.Clear();
+
+    // Clearing is done via EGL in scaled M3G case
+    if (iScalingOn && iFullScreen && !IsEglAvailable())
+    {
+        const TRect rect = Rect();
+        if (rect != iViewRect)
+        {
+            gc.SetBrushColor(KRgbBlack);
+            gc.SetBrushStyle(CGraphicsContext::ESolidBrush);
+            DrawUtils::ClearBetweenRects(gc, rect, iViewRect);
+        }
+    }
+
     if (!aDrawing)
     {
         DeactivateGc();
         Window().EndRedraw();
     }
+}
+
+// ---------------------------------------------------------------------------
+// CMIDCanvas::DrawToWindowGc
+// Draws current frame buffer content to CWindowGc
+// ---------------------------------------------------------------------------
+//
+void CMIDCanvas::DrawToWindowGc()
+{
+    if (iDirectContents.Count() > 0 ||
+            !IsWindowVisible() ||
+            !iForeground)
+    {
+        return;
+    }
+
+    Window().BeginRedraw();
+    ActivateGc();
+
+    TRect rect = (iFullScreen && iScalingOn) ? iViewRect : Rect();
+    DrawWindow(rect);
+
+    DeactivateGc();
+    Window().EndRedraw();
+
     iCoeEnv->WsSession().Finish();
 }
 
+// ---------------------------------------------------------------------------
 // CMIDCanvas::SuspendPixelSource
 // ---------------------------------------------------------------------------
 //
@@ -3976,7 +4127,7 @@ void CMIDCanvas::OpenEglL()
 // Destroys EGL contexts and surfaces.
 // ---------------------------------------------------------------------------
 //
-void CMIDCanvas::CloseEgl()
+void CMIDCanvas::CloseEgl(TBool aReadback)
 {
     DEBUG("CMIDCanvas::CloseEglL() ++");
 
@@ -3992,9 +4143,8 @@ void CMIDCanvas::CloseEgl()
 
     // MIDlet might draw only 2D after this =>
     // need to set frame buffer opaque to be compatible with
-    // blending methods in Lcdgd. UpdateOffScreenBitmapL() does this
-    // for GameCanvas.
-    if (!IsGameCanvas() && iFrameContext)
+    // blending methods in Lcdgd. UpdateOffScreenBitmapL() does this too.
+    if (!aReadback && iFrameContext)
     {
         iFrameContext->SetBrushColor(KOpaqueClearColor);
         iFrameContext->SetDrawMode(CGraphicsContext::EDrawModeWriteAlpha);
@@ -4002,10 +4152,13 @@ void CMIDCanvas::CloseEgl()
     }
 
     // Take a snapshot from window surface to the frame buffer.
-    TRAPD(err, UpdateOffScreenBitmapL(EFalse));
-    if (err != KErrNone)
+    if (aReadback)
     {
-        DEBUG("CMIDCanvas::CloseEgl() - UpdateOffScreenBitmapL() failed");
+        TRAPD(err, UpdateOffScreenBitmapL(ETrue));
+        if (err != KErrNone)
+        {
+            DEBUG("CMIDCanvas::CloseEgl() - UpdateOffScreenBitmapL() failed");
+        }
     }
 
     // make sure the we have no current target
@@ -4139,7 +4292,7 @@ TSize CMIDCanvas::GetEglSurfaceSize(EGLSurface aSurface)
 // next ProcessL() when M3G_CONTENT_START is recieved from Java side.
 // ---------------------------------------------------------------------------
 //
-void CMIDCanvas::HandleSizeChanged()
+void CMIDCanvas::HandleSizeChanged(TBool aOrientationChange)
 {
     DEBUG("CMIDCanvas::HandleSizeChanged ++");
 
@@ -4149,7 +4302,8 @@ void CMIDCanvas::HandleSizeChanged()
     {
         TSize surfaceSize = GetEglSurfaceSize(iEglWindowSurface);
         TSize controlSize = Size();
-        if (surfaceSize.iHeight < controlSize.iHeight ||
+        if (aOrientationChange ||
+                surfaceSize.iHeight < controlSize.iHeight ||
                 surfaceSize.iWidth < controlSize.iWidth)
         {
             // Check if egl surface is currently occupied.
@@ -4157,14 +4311,14 @@ void CMIDCanvas::HandleSizeChanged()
             {
                 // Delayed resizing. It is done when the ReleaseEglSurface method
                 // is called.
-                DEBUG("CMIDCanvas::HandleSizeChanged - egl - resize pending");
                 iEglPendingResize = ETrue;
             }
             else
             {
-                DEBUG("CMIDCanvas::SizeChanged - close egl");
                 // Surface recreation is done in next ProcessL() call
-                CloseEgl();
+                // No readback from EGL, because canvas needs to
+                // repaint itself anyway in new size
+                CloseEgl(EFalse);
             }
         }
     }
@@ -4211,7 +4365,7 @@ void CMIDCanvas::UpdateEglContent()
 // Return ETrue, if EGL based drawing is in use.
 // ---------------------------------------------------------------------------
 //
-TBool CMIDCanvas::IsEglAvailable()
+TBool CMIDCanvas::IsEglAvailable() const
 {
     return (iEglWindowSurface != EGL_NO_SURFACE);
 }
@@ -4253,14 +4407,18 @@ void CMIDCanvas::ReleaseEglSurface()
         if (iEglPendingDispose)
         {
             DEBUG("CMIDCanvas::ReleaseEglSurface() - dispose egl");
-            CloseEgl();
+            FreeGraphicsMemory(ETrue);
         }
         else if (iEglPendingResize)
         {
             DEBUG("CMIDCanvas::ReleaseEglSurface() - pending resize");
-            HandleSizeChanged();
+            HandleSizeChanged(ETrue);
         }
-        ClearFrameBuffer();
+
+        if (IsEglAvailable())
+        {
+            ClearFrameBuffer();
+        }
     }
 }
 
@@ -4443,6 +4601,17 @@ void CMIDCanvas::UpdateRect(const TRect& aRect)
     TRect canvasRect = IsDownScaling(iContentSize, iViewRect, iM3GContent) ?
                        TRect(iViewRect.Size()) : TRect(iContentSize);
     rect.Intersection(canvasRect);
+    // Checking if rect have intersection with frameRect
+    TRect frameRect(TPoint(), iFrameBuffer->SizeInPixels());
+    if (!rect.Intersects(frameRect))
+    {
+        return;
+    }
+    rect.Intersection(frameRect);
+    if (rect.IsEmpty())
+    {
+        return;
+    }
 
     // Update the member rects
     if (iUpperUpdateRect.Intersects(rect))
@@ -4477,6 +4646,22 @@ void CMIDCanvas::UpdateRect(const TRect& aRect)
             iUpperUpdateRect.BoundingRect(rect);
         }
     }
+}
+
+// ---------------------------------------------------------------------------
+// From MMIDCanvas
+// CMIDCanvas::MidletExiting
+// Draws content to CWindowGc to enable the system effect on MIDlet exit.
+// Canvas might be in the middle of rendering new frame when this is called.
+// Having incomplete frame on screen in some exit cases is anyway better than
+// fully black always.
+// ---------------------------------------------------------------------------
+//
+void CMIDCanvas::MidletExiting()
+{
+    iExiting = ETrue;
+    TRAP_IGNORE(UpdateOffScreenBitmapL(ETrue));
+    DrawToWindowGc();
 }
 
 // ---------------------------------------------------------------------------
@@ -4614,8 +4799,11 @@ void CMIDCanvas::BlitSubRect(const TRect& aRect)
             TInt srcOffset = (canvasHeight - (yStart + ySize)) * stride +
                              xStart * KBytesPerPixel;
 
-            BlitSubRectTexture(xStart, yStart, xSize, ySize, stride,
-                               (TUint8*)iFrameBuffer->DataAddress() + srcOffset);
+            if ((xSize > 0) && (xSize <= 256) && (ySize > 0) && (ySize <= 256))
+            {
+                BlitSubRectTexture(xStart, yStart, xSize, ySize, stride,
+                                   (TUint8*)iFrameBuffer->DataAddress() + srcOffset);
+            }
         }
     }
 }
@@ -4678,7 +4866,7 @@ void CMIDCanvas::BlitSubRectTexture(TInt aXOffset, TInt aYOffset,
     if (err == GL_OUT_OF_MEMORY)
     {
         glDeleteTextures(KTexturesCount, tempTexObj);
-        DEBUG("CMIDCanvas::BlitSubRectTexture(): Out of memory when creating OpenGL texture");
+        ELOG(EJavaUI, "CMIDCanvas::BlitSubRectTexture(): Out of memory when creating OpenGL texture");
         return;
     }
     else if (err != GL_NO_ERROR)
@@ -4713,7 +4901,6 @@ void CMIDCanvas::BlitSubRectTexture(TInt aXOffset, TInt aYOffset,
     {
         // Clear the pixel data with transparent for case where
         // actual texture data does not cover the full tile.
-        // This should be actually done with glClear().
         Mem::FillZ(dst, tileWidth * tileHeight * KBytesPerPixel);
         dst += tileWidth * (tileHeight - aHeight) * KBytesPerPixel;
     }
@@ -4961,11 +5148,11 @@ void CMIDCanvas::BlitPBufferScaledToWindowSurface()
     glLoadIdentity();
 
     // position texture screen coordinates
-    pos[0] = (GLshort)iViewRect.iTl.iX - iPositionRelativeToScreen.iX;
+    pos[0] = (GLshort)iViewRect.iTl.iX;
     pos[1] = (GLshort)iViewRect.Height() + (height - iViewRect.iBr.iY);
     pos[2] = pos[0];
     pos[3] = (GLshort)height - iViewRect.iBr.iY;
-    pos[4] = (GLshort)iViewRect.iBr.iX - iPositionRelativeToScreen.iX;
+    pos[4] = (GLshort)iViewRect.iBr.iX;
     pos[5] = pos[1];
     pos[6] = pos[4];
     pos[7] = pos[3];
@@ -5077,5 +5264,31 @@ const TDesC8& CMIDCanvas::GetEglError(EGLint aErr)
     return KEglSuccess;
 }
 
+// ---------------------------------------------------------------------------
+// CMIDCanvas::IsWindowVisible
+// Checks if canvas window is currently visible on display. Canvas may be visible
+// e.g. behind task switcher or system dialogs even though MIDlet is not the
+// foreground application in that case. This function relies on
+// CMIDDisplayble setting canvas window invisible when some other full-screen
+// displayble is set as current.
+// ---------------------------------------------------------------------------
+//
+TBool CMIDCanvas::IsWindowVisible() const
+{
+    return iEnv.HasFullOrPartialForeground() && IsVisible();
+}
+
+// ---------------------------------------------------------------------------
+// CMIDCanvas::PostForcedPaint
+// Send forced paint to Java. Canvas.paint() will be called even if canvas is
+// not the current displayable.
+// ---------------------------------------------------------------------------
+//
+void CMIDCanvas::PostForcedPaint()
+{
+    TInt posPacked  = 0;
+    TInt sizePacked = (iContentSize.iWidth << 16) | (iContentSize.iHeight);
+    PostEvent(EForcedPaint, posPacked, sizePacked);
+}
 #endif // RD_JAVA_NGA_ENABLED        
 // End of File.

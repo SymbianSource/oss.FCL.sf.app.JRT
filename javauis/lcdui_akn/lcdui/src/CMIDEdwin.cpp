@@ -770,7 +770,8 @@ TKeyResponse CMIDEdwin::OfferKeyEventL(const TKeyEvent& aKeyEvent,TEventCode aTy
         {
             CEikEdwin::SetCursorPosL(cursorPos + 1, EFalse);
         }
-        else if (cursorPos == (iMaxSize - 1) && cursorPos == textLength && scanCode==EStdKeyFullStop)
+        else if (cursorPos == (iMaxSize - 1) && cursorPos == textLength &&
+                 (scanCode == EStdKeyFullStop || scanCode == EStdKeyMinus))
         {
             CEikEdwin::SetCursorPosL(iMaxSize, EFalse);
         }
@@ -840,7 +841,7 @@ TKeyResponse CMIDEdwin::OfferKeyEventL(const TKeyEvent& aKeyEvent,TEventCode aTy
         }
     }
 
-    if (aType != EEventKey)
+    if (aType != EEventKey && aKeyEvent.iScanCode != EStdKeyApplication0)
     {
         UpdateTextCapacityIndicatorValueL();
         return EKeyWasConsumed;
@@ -849,13 +850,16 @@ TKeyResponse CMIDEdwin::OfferKeyEventL(const TKeyEvent& aKeyEvent,TEventCode aTy
 
     TKeyResponse response = EKeyWasNotConsumed;
 
-    //Error tone playing case2:
-    //Play error tone if TextBox/TextField is read-only or maximum length has been reached.
-    //Here is handling of full keyboard keys(NOT 0...9) and all virtual keyboard keys.
-    //(Note: Virtual keyboard sends only EEventKey type events, not up or down events)
-    //(Note: Error tone is played when there is no text to be replaced i.e. no text has been painted)
-    if (!iEdwinUtils->IsNavigationKey(aKeyEvent) && !iEdwinUtils->IsHotKeyL(aKeyEvent, iCoeEnv) && !aKeyEvent.iCode == EKeyYes &&
-            (!iKeyEventsPending || (scanCode < KKeyQwerty0  || scanCode > KKeyQwerty9)))
+    // Error tone playing case2:
+    // Play error tone if TextBox/TextField is read-only or maximum length has been reached.
+    // Here is handling of full keyboard keys(NOT 0...9) and all virtual keyboard keys
+    // (camera and menu key not included).
+    // (Note: Virtual keyboard sends only EEventKey type events, not up or down events)
+    // (Note: Error tone is played when there is no text to be replaced i.e. no text has been painted)
+    if (!iEdwinUtils->IsNavigationKey(aKeyEvent) && !iEdwinUtils->IsHotKeyL(aKeyEvent, iCoeEnv) && aKeyEvent.iCode != EKeyYes &&
+            (!iKeyEventsPending || (scanCode < KKeyQwerty0  || scanCode > KKeyQwerty9)) &&
+            (aKeyEvent.iCode != EKeyApplication0 && scanCode != EStdKeyApplication0 &&
+             aKeyEvent.iCode != EKeyApplication19 && scanCode != EStdKeyApplication19))
     {
         if (IsReadOnly() || (TextLength() >= iMaxSize && aKeyEvent.iCode != EKeyBackspace))
         {
@@ -922,13 +926,20 @@ TKeyResponse CMIDEdwin::OfferKeyEventL(const TKeyEvent& aKeyEvent,TEventCode aTy
                 if (res && TChar(aKeyEvent.iCode) == TChar('-') &&
                         TextLength() < iMaxSize)
                 {
+                    TInt textLength = TextLength();
                     res->InsertL(GetCaretPosition(), KMinusChar);
                     HandleTextChangedL(); // notify editor about the text changes
                     CEikEdwin::ReportEdwinEventL(EEventTextUpdate);
+                    TInt cursorPos = GetCaretPosition();
 
                     if (TextLength() < iMaxSize)
                     {
                         CEikEdwin::SetCursorPosL(GetCaretPosition() + 1, EFalse);
+                    }
+                    else if (cursorPos == (iMaxSize - 1) && cursorPos == textLength)
+
+                    {
+                        CEikEdwin::SetCursorPosL(iMaxSize, EFalse);
                     }
                 }
             }

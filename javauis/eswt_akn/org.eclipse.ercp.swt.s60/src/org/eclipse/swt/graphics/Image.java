@@ -284,7 +284,7 @@ public final class Image implements Drawable
         if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
         init(device, new ImageData(filename));
     }
-
+    
     /**
      * Disposes of the operating system resources associated with
      * the image. Applications must dispose of all images which
@@ -771,5 +771,48 @@ public final class Image implements Drawable
         }
 
         return baoStream.toByteArray();
+    }
+    
+    /**
+     * Invokes platform specific functionality to allocate a new image
+     * which has handle to a system image.
+     * <p>
+     * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+     * API for <code>Font</code>. It is marked public only so that it
+     * can be shared within the packages provided by SWT. It is not
+     * available on all platforms, and should never be called from
+     * application code.
+     * </p>
+     *
+     * @param device the device on which to allocate the image
+     * @param handle the native handle for the image
+     * @return a new image object containing the specified device and
+     *         system image handle
+     */
+    public static Image internal_new(Device device, int handle)
+    {
+        if (device == null) device = Device.getDevice();
+        if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+        if (handle == 0)
+        {
+            SWT.error(SWT.ERROR_NO_HANDLES, null, device.getLastError());
+        }
+        
+        Image image = new Image();
+        image.device = device;
+        image.handle = handle;
+        image.type = SWT.BITMAP;
+
+        try
+        {
+            if (device.tracking) device.new_Object(image);
+        }
+        catch (Error e)
+        {
+            OS.Image_Dispose(device.handle, handle);
+            throw e;
+        }
+        
+        return image;
     }
 }

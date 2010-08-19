@@ -56,13 +56,24 @@ public:
 
     void SetEnv(MMIDEnv& aEnv);
     void UnSetEnv();
+    void SetPauseAppState(TBool aState);
+    TBool GetPauseAppState();
 
 
 private:
     // MLcduiPlugin
-    void SetObserver(MMIDObserver* aObserver);
+    void SetObserverL(MMIDObserver* aObserver);
     MMIDComponentFactory* CreateComponentFactoryL();
-
+    // This will be called from Toolkit before it deletes CMIDEnv
+    void SetEnv(MMIDEnv* aEnv);
+#ifdef RD_JAVA_NGA_ENABLED
+    /**
+     * Handle graphics out of memory event sent by the GOOM module.
+     * This method releases graphics memory and informs the GOOM about this.
+     * @return <code>ETrue</code> if the event was handled properly.
+     */
+    TBool HandleGoomMemoryLowEventL();
+#endif // RD_JAVA_NGA_ENABLED
 
 private: // data
     MMIDObserver* iObserver;
@@ -72,6 +83,9 @@ private: // data
 
     MMIDEnv* iEnv;
     CMIDDisplayable* iCurrentDisplayable;
+    // To store orientation change before Observer is set.
+    TBool iPendingOrientationChange;
+    TBool iPauseApp;
 };
 
 #endif // CMIDAPPUI_H

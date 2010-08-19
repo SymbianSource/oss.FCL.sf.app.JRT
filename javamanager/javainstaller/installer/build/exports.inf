@@ -27,11 +27,12 @@ PRJ_EXPORTS
 ../data/inst_plugins.cfg   /epoc32/data/z/private/102033E6/installer/inst_plugins.cfg
 
 
-// Generic configuration interface for javainstaller cenrep settings
-// javainstaller_102824CE implementation specifics for cenrep data
+// Configuration interface for javainstaller 
 #ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS 
+// Public configuration interface is named as CI_javainstaller.confml
+// and it is located outside of jrt package. The name of private
+// configuration interface is javainstaller2.confml.
 ../conf/javainstaller2.confml         APP_LAYER_CONFML(javainstaller.confml)
-../conf/CI_javainstaller.confml       APP_LAYER_CONFML(CI_javainstaller.confml)
 #else
 ../conf/javainstaller.confml          APP_LAYER_CONFML(javainstaller.confml)
 #endif /* RD_JAVA_S60_RELEASE_10_1_ONWARDS */

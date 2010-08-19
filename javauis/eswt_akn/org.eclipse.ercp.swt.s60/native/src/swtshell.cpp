@@ -343,6 +343,7 @@ void CSwtShell::DoDelete()
     iTitleText = NULL;
 
     iFocusControl = NULL;
+    iPrevFocusControl = NULL;
     iFocusMemory = NULL;
     iDefaultCommand = NULL;
     iControlGoingToStack= NULL;
@@ -1566,7 +1567,7 @@ void CSwtShell::SetFocusControl(MSwtControl* aControl)
         }
     }
 
-    iFocusControl = aControl;
+    DoSetFocusControl(aControl);
 }
 
 // ---------------------------------------------------------------------------
@@ -1601,6 +1602,8 @@ void CSwtShell::ActivityChanged(TBool aIsActive, TBool aSetFocus)
         const TDesC* titleText = GetText();
 
         // Find a focus control
+        MSwtControl* newFocusControl = NULL;
+
         if (aSetFocus)
         {
             if (!iFocusMemory)
@@ -1616,7 +1619,7 @@ void CSwtShell::ActivityChanged(TBool aIsActive, TBool aSetFocus)
                         MSwtControl* ctrl = (*tabList)[i];
                         if (ctrl->IsFocusable())
                         {
-                            iFocusControl = ctrl;
+                            newFocusControl = ctrl;
                             break;
                         }
                     }
@@ -1624,13 +1627,12 @@ void CSwtShell::ActivityChanged(TBool aIsActive, TBool aSetFocus)
             }
             else if (!iFocusMemory->IsFocusable())
             {
-                iFocusControl = NULL;
-                TRAP_IGNORE((iFocusControl = FindTraversalTargetL(
-                                                 ESwtTraverseTabPrevious, *iFocusMemory)));
+                TRAP_IGNORE((newFocusControl = FindTraversalTargetL(
+                                                   ESwtTraverseTabPrevious, *iFocusMemory)));
             }
             else
             {
-                iFocusControl = iFocusMemory;
+                newFocusControl = iFocusMemory;
             }
         }
 
@@ -1638,14 +1640,13 @@ void CSwtShell::ActivityChanged(TBool aIsActive, TBool aSetFocus)
 
         TRAP_IGNORE(iDisplay.PostShellEventL(iPeer, ESwtEventActivate));
 
-        if (iFocusControl)
+        if (newFocusControl)
         {
             // Give focus to the focus control
-            ASSERT(!iFocusControl->IsShell());
-            CCoeControl& coeFocusCtrl = iFocusControl->CoeControl();
+            ASSERT(!newFocusControl->IsShell());
+            CCoeControl& coeFocusCtrl = newFocusControl->CoeControl();
             if (!coeFocusCtrl.IsFocused())
             {
-                iFocusControl = NULL;
                 // This will set iFocusControl to the correct value
                 coeFocusCtrl.SetFocus(ETrue);
                 ASSERT(&iFocusControl->CoeControl() == &coeFocusCtrl);
@@ -1846,16 +1847,6 @@ void CSwtShell::SetControlGoingToStack(MSwtControl* aControl)
 }
 
 // ---------------------------------------------------------------------------
-// CSwtShell::ControlGoingToStack
-// From MSwtShell
-// ---------------------------------------------------------------------------
-//
-MSwtControl* CSwtShell::ControlGoingToStack() const
-{
-    return iControlGoingToStack;
-}
-
-// ---------------------------------------------------------------------------
 // CSwtShell::SetControlGainingFocus
 // From MSwtShell
 // ---------------------------------------------------------------------------
@@ -1863,16 +1854,6 @@ MSwtControl* CSwtShell::ControlGoingToStack() const
 void CSwtShell::SetControlGainingFocus(MSwtControl* aControl)
 {
     iControlGainingFocus = aControl;
-}
-
-// ---------------------------------------------------------------------------
-// CSwtShell::ControlGainingFocus
-// From MSwtShell
-// ---------------------------------------------------------------------------
-//
-MSwtControl* CSwtShell::ControlGainingFocus() const
-{
-    return iControlGainingFocus;
 }
 
 // ---------------------------------------------------------------------------
@@ -1965,7 +1946,7 @@ void CSwtShell::SetToBeFocusedControl(MSwtControl* aControl)
 
     if (iFocusControl)
     {
-        iFocusControl = NULL;
+        DoSetFocusControl(NULL);
     }
 
     iFocusMemory = aControl;
@@ -2148,7 +2129,6 @@ void CSwtShell::DoSetLocation(const TPoint& aPoint)
     }
 }
 
-
 // ---------------------------------------------------------------------------
 // CSwtShell::HandleStatusPaneSizeChange
 // From MEikStatusPaneObserver
@@ -2167,4 +2147,172 @@ void CSwtShell::FinishRedraw() const
 #ifdef RD_JAVA_S60_RELEASE_9_2
     iDisplay.CoeEnv()->WsSession().Finish();
 #endif
+}
+
+// ---------------------------------------------------------------------------
+// CSwtShell::UpdateHighlight
+// ---------------------------------------------------------------------------
+//
+void CSwtShell::UpdateHighlight(TBool aDrawNow /*= EFalse*/)
+{
+    // Turn off highlight for the previously focused control and its eventual
+    // nearest captioned control parent.
+    if (iPrevFocusControl)
+    {
+        MSwtCaptionedControl* captParent = iPrevFocusControl->GetNearestCaptionedControl(EFalse);
+        MSwtControl* captParentCtrl = NULL;
+        if (captParent)
+        {
+            MSwtComposite* captParentComp = captParent->Composite();
+            if (captParentComp)
+            {
+                captParentCtrl = captParentComp->Control();
+                DoSetHighlight(*captParentCtrl, EFalse);
+            }
+        }
+
+        DoSetHighlight(*iPrevFocusControl, EFalse);
+
+        if (aDrawNow)
+        {
+            if (captParentCtrl)
+                captParentCtrl->Redraw();
+            else
+                iPrevFocusControl->Redraw();
+        }
+        else
+        {
+            if (captParentCtrl)
+                captParentCtrl->CoeControl().DrawDeferred();
+            else
+                iPrevFocusControl->CoeControl().DrawDeferred();
+        }
+
+        iPrevFocusControl = NULL;
+    }
+
+    // Turn on highlight for the current focused control and its eventual
+    // nearest captioned control parent.
+    if (iFocusControl)
+    {
+        TBool ctrlHighlight = EFalse;
+        TBool captHighlight = EFalse;
+
+        if (iFocusControl->Pressed())
+        {
+            // Always represent pressed state with highlight
+            TInt pressPolicy = iFocusControl->PressBackgroundPolicy();
+            ctrlHighlight = pressPolicy == EPressBackground;
+            captHighlight = pressPolicy == EPressBackground
+                            || pressPolicy == EEmbeddedPressBackground;
+        }
+        else
+        {
+            if (iDisplay.UiUtils().NaviKeyInput())
+            {
+                TBool noOtherFocusableCtrls(CountFocusableChildren(1, iFocusControl) == 0);
+                if (noOtherFocusableCtrls)
+                {
+                    // No highlight if there's only one focusable control
+                    ctrlHighlight = EFalse;
+                    captHighlight = EFalse;
+                }
+                else
+                {
+                    captHighlight = ETrue;
+                    ctrlHighlight = ETrue;
+
+                    TInt policy = iFocusControl->FocusBackgroundPolicy();
+                    if ((policy == ENoFocusBackground)
+                            || (policy == EEmbeddedFocusBackground)
+                            || (policy ==ENoFocusBackgroundInCaptionedControl))
+                    {
+                        ctrlHighlight = EFalse;
+                    }
+                }
+            }
+            else
+            {
+                // No focus highlight with touch input
+                ctrlHighlight = EFalse;
+                captHighlight = EFalse;
+            }
+        }
+
+        TBool directlyCaptioned(EFalse);
+        MSwtCaptionedControl* captParent = iFocusControl->GetNearestCaptionedControl(EFalse);
+        MSwtControl* captParentCtrl = NULL;
+        if (captParent)
+        {
+            MSwtComposite* captParentComp = captParent->Composite();
+            if (captParentComp)
+            {
+                directlyCaptioned = iFocusControl->GetParent() == captParentComp;
+                // When pressing, only the direct caption control gets "pressed" also.
+                if (!directlyCaptioned && iFocusControl->Pressed())
+                    captHighlight = EFalse;
+                captParentCtrl = captParentComp->Control();
+                DoSetHighlight(*captParentCtrl, captHighlight);
+            }
+        }
+
+        if (!directlyCaptioned)
+        {
+            DoSetHighlight(*iFocusControl, ctrlHighlight);
+        }
+
+        if (aDrawNow)
+        {
+            if (captParentCtrl)
+                captParentCtrl->Redraw();
+            else
+                iFocusControl->Redraw();
+        }
+        else
+        {
+            if (captParentCtrl)
+                captParentCtrl->CoeControl().DrawDeferred();
+            else
+                iFocusControl->CoeControl().DrawDeferred();
+        }
+    }
+}
+
+void CSwtShell::DoSetFocusControl(MSwtControl* aControl)
+{
+    iPrevFocusControl = iFocusControl;
+
+    // This must always be the only place to assign to iFocusControl!
+    iFocusControl = aControl;
+}
+
+void CSwtShell::DoSetHighlight(MSwtControl& aControl, TBool aEnabled)
+{
+    if (aControl.HasHighlight(EFalse) != aEnabled) // not checking parents
+    {
+        aControl.SetHighlight(aEnabled);
+    }
+}
+
+void CSwtShell::ControlDisposing(const MSwtControl& aControl)
+{
+    const MSwtControl* control = &aControl;
+
+    if (control == iPrevFocusControl)
+        iPrevFocusControl = NULL;
+
+    if (control == iControlGoingToStack)
+        iControlGoingToStack = NULL;
+
+    if (control == iControlGainingFocus)
+        iControlGainingFocus = NULL;
+
+    if (control== iFocusControl)
+        iFocusControl = NULL;
+
+    if (control == iFocusMemory)
+        iFocusMemory = NULL;
+
+    if (control == iUrgentPaintControl)
+        iUrgentPaintControl = NULL;
 }

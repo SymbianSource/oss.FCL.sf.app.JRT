@@ -193,7 +193,6 @@ void CSwtLink::ConstructL()
     UpdateDefaultFontL();
     DoSetFont(&iDefaultFont->Font());
     UpdateMarginValues();
-    UpdateSkinColor();
     SetBackground(this);   // Back will be drawn by ASwtControlBase::Draw
 
 #ifdef RD_TACTILE_FEEDBACK
@@ -216,38 +215,7 @@ void CSwtLink::SwtHandleResourceChangeL(TInt aType)
         UpdateMarginValues();
         BuildDrawableFragmentsListL(TextRect());
     }
-    else if (aType == KAknsMessageSkinChange)
-    {
-        if (!iCustomTextColor)
-        {
-            UpdateSkinColor();
-        }
-    }
 }
-
-/**
- * Updates skin colors
- */
-void CSwtLink::UpdateSkinColor()
-{
-    AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
-                              iTextColor,
-                              KAknsIIDQsnTextColors,
-                              EAknsCIQsnTextColorsCG6);
-    AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
-                              iLinkColor,
-                              KAknsIIDQsnHighlightColors,
-                              EAknsCIQsnHighlightColorsCG3);
-    AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
-                              iHighlightColor,
-                              KAknsIIDQsnHighlightColors,
-                              EAknsCIQsnHighlightColorsCG2);
-    AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
-                              iHighlightedLinkColor,
-                              KAknsIIDQsnTextColors,
-                              EAknsCIQsnTextColorsCG24);
-}
-
 
 /**
  * Updates default font
@@ -1006,20 +974,20 @@ void CSwtLink::Draw(const TRect& /*aRect*/) const
         TRect rect = fragment->Rect();
         rect.Move(textRect.iTl);
 
-        TRgb textColor = iTextColor;
+        TRgb textColor = TextColor();
         if (fragment->FragmentDescriptor()->Target())
         {
-            textColor = iLinkColor;
+            textColor = LinkColor();
         }
 
         // Same background highlight as that of HyperLink
         if (fragment->FragmentDescriptor() == iFocusedFragment
                 && (iPressed || iDisplay.UiUtils().NaviKeyInput()))
         {
-            textColor = iHighlightedLinkColor;
+            textColor = PressedLinkColor();
             gc.SetPenStyle(CGraphicsContext::ENullPen);
             gc.SetBrushStyle(CGraphicsContext::ESolidBrush);
-            gc.SetBrushColor(iHighlightColor);
+            gc.SetBrushColor(LinkBgColor());
             gc.DrawRect(rect);
         }
 
@@ -1128,7 +1096,7 @@ void CSwtLink::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 
         if (iPressed)
         {
-            Redraw();
+            GetShell().UpdateHighlight(ETrue); // draw now
         }
         break;
     }
@@ -1162,7 +1130,7 @@ void CSwtLink::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 
         if (pressed != iPressed)
         {
-            Redraw();
+            GetShell().UpdateHighlight(ETrue); // draw now
         }
         break;
     }
@@ -1193,7 +1161,7 @@ void CSwtLink::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 
         if (pressed != iPressed)
         {
-            Redraw();
+            GetShell().UpdateHighlight(ETrue); // draw now
         }
         break;
     }
@@ -1209,22 +1177,9 @@ void CSwtLink::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 void CSwtLink::SetForegroundL(const MSwtColor* aColor)
 {
     ASwtControlBase::DoSetForegroundL(aColor);
-    aColor ? iCustomTextColor = ETrue : iCustomTextColor = EFalse;
-    if (iCustomTextColor)
-    {
-        TRgb rgb;
-        TBool overrideColorSet(GetColor(EColorControlText, rgb));
-        ASSERT(overrideColorSet);
-        iTextColor = rgb;
-        iLinkColor = rgb;
-    }
-    else
-    {
-        UpdateSkinColor();
-    }
+    iCustomFg = aColor;
     Redraw();
 }
-
 
 // ---------------------------------------------------------------------------
 // From class MSwtControl.
@@ -1240,6 +1195,36 @@ TSize CSwtLink::ComputeSizeL(TInt aWHint, TInt aHHint)
     return ComputeTextSizeL(aWHint, aHHint);
 }
 
+// ---------------------------------------------------------------------------
+// CSwtLink::DefaultFont
+// From MSwtControl
+// ---------------------------------------------------------------------------
+//
+void CSwtLink::SetFontL(const MSwtFont* aFont)
+{
+    ASwtControlBase::DoSetFontL(aFont);
+    DoSetFont(&GetFont()->Font());
+    Redraw();
+}
+
+TBool CSwtLink::SetSwtFocus(TInt aReason /*= KSwtFocusByApi*/)
+{
+    TBool prevFocused = IsFocusControl();
+    TBool res = ASwtControlBase::SetSwtFocus(aReason);
+
+    // Gaines focus by pointer
+    if (IsFocusControl() && !prevFocused)
+    {
+        iFocusChanged = ETrue;
+    }
+
+    return res;
+}
+
+TInt CSwtLink::PressBackgroundPolicy() const
+{
+    return EEmbeddedPressBackground;
+}
 
 // ---------------------------------------------------------------------------
 // CSwtLink::ComputeTextSizeL
@@ -1450,18 +1435,61 @@ TBool CSwtLink::IsRtl() const
     return result;
 }
 
-// ---------------------------------------------------------------------------
-// CSwtLink::DefaultFont
-// From MSwtControl
-// ---------------------------------------------------------------------------
-//
-void CSwtLink::SetFontL(const MSwtFont* aFont)
+TRgb CSwtLink::TextColor() const
 {
-    ASwtControlBase::DoSetFontL(aFont);
-    DoSetFont(&GetFont()->Font());
-    Redraw();
+    TBool highlighted = HasHighlight();
+    if (!highlighted && iCustomFg)
+    {
+        return iCustomFg->RgbValue();
+    }
+    else
+    {
+        TRgb res(0);
+        AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
+                                  res,
+                                  KAknsIIDQsnTextColors,
+                                  highlighted ? KHighlightedTextColor : KNonHighlightedTextColor);
+        return res;
+    }
 }
 
+TRgb CSwtLink::LinkColor() const
+{
+    TBool highlighted = HasHighlight();
+    if (!highlighted && iCustomFg)
+    {
+        return iCustomFg->RgbValue();
+    }
+    else
+    {
+        TRgb res(0);
+        AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
+                                  res,
+                                  KAknsIIDQsnHighlightColors,
+                                  EAknsCIQsnHighlightColorsCG3);
+        return res;
+    }
+}
+
+TRgb CSwtLink::PressedLinkColor() const
+{
+    TRgb res(0);
+    AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
+                              res,
+                              KAknsIIDQsnTextColors,
+                              EAknsCIQsnTextColorsCG24);
+    return res;
+}
+
+TRgb CSwtLink::LinkBgColor() const
+{
+    TRgb res(0);
+    AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
+                              res,
+                              KAknsIIDQsnHighlightColors,
+                              EAknsCIQsnHighlightColorsCG2);
+    return res;
+}
 
 void CSwtLink::DoSetFont(const CFont* aFont)
 {
@@ -1562,20 +1590,6 @@ void CSwtLink::SetFocusedFragment()
     {
         iFocusedFragment = NULL;
     }
-}
-
-TBool CSwtLink::SetSwtFocus(TInt aReason /*= KSwtFocusByApi*/)
-{
-    TBool prevFocused = IsFocusControl();
-    TBool res = ASwtControlBase::SetSwtFocus(aReason);
-
-    // Gaines focus by pointer
-    if (IsFocusControl() && !prevFocused)
-    {
-        iFocusChanged = ETrue;
-    }
-
-    return res;
 }
 
 // ---------------------------------------------------------------------------

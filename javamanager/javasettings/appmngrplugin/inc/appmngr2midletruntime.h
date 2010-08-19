@@ -68,6 +68,11 @@ public:     // constructor and destructor
      * @since S60 9.1
      */
     ~CAppMngr2MidletRuntime();
+    
+    /**
+     * Get the ideal size for Java raster icons in the app mgr list.
+     */
+    inline TSize JavaRasterIconSize() {return iJavaRasterIconSize;};
 
 public:     // from CAppMngr2Runtime
 
@@ -172,6 +177,11 @@ private:    // data
      * Owned
      */
     CAppMngr2MidletResourceHandler* iResourceHandler;
+    
+    /**
+     * Size of java raster icons in the app mgr list.
+     */
+    TSize iJavaRasterIconSize;
 };
 
 #endif // APPMNGR2MIDLETRUNTIME_H

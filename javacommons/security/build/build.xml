@@ -1,5 +1,5 @@
 <!--
-    Copyright (c) 2008 Nokia.  All rights reserved.
+    Copyright (c) 2008-2010 Nokia.  All rights reserved.
 
     This material, including documentation and any related computer programs,
     is protected by copyright controlled by Nokia. All rights are reserved.
@@ -9,9 +9,9 @@
     disclosed to others without the prior written consent of Nokia.
 -->
 
-<project name="javasecurity" default="deploy.generate.policies.and.certs" basedir=".">
+<project name="javasecurity" default="deploy.generate.policies" basedir=".">
   <description>
-        Builds OMJ security, generates the policy files in their internal format and copies the certificates and the metadata into right locations
+        Builds OMJ security and generates the policy files in their internal format
   </description>
 
   <import file="../../../build/utilities.xml"/>
@@ -32,7 +32,6 @@
   <target name="init" depends="init.properties">
     <property name="internal.policies.dir" location="${java.res.root}/security/policies"/>
     <mkdir dir="${internal.policies.dir}"/>
-    <property name="security_res_dir" location="${java.captain.datacage}/security/trustroots/device/certificates"/>
   </target>
   
   <target name="deliver.classes.to.external.tool">
@@ -48,7 +47,7 @@
     </jar>
   </target>
   
-  <target name="deploy.generate.policies.and.certs" depends="init, deploy.dual, deliver.classes.to.external.tool, set.linux.certs">
+  <target name="deploy.generate.policies" depends="init, deploy.dual, deliver.classes.to.external.tool">
     <java classname="com.nokia.mj.tools.security.midp.PolicyEditor"
          failonerror="true">
          <sysproperty key="emma.properties" value="${emma.properties}"/>
@@ -62,20 +61,10 @@
     </java>
   </target>
 
-  <target name="set.linux.certs" if="target.linux">
-    <copy todir="${security_res_dir}/">
-        <fileset dir="../../../javatools/testcerts/" includes="*.der"/>
-    </copy>
-    <copy todir="${security_res_dir}/">
-        <fileset dir="../../../javatools/testcerts/" includes="*.metadata"/>
-    </copy>
-  </target>
-
   <target name="clean" depends="init">
     <ant antfile="../../../build/utilities.xml" target="clean"/>  
     <delete dir="${internal.policies.dir}"/>
     <delete file="${external.policy.editor.tool.lib}"/>
-    <delete dir="${security_res_dir}"/>
   </target>
   
   

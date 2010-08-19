@@ -66,4 +66,13 @@ EXPORTS
 	?StopL@CMMAVideoUrlPlayer@@UAEXH@Z @ 65 NONAME ; void CMMAVideoUrlPlayer::StopL(int)
 	?TakeSnapshotL@CMMAVideoPlayer@@UAE?AW4TEncoding@MMMASnapshot@@PAVTRequestStatus@@ABVTSize@@ABVCMMAImageSettings@@@Z @ 66 NONAME ; enum MMMASnapshot::TEncoding CMMAVideoPlayer::TakeSnapshotL(class TRequestStatus *, class TSize const &, class CMMAImageSettings const &)
 	?Type@CMMAVideoPlayer@@MAEABVTDesC16@@XZ @ 67 NONAME ; class TDesC16 const & CMMAVideoPlayer::Type(void)
+	??0CMMAVolumeControl@@IAE@PAVCMMAPlayer@@@Z @ 68 NONAME ; CMMAVolumeControl::CMMAVolumeControl(class CMMAPlayer *)
+	??1CMMAVolumeControl@@UAE@XZ @ 69 NONAME ; CMMAVolumeControl::~CMMAVolumeControl(void)
+	?ClassName@CMMAVolumeControl@@UBEABVTDesC16@@XZ @ 70 NONAME ; class TDesC16 const & CMMAVolumeControl::ClassName(void) const
+	?CloseL@CMMAPlayer@@UAEXXZ @ 71 NONAME ; void CMMAPlayer::CloseL(void)
+	?ConstructBaseL@CMMAVolumeControl@@IAEXXZ @ 72 NONAME ; void CMMAVolumeControl::ConstructBaseL(void)
+	?HandleActiveProfileEventL@CMMAVolumeControl@@UAEXW4TProfileEvent@@H@Z @ 73 NONAME ; void CMMAVolumeControl::HandleActiveProfileEventL(enum TProfileEvent, int)
+	?RefreshControl@CMMAVolumeControl@@UAEXXZ @ 74 NONAME ; void CMMAVolumeControl::RefreshControl(void)
+	?RefreshVolume@CMMAVolumeControl@@AAEXXZ @ 75 NONAME ; void CMMAVolumeControl::RefreshVolume(void)
+	?StateChanged@CMMAVolumeControl@@UAEXH@Z @ 76 NONAME ; void CMMAVolumeControl::StateChanged(int)
 

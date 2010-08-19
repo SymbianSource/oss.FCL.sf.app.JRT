@@ -83,7 +83,7 @@ jint FindFilesFromInboxL
                                                 classHandles, "addElement", "(Ljava/lang/Object;)V");
         jclass classTimestamps = aEnv->GetObjectClass(aTimestamps);
         jmethodID methodTimestampsAddElement = aEnv->GetMethodID(
-                                                   classHandles, "addElement", "(Ljava/lang/Object;)V");
+                                                   classTimestamps, "addElement", "(Ljava/lang/Object;)V");
         jclass integerClass = aEnv->FindClass("java/lang/Integer");
         jmethodID integerConstructor = aEnv->GetMethodID(
                                            integerClass, "<init>", "(I)V");

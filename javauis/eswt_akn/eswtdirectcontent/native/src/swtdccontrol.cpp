@@ -39,7 +39,9 @@ enum TDcEvent
 {
     ERedraw,
     ESetFullScreen,
-    EUpdateFullScreen
+    EUpdateFullScreen,
+    EFixUIOrientation,
+    EUnFixUIOrientation
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -53,6 +55,7 @@ CSwtDCControl::CSwtDCControl(MSwtDisplay& aDisplay,
         , iDsaWasStartedAlready(EFalse)
 #endif
         , iDcObserver(NULL)
+        , iFixedOrientationSet(EFalse)
 {
     SetFocusing(EFalse);
 }
@@ -83,6 +86,12 @@ CSwtDCControl::~CSwtDCControl()
     {
         delete iDcObserver;
         iDcObserver = NULL;
+    }
+
+    if (iFixedOrientationSet)
+    {
+        iDisplay.UiUtils().UnRegisterFixScreenOrientation();
+        iFixedOrientationSet = EFalse;
     }
 
     DEBUG("CSwtDCControl::~CSwtDCControl()-");
@@ -543,6 +552,18 @@ TRect CSwtDCControl::MdcContainerWindowRect() const
     return GetShell().Control()->GetBounds();
 }
 
+void CSwtDCControl::MdcFixUIOrientation(TBool aEnableFix)
+{
+    if (aEnableFix)
+    {
+        iDcObserver->InvokeDcEvent(*this, EFixUIOrientation);
+    }
+    else
+    {
+        iDcObserver->InvokeDcEvent(*this, EUnFixUIOrientation);
+    }
+}
+
 #ifdef SWTDCCONTROL_DSA_ENABLED
 void CSwtDCControl::Restart(RDirectScreenAccess::TTerminationReasons /*aReason*/)
 {
@@ -801,6 +822,24 @@ TBool CSwtDCControl::IsFrameBufferUsed() const
     return iContent && iContent->MdcFrameBuffer() != 0;
 }
 
+void CSwtDCControl::FixUIOrientation()
+{
+    if (!iFixedOrientationSet)
+    {
+        iDisplay.UiUtils().RegisterFixScreenOrientation();
+        iFixedOrientationSet = ETrue;
+    }
+}
+
+void CSwtDCControl::UnFixUIOrientation()
+{
+    if (iFixedOrientationSet)
+    {
+        iDisplay.UiUtils().UnRegisterFixScreenOrientation();
+        iFixedOrientationSet = EFalse;
+    }
+}
+
 /**
  * Receives asynchronous events from iDcObserver
  */
@@ -816,6 +855,12 @@ void CSwtDCControl::HandleDcEvent(int aType)
         break;
     case EUpdateFullScreen:
         UpdateFullScreenState();
+        break;
+    case EFixUIOrientation:
+        FixUIOrientation();
+        break;
+    case EUnFixUIOrientation:
+        UnFixUIOrientation();
         break;
     }
 }

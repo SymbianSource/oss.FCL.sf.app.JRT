@@ -1156,7 +1156,7 @@ public final class SecurityStorage
                                appUID.getStringValue()));
         query.addAttribute(new StorageAttribute(
                                StorageNames.NAME,
-                               "MIDlet-Operator-Allowed"));
+                               "Nokia-MIDlet-Operator-Allowed"));
         query.addAttribute(new StorageAttribute(
                                StorageNames.VALUE,
                                ""));

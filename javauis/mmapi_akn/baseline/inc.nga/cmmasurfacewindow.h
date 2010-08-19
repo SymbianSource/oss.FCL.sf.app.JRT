@@ -202,7 +202,7 @@ public: // New methods
      *
      * @param aStatus true indicates cable connected else false
      */
-    void SetAVCableConnStatus(TBool aStatus);
+    IMPORT_C void SetAVCableConnStatus(TBool aStatus);
 
 private: // New methods
     /**

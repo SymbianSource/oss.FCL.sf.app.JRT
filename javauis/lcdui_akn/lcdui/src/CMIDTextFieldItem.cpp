@@ -677,17 +677,15 @@ void CMIDTextFieldItem::UpdateTextColorsL()
 {
     if (iTextField)
     {
-        // Set color for content text according to item highlight
-        // (logical color constants are defined in lcdui.h)
         if (iHighlighted)
         {
             // Text colour from skin - highlighted
-            iTextField->SetTextSkinColorIdL(KHighlightedItemTextColor);
+            iTextField->SetTextSkinColorIdL(EAknsCIQsnTextColorsCG8);
         }
         else
         {
             // Text colour from skin - unfocused
-            iTextField->SetTextSkinColorIdL(KNonHighlightedItemTextColor);
+            iTextField->SetTextSkinColorIdL(EAknsCIQsnTextColorsCG6);
         }
     }
 }

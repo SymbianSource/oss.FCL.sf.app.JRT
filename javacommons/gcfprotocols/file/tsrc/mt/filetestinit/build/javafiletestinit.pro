@@ -21,7 +21,6 @@ CONFIG -= qt
 
 symbian {
     TARGET.CAPABILITY = all -tcb
-    INCLUDEPATH += /epoc32/include/caf
     LIBS += -lcaf -lcafutils -lefsrv -lDrmParsers -lDRMServerInterfaces
 }
 

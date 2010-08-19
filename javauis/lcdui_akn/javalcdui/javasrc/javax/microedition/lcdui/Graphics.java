@@ -858,11 +858,6 @@ public class Graphics
 
     public void drawChar(char aChar, int aX, int aY, int aAnchor)
     {
-        if (isDownscaled())
-        {
-            aX = (aX * iOnScreenWidth) / iWidth;
-            aY = (aY * iOnScreenHeight) / iHeight;
-        }
         // Calling of drawChars with array with size 1.
         iChar[0] = aChar;
         DrawChars(iChar, 0, 1, aX, aY, aAnchor);
@@ -870,13 +865,6 @@ public class Graphics
 
     public void drawChars(char[] aChars,int aOffset,int aLength,int aX,int aY,int aAnchor)
     {
-        // If is downscaling on, then it downscales drawing point.
-        if (isDownscaled())
-        {
-            aX = (aX * iOnScreenWidth) / iWidth;
-            aY = (aY * iOnScreenHeight) / iHeight;
-        }
-
         synchronized (iBuffer)
         {
             // Checking if offset and length are correct.
@@ -894,6 +882,12 @@ public class Graphics
 
     private void DrawChars(char[] aChars,int aOffset,int aLength,int aX,int aY,int aAnchor)
     {
+        // If is downscaling on, then it downscales drawing point.
+        if (isDownscaled())
+        {
+            aX = (aX * iOnScreenWidth) / iWidth;
+            aY = (aY * iOnScreenHeight) / iHeight;
+        }
         // checking of anchor or setting default
         aAnchor = checkAnchor(aAnchor, STRING_ANCHOR_MASK);
         if (isDownscaled())

@@ -222,13 +222,9 @@ TPtr SwtControlHelper::GetClipboardTextContentLC()
     CleanupStack::PushL(buffer);
 
     TPtrC8 ptr8(buffer->Ptr(0));
-#ifdef _UNICODE
     return TPtr16(reinterpret_cast<TText16*>(const_cast<TText8*>(ptr8.Ptr())),
                   length,
                   length);  //lint !e826
-#else
-    return TPtr8(const_cast<TText8*>(ptr8.Ptr()), ptr8.Length(),  ptr8.Length());
-#endif
 }
 
 /*

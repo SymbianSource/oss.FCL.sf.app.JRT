@@ -57,6 +57,18 @@ public:
      * Called by appui in response to CONE resource change.
      */
     virtual void HandleResourceChangeL(TInt aType)=0;
+
+#ifdef RD_JAVA_NGA_ENABLED
+    /**
+     * Called by appui when application gains or loses partial/full foreground.
+     */
+    virtual void HandleFullOrPartialForegroundL(TBool aFullOrPartialFg)=0;
+
+    /**
+     * Called by appui when application needs to free all GPU memory immediately.
+     */
+    virtual void HandleFreeGraphicsMemory()=0;
+#endif //RD_JAVA_NGA_ENABLED
 };
 #endif
 
@@ -65,7 +77,8 @@ class MLcduiPlugin
 public:
     virtual MMIDComponentFactory* CreateComponentFactoryL() = 0;
 #ifdef LCDUI_TRANSITIONAL_API
-    virtual void SetObserver(MMIDObserver* aObserver) = 0;
+    virtual void SetObserverL(MMIDObserver* aObserver) = 0;
+    virtual void SetEnv(MMIDEnv* aEnv) = 0;
 #endif
 };
 

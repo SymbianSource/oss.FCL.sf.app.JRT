@@ -77,6 +77,9 @@ public:
     TBool MousePostL(const TSwtKeyEventData& aData, TPoint point);
     MSwtImage* NewImageL(const TSize& aSize);
     MSwtImage* NewImageFromDataL(const MSwtImageData& aData);
+    MSwtImage* NewImageFromThemeL(const TInt aId);
+    MSwtImage* ScaleImageL(const MSwtImage& aSrcImage,
+                           const TSize& aDestSize, TBool aKeepAspectRatio);
     inline CSwtJavaBufferDrawer& JavaBufferDrawer();
 
 // Methods to be used by either thread

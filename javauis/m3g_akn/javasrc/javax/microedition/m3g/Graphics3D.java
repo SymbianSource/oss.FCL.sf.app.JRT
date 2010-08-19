@@ -107,7 +107,7 @@ public class Graphics3D
     private Rect viewport;
     private Rect clip;
     private boolean ngaEnabled = false;
-    private boolean foreground;
+    private boolean pendingGLESRelease = false;
 
 
     //------------------------------------------------------------------
@@ -128,9 +128,7 @@ public class Graphics3D
             }
             if (instance.graphics3D == null)
             {
-                // graphics3D must be assigned to interface before asking foreground status
                 instance.graphics3D = new Graphics3D();
-                instance.graphics3D.foreground = ToolkitInvoker.getToolkitInvoker().isForeground();
             }
             return instance.graphics3D;
         }
@@ -158,7 +156,7 @@ public class Graphics3D
         this.clip = new Rect();
         // Initializes NGA status - enabled or disabled
         ngaEnabled = invoker.isNgaEnabled();
-     }
+    }
 
     /**
      *
@@ -185,7 +183,7 @@ public class Graphics3D
      */
     public void bindTarget(java.lang.Object target, boolean depth, int flags)
     {
-        synchronized (Interface.getInstance()) 
+        synchronized (Interface.getInstance())
         {
             integrityCheck();
             int eventSrcHandle = 0;
@@ -288,16 +286,16 @@ public class Graphics3D
      */
     public void releaseTarget()
     {
-        synchronized (Interface.getInstance()) 
+        synchronized (Interface.getInstance())
         {
             integrityCheck();
             if (currentTarget == null)
             {
                 return;
             }
-        
+
             int eventSrcHandle = 0;
-        
+
             try
             {
                 // Bind event source
@@ -328,9 +326,12 @@ public class Graphics3D
             finally
             {
                 currentTarget = null;
-                        
-                if (ngaEnabled && !foreground && eventSrcHandle != 0)
+
+                if (ngaEnabled  &&
+                        pendingGLESRelease &&
+                        eventSrcHandle != 0)
                 {
+                    pendingGLESRelease = false;
                     _freeGLESResources(eventSrcHandle, handle);
                 }
 
@@ -748,16 +749,19 @@ public class Graphics3D
         }
     }
 
-    void setForeground(boolean foreground) 
+    void freeGraphicsMemory()
     {
         synchronized (Interface.getInstance())
         {
-            this.foreground = foreground;
-            if (ngaEnabled &&
-                !foreground && 
-                currentTarget == null)
+            if (!ngaEnabled)
             {
-                try 
+                return;
+            }
+
+            if (currentTarget == null)
+            {
+                pendingGLESRelease = false;
+                try
                 {
                     _freeGLESResources(Interface.bindEventSource(), handle);
                 }
@@ -766,9 +770,13 @@ public class Graphics3D
                     Interface.releaseEventSource();
                 }
             }
+            else
+            {
+                pendingGLESRelease = true;
+            }
         }
     }
-    
+
     private native static int _ctor(int hInterface);
     private native static void _addRef(int hObject);
 
@@ -850,6 +858,6 @@ public class Graphics3D
     private native static int _getTargetWidth(int graphicsHandle);
     private native static void _updateEglContent(int eventSourceHandle,
             int graphicsHandle);
-    private native static void _freeGLESResources(int eventSourceHandle, 
+    private native static void _freeGLESResources(int eventSourceHandle,
             int handle);
 }

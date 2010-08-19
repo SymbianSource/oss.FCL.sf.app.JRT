@@ -19,5 +19,5 @@ PRJ_PLATFORMS
 default
 
 PRJ_MMPFILES  
-fileutils_0x2002DCAD.mmp 
+javafileutils_0x2002DCAD.mmp 
 #include "exports.inf" 

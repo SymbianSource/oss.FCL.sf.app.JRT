@@ -17,4 +17,5 @@ TEMPLATE = subdirs
 SUBDIRS += installerui/build/javainstallerui.pro 
 SUBDIRS += installer/build/javainstaller.pro 
 BLD_INF_RULES.prj_extensions += "$${LITERAL_HASH}include \"appinstuiplugin/build/bld.inf\""  
+BLD_INF_RULES.prj_extensions += "$${LITERAL_HASH}include \"iconsizenotifplugin/build/bld.inf\""  
 BLD_INF_RULES.prj_extensions += "prj_extensions" 

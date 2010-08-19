@@ -150,6 +150,9 @@ public class FinalizeInstallation extends ExeStep
             Log.log("JavaCaptain notified");
         }
 
+        // Add an entry to platform installation log.
+        ball.iApplicationRegistrator.addInstallLogEntry(ball.iSuite, 0);
+
         String midletName = ball.getAttributeValue("MIDlet-Name");
         ball.log("Application " + midletName + " successfully installed.");
         ball.log(ball.iSuite.toShortString());
@@ -302,11 +305,18 @@ public class FinalizeInstallation extends ExeStep
                     }
                 }
 
-                //if (ball.iSifRegistrator.getSifMode() > 0 && launchApp)
-                //{
-                //    ball.iSifRegistrator.launchAppView();
-                //}
-                //else
+                if (ball.iSifRegistrator.getSifMode() > 0 && launchApp)
+                {
+                    ball.getInstallerUi().syncExec(new Runnable()
+                    {
+                        // launchAppView() must be called in the UI thread.
+                        public void run()
+                        {
+                            ball.iSifRegistrator.launchAppView();
+                        }
+                    });
+                }
+                else
                 if (ball.iCaptainMsgs && launchApp &&
                         launchAppInfo.getApplications() != null &&
                         launchAppInfo.getApplications().length > 0)

@@ -124,7 +124,6 @@ public:
     MSwtTree* NewTreeL(MSwtDisplay& aDisplay, TSwtPeer aPeer,
                        MSwtComposite& aParent, TInt aStyle) const;
     TRgb* RunColorDialogL(TRgb* aDefaultColor) const;
-    MSwtFontDialog* NewFontDialogL() const;
     MSwtDirectoryDialog* NewDirectoryDialogL(const TDesC& aFilterPath,
             const TDesC& aTitle) const;
     MSwtBrowser* NewBrowserL(MSwtDisplay& aDisplay, TSwtPeer aPeer,

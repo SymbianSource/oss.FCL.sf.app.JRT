@@ -95,6 +95,7 @@ public abstract class Canvas extends Displayable
      */
     private boolean iHasBackgroundImage;
     private boolean iIsGameCanvas;
+    private Object iPaintLock;
 
     protected Canvas()
     {
@@ -140,6 +141,7 @@ public abstract class Canvas extends Displayable
             }
 
             iM3GContent = false;
+            iPaintLock = new Object();
         }
     }
 
@@ -281,7 +283,7 @@ public abstract class Canvas extends Displayable
 
     public final void serviceRepaints()
     {
-        paint();
+        paint(false);
     }
 
     // Canvas spec'd to have getWidth() method override.
@@ -355,7 +357,7 @@ public abstract class Canvas extends Displayable
 
     protected abstract void paint(Graphics aGraphics);
 
-    private void handlePaint(int aX, int aY, int aWidth, int aHeight)
+    private void handlePaint(int aX, int aY, int aWidth, int aHeight, boolean forced)
     {
         synchronized (iToolkit)
         {
@@ -386,10 +388,10 @@ public abstract class Canvas extends Displayable
             }
         }
 
-        paint();
+        paint(forced);
     }
 
-    private void paint()
+    private void paint(boolean forced)
     {
         Graphics graphics;
         int     x;
@@ -397,55 +399,58 @@ public abstract class Canvas extends Displayable
         int     w;
         int     h;
 
-        synchronized (iCallbackLock)
+        synchronized (iPaintLock)
         {
-            final int width;
-            final int height;
-
-            //
-            // Synchronize to protect the update region from concurrent
-            // repaint()'s. Note that this is *not* sufficient to ensure
-            // that no other callbacks are called by the event thread
-            // whilst the current thread is in the repaint routine, for
-            // that we use the callbacklock below.
-            //
-            synchronized (iToolkit)
+            synchronized (iCallbackLock)
             {
-                width  = iWidth;
-                height = iHeight;
+                final int width;
+                final int height;
 
-                x = iRepaintX1;
-                y = iRepaintY1;
-                w = iRepaintX2-iRepaintX1;
-                h = iRepaintY2-iRepaintY1;
-
-                iRepaintX1 = 0;
-                iRepaintY1 = 0;
-                iRepaintX2 = 0;
-                iRepaintY2 = 0;
-
-                if (!((w>0) && (h>0) && IsShown()))
+                //
+                // Synchronize to protect the update region from concurrent
+                // repaint()'s. Note that this is *not* sufficient to ensure
+                // that no other callbacks are called by the event thread
+                // whilst the current thread is in the repaint routine, for
+                // that we use the callbacklock below.
+                //
+                synchronized (iToolkit)
                 {
-                    return;
+                    width  = iWidth;
+                    height = iHeight;
+
+                    x = iRepaintX1;
+                    y = iRepaintY1;
+                    w = iRepaintX2-iRepaintX1;
+                    h = iRepaintY2-iRepaintY1;
+
+                    iRepaintX1 = 0;
+                    iRepaintY1 = 0;
+                    iRepaintX2 = 0;
+                    iRepaintY2 = 0;
+
+                    if (!((w>0) && (h>0) && (IsShown() || forced)))
+                    {
+                        return;
+                    }
+
+                    graphics = GetPaintGraphics();
                 }
 
-                graphics = GetPaintGraphics();
+                graphics.reset(width, height);
+                graphics.setClip(x, y, w, h);
+
+                // On a non-full-screen (normal) mode Canvas the background
+                // image must be initially shown, if the value of the iHasBackgroundImage
+                // is true.
+                if (!iFullScreen && iHasBackgroundImage && !iIsGameCanvas)
+                {
+                    drawBackground(true);
+                }
+                paint(graphics);
             }
 
-            graphics.reset(width, height);
-            graphics.setClip(x, y, w, h);
-
-            // On a non-full-screen (normal) mode Canvas the background
-            // image must be initially shown, if the value of the iHasBackgroundImage
-            // is true.
-            if (!iFullScreen && iHasBackgroundImage && !iIsGameCanvas)
-            {
-                drawBackground(true);
-            }
-            paint(graphics);
+            flush(x, y, w, h);
         }
-
-        flush(x, y, w, h);
     }
 
     void flush(int aX, int aY, int aWidth, int aHeight)
@@ -569,12 +574,14 @@ public abstract class Canvas extends Displayable
         switch (aEvent)
         {
         case Toolkit.EVENT_PAINT:
+        case Toolkit.EVENT_FORCED_PAINT:
         {
             final int x = aData0 >>> 16;
             final int y = aData0 & 0xffff;
             final int w = aData1 >>> 16;
             final int h = aData1 & 0xffff;
-            handlePaint(x, y, w, h);
+            boolean forced = (aEvent == Toolkit.EVENT_FORCED_PAINT);
+            handlePaint(x, y, w, h, forced);
         }
         break;
 

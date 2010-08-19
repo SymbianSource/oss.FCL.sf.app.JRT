@@ -146,6 +146,7 @@ void CMMAMMFPlayerBase::StartL(TBool aPostEvent)
         // inform java side
         PostLongEvent(CMMAPlayerEvent::EStarted, iStartedEventTime);
     }
+    
     ChangeState(EStarted);
     PostActionCompleted(KErrNone);   // java start return
 }
@@ -159,35 +160,9 @@ void CMMAMMFPlayerBase::StopL(TBool aPostEvent)
         iStartedEventTime = time;
 
         TInt err = KErrNone;
-        // AAC controller does not support multiple
-        // calls to pause but leave with KErrNotReady.
-        // That error is dismissed as player should
-        // be paused already in that case.
-        if (time == 0)
-        {
-            DEBUG("CMMAMMFPlayerBase::StopL: Position is zero, stopping");
-            // Normally pause would be called, but if
-            // current time is zero, Stop is called instead.
-            // This is done because video playback breaks
-            // if pause is called between events
-            // KMMFEventCategoryVideoLoadingStarted and
-            // KMMFEventCategoryVideoLoadingCompleted
-            // (no wurther events are delivered altough
-            // playback continues fine).
-            // However calling Stop is tolerated in that
-            // situation.
-            err = iController.Stop();
-            if (err == KErrNone)
-            {
-                err = iController.Prime();
-            }
-        }
-        else
-        {
-            DEBUG("CMMAMMFPlayerBase::StopL: Position not zero, pausing");
-            err = iController.Pause();
-        }
-
+        DEBUG("CMMAMMFPlayerBase::StopL: Position not zero, pausing");
+        err = iController.Pause();
+        
         if ((err != KErrNone) && (err != KErrNotReady))
         {
             DEBUG_INT("CMMAMMFPlayerBase::StopL: pause/stop failed %d, leaving", err);

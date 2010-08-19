@@ -269,6 +269,7 @@ protected:
     //
     void UpdateLeftSoftKeyL();
     TBool OkToExitL(TInt aButtonId);
+    void PreLayoutDynInitL();
 
 private:
     /**

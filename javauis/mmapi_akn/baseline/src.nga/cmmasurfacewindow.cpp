@@ -667,7 +667,7 @@ void CMMASurfaceWindow::CleanVideoDisplay()
     DEBUG("MID::CMMASurfaceWindow::CleanVideoDisplay -");
 }
 
-void CMMASurfaceWindow::SetAVCableConnStatus(TBool aStatus)
+EXPORT_C void CMMASurfaceWindow::SetAVCableConnStatus(TBool aStatus)
 {
     iAVCableConnected = aStatus;
     if (iDisplay && !iAVCableConnected)

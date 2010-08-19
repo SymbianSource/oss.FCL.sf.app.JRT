@@ -35,6 +35,7 @@ import com.nokia.mj.impl.utils.exception.InstallerExceptionBase;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.Hashtable;
 
 import org.eclipse.ercp.swt.midp.UIThreadSupport;
@@ -48,6 +49,8 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.extension.DisplayExtension;
+import org.eclipse.swt.internal.extension.ImageUtil;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Composite;
@@ -126,7 +129,6 @@ public class InstallerUiEswt extends InstallerUi
         // Create a hashtable for icons.
         iImageTable = new Hashtable();
         // Create a new thread to be the UI main thread.
-        iUiThreadExists = true;
         UIThreadSupport.startInUIThread(new Runnable()
         {
             public void run()
@@ -145,6 +147,7 @@ public class InstallerUiEswt extends InstallerUi
     private void uiMain()
     {
         log("uiMain: thread started");
+        iUiThreadExists = true;
         try
         {
             // Create the necessary views.
@@ -201,10 +204,7 @@ public class InstallerUiEswt extends InstallerUi
                     display.sleep();
                 }
             }
-            if (iBoldFont != null && !iBoldFont.isDisposed())
-            {
-                iBoldFont.dispose();
-            }
+            disposeResources();
             display.dispose();
             log("uiMain: display disposed");
             synchronized (iExitWaitObject)
@@ -512,6 +512,12 @@ public class InstallerUiEswt extends InstallerUi
         // updating it.
         synchronized (iProgressSyncObject)
         {
+            if (iDlProgressView != null && iDlProgressView.isVisible())
+            {
+                // If download progress is being displayed,
+                // do not display installation progress.
+                return;
+            }
             if (iDisplayProgress && !iProgressView.isVisible())
             {
                 iProgressView.setVisible(true);
@@ -994,6 +1000,14 @@ public class InstallerUiEswt extends InstallerUi
     }
 
     /**
+     * Executes given Runnable synchronously in the UI thread.
+     */
+    public void syncExec(Runnable aRunnable)
+    {
+        iParent.getDisplay().syncExec(aRunnable);
+    }
+
+    /**
      * Returns string title basing on mode of this InstallerUi.
      */
     protected String getTitle()
@@ -1033,17 +1047,21 @@ public class InstallerUiEswt extends InstallerUi
         {
             return iSecurityIcon;
         }
-        String iconFilename = ResourceUtil.UNTRUSTED_ICON_NAME;
+        int id = ImageUtil.THEME_IMAGE_SECURITY_UNTRUSTED;
         if (aIdentified)
         {
-            iconFilename = ResourceUtil.TRUSTED_ICON_NAME;
+            id = ImageUtil.THEME_IMAGE_SECURITY_TRUSTED;
         }
-        String resourceDir = ResourceUtil.getResourceDir(0);
-        for (int i = 1; iSecurityIcon == null && resourceDir != null; i++)
+        
+        try 
         {
-            iSecurityIcon = loadImage(aDisplay, resourceDir + iconFilename, false);
-            resourceDir = ResourceUtil.getResourceDir(i);
+            iSecurityIcon = ImageUtil.createImageFromTheme(aDisplay, id);
         }
+        catch (Throwable t)
+        {
+            log("Can not load security icon: " + t);
+        }
+        
         return iSecurityIcon;
     }
 
@@ -1133,22 +1151,26 @@ public class InstallerUiEswt extends InstallerUi
         try
         {
             long startTime = System.currentTimeMillis();
-            ImageData[] imageDatas = new ImageLoader().load(aInputStream);
-            ImageData imageData = imageDatas[0];
+            
+            Image image = new Image(aDisplay, aInputStream);
             if (aScaleImage)
             {
-                Point bestSize = getBestImageSize(
-                                     imageData.width, imageData.height);
-                if (bestSize.x != imageData.width ||
-                        bestSize.y != imageData.height)
+                int maxWidth = DisplayExtension.getBestImageWidth(DisplayExtension.LIST_ELEMENT);
+                int maxHeight = DisplayExtension.getBestImageHeight(DisplayExtension.LIST_ELEMENT);
+                Rectangle rect = image.getBounds();
+                if (maxWidth != rect.width || maxHeight != rect.height)
                 {
-                    imageData = imageData.scaledTo(bestSize.x, bestSize.y);
-                    log("Image " + aImageName + " scaled from " +
-                        imageDatas[0].width + "x" + imageDatas[0].height +
-                        " to " + bestSize.x + "x" + bestSize.y);
+                    // Copy and scale natively preserving the aspect ratio
+                    result = ImageUtil.scaleImage(aDisplay, image, new Point(maxWidth, maxHeight), true);
+                    image.dispose();
+                    image = null;
                 }
             }
-            result = new Image(aDisplay, imageData);
+            if (result == null)
+            {
+                result = image;
+            }
+            
             long endTime = System.currentTimeMillis();
             log("Loaded image " + aImageName + " (load time " +
                 (endTime - startTime) + " ms)");
@@ -1158,33 +1180,6 @@ public class InstallerUiEswt extends InstallerUi
         {
             log("Can not load image " + aImageName + ": " + t);
             //logError("Exception while loading image " + aImageName, t);
-        }
-        return result;
-    }
-
-    /**
-     * Determines the best image size for the image of given size.
-     */
-    private static Point getBestImageSize(int aWidth, int aHeight)
-    {
-        // Actually maximum image width and height should be obtained with
-        // org.eclipse.swt.internal.extension.DisplayExtension
-        // getBestImageWidth() and getBestImageHeight().
-        final int MAX_WIDTH = 50; // max width in pixels
-        final int MAX_HEIGHT = 50; // max height in pixels
-        Point result = new Point(aWidth, aHeight);
-        if (result.x > MAX_WIDTH || result.y > MAX_HEIGHT)
-        {
-            if (result.x >= MAX_WIDTH)
-            {
-                result.x = MAX_WIDTH;
-                result.y = MAX_WIDTH * aHeight / aWidth;
-            }
-            if (result.y >= MAX_HEIGHT)
-            {
-                result.x = MAX_HEIGHT * aWidth / aHeight;
-                result.y = MAX_HEIGHT;
-            }
         }
         return result;
     }
@@ -1284,6 +1279,13 @@ public class InstallerUiEswt extends InstallerUi
         }
         return iBoldFont;
     }
+    
+    int iconLabelTopMargin()
+    {
+        // Aproximating the space at the top of a Label.
+        // eSWT's Label adds extra space around texts but not around images.
+        return getBoldFont().getFontData()[0].getHeight();
+    }
 
     void setActiveView(ViewBase aView)
     {
@@ -1298,5 +1300,25 @@ public class InstallerUiEswt extends InstallerUi
     ViewBase getActiveView()
     {
         return iActiveView;
+    }
+    
+    private void disposeResources() {
+        if (iBoldFont != null && !iBoldFont.isDisposed())
+        {
+            iBoldFont.dispose();
+        }
+        if (iSecurityIcon != null && !iSecurityIcon.isDisposed())
+        {
+            iSecurityIcon.dispose();
+        }
+        Enumeration e = iImageTable.elements();
+        while (e.hasMoreElements())
+        {
+            Image img = (Image)e.nextElement();
+            if (img != null && !img.isDisposed())
+            {
+                img.dispose();
+            }
+        }
     }
 }

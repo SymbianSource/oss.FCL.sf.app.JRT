@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008 - 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -19,7 +19,9 @@
 
 
 #include <e32base.h>
+#ifndef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 #include <apgcli.h> // for RApaLsSession
+#endif
 #include <hal_data.h>
 #include <hal.h>
 #include <sysutil.h>
@@ -31,6 +33,7 @@
 #include "coreinterface.h"
 #include "booteventprovidermessages.h"
 #include "mmceventprovidermessages.h"
+#include "preinstallerstartermessages.h"
 
 #include "preinstallerstarter.h"
 
@@ -52,19 +55,19 @@ using java::fileutils::driveInfo;
 using java::fileutils::DriveListenerInterface;
 
 /**
- * Empty contructor
+ * Initialize member varaibles in constructor
  */
-PreinstallerStarter::PreinstallerStarter() : mCore(0)
+PreinstallerStarter::PreinstallerStarter() :
+    CActive(EPriorityStandard), mCore(0), mPreinstaller(0)
 {
-    JELOG2(EJavaCaptain);
 }
 
 /**
- * Empty destructor
+ * Destructor
  */
 PreinstallerStarter::~PreinstallerStarter()
 {
-    JELOG2(EJavaCaptain);
+    DoCancel();
 }
 
 /**
@@ -72,8 +75,8 @@ PreinstallerStarter::~PreinstallerStarter()
  */
 void PreinstallerStarter::startPlugin(CoreInterface* core)
 {
-    JELOG2(EJavaCaptain);
     mCore = core;
+    CActiveScheduler::Add(this);
 }
 
 /**
@@ -81,7 +84,6 @@ void PreinstallerStarter::startPlugin(CoreInterface* core)
  */
 void PreinstallerStarter::stopPlugin()
 {
-    JELOG2(EJavaCaptain);
     mCore = 0;
 }
 
@@ -90,7 +92,6 @@ void PreinstallerStarter::stopPlugin()
  */
 EventConsumerInterface* PreinstallerStarter::getEventConsumer()
 {
-    JELOG2(EJavaCaptain);
     return this;
 }
 
@@ -106,7 +107,6 @@ EventConsumerInterface* PreinstallerStarter::getEventConsumer()
 void PreinstallerStarter::event(const std::string& eventProvider,
                                 java::comms::CommsMessage& aMsg)
 {
-    JELOG2(EJavaCaptain);
     if (eventProvider == BOOT_EVENT_PROVIDER)
     {
         int bootType = NORMAL_BOOT_C;
@@ -133,7 +133,9 @@ void PreinstallerStarter::event(const std::string& eventProvider,
         case FIRST_DEVICE_BOOT_C:
         case NORMAL_BOOT_C:
         {
+#ifndef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
             registerMidletApplicationTypeHandler();
+#endif
 
             // Start preinstaller normally (without 'iad' option).
             startPreinstaller(EFalse);
@@ -183,8 +185,6 @@ void PreinstallerStarter::event(const std::string& eventProvider,
  */
 void PreinstallerStarter::startPreinstaller(TBool aIadBoot)
 {
-    JELOG2(EJavaCaptain);
-
     // Check that the device has enough free memory (800kB) to start preinstaller process
     // and (if needed) also java installer
     TInt freeMemory = 0;
@@ -276,17 +276,21 @@ void PreinstallerStarter::startPreinstaller(TBool aIadBoot)
         }
 
         // start preinstaller
-        RProcess preinstaller;
+        mPreinstaller = new RProcess();
         TBuf<64> preinstallerProcess;  // Actual len of the process name is 9
         len = strlen(java::runtime::JAVA_PROCESS);
         TPtr8 ptr8Process((TUint8 *)java::runtime::JAVA_PROCESS, len, len);
         preinstallerProcess.Copy(ptr8Process);
-        TInt err = preinstaller.Create(preinstallerProcess, commandLine);
+        TInt err = mPreinstaller->Create(preinstallerProcess, commandLine);
         if (KErrNone == err)
         {
-            // process has been created, allow it to run
-            preinstaller.Resume();
-            preinstaller.Close();
+            // Process has been created.
+
+            // This active object will be activated when preinstaller process exits
+            mPreinstaller->Logon(iStatus);
+
+            // Allow the process to run
+            mPreinstaller->Resume();
             if (aIadBoot)
             {
                 LOG(
@@ -298,9 +302,14 @@ void PreinstallerStarter::startPreinstaller(TBool aIadBoot)
             {
                 LOG(EJavaCaptain, EInfo, "PreinstallerStarter: started preinstaller");
             }
+
+            SetActive();
         }
         else
         {
+            delete mPreinstaller;
+            mPreinstaller = 0;
+
             ELOG1(
                 EJavaCaptain,
                 "PreinstallerStarter: starting preinstaller failed, err %d",
@@ -313,6 +322,7 @@ void PreinstallerStarter::startPreinstaller(TBool aIadBoot)
  * Register 'javalauncher.exe' as the midlet application type handler
  * in AppArc. If necessary unregister old handler first.
  */
+#ifndef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 void PreinstallerStarter::registerMidletApplicationTypeHandler()
 {
     _LIT(KMidpAppArcPlugin, "javalauncher.exe");
@@ -374,6 +384,37 @@ void PreinstallerStarter::registerMidletApplicationTypeHandler()
               err);
     }
 }
+#endif
+
+void PreinstallerStarter::RunL()
+{
+    LOG(EJavaCaptain, EInfo, "PreinstallerStarter::RunL started");
+
+    // Send event to AutoStarter plugin, done only once
+    CommsMessage eventMsg;
+    setPreinstallerExitedMessageParams(eventMsg, iStatus.Int());
+    mCore->getEventDispatcher()->event(PREINSTALLER_EVENT_PROVIDER, eventMsg);
+
+    // process handle is no longer needed
+    mPreinstaller->Close();
+    delete mPreinstaller;
+    mPreinstaller = 0;
+}
+
+
+void PreinstallerStarter::DoCancel()
+{
+    if (mPreinstaller)
+    {
+        mPreinstaller->LogonCancel(iStatus);
+        // Because exit notification request has been canceled,
+        // there is no reason to keep the process handle open.
+        mPreinstaller->Close();
+        delete mPreinstaller;
+        mPreinstaller = 0;
+    }
+}
+
 
 } // namespace captain
 } // namespace java

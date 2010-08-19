@@ -1,0 +1,372 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - Initial contribution
+*
+* Contributors:
+*
+* Description:
+* Image-description file of the Java package for ROFS1.
+*/
+
+#ifndef __JAVA_IBY__
+#define __JAVA_IBY__
+
+#include <data_caging_paths_for_iby.hrh>
+
+// Helper defines
+define JAVA_RES_BLD        ABI_DIR\BUILD_DIR\z\resource\java
+define JAVA_RES_IMG        RESOURCE_FILES_DIR\java
+define JAVA_VM_RES_BLD     JAVA_RES_BLD\jvm\lib\jrt
+define JAVA_VM_RES_IMG     JAVA_RES_IMG\jvm\lib\jrt
+define JAVA_POLICY_BLD     ABI_DIR\BUILD_DIR\z\resource\java\security\policies
+define JAVA_POLICY_IMG     RESOURCE_FILES_DIR\java\security\policies
+
+
+////////////////////////////
+// Java Manager collection//
+////////////////////////////
+
+// stub sis
+data=ZSYSTEM\install\java.sis    System\Install\java.sis
+
+
+// AppMngr plugin
+ECOM_PLUGIN( appmngr2midletplugin.dll, appmngr2midletplugin.rsc )
+data=ZRESOURCE\plugins\appmngr2midletplugin.rsc    ECOM_RESOURCE_DIR\appmngr2midletplugin.rsc
+
+// Captain
+file=ABI_DIR\BUILD_DIR\javacaptain_ext_autostarter.dll             	        SHARED_LIB_DIR\javacaptain_ext_autostarter.dll
+file=ABI_DIR\BUILD_DIR\javacaptain_ext_btdeviceclassmanager.dll             SHARED_LIB_DIR\javacaptain_ext_btdeviceclassmanager.dll
+file=ABI_DIR\BUILD_DIR\javacaptain_ext_config.dll                           SHARED_LIB_DIR\javacaptain_ext_config.dll
+file=ABI_DIR\BUILD_DIR\javacaptain_ext_ondemand_2.dll                       SHARED_LIB_DIR\javacaptain_ext_ondemand_2.dll
+file=ABI_DIR\BUILD_DIR\javacaptain_ext_ondemand_7.dll                       SHARED_LIB_DIR\javacaptain_ext_ondemand_7.dll
+file=ABI_DIR\BUILD_DIR\javacaptain_ext_preinstallerstarter.dll              SHARED_LIB_DIR\javacaptain_ext_preinstallerstarter.dll
+file=ABI_DIR\BUILD_DIR\javacaptain_ext_pushregistryplugin.dll               SHARED_LIB_DIR\javacaptain_ext_pushregistryplugin.dll
+file=ABI_DIR\BUILD_DIR\javacaptain_ext_storageserverplugin.dll              SHARED_LIB_DIR\javacaptain_ext_storageserverplugin.dll
+file=ABI_DIR\BUILD_DIR\javacaptain_ext_settingslistener.dll                 SHARED_LIB_DIR\javacaptain_ext_settingslistener.dll
+file=ABI_DIR\BUILD_DIR\javacaptain.exe                                      PROGRAMS_DIR\javacaptain.exe
+
+// Registry
+file=ABI_DIR\BUILD_DIR\javaregistryclient.dll                               SHARED_LIB_DIR\javaregistryclient.dll
+file=ABI_DIR\BUILD_DIR\javasizehelperclient.dll                             SHARED_LIB_DIR\javasizehelperclient.dll
+file=ABI_DIR\BUILD_DIR\javasizehelperserver.dll                             SHARED_LIB_DIR\javasizehelperserver.dll
+
+// Installer
+ECOM_PLUGIN(ifeui.dll,ifeui.rsc)
+data=ZRESOURCE\plugins\ifeui.rsc                                            ECOM_RESOURCE_DIR\ifeui.rsc
+data=ZPRIVATE\10003a3f\apps\javainstaller_reg.rsc                           \private\10003a3f\import\apps\javainstaller_reg.rsc
+data=ZRESOURCE\apps\javainstaller_loc.rsc                                   APP_RESOURCE_DIR\javainstaller_loc.rsc
+data=ZRESOURCE\apps\javainstaller_icon.mif                                  APP_BITMAP_DIR\javainstaller_icon.mif
+file=ABI_DIR\BUILD_DIR\javainstaller.dll                                    SHARED_LIB_DIR\javainstaller.dll
+data=JAVA_VM_RES_BLD\javainstallerui.odc                                    JAVA_VM_RES_IMG\javainstallerui.odc
+file=ABI_DIR\BUILD_DIR\javainstallerui.dll                                  SHARED_LIB_DIR\javainstallerui.dll
+data=JAVA_VM_RES_BLD\javainstaller.odc                                      JAVA_VM_RES_IMG\javainstaller.odc
+file=ABI_DIR\BUILD_DIR\javainstallerstarter.dll                             PROGRAMS_DIR\javainstallerstarter.dll
+file=ABI_DIR\BUILD_DIR\javapreinstaller.dll                                 PROGRAMS_DIR\javapreinstaller.dll
+data=ZRESOURCE\java\java_app_92.mif                                         JAVA_RES_IMG\java_app.mif
+data=ZRESOURCE\java\java_trusted.png                                        JAVA_RES_IMG\java_trusted.png
+data=ZRESOURCE\java\java_untrusted.png                                      JAVA_RES_IMG\java_untrusted.png
+data=DATAZ_\private\102033E6\installer\inst_plugins.cfg           	    \private\102033E6\installer\inst_plugins.cfg
+
+// Launchers
+file=ABI_DIR\BUILD_DIR\javalauncher.exe                                     PROGRAMS_DIR\javalauncher.exe
+ECOM_PLUGIN(javaappschemeplugin.dll,javaappschemeplugin.rsc)
+data=ZRESOURCE\plugins\javaappschemeplugin.rsc                              ECOM_RESOURCE_DIR\javaappschemeplugin.rsc
+
+// SID Checker
+ECOM_PLUGIN(javasidchecker.dll,10281FBE.rsc)
+data=ZRESOURCE\plugins\javasidchecker.rsc                                   ECOM_RESOURCE_DIR\javasidchecker.rsc
+
+// Recognizers
+ECOM_PLUGIN(recjar.dll, 102031FB.rsc)
+data=ZRESOURCE\plugins\recjar.rsc                                           ECOM_RESOURCE_DIR\recjar.rsc
+
+// Backup & Restore
+file=ABI_DIR\BUILD_DIR\javabackup.exe                                       PROGRAMS_DIR\javabackup.exe
+ECOM_PLUGIN(midp2backupplugin.dll,10282474.rsc)
+data=ZRESOURCE\plugins\midp2backupplugin.rsc                                ECOM_RESOURCE_DIR\midp2backupplugin.rsc
+data=DATAZ_\private\1028246F\backup_registration.xml                        \private\1028246F\backup_registration.xml
+data=DATAZ_\private\102033E6\backup_registration.xml                        \private\102033E6\backup_registration.xml
+
+
+/////////////////////////
+// Java UIs collection //
+/////////////////////////
+
+// CoreUi
+file=ABI_DIR\BUILD_DIR\javacoreui.dll                                       SHARED_LIB_DIR\javacoreui.dll
+data=JAVA_VM_RES_BLD\javacoreui.odc                                         JAVA_VM_RES_IMG\javacoreui.odc
+
+// eSWT
+file=ABI_DIR\BUILD_DIR\eswt.dll                                             SHARED_LIB_DIR\eswt.dll
+data=JAVA_VM_RES_BLD\eswt.odc                                               JAVA_VM_RES_IMG\eswt.odc
+file=ABI_DIR\BUILD_DIR\eswtphysics.dll                                      SHARED_LIB_DIR\eswtphysics.dll
+file=ABI_DIR\BUILD_DIR\eswtapifacade.dll                                    SHARED_LIB_DIR\eswtapifacade.dll
+file=ABI_DIR\BUILD_DIR\eswtdirectcontent.dll                                SHARED_LIB_DIR\eswtdirectcontent.dll
+data=JAVA_VM_RES_BLD\eswtdirectcontent.odc                                  JAVA_VM_RES_IMG\eswtdirectcontent.odc
+data=ZPRIVATE\10003a3f\apps\eswt_reg.rsc                                    \private\10003a3f\import\apps\eswt_reg.rsc
+
+// LCDUI
+file=ABI_DIR\BUILD_DIR\javalcdui.dll                                        SHARED_LIB_DIR\javalcdui.dll
+data=JAVA_VM_RES_BLD\javalcdui.odc                                          JAVA_VM_RES_IMG\javalcdui.odc
+file=ABI_DIR\BUILD_DIR\lcdui.dll                                            SHARED_LIB_DIR\lcdui.dll
+file=ABI_DIR\BUILD_DIR\lcdgr.dll                                            SHARED_LIB_DIR\lcdgr.dll
+file=ABI_DIR\BUILD_DIR\lcdgdrv.dll                                          SHARED_LIB_DIR\lcdgdrv.dll
+file=ABI_DIR\BUILD_DIR\lcdgdrvi.dll                                         SHARED_LIB_DIR\lcdgdrvi.dll
+file=ABI_DIR\BUILD_DIR\lcduiphysicswrap.dll                                 SHARED_LIB_DIR\lcduiphysicswrap.dll
+ECOM_PLUGIN(LCDC4K.dll, 10208164.rsc)
+ECOM_PLUGIN(LCDC64K.dll, 10208162.rsc)
+ECOM_PLUGIN(LCDC16MU.dll, 10208166.rsc)
+ECOM_PLUGIN(LCDC16MA.dll, 10208168.rsc)
+data=ZRESOURCE\java\lcdgr.rsc                                               JAVA_RES_IMG\lcdgr.rsc
+data=ZPRIVATE\10003a3f\apps\lcdui_reg.rsc                                   \private\10003a3f\import\apps\lcdui_reg.rsc
+
+SCALABLE_IMAGE(APP_BITMAP_DIR,APP_BITMAP_DIR,lcdui)
+
+// AMMS API
+file=ABI_DIR\BUILD_DIR\javaamms.dll                                         SHARED_LIB_DIR\javaamms.dll
+data=JAVA_VM_RES_BLD\javaamms.odc                                           JAVA_VM_RES_IMG\javaamms.odc
+
+// Mobile Media API
+file=ABI_DIR\BUILD_DIR\javamobilemedia.dll                                  SHARED_LIB_DIR\javamobilemedia.dll
+data=JAVA_VM_RES_BLD\javamobilemedia.odc                                    JAVA_VM_RES_IMG\javamobilemedia.odc
+data=ABI_DIR\BUILD_DIR\z\system\sounds\digital\CamcorderJavaCapture.wav     \System\Sounds\Digital\CamcorderJavaCapture.wav
+data=ABI_DIR\BUILD_DIR\z\system\sounds\digital\CamcorderJavaStart.wav       \System\Sounds\Digital\CamcorderJavaStart.wav
+
+// MobInfo API
+file=ABI_DIR\BUILD_DIR\javamobinfo.dll                                      SHARED_LIB_DIR\javamobinfo.dll
+data=JAVA_VM_RES_BLD\javamobinfo.odc                                        JAVA_VM_RES_IMG\javamobinfo.odc
+
+// GlobalIndicators API
+file=ABI_DIR\BUILD_DIR\javaglobalindicators.dll                             SHARED_LIB_DIR\javaglobalindicators.dll
+data=JAVA_VM_RES_BLD\javaglobalindicators.odc                               JAVA_VM_RES_IMG\javaglobalindicators.odc
+
+// SoftNotification API
+file=ABI_DIR\BUILD_DIR\javasoftnotification.dll                             SHARED_LIB_DIR\javasoftnotification.dll
+data=JAVA_VM_RES_BLD\javasoftnotification.odc                               JAVA_VM_RES_IMG\javasoftnotification.odc
+
+// 2G API
+file=ABI_DIR\BUILD_DIR\javam2g.dll                                          SHARED_LIB_DIR\javam2g.dll
+data=JAVA_VM_RES_BLD\javam2g.odc                                            JAVA_VM_RES_IMG\javam2g.odc
+
+// 3G API
+file=ABI_DIR\BUILD_DIR\javam3g.dll                                          SHARED_LIB_DIR\javam3g.dll
+data=JAVA_VM_RES_BLD\javam3g.odc                                            JAVA_VM_RES_IMG\javam3g.odc
+
+// Nokia Sound API
+file=ABI_DIR\BUILD_DIR\javanokiasound.dll                                   SHARED_LIB_DIR\javanokiasound.dll
+data=JAVA_VM_RES_BLD\javanokiasound.odc                                     JAVA_VM_RES_IMG\javanokiasound.odc
+
+// Remote Connection Observer
+file=ABI_DIR\BUILD_DIR\javaremconobserver.dll                               SHARED_LIB_DIR\javaremconobserver.dll
+
+// Legacy utilities
+file=ABI_DIR\BUILD_DIR\javalegacyutils.dll                                  SHARED_LIB_DIR\javalegacyutils.dll
+data=JAVA_VM_RES_BLD\javalegacyutils.odc                                    JAVA_VM_RES_IMG\javalegacyutils.odc
+
+
+/////////////////////////////
+// Java Runtimes collection //
+/////////////////////////////
+
+// Runtime utilities
+file=ABI_DIR\BUILD_DIR\javaruntimeui.dll                                    SHARED_LIB_DIR\javaruntimeui.dll
+data=JAVA_VM_RES_BLD\javaruntimeui.odc                                      JAVA_VM_RES_IMG\javaruntimeui.odc
+file=ABI_DIR\BUILD_DIR\javaruntimestarterutils.dll                          SHARED_LIB_DIR\javaruntimestarterutils.dll
+file=ABI_DIR\BUILD_DIR\javastarter.dll                                      SHARED_LIB_DIR\javastarter.dll
+
+// MIDP runtime
+file=ABI_DIR\BUILD_DIR\javamidp.exe                                         PROGRAMS_DIR\javamidp.exe
+file=ABI_DIR\BUILD_DIR\javamidpstarter.dll                                  SHARED_LIB_DIR\javamidpstarter.dll
+file=ABI_DIR\BUILD_DIR\javamidpruntime.dll                                  SHARED_LIB_DIR\javamidpruntime.dll
+data=JAVA_VM_RES_BLD\javamidpruntime.odc                                    JAVA_VM_RES_IMG\javamidpruntime.odc
+
+// An empty JVM argument modifier (to prevent 3rd parties from installing a DLL with this name)
+// To enable JVM argument modifier - comment 1st line below and uncomment 2nd line below
+file=ABI_DIR\BUILD_DIR\javajvmargsmodifier.dll                              SHARED_LIB_DIR\javajvmargsmodifier.dll
+//file=ABI_DIR\BUILD_DIR\javajvmargsmodifierfile.dll                        SHARED_LIB_DIR\javajvmargsmodifier.dll
+
+
+/////////////////////////////
+// Java Commons collection //
+/////////////////////////////
+
+// J9 JVM
+file=ABI_DIR\BUILD_DIR\j9.dll                                               SHARED_LIB_DIR\j9.dll
+file=ABI_DIR\BUILD_DIR\j9vmall23.dll                                        SHARED_LIB_DIR\j9vmall23.dll
+file=ABI_DIR\BUILD_DIR\j9mjit23.dll                                         SHARED_LIB_DIR\j9mjit23.dll
+file=ABI_DIR\BUILD_DIR\jclcldc11_23.dll                                     SHARED_LIB_DIR\jclcldc11_23.dll
+file=ABI_DIR\BUILD_DIR\jclcdc11_23.dll                                      SHARED_LIB_DIR\jclcdc11_23.dll
+file=ABI_DIR\BUILD_DIR\j9fdm23.dll                                          SHARED_LIB_DIR\j9fdm23.dll
+file=ABI_DIR\BUILD_DIR\JvmNativePort.dll                                    SHARED_LIB_DIR\JvmNativePort.dll
+data=JAVA_RES_BLD\jvm\bin\java.properties                                   JAVA_RES_IMG\jvm\bin\java.properties
+data=JAVA_RES_BLD\jvm\lib\security\java.policy                              JAVA_RES_IMG\jvm\lib\security\java.policy
+data=JAVA_RES_BLD\jvm\lib\security\java.security                            JAVA_RES_IMG\jvm\lib\security\java.security
+
+// Utilities
+file=ABI_DIR\BUILD_DIR\javautils.dll                                        SHARED_LIB_DIR\javautils.dll
+data=JAVA_VM_RES_BLD\javautils.odc                                          JAVA_VM_RES_IMG\javautils.odc
+file=ABI_DIR\BUILD_DIR\javacomms.dll                                        SHARED_LIB_DIR\javacomms.dll
+data=JAVA_VM_RES_BLD\javacomms.odc                                          JAVA_VM_RES_IMG\javacomms.odc
+file=ABI_DIR\BUILD_DIR\javaipc.dll                                          SHARED_LIB_DIR\javaipc.dll
+file=ABI_DIR\BUILD_DIR\javafileutils.dll                                    SHARED_LIB_DIR\javafileutils.dll
+data=JAVA_VM_RES_BLD\javafileutils.odc                                      JAVA_VM_RES_IMG\javafileutils.odc
+file=ABI_DIR\BUILD_DIR\javadebugapi.dll                                     SHARED_LIB_DIR\javadebugapi.dll
+
+// Security dlls
+file=ABI_DIR\BUILD_DIR\javasecurity.dll                                     SHARED_LIB_DIR\javasecurity.dll
+data=JAVA_VM_RES_BLD\javasecurity.odc                                       JAVA_VM_RES_IMG\javasecurity.odc
+ECOM_PLUGIN(javaunicertstoreplugin.dll,200213A3.rsc)
+data=ZRESOURCE\plugins\javaunicertstoreplugin.rsc                           ECOM_RESOURCE_DIR\javaunicertstoreplugin.rsc
+
+// Security certs & policies
+data=JAVA_POLICY_BLD\s60_manufacturer.ser                                   JAVA_POLICY_IMG\s60_manufacturer.ser
+data=JAVA_POLICY_BLD\s60_operator.ser                                       JAVA_POLICY_IMG\s60_operator.ser
+data=JAVA_POLICY_BLD\s60_trustedthirdparty.ser                              JAVA_POLICY_IMG\s60_trustedthirdparty.ser
+data=JAVA_POLICY_BLD\s60_untrusted.ser                                      JAVA_POLICY_IMG\s60_untrusted.ser
+data=JAVA_POLICY_BLD\msa_manufacturer.ser                                   JAVA_POLICY_IMG\msa_manufacturer.ser
+data=JAVA_POLICY_BLD\msa_operator.ser                                       JAVA_POLICY_IMG\msa_operator.ser
+data=JAVA_POLICY_BLD\msa_trustedthirdparty.ser                              JAVA_POLICY_IMG\msa_trustedthirdparty.ser
+data=JAVA_POLICY_BLD\msa_untrusted.ser                                      JAVA_POLICY_IMG\msa_untrusted.ser
+data=JAVA_POLICY_BLD\att_manufacturer.ser                                   JAVA_POLICY_IMG\att_manufacturer.ser
+data=JAVA_POLICY_BLD\att_operator.ser                                       JAVA_POLICY_IMG\att_operator.ser
+data=JAVA_POLICY_BLD\att_operatorextra.ser                                  JAVA_POLICY_IMG\att_operatorextra.ser
+data=JAVA_POLICY_BLD\att_trustedthirdparty.ser                              JAVA_POLICY_IMG\att_trustedthirdparty.ser
+data=JAVA_POLICY_BLD\att_untrusted.ser                                      JAVA_POLICY_IMG\att_untrusted.ser
+data=JAVA_POLICY_BLD\all.ser                                                JAVA_POLICY_IMG\all.ser
+
+
+// Java environment info
+file=ABI_DIR\BUILD_DIR\javaenvinfo.dll                                      SHARED_LIB_DIR\javaenvinfo.dll
+data=ABI_DIR\BUILD_DIR\Z\Resource\versions\java.txt                         RESOURCE_FILES_DIR\versions\java.txt
+
+// Storage
+file=ABI_DIR\BUILD_DIR\javastorage.dll                                      SHARED_LIB_DIR\javastorage.dll
+data=JAVA_VM_RES_BLD\javastorage.odc                                        JAVA_VM_RES_IMG\javastorage.odc
+
+// GCF base
+file=ABI_DIR\BUILD_DIR\javagcf.dll                                          SHARED_LIB_DIR\javagcf.dll
+data=JAVA_VM_RES_BLD\javagcf.odc                                            JAVA_VM_RES_IMG\javagcf.odc
+
+// Connection Manager
+file=ABI_DIR\BUILD_DIR\javaconnectionmanager.dll                            SHARED_LIB_DIR\javaconnectionmanager.dll
+data=JAVA_VM_RES_BLD\javaconnectionmanager.odc                              JAVA_VM_RES_IMG\javaconnectionmanager.odc
+
+// Http & https protocols
+file=ABI_DIR\BUILD_DIR\javahttp.dll                                         SHARED_LIB_DIR\javahttp.dll
+file=ABI_DIR\BUILD_DIR\javahttps.dll                                        SHARED_LIB_DIR\javahttps.dll
+data=JAVA_VM_RES_BLD\javahttp.odc                                           JAVA_VM_RES_IMG\javahttp.odc
+data=JAVA_VM_RES_BLD\javahttps.odc                                          JAVA_VM_RES_IMG\javahttps.odc
+
+// Socket protocol
+file=ABI_DIR\BUILD_DIR\javasocket.dll                                       SHARED_LIB_DIR\javasocket.dll
+file=ABI_DIR\BUILD_DIR\javasocketscplugin.dll                               SHARED_LIB_DIR\javasocketscplugin.dll
+data=JAVA_VM_RES_BLD\javasocket.odc                                         JAVA_VM_RES_IMG\javasocket.odc
+
+// Secure socket protocol
+file=ABI_DIR\BUILD_DIR\javassl.dll                                          SHARED_LIB_DIR\javassl.dll
+data=JAVA_VM_RES_BLD\javassl.odc                                            JAVA_VM_RES_IMG\javassl.odc
+
+
+////////////////////////////////
+// Java Extensions collection //
+////////////////////////////////
+
+// Push
+file=ABI_DIR\BUILD_DIR\javapushcontroller.dll                               SHARED_LIB_DIR\javapushcontroller.dll
+file=ABI_DIR\BUILD_DIR\javapushregistry.dll                                 SHARED_LIB_DIR\javapushregistry.dll
+data=JAVA_VM_RES_BLD\javapushregistry.odc                                   JAVA_VM_RES_IMG\javapushregistry.odc
+
+// Bluetooth
+file=ABI_DIR\BUILD_DIR\javabluecove.dll                                     SHARED_LIB_DIR\javabluecove.dll
+file=ABI_DIR\BUILD_DIR\javabluetooth.dll                                    SHARED_LIB_DIR\javabluetooth.dll
+file=ABI_DIR\BUILD_DIR\javabluetoothcommons.dll                             SHARED_LIB_DIR\javabluetoothcommons.dll
+file=ABI_DIR\BUILD_DIR\javabtgoepscplugin.dll                               SHARED_LIB_DIR\javabtgoepscplugin.dll
+file=ABI_DIR\BUILD_DIR\javabtl2capscplugin.dll                              SHARED_LIB_DIR\javabtl2capscplugin.dll
+file=ABI_DIR\BUILD_DIR\javabtsppscplugin.dll                                SHARED_LIB_DIR\javabtsppscplugin.dll
+data=JAVA_VM_RES_BLD\javabluecove.odc                                       JAVA_VM_RES_IMG\javabluecove.odc
+data=JAVA_VM_RES_BLD\javabluetooth.odc                                      JAVA_VM_RES_IMG\javabluetooth.odc
+data=JAVA_VM_RES_BLD\javabluetoothcommons.odc                               JAVA_VM_RES_IMG\javabluetoothcommons.odc
+
+// WMA
+file=ABI_DIR\BUILD_DIR\javawma.dll                                          SHARED_LIB_DIR\javawma.dll
+file=ABI_DIR\BUILD_DIR\javawmamms.dll                                       SHARED_LIB_DIR\javawmamms.dll
+file=ABI_DIR\BUILD_DIR\javacbsscplugin.dll                                  SHARED_LIB_DIR\javacbsscplugin.dll
+file=ABI_DIR\BUILD_DIR\javammsscplugin.dll                                  SHARED_LIB_DIR\javammsscplugin.dll
+file=ABI_DIR\BUILD_DIR\javasmsscplugin.dll                                  SHARED_LIB_DIR\javasmsscplugin.dll
+data=JAVA_VM_RES_BLD\javawma.odc                                            JAVA_VM_RES_IMG\javawma.odc
+data=JAVA_VM_RES_BLD\javawmamms.odc                                         JAVA_VM_RES_IMG\javawmamms.odc
+
+// Comm
+file=ABI_DIR\BUILD_DIR\javacomm.dll                                         SHARED_LIB_DIR\javacomm.dll
+data=JAVA_VM_RES_BLD\javacomm.odc                                           JAVA_VM_RES_IMG\javacomm.odc
+
+// Datagram
+file=ABI_DIR\BUILD_DIR\javadatagram.dll                                     SHARED_LIB_DIR\javadatagram.dll
+file=ABI_DIR\BUILD_DIR\javadatagramscplugin.dll                             SHARED_LIB_DIR\javadatagramscplugin.dll
+data=JAVA_VM_RES_BLD\javadatagram.odc                                       JAVA_VM_RES_IMG\javadatagram.odc
+
+// Location API
+file=ABI_DIR\BUILD_DIR\javalocation.dll                                     SHARED_LIB_DIR\javalocation.dll
+data=JAVA_VM_RES_BLD\javalocation.odc                                       JAVA_VM_RES_IMG\javalocation.odc
+
+// Sensor API
+file=ABI_DIR\BUILD_DIR\javasensor.dll                                       SHARED_LIB_DIR\javasensor.dll
+data=JAVA_VM_RES_BLD\javasensor.odc                                         JAVA_VM_RES_IMG\javasensor.odc
+
+// Web services API
+file=ABI_DIR\BUILD_DIR\javawebservices.dll                                  SHARED_LIB_DIR\javawebservices.dll
+data=JAVA_VM_RES_BLD\javawebservices.odc                                    JAVA_VM_RES_IMG\javawebservices.odc
+
+// PIM API
+file=ABI_DIR\BUILD_DIR\javapim.dll                                          SHARED_LIB_DIR\javapim.dll
+data=JAVA_VM_RES_BLD\javapim.odc                                            JAVA_VM_RES_IMG\javapim.odc
+
+// RMS API
+file=ABI_DIR\BUILD_DIR\javarms.dll                                          SHARED_LIB_DIR\javarms.dll
+data=JAVA_VM_RES_BLD\javarms.odc                                            JAVA_VM_RES_IMG\javarms.odc
+
+// SATSA API
+file=ABI_DIR\BUILD_DIR\javasatsa.dll                                        SHARED_LIB_DIR\javasatsa.dll
+data=JAVA_VM_RES_BLD\javasatsa.odc                                          JAVA_VM_RES_IMG\javasatsa.odc
+
+// File API
+file=ABI_DIR\BUILD_DIR\javafile.dll                                         SHARED_LIB_DIR\javafile.dll
+data=JAVA_VM_RES_BLD\javafile.odc                                           JAVA_VM_RES_IMG\javafile.odc
+
+// IAP Info API
+file=ABI_DIR\BUILD_DIR\javaiapinfo.dll                                      SHARED_LIB_DIR\javaiapinfo.dll
+data=JAVA_VM_RES_BLD\javaiapinfo.odc                                        JAVA_VM_RES_IMG\javaiapinfo.odc
+
+
+///////////////////
+// Miscellaneous //
+///////////////////
+
+// Generated localization file resources
+data=JAVA_VM_RES_BLD\resources.jar                                          JAVA_VM_RES_IMG\resources.jar
+
+// ODC list files
+data=ZRESOURCE\java\midpOdcList                                             JAVA_RES_IMG\midpodclist
+data=ZRESOURCE\java\installerOdcList                                        JAVA_RES_IMG\installerodclist
+data=ZRESOURCE\java\tckRunnerOdcList                                        JAVA_RES_IMG\tckrunnerodclist
+data=ZRESOURCE\java\javacontrolpanelodclist                                 JAVA_RES_IMG\javacontrolpanelodclist
+
+// trust roots list
+data=ZRESOURCE\java\security\trustroots\midprootslist                       JAVA_RES_IMG\security\trustroots\midprootslist
+
+// Utility for Services team
+file=ABI_DIR\BUILD_DIR\javaupgradeapp.exe                                   PROGRAMS_DIR\javaupgradeapp.exe
+
+// Java icon size notifier ecom plugin
+ECOM_PLUGIN(javaiconsizenotifplugin.dll, javaiconsizenotifplugin.rsc)
+data=ZRESOURCE\plugins\javaiconsizenotifplugin.rsc ECOM_RESOURCE_DIR\javaiconsizenotifplugin.rsc
+
+#endif

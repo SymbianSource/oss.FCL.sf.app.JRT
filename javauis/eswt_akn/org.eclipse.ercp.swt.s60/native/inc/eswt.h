@@ -17,6 +17,7 @@
 #include <coedef.h>
 #include <eikenv.h>
 #include <w32std.h>
+#include <AknUtils.h>
 
 
 class _jweak;
@@ -40,14 +41,12 @@ class MSwtMenu;
 
 
 /*
- * SWT style constants
+ * SWT style constants, used by the native libraries
  */
 const TInt KSwtStyleBar              = 1 << 1;
-const TInt KSwtStyleDropDown         = 1 << 2;
 const TInt KSwtStylePopUp            = 1 << 3;
 const TInt KSwtStyleSeparator        = 1 << 1;
 const TInt KSwtStyleToggle           = 1 << 1;
-const TInt KSwtStyleArrow            = 1 << 2;
 const TInt KSwtStylePush             = 1 << 3;
 const TInt KSwtStyleRadio            = 1 << 4;
 const TInt KSwtStyleCheck            = 1 << 5;
@@ -56,27 +55,15 @@ const TInt KSwtStyleMulti            = 1 << 1;
 const TInt KSwtStyleSingle           = 1 << 2;
 const TInt KSwtStyleReadOnly         = 1 << 3;
 const TInt KSwtStyleWrap             = 1 << 6;
-const TInt KSwtStyleSimple           = 1 << 6;
 const TInt KSwtStylePassword         = 1 << 22;
 const TInt KSwtStyleShadowIn         = 1 << 2;
 const TInt KSwtStyleShadowOut        = 1 << 3;
-const TInt KSwtStyleShadowEtchedIn   = 1 << 4;
-const TInt KSwtStyleShadowEtchedOut  = 1 << 6;
-const TInt KSwtStyleShadowNone       = 1 << 5;
 const TInt KSwtStyleIndeterminate    = 1 << 1;
-const TInt KSwtStyleTool             = 1 << 2;
 const TInt KSwtStyleNoTrim           = 1 << 3;
-const TInt KSwtStyleResize           = 1 << 4;
 const TInt KSwtStyleTitle            = 1 << 5;
-const TInt KSwtStyleClose            = 1 << 6;
-const TInt KSwtStyleMenu             = KSwtStyleClose;
-const TInt KSwtStyleMin              = 1 << 7;
-const TInt KSwtStyleMax              = 1 << 10;
 const TInt KSwtStyleHScroll          = 1 << 8;
 const TInt KSwtStyleVScroll          = 1 << 9;
 const TInt KSwtStyleBorder           = 1 << 11;
-const TInt KSwtStyleClipChildren     = 1 << 12;
-const TInt KSwtStyleClipSiblings     = 1 << 13;
 const TInt KSwtStyleOnTop            = 1 << 14;
 const TInt KSwtStyleModeless         = 0;
 const TInt KSwtStylePrimaryModal     = 1 << 15;
@@ -87,15 +74,11 @@ const TInt KSwtStyleFullSelection    = 1 << 16;
 const TInt KSwtStyleFlat             = 1 << 23;
 const TInt KSwtStyleSmooth           = 1 << 16;
 const TInt KSwtStyleNoBackground     = 1 << 18;
-const TInt KSwtStyleNoFocus          = 1 << 19;
 const TInt KSwtStyleNoRedrawResize   = 1 << 20;
 const TInt KSwtStyleNoMergePaints    = 1 << 21;
 const TInt KSwtStyleNoRadioGroup     = 1 << 22;
 const TInt KSwtStyleLeftToRight      = 1 << 25;
 const TInt KSwtStyleRightToLeft      = 1 << 26;
-const TInt KSwtStyleMirrored         = 1 << 27;
-const TInt KSwtStyleEmbedded         = 1 << 24;
-const TInt KSwtStyleVirtual          = 1 << 28;
 const TInt KSwtStyleUp               = 1 << 7;
 const TInt KSwtStyleDown             = 1 << 10;
 const TInt KSwtStyleLead             = 1 << 14;
@@ -103,18 +86,8 @@ const TInt KSwtStyleTrail            = 1 << 17;
 const TInt KSwtStyleCenter           = 1 << 24;
 const TInt KSwtStyleHorizontal       = 1 << 8;
 const TInt KSwtStyleVertical         = 1 << 9;
-const TInt KSwtStyleBeginning        = 1;
-const TInt KSwtStyleFill             = 4;
 const TInt KSwtStyleOpen             = 1 << 12;
 const TInt KSwtStyleSave             = 1 << 13;
-
-
-// Although the styles KSwtStyleShellTrim and KSwtStyleDialogTrim use
-// the KSwtStyleNormalStatusPane in Mobile Extension, we still do not bitwise OR
-// them with KSwtStyleNormalStatusPane, to keep the compatibility when Mobile
-// Extensions is not used.
-const TInt KSwtStyleShellTrim        = KSwtStyleTitle | KSwtStyleClose | KSwtStyleMin | KSwtStyleMax | KSwtStyleResize;
-const TInt KSwtStyleDialogTrim       = KSwtStyleTitle | KSwtStyleClose | KSwtStyleBorder;
 
 
 /**
@@ -177,14 +150,6 @@ enum TMsgBoxButtons
 
 
 /**
- * Default value of the ProgressBar
- */
-const TInt KDefaultProgressBarSelectionValue= 0;
-const TInt KDefaultProgressBarMinValue      = 0;
-const TInt KDefaultProgressBarMaxValue      = 100;
-
-
-/**
  * Retrieves the message box's button from it's style
  */
 inline TMsgBoxButtons SwtMsgBoxButtons(TInt aMsgBoxStyle)
@@ -194,52 +159,23 @@ inline TMsgBoxButtons SwtMsgBoxButtons(TInt aMsgBoxStyle)
 
 
 /**
- * Greatest number of pages in a CSwtMultiPageDialog
- */
-const TInt KMultiPageDialogNbPageMax = 5;
-
-
-/**
- * SWT error code
+ * SWT error code, , used by the native libraries.
  */
 enum TSwtError
 {
-    ESwtErrorNone                =  0,
     ESwtErrorUnspecified         =  1,
     ESwtErrorNoHandles           =  2,
-    ESwtErrorNoMoreCallbacks     =  3,
     ESwtErrorNullArgument        =  4,
     ESwtErrorInvalidArgument     =  5,
     ESwtErrorInvalidRange        =  6,
     ESwtErrorCannotBeZero        =  7,
-    ESwtErrorCannotGetItem       =  8,
     ESwtErrorCannotGetSelection  =  9,
-    ESwtErrorCannotGetItemHeight = 11,
-    ESwtErrorCannotGetText       = 12,
-    ESwtErrorCannotSetText       = 13,
     ESwtErrorItemNotAdded        = 14,
-    ESwtErrorItemNotRemoved      = 15,
-    ESwtErrorNotImplemented      = 20,
-    ESwtErrorMenuNotDropDown     = 21,
     ESwtErrorThreadInvalidAccess = 22,
-    ESwtErrorWidgetDisposed      = 24,
-    ESwtErrorMenuItemNotCascade  = 27,
     ESwtErrorCannotSetSelection  = 28,
-    ESwtErrorCannotSetMenu       = 29,
-    ESwtErrorCannotSetEnabled    = 30,
-    ESwtErrorCannotGetEnabled    = 31,
-    ESwtErrorInvalidParent       = 32,
-    ESwtErrorMenuNotBar          = 33,
-    ESwtErrorCannotGetCount      = 36,
-    ESwtErrorMenuNotPopUp        = 37,
     ESwtErrorUnsupportedDepth    = 38,
     ESwtErrorIO                  = 39,
     ESwtErrorInvalidImage        = 40,
-    ESwtErrorUnsupportedFormat   = 42,
-    ESwtErrorInvalidSubclass     = 43,
-    ESwtErrorGraphicDisposed     = 44,
-    ESwtErrorDeviceDisposed      = 45,
-    ESwtErrorFailedExec          = 46,
     ESwtErrorFailedLoadLibrary   = 47
 };
 
@@ -253,19 +189,16 @@ const TInt KSwtItalic = 1 << 1;
 
 
 /**
- * SWT event type
+ * SWT events (constant values specifed in eSWT API)
  */
 enum TSwtEventType
 {
-    // SWT events (constant values specifed in eSWT API)
     ESwtEventNone             =  0,
     ESwtEventKeyDown          =  1,
     ESwtEventKeyUp            =  2,
     ESwtEventMouseDown        =  3,
     ESwtEventMouseUp          =  4,
     ESwtEventMouseMove        =  5,
-    ESwtEventMouseEnter       =  6,
-    ESwtEventMouseExit        =  7,
     ESwtEventMouseDoubleClick =  8,
     ESwtEventPaint            =  9,
     ESwtEventMove             = 10,
@@ -277,8 +210,6 @@ enum TSwtEventType
     ESwtEventFocusOut         = 16,
     ESwtEventExpand           = 17,
     ESwtEventCollapse         = 18,
-    ESwtEventIconify          = 19,
-    ESwtEventDeiconify        = 20,
     ESwtEventClose            = 21,
     ESwtEventShow             = 22,
     ESwtEventHide             = 23,
@@ -286,22 +217,13 @@ enum TSwtEventType
     ESwtEventVerify           = 25,
     ESwtEventActivate         = 26,
     ESwtEventDeactivate       = 27,
-    ESwtEventHelp             = 28,
-    ESwtEventDragDetect       = 29,
-    ESwtEventArm              = 30,
     ESwtEventTraverse         = 31,
-    ESwtEventMouseHover       = 32,
-    ESwtEventHardKeyDown      = 33,
-    ESwtEventHardKeyUp        = 34,
-    ESwtEventMenuDetect       = 35,
-    ESwtEventSetData          = 36,
     ESwtEventSettings         = 39, //added in eSWT 1.1
     // Custom events
     ESwtEventLocation         = 1000,
     ESwtEventProgress         = 1002,
     ESwtEventStatusText       = 1003,
     ESwtEventTitle            = 1004,
-    ESwtEventExit             = 1005,
     ESwtEventForeground       = 1006,
     ESwtEventDialogStringResult = 1007,
     ESwtEventDialogIntegerResult = 1008,
@@ -334,16 +256,6 @@ enum TSwtBrCallBackOperationType
     ESwtBrGoBack        = 1 << 2,
     ESwtBrGoForward     = 1 << 3
 };
-
-
-/*
- * SWT IME constants
- */
-const TInt KSwtImeDbcs     = 1 << 1; // Input Method Editor style constant for double byte input behaviour.
-const TInt KSwtImeAlpha    = 1 << 2; // Input Method Editor style constant for alpha input behaviour.
-const TInt KSwtImeNative   = 1 << 3; // Input Method Editor style constant for native input behaviour.
-const TInt KSwtImePhonetic = 1 << 4; // Input Method Editor style constant for phonetic input behaviour.
-const TInt KSwtImeRoman    = 1 << 5; // Input Method Editor style constant for romanicised input behaviour.
 
 
 /*
@@ -408,9 +320,6 @@ const TInt KSwtKeyMask = KSwtKeycodeBit + 0xFFFF;
  * character.
  */
 const TInt KSwtScanCodeBase = (1 << 25);
-
-
-
 
 
 /**
@@ -537,29 +446,10 @@ enum TSwtGifDisposal
 
 
 /**
- * System colour ID
+ * System color IDs used from the native libs (the values are defined by the eSWT API)
  */
 enum TSwtColorId
 {
-    // Default colours
-    ESwtColorWhite       =  1, // Default colour white.
-    ESwtColorBlack       =  2, // Default colour black.
-    ESwtColorRed         =  3, // Default colour red.
-    ESwtColorDarkRed     =  4, // Default colour dark red.
-    ESwtColorGreen       =  5, // Default colour green.
-    ESwtColorDarkGreen   =  6, // Default colour dark green.
-    ESwtColorYellow      =  7, // Default colour yellow.
-    ESwtColorDarkYellow  =  8, // Default colour dark yellow.
-    ESwtColorBlue        =  9, // Default colour blue.
-    ESwtColorDarkBlue    = 10, // Default colour dark blue.
-    ESwtColorMagenta     = 11, // Default colour magenta.
-    ESwtColorDarkMagenta = 12, // Default colour dark magenta.
-    ESwtColorCyan        = 13, // Default colour cyan.
-    ESwtColorDarkCyan    = 14, // Default colour dark cyan.
-    ESwtColorGray        = 15, // Default colour gray.
-    ESwtColorDarkGray    = 16, // Default colour dark gray.
-
-    // System colours
     ESwtColorWidgetDarkShadow                = 17, // System colour used to paint dark shadow areas.
     ESwtColorWidgetNormalShadow              = 18, // System colour used to paint normal shadow areas.
     ESwtColorWidgetLightShadow               = 19, // System colour used to paint light shadow areas.
@@ -579,53 +469,11 @@ enum TSwtColorId
     ESwtColorTitleInactiveBackgroundGradient = 35  // System colour used to paint inactive title background gradient.
 };
 
-
 /**
- * Orientation
+ * Default Text colors
  */
-enum TSwtOrientation
-{
-    ESwtLeftToRight = KSwtStyleLeftToRight, // Left to right orientation
-    ESwtRightToLeft = KSwtStyleRightToLeft  // Right to left orientation
-};
-
-
-/*
- * Image transparency type
- */
-const TInt KSwtTransparencyNone  = 0x0;    // The image contains no transparency
-const TInt KSwtTransparencyAlpha = 1 << 0; // The image contains alpha transparency information
-const TInt KSwtTransparencyMask  = 1 << 1; // The image contains a transparency mask
-const TInt KSwtTransparencyPixel = 1 << 2; // The image contains a transparent pixel
-
-
-/**
- * Image Copy type
- */
-enum TSwtImageCopyType
-{
-    /**
-     * The Image constructor argument indicating that
-     * the new image should be a copy of the image provided as
-     * an argument  (value is 0).
-     */
-    ESwtImageCopy     = 0, // Simple image copy
-    ESwtImageDisabled = 1, // The copy must look like the "disabled" original
-    ESwtImageGray     = 2  // The copy must be a gray scaled version of the original
-};
-
-
-/**
- * Default width for a widget
- */
-const TInt KSwtDefaultWidth  = 64;
-
-
-/**
- * Default height for a widget
- */
-const TInt KSwtDefaultHeight = 64;
-
+const TInt KHighlightedTextColor    = EAknsCIQsnTextColorsCG8;
+const TInt KNonHighlightedTextColor = EAknsCIQsnTextColorsCG6;
 
 /**
  * Window priorities. By default the CCoeControl window priority is 0.
@@ -692,6 +540,16 @@ const TInt KSwtPhysicsNoAction = 0;
 const TInt KSwtPhysicsGrabbing = 1;
 const TInt KSwtPhysicsPanning = 2;
 const TInt KSwtPhysicsFlicking = 3;
+
+
+/**
+ * Ids for theme icons from wich MSwtImage objects can be created.
+ */
+enum TSwtThemeImageId
+{
+    ESwtThemeImageSecurityTrusted = 0,
+    ESwtThemeImageSecurityUntrusted
+};
 
 
 /**
@@ -859,9 +717,7 @@ public:
      * Posts an asynchronous keyboard event
      * @param aPeer      The Java object to send the event to
      * @param aType      The event type, must be one of ESwtEventMouseDown,
-     *                   ESwtEventMouseUp, ESwtEventMouseMove,
-     *                   ESwtEventMouseEnter, ESwtEventMouseExit
-     *                   or ESwtEventMouseDoubleClick
+     *                   ESwtEventMouseUp, or ESwtEventMouseDoubleClick
      * @param aButton    The pressed or relased button, must be one of KSwtMouseButton1,
      *                   KSwtMouseButton2 or KSwtMouseButton3.
      * @param aPos       The mouse's position of client coordinates.
@@ -1063,12 +919,12 @@ public:
      * @return void
      */
     virtual void PostTitleEventL(TSwtPeer aPeer, const TDesC& aTitle) = 0;
-    
+
     /**
      * Posts a show focused control to a ScrolledComposite.
      */
     virtual void PostShowFocusedControlEventL(TSwtPeer aPeer) =0;
-    
+
     /**
      * Get eSWT Java application allocated id
      * @return Java application allocated id

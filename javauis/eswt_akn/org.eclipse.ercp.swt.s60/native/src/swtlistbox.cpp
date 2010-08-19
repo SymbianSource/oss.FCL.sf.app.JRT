@@ -463,12 +463,6 @@ void CSwtListBox::SizeChanged()
 
     if (iList)
     {
-        // The redraw is restored after the initialization of the listbox.
-        if (iRestoreRedraw)
-        {
-            iRestoreRedraw = EFalse;
-            iList->View()->SetDisableRedraw(EFalse);
-        }
         TRect rect = BorderInnerRect();
         iList->SetSize(rect.Size());
 
@@ -874,6 +868,37 @@ void CSwtListBox::EnableFocusHighlight(TBool aEnable)
 }
 #endif //RD_JAVA_S60_RELEASE_9_2
 
+TInt CSwtListBox::FocusBackgroundPolicy() const
+{
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    return ENoFocusBackgroundInCaptionedControl;
+#else
+    return EDefaultFocusBackground;
+#endif // RD_JAVA_S60_RELEASE_9_2
+}
+
+// ---------------------------------------------------------------------------
+// CSwtListBox::PrepareForTraverse
+// From MSwtControl
+// ---------------------------------------------------------------------------
+//
+void CSwtListBox::PrepareForTraverse()
+{
+    ASSERT(iList);
+    ASSERT(iList->View());
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    // AvKon enables highlight only when key event is recieved.
+    // When traversing, no key event is sent to AvKon, so we
+    // have to enable highlight by ourselves.
+    CListItemDrawer* itemDrawer = iList->View()->ItemDrawer();
+    if (itemDrawer)
+    {
+        itemDrawer->ClearFlags(CListItemDrawer::ESingleClickDisabledHighlight);
+    }
+#endif //RD_JAVA_S60_RELEASE_9_2
+}
+
 // ---------------------------------------------------------------------------
 // CSwtListBox::Scrollable
 // From MSwtListBox
@@ -946,7 +971,7 @@ void CSwtListBox::SetLayoutStyleL(TInt aLayoutStyle)
     iPrevSelItems = new(ELeave) CArrayFixFlat<TInt>(KInitSelArrLength);
 
     // Get item cells
-    CSwtListBoxLists::Cells(iProps.iListType, iCells);
+    CSwtListBoxLists::CellsL(iProps.iListType, iCells);
 
     // This is needed for the case where the theme has animated highlights.
     iList->SetFocus(ETrue, ENoDrawNow);
@@ -967,15 +992,14 @@ void CSwtListBox::SetLayoutStyleL(TInt aLayoutStyle)
     }
 #endif
 
-    // Must trigger SizeChanged which Avkon lists use to create the layout
-    // columns. Not calling this will result in invisible lists or incorrect
-    // list layouts. Also important is to hide the list while is being
-    // created to avoid flickering.
-    iList->View()->SetDisableRedraw(ETrue);
     UpdateListMskL();
-    SizeChanged();
+
     ActivateL();
-    iRestoreRedraw = ETrue;
+
+    // Because the creation of the contained list is delayed
+    // we need to ensure that it redraws with correct size.
+    // Not doing this would result in empty list in CaptionedControl for instance.
+    SizeChanged();
 }
 
 // ---------------------------------------------------------------------------
@@ -1521,6 +1545,7 @@ CEikTextListBox* CSwtListBox::CreateListL(TInt aListType)
         CSwtListBoxLists::SetListObserver(aListType, list, this);
         list->SetContainerWindowL(*this);
         list->SetCurrentItemIndex(0);
+        list->MakeVisible(ETrue);
         list->SetComponentsToInheritVisibility(ETrue);
         CreateScrollBarsL(list);
 

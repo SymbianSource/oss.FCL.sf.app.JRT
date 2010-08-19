@@ -73,6 +73,9 @@ public class SuiteInfo
     private String iAccessPoint = null;
     // Flag telling if application suite is trusted
     private boolean iTrusted = false;
+    // Flag telling if preinstallation state should be
+    // reseted in uninstallation.
+    private boolean iResetPreinstall = false;
 
     /** Flag telling if default icon should be used. */
     private boolean iUseDefaultIcon = false;
@@ -80,6 +83,8 @@ public class SuiteInfo
     private String iConvertedIconPath = null;
     /** Application installation group. This member is not saved into storage. */
     private String iInstallationGroup = null;
+    /** Protection domain name. This member is not saved into storage. */
+    private String iProtectionDomainName = null;
 
     /**
      * Combined Jad and Manifest attributes. Key is attribute name,
@@ -521,6 +526,22 @@ public class SuiteInfo
     }
 
     /**
+     * Get protection domain name.
+     */
+    public String getProtectionDomainName()
+    {
+        return iProtectionDomainName;
+    }
+
+    /**
+     * Set protection domain name.
+     */
+    public void setProtectionDomainName(String aProtectionDomainName)
+    {
+        iProtectionDomainName = aProtectionDomainName;
+    }
+
+    /**
      * Set suite uid.
      *
      * @param aUid suite uid
@@ -740,6 +761,14 @@ public class SuiteInfo
     }
 
     /**
+     * Returns true if this application suite is preinstalled, false otherwise.
+     */
+    public boolean isPreinstalled()
+    {
+        return (iPreinstallState == STATE_PREINSTALLED);
+    }
+
+    /**
      * Set flag telling if application suite is preinstalled.
      *
      * @param aTrusted true if suite is preinstalled, false otherwise
@@ -754,6 +783,24 @@ public class SuiteInfo
         {
             iPreinstallState = STATE_INSTALLED;
         }
+    }
+
+    /**
+     * Get the flag telling if preinstallation state should be reset.
+     * Used only in uninstallation.
+     */
+    public boolean getResetPreinstall()
+    {
+        return iResetPreinstall;
+    }
+
+    /**
+     * Set the flag telling if preinstallation state should be reset.
+     * Used only in uninstallation.
+     */
+    public void setResetPreinstall(boolean aResetPreinstall)
+    {
+        iResetPreinstall = aResetPreinstall;
     }
 
     /**
@@ -839,9 +886,11 @@ public class SuiteInfo
         buf.append("  MediaId: ").append(getMediaId()).append("\n");
         buf.append("  InitialSize: ").append(getInitialSize()).append("\n");
         buf.append("  PreinstallState: ").append(iPreinstallState).append("\n");
+        buf.append("  ResetPreinstall: ").append(getResetPreinstall()).append("\n");
         buf.append("  OnScreenKeypad: ").append(getOnScreenKeypad()).append("\n");
         buf.append("  ConvertedIcon: ").append(getConvertedIconPath()).append("\n");
         buf.append("  Group: ").append(getInstallationGroup()).append("\n");
+        buf.append("  Protection domain: ").append(getProtectionDomainName()).append("\n");
         if (iApplications != null)
         {
             buf.append("Applications:\n");

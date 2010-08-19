@@ -216,19 +216,37 @@ void CSwtTextBase::ProcessFontUpdateL()
         charMask.SetAttrib(EAttFontPosture);
     }
 
-    // when we set the new font color also changes. So we have to set the color again.
-    if (!iTextColor)
+    TRgb color(0);
+    TInt err(KErrNone);
+
+    if (HasHighlight())
     {
-        TRgb color;
-        AknsUtils::GetCachedColor(AknsUtils::SkinInstance(), color,
-                                  KAknsIIDQsnTextColors, EAknsCIQsnTextColorsCG6);
-        charFormat.iFontPresentation.iTextColor = color;
+        err = AknsUtils::GetCachedColor(AknsUtils::SkinInstance()
+                                        , color
+                                        , KAknsIIDQsnTextColors
+                                        , KHighlightedTextColor);
+        if (err == KErrNone)
+        {
+            charFormat.iFontPresentation.iTextColor = color;
+            charMask.SetAttrib(EAttColor);
+        }
+    }
+    else if (iTextColor)
+    {
+        charFormat.iFontPresentation.iTextColor = GetForeground();
         charMask.SetAttrib(EAttColor);
     }
     else
     {
-        charFormat.iFontPresentation.iTextColor = GetForeground();
-        charMask.SetAttrib(EAttColor);
+        err = AknsUtils::GetCachedColor(AknsUtils::SkinInstance()
+                                        , color
+                                        , KAknsIIDQsnTextColors
+                                        , KNonHighlightedTextColor);
+        if (err == KErrNone)
+        {
+            charFormat.iFontPresentation.iTextColor = color;
+            charMask.SetAttrib(EAttColor);
+        }
     }
 
     if (iStyle & KSwtStyleSingle)
@@ -287,18 +305,23 @@ void CSwtTextBase::SetBackgroundL(const MSwtColor* aColor)
 void CSwtTextBase::SetForegroundL(const MSwtColor* aColor)
 {
     ASwtControlBase::DoSetForegroundL(aColor);
-    TRgb color(aColor ? aColor->RgbValue() :
-               iDisplay.CoeEnv()->Color(EColorControlText));
-    if (iEditor)
+
+    iTextColor = ETrue;
+    if (!aColor)
+    {
+        iTextColor = EFalse;
+    }
+    else if (iEditor)
     {
         TCharFormat charFormat;
         TCharFormatMask charMask;
-        charFormat.iFontPresentation.iTextColor=color;
+        charFormat.iFontPresentation.iTextColor = aColor->RgbValue();
         charMask.SetAttrib(EAttColor);
         static_cast<CGlobalText*>(iEditor->Text())->
         ApplyCharFormatL(charFormat, charMask, 0, iEditor->TextLength());
-        iTextColor = ETrue;
     }
+
+    UpdateTextColor();
     Redraw();
 }
 
@@ -343,6 +366,61 @@ TSwtPeer CSwtTextBase::Dispose()
         }
     }
     return ASwtScrollableBase::Dispose();
+}
+
+TInt CSwtTextBase::PressBackgroundPolicy() const
+{
+    return EPressBackground;
+}
+
+void CSwtTextBase::UpdateTextColor()
+{
+    if (iEditor)
+    {
+        TCharFormat charFormat;
+        TCharFormatMask charMask;
+        TRgb color(0);
+        TInt err(KErrNone);
+
+        if (HasHighlight())
+        {
+            // Highlighted foreground color, overrides all others.
+            err = AknsUtils::GetCachedColor(AknsUtils::SkinInstance()
+                                            , color
+                                            , KAknsIIDQsnTextColors
+                                            , KHighlightedTextColor);
+            if (err == KErrNone)
+            {
+                charFormat.iFontPresentation.iTextColor = color;
+            }
+        }
+        else if (iTextColor)
+        {
+            // Custom foreground color, overrides the default.
+            charFormat.iFontPresentation.iTextColor = GetForeground();
+        }
+        else
+        {
+            // Default foreground color.
+            err = AknsUtils::GetCachedColor(AknsUtils::SkinInstance()
+                                            , color
+                                            , KAknsIIDQsnTextColors
+                                            , KNonHighlightedTextColor);
+            if (err == KErrNone)
+            {
+                charFormat.iFontPresentation.iTextColor = color;
+            }
+        }
+
+        charMask.SetAttrib(EAttColor);
+        TRAP_IGNORE(static_cast<CGlobalText*>(iEditor->Text())->
+                    ApplyCharFormatL(charFormat, charMask, 0, iEditor->TextLength()));
+    }
+}
+
+void CSwtTextBase::HandleHighlightChange()
+{
+    UpdateTextColor();
 }
 
 // ---------------------------------------------------------------------------
@@ -835,9 +913,11 @@ void CSwtTextBase::SwtHandleResourceChangeL(TInt aType)
 
     if (aType == KAknsMessageSkinChange || aType == KEikDynamicLayoutVariantSwitch)
     {
+        // The highlight color will be updated from ProcessFontUpdateL()
+
         if (!iFont)
         {
-            RetrieveDefaultFontL();
+            RetrieveDefaultFontL(); // ProcessFontUpdateL() will get called also.
         }
         else
         {
@@ -906,14 +986,15 @@ void CSwtTextBase::HandlePointerEventL(const TPointerEvent& aPointerEvent)
         vsb->HandlePointerEventL(aPointerEvent);
     }
 
+    TBool forward(EFalse);
+    TPointerEvent pointerEvent(aPointerEvent);
+
     // Edwin tap. Button1Up after the long tap is not forwarded to the editor
     if (!(aPointerEvent.iType == TPointerEvent::EButton1Up
             && (iDisplay.RevertPointerEvent() || !hit))
             && !iVScrollBarGrabsPointerEvents
             && !iIgnorePointerDown)
     {
-        TPointerEvent pointerEvent(aPointerEvent);
-
         // If clicking on margins, move the pointer event.
         TRect viewRect(iEditor->TextView()->ViewRect());
         TRect viewRectWithoutMargins(viewRect);
@@ -949,7 +1030,7 @@ void CSwtTextBase::HandlePointerEventL(const TPointerEvent& aPointerEvent)
             }
         }
 
-        iEditor->HandlePointerEventL(pointerEvent);
+        forward = ETrue;
     }
 
     // Stop scrollbar grabbing
@@ -967,13 +1048,21 @@ void CSwtTextBase::HandlePointerEventL(const TPointerEvent& aPointerEvent)
     }
 
     if (pressed != iPressed)
-        Redraw();
+    {
+        GetShell().UpdateHighlight(ETrue); // draw now
+    }
 #endif
 
 #ifndef RD_JAVA_S60_RELEASE_9_2
     // We got a pointer event, so any subsequent events should not be ignored.
     iIgnorePointerDown = EFalse;
 #endif // RD_JAVA_S60_RELEASE_9_2
+
+    // Forwarding this late due to splitview + pressed flicker issues.
+    if (forward)
+    {
+        iEditor->HandlePointerEventL(pointerEvent);
+    }
 
     PostMouseEventL(aPointerEvent);
 }
@@ -1173,25 +1262,6 @@ TBool CSwtTextBase::SetSwtFocus(TInt aReason /*=KSwtFocusByApi*/)
 #endif // RD_JAVA_S60_RELEASE_9_2
     return ASwtControlBase::SetSwtFocus(aReason);
 }
-
-// ---------------------------------------------------------------------------
-// CSwtTextBase::FocusBackgroundPolicy
-// From MSwtControl
-// While background color is set, the editor's control context must be null,
-// otherwise there will be ugly background drawing problems while typing.
-// ---------------------------------------------------------------------------
-//
-TInt CSwtTextBase::FocusBackgroundPolicy() const
-{
-    if (!IsDefaultBackgroundUse())
-    {
-        return EEmbeddedFocusBackground;
-    }
-    else
-    {
-        return ASwtControlBase::FocusBackgroundPolicy();
-    }
-};
 
 // ---------------------------------------------------------------------------
 // CSwtTextBase::ClientRect

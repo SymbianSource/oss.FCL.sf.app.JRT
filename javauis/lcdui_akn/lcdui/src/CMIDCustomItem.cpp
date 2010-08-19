@@ -54,6 +54,17 @@
 it needs to draw bitmaps with these sizes. @see KMaxScreenSizeFactor */
 const TInt KCIMaxScreenSizeFactor = 2;
 
+// ---------------------------------------------------------------------------
+// TLcduiEvent
+// ---------------------------------------------------------------------------
+//
+enum TLcduiEvent
+{
+    EFixUIOrientation,
+    EUnFixUIOrientation
+};
+
+
 CMIDCustomItem* CMIDCustomItem::NewL(
     MMIDEnv& aEnv, const TDesC& aLabel, CMIDUIManager* aUIManager)
 {
@@ -78,6 +89,8 @@ CMIDCustomItem::CMIDCustomItem(MMIDEnv& aEnv, CMIDUIManager* aUIManager)
         , iRestoreDirectContentWhenUnfaded(EFalse)
         , iPreviousVisibility(EFalse)
         , iConsumerWaitingForDSAResourcesCallback(NULL)
+        , iUiFixed(EFalse)
+        , iUiToBeFixedLater(EFalse)
 {
     iMMidItem = this;
 
@@ -245,6 +258,12 @@ CMIDCustomItem::~CMIDCustomItem()
     if (iDirectContent)
     {
         iDirectContent->MdcContainerDestroyed();
+    }
+    
+    if (iUiFixed && iForm)
+    {
+        iForm->CurrentDisplayable().ReleaseOrientation();
+        iUiFixed = EFalse;
     }
 
 #ifndef RD_JAVA_NGA_ENABLED
@@ -1328,10 +1347,24 @@ void CMIDCustomItem::ItemAddedToFormL()
     {
         ChangeDirectContainerVisibility(ETrue);
     }
+    
+    if (iUiToBeFixedLater && iForm)
+    {
+        iForm->CurrentDisplayable().FixOrientation();
+        iUiFixed = ETrue;
+        iUiToBeFixedLater = EFalse;
+    }
 }
 
 void CMIDCustomItem::ItemRemovedFromForm()
 {
+    if (iUiFixed && iForm)
+    {
+        iForm->CurrentDisplayable().ReleaseOrientation();
+        iUiFixed = EFalse;
+        iUiToBeFixedLater = EFalse;
+    }
+
     CMIDItem::ItemRemovedFromForm();
 
     ChangeDirectContainerVisibility(EFalse);
@@ -1524,6 +1557,52 @@ void CMIDCustomItem::MdcGetUICallback(
 }
 
 // ---------------------------------------------------------------------------
+// From class MDirectContainer.
+// CMIDCustomItem::MdcFixUIOrientation(TBool aEnableFix)
+// ---------------------------------------------------------------------------
+// 
+
+void CMIDCustomItem::MdcFixUIOrientation(TBool aEnableFix)
+{
+    if (aEnableFix)
+    {
+        iEnv.ToLcduiObserver().InvokeLcduiEvent(*this, EFixUIOrientation);
+    }
+    else
+    {
+        iEnv.ToLcduiObserver().InvokeLcduiEvent(*this, EUnFixUIOrientation);
+    }     
+}
+
+void CMIDCustomItem::HandleLcduiEvent(int aType)
+{
+   switch (aType)
+   {
+       case EFixUIOrientation:
+           if (!iUiFixed)
+           {
+               if (iForm)
+               {
+                   iForm->CurrentDisplayable().FixOrientation();
+                   iUiFixed = ETrue;
+                   iUiToBeFixedLater = EFalse;
+               }
+               else
+               {
+                   iUiToBeFixedLater = ETrue;
+               }
+           }
+           break;
+       case EUnFixUIOrientation:
+           if (iForm && iUiFixed)
+           {
+               iForm->CurrentDisplayable().ReleaseOrientation();
+               iUiFixed = EFalse;
+               iUiToBeFixedLater = EFalse;
+           }
+           break;    
+    }
+}
 //
 // ---------------------------------------------------------------------------
 //

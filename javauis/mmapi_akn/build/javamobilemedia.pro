@@ -24,8 +24,7 @@ include(../../../inc/build_defines.pri)
 DEFINES += RD_JAVA_VOLUME_CONTROL
 DEFINES += RD_JAVA_OMA_DRM_V2
 
-INCLUDEPATH +=  /epoc32/include/mmf/common \              
-                ../animated_gif/inc \
+INCLUDEPATH +=  ../animated_gif/inc \
                 ../baseline/inc \
                 ../src_drmv2/inc \
                 ../directcontent/inc \
@@ -69,7 +68,10 @@ contains(PROJECT_DEFINES,RD_JAVA_NGA_ENABLED) {
         
         SOURCES += ../baseline/src.nga/*.cpp
         
-        LIBS += -lmediaclientvideodisplay
+        LIBS += -lmediaclientvideodisplay \
+                -lsensrvclient \
+                -lsensrvutil \
+                -lfbscli
 }
 else {
 				INCLUDEPATH +=  ../baseline/inc.dsa

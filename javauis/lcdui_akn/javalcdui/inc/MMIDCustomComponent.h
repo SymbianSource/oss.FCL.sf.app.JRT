@@ -48,7 +48,8 @@ public: // new types
     {
         EFullscreenChange,
         EResolutionChange,
-        EPartialVKBChange
+        EPartialVKBChange,
+        EForegroundGained
     };
 
 public: // New methods
@@ -134,6 +135,15 @@ public: // New methods
      * @since S60 5.0
      */
     virtual void HandleResourceChange(TInt aType) = 0;
+
+    /**
+     * Handles switching from foreground to background and vice versa.
+     *
+     * @param aForeground Flag if it switches to foreground or to backgound.
+     *
+     * @since S60 5.0
+     */
+    virtual void HandleForeground(TBool aForeground) = 0;
 
 protected: // Destructor
 

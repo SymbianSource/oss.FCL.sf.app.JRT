@@ -65,7 +65,21 @@ const TInt KShift8 = 8;
 
 EXPORT_C bool ConnectionManager::isIapDefault(TUint32 aMatchIapId, TUint32 aDestId, bool aDefault)
 {
-    LOG(ESOCKET,EInfo,"+ConnectionManager::getDefualtId");
+	  LOG(ESOCKET,EInfo,"+ConnectionManager::isIapDefault");
+	  bool retVal = false;
+    TRAPD(err,retVal = checkIapDefaultL(aMatchIapId,aDestId,aDefault));
+    if(err!=KErrNone)
+    {
+        // error occured
+        return false;
+    }
+    return retVal;
+}
+
+bool ConnectionManager::checkIapDefaultL(TUint32 aMatchIapId, TUint32 aDestId, bool aDefault)
+{
+	
+    LOG(ESOCKET,EInfo,"+ConnectionManager::checkIapDefaultL");
     TUint32 id = aDestId;
     TUint32 tmpapId;
     TCmDefConnType type;
@@ -79,7 +93,7 @@ EXPORT_C bool ConnectionManager::isIapDefault(TUint32 aMatchIapId, TUint32 aDest
         mgr->ReadDefConnL(obj);
         id = obj.iId;
         type = obj.iType;
-        if ((type ==ECmDefConnConnectionMethod) && (type == aMatchIapId))
+        if ((type ==ECmDefConnConnectionMethod) && (id == aMatchIapId))
         {
             return true;
         }
@@ -104,8 +118,9 @@ EXPORT_C bool ConnectionManager::isIapDefault(TUint32 aMatchIapId, TUint32 aDest
             return true;
         }
     }
-    return false;
-
+    return false;	
+	
+	
 }
 
 // ---------------------------------------------------------------------------

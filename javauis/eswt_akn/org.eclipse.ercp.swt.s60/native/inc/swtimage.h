@@ -71,8 +71,8 @@ public:
 
     /**
      * Two phase constructor.
-     * @param aBitmap source bitmap
-     * @param aBitmap source mask
+     * @param aBitmap source bitmap - ownership NOT transferred
+     * @param aBitmap source mask - ownership NOT transferred
      * @param aTopLeft initial position
      * @param aDelayTime frame delay
      * @param aDisposalMethod disposal method of previous frames
@@ -80,6 +80,14 @@ public:
      */
     static CSwtImage* NewL(CFbsBitmap& aBitmap, CFbsBitmap* aMask,
                            const TPoint& aTopLeft, TInt aDelayTime, TSwtGifDisposal aDisposalMethod);
+
+    /**
+     * Two phase constructor.
+     * @param aBitmap source bitmap - ownership transferred
+     * @param aBitmap source mask - ownership transferred
+     * @return pointer to image constructed bitmap + mask
+     */
+    static CSwtImage* NewL(CFbsBitmap& aBitmap, CFbsBitmap* aMask);
 
 private:
     /**
@@ -116,7 +124,7 @@ private:
      * @param aDisposalMethod disposal method of previous frames
      */
     void ConstructL(CFbsBitmap& aBitmap, CFbsBitmap* aMask, const TPoint& aTopLeft,
-                    TInt aDelayTime, TSwtGifDisposal aDisposalMethod);
+                    TInt aDelayTime, TSwtGifDisposal aDisposalMethod, TBool aBmpOwnExternally);
 
     /**
      * Color key setter.

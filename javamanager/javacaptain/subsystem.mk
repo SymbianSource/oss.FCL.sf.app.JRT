@@ -22,6 +22,7 @@ COMPONENTS = \
     extensionplugins/config/build \
     extensionplugins/javacertstore/build \
     extensionplugins/storageserver/build \
+    extensionplugins/settingslistener/build \
     $(LINUX_ONLY)
 
 
@@ -35,6 +36,7 @@ NONQTSUBSYSTEMS = \
 endif
 
 COMPONENTS += extensionplugins/preinstallerstarter/build
+COMPONENTS += extensionplugins/autostarter/build
 ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 COMPONENTS += extensionplugins/scrupdater/build
 endif

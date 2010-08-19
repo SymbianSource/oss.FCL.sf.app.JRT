@@ -385,80 +385,68 @@ void CMMACameraWindow::ContainerDestroyed()
 
 
 // ---------------------------------------------------------------------------
-// From class MCameraObserver
-// CMMACameraWindow::ReserveComplete
+// From class MCameraObserver2
+// CMMACameraWindow::HandleEvent
 //
 // ---------------------------------------------------------------------------
 //
-void CMMACameraWindow::ReserveComplete(TInt aError)
+void CMMACameraWindow::HandleEvent(const TECAMEvent& aEvent)
 {
-    DEBUG_INT("MMA::CMMACameraWindow::ReserveComplete %d", aError);
-
-    if (aError == KErrNone)
+    TInt error = aEvent.iErrorCode;
+    if (KUidECamEventReserveComplete == aEvent.iEventType)
     {
-        // camera will notify completion with PowerOnComplete method.
-        iUICamera->PowerOn();
+        DEBUG_INT("MMA::CMMACameraPlayer::HandleEvent:KUidECamEventReserveComplete error  %d", error);
+        if (error == KErrNone)
+        {
+            // camera will notify completion with PowerOnComplete method.
+            iUICamera->PowerOn();
+        }
+    }
+    else if (KUidECamEventPowerOnComplete == aEvent.iEventType)
+    {
+        DEBUG_INT("MMA::CMMACameraPlayer::HandleEvent:KUidECamEventPowerOnComplete error  %d", error);
+        if (error == KErrNone)
+        {
+            iCameraPowerOn = ETrue;
+            SetViewFinderVisibility(ETrue);
+        }
     }
 }
 
 
 // ---------------------------------------------------------------------------
-// From class MCameraObserver
-// CMMACameraWindow::PowerOnComplete
+// From class MCameraObserver2
+// CMMACameraWindow::ViewFinderReady
 //
 // ---------------------------------------------------------------------------
 //
-void CMMACameraWindow::PowerOnComplete(TInt aError)
+void CMMACameraWindow::ViewFinderReady(MCameraBuffer& /*aCameraBuffer*/,
+                                       TInt /*aError*/)
 {
-    DEBUG_INT("MMA::CMMACameraWindow::PowerOnComplete %d", aError);
-
-    if (aError == KErrNone)
-    {
-        iCameraPowerOn = ETrue;
-        SetViewFinderVisibility(ETrue);
-    }
 }
 
 
 // ---------------------------------------------------------------------------
-// From class MCameraObserver
-// CMMACameraWindow::ViewFinderFrameReady
+// From class MCameraObserver2
+// CMMACameraWindow::ImageBufferReady
 //
 // ---------------------------------------------------------------------------
 //
-void CMMACameraWindow::ViewFinderFrameReady(CFbsBitmap& /*aFrame*/)
-{
-    // Empty implementation of the interface method
-    DEBUG("MMA::CMMACameraWindow::ViewFinderFrameReady");
-}
-
-
-// ---------------------------------------------------------------------------
-// From class MCameraObserver
-// CMMACameraWindow::ImageReady
-//
-// ---------------------------------------------------------------------------
-//
-void CMMACameraWindow::ImageReady(CFbsBitmap* /*aBitmap*/,
-                                  HBufC8* /*aData*/,
-                                  TInt /*aError*/)
-{
-    // Empty implementation of the interface method
-    DEBUG("MMA::CMMACameraWindow::ImageReady");
-}
-
-
-// ---------------------------------------------------------------------------
-// From class MCameraObserver
-// CMMACameraWindow::FrameBufferReady
-//
-// ---------------------------------------------------------------------------
-//
-void CMMACameraWindow::FrameBufferReady(MFrameBuffer* /*aFrameBuffer*/,
+void CMMACameraWindow::ImageBufferReady(MCameraBuffer& /*aCameraBuffer*/,
                                         TInt /*aError*/)
 {
-    // Empty implementation of the interface method
-    DEBUG("MMA::CMMACameraWindow::FrameBufferReady");
+}
+
+
+// ---------------------------------------------------------------------------
+// From class MCameraObserver2
+// CMMACameraWindow::VideoBufferReady
+//
+// ---------------------------------------------------------------------------
+//
+void CMMACameraWindow::VideoBufferReady(MCameraBuffer& /*aCameraBuffer*/,
+                                        TInt /*aError*/)
+{
 }
 
 
@@ -533,7 +521,7 @@ void CMMACameraWindow::UIStartViewFinder(
     if (!iUICamera)
     {
         TRAPD(error, iUICamera =
-                  CCamera::NewDuplicateL(*this, iCameraHandle));
+                  CCamera::NewDuplicate2L(*this, iCameraHandle));
 
         DEBUG_INT(
             "MMA::CMMACameraWindow::UIStartViewFinder - NewDuplicateL %d",
@@ -905,7 +893,7 @@ void CMMACameraWindow::MdcDSAResourcesCallback(
 //
 void CMMACameraWindow::MdcUICallback(TInt aCallbackId)
 {
-    DEBUG("MMA::CMMACameraWindow::MdcUICallback");
+    DEBUG_INT("MMA::CMMACameraWindow::MdcUICallback callbackid %d", aCallbackId);
 
     switch (aCallbackId)
     {

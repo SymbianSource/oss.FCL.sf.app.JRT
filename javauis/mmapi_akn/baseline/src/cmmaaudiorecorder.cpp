@@ -19,7 +19,7 @@
 #include <jdebug.h>
 #include <mmf/server/mmffile.h>
 #include <mmf/server/mmfdes.h>
-#include <mmfformatimplementationuids.hrh>
+#include <mmf/plugin/mmfformatimplementationuids.hrh>
 #include "cmmaaudiorecorder.h"
 #include "cmmaoutputstream.h"
 

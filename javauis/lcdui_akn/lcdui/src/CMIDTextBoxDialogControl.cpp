@@ -68,12 +68,13 @@ void CMIDTextBoxDialogControl::ConstructL(
     iTextContent.CreateL(KNullDesC, aMaxSize);
 
     CreateTextBoxQueryDialogL(iDialog, aConstraints, aMaxSize, aText);
+    SetTextL(aText);
 
     iDisplayable->SetPopupTextBox(ETrue);
     SetRect(iDisplayable->Rect());
     iDisplayable->SetComponentL(*this);
 
-    SetTextL(aText);
+    
     SetContainerWindowL(*iDisplayable);
 
     iCurrentText = GetTextL();
@@ -175,13 +176,10 @@ void CMIDTextBoxDialogControl::HandleCurrentL(TBool aCurrent)
 
         TInt curPosition = iCursorPosition;
         iCursorPosition = 0;
-        iDialog->SetCursorPositionL(0);
+        iDialog->SetCursorPositionL(iCursorPosition);
+        
         iDialog->ShowL(ETrue);
-
-        if (iCurrentText)
-        {
-            SetTextL(*iCurrentText);
-        }
+        
         iCursorPosition = curPosition;
         // Set cursor position back to original value.
         iDialog->SetCursorPositionL(iCursorPosition);

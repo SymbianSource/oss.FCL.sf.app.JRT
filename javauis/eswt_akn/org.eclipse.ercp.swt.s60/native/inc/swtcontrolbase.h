@@ -315,6 +315,7 @@ public:
     IMPORT_C TBool IsFocusable(TInt aReason = KSwtFocusByApi) const;
     IMPORT_C TBool SetSwtFocus(TInt aReason = KSwtFocusByApi);
     IMPORT_C TInt  FocusBackgroundPolicy() const;
+    IMPORT_C TInt  PressBackgroundPolicy() const;
     IMPORT_C TBool GetEnabled() const;
     IMPORT_C TBool GetVisible() const;
     IMPORT_C TBool GetVisibleRecursively() const;
@@ -334,7 +335,7 @@ public:
     IMPORT_C TBool IsDescentOf(const MSwtControl& aParent) const;
     IMPORT_C MSwtShell& GetShell() const;
     IMPORT_C MSwtShell& GetTopShell() const;
-    IMPORT_C MSwtCaptionedControl* GetTopCaptionedControl() const;
+    IMPORT_C MSwtCaptionedControl* GetNearestCaptionedControl(TBool aIncludeSelf = ETrue) const;
     IMPORT_C TSize GetWidgetSize() const;
     IMPORT_C void  SetWidgetSize(const TSize& aSize);
     IMPORT_C TBool IsFocusControl();
@@ -365,18 +366,27 @@ public:
     IMPORT_C TBool IsOnControlStack() const;
     IMPORT_C void  UpdateDoNotDrawFlag();
     IMPORT_C TBool HasDoNotDrawFlag() const;
-    void HideSilently() {};
-    void ShowSilently() {};
+    void  HideSilently() {};
+    void  ShowSilently() {};
     TBool HiddenSilently() const
     {
         return GetShell().Control()->HiddenSilently();
     };
     IMPORT_C TBool IsLongTapAnimationCandidate(const TPointerEvent& aPointerEvent) const;
-    IMPORT_C void DoControlSpecificFeedback(const TBool& aFirstTap,
-                                            const TBool& aTappedToChildRect, const TPointerEvent& aPointerEvent) const;
-    IMPORT_C void PostMouseEventL(const TPointerEvent& aPointerEvent);
-    IMPORT_C void EnableFocusHighlight(TBool aEnable);
+    IMPORT_C void  DoControlSpecificFeedback(const TBool& aFirstTap,
+            const TBool& aTappedToChildRect,
+            const TPointerEvent& aPointerEvent) const;
+    IMPORT_C void  PostMouseEventL(const TPointerEvent& aPointerEvent);
+    IMPORT_C void  EnableFocusHighlight(TBool aEnable);
     IMPORT_C TRect VisibleRect(TBool aVisibleBounds = EFalse) const;
+    IMPORT_C void  SetHighlight(TBool aEnabled);
+    IMPORT_C TBool HasHighlight(TBool aIncludingParents = ETrue) const;
+    IMPORT_C void  HandleHighlightChange();
+    TInt Pressed() const
+    {
+        return iPressed;
+    };
+    IMPORT_C void PrepareForTraverse();
 
 protected:
     MSwtDisplay& iDisplay;
@@ -401,9 +411,15 @@ protected:
     TBool iFocusChanged;
 
     /**
-     * Used to implement visual pressed down feedback for some controls.
+     * Control pressed by pointer.
      */
-    TBool iPressed;
+    TInt iPressed;
+
+    /**
+     * If this is true, the control should draw a highlight
+     * either because it is pressed or focused.
+     */
+    TBool iHighlightEnabled;
 };
 
 

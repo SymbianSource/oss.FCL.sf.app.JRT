@@ -73,12 +73,7 @@ void ASwtControlBase::CreateFocusBackgroundL()
                         CSwtLafFacade::EInputFieldSkinPlacingGeneralLine5, rect, 0).Rect().iTl;
 
     iFocusFrame = CAknsFrameBackgroundControlContext::NewL(
-#ifdef RD_JAVA_S60_RELEASE_9_2
-                      KAknsIIDQsnFrPopupPreview,
-#else
-                      KAknsIIDQsnFrInput,
-#endif // RD_JAVA_S60_RELEASE_9_2
-                      rect, innerRect, EFalse /*parent absolute*/);
+                      KAknsIIDQsnFrInput, rect, innerRect, EFalse /*parent absolute*/);
 
     if (iBackgrdDefaultUsed)
     {
@@ -88,45 +83,19 @@ void ASwtControlBase::CreateFocusBackgroundL()
 
 CAknsBasicBackgroundControlContext* ASwtControlBase::FocusBackgroundNow() const
 {
-#ifdef RD_JAVA_S60_RELEASE_9_2
-    if (!iDisplay.UiUtils().NaviKeyInput() && !iPressed)
+    if (HasHighlight(EFalse)) // not checking parents
+    {
+        return iFocusFrame;
+    }
+    else
     {
         return NULL;
     }
-#endif // RD_JAVA_S60_RELEASE_9_2
-
-    // Pressed down state shows the highlight no matter what.
-    if (!iPressed)
-    {
-        TInt policy = FocusBackgroundPolicy();
-
-        // CaptionedControls that have a custom back color set provide a highlight with
-        // no parent context and that can be a problem for semi transparent highligts.
-        // The remedy for this is to let the child control draw its own highlight for
-        // as long as the parent CaptionedControl has the custom background color set.
-        if ((policy == ENoFocusBackground)
-                || (policy == EEmbeddedFocusBackground)
-                || (iParent && iParent->Control()->CaptionedControlInterface() && iParent->Control()->IsDefaultBackgroundUse())
-                || (policy == ECaptionedCtrlFocusBackground && !IsFocusedOrChildIsFocused())
-                || (policy == EDefaultFocusBackground && GetShell().FocusControl() != this)
-                || (GetShell().Composite()->CountFocusableChildren(1, this) == 0))
-        {
-            return NULL;
-        }
-    }
-
-    // If we got here, it means we have to draw a focus background.
-    if (!iFocusFrame)
-    {
-        TRAP_IGNORE(const_cast<ASwtControlBase*>(this)->CreateFocusBackgroundL());
-    }
-
-    return iFocusFrame;
 }
 
 void ASwtControlBase::RedrawFocusBackground()
 {
-    MSwtCaptionedControl* captCtrl = GetTopCaptionedControl();
+    MSwtCaptionedControl* captCtrl = GetNearestCaptionedControl();
     if (captCtrl)
     {
         captCtrl->Composite()->Control()->Redraw();
@@ -466,6 +435,7 @@ void ASwtControlBase::ForceInvalidate(const TRect& aRect)
     MSwtControl* urgentPaintControl = shell.UrgentPaintControl();
     if (urgentPaintControl)
     {
+        // Redraw requests outside urgently painted controls are ignored.
         if (IsDescentOf(*urgentPaintControl))
         {
             urgentPaintControl->PaintUrgently(aRect);
@@ -530,6 +500,39 @@ EXPORT_C TRect ASwtControlBase::VisibleRect(TBool aVisibleBounds) const
     }
 
     return rect;
+}
+
+EXPORT_C TBool ASwtControlBase::HasHighlight(TBool aIncludingParents /*= ETrue*/) const
+{
+    TBool res = iHighlightEnabled;
+    if (!res && aIncludingParents)
+    {
+        res = res || (iParent && iParent->Control()->HasHighlight(ETrue));
+    }
+    return res;
+}
+
+EXPORT_C void ASwtControlBase::SetHighlight(TBool aEnabled)
+{
+    iHighlightEnabled = aEnabled;
+
+    // Prepare the frame
+    if (aEnabled && !iFocusFrame)
+    {
+        TRAP_IGNORE(const_cast<ASwtControlBase*>(this)->CreateFocusBackgroundL());
+    }
+
+    HandleHighlightChange();
+}
+
+EXPORT_C void ASwtControlBase::HandleHighlightChange()
+{
+    // Do nothing here. Inherit where needed.
+}
+
+EXPORT_C void ASwtControlBase::PrepareForTraverse()
+{
+    // Do nothing here. Inherit where needed.
 }
 
 TRect ASwtControlBase::ClipToVisibleRect(const TRect& aRect) const
@@ -755,16 +758,13 @@ EXPORT_C void ASwtControlBase::HandleFocusChanged(TDrawNow /*aDrawNow*/)
     TSwtEventType type((focused) ? ESwtEventFocusIn : ESwtEventFocusOut);
     TRAP_IGNORE(iDisplay.PostFocusEventL(JavaPeer(), type));
 
-    if (!(iCtrlFlags & MSwtControl::EFlagDoNotDraw))
-    {
-        Redraw();
-    }
-
     if (focused)
     {
         // Add to ControlStack since the control becomes focused
         TRAP_IGNORE(AddToControlStackL(ECoeStackPriorityDefault));
     }
+
+    shell.UpdateHighlight();
 }
 
 TKeyResponse ASwtControlBase::OfferKeyEventToCommandAndMenuArrangersL(
@@ -859,14 +859,6 @@ TKeyResponse ASwtControlBase::HandleKeyL(const TKeyEvent& aKeyEvent,
     case EKeyRightDownArrow:
         return HandleDiagonalKeysL(aKeyEvent, aType, aTraversalDoIt, EKeyRightArrow,
                                    EStdKeyRightArrow, EKeyDownArrow, EStdKeyDownArrow);
-    }
-
-    if (aKeyEvent.iScanCode == EStdKeyDownArrow
-            || aKeyEvent.iScanCode == EStdKeyUpArrow
-            || aKeyEvent.iScanCode == EStdKeyRightArrow
-            || aKeyEvent.iScanCode == EStdKeyLeftArrow)
-    {
-        iDisplay.UiUtils().SetNaviKeyInput(ETrue);
     }
 
     // Offer key event to command arranger first
@@ -1092,11 +1084,20 @@ MAknsControlContext* ASwtControlBase::SwtMopSupplyCtrlContext(TBool aBeginSearch
     }
 
     MSwtComposite* parent = GetParent();
+    TInt policy = FocusBackgroundPolicy();
     if (IsDefaultBackgroundUse())
     {
         background = aBeginSearchToThis ? GetControlContext() : NULL;
         while (!background && parent)
         {
+            // If policy is ENoFocusBackgroundInCaptionedControl, bypass the caption highlight.
+            if (policy == ENoFocusBackgroundInCaptionedControl
+                    && parent->Control()->CaptionedControlInterface())
+            {
+                parent = parent->Control()->GetParent();
+                ASSERT(parent);
+            }
+
             background = parent->Control()->GetControlContext();
 
             // If the parent is a Shell we stop on it.
@@ -1349,14 +1350,6 @@ EXPORT_C TSwtPeer ASwtControlBase::Dispose()
 
     Invalidate(CoeControl().Rect());
 
-    if (GetShell().ControlGoingToStack() == this)
-    {
-        GetShell().SetControlGoingToStack(NULL);
-    }
-    if (GetShell().ControlGainingFocus() == this)
-    {
-        GetShell().SetControlGainingFocus(NULL);
-    }
     if (UiUtils().PointerCaptureControl() == this)
     {
         UiUtils().SetPointerCaptureControl(NULL);
@@ -1371,6 +1364,8 @@ EXPORT_C TSwtPeer ASwtControlBase::Dispose()
     }
 
     RemoveFromControlStack();
+
+    GetShell().ControlDisposing(*this);
 
     TSwtPeer peer(iPeer);
     DoDelete();
@@ -1737,6 +1732,11 @@ EXPORT_C TInt ASwtControlBase::FocusBackgroundPolicy() const
     return EDefaultFocusBackground;
 };
 
+EXPORT_C TInt ASwtControlBase::PressBackgroundPolicy() const
+{
+    return ENoPressBackground;
+};
+
 EXPORT_C TBool ASwtControlBase::GetEnabled() const
 {
     return (CoeControl().IsDimmed()) ? EFalse : ETrue;
@@ -1763,10 +1763,7 @@ EXPORT_C TBool ASwtControlBase::IsDefaultBackgroundUse() const
 
 EXPORT_C MAknsControlContext* ASwtControlBase::GetControlContext() const
 {
-    // A focus highlight without parent context is no good since the highlight
-    // graphic may be semi transparent, so return CaptionedControl's highlight
-    // only if no back color has been set.
-    if (CaptionedControlInterface() && IsDefaultBackgroundUse())
+    if (CaptionedControlInterface())
     {
         return FocusBackgroundNow();
     }
@@ -1890,15 +1887,15 @@ EXPORT_C MSwtShell& ASwtControlBase::GetTopShell() const
     return *shell;
 }
 
-EXPORT_C MSwtCaptionedControl* ASwtControlBase::GetTopCaptionedControl() const
+EXPORT_C MSwtCaptionedControl* ASwtControlBase::GetNearestCaptionedControl(TBool aIncludeSelf /*= ETrue*/) const
 {
     MSwtCaptionedControl* res = NULL;
-    const MSwtControl* ctrl = this;
+    const MSwtControl* ctrl = aIncludeSelf ? this : (GetParent() ? GetParent()->Control() : NULL);
     while (ctrl)
     {
         if (ctrl->CaptionedControlInterface())
         {
-            res = ctrl->CaptionedControlInterface();
+            return ctrl->CaptionedControlInterface();
         }
         ctrl = ctrl->GetParent() ? ctrl->GetParent()->Control() : NULL;
     }

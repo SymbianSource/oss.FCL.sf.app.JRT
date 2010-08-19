@@ -135,6 +135,7 @@ private: // Data
      */
     CAccMonitor *iAccMonitor;
     RAccMonCapabilityArray iAccMonCapabilityArray;
+    TBool isHDMICableConnected;
 };
 
 #endif // CMMAVIDEOPLAYER_H

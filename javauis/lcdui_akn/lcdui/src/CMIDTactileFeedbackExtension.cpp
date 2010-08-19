@@ -22,6 +22,8 @@
 #include "CMIDCanvas.h"
 #include "CMIDCustomItem.h"
 
+#include <j2me/jdebug.h>
+
 CMIDTactileFeedbackExtension::CMIDTactileFeedbackExtension(MMIDTactileFeedbackComponent* aParent, TInt aParentType): TypeCanvas(1), TypeCustomItem(2)
 
 {
@@ -74,6 +76,7 @@ CMIDTactileFeedbackExtension::FeedbackArea* CMIDTactileFeedbackExtension::GetAre
 void CMIDTactileFeedbackExtension::RegisterFeedbackArea(TInt aId, TRect aRect, TInt aStyle)
 {
     FeedbackArea* area = GetAreaByID(aId, NULL);
+    TInt err = KErrNone;
     if (area)
     {
         area->rect = aRect;
@@ -85,10 +88,17 @@ void CMIDTactileFeedbackExtension::RegisterFeedbackArea(TInt aId, TRect aRect, T
         newArea.id  = aId;
         newArea.rect = aRect;
         newArea.style = (TTouchLogicalFeedback)aStyle;
-        iFeedbackAreasArray.Append(newArea);
+        err = iFeedbackAreasArray.Append(newArea);
     }
 
-    iParent->UpdateTactileFeedback();
+    if (KErrNone == err )
+    {
+        iParent->UpdateTactileFeedback();
+    }
+    else
+    {
+        DEBUG_INT("CMIDTactileFeedbackExtension::RegisterFeedbackArea - RArray append error %d", err);
+    }
 }
 
 void CMIDTactileFeedbackExtension::SetFeedbackArea(TInt aId, TRect aRect, TInt aStyle)

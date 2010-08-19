@@ -151,11 +151,11 @@ ifneq ($(wildcard exports.inf),)
 	echo #include "exports.inf" >> bld.inf
 endif
 
+# Quick java releasables target
+RELEASABLE_PATH = $(EPOCROOT)epoc32/release/$(PLATFORM)/$(CFG)/z/resource/java/jvm/lib/jrt
 javareleasables:
 ifneq ($(ANT_FILE),)
-	$(ANT) -q -Dtarget.platform=$(PLATFORM) -Dtarget.cfg=$(VARIANT) $(ANT_PROJECT_DEFINES) releasables > $(DEVNULL)
-	$(call CATCOMMAND,java_releasables_$(PLATFORM)_$(VARIANT).tmp)
-	$(call RMFILE,java_releasables_$(PLATFORM)_$(VARIANT).tmp)
+	echo $(RELEASABLE_PATH)/$(BASENAME).odc
 endif
 
 # Remove all generated build files
@@ -185,11 +185,11 @@ export:
 
 build_native:
 	$(PHASEINFO)
-	$(SBS) -c $(PLATFORM)_$(CFG) BUILD
+	$(SBS) -c $(PLATFORM)_$(CFG)
 
-fastbuild: export java
+fastbuild: java
 	$(PHASEINFO)
-	$(SBS) -c $(PLATFORM)_$(CFG) TARGET
+	$(SBS) -c $(PLATFORM)_$(CFG)
 
 build_clean_native:
 	$(PHASEINFO)

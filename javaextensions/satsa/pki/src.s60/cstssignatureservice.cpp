@@ -15,8 +15,6 @@
  *
 */
 
-
-// INCLUDE FILES
 #include "cstssignatureservice.h"
 #include "tstsdistinguishednameconverter.h"
 #include "secdlg.h"
@@ -32,7 +30,11 @@
 #include <CCMSSignerInfo.h>
 #include <CCMSEncapsulatedContentInfo.h>
 #include <CCMSSignedData.h>
+
+#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
 #include <PKIDlg.h>
+#endif
+
 #include "cstsseprompt.h"
 
 #include <hash.h>
@@ -42,7 +44,7 @@
 #include "logger.h"
 #include "jstringutils.h"
 
-// CONSTANTS
+
 const TInt KDefaultGranularity = 1;
 
 const TInt KOptionIncludeContent = 1;
@@ -80,10 +82,12 @@ CSTSSignatureService::~CSTSSignatureService()
     {
         iDialog->Release(); // Release deletes the object
     }
+#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS	
     if (iPKIDialog)
     {
         iPKIDialog->Release();
     }
+#endif	
     iCertificateArray.Close();
     iCertInfos.Close();
     delete iFilter;
@@ -126,14 +130,12 @@ HBufC8* CSTSSignatureService::AuthenticateL(const TDesC8& abytesToAuthenticate,
         TInt aOptions, const CDesCArray& aCaNames,
         const TDesC& asecurityElementPrompt, TBool aShowData)
 {
-    LOG(ESATSA, EInfo, "+ CSTSSignatureService::AuthenticateL");
     if (iState != EReady)
     {
         ELOG(ESATSA, "CSTSSignatureService::AuthenticateL: Not Ready");
         User::Leave(KErrNotReady);
     }
 
-    LOG(ESATSA, EInfo, "CSTSSignatureService::AuthenticateL:After convertions");
     // First we need to convert the data to unicode, if we have to display it
     HBufC* textToDisplay = NULL;
     if (aShowData)
@@ -155,14 +157,9 @@ HBufC8* CSTSSignatureService::AuthenticateL(const TDesC8& abytesToAuthenticate,
     iOptions = aOptions;
 
     iShowNotes = EFalse;
-
-    LOG(ESATSA, EInfo, "CSTSSignatureService::AuthenticateL:Going to call CreateSignatureL");
     // get handles to applicable certificates
     HBufC8* retVal = CreateSignatureL(aCaNames, EX509UsageDigitalSignature,
                                       asecurityElementPrompt);
-    LOG(ESATSA, EInfo, "CSTSSignatureService::AuthenticateL:After call to CreateSignatureL");
-
-    LOG(ESATSA, EInfo, "-- CSTSSignatureService::AuthenticateL");
     return retVal;
 }
 
@@ -171,7 +168,6 @@ TInt CSTSSignatureService::StaticAuthenticateL(JNIEnv* aJniEnv,
         jint aOptions, jobjectArray aCaNames, jstring aSecurityElementPrompt,
         jboolean aShowData, HBufC8** aRetVal)
 {
-    LOG(ESATSA, EInfo, "+ CSTSSignatureService::StaticAuthenticateL");
     const TInt byteArrayLength = aJniEnv->GetArrayLength(
                                      aByteArrayToAuthenticate);
     jbyte* bytesToAuthenticate = aJniEnv->GetByteArrayElements(
@@ -189,20 +185,15 @@ TInt CSTSSignatureService::StaticAuthenticateL(JNIEnv* aJniEnv,
     CDesCArrayFlat* nativeCaNames = STSCreateNativeStringArrayL(aJniEnv,
                                     aCaNames);
 
-    LOG(ESATSA, EInfo,  "CSTSSignatureService::StaticAuthenticateL: prepare se prompt");
     const JStringUtils securityElementPrompt(*aJniEnv, aSecurityElementPrompt);
 
-    LOG(ESATSA, EInfo,  "CSTSSignatureService::StaticAuthenticateL: start convertions to TInt");
     TBool ShowData = static_cast<TBool>(aShowData);
     const TDesC* sec = static_cast<const TDesC*>(&securityElementPrompt);
 
-    LOG(ESATSA, EInfo, "CSTSSignatureService::StaticAuthenticateL: After convertions,going to call CallMethodL");
     TRAPD(err, CallMethodL(*aRetVal, service,
                            &CSTSSignatureService::AuthenticateL, desToAuthenticate, aOptions,
                            *nativeCaNames, *sec, ShowData, service));
 
-    LOG(ESATSA, EInfo, "+ CSTSSignatureService::StaticAuthenticateL:After CallmethodL");
-    LOG(ESATSA, EInfo, "-- return CSTSSignatureService::StaticAuthenticateL");
     return err;
 
 }
@@ -216,15 +207,12 @@ TInt CSTSSignatureService::StaticAuthenticateL(JNIEnv* aJniEnv,
 HBufC8* CSTSSignatureService::SignL(const TDesC8& aBytesToSign, TInt aOptions,
                                     const CDesCArray& aCaNames, const TDesC& aSecurityElementPrompt)
 {
-    LOG(ESATSA, EInfo, "+ CSTSSignatureService::SignL");
     if (iState != EReady)
     {
         ELOG(ESATSA, "CSTSSignatureService::SignL: Not Ready");
         User::Leave(KErrNotReady);
     }
 
-    LOG(ESATSA, EInfo, "CSTSSignatureService::SignL: start convertions!");
-    LOG(ESATSA, EInfo, "CSTSSignatureService::SignL: After convertions");
     // convert text from UTF8
     HBufC* textToDisplay = ConvertUTF8ToUnicodeL(aBytesToSign);
     delete iTextToDisplay;
@@ -238,12 +226,10 @@ HBufC8* CSTSSignatureService::SignL(const TDesC8& aBytesToSign, TInt aOptions,
 
     iShowNotes = ETrue;
 
-    LOG(ESATSA, EInfo, "CSTSSignatureService::SignL: Before call to CreateSignatureL");
     // get handles to applicable certificates
     HBufC8* retVal = CreateSignatureL(aCaNames, EX509UsageNonRepudiation,
                                       aSecurityElementPrompt);
 
-    LOG(ESATSA, EInfo, "-- return CSTSSignatureService::SignL");
     return retVal;
 }
 
@@ -256,13 +242,12 @@ TInt CSTSSignatureService::StaticSignL(JNIEnv* aJniEnv,
                                        CSTSSignatureService* service, jbyteArray aBytesToSign, jint aOptions,
                                        jobjectArray aCaNames, jstring aSecurityElementPrompt, HBufC8** aRetVal)
 {
-    LOG(ESATSA, EInfo, "+ CSTSSignatureService::StaticSignL");
     const TInt byteArrayLength = aJniEnv->GetArrayLength(aBytesToSign);
     jbyte* bytesToSign = aJniEnv->GetByteArrayElements(aBytesToSign, NULL);
 
     if (!bytesToSign)
     {
-        LOG(ESATSA, EInfo, "CSTSSignatureService::StaticSignL: No memory");
+        ELOG(ESATSA, "CSTSSignatureService::StaticSignL: No memory");
         return NULL;
     }
 
@@ -273,15 +258,12 @@ TInt CSTSSignatureService::StaticSignL(JNIEnv* aJniEnv,
 
     const JStringUtils securityElementPrompt(*aJniEnv, aSecurityElementPrompt);
 
-    LOG(ESATSA, EInfo, "CSTSSignatureService::StaticSignL: Start convertions");
-    LOG(ESATSA, EInfo, "CSTSSignatureService::StaticSignL: Before callmethodl");
-
+    
     const TDesC* sec = static_cast<const TDesC*>(&securityElementPrompt);
 
     TRAPD(err, CallMethodL(*aRetVal, service, &CSTSSignatureService::SignL,
                            desToSign, aOptions, *nativeCaNames, *sec, service));
 
-    LOG(ESATSA, EInfo, "-- ret CSTSSignatureService::StaticSignL");
     return err;
 }
 
@@ -292,28 +274,25 @@ TInt CSTSSignatureService::StaticSignL(JNIEnv* aJniEnv,
 //
 void CSTSSignatureService::RunL()
 {
-    LOG(ESATSA, EInfo, "+ CSTSSignatureService::RunL");
     if (iStatus == KErrCancel)
     {
-        LOG(ESATSA, EInfo, "CSTSSignatureService::RunL: KErrCancel");
         if (iShowNotes)
         {
-            LOG(ESATSA, EInfo, "CSTSSignatureService::RunL: ShowNote");
             iState = EFinalNote;
             iStatus = KErrNone;
+#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS			
             iPKIDialog->Note(MPKIDialog::ESigningCancelled, iStatus);
+#endif			
             SetActive();
-            LOG(ESATSA, EInfo, "CSTSSignatureService::RunL: Done ShowNote");
-        }
+         }
         else
         {
-            LOG(ESATSA, EInfo, "CSTSSignatureService::RunL: Complete");
-            Complete(KErrNone);
+             Complete(KErrNone);
         }
     }
     else if (iStatus != KErrNone)
     {
-        LOG(ESATSA, EInfo, "CSTSSignatureService::RunL: Error occured");
+        ELOG(ESATSA, "CSTSSignatureService::RunL: Error occured");
         // Error has occured; inform java
         Complete(iStatus.Int());
     }
@@ -323,29 +302,23 @@ void CSTSSignatureService::RunL()
         {
         case EInitialising:
         {
-            LOG(ESATSA, EInfo, "CSTSSignatureService::RunL: case EInitialising");
             iState = EKeyStoreInit;
             iKeyStore->Initialize(iStatus);
             SetActive();
-            LOG(ESATSA, EInfo, "CSTSSignatureService::RunL: over case EInitialising");
             break;
         }
         case EKeyStoreInit:
         {
-            LOG(ESATSA, EInfo, "CSTSSignatureService::RunL: case EKeyStoreInit");
             Complete(KErrNone);
             break;
         }
         case EListing:
         {
-            LOG(ESATSA, EInfo, "CSTSSignatureService::RunL: case EListing");
             HandlesFromCertInfosL();
-            LOG(ESATSA, EInfo, "CSTSSignatureService::RunL: over case EListing");
             break;
         }
         case EDialog:
         {
-            LOG(ESATSA, EInfo, "CSTSSignatureService::RunL: case EDialog");
             iState = EGetCert;
             if (iCertificate)
             {
@@ -360,12 +333,10 @@ void CSTSSignatureService::RunL()
 
             iCertStore->GetCert(iCertificate, iCertificateHandle, iStatus);
             SetActive();
-            LOG(ESATSA, EInfo, "CSTSSignatureService::RunL: over case EDialog");
             break;
         }
         case EGetCert:
         {
-            LOG(ESATSA, EInfo, "CSTSSignatureService::RunL: case EGetCert");
             if (iX509Certificate)
             {
                 delete iX509Certificate;
@@ -374,44 +345,35 @@ void CSTSSignatureService::RunL()
             iState = ERetrieveCert;
             iCertStore->Retrieve(*iCertificate, iX509Certificate, iStatus);
             SetActive();
-            LOG(ESATSA, EInfo, "CSTSSignatureService::RunL: over case EGetCert");
             break;
         }
         case ERetrieveCert:
         {
-            LOG(ESATSA, EInfo, "CSTSSignatureService::RunL: case ERetrieveCert");
             FindKeyL();
             break;
         }
         case EFindKey:
         {
-            LOG(ESATSA, EInfo, "CSTSSignatureService::RunL: case EFindKey");
             OpenSignerL();
             break;
         }
         case EOpenSigner:
         {
-            LOG(ESATSA, EInfo, "CSTSSignatureService::RunL: case EOpenSigner");
             SignL();
             break;
         }
         case ESign:
         {
-            LOG(ESATSA, EInfo, "CSTSSignatureService::RunL: case ESign");
             CreateSignedDataL();
-            LOG(ESATSA, EInfo, "CSTSSignatureService::RunL: over case ESign");
             break;
         }
         case EFinalNote:
         {
-            LOG(ESATSA, EInfo, "CSTSSignatureService::RunL: case EFinalNote");
             Complete(KErrNone);
-            LOG(ESATSA, EInfo, "CSTSSignatureService::RunL: over case EFinalNote");
             break;
         }
         default:
         {
-            LOG(ESATSA, EInfo, "CSTSSignatureService::RunL: case default");
             Complete(KErrGeneral);
         }
         }
@@ -425,7 +387,6 @@ void CSTSSignatureService::RunL()
 //
 TInt CSTSSignatureService::RunError(TInt aError)
 {
-    LOG(ESATSA, EInfo, "+ CSTSSignatureService::RunError");
     Complete(aError);
     return KErrNone;
 }
@@ -524,8 +485,9 @@ void CSTSSignatureService::ConstructL()
 {
     User::LeaveIfError(iFileServer.Connect());
     iDialog = SecurityDialogFactory::CreateL();
+#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS	
     iPKIDialog = PKIDialogFactory::CreateNoteL();
-
+#endif
     iFilter = CCertAttributeFilter::NewL();
 
     iWait = new(ELeave) CActiveSchedulerWait;
@@ -542,7 +504,6 @@ void CSTSSignatureService::ConstructL()
 //
 void CSTSSignatureService::Complete(TInt aError)
 {
-    LOG(ESATSA, EInfo, "+ CSTSSignatureService::Complete");
     if (KErrNone == aError)
     {
         iState = EReady;
@@ -553,7 +514,7 @@ void CSTSSignatureService::Complete(TInt aError)
         iError = aError;
     }
     iWait->AsyncStop();
-    LOG(ESATSA, EInfo, "-- ret CSTSSignatureService::Complete");
+    
 }
 
 // -----------------------------------------------------------------------------
@@ -563,17 +524,14 @@ void CSTSSignatureService::Complete(TInt aError)
 //
 void CSTSSignatureService::WaitForCompletionL()
 {
-    LOG(ESATSA, EInfo, "+ CSTSSignatureService::WaitForCompletionL");
     SetActive();
     iWait->Start();
     if (iState != EReady)
     {
         // we need to be ready for the next request
         iState = EReady;
-
         User::Leave(iError);
     }
-    LOG(ESATSA, EInfo, "- ret CSTSSignatureService::WaitForCompletionL");
 }
 
 // -----------------------------------------------------------------------------
@@ -584,7 +542,6 @@ void CSTSSignatureService::WaitForCompletionL()
 HBufC8* CSTSSignatureService::CreateSignatureL(const CDesCArray& aCaNames,
         const TKeyUsageX509 aUsage, const TDesC& aSecurityElementPrompt)
 {
-    LOG(ESATSA, EInfo, "+ CSTSSignatureService::CreateSignatureL");
     HBufC* sePrompt = NULL;
     if (aSecurityElementPrompt != KNullDesC())
     {
@@ -592,14 +549,10 @@ HBufC8* CSTSSignatureService::CreateSignatureL(const CDesCArray& aCaNames,
     }
     delete iSecurityElementPrompt;
     iSecurityElementPrompt = sePrompt;
-    LOG(ESATSA, EInfo, "CSTSSignatureService::CreateSignatureL: call findcertificates");
     FindCertificatesL(aCaNames, aUsage);
-    LOG(ESATSA, EInfo, "CSTSSignatureService::CreateSignatureL: After call to findcertificates");
     WaitForCompletionL();
-    LOG(ESATSA, EInfo, "CSTSSignatureService::CreateSignatureL: call WaitForCompletion");
     HBufC8* retVal = iSignature;
     iSignature = NULL;
-    LOG(ESATSA, EInfo, "-- ret CSTSSignatureService::CreateSignatureL");
     return retVal;
 }
 // -----------------------------------------------------------------------------
@@ -611,7 +564,6 @@ void CSTSSignatureService::FindCertificatesL(const CDesCArray& aCaNames,
         const TKeyUsageX509 aUsage)
 {
 
-    LOG(ESATSA, EInfo, "+ CSTSSignatureService::FindCertificatesL");
     iFilter->SetKeyUsage(aUsage);
     iFilter->SetOwnerType(EUserCertificate);
     iFilter->SetFormat(EX509Certificate);
@@ -654,7 +606,7 @@ void CSTSSignatureService::FindCertificatesL(const CDesCArray& aCaNames,
         iState = EListing;
         iCertStore->List(iCertInfos, *iFilter, iDERNames, iStatus);
     }
-    LOG(ESATSA, EInfo, "-- ret CSTSSignatureService::FindCertificatesL");
+    
 }
 
 // -----------------------------------------------------------------------------
@@ -664,7 +616,6 @@ void CSTSSignatureService::FindCertificatesL(const CDesCArray& aCaNames,
 //
 void CSTSSignatureService::HandlesFromCertInfosL()
 {
-    LOG(ESATSA, EInfo, "+ CSTSSignatureService::HandlesFromCertInfosL");
     TInt certificateCount = iCertInfos.Count();
     if (certificateCount == 0)
     {
@@ -675,7 +626,6 @@ void CSTSSignatureService::HandlesFromCertInfosL()
     iCertificateArray.Reset();
     for (TInt i = 0; i < certificateCount; i++)
     {
-        LOG(ESATSA, EInfo, "+ CSTSSignatureService::HandlesFromCertInfosL: No Certificates");
         User::LeaveIfError(iCertificateArray.Append(iCertInfos[i]->Handle()));
     }
 
@@ -684,18 +634,18 @@ void CSTSSignatureService::HandlesFromCertInfosL()
     {
     case EAuthWithoutText:
     {
-        LOG(ESATSA, EInfo, "CSTSSignatureService::HandlesFromCertInfosL: case EAuthWithoutText");
+#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS        
         iPKIDialog->UserAuthentication(iCertificateArray, iCertificateHandle,
                                        iStatus);
-        LOG(ESATSA, EInfo, "CSTSSignatureService::HandlesFromCertInfosL: over case EAuthWithoutText");
+#endif 
         break;
     }
     case EAuthWithText:
     {
-        LOG(ESATSA, EInfo, "CSTSSignatureService::HandlesFromCertInfosL: case EAuthWithText");
+#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
         iPKIDialog->UserAuthenticationText(*iTextToDisplay, iCertificateArray,
                                            iCertificateHandle, iStatus);
-        LOG(ESATSA, EInfo, "CSTSSignatureService::HandlesFromCertInfosL: over case EAuthWithText");
+#endif
         break;
     }
     case ESignWithText:
@@ -721,7 +671,6 @@ void CSTSSignatureService::HandlesFromCertInfosL()
 //
 void CSTSSignatureService::FindKeyL()
 {
-    LOG(ESATSA, EInfo, "+ CSTSSignatureService::FindKeyL");
     iKeyFilter.iKeyAlgorithm = CKeyInfoBase::EInvalidAlgorithm;
     iKeyFilter.iKeyId = iCertificate->SubjectKeyId();
 
@@ -740,7 +689,6 @@ void CSTSSignatureService::FindKeyL()
 //
 void CSTSSignatureService::OpenSignerL()
 {
-    LOG(ESATSA, EInfo, "+ CSTSSignatureService::OpenSignerL");
     // if key is not found, display security element prompt and search again
     if (iKeys.Count() == 0)
     {
@@ -803,8 +751,6 @@ void CSTSSignatureService::OpenSignerL()
 //
 void CSTSSignatureService::SignL()
 {
-    LOG(ESATSA, EInfo, "+ CSTSSignatureService::SignL");
-
     // first we create a digest of the message
 
     CSHA1* sha = CSHA1::NewL();
@@ -892,7 +838,6 @@ void CSTSSignatureService::SignL()
 //
 void CSTSSignatureService::CreateSignedDataL()
 {
-    LOG(ESATSA, EInfo, "+ CSTSSignatureService::CreateSignedDataL");
     CCTKeyInfo* keyInfo = iKeys[0];
 
     HBufC8* signature = NULL;
@@ -987,14 +932,16 @@ void CSTSSignatureService::CreateSignedDataL()
     if (iShowNotes)
     {
         iState = EFinalNote;
+#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS		
         iPKIDialog->Note(MPKIDialog::ESignatureDone, iStatus);
+#endif		
         SetActive();
     }
     else
     {
         Complete(KErrNone);
     }
-    LOG(ESATSA, EInfo, "-- ret CSTSSignatureService::CreateSignedDataL");
+
 }
 
 // -----------------------------------------------------------------------------

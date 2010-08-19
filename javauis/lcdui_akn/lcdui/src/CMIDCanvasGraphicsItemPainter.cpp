@@ -77,6 +77,12 @@ CMIDCanvasGraphicsItemPainter::~CMIDCanvasGraphicsItemPainter()
 {
     DEBUG("CMIDCanvasGraphicsItemPainter::~CMIDCanvasGraphicsItemPainter +");
 
+    // Removes the parent item from component container
+    if (iItem)
+    {
+        iItem->DeregisterCanvasGraphicsItem();
+    }
+
     // Release buffers
     ResetBuffers();
 
@@ -85,7 +91,7 @@ CMIDCanvasGraphicsItemPainter::~CMIDCanvasGraphicsItemPainter()
     {
         iDirectContainer->MdcRemoveContent(this);
     }
-
+    
     iItem = NULL;
 
     DEBUG("CMIDCanvasGraphicsItemPainter::~CMIDCanvasGraphicsItemPainter -");
@@ -291,7 +297,7 @@ void CMIDCanvasGraphicsItemPainter::SetItemSizeL(
 void CMIDCanvasGraphicsItemPainter::Dispose()
 {
     DEBUG("CMIDCanvasGraphicsItemPainter::Dispose +");
-
+    
     delete this;
 
     DEBUG("CMIDCanvasGraphicsItemPainter::Dispose -");

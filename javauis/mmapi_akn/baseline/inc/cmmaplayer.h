@@ -25,9 +25,11 @@
 #include "cmmaplayerevent.h"
 #include "mmmasourcestreamlistener.h"
 #include "mmmaplayerstatelistener.h"
+#include "mmmacallstateobserver.h"
 
 //  FORWARD DECLARATIONS
 class CMMADurationUpdater;
+class CMMACallStateMonitor;
 
 //  CONTANTS
 
@@ -52,7 +54,7 @@ const TInt KTimeUnknown = -1;
 */
 
 class CMMAPlayer : public CBase,
-        public MMMASourceStreamListener
+        public MMMASourceStreamListener, MMMACallStateObserver
 
 {
 public:
@@ -174,7 +176,7 @@ public: // New methods
      * Close the Player and release its resources. After this player is in
      * EClosed state and cannot be used anymore.
      */
-    virtual void CloseL();
+    IMPORT_C virtual void CloseL();
 
     /**
      * Gets duration.
@@ -216,6 +218,10 @@ public: // New methods
      */
     HBufC* ContentType() const;
 
+public: // from MMMACallStateObserver
+	
+    void HandleCallStateEventL(TUid aUid, TInt aKey);
+    
 public: // new methods
     /**
      * Sets Java listener object that will be used to post player events
@@ -451,6 +457,16 @@ protected: // Memeber data
      */
     CMMADurationUpdater* iDurationUpdater;
 
+		/**
+    * Used to get the callback for Call State Events.
+    */
+    CMMACallStateMonitor* iStateObserver; 
+    
+    /**
+     *  Used to determine if the Player is in Paused state
+     *  due to call or done by user.
+     */
+    TBool isPausedByCall;
 };
 
 

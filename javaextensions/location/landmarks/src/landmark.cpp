@@ -457,6 +457,11 @@ JNICALL Java_javax_microedition_location_Landmark__1setAddressInfo(
     return error;
 }
 
+LOCAL_C void dispose(CBase* aLandmark)
+{
+    delete aLandmark;
+}
+
 /*
  * Class:     javax_microedition_location_Landmark
  * Method:    _dispose
@@ -466,14 +471,15 @@ JNIEXPORT void
 JNICALL Java_javax_microedition_location_Landmark__1dispose(
     JNIEnv* /*aJniEnv*/,
     jobject /*aPeer*/,
-    jint /*aEventSourceHandle*/,
+    jint aEventSourceHandle,
     jint aLandmarkHandle)
 {
     JELOG2(EJavaLocation);
-
+    LocationFunctionServer* eventSource =
+        reinterpret_cast< LocationFunctionServer*>(aEventSourceHandle);
+    
     CBase* object = reinterpret_cast< CBase*>(aLandmarkHandle);
-
-    delete object;
+    eventSource->ExecuteTrap(dispose,object);
 }
 
 // End of file

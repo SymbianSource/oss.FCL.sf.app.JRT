@@ -81,6 +81,12 @@ CMIDCanvasGraphicsItem::~CMIDCanvasGraphicsItem()
 {
     DEBUG("CMIDCanvasGraphicsItem::~CMIDCanvasGraphicsItem +");
 
+    // When disposing item first, removes the painter parent
+    if (iItemPainter)
+    {
+        iItemPainter->SetItem(NULL);
+    }
+    
     // Remove this component from the container if set.
     if (iComponentContainer)
     {
@@ -313,7 +319,7 @@ void CMIDCanvasGraphicsItem::SetPosition(const TInt aX, const TInt aY)
 void CMIDCanvasGraphicsItem::Dispose()
 {
     DEBUG("CMIDCanvasGraphicsItem::Dispose +");
-
+    
     delete this;
 
     DEBUG("CMIDCanvasGraphicsItem::Dispose -");
@@ -370,6 +376,15 @@ void CMIDCanvasGraphicsItem::HandleResourceChange(TInt aType)
     }
 }
 
+void CMIDCanvasGraphicsItem::HandleForeground(TBool aForeground)
+{
+    // If Canvas goes to foreground and scaling is on,
+    // then we resize a CanvasGraphicsItem.
+    if (aForeground)
+    {
+        HandleChangeForScaling(EForegroundGained);
+    }
+}
 void CMIDCanvasGraphicsItem::HandleChangeForScaling(TChange aChange)
 {
     // Calling functions which set size and position.
@@ -380,7 +395,9 @@ void CMIDCanvasGraphicsItem::HandleChangeForScaling(TChange aChange)
     }
     SetPosition(iNonScaledPosition.iX, iNonScaledPosition.iY);
 
-    if (aChange == EResolutionChange || aChange == EFullscreenChange)
+    if (aChange == EResolutionChange
+            || aChange == EFullscreenChange
+            || aChange == EForegroundGained)
     {
         if (iUtils)
         {
@@ -406,4 +423,16 @@ void CMIDCanvasGraphicsItem::HandleChangeForScaling(TChange aChange)
 #endif // RD_JAVA_S60_RELEASE_9_2
 }
 
+void CMIDCanvasGraphicsItem::DeregisterCanvasGraphicsItem()
+{
+    // This method is called on item from painter, when painter is disposed 
+    // before disposal of item
+    if (iComponentContainer)
+    {
+        // Remove this component from the container if set.
+        iComponentContainer->UnregisterComponent(this);
+    }
+
+    iComponentContainer = NULL;
+}
 // End of file

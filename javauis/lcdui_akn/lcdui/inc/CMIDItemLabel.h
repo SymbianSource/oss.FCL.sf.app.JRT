@@ -91,6 +91,7 @@ public:
     void ResolutionChange();
     TInt ItemLabelMargin();
     void AdjustToSizeL(const TSize& aSize);
+    void LayoutItemLabel();
 
 private:
     CMIDItemLabel(TInt aMaxWidth, TBool aLabelBeforeContent, TInt aMaxNumberOfLines,

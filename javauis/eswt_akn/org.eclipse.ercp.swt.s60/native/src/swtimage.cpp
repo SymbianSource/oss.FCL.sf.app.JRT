@@ -95,7 +95,20 @@ CSwtImage* CSwtImage::NewL(CFbsBitmap& aBitmap, CFbsBitmap* aMask,
 {
     CSwtImage* self = new(ELeave) CSwtImage(NULL, NULL);
     CleanupStack::PushL(self);
-    self->ConstructL(aBitmap, aMask, aTopLeft, aDelayTime, aDisposalMethod);
+    self->ConstructL(aBitmap, aMask, aTopLeft, aDelayTime, aDisposalMethod, ETrue);
+    CleanupStack::Pop(self);
+    return self;
+}
+
+// ---------------------------------------------------------------------------
+// CSwtImage::NewL
+// ---------------------------------------------------------------------------
+//
+CSwtImage* CSwtImage::NewL(CFbsBitmap& aBitmap, CFbsBitmap* aMask)
+{
+    CSwtImage* self = new(ELeave) CSwtImage(NULL, NULL);
+    CleanupStack::PushL(self);
+    self->ConstructL(aBitmap, aMask, TPoint(0, 0), 0, KSwtDisposalUnspecified, EFalse);
     CleanupStack::Pop(self);
     return self;
 }
@@ -263,10 +276,11 @@ void CSwtImage::ConstructL(const MSwtImageData& aData)
 // ---------------------------------------------------------------------------
 //
 void CSwtImage::ConstructL(CFbsBitmap& aBitmap, CFbsBitmap* aMask,
-                           const TPoint& aTopLeft, TInt aDelayTime, TSwtGifDisposal aDisposalMethod)
+                           const TPoint& aTopLeft, TInt aDelayTime,
+                           TSwtGifDisposal aDisposalMethod, TBool aBmpOwnExternally)
 {
-    // Caution: when using this constructor you depend on the external bitmap's lifetime
-    iOwnExternally = ETrue;
+    // Caution: if true, the object depends on the external bitmap's lifetime
+    iOwnExternally = aBmpOwnExternally;
 
     iBitmap = &aBitmap;
     iMask = aMask;
@@ -1600,12 +1614,50 @@ CFbsBitmap& CSwtImage::GetSubBitmap(const TSize& aSize) const
         // NOTE! iScaledMasksInverted entries are valid only if
         // the main mask is monochrome. Otherwise they are NULL
         // and iScaledMasks entries should be used instead.
-        iScaledBitmapRefs.Append(0);
-        iScaledBitmaps.Append(bmp);
-        iScaledMasks.Append(mask);
-        iScaledMasksInverted.Append(maski);
+        TInt err = KErrNone;
+        TInt appendCount = 0;
+        err = iScaledBitmapRefs.Append(0);
+        if (err == KErrNone)
+        {
+            ++appendCount;
+            err = iScaledBitmaps.Append(bmp);
+        }
+        if (err == KErrNone)
+        {
+            ++appendCount;
+            err = iScaledMasks.Append(mask);
+        }
+        if (err == KErrNone)
+        {
+            ++appendCount;
+            err = iScaledMasksInverted.Append(maski);
+        }
+
+        if (err)
+        {
+            if (appendCount > 0)
+            {
+                iScaledBitmapRefs.Remove(iScaledBitmapRefs.Count() - 1);
+            }
+            if (appendCount > 1)
+            {
+                iScaledBitmaps.Remove(iScaledBitmaps.Count() - 1);
+            }
+            if (appendCount > 2)
+            {
+                iScaledMasks.Remove(iScaledMasks.Count() - 1);
+            }
+
+            delete bmp;
+            bmp = NULL;
+            delete mask;
+            mask = NULL;
+            delete maski;
+            maski = NULL;
+        }
     }
-    else
+
+    if (!bmp)
     {
         // In the case of no memory or whatever
         ASSERT(EFalse);

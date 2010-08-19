@@ -18,6 +18,7 @@
 PRJ_PLATFORMS
 default
 
+#include "nokiasound/build/bld.inf"    
 #include "amms_akn/build/bld.inf"    
 #include "coreui_akn/build/bld.inf"    
 #include "eswt_akn/eswtdirectcontent/build/bld.inf"    
@@ -25,7 +26,6 @@ default
 #include "m2g_akn/build/bld.inf"    
 #include "m3g_akn/build/bld.inf"    
 #include "mmapi_akn/build/bld.inf"    
-#include "nokiasound_akn/build/bld.inf"    
 #include "remconobserver_akn/build/bld.inf"    
 #include "runtimeui_akn/build/bld.inf"    
 #include "softnotification_akn/build/bld.inf"    

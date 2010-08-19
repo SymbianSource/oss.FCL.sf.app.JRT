@@ -123,11 +123,7 @@ void CMIDTextFieldEdwin::DoLayout(const TRect& aRect)
     }
     else
     { // skinning colour groups for editable text
-        // Set color for content text (logical color constants 
-        // are defined in lcdui.h)
-        skinTextColor = IsFocused() ?
-                        TAknsQsnTextColorsIndex(KHighlightedItemTextColor)
-                        : TAknsQsnTextColorsIndex(KNonHighlightedItemTextColor);
+        skinTextColor = IsFocused() ? EAknsCIQsnTextColorsCG8 : EAknsCIQsnTextColorsCG6;
     }
 
     TRect parentRect = aRect;

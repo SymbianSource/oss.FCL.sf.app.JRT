@@ -37,6 +37,7 @@
 #include <bldvariant.hrh>
 
 #include "logger.h"                     // LOG
+#include "iconsizeutils.h"              // IconSizeUtils::GetIconSizes
 
 // MIDlet icon file name
 _LIT(KAppMngr2MidletIconFileNameMif, "AppMngr2Midlet.mif");
@@ -270,5 +271,8 @@ void CAppMngr2MidletRuntime::ConstructL()
     LOG(EJavaAppMngrPlugin, EInfo, " + CAppMngr2MidletRuntime::ConstructL ");
     iJavaRegistry = Java::CJavaRegistry::NewL();
     iResourceHandler = CAppMngr2MidletResourceHandler::NewL();
+    iJavaRasterIconSize = IconSizeUtils::GetIconSizes().iAppMgrIconSize;
+    ILOG2(EJavaAppMngrPlugin, "Java icon size (%d, %d)", 
+        iJavaRasterIconSize.iWidth, iJavaRasterIconSize.iHeight);
     LOG(EJavaAppMngrPlugin, EInfo, " - CAppMngr2MidletRuntime::ConstructL ");
 }

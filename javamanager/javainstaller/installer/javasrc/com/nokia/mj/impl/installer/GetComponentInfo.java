@@ -480,6 +480,15 @@ public class GetComponentInfo
                         suiteUid, null,
                         iSecurityAttributes.getAuthenticationAttributes());
 
+                if (authenticationCredentials != null)
+                {
+                    for (int i = 0; i < authenticationCredentials.length; i++)
+                    {
+                        String domain = authenticationCredentials[i]
+                            .getProtectionDomainCategory();
+                        Log.log("Protection domain: " + domain);
+                    }
+                }
                 if (iJarFilename != null)
                 {
                     // Authenticate jar.

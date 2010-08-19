@@ -581,4 +581,9 @@ void CMIDChoiceGroupListBox::SetHighlight(TBool aVisible)
 {
     iHighlight = aVisible;
 }
+
+TBool CMIDChoiceGroupListBox::GetHighlight()
+{
+    return iHighlight;
+}
 #endif // RD_JAVA_S60_RELEASE_9_2

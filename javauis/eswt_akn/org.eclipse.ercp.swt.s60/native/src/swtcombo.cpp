@@ -294,7 +294,7 @@ void CSwtCombo::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 
     if (pressed != iPressed)
     {
-        Redraw();
+        GetShell().UpdateHighlight(ETrue); // draw now
     }
 
     PostMouseEventL(aPointerEvent);
@@ -468,6 +468,7 @@ void CSwtCombo::ProcessKeyEventL(const TKeyEvent& aKeyEvent, TEventCode aType)
         {
             if (!iOpen)
             {
+                Invalidate(Rect());
                 DoOpenL();
                 iDisplay.PostDefaultSelectionEventL(iPeer);
             }
@@ -517,6 +518,16 @@ void CSwtCombo::SwtHandleResourceChangeL(TInt aType)
 HBufC* CSwtCombo::MSKLabelL() const
 {
     return iEikonEnv->AllocReadResourceL(R_QTN_MSK_OPEN);
+}
+
+// ---------------------------------------------------------------------------
+// CSwtCombo::PressBackgroundPolicy
+// From MSwtControl
+// ---------------------------------------------------------------------------
+//
+TInt CSwtCombo::PressBackgroundPolicy() const
+{
+    return EEmbeddedPressBackground;
 }
 
 // ---------------------------------------------------------------------------
@@ -1346,7 +1357,9 @@ void CSwtCombo::HandleControlEventL(
 
         // Get new selection
         iPrevSelIdx = iCombo->SelectedIndex();
-        Redraw();
+
+        // Remove the pressed down highlight
+        GetShell().UpdateHighlight(ETrue);
     }
 }
 

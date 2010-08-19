@@ -24,12 +24,8 @@
        file -->
 
   <target name="compile">
-    <omj.javac classpath="${classpath}:${impl.cldc.jar}"/>
+    <omj.javac classpath="${compile.result.root}/javalegacyutils/classes/collection:${compile.result.root}/javalcdui/classes/first"/>
   </target>
-
-
-  <!-- Needed by the utilities.xml. See the description form the utilities.xml
-       file -->
 
   <property name="javah.classnames" 
             value="com.nokia.microedition.m2g.M2GDocument,

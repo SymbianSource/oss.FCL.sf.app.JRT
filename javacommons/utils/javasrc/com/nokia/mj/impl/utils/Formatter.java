@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -28,6 +28,7 @@ import java.util.Date;
  * <UL>
  * <LI>%nU - String in position n
  * <LI>%U - Next string
+ * <LI>%Ln - Integer in position n
  * <LI>%nN - Integer in position n
  * <LI>%N - Next integer
  * <LI>%nC - Character in position n
@@ -60,7 +61,7 @@ public class Formatter
     private String replaced;
 
     /** Next replacement index */
-    private int nextIndex = 0;
+    private int nextIndex = (ResourceLoader.getLocaleIdQt() == null? 0: 1);
 
     /*** ----------------------------- PUBLIC ------------------------------ */
 
@@ -69,7 +70,7 @@ public class Formatter
      *
      * @param pattern formatter pattern
      */
-    public Formatter(String aPattern)
+    Formatter(String aPattern)
     {
         pattern = aPattern;
         replaced = aPattern;
@@ -90,11 +91,12 @@ public class Formatter
                 replace("%U", string))
         {
             nextIndex++;
-
         }
         else
         {
-            Logger.WLOG(Logger.EUtils, "String replacement failed");
+            Logger.WLOG(Logger.EUtils,
+                        "String replacement failed on parameter " +
+                        nextIndex + ": " + pattern);
         }
         return this;
     }
@@ -110,8 +112,9 @@ public class Formatter
     {
         String localisedNumber = _formatInteger(number);
 
-        // Try to replace with patterns %nN, %n, %N
-        if (replace("%" + nextIndex + "N", localisedNumber) ||
+        // Try to replace with patterns %Ln, %nN, %n, %N
+        if (replace("%" + "L" + nextIndex, localisedNumber) ||
+                replace("%" + nextIndex + "N", localisedNumber) ||
                 replace("%" + nextIndex, localisedNumber) ||
                 replace("%N", localisedNumber))
         {
@@ -120,7 +123,9 @@ public class Formatter
         }
         else
         {
-            Logger.WLOG(Logger.EUtils, "Integer replacement failed");
+            Logger.WLOG(Logger.EUtils,
+                        "Integer replacement failed on parameter " +
+                        nextIndex + ": " + pattern);
         }
         return this;
     }
@@ -146,7 +151,9 @@ public class Formatter
         }
         else
         {
-            Logger.WLOG(Logger.EUtils, "Character replacement failed");
+            Logger.WLOG(Logger.EUtils,
+                        "Character replacement failed on parameter " +
+                        nextIndex + ": " + pattern);
         }
         return this;
     }
@@ -208,7 +215,7 @@ public class Formatter
 
         // Reset for next usage
         replaced = pattern;
-        nextIndex = 0;
+        nextIndex = (ResourceLoader.getLocaleIdQt() == null? 0: 1);
 
         return result;
     }

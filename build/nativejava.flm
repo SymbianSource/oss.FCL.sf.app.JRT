@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+# Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
 # All rights reserved.
 # This component and the accompanying materials are made available
 # under the terms of "Eclipse Public License v1.0"
@@ -23,23 +23,67 @@
 #  therefore the jrt-directory is found from finding first directory having
 #  subsystem.mk, going up to max. three directory levels)
 
-JAVABUILDDIR = $(dir $(firstword $(wildcard $(TO_BLDINF)/subsystem.mk $(TO_BLDINF)/../subsystem.mk $(TO_BLDINF)/../../subsystem.mk)))
+JAVABUILDDIR:= $(dir $(firstword $(wildcard $(TO_BLDINF)/subsystem.mk $(TO_BLDINF)/../subsystem.mk $(TO_BLDINF)/../../subsystem.mk)))
 
-JAVABUILDCMD = make -C $(JAVABUILDDIR) -f subsystem.mk EPOCROOT=$(EPOCROOT)/ \
+# General Java makefile command
+JAVACMD:= make -C $(JAVABUILDDIR) -f subsystem.mk EPOCROOT=$(EPOCROOT)/ \
                PLATFORM=$(PLATFORM) CFG=$(CFG) BLD_INF_JAVA=1
 
-define java_build
-RESOURCE::
+# General build command, targetting armv5 urel files
+JAVABUILDCMD:= make -C $(JAVABUILDDIR) -f subsystem.mk EPOCROOT=$(EPOCROOT)/ \
+               PLATFORM=armv5 CFG=urel BLD_INF_JAVA=1 java finalactions
+
+# Marker file to prevent multiple Java compilations of the
+# same platform/cfg, when building e.g. device variants.
+NATIVEJAVAMARKER := $(EPOCBLD)/nativejavamarker_$(PLATFORM)_$(CFG).done
+
+# Java build artifact file source and target
+JAVABUILD_ARTIFACT_SRC := $(EPOCROOT)/epoc32/release/armv5/urel
+JAVABUILD_ARTIFACT_DST := $(EPOCROOT)/epoc32/release/$(PLATFORM)/$(CFG)
+
+define compilenativejava
+
+# This is the general Java compilation, done once for the component
+ifeq ($(GUARD_nativejavatarget),)
+GUARD_nativejavatarget:=1
+.PHONY:: nativejavatarget
+nativejavatarget:
 	$(call startrule,compilenativejava,,javasources) \
-	$(JAVABUILDCMD) java finalactions\
+	$(JAVABUILDCMD) \
 	$(call endrule,compilenativejava)
+endif 
+
+# Actual resource target, one for each platform/cfg variant
+ifeq ($(GUARD_$(call sanitise,$(NATIVEJAVAMARKER))),)
+GUARD_$(call sanitise,$(NATIVEJAVAMARKER)):=1
+
+RESOURCE:: $(NATIVEJAVAMARKER)
+
+# Copy the build artifacts to target
+$(NATIVEJAVAMARKER): nativejavatarget
+ifeq ($(filter armv5_urel ARMV5_urel ARMV5_UREL,$(PLATFORM)_$(CFG)),)
+	$(call makepath,$(JAVABUILD_ARTIFACT_DST)/z/resource/java/jvm/lib/jrt)
+	$(call makepath,$(JAVABUILD_ARTIFACT_DST)/z/resource/java/security)
+	$(call startrule,copynativejavaresults) \
+	$(foreach f,java_impl_cdc.jar java_impl_cldc.jar java_platform_api.jar java_public_api.jar java_signature_test.jar, $(GNUCP) -v $(JAVABUILD_ARTIFACT_SRC)/$f $(JAVABUILD_ARTIFACT_DST) &&) \
+	$(GNUCP) -Rv $(JAVABUILD_ARTIFACT_SRC)/z/resource/java/jvm/lib/jrt $(JAVABUILD_ARTIFACT_DST)/z/resource/java/jvm/lib && \
+	$(GNUCP) -Rv $(JAVABUILD_ARTIFACT_SRC)/z/resource/java/security $(JAVABUILD_ARTIFACT_DST)/z/resource/java \
+	$(call endrule,copynativejavaresults)
+endif
+endif
+
+# Use normal clean for all variants
 CLEAN::
 	$(call startrule,cleannativejava,,javasources) \
-	$(JAVABUILDCMD) clean_java \
+	$(JAVACMD) clean_java \
 	$(call endrule,cleannativejava)
 endef
 
-$(eval $(java_build))
+$(eval $(compilenativejava))
 
-RELEASABLES = $(shell $(JAVABUILDCMD) -s javareleasables)
+RELEASABLES:= $(shell $(JAVACMD) -s javareleasables)
 $(eval $(call whatmacro,$(RELEASABLES),WHATRESOURCES))
+
+$(eval $(call GenerateStandardCleanTarget,$(NATIVEJAVAMARKER)))
+
+

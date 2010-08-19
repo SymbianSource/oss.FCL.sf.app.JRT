@@ -27,7 +27,7 @@ class ApnSettings
 
 public :
     static int setDefaultApn(int aType, int aApn);
-    static void removeDefaultApn();
+   
 };
 
 

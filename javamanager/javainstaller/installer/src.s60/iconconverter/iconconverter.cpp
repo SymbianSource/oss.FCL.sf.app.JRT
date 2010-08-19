@@ -20,11 +20,14 @@
 
 #include <zipfile.h>
 #include <time.h>
+#include <bitmaptransforms.h>
 
 #include "javacommonutils.h"
 #include "logger.h"
 #include "mifconverter.h"
 #include "iconconverter.h"
+#include "iconsizeutils.h"      // TIconSizes 
+#include "iconsizenotifier.h"   // KUidIconSizeNotifPlugin
 
 namespace java
 {
@@ -32,12 +35,13 @@ namespace java
 /**
  * The icon in S60 temporary drive
  */
-_LIT(KTempIconName, "D:\\micon.mbm");
+_LIT(KTempIconName1, "D:\\micon1.mbm");
+_LIT(KTempMaskName1, "D:\\mmask1.mbm");
 
-/**
- * The mask in S60 temporary drive
- */
-_LIT(KTempMaskName, "D:\\mmask.mbm");
+#ifdef RD_JAVA_S60_RELEASE_9_2
+_LIT(KTempIconName2, "D:\\micon2.mbm");
+_LIT(KTempMaskName2, "D:\\mmask2.mbm");
+#endif // RD_JAVA_S60_RELEASE_9_2
 
 
 // MIF file constants
@@ -51,12 +55,10 @@ const TInt KMifIconHeaderType = 1;
 const TInt KMifIconHeaderAnimated = 0;
 
 
-
 CIconConverter* CIconConverter::NewL(RFs& aRFs)
 {
     return new(ELeave) CIconConverter(aRFs);
 }
-
 
 CIconConverter::CIconConverter(RFs &aRFs)
 {
@@ -79,6 +81,8 @@ CIconConverter::~CIconConverter()
     // Do NOT close file server session
     delete iBitmapMask;
     delete iBitmap;
+    delete iBitmapMaskScaledCopy;
+    delete iBitmapScaledCopy;
     delete iImageDecoder;
 
     RFbsSession::Disconnect();
@@ -246,34 +250,77 @@ int CIconConverter::ConvertNormalIconL(
                            *iBitmapMask);
 
     CActiveScheduler::Start();
-    err = iActiveListener->iStatus.Int();
+    User::LeaveIfError(iActiveListener->iStatus.Int());
+
+    // Scale icons
+    TIconSizes sizes(GetIdealIconSizes());
+    CBitmapScaler* scaler = CBitmapScaler::NewL();
+    CleanupStack::PushL(scaler);
+    scaler->SetQualityAlgorithm(CBitmapScaler::EMaximumQuality);
+
+    // Scale for Menu
+    ILOG2(EJavaInstaller, "Scaling Menu icon to (%d, %d)", 
+        sizes.iMenuIconSize.iWidth, sizes.iMenuIconSize.iHeight);
+    iBitmapScaledCopy = new(ELeave) CFbsBitmap;
+    iBitmapMaskScaledCopy = new(ELeave) CFbsBitmap;
+    ScaleL(*scaler, sizes.iMenuIconSize);
+    User::LeaveIfError(iBitmapScaledCopy->Save(KTempIconName1));
+    User::LeaveIfError(iBitmapMaskScaledCopy->Save(KTempMaskName1));
+    iBitmapScaledCopy->Reset();
+    iBitmapMaskScaledCopy->Reset();
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    // Scale for App Manager
+    ILOG2(EJavaInstaller, "Scaling App Mgr icon to (%d, %d)", 
+        sizes.iMenuIconSize.iWidth, sizes.iMenuIconSize.iHeight);
+    ScaleL(*scaler, sizes.iAppMgrIconSize);
+    User::LeaveIfError(iBitmapScaledCopy->Save(KTempIconName2));
+    User::LeaveIfError(iBitmapMaskScaledCopy->Save(KTempMaskName2));
+    iBitmapScaledCopy->Reset();
+    iBitmapMaskScaledCopy->Reset();
+#endif // RD_JAVA_S60_RELEASE_9_2
+
+    CleanupStack::PopAndDestroy(scaler);
     delete iActiveListener;
     iActiveListener = NULL;
-    if (err != KErrNone)
-    {
-        User::Leave(err);
-    }
 
-    // store bitmap to two temp files
-    User::LeaveIfError(iBitmap->Save(KTempIconName));
-    User::LeaveIfError(iBitmapMask->Save(KTempMaskName));
-
-    // construct multi bitmap file from bitmap and mask files (2 files)
+    // Construct multi bitmap file from bitmap and mask files (2 files)
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    const TInt KBmpCount = 4;
+    TInt32 sourceIds[] = {0, 0, 0, 0};
+#else
+    const TInt KBmpCount = 2;
     TInt32 sourceIds[] = {0, 0};
-    TFileName** filenames = new(ELeave) TFileName*[2];
+#endif // RD_JAVA_S60_RELEASE_9_2
+    
+    TFileName** filenames = new(ELeave) TFileName*[KBmpCount];
     CleanupStack::PushL(filenames);
-    filenames[0] = new(ELeave) TFileName(KTempIconName);
+    filenames[0] = new(ELeave) TFileName(KTempIconName1);
     CleanupStack::PushL(filenames[0]);
-    filenames[1] = new(ELeave) TFileName(KTempMaskName);
+    filenames[1] = new(ELeave) TFileName(KTempMaskName1);
     CleanupStack::PushL(filenames[1]);
-
-    CFbsBitmap::StoreL(aOutputFile, 2, (const TDesC**)filenames, sourceIds);
+    
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    filenames[2] = new(ELeave) TFileName(KTempIconName2);
+    CleanupStack::PushL(filenames[2]);
+    filenames[3] = new(ELeave) TFileName(KTempMaskName2);
+    CleanupStack::PushL(filenames[3]);
+#endif // RD_JAVA_S60_RELEASE_9_2
+    
+    CFbsBitmap::StoreL(aOutputFile, KBmpCount, (const TDesC**)filenames, sourceIds);
 
     // Now try to delete the temp icon and mask files,
     // ignore possible errors
-    (void)iRFs.Delete(KTempIconName);
-    (void)iRFs.Delete(KTempMaskName);
-
+    (void)iRFs.Delete(KTempIconName1);
+    (void)iRFs.Delete(KTempMaskName1);
+    
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    (void)iRFs.Delete(KTempIconName2);
+    (void)iRFs.Delete(KTempMaskName2);
+    CleanupStack::PopAndDestroy(filenames[3]);
+    CleanupStack::PopAndDestroy(filenames[2]);
+#endif // RD_JAVA_S60_RELEASE_9_2
+    
     CleanupStack::PopAndDestroy(filenames[1]);
     CleanupStack::PopAndDestroy(filenames[0]);
     CleanupStack::PopAndDestroy(filenames);
@@ -369,6 +416,66 @@ void CIconConverter:: LogAllSupportedMimeTypes()
     }
 
     mimeTypes.ResetAndDestroy();
+}
+
+void CIconConverter::ScaleL(CBitmapScaler& aScaler, const TSize aSize)
+{
+    ASSERT(iBitmapScaledCopy);
+    ASSERT(iBitmapMaskScaledCopy);
+
+    User::LeaveIfError(iBitmapScaledCopy->Create(aSize, EColor16M));
+    User::LeaveIfError(iBitmapMaskScaledCopy->Create(aSize, EGray256));
+
+    iActiveListener->InitialiseActiveListener();
+    aScaler.Scale(&iActiveListener->iStatus, *iBitmap, *iBitmapScaledCopy, ETrue);
+    CActiveScheduler::Start();
+    User::LeaveIfError(iActiveListener->iStatus.Int());
+
+    iActiveListener->InitialiseActiveListener();
+    aScaler.Scale(&iActiveListener->iStatus, *iBitmapMask, *iBitmapMaskScaledCopy, ETrue);
+    CActiveScheduler::Start();
+    User::LeaveIfError(iActiveListener->iStatus.Int());
+}
+
+TIconSizes CIconConverter::GetIdealIconSizes()
+{
+    TIconSizes fallbackSizes;
+    fallbackSizes.iMenuIconSize = TSize(KIconInMenuFallbackSize, KIconInMenuFallbackSize);
+    fallbackSizes.iAppMgrIconSize = TSize(KIconInAppMgrFallbackSize, KIconInAppMgrFallbackSize);
+    
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    RNotifier notifier;
+    TInt err = notifier.Connect();
+    if (KErrNone != err)
+    {
+        ELOG1(EJavaInstaller, "CIconConverter::GetIdealIconSizes #1 err = %d", err);
+        return fallbackSizes;
+    }
+    
+    CleanupClosePushL(notifier);
+
+    TPckgBuf<TIconSizes> des;
+    iActiveListener->InitialiseActiveListener();
+    notifier.StartNotifierAndGetResponse(iActiveListener->iStatus,
+                                         KUidIconSizeNotifPlugin, des, des);
+    CActiveScheduler::Start();
+    notifier.CancelNotifier(KUidIconSizeNotifPlugin);
+    err = iActiveListener->iStatus.Int();
+    
+    CleanupStack::PopAndDestroy(&notifier);
+    
+    if (KErrNone != err)
+    {
+        ELOG1(EJavaInstaller, "CIconConverter::GetIdealIconSizes #2 err = %d", err);
+        return fallbackSizes;
+    }
+    else
+    {
+        return des();
+    }
+#else
+    return fallbackSizes;
+#endif
 }
 
 } // namespace java

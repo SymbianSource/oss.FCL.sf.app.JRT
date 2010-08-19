@@ -2,4 +2,5 @@ domain UnidentifiedThirdParty;
 grant user "Net Access" oneshot,no {
     permission javax.microedition.io.HttpProtocolPermission "http://*";
     permission javax.microedition.io.HttpsProtocolPermission "https://*";
+    permission javax.microedition.io.Connector.rtsp "*";
 }

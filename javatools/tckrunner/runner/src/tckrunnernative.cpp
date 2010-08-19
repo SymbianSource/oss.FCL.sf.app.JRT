@@ -58,12 +58,13 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_tckrunner_Installer__1launchJavaIn
 {
     int rc = 0;
 
-    const char* av[MAX_PARAMS + 5];
+    const char* av[MAX_PARAMS + 6];
     int index = 0;
     av[index++] = java::runtime::JAVA_PROCESS;
     av[index++] = java::runtime::JAVA_INSTALLER_STARTER_DLL;
     av[index++] = "poll";
     av[index++] = "-address=tck";
+    av[index++] = "-drive=C";
 
     int args = aEnv->GetArrayLength(aArgs);
     char** installerArgs = new char*[args];

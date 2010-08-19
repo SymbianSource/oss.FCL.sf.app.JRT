@@ -22,13 +22,13 @@
 // INCLUDE
 #include <e32base.h>
 
-
-
-
 // FORWARD DECLARATIONS
-class CAknGlobalNote;
-class CAOSynchronizer;
+#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
 
+class CAOSynchronizer;
+class CAknGlobalNote;
+
+#endif
 // CLASS DECLARATION
 
 /**
@@ -71,11 +71,14 @@ private: // Constructors and destructor
 
 
 private: // data
-
+    #ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
     // displays the prompt asynchronously, owned
     CAknGlobalNote* iGlobalNote;
     // waits for the prompt to finish, owned
     CAOSynchronizer* iSynchronizer;
+    
+    #endif
+    
 
 };
 

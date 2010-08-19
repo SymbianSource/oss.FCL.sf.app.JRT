@@ -119,7 +119,7 @@ static void startPreinstallationL()
 
     // Start active scheduler. Preinstallation starts.
     LOG(EJavaPreinstaller, EInfo, "startPreinstallationL: Starting CActiveScheduler");
-    CActiveScheduler::Start();
+    CActiveScheduler::Start(); // codescanner::activestart
 
     // Now preinstallation has been done
     LOG(EJavaPreinstaller, EInfo, "startPreinstallationL: Cleaning up");

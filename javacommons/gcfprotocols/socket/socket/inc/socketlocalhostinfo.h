@@ -27,7 +27,7 @@ class SocketLocalHostInfo
 public:
 
     OS_IMPORT static int getLocalAddress(int aSd, char *aLocalAddr, int aMidletIapId, int aApType);
-
+    static char* getLocalHostName();
 
 };
 

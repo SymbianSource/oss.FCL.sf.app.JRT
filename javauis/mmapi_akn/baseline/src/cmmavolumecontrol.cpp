@@ -20,9 +20,9 @@
 #include "cmmaplayer.h"
 #include "cmmavolumecontrol.h"
 #include <jdebug.h>
-#include <mprofile.h>
-#include <mprofileengine.h>
-#include <cprofilechangenotifyhandler.h>
+#include <MProfile.h>
+#include <MProfileEngine.h>
+#include <CProfileChangeNotifyHandler.h>
 
 _LIT(KMMAVolumeErrorMsg, "Can't set volume level");
 
@@ -46,20 +46,20 @@ void CMMAVolumeControl::StaticGetLevelL(CMMAVolumeControl* aVolumeControl,
 }
 
 
-CMMAVolumeControl::CMMAVolumeControl(CMMAPlayer* aPlayer)
+EXPORT_C CMMAVolumeControl::CMMAVolumeControl(CMMAPlayer* aPlayer)
         : iPlayer(aPlayer), iLevel(KMMAVolumeMaxLevel)
 {
 }
 
 
-CMMAVolumeControl::~CMMAVolumeControl()
+EXPORT_C CMMAVolumeControl::~CMMAVolumeControl()
 {
     delete iProfChangeNotifier;
     iLevels.Close();
 }
 
 
-void CMMAVolumeControl::ConstructBaseL()
+EXPORT_C void CMMAVolumeControl::ConstructBaseL()
 {
     iPlayer->AddStateListenerL(this);
 
@@ -114,8 +114,8 @@ void CMMAVolumeControl::SetProfilesBasedSoundMutingL()
     iLevel = CalculateLevel();
 
 }
-void CMMAVolumeControl::HandleActiveProfileEventL(TProfileEvent aProfileEvent,
-        TInt aProfileId)
+EXPORT_C void CMMAVolumeControl::HandleActiveProfileEventL(
+                                 TProfileEvent aProfileEvent, TInt aProfileId)
 {
     switch (aProfileEvent)
     {
@@ -157,7 +157,7 @@ void CMMAVolumeControl::HandleActiveProfileEventL(TProfileEvent aProfileEvent,
 
 
 
-const TDesC& CMMAVolumeControl::ClassName() const
+EXPORT_C const TDesC& CMMAVolumeControl::ClassName() const
 {
     return KMMAVolumeControlName;
 }
@@ -172,7 +172,7 @@ void CMMAVolumeControl::SetLevelL(TInt aLevel)
     iLevel = aLevel;
 }
 
-void CMMAVolumeControl::StateChanged(TInt aState)
+EXPORT_C void CMMAVolumeControl::StateChanged(TInt aState)
 {
     DEBUG_INT("CMMAVolumeControl::StateChanged - state %d", aState);
     // Set the volume if the player is prefetched
@@ -204,10 +204,12 @@ void CMMAVolumeControl::StateChanged(TInt aState)
     {
         if ((iLevels.Count() - 1) == KMMAGlobalVolumeSoundIndex)
         {
-            DEBUG("MMA::CMMAVolumeControl::StateChanged : Post GLOBAL VOL EVENT  ");
-            if (iLevels[ KMMAGlobalVolumeSoundIndex ] != KErrNotFound)
+            if ((iLevels[ KMMAGlobalVolumeSoundIndex ] != KErrNotFound) && 
+            (iLevels[ KMMAGlobalVolumeSoundIndex] != iInitialGlobalVolumeLevel))
             {
-                DEBUG_INT("MMA::CMMAVolumeControl::StateChanged : Post complete Val = %d ",iLevels[ KMMAGlobalVolumeSoundIndex ]);
+                DEBUG("MMA::CMMAVolumeControl::StateChanged : Post GLOBAL VOL EVENT  ");
+                DEBUG_INT("MMA::CMMAVolumeControl::StateChanged : Post complete Val = %d ",
+                                       iLevels[ KMMAGlobalVolumeSoundIndex ]);
                 iPlayer->PostLongEvent(CMMAPlayerEvent::ENOKIA_EXTERNAL_VOLUME_EVENT,
                                        iLevels[ KMMAGlobalVolumeSoundIndex ]);
             }
@@ -215,7 +217,7 @@ void CMMAVolumeControl::StateChanged(TInt aState)
     }
 }
 
-void CMMAVolumeControl::RefreshVolume()
+EXPORT_C void CMMAVolumeControl::RefreshVolume()
 {
     DEBUG("MMA::CMMAVolumeControl::RefreshVolume ++ ");
     TRAPD(error,
@@ -238,7 +240,7 @@ void CMMAVolumeControl::RefreshVolume()
     DEBUG("MMA::CMMAVolumeControl::RefreshVolume -- ");
 }
 
-void CMMAVolumeControl::RefreshControl()
+EXPORT_C void CMMAVolumeControl::RefreshControl()
 {
     RefreshVolume();
 }
@@ -283,6 +285,10 @@ EXPORT_C void CMMAVolumeControl::SetVolumeLevelL(TInt aLevelIndex,
     }
 }
 
+void CMMAVolumeControl::InitializeGlobalVolumeLevel(TInt aGlobalVolumeLevel)
+{
+    iInitialGlobalVolumeLevel = aGlobalVolumeLevel;
+}
 void CMMAVolumeControl::GetVolumeLevelL(TInt aLevelIndex,
                                         TInt* aVolumeLevel)
 {
@@ -330,6 +336,7 @@ TInt CMMAVolumeControl::CalculateLevel()
     // Actual sound level will be multiplying all levels.
     for (TInt i = 0; i < levelCount; i++)
     {
+        DEBUG_INT2("CMMAVolumeControl::CalculateLevel value at iLevels[ %d ] is %d",i,iLevels[i]);
         // If the level is not known it is expected to be max volume
         level = (iLevels[ i ] == KErrNotFound ?
                  level * KMMAVolumeMaxLevel :

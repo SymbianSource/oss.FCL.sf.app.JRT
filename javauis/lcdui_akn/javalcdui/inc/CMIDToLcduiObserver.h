@@ -131,6 +131,18 @@ public:
      */
     void InvokeUICallback(MUiEventConsumer& aConsumer, TInt aCallbackId);
 
+    /**
+     * Invokes MDirectContainer::InvokeLcduiEvent in UI thread.
+     *
+     * @since S60 9.2
+     * @param aControl CCoeControl pointer needed for checking that registered
+     *                 control has not unregistered yet.
+     * @param aContainer The container to be notifed.
+     */
+    void InvokeLcduiEvent(
+         MMIDLcduiEventConsumer& aConsumer,
+         TInt aCallbackId);
+
 private:
     /** CMIDToLcduiObserver event datatype */
     enum TToLcduiEventType
@@ -141,6 +153,7 @@ private:
 #ifdef RD_JAVA_NGA_ENABLED
         ,ENotifyContentAdded
 #endif
+        ,ELcduiEvent
     };
 
     /** CMIDToLcduiObserver event content datatype */
@@ -149,7 +162,7 @@ private:
         TToLcduiEventType iType;
         CCoeControl* iControl;
         TRect iRect;
-        MUiEventConsumer* iConsumer;
+        void* iConsumer;
         TInt iId;
 #ifdef RD_JAVA_NGA_ENABLED
         MDirectContainer* iContainer;
@@ -179,15 +192,26 @@ private:
         MUiEventConsumer *aConsumer);
 
     /**
-     * Invokes callback aConsumer->MdcUICallback.
+     * Invokes callback aConsumer->HandleLcduiEvent(aCallbackId)
+     *
+     * @since S60 9.2
+     * @param aConsumer Consumer of the callback.
+     * @param aCallbackId Id which is provided to the callback
+     */
+    void DoInvokeLcduiEvent(
+         MMIDLcduiEventConsumer  *aConsumer,
+         TInt aCallbackId);
+    
+    /**
+     * Invokes callback aConsumer->MdcUICallback
      *
      * @since S60 5.0
      * @param aConsumer Consumer of the callback.
      * @param aCallbackId Id which is provided to the callback
      */
     void DoInvokeUICallback(
-        MUiEventConsumer *aConsumer,
-        TInt aCallbackId);
+         MUiEventConsumer *aConsumer,
+         TInt aCallbackId);
 
 
 #ifdef RD_JAVA_NGA_ENABLED
@@ -221,7 +245,7 @@ private:
      *
      * @since S60 5.0
      */
-    virtual void DoCancel();
+    virtual void DoCancel();    
 
 private:
     /**

@@ -93,6 +93,7 @@ public:
     void Update() const;
     void SetBounds(const TRect& aRect);
     void SetWidgetSize(const TSize& aSize);
+    void HandleHighlightChange();
 
 // From ASwtScrollableBase
 protected:

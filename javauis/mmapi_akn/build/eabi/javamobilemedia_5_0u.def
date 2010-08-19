@@ -9,128 +9,146 @@ EXPORTS
 	_ZN10CMMAPlayer15PostStringEventEN15CMMAPlayerEvent10TEventTypeERK7TDesC16 @ 8 NONAME
 	_ZN10CMMAPlayer16AddSourceStreamLEP7JNIEnv_P15CMMAEventSourceP8_jobject @ 9 NONAME
 	_ZN10CMMAPlayer17AddStateListenerLEP23MMMAPlayerStateListener @ 10 NONAME
-	_ZN10CMMAPlayer19RemoveStateListenerEP23MMMAPlayerStateListener @ 11 NONAME
-	_ZN10CMMAPlayer24SetPlayerListenerObjectLEP8_jobjectP7JNIEnv_P15MMMAEventPoster @ 12 NONAME
-	_ZN10CMMAPlayer7ControlEi @ 13 NONAME
-	_ZN10CMMAPlayerC2Ev @ 14 NONAME
-	_ZN10CMMAPlayerD0Ev @ 15 NONAME
-	_ZN10CMMAPlayerD1Ev @ 16 NONAME
-	_ZN10CMMAPlayerD2Ev @ 17 NONAME
-	_ZN11CMMAManager17AddPlayerFactoryLEP17MMMAPlayerFactory @ 18 NONAME
-	_ZN15CMMAAudioPlayer13PlayCompleteLEi @ 19 NONAME
-	_ZN15CMMAAudioPlayer13PrefetchDataLERK6TDesC8 @ 20 NONAME
-	_ZN15CMMAAudioPlayer13PrefetchFileLEv @ 21 NONAME
-	_ZN15CMMAAudioPlayer21ErrorPlaybackCompleteEi @ 22 NONAME
-	_ZN15CMMAAudioPlayer23HandlePlaybackCompleteLEv @ 23 NONAME
-	_ZN15CMMAEventSource25SetPlayerInstanceObserverEP26MMMAPlayerInstanceObserver @ 24 NONAME
-	_ZN15CMMAEventSource26StaticAddObjectFromHandleLEPS_i @ 25 NONAME
-	_ZN15CMMAEventSource7PlayersEv @ 26 NONAME
-	_ZN15CMMAVideoPlayer10SourceSizeEv @ 27 NONAME
-	_ZN15CMMAVideoPlayer11SetDisplayLEP11MMMADisplay @ 28 NONAME
-	_ZN15CMMAVideoPlayer11SnapshoterLEv @ 29 NONAME
-	_ZN15CMMAVideoPlayer13TakeSnapshotLEP14TRequestStatusRK5TSizeRK17CMMAImageSettings @ 30 NONAME
-	_ZN15CMMAVideoPlayer14ReadCompletedLEiRK6TDesC8 @ 31 NONAME
-	_ZN15CMMAVideoPlayer14SnapshotBitmapEv @ 32 NONAME
-	_ZN15CMMAVideoPlayer15SnapshotEncodedEv @ 33 NONAME
-	_ZN15CMMAVideoPlayer21NotifyWithStringEventEN15CMMAPlayerEvent10TEventTypeERK7TDesC16 @ 34 NONAME
-	_ZN15CMMAVideoPlayer24SetPlayerListenerObjectLEP8_jobjectP7JNIEnv_P15MMMAEventPoster @ 35 NONAME
-	_ZN15CMMAVideoPlayer4TypeEv @ 36 NONAME
-	_ZN16CMMAVideoControl13SnapshotReadyEv @ 37 NONAME
-	_ZN16CMMAVideoControl15HandleSwitchOnLEi @ 38 NONAME
-	_ZN16CMMAVideoControl17HandleForegroundLEi @ 39 NONAME
-	_ZN16CMMAVideoControl21HandleResourceChangeLEi @ 40 NONAME
-	_ZN16CMMAVideoControlC1EP13MMMAGuiPlayer @ 41 NONAME
-	_ZN16CMMAVideoControlC2EP13MMMAGuiPlayer @ 42 NONAME
-	_ZN16CMMAVideoControlD0Ev @ 43 NONAME
-	_ZN16CMMAVideoControlD1Ev @ 44 NONAME
-	_ZN16CMMAVideoControlD2Ev @ 45 NONAME
-	_ZN17CMMAMMFPlayerBase10ControllerEv @ 46 NONAME
-	_ZN17CMMAMMFPlayerBase11GetDurationEPx @ 47 NONAME
-	_ZN17CMMAMMFPlayerBase6DoOpenE4TUidRK6TDesC8S0_S3_20TMMFPrioritySettings @ 48 NONAME
-	_ZN17CMMAVolumeControl15SetVolumeLevelLEii @ 49 NONAME
-	_ZN17CMMAVolumeControl25SetAudioOutputPreferenceLEi @ 50 NONAME
-	_ZN17CMMAVolumeControl9AddLevelLEv @ 51 NONAME
-	_ZN18CMMAVideoUrlPlayer10ConstructLERK7TDesC16 @ 52 NONAME
-	_ZN18CMMAVideoUrlPlayer11DeallocateLEv @ 53 NONAME
-	_ZN18CMMAVideoUrlPlayer11HandleEventERK9TMMFEvent @ 54 NONAME
-	_ZN18CMMAVideoUrlPlayer12GetMediaTimeEPx @ 55 NONAME
-	_ZN18CMMAVideoUrlPlayer5StopLEi @ 56 NONAME
-	_ZN18CMMAVideoUrlPlayer6CloseLEv @ 57 NONAME
-	_ZN18CMMAVideoUrlPlayer6StartLEi @ 58 NONAME
-	_ZN18CMMAVideoUrlPlayer8RealizeLEv @ 59 NONAME
-	_ZN18CMMAVideoUrlPlayer9PrefetchLEv @ 60 NONAME
-	_ZN18CMMAVideoUrlPlayerC1EP15CMMAMMFResolver @ 61 NONAME
-	_ZN18CMMAVideoUrlPlayerC2EP15CMMAMMFResolver @ 62 NONAME
-	_ZN18CMMAVideoUrlPlayerD0Ev @ 63 NONAME
-	_ZN18CMMAVideoUrlPlayerD1Ev @ 64 NONAME
-	_ZN18CMMAVideoUrlPlayerD2Ev @ 65 NONAME
-	_ZN20CMMAMMFPlayerFactory13CreatePlayerLEP29CMMFFormatSelectionParametersPK7TDesC16 @ 66 NONAME
-	_ZN20CMMAMMFPlayerFactory33PreparePluginSelectionParametersLEP15CMMAMMFResolverP29CMMFFormatSelectionParameters @ 67 NONAME
-	_ZN20CMMAMMFPlayerFactoryC2Ev @ 68 NONAME
-	_ZN20CMMAMMFPlayerFactoryD0Ev @ 69 NONAME
-	_ZN20CMMAMMFPlayerFactoryD1Ev @ 70 NONAME
-	_ZN20CMMAMMFPlayerFactoryD2Ev @ 71 NONAME
-	_ZN22CMMAAudioVolumeControl4NewLEP15CMMAAudioPlayer @ 72 NONAME
-	_ZNK11CMMAControl15PublicClassNameEv @ 73 NONAME
-	_ZNK14CMMAMIDIPlayer10MidiClientEv @ 74 NONAME
-	_ZNK16CMMAVideoControl9ClassNameEv @ 75 NONAME
-	_ZTI10CMMAPlayer @ 76 NONAME
-	_ZTI11CMMAControl @ 77 NONAME
-	_ZTI14CMMAMIDIPlayer @ 78 NONAME
-	_ZTI15CMMAEventSource @ 79 NONAME
-	_ZTI16CMMAVideoControl @ 80 NONAME
-	_ZTI17CMMAMMFPlayerBase @ 81 NONAME
-	_ZTI17CMMAStreamRequest @ 82 NONAME
-	_ZTI17CMMAVolumeControl @ 83 NONAME
-	_ZTI18CMMAVideoUrlPlayer @ 84 NONAME
-	_ZTI20CMMAMMFPlayerFactory @ 85 NONAME
-	_ZTI26CPlaybackCompletedCallback @ 86 NONAME
-	_ZTIN15CMMAMIDIControl23CChannelVolumeEventWaitE @ 87 NONAME
-	_ZTIN18CMMAVideoUrlPlayer26CMMAVideoUrlPlayerDelegateE @ 88 NONAME
-	_ZTIN18CMMAVideoUrlPlayer36CMMAVideoUrlPlayerClipStreamDelegateE @ 89 NONAME
-	_ZTIN18CMMAVideoUrlPlayer36CMMAVideoUrlPlayerLiveStreamDelegateE @ 90 NONAME
-	_ZTIN19CMMAStopTimeControl10CStopTimerE @ 91 NONAME
-	_ZTV10CMMAPlayer @ 92 NONAME
-	_ZTV11CMMAControl @ 93 NONAME
-	_ZTV14CMMAMIDIPlayer @ 94 NONAME
-	_ZTV15CMMAEventSource @ 95 NONAME
-	_ZTV16CMMAVideoControl @ 96 NONAME
-	_ZTV17CMMAMMFPlayerBase @ 97 NONAME
-	_ZTV17CMMAStreamRequest @ 98 NONAME
-	_ZTV17CMMAVolumeControl @ 99 NONAME
-	_ZTV18CMMAVideoUrlPlayer @ 100 NONAME
-	_ZTV20CMMAMMFPlayerFactory @ 101 NONAME
-	_ZTV26CPlaybackCompletedCallback @ 102 NONAME
-	_ZTVN15CMMAMIDIControl23CChannelVolumeEventWaitE @ 103 NONAME
-	_ZTVN18CMMAVideoUrlPlayer26CMMAVideoUrlPlayerDelegateE @ 104 NONAME
-	_ZTVN18CMMAVideoUrlPlayer36CMMAVideoUrlPlayerClipStreamDelegateE @ 105 NONAME
-	_ZTVN18CMMAVideoUrlPlayer36CMMAVideoUrlPlayerLiveStreamDelegateE @ 106 NONAME
-	_ZTVN19CMMAStopTimeControl10CStopTimerE @ 107 NONAME
-	_ZThn12_N16CMMAVideoControl15HandleSwitchOnLEi @ 108 NONAME
-	_ZThn12_N16CMMAVideoControl17HandleForegroundLEi @ 109 NONAME
-	_ZThn12_N16CMMAVideoControl21HandleResourceChangeLEi @ 110 NONAME
-	_ZThn152_N18CMMAVideoUrlPlayer11HandleEventERK9TMMFEvent @ 111 NONAME
-	_ZThn280_N15CMMAAudioPlayer21ErrorPlaybackCompleteEi @ 112 NONAME
-	_ZThn280_N15CMMAAudioPlayer23HandlePlaybackCompleteLEv @ 113 NONAME
-	_ZThn288_N15CMMAVideoPlayer10SourceSizeEv @ 114 NONAME
-	_ZThn288_N15CMMAVideoPlayer11SetDisplayLEP11MMMADisplay @ 115 NONAME
-	_ZThn288_N15CMMAVideoPlayer11SnapshoterLEv @ 116 NONAME
-	_ZThn288_N15CMMAVideoPlayer21NotifyWithStringEventEN15CMMAPlayerEvent10TEventTypeERK7TDesC16 @ 117 NONAME
-	_ZThn288_N18CMMAVideoUrlPlayerD0Ev @ 118 NONAME
-	_ZThn288_N18CMMAVideoUrlPlayerD1Ev @ 119 NONAME
-	_ZThn292_N15CMMAVideoPlayer13TakeSnapshotLEP14TRequestStatusRK5TSizeRK17CMMAImageSettings @ 120 NONAME
-	_ZThn292_N15CMMAVideoPlayer14SnapshotBitmapEv @ 121 NONAME
-	_ZThn292_N15CMMAVideoPlayer15SnapshotEncodedEv @ 122 NONAME
-	_ZThn292_N18CMMAVideoUrlPlayerD0Ev @ 123 NONAME
-	_ZThn292_N18CMMAVideoUrlPlayerD1Ev @ 124 NONAME
-	_ZThn4_N10CMMAPlayerD0Ev @ 125 NONAME
-	_ZThn4_N10CMMAPlayerD1Ev @ 126 NONAME
-	_ZThn4_N15CMMAVideoPlayer14ReadCompletedLEiRK6TDesC8 @ 127 NONAME
-	_ZThn4_N18CMMAVideoUrlPlayerD0Ev @ 128 NONAME
-	_ZThn4_N18CMMAVideoUrlPlayerD1Ev @ 129 NONAME
-	_ZThn4_N20CMMAMMFPlayerFactoryD0Ev @ 130 NONAME
-	_ZThn4_N20CMMAMMFPlayerFactoryD1Ev @ 131 NONAME
-	_ZThn8_N16CMMAVideoControl13SnapshotReadyEv @ 132 NONAME
-	_ZThn8_N16CMMAVideoControlD0Ev @ 133 NONAME
-	_ZThn8_N16CMMAVideoControlD1Ev @ 134 NONAME
+	_ZN10CMMAPlayer19PostActionCompletedEi @ 11 NONAME
+	_ZN10CMMAPlayer19RemoveStateListenerEP23MMMAPlayerStateListener @ 12 NONAME
+	_ZN10CMMAPlayer24SetPlayerListenerObjectLEP8_jobjectP7JNIEnv_P15MMMAEventPoster @ 13 NONAME
+	_ZN10CMMAPlayer6CloseLEv @ 14 NONAME
+	_ZN10CMMAPlayer7ControlEi @ 15 NONAME
+	_ZN10CMMAPlayerC2Ev @ 16 NONAME
+	_ZN10CMMAPlayerD0Ev @ 17 NONAME
+	_ZN10CMMAPlayerD1Ev @ 18 NONAME
+	_ZN10CMMAPlayerD2Ev @ 19 NONAME
+	_ZN11CMMAManager17AddPlayerFactoryLEP17MMMAPlayerFactory @ 20 NONAME
+	_ZN15CMMAAudioPlayer13PlayCompleteLEi @ 21 NONAME
+	_ZN15CMMAAudioPlayer13PrefetchDataLERK6TDesC8 @ 22 NONAME
+	_ZN15CMMAAudioPlayer13PrefetchFileLEv @ 23 NONAME
+	_ZN15CMMAAudioPlayer21ErrorPlaybackCompleteEi @ 24 NONAME
+	_ZN15CMMAAudioPlayer23HandlePlaybackCompleteLEv @ 25 NONAME
+	_ZN15CMMAEventSource25SetPlayerInstanceObserverEP26MMMAPlayerInstanceObserver @ 26 NONAME
+	_ZN15CMMAEventSource26StaticAddObjectFromHandleLEPS_i @ 27 NONAME
+	_ZN15CMMAEventSource7PlayersEv @ 28 NONAME
+	_ZN15CMMAVideoPlayer10SourceSizeEv @ 29 NONAME
+	_ZN15CMMAVideoPlayer11SetDisplayLEP11MMMADisplay @ 30 NONAME
+	_ZN15CMMAVideoPlayer11SnapshoterLEv @ 31 NONAME
+	_ZN15CMMAVideoPlayer13TakeSnapshotLEP14TRequestStatusRK5TSizeRK17CMMAImageSettings @ 32 NONAME
+	_ZN15CMMAVideoPlayer14ReadCompletedLEiRK6TDesC8 @ 33 NONAME
+	_ZN15CMMAVideoPlayer14SnapshotBitmapEv @ 34 NONAME
+	_ZN15CMMAVideoPlayer15SnapshotEncodedEv @ 35 NONAME
+	_ZN15CMMAVideoPlayer21NotifyWithStringEventEN15CMMAPlayerEvent10TEventTypeERK7TDesC16 @ 36 NONAME
+	_ZN15CMMAVideoPlayer24SetPlayerListenerObjectLEP8_jobjectP7JNIEnv_P15MMMAEventPoster @ 37 NONAME
+	_ZN15CMMAVideoPlayer4TypeEv @ 38 NONAME
+	_ZN16CMMAVideoControl13SnapshotReadyEv @ 39 NONAME
+	_ZN16CMMAVideoControl15HandleSwitchOnLEi @ 40 NONAME
+	_ZN16CMMAVideoControl17HandleForegroundLEi @ 41 NONAME
+	_ZN16CMMAVideoControl21HandleResourceChangeLEi @ 42 NONAME
+	_ZN16CMMAVideoControlC1EP13MMMAGuiPlayer @ 43 NONAME
+	_ZN16CMMAVideoControlC2EP13MMMAGuiPlayer @ 44 NONAME
+	_ZN16CMMAVideoControlD0Ev @ 45 NONAME
+	_ZN16CMMAVideoControlD1Ev @ 46 NONAME
+	_ZN16CMMAVideoControlD2Ev @ 47 NONAME
+	_ZN17CMMAMMFPlayerBase10ControllerEv @ 48 NONAME
+	_ZN17CMMAMMFPlayerBase11GetDurationEPx @ 49 NONAME
+	_ZN17CMMAMMFPlayerBase6DoOpenE4TUidRK6TDesC8S0_S3_20TMMFPrioritySettings @ 50 NONAME
+	_ZN17CMMAVolumeControl12StateChangedEi @ 51 NONAME
+	_ZN17CMMAVolumeControl13RefreshVolumeEv @ 52 NONAME
+	_ZN17CMMAVolumeControl14ConstructBaseLEv @ 53 NONAME
+	_ZN17CMMAVolumeControl14RefreshControlEv @ 54 NONAME
+	_ZN17CMMAVolumeControl15SetVolumeLevelLEii @ 55 NONAME
+	_ZN17CMMAVolumeControl25HandleActiveProfileEventLE13TProfileEventi @ 56 NONAME
+	_ZN17CMMAVolumeControl25SetAudioOutputPreferenceLEi @ 57 NONAME
+	_ZN17CMMAVolumeControl9AddLevelLEv @ 58 NONAME
+	_ZN17CMMAVolumeControlC2EP10CMMAPlayer @ 59 NONAME
+	_ZN17CMMAVolumeControlD0Ev @ 60 NONAME
+	_ZN17CMMAVolumeControlD1Ev @ 61 NONAME
+	_ZN17CMMAVolumeControlD2Ev @ 62 NONAME
+	_ZN18CMMAVideoUrlPlayer10ConstructLERK7TDesC16 @ 63 NONAME
+	_ZN18CMMAVideoUrlPlayer11DeallocateLEv @ 64 NONAME
+	_ZN18CMMAVideoUrlPlayer11HandleEventERK9TMMFEvent @ 65 NONAME
+	_ZN18CMMAVideoUrlPlayer12GetMediaTimeEPx @ 66 NONAME
+	_ZN18CMMAVideoUrlPlayer5StopLEi @ 67 NONAME
+	_ZN18CMMAVideoUrlPlayer6CloseLEv @ 68 NONAME
+	_ZN18CMMAVideoUrlPlayer6StartLEi @ 69 NONAME
+	_ZN18CMMAVideoUrlPlayer8RealizeLEv @ 70 NONAME
+	_ZN18CMMAVideoUrlPlayer9PrefetchLEv @ 71 NONAME
+	_ZN18CMMAVideoUrlPlayerC1EP15CMMAMMFResolver @ 72 NONAME
+	_ZN18CMMAVideoUrlPlayerC2EP15CMMAMMFResolver @ 73 NONAME
+	_ZN18CMMAVideoUrlPlayerD0Ev @ 74 NONAME
+	_ZN18CMMAVideoUrlPlayerD1Ev @ 75 NONAME
+	_ZN18CMMAVideoUrlPlayerD2Ev @ 76 NONAME
+	_ZN20CMMAMMFPlayerFactory13CreatePlayerLEP29CMMFFormatSelectionParametersPK7TDesC16 @ 77 NONAME
+	_ZN20CMMAMMFPlayerFactory33PreparePluginSelectionParametersLEP15CMMAMMFResolverP29CMMFFormatSelectionParameters @ 78 NONAME
+	_ZN20CMMAMMFPlayerFactoryC2Ev @ 79 NONAME
+	_ZN20CMMAMMFPlayerFactoryD0Ev @ 80 NONAME
+	_ZN20CMMAMMFPlayerFactoryD1Ev @ 81 NONAME
+	_ZN20CMMAMMFPlayerFactoryD2Ev @ 82 NONAME
+	_ZN22CMMAAudioVolumeControl4NewLEP15CMMAAudioPlayer @ 83 NONAME
+	_ZNK11CMMAControl15PublicClassNameEv @ 84 NONAME
+	_ZNK14CMMAMIDIPlayer10MidiClientEv @ 85 NONAME
+	_ZNK16CMMAVideoControl9ClassNameEv @ 86 NONAME
+	_ZNK17CMMAVolumeControl9ClassNameEv @ 87 NONAME
+	_ZTI10CMMAPlayer @ 88 NONAME ; #<TI>#
+	_ZTI11CMMAControl @ 89 NONAME ; #<TI>#
+	_ZTI14CMMAMIDIPlayer @ 90 NONAME ; #<TI>#
+	_ZTI15CMMAEventSource @ 91 NONAME ; #<TI>#
+	_ZTI16CMMAVideoControl @ 92 NONAME ; #<TI>#
+	_ZTI17CMMAMMFPlayerBase @ 93 NONAME ; #<TI>#
+	_ZTI17CMMAStreamRequest @ 94 NONAME ; #<TI>#
+	_ZTI17CMMAVolumeControl @ 95 NONAME ; #<TI>#
+	_ZTI18CMMAVideoUrlPlayer @ 96 NONAME ; #<TI>#
+	_ZTI20CMMACallStateMonitor @ 97 NONAME ; #<TI>#
+	_ZTI20CMMAMMFPlayerFactory @ 98 NONAME ; #<TI>#
+	_ZTI26CPlaybackCompletedCallback @ 99 NONAME ; #<TI>#
+	_ZTIN15CMMAMIDIControl23CChannelVolumeEventWaitE @ 100 NONAME ; #<TI>#
+	_ZTIN18CMMAVideoUrlPlayer26CMMAVideoUrlPlayerDelegateE @ 101 NONAME ; #<TI>#
+	_ZTIN18CMMAVideoUrlPlayer36CMMAVideoUrlPlayerClipStreamDelegateE @ 102 NONAME ; #<TI>#
+	_ZTIN18CMMAVideoUrlPlayer36CMMAVideoUrlPlayerLiveStreamDelegateE @ 103 NONAME ; #<TI>#
+	_ZTIN19CMMAStopTimeControl10CStopTimerE @ 104 NONAME ; #<TI>#
+	_ZTV10CMMAPlayer @ 105 NONAME ; #<VT>#
+	_ZTV11CMMAControl @ 106 NONAME ; #<VT>#
+	_ZTV14CMMAMIDIPlayer @ 107 NONAME ; #<VT>#
+	_ZTV15CMMAEventSource @ 108 NONAME ; #<VT>#
+	_ZTV16CMMAVideoControl @ 109 NONAME ; #<VT>#
+	_ZTV17CMMAMMFPlayerBase @ 110 NONAME ; #<VT>#
+	_ZTV17CMMAStreamRequest @ 111 NONAME ; #<VT>#
+	_ZTV17CMMAVolumeControl @ 112 NONAME ; #<VT>#
+	_ZTV18CMMAVideoUrlPlayer @ 113 NONAME ; #<VT>#
+	_ZTV20CMMACallStateMonitor @ 114 NONAME ; #<VT>#
+	_ZTV20CMMAMMFPlayerFactory @ 115 NONAME ; #<VT>#
+	_ZTV26CPlaybackCompletedCallback @ 116 NONAME ; #<VT>#
+	_ZTVN15CMMAMIDIControl23CChannelVolumeEventWaitE @ 117 NONAME ; #<VT>#
+	_ZTVN18CMMAVideoUrlPlayer26CMMAVideoUrlPlayerDelegateE @ 118 NONAME ; #<VT>#
+	_ZTVN18CMMAVideoUrlPlayer36CMMAVideoUrlPlayerClipStreamDelegateE @ 119 NONAME ; #<VT>#
+	_ZTVN18CMMAVideoUrlPlayer36CMMAVideoUrlPlayerLiveStreamDelegateE @ 120 NONAME ; #<VT>#
+	_ZTVN19CMMAStopTimeControl10CStopTimerE @ 121 NONAME ; #<VT>#
+	_ZThn12_N16CMMAVideoControl15HandleSwitchOnLEi @ 122 NONAME ; #<thunk>#
+	_ZThn12_N16CMMAVideoControl17HandleForegroundLEi @ 123 NONAME ; #<thunk>#
+	_ZThn12_N16CMMAVideoControl21HandleResourceChangeLEi @ 124 NONAME ; #<thunk>#
+	_ZThn12_N17CMMAVolumeControl25HandleActiveProfileEventLE13TProfileEventi @ 125 NONAME ; #<thunk>#
+	_ZThn160_N18CMMAVideoUrlPlayer11HandleEventERK9TMMFEvent @ 126 NONAME ; #<thunk>#
+	_ZThn288_N15CMMAAudioPlayer21ErrorPlaybackCompleteEi @ 127 NONAME ; #<thunk>#
+	_ZThn288_N15CMMAAudioPlayer23HandlePlaybackCompleteLEv @ 128 NONAME ; #<thunk>#
+	_ZThn296_N15CMMAVideoPlayer10SourceSizeEv @ 129 NONAME ; #<thunk>#
+	_ZThn296_N15CMMAVideoPlayer11SetDisplayLEP11MMMADisplay @ 130 NONAME ; #<thunk>#
+	_ZThn296_N15CMMAVideoPlayer11SnapshoterLEv @ 131 NONAME ; #<thunk>#
+	_ZThn296_N15CMMAVideoPlayer21NotifyWithStringEventEN15CMMAPlayerEvent10TEventTypeERK7TDesC16 @ 132 NONAME ; #<thunk>#
+	_ZThn296_N18CMMAVideoUrlPlayerD0Ev @ 133 NONAME ; #<thunk>#
+	_ZThn296_N18CMMAVideoUrlPlayerD1Ev @ 134 NONAME ; #<thunk>#
+	_ZThn300_N15CMMAVideoPlayer13TakeSnapshotLEP14TRequestStatusRK5TSizeRK17CMMAImageSettings @ 135 NONAME ; #<thunk>#
+	_ZThn300_N15CMMAVideoPlayer14SnapshotBitmapEv @ 136 NONAME ; #<thunk>#
+	_ZThn300_N15CMMAVideoPlayer15SnapshotEncodedEv @ 137 NONAME ; #<thunk>#
+	_ZThn300_N18CMMAVideoUrlPlayerD0Ev @ 138 NONAME ; #<thunk>#
+	_ZThn300_N18CMMAVideoUrlPlayerD1Ev @ 139 NONAME ; #<thunk>#
+	_ZThn4_N10CMMAPlayerD0Ev @ 140 NONAME ; #<thunk>#
+	_ZThn4_N10CMMAPlayerD1Ev @ 141 NONAME ; #<thunk>#
+	_ZThn4_N15CMMAVideoPlayer14ReadCompletedLEiRK6TDesC8 @ 142 NONAME ; #<thunk>#
+	_ZThn4_N18CMMAVideoUrlPlayerD0Ev @ 143 NONAME ; #<thunk>#
+	_ZThn4_N18CMMAVideoUrlPlayerD1Ev @ 144 NONAME ; #<thunk>#
+	_ZThn4_N20CMMAMMFPlayerFactoryD0Ev @ 145 NONAME ; #<thunk>#
+	_ZThn4_N20CMMAMMFPlayerFactoryD1Ev @ 146 NONAME ; #<thunk>#
+	_ZThn8_N16CMMAVideoControl13SnapshotReadyEv @ 147 NONAME ; #<thunk>#
+	_ZThn8_N16CMMAVideoControlD0Ev @ 148 NONAME ; #<thunk>#
+	_ZThn8_N16CMMAVideoControlD1Ev @ 149 NONAME ; #<thunk>#
+	_ZThn8_N17CMMAVolumeControl12StateChangedEi @ 150 NONAME ; #<thunk>#
+	_ZThn8_N17CMMAVolumeControlD0Ev @ 151 NONAME ; #<thunk>#
+	_ZThn8_N17CMMAVolumeControlD1Ev @ 152 NONAME ; #<thunk>#
 

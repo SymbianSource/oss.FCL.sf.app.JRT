@@ -37,14 +37,13 @@
 #include <AknsDrawUtils.h>// skin
 // for backgroud control context (iBackGroundControlContext)
 #include <AknsBasicBackgroundControlContext.h> //skin
+#include <aknappui.h>
 
 #include "CMIDCommand.h"
 // API needed for working with commands and command list (setting, getting, handling)
 #include "CMIDCommandList.h"
 // using CMIDMenuHandler::TMenuType
 #include "CMIDMenuHandler.h"
-// using TMidpCustomEvents enumeration
-#include "S60LCDUICustomEvents.h"
 #include "CMIDCanvasKeypad.h"
 #include <e32property.h>
 
@@ -70,7 +69,7 @@ class CPropertyWatch;
 
 // Container for MIDlet Displayables.
 NONSHARABLE_CLASS(CMIDDisplayable) : public CEikBorderedControl, public MMIDDisplayable,
-        public MMIDEnvObserver, public MAknLongTapDetectorCallBack, public MEikMenuObserver
+public MMIDEnvObserver, public MAknLongTapDetectorCallBack, public MEikMenuObserver
 {
 public:
 
@@ -142,6 +141,10 @@ public:
     void HandleSwitchOnL(TBool aSwitchOn);
     void HandleForegroundL(TBool aForeground);
     void HandleResourceChangeL(TInt aType);
+#ifdef RD_JAVA_NGA_ENABLED
+    void HandleFullOrPartialForegroundL(TBool aFullOrPartialFg);
+    void HandleFreeGraphicsMemory();
+#endif
 
     // Title handling
     TBool HasTitle() const;
@@ -162,10 +165,13 @@ public:
     void InitializeCbasL();
     void SetCba(CEikButtonGroupContainer* aCba);
     TBool ShowOkOptionsMenuL();
+    TBool ShowScreenOrHelpOptionsMenuL();
     TInt NumCommandsForOkOptionsMenu() const;
+    TInt NumCommandsForScreenOrHelpOptionsMenu() const;
     TInt GetHighestPriorityScreenOrHelpCommand() const;
     void SetItemCommandList(CMIDCommandList* aList, CMIDCommand* aMSKCommand);
     void SetMSKCommand(CMIDCommand* aMSKCommand);
+
     /**
      * Stores select command to Displayable
      * @param aSelectCommand a command used in MSK and in menu
@@ -311,6 +317,33 @@ public:
      * @since S60 5.0
      */
     void ProcessMSKCommandL();
+    /**
+     * Enum callback type 
+     * @since S60 9.2
+     */
+    enum TLcduiUiCallbackType
+    {
+        EFixUIOrientation,
+        EUnFixUIOrientation
+    };
+    
+    /**
+     * Fix orientation from MMA 
+     *
+     * @return void
+     *
+     * @since S60 9.2
+     */
+    void FixOrientation();
+    
+    /**
+     * Release orientation from MMA
+     *
+     * @return void
+     *
+     * @since S60 9.2
+     */
+    void ReleaseOrientation();
 
 private:
     // Construction and destruction
@@ -332,7 +365,7 @@ private:
     void HandleStandardCommandL(const TCommandEntry& aCmdEntry);
     void HandleItemCommandL(const TCommandEntry& aCmdEntry);
     TInt GetInternalCommandIdFor(CMIDCommand* aCommand) const;
-    void GetOkOptionsMenuCommands(RPointerArray<CMIDCommand>& aCommands) const;
+    void GetOkOptionsMenuCommandsL(RPointerArray<CMIDCommand>& aCommands) const;
     void ResetSoftKeysAndCommands(const RArray<CMIDCommandList*>& aLists);
 
     // Visual layouting and updating
@@ -355,14 +388,14 @@ private:
          * Default ctor
          */
         TDirectContentsRect()
-                : iRefCount(0) {}
+            : iRefCount(0) {}
 
         /**
          * Ctor
          * @param aRect Rectangle
          */
         TDirectContentsRect(const TRect& aRect)
-                : iRect(aRect), iRefCount(1) {}
+            : iRect(aRect), iRefCount(1) {}
 
         TRect iRect;
         TInt iRefCount;
@@ -443,6 +476,12 @@ private:
 
     void HideIndicator(CEikStatusPane* aSp, TInt aId);
     void HideIndicators();
+
+    /**
+     * If content control is CMIDCanvas, returns pointer to it, NULL otherwise.
+     * @since S60 9.2
+     */
+    CMIDCanvas* GetContentCanvas();
 
 private:
     CMIDAppUi* iAppUi;
@@ -559,7 +598,10 @@ private:
     // Indicates opened split screen keyboard
     TBool iSplitScreenKeyboard;
 #endif // RD_JAVA_S60_RELEASE_9_2
-
+    
+    TBool iRestoreOrientation;
+    CAknAppUiBase::TAppUiOrientation iOldUiOrientation;
+    TInt iReleaseCnt;
 };
 
 

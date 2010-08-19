@@ -112,14 +112,13 @@ START RESOURCE lcdui_reg.rss
 TARGETPATH private/10003a3f/apps
 END
 
-SYSTEMINCLUDE     ../inc
-
-SYSTEMINCLUDE   ../../inc
-SYSTEMINCLUDE   ../../../inc
-SYSTEMINCLUDE   ../../../../inc
-SYSTEMINCLUDE   ../../../../inc/j2me
-SYSTEMINCLUDE   ../../../../inc/j2me/midp2/data
-SYSTEMINCLUDE   ../../../../inc/j2me/midp2/security
+USERINCLUDE   ../inc
+USERINCLUDE   ../../inc
+USERINCLUDE   ../../../inc
+USERINCLUDE   ../../../../inc
+USERINCLUDE   ../../../../inc/j2me
+USERINCLUDE   ../../../../inc/j2me/midp2/data
+USERINCLUDE   ../../../../inc/j2me/midp2/security
 
 // LCDUI had dependencies to apps layer
 
@@ -212,6 +211,7 @@ LIBRARY akntransitionutils.lib
 LIBRARY libEGL.lib
 LIBRARY libGLESv1_CM.lib
 LIBRARY alfdecoderserverclient.lib
+LIBRARY	goommonitor.lib
 #endif // RD_JAVA_NGA_ENABLED
 
 NOSTRICTDEF

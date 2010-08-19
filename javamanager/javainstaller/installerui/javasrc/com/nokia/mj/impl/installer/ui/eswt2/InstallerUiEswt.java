@@ -27,7 +27,6 @@ import com.nokia.mj.impl.installer.ui.InstallInfo;
 import com.nokia.mj.impl.installer.ui.LaunchAppInfo;
 import com.nokia.mj.impl.installer.ui.PermissionInfo;
 import com.nokia.mj.impl.installer.ui.UninstallInfo;
-import com.nokia.mj.impl.installer.ui.eswt.MinimalUi;
 import com.nokia.mj.impl.rt.ui.ConfirmData;
 import com.nokia.mj.impl.rt.ui.RuntimeUi;
 import com.nokia.mj.impl.rt.ui.RuntimeUiFactory;
@@ -37,6 +36,7 @@ import com.nokia.mj.impl.utils.exception.InstallerExceptionBase;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.Hashtable;
 
 import org.eclipse.ercp.swt.midp.UIThreadSupport;
@@ -47,10 +47,10 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.extension.DisplayExtension;
+import org.eclipse.swt.internal.qt.BaseCSSEngine;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Composite;
@@ -62,10 +62,15 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class InstallerUiEswt extends InstallerUi
 {
+    /** Disable UI temporarily. */
+    private static final boolean DISABLE_UI =
+        (System.getProperty("com.nokia.mj.impl.installer.ui.disableui")
+         == null? false: true);
     /** Default shell style. */
     private static final int SHELL_STYLE =
         SWT.BORDER | SWT.APPLICATION_MODAL | SWT.ON_TOP;
 
+    private BaseCSSEngine iCssEngine = null;
     private Shell iParent = null;
     private Shell iDialog = null;
     private ProgressView iProgressView = null;
@@ -98,8 +103,6 @@ public class InstallerUiEswt extends InstallerUi
     private boolean iDisplayProgress = false;
     /** Flag telling if the first progress bar update has been traced. */
     private boolean iProgressBarUpdateTraced = false;
-    /** Flag telling if MinimalUi should be used if UI creation fails. */
-    private boolean iMinimalUiEnabled = true;
 
     /** Hashtable for storing the loaded icons. */
     private static Hashtable iImageTable = null;
@@ -135,7 +138,6 @@ public class InstallerUiEswt extends InstallerUi
         // Create a hashtable for icons.
         iImageTable = new Hashtable();
         // Create a new thread to be the UI main thread.
-        iUiThreadExists = true;
         UIThreadSupport.startInUIThread(new Runnable()
         {
             public void run()
@@ -154,12 +156,14 @@ public class InstallerUiEswt extends InstallerUi
     private void uiMain()
     {
         log("uiMain: thread started");
+        iUiThreadExists = true;
         try
         {
             // Create the necessary views.
             DisplayExtension display = new DisplayExtension();
             StartUpTrace.doTrace("InstallerUiEswt display created");
             display.setAppName(""); // Remove display title.
+            iCssEngine = new BaseCSSEngine(display);
             iParent = new Shell(display);
             iDialog = new Shell(iParent, SHELL_STYLE);
             iDefaultShellBounds = iDialog.internal_getDefaultBounds();
@@ -182,10 +186,10 @@ public class InstallerUiEswt extends InstallerUi
             });
 
             // Initialize best icon size.
-            iBestIconSize = new Point(
-                display.getBestImageWidth(DisplayExtension.ALERT),
-                display.getBestImageHeight(DisplayExtension.ALERT));
-            log("Best icon size: " + iBestIconSize);
+            //iBestIconSize = new Point(
+            //    display.getBestImageWidth(DisplayExtension.ALERT),
+            //    display.getBestImageHeight(DisplayExtension.ALERT));
+            //log("Best icon size: " + iBestIconSize);
 
             synchronized (iInitWaitObject)
             {
@@ -216,10 +220,7 @@ public class InstallerUiEswt extends InstallerUi
                     display.sleep();
                 }
             }
-            if (iBoldFont != null && !iBoldFont.isDisposed())
-            {
-                iBoldFont.dispose();
-            }
+            disposeResources();
             display.dispose();
             log("uiMain: display disposed");
             synchronized (iExitWaitObject)
@@ -302,24 +303,14 @@ public class InstallerUiEswt extends InstallerUi
         super.confirm(aInstallInfo);
 
         waitForUi();
-        boolean result = true;
         if (!isUiReady())
         {
-            result = false;
-            if (iMinimalUiEnabled)
-            {
-                result = MinimalUi.confirmStatic(aInstallInfo);
-                log("MinimalUi installation confirmation returns " + result);
-                return result;
-            }
-            else
-            {
-                // If UI is not ready by the time confirmation is requested,
-                // throw an exception.
-                throw new RuntimeException("JavaInstallerUi not ready");
-            }
+            // If UI is not ready by the time confirmation is requested,
+            // throw an exception.
+            throw new RuntimeException("JavaInstallerUi not ready");
         }
 
+        boolean result = true;
         if (result)
         {
             StartUpTrace.doTrace("InstallerUiEswt confirm");
@@ -463,6 +454,7 @@ public class InstallerUiEswt extends InstallerUi
     public void updateProgress(int aProgress)
     {
         super.updateProgress(aProgress);
+        if (DISABLE_UI) return; // Disable UI temporarily.
         if (!isUiReady())
         {
             return;
@@ -473,6 +465,12 @@ public class InstallerUiEswt extends InstallerUi
         // updating it.
         synchronized (iProgressSyncObject)
         {
+            if (iDlProgressView != null && iDlProgressView.isVisible())
+            {
+                // If download progress is being displayed,
+                // do not display installation progress.
+                return;
+            }
             if (iDisplayProgress && !iProgressView.isVisible())
             {
                 // Re-create iProgressView here so that it gets
@@ -509,6 +507,7 @@ public class InstallerUiEswt extends InstallerUi
     public void ended()
     {
         super.ended();
+        if (DISABLE_UI) return; // Disable UI temporarily.
         if (!isUiReady())
         {
             return;
@@ -553,6 +552,7 @@ public class InstallerUiEswt extends InstallerUi
     public void started(DownloadInfo aDownloadInfo)
     {
         super.started(aDownloadInfo);
+        if (DISABLE_UI) return; // Disable UI temporarily.
         if (!isUiReady())
         {
             return;
@@ -579,6 +579,7 @@ public class InstallerUiEswt extends InstallerUi
     public void updateProgress(DownloadInfo aDownloadInfo)
     {
         super.updateProgress(aDownloadInfo);
+        if (DISABLE_UI) return; // Disable UI temporarily.
         if (!isUiReady())
         {
             return;
@@ -628,6 +629,7 @@ public class InstallerUiEswt extends InstallerUi
     public void ended(DownloadInfo aDownloadInfo)
     {
         super.ended(aDownloadInfo);
+        if (DISABLE_UI) return; // Disable UI temporarily.
         if (!isUiReady())
         {
             return;
@@ -654,6 +656,7 @@ public class InstallerUiEswt extends InstallerUi
     public void setOcspIndicator(boolean aOn)
     {
         super.setOcspIndicator(aOn);
+        if (DISABLE_UI) return; // Disable UI temporarily.
         waitForUi();
         if (!isUiReady())
         {
@@ -669,9 +672,10 @@ public class InstallerUiEswt extends InstallerUi
                 {
                     public void run()
                     {
-                        iOcspProgressView = new ProgressView(self, iDialog,
-                                                             InstallerUiTexts.get(InstallerUiTexts.OCSP_CHECK_PROGRESS),
-                                                             true);
+                        iOcspProgressView = new ProgressView(
+                            self, iDialog,
+                            InstallerUiTexts.get(InstallerUiTexts.OCSP_CHECK_PROGRESS),
+                            true);
                     }
                 });
                 iOcspProgressView.addCancelCommand();
@@ -754,6 +758,7 @@ public class InstallerUiEswt extends InstallerUi
     public void error(InstallerExceptionBase aInstallerException)
     {
         super.error(aInstallerException);
+        if (DISABLE_UI) return; // Disable UI temporarily.
 
         waitForUi();
         if (!isUiReady()) {
@@ -799,45 +804,6 @@ public class InstallerUiEswt extends InstallerUi
     }
 
     /**
-     * Notify user that an error has occurred using RuntimeUI.
-     *
-     * @param aInstallerException exception indicating the error reason
-     */
-    /*
-    private void showRuntimeUiError(InstallerExceptionBase aInstallerException)
-    {
-        boolean identified = false;
-        if (iInstallInfo != null)
-        {
-            if (iInstallInfo.getCertificates() != null)
-            {
-                identified = true;
-            }
-        }
-        else if (iUninstallInfo != null)
-        {
-            if (iUninstallInfo.getCertificates() != null)
-            {
-                identified = true;
-            }
-        }
-        String tmpTitle = InstallerUiTexts.get(InstallerUiTexts.INSTALL_FAILED);
-
-        // Ensure that no confirmations are being displayed.
-        cancelConfirmations();
-        // Hide progress view before displaying error message.
-        if (iProgressView != null)
-        {
-            iProgressView.setVisible(false);
-        }
-        // Use RuntimeUi to display uninstallation error message.
-        RuntimeUi runtimeUi = RuntimeUiFactory.getRuntimeUi(identified);
-        runtimeUi.error(tmpTitle, aInstallerException);
-        runtimeUi.destroy();
-    }
-    */
-
-    /**
      * Seeks confirmation from the user.
      *
      * @param aAppName     the name of the application on behalf of which the
@@ -850,6 +816,7 @@ public class InstallerUiEswt extends InstallerUi
      */
     public boolean confirm(String aAppName, ConfirmData aConfirmData)
     {
+        if (DISABLE_UI) return true; // Disable UI temporarily.
         waitForUi();
         if (!isUiReady()) {
             return true;
@@ -888,6 +855,7 @@ public class InstallerUiEswt extends InstallerUi
      */
     public String[] getUsernamePassword(String aUrl)
     {
+        if (DISABLE_UI) return new String[] { "", "" }; // Disable UI temporarily.
         waitForUi();
         if (!isUiReady())
         {
@@ -943,6 +911,7 @@ public class InstallerUiEswt extends InstallerUi
      */
     public boolean launchAppQuery(LaunchAppInfo aLaunchAppInfo)
     {
+        if (DISABLE_UI) return false; // Disable UI temporarily.
         waitForUi();
         if (!isUiReady() || iConfirmationsCanceled || getInstallInfo() == null)
         {
@@ -964,16 +933,28 @@ public class InstallerUiEswt extends InstallerUi
             });
         }
         boolean result = iLaunchAppQueryView.launchAppQuery(aLaunchAppInfo);
-        iParent.getDisplay().syncExec(new Runnable()
-        {
-            public void run()
-            {
-                iParent.dispose();
-            }
-        });
+        iLaunchAppQueryView.dispose();
         iLaunchAppQueryView = null;
+        if (!result)
+        {
+            iParent.getDisplay().syncExec(new Runnable()
+            {
+                public void run()
+                {
+                    iParent.dispose();
+                }
+            });
+        }
         log("LaunchAppQuery returns " + result + " for " + aLaunchAppInfo);
         return result;
+    }
+
+    /**
+     * Executes given Runnable synchronously in the UI thread.
+     */
+    public void syncExec(Runnable aRunnable)
+    {
+        iParent.getDisplay().syncExec(aRunnable);
     }
 
     /**
@@ -1011,20 +992,23 @@ public class InstallerUiEswt extends InstallerUi
      */
     protected String getTitle()
     {
-        String result = null;
-        if (iMode == MODE_INSTALL)
+        String result = super.getTitle();
+        if (isUiReady())
         {
-            result = InstallerUiTexts.get(InstallerUiTexts.INSTALLING);
-        }
-        else if (iMode == MODE_UNINSTALL)
-        {
-            result = InstallerUiTexts.get("Uninstalling");
-        }
-        else if (iMode == MODE_APP_CONVERSION)
-        {
-            result = InstallerUiTexts.get(
-                "Converting data for application " +
-                iAppConversionCurrent + "/" + iAppConversionTotal);
+            if (iMode == MODE_INSTALL)
+            {
+                result = InstallerUiTexts.get(InstallerUiTexts.INSTALLING);
+            }
+            else if (iMode == MODE_UNINSTALL)
+            {
+                result = InstallerUiTexts.get("Uninstalling");
+            }
+            else if (iMode == MODE_APP_CONVERSION)
+            {
+                result = InstallerUiTexts.get(
+                    "Converting data for application " +
+                    iAppConversionCurrent + "/" + iAppConversionTotal);
+            }
         }
         return result;
     }
@@ -1044,16 +1028,24 @@ public class InstallerUiEswt extends InstallerUi
         {
             return iSecurityIcon;
         }
-        String iconFilename = ResourceUtil.UNTRUSTED_ICON_NAME;
+        String iconFilename = "java_3_untrusted.png";
         if (aIdentified)
         {
-            iconFilename = ResourceUtil.TRUSTED_ICON_NAME;
+            iconFilename = "java_3_trusted.png";
         }
-        String resourceDir = ResourceUtil.getResourceDir(0);
-        for (int i = 1; iSecurityIcon == null && resourceDir != null; i++)
+        try
         {
-            iSecurityIcon = loadImage(aDisplay, resourceDir + iconFilename, false);
-            resourceDir = ResourceUtil.getResourceDir(i);
+            String resourceDir = ResourceUtil.getResourceDir(0);
+            for (int i = 1; iSecurityIcon == null && resourceDir != null; i++)
+            {
+                iSecurityIcon = loadImage(
+                    aDisplay, resourceDir + iconFilename, false);
+                resourceDir = ResourceUtil.getResourceDir(i);
+            }
+        }
+        catch (Throwable t)
+        {
+            log("Can not load security icon: " + t);
         }
         return iSecurityIcon;
     }
@@ -1144,19 +1136,21 @@ public class InstallerUiEswt extends InstallerUi
         try
         {
             long startTime = System.currentTimeMillis();
-            ImageData[] imageDatas = new ImageLoader().load(aInputStream);
-            ImageData imageData = imageDatas[0];
+            Image image = new Image(aDisplay, aInputStream);
+            ImageData imageData = image.getImageData();
             if (aScaleImage)
             {
                 Point bestSize = getBestImageSize(
-                                     imageData.width, imageData.height);
+                    imageData.width, imageData.height);
                 if (bestSize.x != imageData.width ||
                         bestSize.y != imageData.height)
                 {
+                    Point oldSize =
+                        new Point(imageData.width, imageData.height);
                     imageData = imageData.scaledTo(bestSize.x, bestSize.y);
                     log("Image " + aImageName + " scaled from " +
-                        imageDatas[0].width + "x" + imageDatas[0].height +
-                        " to " + bestSize.x + "x" + bestSize.y);
+                        oldSize.x + "x" + oldSize.y + " to " +
+                        bestSize.x + "x" + bestSize.y);
                 }
             }
             result = new Image(aDisplay, imageData);
@@ -1178,8 +1172,8 @@ public class InstallerUiEswt extends InstallerUi
      */
     private static Point getBestImageSize(int aWidth, int aHeight)
     {
-        final int MAX_WIDTH = iBestIconSize.x;
-        final int MAX_HEIGHT = iBestIconSize.y;
+        final int MAX_WIDTH = (iBestIconSize == null? 50: iBestIconSize.x);
+        final int MAX_HEIGHT = (iBestIconSize == null? 50: iBestIconSize.y);
         Point result = new Point(aWidth, aHeight);
         if (result.x > MAX_WIDTH || result.y > MAX_HEIGHT)
         {
@@ -1306,5 +1300,58 @@ public class InstallerUiEswt extends InstallerUi
     ViewBase getActiveView()
     {
         return iActiveView;
+    }
+
+    /**
+     * Loads JavaInstaller UI stylesheet.
+     */
+    void loadCss()
+    {
+        String cssFilename = "javaapplicationinstaller.css";
+        String cssPath = null;
+        try
+        {
+            if (iCssEngine != null)
+            {
+                boolean loaded = false;
+                String resourceDir = ResourceUtil.getResourceDir(0);
+                for (int i = 1; !loaded && resourceDir != null; i++)
+                {
+                    cssPath = resourceDir + cssFilename;
+                    FileUtility cssFile = new FileUtility(cssPath);
+                    if (cssFile.exists())
+                    {
+                        iCssEngine.loadCSS(cssPath);
+                        log("CSS loaded from " + cssPath);
+                        break;
+                    }
+                    resourceDir = ResourceUtil.getResourceDir(i);
+                }
+            }
+        }
+        catch (Throwable t)
+        {
+            logError("Loading CSS from " + cssPath + " failed", t);
+        }
+    }
+
+    private void disposeResources() {
+        if (iBoldFont != null && !iBoldFont.isDisposed())
+        {
+            iBoldFont.dispose();
+        }
+        if (iSecurityIcon != null && !iSecurityIcon.isDisposed())
+        {
+            iSecurityIcon.dispose();
+        }
+        Enumeration e = iImageTable.elements();
+        while (e.hasMoreElements())
+        {
+            Image img = (Image)e.nextElement();
+            if (img != null && !img.isDisposed())
+            {
+                img.dispose();
+            }
+        }
     }
 }

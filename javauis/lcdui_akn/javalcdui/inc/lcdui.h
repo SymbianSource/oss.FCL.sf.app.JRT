@@ -49,7 +49,6 @@
 #include <badesca.h>
 #include <gdi.h>
 #include <w32std.h>
-#include <aknsconstants.h>
 
 #ifdef RD_JAVA_NGA_ENABLED
 #include <EGL/egltypes.h>
@@ -89,6 +88,7 @@ class MUiEventConsumer;
 class MMIDTextEditor;
 class MMIDCanvasGraphicsItem;
 class MMIDCanvasGraphicsItemPainter;
+class MMIDLcduiEventConsumer;
 
 /**
  * @internalComponent
@@ -133,13 +133,6 @@ _LIT(KPositionBottom,          "bottom");
 _LIT(KPositionRight,           "right");
 }
 
-
-#ifdef RD_JAVA_S60_RELEASE_9_2
-const TInt KHighlightedItemTextColor    = EAknsCIQsnTextColorsCG6;
-#else
-const TInt KHighlightedItemTextColor    = EAknsCIQsnTextColorsCG8;
-#endif // RD_JAVA_S60_RELEASE_9_2
-const TInt KNonHighlightedItemTextColor = EAknsCIQsnTextColorsCG6;
 
 
 /**
@@ -242,7 +235,7 @@ public:
      * @return <code>ETrue</code> if EGL exists.
      * @since S60 9.2
      */
-    virtual TBool IsEglAvailable() = 0;
+    virtual TBool IsEglAvailable() const = 0;
 
     /**
      * Gets and binds EGL surface.
@@ -830,6 +823,13 @@ public:
      * @since S60 9.2
      */
     virtual void UpdateRect(const TRect& aRect) = 0;
+
+    /**
+     * Notifies canvas about MIDlet exit. In exit Canvas must draw content to CWindowGc
+     * to enable system transition effects.
+     * @since S60 9.2
+     */
+    virtual void MidletExiting() = 0;
 #endif // RD_JAVA_NGA_ENABLED
 
     virtual TBool ReadyToBlit() const = 0;
@@ -2175,7 +2175,9 @@ enum TEventType
     EItemChanged = 0,       // Futuredev: value
     // EList
     ESelect = 0,             // Futuredev: value
-    EM3GDraw = 32           // M3G content is drowned on canvas
+    EM3GDraw = 32,           // M3G content is drowned on canvas
+    EForcedPaint = 33,
+    EFreeGraphicsMemory = 34
 };
 
 /**
@@ -2255,6 +2257,21 @@ public:
      * Handles a change to resources which are shared accross the environment.
      */
     virtual void HandleResourceChangeL(TInt aType) = 0;
+
+#ifdef RD_JAVA_NGA_ENABLED
+    /**
+     * Called when MIDlet gains or loses partial/full foreground.
+     * Application (CAknAppUi::HandleWsEventL()) gets AknFullOrPartialForegroundGained event
+     * when it becomes at least partially visible even if it would not be the foreground application.
+     * AknFullOrPartialForegroundLost is received when application is not all visible anymore.
+     */
+    virtual void HandleFullOrPartialForegroundL(TBool /*aFullOrPartialFg*/) {}
+
+    /**
+     * Called when all graphics memory needs to be freed immediately.
+     */
+    virtual void HandleFreeGraphicsMemory() {}
+#endif //RD_JAVA_NGA_ENABLED
 };
 
 /**
@@ -2483,6 +2500,25 @@ public:
      */
     virtual TBool IsHardwareAcceleratedL(
         MMIDEnv::THardwareType aHardwareType) = 0;
+
+    /**
+     * Called when MIDlet's partial/full foreground status is changed.
+     * @since S60 9.2
+     */
+    virtual void HandleFullOrPartialForegroundL(TBool aFullOrPartialFg) = 0;
+
+    /**
+     * Called when graphics memory needs to be freed immediately.
+     * @since S60 9.2
+     */
+    virtual void HandleFreeGraphicsMemory() = 0;
+
+    /**
+     * Checks if MIDlet is at least partially visible.
+     * @return ETrue if MIDlet has full or partial foreground.
+     * @since S60 9.2
+     */
+    virtual TBool HasFullOrPartialForeground() const = 0;
 #endif // RD_JAVA_NGA_ENABLED
 
     /**
@@ -2515,6 +2551,14 @@ public:
      * @since Java 2.0
      */
     virtual void DisplayableIsDestructed(const MMIDDisplayable* aDisplayable) = 0;
+
+    /**
+     * Returns pointer to last fullscreen Displayble.
+     *
+     * @return Last fullscreen Displayable
+     * @since Java 2.1
+     */
+    virtual const MMIDDisplayable* LastFullscreenDisplayable() const = 0;
 };
 
 /**
@@ -2598,6 +2642,8 @@ public:
     virtual void InvokeUICallback(
         MUiEventConsumer& aConsumer,
         TInt aCallbackId) = 0;
+
+    virtual void InvokeLcduiEvent(MMIDLcduiEventConsumer& aConsumer, TInt aCallbackId) = 0;
 };
 
 /**
@@ -2878,6 +2924,12 @@ public:
      * operation and clean up any resources.
      */
     virtual void  AbortAsync() = 0;
+};
+
+class MMIDLcduiEventConsumer
+{
+public:
+    virtual void HandleLcduiEvent(int aType) = 0;
 };
 
 #endif // LCDUI_H

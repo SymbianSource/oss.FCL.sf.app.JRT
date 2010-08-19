@@ -152,6 +152,8 @@ protected:
      */
     void FixPadding();
 
+    void UpdateTextColor();
+
 #if defined( RD_SCALABLE_UI_V2)
 // From MCoeCaptionRetrieverForFep
 private:
@@ -182,7 +184,6 @@ protected:
 // From MSwtControl
 public:
     TBool SetSwtFocus(TInt aReason = KSwtFocusByApi);
-    TInt FocusBackgroundPolicy() const;
     TRect ClientRect() const;
     CCoeControl& CoeControl();
     const CCoeControl& CoeControl() const;
@@ -195,6 +196,8 @@ public:
     void SetBounds(const TRect& aRect);
     void SetWidgetSize(const TSize& aSize);
     TSwtPeer Dispose();
+    TInt PressBackgroundPolicy() const;
+    void HandleHighlightChange();
 
 // From ASwtControlBase
 protected:

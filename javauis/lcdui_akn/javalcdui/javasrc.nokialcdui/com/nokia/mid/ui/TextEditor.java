@@ -931,6 +931,8 @@ public class TextEditor
      * rendered using given color value. The default highlight background
      * color is fully opaque black.
      *
+     * This method is not supported on S40 platform.
+     *
      * @param color
      *            the color
      */
@@ -950,6 +952,8 @@ public class TextEditor
      * The text in a current selection range will be rendered
      * using given color value. The default highlight foreground color is fully
      * opaque white.
+     *
+     * This method is not supported on S40 platform.
      *
      * @param color
      *            the color
@@ -1436,19 +1440,23 @@ public class TextEditor
      */
     final void registeredFinalize()
     {
-        synchronized (iToolkit)
+        if (mFinalizer!=null)
         {
-            if (iHandle > 0)
+            synchronized (iToolkit)
             {
-                _dispose(getToolkitHandle(), iHandle);
-                iHandle = 0;
-
-                if (iParent != null)
+                if (iHandle > 0)
                 {
-                    // Remove from editor container.
-                    iEditorContainer.removeEditor(this, iParent);
+                    iToolkitInvoker.toolkitDisposeObject(iToolkit,iHandle);
+                    iHandle = 0;
+
+                    if (iParent != null)
+                    {
+                        // Remove from editor container.
+                        iEditorContainer.removeEditor(this, iParent);
+                    }
                 }
             }
+            mFinalizer = null;
         }
     }
 

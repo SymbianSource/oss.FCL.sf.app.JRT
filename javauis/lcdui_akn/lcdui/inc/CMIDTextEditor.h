@@ -681,6 +681,15 @@ public: // own methods
     void HandleResourceChange(TInt aType);
 
     /**
+     * Handles switching from foreground to background and vice versa.
+     *
+     * @param aForeground Flag if it switches to foreground or to backgound.
+     *
+     * @since S60 5.0
+     */
+    void HandleForeground(TBool aForeground);
+
+    /**
      * Sets the caret in the Editor at x, y location.
      *
      * @param x

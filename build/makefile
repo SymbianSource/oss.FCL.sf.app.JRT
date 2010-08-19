@@ -61,6 +61,9 @@ SUBSYSTEMS += \
 	javatools \
 	javaextensions
 
+# Set order explicitly to get Java building as first
+SUBTARGETS = $(COMPONENTS) $(NONQTSUBSYSTEMS) $(SUBSYSTEMS)
+
 # -------------------------------------------------------
 
 include ${JAVA_SRC_ROOT}/build/Makefile.subsystem

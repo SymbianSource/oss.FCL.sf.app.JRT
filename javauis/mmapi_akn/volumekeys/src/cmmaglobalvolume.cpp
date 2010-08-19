@@ -72,6 +72,7 @@ CMMAGlobalVolume::~CMMAGlobalVolume()
 //
 void CMMAGlobalVolume::AddPlayerL(CMMAPlayer* aPlayer)
 {
+    DEBUG("CMMAGlobalVolume: AddPlayerL +");
     // Find if the player has a volume control
     CMMAVolumeControl* control = FindVolumeControl(aPlayer);
 
@@ -82,12 +83,19 @@ void CMMAGlobalVolume::AddPlayerL(CMMAPlayer* aPlayer)
         // Create new volume control and level index pair
         playerHolder.iVolumeControl = control;
         playerHolder.iVolumeIndex = control->AddLevelL();
+        DEBUG_INT2("CMMAGlobalVolume: AddPlayerL : iVolumeIndex = %d and iLevel = %d",playerHolder.iVolumeIndex,iLevel);
         playerHolder.iPlayer = aPlayer;
         // Set current volume level for the control
         control->SetVolumeLevelL(playerHolder.iVolumeIndex, iLevel);
+        // To set the initial Global Volume for each player so that 
+        // it will not post any event during the transition to realized state if there 
+        // is no change in the global volume between player creation and realization.
+        control->InitializeGlobalVolumeLevel(iLevel);
         // Add created pair to the control list
         iControlList.AppendL(playerHolder);
     }
+    
+    DEBUG("CMMAGlobalVolume: AddPlayerL -");
 }
 
 // ---------------------------------------------------------------------------
@@ -96,6 +104,7 @@ void CMMAGlobalVolume::AddPlayerL(CMMAPlayer* aPlayer)
 //
 void CMMAGlobalVolume::RemovePlayer(CMMAPlayer* aPlayer)
 {
+    DEBUG("CMMAGlobalVolume: RemovePlayer +");
     // Find if the player has a volume control
     CMMAVolumeControl* control = FindVolumeControl(aPlayer);
 
@@ -105,11 +114,14 @@ void CMMAGlobalVolume::RemovePlayer(CMMAPlayer* aPlayer)
         // Check that if this type of volume control can be found from
         // the control list and remove it
         TInt count(iControlList.Count());
+        DEBUG_INT("CMMAGlobalVolume: RemovePlayer :No of CMMAVolumeControl instances = %d",count);
+                
         for (TInt i(0); i < count; i++)
         {
             const TMMAPlayerHolder& holder = iControlList[ i ];
             if (control == holder.iVolumeControl)
             {
+            DEBUG("CMMAGlobalVolume: RemovePlayer  removing the instance of CMMAVolumeControl from the list");
                 iControlList.Remove(i);
                 break;
             }
@@ -124,6 +136,7 @@ void CMMAGlobalVolume::RemovePlayer(CMMAPlayer* aPlayer)
 void CMMAGlobalVolume::VolumeUp()
 {
     DEBUG_INT("THREADID = %d : CMMAGlobalVolume: VolumeUp: +", RThread().Id());
+    DEBUG_INT("CMMAGlobalVolume: VolumeUp : iLevel = %d", iLevel);
     // Adjust volume if midlet is in foreground and the volume level value
     // is not too high, in this case it cannot be set over KMMAVolumeMaxLevel
     if (iForeground->IsForeground() && (iLevel < KMMAVolumeMaxLevel))
@@ -134,6 +147,7 @@ void CMMAGlobalVolume::VolumeUp()
             iLevel > (KMMAVolumeMaxLevel - KMMAVolumeLevelStep) ?
             KMMAVolumeMaxLevel - iLevel : iLevel + KMMAVolumeLevelStep;
         // Increase level by new value
+        DEBUG_INT("CMMAGlobalVolume: VolumeUp : effective volume to be set to player = %d", level);
         SetControlVolumeLevels(level);
     }
     DEBUG("CMMAGlobalVolume: VolumeUp: -");
@@ -146,6 +160,7 @@ void CMMAGlobalVolume::VolumeUp()
 void CMMAGlobalVolume::VolumeDown()
 {
     DEBUG_INT("THREADID = %d : CMMAGlobalVolume: VolumeDown: +", RThread().Id());
+    DEBUG_INT("CMMAGlobalVolume: VolumeDown : iLevel = %d", iLevel);
     // Adjust volume if midlet is in foreground and the volume value
     // is not too low, in this case it cannot be set under zero
     if (iForeground->IsForeground() && (iLevel > 0))
@@ -155,6 +170,7 @@ void CMMAGlobalVolume::VolumeDown()
         TInt level =
             iLevel < KMMAVolumeLevelStep ?
             0 : iLevel - KMMAVolumeLevelStep;
+        DEBUG_INT("CMMAGlobalVolume: VolumeDown : effective volume to be set to player = %d", level);
         // Decrease level by new value
         SetControlVolumeLevels(level);
     }
@@ -188,6 +204,7 @@ CMMAVolumeControl* CMMAGlobalVolume::FindVolumeControl(CMMAPlayer* aPlayer)
 void CMMAGlobalVolume::SetControlVolumeLevels(TInt aLevel)
 {
     TInt count(iControlList.Count());
+    DEBUG_INT("CMMAGlobalVolume: SetControlVolumeLevels + count of controls = %d",count);
     // Adjust volume for all current volume controls associated
     for (TInt i(0); i < count; i++)
     {
@@ -195,6 +212,7 @@ void CMMAGlobalVolume::SetControlVolumeLevels(TInt aLevel)
         // Set new volume level for this control
         TRAPD(error,
               hdr.iVolumeControl->SetVolumeLevelL(hdr.iVolumeIndex, aLevel));
+        DEBUG_INT2("CMMAGlobalVolume: SetControlVolumeLevels level set to control = %d,err = %d",aLevel,error);
         if (error != KErrNone)
         {
             hdr.iPlayer->PostStringEvent(
@@ -211,6 +229,7 @@ void CMMAGlobalVolume::SetControlVolumeLevels(TInt aLevel)
     // in any sophisticated way so we just have to ignore it. Debug builds
     // may panic in this case
     TInt error = iSettingsStore->Set(KMobileMediaVolumeLevel, aLevel);
+    DEBUG_INT2("CMMAGlobalVolume::setting the new value to Settings store, value = %d, err = %d", aLevel, error);
     __ASSERT_DEBUG(error == KErrNone, User::Invariant());
 }
 
@@ -235,6 +254,7 @@ void CMMAGlobalVolume::ConstructL()
 
     // Get level from the settings store
     User::LeaveIfError(iSettingsStore->Get(KMobileMediaVolumeLevel, iLevel));
+    DEBUG_INT("CMMAGlobalVolume::ConstructL - iLevel got from cenrep = %d", iLevel);
 }
 
 // End of file

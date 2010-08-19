@@ -19,7 +19,7 @@
 //
 // Color16MU plugin registration resource file.
 //
-#include <registryinfov2.rh>
+#include <ecom/registryinfov2.rh>
 #include "lcdgd.hrh"
 
 RESOURCE REGISTRY_INFO r_registry

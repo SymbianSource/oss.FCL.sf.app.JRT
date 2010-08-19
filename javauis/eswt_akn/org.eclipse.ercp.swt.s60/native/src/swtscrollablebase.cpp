@@ -301,3 +301,8 @@ void ASwtScrollableBase::HandleScrollEventL(CEikScrollBar*, TEikScrollEvent)
 {
 }
 #endif //RD_SCALABLE_UI_V2
+
+MSwtScrollable* ASwtScrollableBase::ScrollableInterface()
+{
+    return this;
+}

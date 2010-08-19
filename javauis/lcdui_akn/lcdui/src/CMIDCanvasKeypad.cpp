@@ -378,7 +378,7 @@ void CMIDCanvasKeypad::UpdateVisualAppearanceL(CMIDCanvas& aCanvas, TInt aKeypad
     }
     SetRectForAllButtons();//Needed for updating OSK-buttons when closing/opening hw-keyboard
     CreateButtonsL();
-    InitializeKeys();
+    InitializeKeysL();
     ActivateL(); // Window owning control draws all children (buttons)
     MakeVisible(ETrue);
     DrawDeferred();
@@ -504,7 +504,7 @@ void CMIDCanvasKeypad::CreateButtonsL()
             buttonData.iButton->SetExtent(iRockerRect.iTl, iRockerRect.Size());
             buttonData.iButton->ActivateL();
             InitializeKeyEvents(TKeypadKeys(i), &buttonData);
-            iButtonData.Append(buttonData);
+            iButtonData.AppendL(buttonData);
             CleanupStack::Pop(buttonData.iButton);
         }
         CleanupStack::PopAndDestroy(); // reader;
@@ -554,7 +554,7 @@ void CMIDCanvasKeypad::CreateButtonsL()
         buttonDataGameA.iButton->SetExtent(iGameARect.iTl, iGameARect.Size());
         buttonDataGameA.iButton->ActivateL();
         InitializeKeyEvents(EGameA, &buttonDataGameA);
-        iButtonData.Append(buttonDataGameA);
+        iButtonData.AppendL(buttonDataGameA);
 
         //GameB
         bitmap = NULL;
@@ -589,7 +589,7 @@ void CMIDCanvasKeypad::CreateButtonsL()
         buttonDataGameB.iButton->SetExtent(iGameBRect.iTl, iGameBRect.Size());
         buttonDataGameB.iButton->ActivateL();
         InitializeKeyEvents(EGameB, &buttonDataGameB);
-        iButtonData.Append(buttonDataGameB);
+        iButtonData.AppendL(buttonDataGameB);
 
         //GameC
         bitmap = NULL;
@@ -624,7 +624,7 @@ void CMIDCanvasKeypad::CreateButtonsL()
         buttonDataGameC.iButton->SetExtent(iGameCRect.iTl, iGameCRect.Size());
         buttonDataGameC.iButton->ActivateL();
         InitializeKeyEvents(EGameC, &buttonDataGameC);
-        iButtonData.Append(buttonDataGameC);
+        iButtonData.AppendL(buttonDataGameC);
 
         //GameD
         bitmap = NULL;
@@ -658,7 +658,7 @@ void CMIDCanvasKeypad::CreateButtonsL()
         buttonDataGameD.iButton->SetExtent(iGameDRect.iTl, iGameDRect.Size());
         buttonDataGameD.iButton->ActivateL();
         InitializeKeyEvents(EGameD, &buttonDataGameD);
-        iButtonData.Append(buttonDataGameD);
+        iButtonData.AppendL(buttonDataGameD);
     }
 
     //LSK & RSK buttons
@@ -830,17 +830,17 @@ void CMIDCanvasKeypad::CreateButtonsL()
     buttonDataLSK.iButton->SetExtent(iLskRect.iTl, iLskRect.Size());
     buttonDataLSK.iButton->ActivateL();
     InitializeKeyEvents(ELsk, &buttonDataLSK);
-    iButtonData.Append(buttonDataLSK);
+    iButtonData.AppendL(buttonDataLSK);
 
     buttonDataRSK.iButton->SetContainerWindowL(*this);
     buttonDataRSK.iButton->SetExtent(iRskRect.iTl, iRskRect.Size());
     buttonDataRSK.iButton->ActivateL();
     InitializeKeyEvents(ERsk, &buttonDataRSK);
-    iButtonData.Append(buttonDataRSK);
+    iButtonData.AppendL(buttonDataRSK);
 
 }
 
-void CMIDCanvasKeypad::InitializeKeys()
+void CMIDCanvasKeypad::InitializeKeysL()
 {
     TInt buttonCount = iButtonData.Count();
     iCurrentButtonData.Reset();
@@ -856,8 +856,8 @@ void CMIDCanvasKeypad::InitializeKeys()
             {
                 iButtonData[i].iButton->SetPosition(iRockerRect.iTl);
                 iButtonData[i].iButton->SetSize(iRockerRect.Size());
-                iCurrentButtonData.Append(&iButtonData[i]);
-                iButtonStack.Append(i);
+                iCurrentButtonData.AppendL(&iButtonData[i]);
+                iButtonStack.AppendL(i);
             }
         }
         // Other keys
@@ -870,29 +870,29 @@ void CMIDCanvasKeypad::InitializeKeys()
                 {
                     iButtonData[i].iButton->SetPosition(iGameARect.iTl);
                     iButtonData[i].iButton->SetSize(iGameARect.Size());
-                    iCurrentButtonData.Append(&iButtonData[i]);
-                    iButtonStack.Append(i);
+                    iCurrentButtonData.AppendL(&iButtonData[i]);
+                    iButtonStack.AppendL(i);
                 }
                 else if (iButtonData[i].keyType == EGameB)
                 {
                     iButtonData[i].iButton->SetPosition(iGameBRect.iTl);
                     iButtonData[i].iButton->SetSize(iGameBRect.Size());
-                    iCurrentButtonData.Append(&iButtonData[i]);
-                    iButtonStack.Append(i);
+                    iCurrentButtonData.AppendL(&iButtonData[i]);
+                    iButtonStack.AppendL(i);
                 }
                 else if (iButtonData[i].keyType == EGameC)
                 {
                     iButtonData[i].iButton->SetPosition(iGameCRect.iTl);
                     iButtonData[i].iButton->SetSize(iGameCRect.Size());
-                    iCurrentButtonData.Append(&iButtonData[i]);
-                    iButtonStack.Append(i);
+                    iCurrentButtonData.AppendL(&iButtonData[i]);
+                    iButtonStack.AppendL(i);
                 }
                 else if (iButtonData[i].keyType == EGameD)
                 {
                     iButtonData[i].iButton->SetPosition(iGameDRect.iTl);
                     iButtonData[i].iButton->SetSize(iGameDRect.Size());
-                    iCurrentButtonData.Append(&iButtonData[i]);
-                    iButtonStack.Append(i);
+                    iCurrentButtonData.AppendL(&iButtonData[i]);
+                    iButtonStack.AppendL(i);
                 }
             }
 
@@ -900,14 +900,14 @@ void CMIDCanvasKeypad::InitializeKeys()
             if (iButtonData[i].keyType == ELsk && iIsFullScreenMode)
             {
                 iButtonData[i].iButton->SetExtent(iLskRect.iTl, iLskRect.Size());
-                iCurrentButtonData.Append(&iButtonData[i]);
-                iButtonStack.Append(i);
+                iCurrentButtonData.AppendL(&iButtonData[i]);
+                iButtonStack.AppendL(i);
             }
             else if (iButtonData[i].keyType == ERsk && iIsFullScreenMode)
             {
                 iButtonData[i].iButton->SetExtent(iRskRect.iTl, iRskRect.Size());
-                iCurrentButtonData.Append(&iButtonData[i]);
-                iButtonStack.Append(i);
+                iCurrentButtonData.AppendL(&iButtonData[i]);
+                iButtonStack.AppendL(i);
             }
         }
     }
@@ -1393,7 +1393,7 @@ TKeyResponse CMIDCanvasKeypad::RaiseOfferKeyEventL(const TKeyEvent& aEvent, TEve
                 feedback->InstantFeedback(ETouchFeedbackSensitiveButton);
             }
             break;
-#endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK                            
+#endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
         }
     }
 #endif // RD_TACTILE_FEEDBACK

@@ -18,11 +18,13 @@
 //  INCLUDE FILES
 #include <jdebug.h>
 #include <JniEnvWrapper.h>
+#include <ctsydomainpskeys.h>
 
 #include "cmmaplayer.h"
 #include "cmmaeventsource.h"
 #include "cmmadurationupdater.h"
 #include "cmmavolumecontrol.h"
+#include "cmmacallstatemonitor.h"
 
 // CONSTANTS
 _LIT(KPanicOutOfMem, "out of memory");
@@ -43,6 +45,7 @@ EXPORT_C CMMAPlayer::~CMMAPlayer()
     delete iOOMErrorEvent;
     delete iDurationUpdater;
     delete iContentType;
+    delete iStateObserver;
 }
 
 
@@ -51,7 +54,8 @@ EXPORT_C CMMAPlayer::CMMAPlayer():
         iRepeatForever(EFalse),
         iRepeatCount(0),
         iDuration(KTimeUnknown),
-        iState(EUnrealized)
+        iState(EUnrealized),
+        isPausedByCall(EFalse)
 {
 }
 
@@ -60,6 +64,10 @@ void CMMAPlayer::ConstructL()
 {
     DEBUG("MMA::CMMAPlayer::ConstructL + ");
     iDurationUpdater = CMMADurationUpdater::NewL(*this);
+    // Listen to call state changes
+    iStateObserver = CMMACallStateMonitor::NewL(KPSUidCtsyCallInformation,
+                                            KCTsyCallState,this);
+    
     DEBUG("MMA::CMMAPlayer::ConstructL - ");
 }
 
@@ -145,7 +153,7 @@ void CMMAPlayer::RealizeL()
 }
 
 
-void CMMAPlayer::CloseL()
+EXPORT_C void CMMAPlayer::CloseL()
 {
     DEBUG("MMA::CMMAPlayer::CloseL ");
     PostObjectEvent(CMMAPlayerEvent::EClosed, NULL);
@@ -421,7 +429,7 @@ EXPORT_C CMMASourceStream* CMMAPlayer::AddSourceStreamL(JNIEnv* aJNIEnv,
 }
 
 
-void CMMAPlayer::PostActionCompleted(TInt aError)
+EXPORT_C void CMMAPlayer::PostActionCompleted(TInt aError)
 {
     iActionCompletedEvent->SetEventData(aError);
     iEventPoster->PostEvent(iActionCompletedEvent,
@@ -450,6 +458,74 @@ void CMMAPlayer:: DeleteControls()
     if (iControls.Count() > 0)
     {
         iControls.ResetAndDestroy();
+    }
+}
+
+
+void CMMAPlayer::HandleCallStateEventL(TUid aUid, TInt aKey)
+{
+    DEBUG("CMMAPlayer::HandleCallStateEvent +");
+    DEBUG_INT2( "CMMAVideoUrlPlayer::HandleCallStateEvent(TUid aUid, TInt aKey) = (%d, %d)",aUid.iUid, aKey);
+
+    TInt callState;
+    iStateObserver->GetValue(callState);
+    DEBUG_INT( "CMMAVideoUrlPlayer::HandleCallStateEvent: state = %d", callState);
+
+    switch (callState)
+    {
+    case EPSCTsyCallStateUninitialized:
+    {
+        DEBUG_INT( "CMMAVideoUrlPlayer::HandlePSEvent EPSCTsyCallStateUninitialized istate = %d", iState);
+        break;
+    }
+
+    case EPSCTsyCallStateAlerting:
+
+    case EPSCTsyCallStateRinging:
+
+    case EPSCTsyCallStateDialling:
+ 
+    case EPSCTsyCallStateAnswering:
+
+    case EPSCTsyCallStateConnected:
+    {
+        DEBUG_INT( "CMMAVideoUrlPlayer::HandlePSEvent EPSCTsyCallStateConnected iState = %d", iState);
+        if(iState == CMMAPlayer::EStarted)
+        {
+            DEBUG(  "CMMAVideoUrlPlayer::HandlePSEvent EPSCTsyCallStateConnected started state");
+            StopL(ETrue);
+            isPausedByCall = ETrue;
+        }
+        break;
+    }
+    case EPSCTsyCallStateDisconnecting:
+    {
+      DEBUG_INT( "CMMAVideoUrlPlayer::HandlePSEvent EPSCTsyCallStateDisconnecting istate = %d", iState);
+      break;
+    }
+    case EPSCTsyCallStateNone:
+    {
+        DEBUG_INT( "CMMAVideoUrlPlayer::HandlePSEvent EPSCTsyCallStateNone istate = %d", iState);
+        if( (iState == CMMAPlayer::EPrefetched) && isPausedByCall )
+        {
+            DEBUG(  "CMMAVideoUrlPlayer::HandlePSEvent EPSCTsyCallStateNone Prefetched state");
+            StartL(ETrue);
+            isPausedByCall = EFalse;
+        }
+        break;
+    }
+
+    case EPSCTsyCallStateHold:
+    {
+        DEBUG_INT( "CMMAVideoUrlPlayer::HandlePSEvent EPSCTsyCallStateHold iState = %d", iState);
+        break;
+    }
+    default:
+    {
+        DEBUG( "CMMAVideoUrlPlayer::HandlePSEvent default");
+        // Default is no pause
+        break;
+    }
     }
 }
 //  END OF FILE

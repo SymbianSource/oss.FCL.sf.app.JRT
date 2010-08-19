@@ -35,6 +35,7 @@ import com.nokia.mj.impl.rt.ui.RuntimeUi;
 import com.nokia.mj.impl.rt.ui.ConfirmData;
 import com.nokia.mj.impl.connectionmanager.ConnectionManager;
 import com.nokia.mj.impl.connectionmanager.AccessPoint;
+import com.nokia.mj.impl.utils.Id;
 import com.nokia.mj.impl.utils.ResourceLoader;
 
 /**
@@ -74,7 +75,7 @@ public class SecureConnectionImpl extends StreamConnectionBase implements
 
     private static final String LOCALISED_STRING_ID = "qtn_ssl_prompt_";
 
-    private static final String UNTRUSTED_CERTIFICATE_WARNING = "untrusted_certificate";
+    private static final Id UNTRUSTED_CERTIFICATE_WARNING = new Id("untrusted_certificate", "N/A");
 
     /**
      * Constructs the SecureConnectionImpl.

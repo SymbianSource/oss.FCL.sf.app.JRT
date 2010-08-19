@@ -53,7 +53,7 @@ class CCoeControl;
  * @lib    eswtdirectcontent.dll
  * @since  S60 v5.2
  */
-class CSwtDcObserver : public CActive
+NONSHARABLE_CLASS(CSwtDcObserver) : public CActive
 {
 public:
     /**

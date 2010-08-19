@@ -37,6 +37,9 @@ PRJ_EXPORTS
 ../baseline/inc/cmmaplayerevent.h                   |../../inc/cmmaplayerevent.h
 ../baseline/inc/cmmasourcestream.h                  |../../inc/cmmasourcestream.h
 ../baseline/inc/cmmavideocontrol.h                  |../../inc/cmmavideocontrol.h
+../baseline/inc/cmmaaudioplayer.h                   |../../inc/cmmaaudioplayer.h
+../baseline/inc/cmmamidiplayer.h                    |../../inc/cmmamidiplayer.h
+../baseline/inc/cmmammfplayerbase.h                 |../../inc/cmmammfplayerbase.h
 ../baseline/inc/cmmavolumecontrol.h                 |../../inc/cmmavolumecontrol.h
 ../baseline/inc/cmmammfplayerfactory.h              |../../inc/cmmammfplayerfactory.h
 ../baseline/inc/cmmaaudiovolumecontrol.h            |../../inc/cmmaaudiovolumecontrol.h
@@ -47,16 +50,23 @@ PRJ_EXPORTS
 ../baseline/inc/mmmadisplaywindow.h                 |../../inc/mmmadisplaywindow.h
 ../baseline/inc/mmmaplayerfactory.h                 |../../inc/mmmaplayerfactory.h
 ../baseline/inc/mmmaplayerstatelistener.h           |../../inc/mmmaplayerstatelistener.h
+../baseline/inc/mmmaplayerinstanceobserver.h        |../../inc/mmmaplayerinstanceobserver.h
+../baseline/inc/mmmacallstateobserver.h             |../../inc/mmmacallstateobserver.h
 ../baseline/inc/mmmasourcestreamlistener.h          |../../inc/mmmasourcestreamlistener.h
 ../baseline/inc/mmmasnapshotreadycallback.h         |../../inc/mmmasnapshotreadycallback.h
 
 #ifdef RD_JAVA_NGA_ENABLED
 ../baseline/inc.nga/cmmavideoplayer.h               |../../inc/cmmavideoplayer.h
 ../baseline/inc.nga/cmmasurfacewindow.h             |../../inc/cmmasurfacewindow.h
+#else
+../baseline/inc.dsa/cmmadsawindow.h                 |../../inc/cmmadsawindow.h
+../baseline/inc.dsa/cmmavideoplayer.h               |../../inc/cmmavideoplayer.h
 #endif
 
 #ifdef RD_JAVA_HTTP_EMC_ENABLED
 ../baseline/inc.emc/cmmamanager.h                   |../../inc/cmmamanager.h
+../baseline/inc.emc/cmmaemcaudioplayer.h            |../../inc/cmmaemcaudioplayer.h
+../baseline/inc.emc/cmmaemcplayerbase.h             |../../inc/cmmaemcplayerbase.h
 #endif
 
 // Generic configuration interface for mobilemedia cenrep settings  

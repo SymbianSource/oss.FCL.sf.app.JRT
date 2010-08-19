@@ -179,6 +179,8 @@ public:
 #ifdef RD_JAVA_S60_RELEASE_9_2
     void EnableFocusHighlight(TBool aEnable);
 #endif //RD_JAVA_S60_RELEASE_9_2
+    TInt FocusBackgroundPolicy() const;
+    void PrepareForTraverse();
 
 // From MSwtListBox
 public:
@@ -468,11 +470,6 @@ private:
      * Default foreground color.
      */
     TRgb iDefColor;
-
-    /**
-     * Used to hide initial flickering.
-     */
-    TBool iRestoreRedraw;
 
     /**
      * Maximum icon sizes for the current layout.

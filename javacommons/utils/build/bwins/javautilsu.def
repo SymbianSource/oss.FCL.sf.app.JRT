@@ -128,4 +128,7 @@ EXPORTS
 	??_ERuntimeException@runtime@java@@UAE@I@Z @ 127 NONAME ; java::runtime::RuntimeException::~RuntimeException(unsigned int)
 	??1RuntimeException@runtime@java@@UAE@XZ @ 128 NONAME ; java::runtime::RuntimeException::~RuntimeException(void)
 	?toString@RuntimeException@runtime@java@@UBE?AV?$basic_string@DV?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ @ 129 NONAME ; class std::basic_string<char, class std::char_traits<char>, class std::allocator<char> > java::runtime::RuntimeException::toString(void) const
+	?wbase64encode@JavaCommonUtils@util@java@@SA?AV?$basic_string@_WV?$char_traits@_W@std@@V?$allocator@_W@2@@std@@ABV45@@Z @ 130 NONAME ; class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > java::util::JavaCommonUtils::wbase64encode(class std::basic_string<wchar_t, class std::char_traits<wchar_t>, class std::allocator<wchar_t> > const &)
+	?isFirstBoot@JavaCommonUtils@util@java@@SA_NXZ @ 131 NONAME ; bool java::util::JavaCommonUtils::isFirstBoot(void)
+	?initIsFirstBoot@JavaCommonUtils@util@java@@SAHXZ @ 132 NONAME ; int java::util::JavaCommonUtils::initIsFirstBoot(void)
 

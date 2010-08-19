@@ -21,12 +21,14 @@ package com.nokia.mj.impl.installer;
 import com.nokia.mj.impl.comms.CommsEndpoint;
 import com.nokia.mj.impl.comms.CommsMessage;
 import com.nokia.mj.impl.installer.applicationregistrator.SifNotifier;
+import com.nokia.mj.impl.installer.applicationregistrator.SifRegistrator;
 import com.nokia.mj.impl.installer.storagehandler.ApplicationInfo;
 import com.nokia.mj.impl.installer.storagehandler.SuiteInfo;
 import com.nokia.mj.impl.installer.utils.InstallerException;
 import com.nokia.mj.impl.installer.utils.Log;
 import com.nokia.mj.impl.installer.utils.PlatformUid;
 import com.nokia.mj.impl.utils.exception.ExceptionBase;
+import com.nokia.mj.impl.utils.ErrorMessageBase;
 import com.nokia.mj.impl.utils.InstallerErrorMessage;
 import com.nokia.mj.impl.utils.Tokenizer;
 import com.nokia.mj.impl.utils.Uid;
@@ -37,29 +39,76 @@ import java.util.Vector;
 
 /**
  * InstallerResultMessage contains information about install, uninstall
- * and componentinfo operations. It is sent to Comms endpoint specified
- * at JavaInstaller startup.
+ * and componentinfo operation results. JavaInstaller sends it at the end
+ * of operation to Comms endpoint specified at JavaInstaller startup with
+ * -commsresult option.
+ * <p>
+ * InstallerResultMessage contains name-value pairs: name is a string,
+ * value can be either a string or an int. Message syntax:
+ * <p>
+ * <pre>
+ * message := length named_int_value* length named_string_value*
+ * named_int_value := name int_value
+ * named_string_value := name string_value
+ * name := &lt;string&gt;
+ * int_value := &lt;int&gt;
+ * string_value := &lt;string&gt;
+ * length := &lt;int telling the length of the table that follows&gt;
+ * </pre>
+ * <p>
  */
 public class InstallerResultMessage
 {
+    /** Operation type. Value type: int.
+        Possible values: 0: install, 1: uninstall, 2: componentinfo. */
     public static final String NAME_OPERATION = "operation";
+    /** Status code indicating operation result. Value type: int. */
     public static final String NAME_RESULT = "result";
+    /** SIF error category. Value type: int. */
     public static final String NAME_ERROR_CATEGORY = "error-category";
+    /** Java runtime specific error code. Value type: int. */
+    public static final String NAME_ERROR_CODE = "error-code";
+    /** Localized error message. Value type: string. */
     public static final String NAME_ERROR_MSG = "error-message";
+    /** Localized message with more details of the error reason. Value type: string. */
     public static final String NAME_ERROR_DETAILS = "error-details";
+    /** Suite UID. Value type: int. */
     public static final String NAME_SUITE_UID = "suite-uid";
+    /** Midlet-n UID. Value type: int. */
     public static final String NAME_MIDLET_UID = "midlet-uid-";
+    /** Suite component id. Value type: int. */
     public static final String NAME_SUITE_CID = "suite-cid";
+    /** Midlet-n component id. Value type: int. */
     public static final String NAME_MIDLET_CID = "midlet-cid-";
+    /** Suite global id. Value type: string. */
     public static final String NAME_SUITE_GID = "suite-gid";
+    /** Midlet-n global id. Value type: string. */
     public static final String NAME_MIDLET_GID = "midlet-gid-";
+    /** Suite name. Value type: string. */
     public static final String NAME_SUITE_NAME = "suite-name";
+    /** Midlet-n name. Value type: string. */
     public static final String NAME_MIDLET_NAME=  "midlet-name-";
+    /** Suite vendor. Value type: string. */
     public static final String NAME_VENDOR = "vendor";
+    /** Suite version. Value type: string. */
     public static final String NAME_VERSION = "version";
+    /** Component installation status. Value type: int. Possible values:
+        0: new component,
+        1: upgrade,
+        2: already installed,
+        3: newer version already installed,
+        4: invalid package, cannot be installed. */
     public static final String NAME_INSTALL_STATUS = "install-status";
+    /** Component authenticity. Value type: int. Possible values:
+        0: component is not authenticated, 1: component is authenticated. */
     public static final String NAME_AUTHENTICITY = "authenticity";
+    /** Size of the files owned by the component at the time of the
+        installation. Calculated from MIDlet-Data-Size and
+        MIDlet-Jar-Size attributes. Value type: int. */
     public static final String NAME_COMPONENT_SIZE = "component-size";
+
+    /** Id for installer result Comms message. */
+    private static final int INSTALLER_RESULT_MESSAGE_ID = 601;
 
     private Hashtable iNamedIntValues = null;
     private Hashtable iNamedStringValues = null;
@@ -165,7 +214,7 @@ public class InstallerResultMessage
             {
                 addValue(NAME_ERROR_DETAILS, msg);
             }
-            addErrorCategory(eb);
+            addErrorCodes(eb);
         }
         if (aException instanceof InstallerException)
         {
@@ -193,25 +242,24 @@ public class InstallerResultMessage
     }
 
     /**
-     * Get a string value from this message.
-     * @throws IllegalArgumentException if value with given name is not found
+     * Returns a string value from this message, or null
+     * if string value is not present.
      */
-    public String getStringValue(String aName)
+    String getStringValue(String aName)
     {
         Object value = iNamedStringValues.get(aName);
         if (value instanceof String)
         {
             return (String)value;
         }
-        throw new IllegalArgumentException(
-            "InstallerResultMessage: string value " + aName + " not found");
+        return null;
     }
 
     /**
      * Get an int value from this message.
      * @throws IllegalArgumentException if value with given name is not found
      */
-    public int getIntValue(String aName)
+    int getIntValue(String aName)
     {
         Object value = iNamedIntValues.get(aName);
         if (value instanceof Integer)
@@ -225,7 +273,7 @@ public class InstallerResultMessage
     /**
      * Removes a value from this message.
      */
-    public void removeValue(String aName)
+    void removeValue(String aName)
     {
         iNamedStringValues.remove(aName);
         iNamedIntValues.remove(aName);
@@ -255,19 +303,20 @@ public class InstallerResultMessage
         }
         if (iSifNotifier != null)
         {
-            int errCategory = 0;
-            int errCode = 0;
-            String errMsg = null;
-            String errDetails = null;
-            if (getIntValue(NAME_RESULT) != Installer.ERR_NONE)
-            {
-                errCategory = getIntValue(NAME_ERROR_CATEGORY);
-                errCode = Installer.ERR_GENERAL;
-                errMsg = getStringValue(NAME_ERROR_MSG);
-                errDetails = getStringValue(NAME_ERROR_DETAILS);
-            }
             try
             {
+                int result = getIntValue(NAME_RESULT);
+                int errCategory = 0;
+                int errCode = 0;
+                String errMsg = null;
+                String errDetails = null;
+                if (result != Installer.ERR_NONE)
+                {
+                    errCategory = getIntValue(NAME_ERROR_CATEGORY);
+                    errCode = getIntValue(NAME_ERROR_CODE);
+                    errMsg = getStringValue(NAME_ERROR_MSG);
+                    errDetails = getStringValue(NAME_ERROR_DETAILS);
+                }
                 iSifNotifier.notifyEnd(errCategory, errCode, errMsg, errDetails);
             }
             catch (Throwable t)
@@ -298,7 +347,7 @@ public class InstallerResultMessage
         {
             comms.connect(aEndpoint);
             CommsMessage msg = new CommsMessage();
-            msg.setMessageId(601);
+            msg.setMessageId(INSTALLER_RESULT_MESSAGE_ID);
             // Initialise the message data.
             msg.write(iNamedIntValues.size());
             Enumeration e = iNamedIntValues.keys();
@@ -318,7 +367,7 @@ public class InstallerResultMessage
             }
             // Send the message.
             Log.log("Sending InstallerResultMessage to " + aEndpoint);
-            CommsMessage installerResultResponse = comms.sendReceive(msg, 5);
+            comms.sendReceive(msg, 5);
             comms.disconnect();
             Log.log("Received InstallerResultResponse from " + aEndpoint);
         }
@@ -385,48 +434,34 @@ public class InstallerResultMessage
     }
 
     /**
-     * Adds error category to the result message.
+     * Adds error codes to the result message.
      */
-    private void addErrorCategory(ExceptionBase aEb)
+    private void addErrorCodes(ExceptionBase aEb)
     {
-        switch (aEb.getShortMessageId())
+        if (aEb.getShortMessageId() >= ErrorMessageBase.INSTALLER_RANGE_START &&
+            aEb.getShortMessageId() <= ErrorMessageBase.INSTALLER_RANGE_END)
         {
-        case InstallerErrorMessage.INST_NO_MEM:
-            addValue(NAME_ERROR_CATEGORY, 2); // ELowDiskSpace
-            break;
-        case InstallerErrorMessage.INST_NO_NET:
-            addValue(NAME_ERROR_CATEGORY, 3); // ENetworkUnavailable
-            break;
-        case InstallerErrorMessage.INST_CORRUPT_PKG:
-            addValue(NAME_ERROR_CATEGORY, 5); // ECorruptedPackage
-            break;
-        case InstallerErrorMessage.INST_COMPAT_ERR:
-            addValue(NAME_ERROR_CATEGORY, 6); // EApplicationNotCompatible
-            break;
-        case InstallerErrorMessage.INST_AUTHORIZATION_ERR:
-            // fall through
-        case InstallerErrorMessage.INST_AUTHENTICATION_ERR:
-            addValue(NAME_ERROR_CATEGORY, 7); // ESecurityError
-            break;
-        case InstallerErrorMessage.INST_PUSH_REG_ERR:
-            // fall through
-        case InstallerErrorMessage.INST_UNEXPECTED_ERR:
-            // fall through
-        case InstallerErrorMessage.UNINST_UNEXPECTED_ERR:
-            // fall through
-        case InstallerErrorMessage.OTHER_UNEXPECTED_ERR:
-            addValue(NAME_ERROR_CATEGORY, 8); // EUnexpectedError
-            break;
-        case InstallerErrorMessage.INST_CANCEL:
-            // fall through
-        case InstallerErrorMessage.UNINST_CANCEL:
-            addValue(NAME_ERROR_CATEGORY, 9); // EUserCancelled
-            break;
-        case InstallerErrorMessage.UNINST_NOT_ALLOWED:
-            addValue(NAME_ERROR_CATEGORY, 10); // EUninstallationBlocked
-            break;
-        default:
-            addValue(NAME_ERROR_CATEGORY, 8); // EUnexpectedError
+            addValue(NAME_ERROR_CATEGORY,
+                     SifRegistrator.getErrorCategory(aEb.getShortMessageId()));
+            addValue(NAME_ERROR_CODE,
+                     aEb.getShortMessageId()*1000 + aEb.getDetailedMessageId());
+        }
+        else if (aEb.getShortMessageId() >= ErrorMessageBase.SECURITY_RANGE_START &&
+                 aEb.getShortMessageId() <= ErrorMessageBase.SECURITY_RANGE_END)
+        {
+            addValue(NAME_ERROR_CATEGORY,
+                     SifRegistrator.getErrorCategory(
+                         InstallerErrorMessage.INST_AUTHORIZATION_ERR));
+            addValue(NAME_ERROR_CODE,
+                     aEb.getShortMessageId()*1000 + aEb.getDetailedMessageId());
+        }
+        else
+        {
+            addValue(NAME_ERROR_CATEGORY,
+                     SifRegistrator.getErrorCategory(
+                         InstallerErrorMessage.INST_UNEXPECTED_ERR));
+            addValue(NAME_ERROR_CODE,
+                     aEb.getShortMessageId()*1000 + aEb.getDetailedMessageId());
         }
     }
 }

@@ -283,6 +283,13 @@ void CMIDEnv::HandleSwitchOnL(TBool aSwitchOn)
 
 void CMIDEnv::HandleForegroundL(TBool aForeground)
 {
+#ifdef RD_JAVA_NGA_ENABLED
+    if (aForeground)
+    {
+        iFullOrPartialFg = ETrue;
+    }
+#endif // RD_JAVA_NGA_ENABLED    
+
     for (TInt i = iObservers.Count(); i--;)
     {
         iObservers[i]->HandleForegroundL(aForeground);
@@ -303,8 +310,31 @@ void CMIDEnv::HandleResourceChangeL(TInt aType)
     {
         iToolkit->Utils()->HandleResourceChangedL();
     }
-
 }
+
+#ifdef RD_JAVA_NGA_ENABLED
+void CMIDEnv::HandleFullOrPartialForegroundL(TBool aForeground)
+{
+    iFullOrPartialFg = aForeground;
+    for (TInt i = iObservers.Count(); i--;)
+    {
+        iObservers[i]->HandleFullOrPartialForegroundL(aForeground);
+    }
+}
+
+void CMIDEnv::HandleFreeGraphicsMemory()
+{
+    for (TInt i = iObservers.Count(); i--;)
+    {
+        iObservers[i]->HandleFreeGraphicsMemory();
+    }
+}
+
+TBool CMIDEnv::HasFullOrPartialForeground() const
+{
+    return iFullOrPartialFg;
+}
+#endif //RD_JAVA_NGA_ENABLED
 
 TInt CMIDEnv::MidletAttribute(const TDesC& aAttributeName, TPtrC& aAttributeValue)
 {
@@ -539,4 +569,9 @@ void CMIDEnv::DisplayableIsDestructed(const MMIDDisplayable* aDisplayable)
     // Inform CMIDToolkit about deleting of displayble. This is needed
     // for prevereting of panic during changing to new Displayable
     iToolkit->DisplayableIsDestructed(aDisplayable);
+}
+
+const MMIDDisplayable* CMIDEnv::LastFullscreenDisplayable() const
+{
+    return iToolkit->LastFullscreenDisplayable();
 }

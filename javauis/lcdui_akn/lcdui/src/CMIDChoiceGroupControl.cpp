@@ -688,20 +688,36 @@ TKeyResponse CMIDChoiceGroupControl::OfferKeyEventL(
     // Save the currently selected item (if exclusive choice)
     TInt oldSelected = iModel->SelectedElement();
     TInt oldCurrentIndex = -1;
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    TBool wasHighlighted = EFalse;
+#endif // RD_JAVA_S60_RELEASE_9_2
 
     if (iListBox)
     {
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        wasHighlighted = iListBox->GetHighlight();
+#endif // RD_JAVA_S60_RELEASE_9_2
+
         oldCurrentIndex = iListBox->View()->CurrentItemIndex();
         // Let the listbox take a shot at the key
         resp = iListBox->OfferKeyEventL(aKeyEvent, aType);
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        wasHighlighted = (iListBox->GetHighlight() && !wasHighlighted) ? EFalse : ETrue;
+#endif // RD_JAVA_S60_RELEASE_9_2
     }
 
     // If click (enter) on an already selected item in an exclusive choice,
-    // do not consume the key. This allows the form to display a context menu
+    // do not consume the key. This allows the form to display a context menu.
+    // Choicegroup element need to be focused and selected
     if ((iType == MMIDChoiceGroup::EExclusive) &&
             ((aKeyEvent.iCode == EKeyOK) || (aKeyEvent.iCode == EKeyEnter)) &&
             ((oldSelected != -1) || (oldSelected == -1 && oldCurrentIndex == -1)) &&
-            (oldSelected == iModel->SelectedElement()))
+            (oldSelected == iModel->SelectedElement())
+#ifdef RD_JAVA_S60_RELEASE_9_2
+            && (wasHighlighted && iListBox->GetHighlight())
+#endif // RD_JAVA_S60_RELEASE_9_2
+       )
     {
         // Do not consume the key, so that form can pop a menu
         CMIDDisplayable& displayable = iItem->Form()->CurrentDisplayable();
@@ -723,10 +739,19 @@ TKeyResponse CMIDChoiceGroupControl::OfferKeyEventL(
         }
         else
         {
+            TInt numScreenOrHelpCommands = displayable.NumCommandsForScreenOrHelpOptionsMenu();
+
             // if ( cntOpt > 1 ) will run menu, else execute ProcessCommandL( CommandOffset )
             if (cntOpt > 1)
             {
                 displayable.MenuHandler()->ShowMenuL(CMIDMenuHandler::EOkMenu);
+                resp = EKeyWasConsumed;
+            }
+            else if (cntOpt == 0 && numScreenOrHelpCommands > 1)
+            {
+                // If there is more than one screen command on form
+                // and there is no ok/item commands then show menu
+                displayable.MenuHandler()->ShowMenuL(CMIDMenuHandler::EOptionsMenu);
                 resp = EKeyWasConsumed;
             }
             else if (command && command->CommandType() != MMIDCommand::EBack &&
@@ -1174,15 +1199,13 @@ void CMIDChoiceGroupControl::DrawText(const TDesC& aText) const
         TRgb rgb = AKN_LAF_COLOR(215);
         TInt textColor;
 
-        // Set color for text according to item highlight
-        // (logical color constants are defined in lcdui.h)
         if (iItem && iItem->IsHighlighted())
         {
-            textColor = KHighlightedItemTextColor;
+            textColor = EAknsCIQsnTextColorsCG8;
         }
         else
         {
-            textColor = KNonHighlightedItemTextColor;
+            textColor = EAknsCIQsnTextColorsCG6;
         }
 
         AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),

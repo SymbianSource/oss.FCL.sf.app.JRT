@@ -115,7 +115,7 @@ EXPORT_C const TDesC& CJavaRegistryEntry::DrmContentId() const
 // CJavaRegistryEntry::~CJavaRegistryEntry
 // ---------------------------------------------------------------------------
 //
-CJavaRegistryEntry::~CJavaRegistryEntry()
+EXPORT_C CJavaRegistryEntry::~CJavaRegistryEntry()
 {
     if (iWritableEntry)
     {

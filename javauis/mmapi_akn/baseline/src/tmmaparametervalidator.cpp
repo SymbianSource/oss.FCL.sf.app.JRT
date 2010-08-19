@@ -18,10 +18,10 @@
 
 //  INCLUDE FILES
 #include <jdebug.h>
-#include <mmfformatimplementationuids.hrh>
-#include <mmfcontrollerimplementationuids.hrh>
+#include <mmf/plugin/mmfformatimplementationuids.hrh>
+#include <mmf/plugin/mmfcontrollerimplementationuids.hrh>
+#include <mmf/common/mmfcontrollerpluginresolver.h>
 #include "cmmaplayerproperties.h"
-#include <mmfcontrollerpluginresolver.h>
 
 
 #include "tmmaparametervalidator.h"

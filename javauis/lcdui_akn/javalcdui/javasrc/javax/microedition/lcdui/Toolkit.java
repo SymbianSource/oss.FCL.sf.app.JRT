@@ -131,6 +131,9 @@ final class Toolkit
 
     static final int EVET_CANVAS_GRAPHICS_ITEM_REPAINT = 31;
     static final int EVENT_M3G_DRAW = 32 ;
+    static final int EVENT_FORCED_PAINT = 33;
+    static final int EVENT_FREE_GPU_MEMORY = 34;
+
     // IMPLICIT EVENT TYPES
     static final int EVENT_DISMISS = 0;         // ALERT
     static final int EVENT_ITEM_CHANGED = 0;    // ITEM(S)
@@ -261,7 +264,7 @@ final class Toolkit
 
     InputStream getResourceAsStream(String aResource)
     throws
-                IOException
+        IOException
     {
         return getClass().getResourceAsStream(aResource);
     }
@@ -554,17 +557,19 @@ final class Toolkit
                     break;
                 case EVENT_FOREGROUND:
                     iDisplay.handleForeground(true);
-                    notifyForeground(true);
                     break;
                 case EVENT_BACKGROUND:
                     iDisplay.handleForeground(false);
-                    notifyForeground(false);
+                    notifyFreeGraphicsMemory();
                     break;
                 case EVENT_SET_CURRENT:
                     iDisplay.switchCurrent();
                     break;
                 case EVENT_SERIAL:
                     iDisplay.processSerialEvents();
+                    break;
+                case EVENT_FREE_GPU_MEMORY:
+                    notifyFreeGraphicsMemory();
                     break;
                 default:
                     throw new IllegalArgumentException();
@@ -573,7 +578,7 @@ final class Toolkit
         }
     }
 
-    private synchronized void notifyForeground(boolean foreground)
+    private synchronized void notifyFreeGraphicsMemory()
     {
         if (null != iObservers)
         {
@@ -584,7 +589,7 @@ final class Toolkit
                 {
                     final ToolkitObserverNGAExtension observer =
                         (ToolkitObserverNGAExtension)iObservers.elementAt(ii);
-                    observer.foregroundEvent(foreground);
+                    observer.freeGraphicsMemory();
                 }
             }
         }

@@ -28,7 +28,7 @@
     <property name="midlet.permissions" value=""/>
     <property name="package.name" value="Midp_StringItem_01"/>
     <property name="company.name" value="Nokia"/>
-    <property name="midlet.version" value="1.1"/>
+    <property name="midlet.version" value="1.2"/>
     <property name="midlet.description" value=""/>
 
     <!-- Get settings for a basic MIDlet. -->

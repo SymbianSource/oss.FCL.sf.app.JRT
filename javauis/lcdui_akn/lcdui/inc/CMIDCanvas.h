@@ -134,6 +134,7 @@ NONSHARABLE_CLASS(CMIDCanvas) :
         public MMIDCanvas,
         public MMIDBufferProcessor,
         public MDirectContainer,
+        public MMIDLcduiEventConsumer,
 #ifdef CANVAS_DIRECT_ACCESS
         public MDirectScreenAccess,
 #endif
@@ -583,6 +584,17 @@ public:
     void MdcNotifyContentAdded();
 #endif
 
+    /**
+     * From MDirectContainer.
+     *
+     * @since  S60 v9.2
+     * @param TBool aEnableFix
+     */
+    void MdcFixUIOrientation(TBool aEnableFix);
+
+// From MMIDLcduiEventConsumer
+public:
+    void HandleLcduiEvent(int aType);
 
 // from base class MMIDMediaKeysListener
 
@@ -708,6 +720,14 @@ public:
      * @since S60 5.0
      */
     TBool IsFullScreen() const;
+
+    /**
+    * Returns the drawing rectangle.
+    *
+    * @since  java 2.1
+    * @return The rectangle where canvas draws.
+    */
+    inline const TRect ViewRect() const;
 
 #ifdef RD_JAVA_S60_RELEASE_9_2
     /**
@@ -1050,7 +1070,11 @@ private:
      *          returns EFalse.
      */
     TBool IsNetworkIndicatorEnabledL() const;
-
+#ifdef RD_JAVA_NGA_ENABLED
+    TBool IsDownScaling(const TSize& aSourceSize, const TRect& aDestRect,TBool aM3GContent) const;
+#else
+    TBool IsDownScaling(const TSize& aSourceSize, const TRect& aDestRect) const;
+#endif //RD_JAVA_NGA_ENABLED
 public:
     /**
      * Handles switching from foreground to
@@ -1058,6 +1082,23 @@ public:
      * context and surfaces need to be relased.
      */
     void HandleForeground(TBool aForeground);
+
+#ifdef RD_JAVA_NGA_ENABLED
+    /**
+     * Motification about MIDlet's changed full or partial foreground status.
+     * @param aFullOrPartialFg  ETrue, when full or partial foreground was gained.
+     *                          EFalse, when foreground was fully lost.
+     * @param aCurrentDisplayable   ETrue, if canvas is the current displayable
+     */
+    void HandleFullOrPartialForegroundL(TBool aFullOrPartialFg, TBool aCurrentDisplayable);
+
+    /**
+     * Frees all GPU memory that is reserved by Canvas.
+     * @param aForced   If ETrue, memory is freed without checking window visibility
+     *                  If EFalse, memory is freed if canvas window is invisible.
+     */
+    void FreeGraphicsMemory(TBool aForced);
+#endif
 
 private:
     /** States of the first paint */
@@ -1120,7 +1161,7 @@ public:
      * @see MMIDComponentNgaExtension#IsEglAvailable()
      * @since S60 9.2
      */
-    TBool IsEglAvailable();
+    TBool IsEglAvailable() const;
 
     /**
      * @see MMIDComponentNgaExtension#BindEglSurface()
@@ -1166,6 +1207,10 @@ public:
      */
     void UpdateRect(const TRect& aRect);
 
+    /**
+     * @see MMIDCanvas::MidletExiting()
+     */
+    void MidletExiting();
 private:
     /**
      * Blits pbuffer surface scaled to window surface
@@ -1207,9 +1252,11 @@ private:
 
     /**
      * Releases EGL resources
+     * @param aReadback     Defines if surface content is copied to bitmap before
+     *                      destroying surface
      * @since S60 9.2
      */
-    void CloseEgl();
+    void CloseEgl(TBool aReadback);
 
     /**
      * Creates EGL context
@@ -1243,9 +1290,10 @@ private:
     /**
      * Handles size changed. EGL window surface needs to be recreated
      * if window size increases.
+     * @param aOrientationChange    ETrue, method is called because of orientation change
      * @since S60 9.2
      */
-    void HandleSizeChanged();
+    void HandleSizeChanged(TBool aOrientationChange);
 
     /**
      * Draws frame buffer 2D content as OpenGL texture in case of
@@ -1333,6 +1381,25 @@ private:
      */
     void ClearUiSurface(TBool aDrawing);
 
+    /**
+     * Draws current canvas content to CWindowGc.
+     * @since S60 9.2
+     */
+    void DrawToWindowGc();
+
+    /**
+     * Checks if canvas window is currently really visible on screen.
+     * Used for checking when canvas should destroy its surfaces.
+     * @since S60 9.2
+     */
+    TBool IsWindowVisible() const;
+
+    /**
+     * Posts forced paint event to Java side. Forced paint causes Canvas.paint() to be
+     * called, event if Displayable.isShown() would return false in Java. See also Canvas.java.
+     * @since S60 9.2
+     */
+    void PostForcedPaint();
 #endif // RD_JAVA_NGA_ENABLED
 
 private: // data
@@ -1561,11 +1628,6 @@ private: // data
      */
     TRect iOldContentBounds;
 
-    /**
-     * The startup trace should be done only once.
-     */
-    mutable TBool iStartUpTraceDone;
-
     // The list of registered custom components.
     RPointerArray< MMIDCustomComponent > iCustomComponents;
 
@@ -1637,6 +1699,10 @@ private: // data
      * Reset to EFalse in CloseEgl().
      */
     TBool iM3GContent;
+    /**
+     * Previously Flag of iM3GContent
+     */
+    mutable TBool iPrevM3GContent;
 
     /**
      * ETrue, while M3G has bound to canvas EGL surface.
@@ -1703,6 +1769,10 @@ private: // data
     GLshort* iVertexArray;
     GLubyte* iTriangleStrip;
 
+    /**
+     * ETrue, when midlet is exiting and this canvas is the current displayable
+     */
+    TBool iExiting;
 #endif // RD_JAVA_NGA_ENABLED
 
     /**
@@ -1736,6 +1806,11 @@ inline void CMIDCanvas::ConvertPixels(
         *aDst++ =  argb        & 0xFFu;
         *aDst++ = (argb >> 24) & 0xFFu;
     }
+}
+
+inline const TRect CMIDCanvas::ViewRect() const
+{
+    return iViewRect;
 }
 #endif // RD_JAVA_NGA_ENABLED
 

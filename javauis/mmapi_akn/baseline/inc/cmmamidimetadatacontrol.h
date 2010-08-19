@@ -21,7 +21,7 @@
 #define CMMAMIDIMETADATACONTROL_H
 
 //  INCLUDES
-#include <mmfcontroller.h>
+#include <mmf/common/mmfcontroller.h>
 
 #include "cmmamidiplayer.h"
 #include "cmmametadatacontrol.h"

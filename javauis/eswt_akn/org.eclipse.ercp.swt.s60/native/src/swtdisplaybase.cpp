@@ -16,6 +16,11 @@
 #include <eikon.hrh>
 #include <AknUtils.h>
 #include <bautils.h>
+#include <avkon.mbg>
+#include <AknsUtils.h>
+#include <AknsConstants.h>
+#include <aknconsts.h>
+#include <AknIconUtils.h>
 #include <swtlaffacade.h>
 #include "s60commonutils.h"
 #include "swtfactory.h"
@@ -30,7 +35,7 @@
 #include "swtjavabufferdrawer.h"
 #include "swtfont.h"
 #include "swtuiutils.h"
-
+#include "imagescaler.h"
 
 #define ASSERT_JAVAUITHREAD() ASSERT(IsCurrentThreadJavaUi())
 #define ASSERT_NATIVEUITHREAD() ASSERT(IsCurrentThreadNativeUi())
@@ -363,7 +368,6 @@ TBool ASwtDisplayBase::MousePostL(const TSwtKeyEventData& aData, TPoint point)
 
 /**
  * Constructs an uninitialised Image
- *
  * @param aSize  The new image's size
  */
 MSwtImage* ASwtDisplayBase::NewImageL(const TSize& aSize)
@@ -371,10 +375,8 @@ MSwtImage* ASwtDisplayBase::NewImageL(const TSize& aSize)
     return CSwtImage::NewL(*this, aSize, *this);
 }
 
-
 /**
  * Constructs an Image with initial data
- *
  * @param aData  The data to construct the image from
  */
 MSwtImage* ASwtDisplayBase::NewImageFromDataL(const MSwtImageData& aData)
@@ -382,6 +384,93 @@ MSwtImage* ASwtDisplayBase::NewImageFromDataL(const MSwtImageData& aData)
     return CSwtImage::NewL(this, aData, this);
 }
 
+/**
+ * Constructs an image from native theme.
+ * @param aId See TSwtThemeImageId
+ */
+MSwtImage* ASwtDisplayBase::NewImageFromThemeL(const TInt aId)
+{
+    CFbsBitmap* bmp = NULL;
+    CFbsBitmap* mask = NULL;
+    TSize size(0, 0);
+    switch (aId)
+    {
+    case ESwtThemeImageSecurityTrusted:
+        AknsUtils::CreateIconL(AknsUtils::SkinInstance(),
+                               KAknsIIDQgnIndiMidpTrusted, bmp, mask,
+                               AknIconUtils::AvkonIconFileName(),
+                               EMbmAvkonQgn_indi_midp_trusted,
+                               EMbmAvkonQgn_indi_midp_trusted_mask);
+        size = CSwtLafFacade::GetLayoutRect(CSwtLafFacade::EListSingleGraphicPaneG1,
+                                            TRect(),0).Rect().Size();
+        break;
+    case ESwtThemeImageSecurityUntrusted:
+        AknsUtils::CreateIconL(AknsUtils::SkinInstance(),
+                               KAknsIIDQgnIndiMidpUntrusted, bmp, mask,
+                               AknIconUtils::AvkonIconFileName(),
+                               EMbmAvkonQgn_indi_midp_untrusted,
+                               EMbmAvkonQgn_indi_midp_untrusted_mask);
+        size = CSwtLafFacade::GetLayoutRect(CSwtLafFacade::EListSingleGraphicPaneG1,
+                                            TRect(),0).Rect().Size();
+        break;
+    default:
+        return NULL;
+    }
+
+    if (!bmp)
+    {
+        return NULL;
+    }
+    else
+    {
+        if (size.iWidth > 0)
+        {
+            AknIconUtils::SetSize(bmp, size);
+        }
+        // bmp & mask ownership transferred to returned object
+        return CSwtImage::NewL(*bmp, mask);
+    }
+}
+
+/**
+ * Constructs an Image from another Image.
+ * @param aData  The data to construct the image from
+ */
+MSwtImage* ASwtDisplayBase::ScaleImageL(const MSwtImage& aSrcImage,
+                                        const TSize& aDestSize, TBool aKeepAspectRatio)
+{
+    CFbsBitmap& srcBmp = const_cast<CFbsBitmap&>(aSrcImage.Bitmap());
+    CFbsBitmap* srcMask = const_cast<CFbsBitmap*>(aSrcImage.MaskBitmap());
+
+    CFbsBitmap* bmp = new(ELeave) CFbsBitmap;
+    CleanupStack::PushL(bmp);
+    User::LeaveIfError(bmp->Create(aDestSize, srcBmp.DisplayMode()));
+
+    CFbsBitmap* mask = 0;
+    if (srcMask)
+    {
+        mask = new(ELeave) CFbsBitmap;
+        CleanupStack::PushL(mask);
+        User::LeaveIfError(mask->Create(aDestSize, EGray256));
+    }
+
+    CImageScaler* scaler = CImageScaler::NewL();
+    CleanupStack::PushL(scaler);
+    scaler->Scale(srcBmp, *bmp, aKeepAspectRatio);
+    if (srcMask)
+    {
+        scaler->Scale(*srcMask, *mask, aKeepAspectRatio);
+    }
+    CleanupStack::PopAndDestroy(scaler);
+    if (mask)
+    {
+        CleanupStack::Pop(mask);
+    }
+    CleanupStack::Pop(bmp);
+
+    // bmp & mask ownership transferred to returned object
+    return CSwtImage::NewL(*bmp, mask);
+}
 
 //
 // Own internal event methods

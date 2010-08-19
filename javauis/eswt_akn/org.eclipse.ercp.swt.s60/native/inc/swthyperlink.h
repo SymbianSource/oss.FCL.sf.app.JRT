@@ -66,10 +66,12 @@ private:
                   const TDesC& aText,
                   const TRect& aTextRect,
                   const CGraphicsContext::TTextAlign& aAlignment) const;
-    void UpdateSkinColor();
     void UpdateDefaultFontL();
     void LaunchHandler();
     TPtrC Scheme();
+    TRgb LinkColor() const;
+    TRgb LinkBgColor() const;
+    TRgb PressedLinkColor() const;
 
 // From base class CCoeControl
 
@@ -94,6 +96,7 @@ protected:
 public:
     void               SetForegroundL(const MSwtColor* aColor);
     TSize              ComputeSizeL(TInt aWHint, TInt aHHint);
+    TInt               PressBackgroundPolicy() const;
 
 // From base class ASwtControlBase
 
@@ -132,24 +135,10 @@ private:
     MSwtFont* iDefaultFont;
 
     /**
-     * Link fragment text color.
+     * Custom foreground color used by the non pressed link.
+     * Not own.
      */
-    TRgb iLinkColor;
-
-    /**
-     * Link fragment text color when highlighted.
-     */
-    TRgb iHighlightedLinkColor;
-
-    /**
-     * Link fragment back highlight color.
-     */
-    TRgb iHighlightColor;
-
-    /**
-     * True if currently used text color is a color set by the Java application.
-     */
-    TBool iCustomTextColor;
+    const MSwtColor* iCustomFg;
 
     /**
      * The format of the hyperlink. Textual formatting done and the handler
@@ -162,12 +151,6 @@ private:
      * Not own.
      */
     MTouchFeedback* iFeedback;
-
-    /**
-     * True for as long as pressed by pointer.
-     * Eclipses ASwtControlBase::iPressed!
-     */
-    TBool iPressed;
 };
 
 

@@ -50,13 +50,17 @@ PAGED
 
 USERINCLUDE     ../inc
 USERINCLUDE     ../../org.eclipse.ercp.swt.s60/native/inc
-SYSTEMINCLUDE	/epoc32/include/ecom
+
+#ifdef RD_JAVA_S60_RELEASE_5_0
+SYSTEMINCLUDE	/epoc32/include/ecom    // Due to schemehandler.inl in S60 5.0 2009w18
+#endif
 
 // java/javauis/inc
-SYSTEMINCLUDE   ../../../inc
+USERINCLUDE   ../../../inc
 
 // java/inc
-SYSTEMINCLUDE   ../../../../inc
+USERINCLUDE   ../../../../inc
+
 
 SOURCEPATH  ../src
 SOURCE swtbrowseractiveapdb.cpp

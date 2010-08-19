@@ -102,6 +102,14 @@ public:
     * @returns The rect of the content window in screen co-ordinates.
     */
     virtual TRect MdcContainerWindowRect() const = 0;
+    
+    /**
+     * Fixes screen UI orientation.
+     *
+     * @param aEnableFix If ETrue, the UI orientation will be fixed.
+     *                   If EFalse, the standard UI orientation is restored.        
+     */
+    virtual void MdcFixUIOrientation(TBool aEnableFix) = 0;
 };
 
 

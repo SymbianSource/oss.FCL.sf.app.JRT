@@ -199,7 +199,9 @@ void L2CapPushServerConnection::handleConnectionRequest(
     BluetoothNameLookup * nameLookup = NULL;
 
     long long remoteDevAddr = aClientConnection->getRemoteAddress();
-
+    ELOG1(EJavaBluetooth,
+      "+ L2CapPushServerConnection::handleConnectionRequest DeviceAddress:%llx",
+         remoteDevAddr);
     TRAPD(lookupErr,
     {
         nameLookup = BluetoothNameLookup::NewL();

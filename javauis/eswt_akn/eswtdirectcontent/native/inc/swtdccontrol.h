@@ -75,6 +75,8 @@ protected: // New methods
     void DoDraw();
     void DoCallDSAResourcesCallback(MUiEventConsumer *aConsumer);
     void DoCallUICallback(MUiEventConsumer *aConsumer, TInt aCallbackId);
+    void FixUIOrientation();
+    void UnFixUIOrientation();
 
 public: // From CCoeControl
     void SetDimmed(TBool aDimmed);
@@ -116,6 +118,7 @@ public: // From MSWTContainer
         TBool aIsInUiThread);
     void MdcGetUICallback(MUiEventConsumer& aConsumer, TInt aCallbackId);
     TRect MdcContainerWindowRect() const;
+    void MdcFixUIOrientation(TBool aEnableFix);
 
 public: // From MSwtDcFullscreenProvider
     void HandleDcEvent(int aType);
@@ -193,7 +196,11 @@ private: // Data
     // This observer receives requests from any thread and asynchronously
     // calls a callback in ESWT thread to a given receiver
     CSwtDcObserver* iDcObserver;
-
+    
+    // Indicates that UI orientation has been set to fixed
+    // by this instance already, so another calls of 
+    // MdcFixUIOrientation(ETrue) are ignored then. And vice versa.
+    TBool iFixedOrientationSet;
 
 };
 

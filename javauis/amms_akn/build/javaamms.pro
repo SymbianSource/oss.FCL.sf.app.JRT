@@ -26,17 +26,14 @@ DEFINES += RD_JAVA_OMA_DRM_V2
 DEFINES += __JAVA_JSR234_TUNER
 
 
-INCLUDEPATH +=  /epoc32/include/mmf/common \
-                /epoc32/include/caf \
-                ../ammscontrol/inc \
+INCLUDEPATH +=  ../ammscontrol/inc \
                 ../ammscontrol/audio3D/inc \
                 ../ammscontrol/audioeffect/inc \
                 ../mmacontrol/inc \
                 ../module/inc \
                 ../src_tuner/native/external_include \
                 ../src_tuner/native/inc \
-                ../ammscontrol/inc \
-                ../../mmapi_akn/baseline/inc
+                ../ammscontrol/inc 
 
 
 SOURCES +=  ../ammscontrol/src/*.cpp \
@@ -47,8 +44,7 @@ SOURCES +=  ../ammscontrol/src/*.cpp \
             ../module/src/*.cpp
           
 contains(PROJECT_DEFINES,RD_JAVA_HTTP_EMC_ENABLED) {
-        INCLUDEPATH +=  ../../mmapi_akn/baseline/inc.emc \
-        ../mmacontrol/inc.emc \
+        INCLUDEPATH +=  ../mmacontrol/inc.emc \
         
         SOURCES += ../mmacontrol/src.emc/*.cpp
          
@@ -57,20 +53,11 @@ contains(PROJECT_DEFINES,RD_JAVA_HTTP_EMC_ENABLED) {
         -lmmfdevsound
 }
 else{
-			 INCLUDEPATH +=  ../../mmapi_akn/baseline/inc.mmf \
-        ../mmacontrol/inc.mmf \
+			 INCLUDEPATH += ../mmacontrol/inc.mmf \
         
 			  SOURCES += ../mmacontrol/src.mmf/*.cpp
 			  
 }
-
-contains(PROJECT_DEFINES,RD_JAVA_NGA_ENABLED) {
-				INCLUDEPATH +=  ../../mmapi_akn/baseline/inc.nga
-}
-else {
-				INCLUDEPATH +=  ../../mmapi_akn/baseline/inc.dsa
-}
-
 
 LIBS += -lAudioEqualizerEffect \
         -lAudioEqualizerUtility \

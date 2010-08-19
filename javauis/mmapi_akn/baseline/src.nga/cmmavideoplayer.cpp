@@ -83,7 +83,8 @@ CMMAVideoPlayer::CMMAVideoPlayer(
         CMMAAudioPlayer(aResolver),
         iVideoControllerCustomCommands(iController),
         iVideoPlayControllerCustomCommands(iController),
-        iVideoPlaySurfaceSupportCustomCommands(iController)
+        iVideoPlaySurfaceSupportCustomCommands(iController),
+        isHDMICableConnected(EFalse)
 {
     iMMASurface.iPrevSurfaceAvailable = EFalse;
 }
@@ -248,12 +249,21 @@ void CMMAVideoPlayer::HandleEvent(const TMMFEvent& aEvent)
     if ((aEvent.iEventType == KMMFEventCategoryVideoPlayerGeneralError) &&
             (aEvent.iErrorCode == KMMVideoBlitError))
     {
-        TRAPD(error, StartL(EFalse));
-        if (KErrNone != error)
-        {
-            DEBUG_INT("MMA:CMMAVideoPlayer::HandleEvent, StartL() error %d", error);
-        }
-        return;
+       // incase of HDMI cable is inserted, start the player again before ignoring the error otherwise simply ignore
+       if(isHDMICableConnected)
+       {
+          TRAPD(error, StartL(EFalse));
+          if (KErrNone != error)
+          {
+             DEBUG_INT("MMA:CMMAVideoPlayer::HandleEvent, StartL() error %d",
+                                                                          error);
+          }
+          return;
+       }
+       else // no HDMI cable is inserted, Hence ignore the error.
+       {
+          return;
+       }
     }
 
     // KNotCompleteVideoError can be notified when video is not complete
@@ -569,6 +579,7 @@ void CMMAVideoPlayer::ConnectedL(CAccMonitorInfo* aAccessoryInfo)
     DEBUG_INT("MID::CMMAVideoPlayer::ConnectedL %d", deviceType);
     if (iSurfaceWindow && (deviceType == KAccMonAVDevice))
     {
+        isHDMICableConnected = ETrue;
         iSurfaceWindow->SetAVCableConnStatus(ETrue);
     }
 }
@@ -579,6 +590,7 @@ void CMMAVideoPlayer::DisconnectedL(CAccMonitorInfo* aAccessoryInfo)
     DEBUG_INT("MID::CMMAVideoPlayer::DisconnectedL %d", deviceType);
     if (iSurfaceWindow && (deviceType == KAccMonAVDevice))
     {
+        isHDMICableConnected = EFalse;
         iSurfaceWindow->SetAVCableConnStatus(EFalse);
     }
 }

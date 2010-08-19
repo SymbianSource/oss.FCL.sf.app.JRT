@@ -48,9 +48,11 @@ void CMMASnapshotEvent::Dispatch(JNIEnv& aJni)
     DEBUG("MMA::CMMASnapshotEvent::Dispatch");
 
     // create java byte array
+
     jbyteArray byteArray;
 
     if (iImageBuffer)
+
     {
         byteArray = aJni.NewByteArray(iImageBuffer->Size());
         if (byteArray)
@@ -82,8 +84,8 @@ void CMMASnapshotEvent::Dispatch(JNIEnv& aJni)
                         byteArray);
 
     delete iImageBuffer;
-
     iImageBuffer = NULL; // otherwise double delete in destructor
+
     aJni.DeleteLocalRef(byteArray);
 
 }

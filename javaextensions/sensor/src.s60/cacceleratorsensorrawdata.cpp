@@ -97,6 +97,18 @@ void CAcceleratorSensorRawData::DataRange(const RSensrvPropertyList aList,
     TSensrvProperty property;
     TInt intValue(0);
     GetProperty(aList, KSensrvPropIdScaledRange,KSensrvItemIndexNone, property);
+
+    if ((property.GetArrayIndex() == ESensrvArrayPropertyInfo)&&
+            (property.PropertyType() == ESensrvIntProperty))
+    {
+        // Read index
+        TInt rangeIndex = 0;
+
+        // Read actual property data from array
+        GetProperty(aList, KSensrvPropIdScaledRange,
+                    KSensrvItemIndexNone, rangeIndex, property);
+    }
+
     if (property.PropertyType() == ESensrvIntProperty)
     {
         aPtr->Append(KMeasureRangeCount);

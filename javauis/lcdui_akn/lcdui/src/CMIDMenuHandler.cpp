@@ -44,6 +44,8 @@
 #include "lcdui.h"
 #include <j2me/jdebug.h>
 #include "CMIDUIManager.h"
+#include "coreuiavkonlcdui.h"
+#include "coreuiappui.h"
 
 
 const TInt KResolutionStringLength = 4;
@@ -201,23 +203,24 @@ void CMIDMenuHandler::SetDisplayable(CMIDDisplayable* aDisplayable)
 //
 void CMIDMenuHandler::SendMultipleKeyPressedEvent()
 {
-    ASSERT(iDisplayable);
-
-    RWsSession  wsSession = CCoeEnv::Static()->WsSession();
-    TWsEvent event;
-
-    // Check the current Display type if it is canvas enable the
-    // multiple key events, other wise disable it.
-    MMIDComponent* component = iDisplayable->Component();
-    MMIDComponent::TType type = component->Type();
-
-    if (type == MMIDComponent::ECanvas)
-        event.SetType(EEnableMultipleKeyPressedEvent); // set event type enable multiple key pressed event
-    else
-        event.SetType(EDisableMultipleKeyPressedEvent); // set event type disable multiple key pressed event
-    event.SetTimeNow(); // set the event time
-    event.SetHandle(wsSession.WsHandle()); // set window server handle
-    wsSession.SendEventToAllWindowGroups(event);
+    ASSERT(iDisplayable);    
+    java::ui::CoreUiAvkonAppUi* appUi =
+        java::ui::CoreUiAvkonLcdui::getInstance().getJavaUiAppUi();
+    if (appUi)
+    {
+        MMIDComponent* component = iDisplayable->Component();
+        if (component)
+        {
+            if (component->Type() == MMIDComponent::ECanvas)
+            {
+                appUi->glueSetKeyBlockMode(ENoKeyBlock);
+            }
+            else
+            {
+                appUi->glueSetKeyBlockMode(EDefaultBlockMode);
+            }
+        }
+    }
 }
 
 

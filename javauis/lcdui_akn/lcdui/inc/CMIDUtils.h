@@ -373,9 +373,15 @@ private:
     void UpdatePTIEngineStatusL();
 
 #ifdef RD_INTELLIGENT_TEXT_INPUT
+
 #ifdef RD_JAVA_S60_RELEASE_5_0_IAD
     void CallToJavaPtiVariationL(TInt aType);
-#endif //RD_JAVA_S60_RELEASE_5_0_IAD    
+#endif //RD_JAVA_S60_RELEASE_5_0_IAD
+
+    /**
+     * Function sets keyboard type/layout for Pti engine
+     */
+    void SetPtiKeyboardL();
 #endif //RD_INTELLIGENT_TEXT_INPUT
 
 private:
@@ -409,6 +415,8 @@ private:
     RLibrary iPtiSupportLib;
 #endif //RD_JAVA_S60_RELEASE_5_0_IAD
 
+    // Storing current pti keyboard type/layout
+    TInt iPtiKeyboardType;
 #endif // RD_INTELLIGENT_TEXT_INPUT
 
     TInt iQwertyMode;

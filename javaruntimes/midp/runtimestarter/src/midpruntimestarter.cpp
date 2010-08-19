@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -397,36 +397,36 @@ void MidpRuntimeStarter::startCoreUi(std::auto_ptr<java::util::DynamicLibLoader>
             LOG(EJavaRuntime, EInfo, "Nokia-MIDlet-App-Orientation not defined");
         }
 
-        // Check if the MIDlet has defined the MIDlet-Splash-Screen-Image
+        // Check if the MIDlet has defined the Nokia-MIDlet-Splash-Screen-Image
         // JAD attribute.
         std::auto_ptr<std::wstring> splashScreen
         (getMidletAttributeFromStorage(*javaStorage.get(),
-                                       L"MIDlet-Splash-Screen-Image"));
+                                       L"Nokia-MIDlet-Splash-Screen-Image"));
         if (splashScreen.get() != 0)
         {
             std::transform(splashScreen->begin(), splashScreen->end(),
                            splashScreen->begin(), tolower);
             if (*splashScreen == L"suppress")
             {
-                // If MIDlet-Splash-Screen-Image JAD attribute is suppress then
+                // If Nokia-MIDlet-Splash-Screen-Image JAD attribute is suppress then
                 // we start the UI into background.
-                LOG(EJavaRuntime, EInfo, "MIDlet-Splash-Screen-Image is suppress");
+                LOG(EJavaRuntime, EInfo, "Nokia-MIDlet-Splash-Screen-Image is suppress");
                 uiParams.setScreenMode(NO_START_SCREEN);
                 uiParams.setBackgroundStart(true);
             }
             else
             {
-                // If MIDlet-Splash-Screen-Image JAD attribute is not suppress then
+                // If Nokia-MIDlet-Splash-Screen-Image JAD attribute is not suppress then
                 // we need to solve the root path of the MIDlet and provide that
                 // to the coreUI.
                 uiParams.setScreenMode(MIDLET_DEFINED_SCREEN);
-                LOG1(EJavaRuntime, EInfo, "MIDlet-Splash-Screen-Image, setPath to %S",
+                LOG1(EJavaRuntime, EInfo, "Nokia-MIDlet-Splash-Screen-Image, setPath to %S",
                      mMidletInfo->mMIDletRootPath.c_str());
             }
         }
         else
         {
-            LOG(EJavaRuntime, EInfo, "MIDlet-Splash-Screen-Image not defined");
+            LOG(EJavaRuntime, EInfo, "Nokia-MIDlet-Splash-Screen-Image not defined");
             uiParams.setScreenMode(DEFAULT_START_SCREEN);
         }
 

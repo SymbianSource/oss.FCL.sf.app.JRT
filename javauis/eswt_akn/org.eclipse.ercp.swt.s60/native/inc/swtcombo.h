@@ -99,6 +99,7 @@ public:
         TEventCode aType);
     TBool IsKeyUsed(TUint aKeyCode) const;
     HBufC* MSKLabelL() const;
+    TInt PressBackgroundPolicy() const;
 
 // From ASwtScrollableBase
 protected:
@@ -236,12 +237,6 @@ private:
      * Not own.
      */
     MTouchFeedback* iFeedback;
-    
-    /**
-     * True for as long as pressed by pointer.
-     * Eclipses ASwtControlBase::iPressed!
-     */
-    TBool iPressed;
 };
 
 

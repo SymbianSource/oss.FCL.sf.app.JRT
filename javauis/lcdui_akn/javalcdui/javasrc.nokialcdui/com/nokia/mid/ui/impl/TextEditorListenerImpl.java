@@ -138,15 +138,17 @@ public class TextEditorListenerImpl
     final void registeredFinalize()
     {
         // JDEBUG( "TextEditorListenerImpl.registeredFinalize() +" );
-
-        synchronized (iToolkit)
+        if (mFinalizer!=null)
         {
-            if (iHandle > 0)
+            synchronized (iToolkit)
             {
-                _dispose(iToolkitInvoker.toolkitGetHandle(iToolkit), iHandle);
-
-                iHandle = 0;
+                if (iHandle > 0)
+                {
+                    iToolkitInvoker.toolkitDisposeObject(iToolkit,iHandle);
+                    iHandle = 0;
+                }
             }
+            mFinalizer = null;
         }
 
         // JDEBUG( "TextEditorListenerImpl.registeredFinalize() -" );

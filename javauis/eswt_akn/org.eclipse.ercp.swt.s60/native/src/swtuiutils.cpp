@@ -24,6 +24,7 @@
 #include <AknUtils.h>
 #include <AknsDrawUtils.h>
 #include <AknTextDecorationMetrics.h>
+#include <layoutmetadata.cdl.h>
 #ifdef RD_JAVA_S60_RELEASE_9_2
 #include <AknPriv.hrh>
 #include <aknappui.h>
@@ -496,6 +497,7 @@ CSwtUiUtils::CSwtUiUtils(MSwtDisplay& aDisplay)
         , iBrowserShellGarbage(NULL)
         , iShellGarbageCollectionRequested(EFalse)
         , iScrollBarBreadth(-1)
+        , iFixScreenOrientationApplicantsCount(0)
 {
 }
 
@@ -813,8 +815,11 @@ void CSwtUiUtils::MoveToEndOfQueue(MSwtShell& aShell)
 {
     TInt index = iShells.Find(&aShell);
     ASSERT(index != KErrNotFound);
-    iShells.Remove(index);
-    iShells.Append(&aShell);
+    TInt err = iShells.Append(&aShell);
+    if (err == KErrNone)
+    {
+        iShells.Remove(index);
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -960,7 +965,7 @@ TRgb CSwtUiUtils::GetSystemColor(TSwtColorId aId) const
     case ESwtColorWidgetForeground:
     case ESwtColorListForeground:
         AknsUtils::GetCachedColor(skin, color, KAknsIIDQsnTextColors,
-                                  EAknsCIQsnTextColorsCG6);
+                                  KNonHighlightedTextColor);
         break;
     case ESwtColorListSelectionText:
         AknsUtils::GetCachedColor(skin, color, KAknsIIDQsnTextColors,
@@ -1567,7 +1572,7 @@ TSize CSwtUiUtils::GetBestImageSize(TInt aImageType)
     {
     case ESwtListImage:
         maxImageSize = CSwtLafFacade::GetLayoutRect(
-                           CSwtLafFacade::EListSingleLargeGraphicPaneG1, TRect(), 0).Rect().Size();
+                           CSwtLafFacade::EListDoubleLargeGraphicPaneG1, TRect(), 0).Rect().Size();
         break;
     case ESwtChoiceImage:
         maxImageSize = CSwtLafFacade::GetLayoutRect(
@@ -1578,6 +1583,7 @@ TSize CSwtUiUtils::GetBestImageSize(TInt aImageType)
                            CSwtLafFacade::EPopupMidpNoteAlarmWindowG1, TRect(), 0).Rect().Size();
         break;
     default:
+
         break;
     }
     return maxImageSize;
@@ -1671,9 +1677,7 @@ void CSwtUiUtils::SetNaviKeyInput(TBool aStatus)
     {
         if (iActiveShell)
         {
-            MSwtControl* ctrl = iActiveShell->FocusControl();
-            if (ctrl)
-                ctrl->Redraw();
+            iActiveShell->UpdateHighlight();
         }
     }
 }
@@ -2090,5 +2094,47 @@ void CSwtUiUtils::SetShellFade(MSwtShell* aShell, TBool aStatus)
 TBool CSwtUiUtils::CanBeFaded(MSwtShell* aShell) const
 {
     return (aShell && aShell->GetParentShell() && IsApplicationModal(*aShell));
+}
+
+// ---------------------------------------------------------------------------
+// CSwtUiUtils::RegisterFixScreenOrientation
+// ---------------------------------------------------------------------------
+//
+void CSwtUiUtils::RegisterFixScreenOrientation()
+{
+    iFixScreenOrientationApplicantsCount++;
+
+    // Store the old setting for the first applicant only
+    if (iFixScreenOrientationApplicantsCount == 1)
+    {
+        iOldUiOrientation = iAvkonAppUi->Orientation();
+        iRestoreOrientation =
+            (iOldUiOrientation == CAknAppUiBase::EAppUiOrientationUnspecified);
+
+        // Fix the orientation when was set to unspecified only
+        if (iRestoreOrientation)
+        {
+            TRAP_IGNORE(iAvkonAppUi->SetOrientationL(CAknAppUiBase::EAppUiOrientationLandscape));
+        }
+    }
+}
+
+void CSwtUiUtils::UnRegisterFixScreenOrientation()
+{
+    if (iFixScreenOrientationApplicantsCount > 0)
+    {
+        iFixScreenOrientationApplicantsCount--;
+
+        if (iFixScreenOrientationApplicantsCount == 0 && iRestoreOrientation)
+        {
+            TRAP_IGNORE(iAvkonAppUi->SetOrientationL(iOldUiOrientation));
+            iRestoreOrientation = EFalse;
+        }
+    }
+}
+
+TBool CSwtUiUtils::IsScreenOrientationFixed() const
+{
+    return iFixScreenOrientationApplicantsCount > 0;
 }
 

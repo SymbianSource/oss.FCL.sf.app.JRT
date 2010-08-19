@@ -88,6 +88,7 @@ public:
 // From ASwtControlBase
 public:
     virtual TRect ClientRect() const;
+    virtual MSwtScrollable* ScrollableInterface();
 
 // From MEikScrollBarObserver
 public:

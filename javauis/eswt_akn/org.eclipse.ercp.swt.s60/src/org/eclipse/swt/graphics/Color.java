@@ -287,8 +287,6 @@ public final class Color
         return OS.Color_RgbValue(device.handle, handle);
     }
 
-
-
     /**
      * Invokes platform specific functionality to allocate a new Color.
      * <p>
@@ -300,8 +298,8 @@ public final class Color
      * </p>
      *
      * @param device the device on which to allocate the color
-     * @param handle the handle for the font
-     * @return a new font object containing the specified device and handle
+     * @param handle the handle for the color
+     * @return a new color object containing the specified device and handle
      */
     public static Color internal_new(Device device, int handle)
     {

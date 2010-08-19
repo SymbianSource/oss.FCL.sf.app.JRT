@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -87,7 +87,7 @@ public class CoreUiImpl extends CoreUi
             }
         }
 
-        String splashScreenImg = appInfo.getAttribute("MIDlet-Splash-Screen-Image");
+        String splashScreenImg = appInfo.getAttribute("Nokia-MIDlet-Splash-Screen-Image");
         if (splashScreenImg != null)
         {
             if (splashScreenImg.toLowerCase().equals("suppress"))

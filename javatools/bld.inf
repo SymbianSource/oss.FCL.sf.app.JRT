@@ -20,6 +20,7 @@ default
 
 #include "tckrunner/starter/build/bld.inf"    
 #include "tckrunner/runner/build/bld.inf"    
+#include "javacontrolpanel/starter/build/bld.inf"    
+#include "javacontrolpanel/controlpanel/build/bld.inf"    
 #include "javasecuritycustomization/build/bld.inf"    
-#include "javacaptain_app/build/bld.inf"    
 #include "testcerts/bld.inf"  

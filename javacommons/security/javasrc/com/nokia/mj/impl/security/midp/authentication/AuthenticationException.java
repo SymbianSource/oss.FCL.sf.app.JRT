@@ -37,6 +37,7 @@ public class AuthenticationException extends RuntimeException
     public static final int CERT_EXPIRED = 8;
     public static final int ROOT_CERT_IN_CHAIN = 9;
     public static final int UNKNOWN_EXT_KEY_USAGE = 10;
+    public static final int JAR_NOT_FOUND = 11;
 
     // the error code encapsulated in this exception
     private int errorCode;

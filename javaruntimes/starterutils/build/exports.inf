@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *
 */
 
@@ -19,3 +19,7 @@ PRJ_EXPORTS
 
 ../inc/jvmstarter.h             |../../../javaruntimes/inc/jvmstarter.h
 ../inc/runtimestarterutils.h    |../../../javaruntimes/inc/runtimestarterutils.h
+
+#ifdef RD_JAVA_SYMBIAN_TARGET
+../src.s60/javaruntimeprivatecrkeys.h |../../../inc/javaruntimeprivatecrkeys.h
+#endif

@@ -87,4 +87,14 @@ EXPORTS
 	?StopL@CMMAVideoUrlPlayer@@UAEXH@Z @ 86 NONAME ; void CMMAVideoUrlPlayer::StopL(int)
 	??1CMMAVideoControl@@UAE@XZ @ 87 NONAME ; CMMAVideoControl::~CMMAVideoControl(void)
 	?HandleSwitchOnL@CMMAVideoControl@@UAEXH@Z @ 88 NONAME ; void CMMAVideoControl::HandleSwitchOnL(int)
+	?StateChanged@CMMAVolumeControl@@UAEXH@Z @ 89 NONAME ; void CMMAVolumeControl::StateChanged(int)
+	?CloseL@CMMAPlayer@@UAEXXZ @ 90 NONAME ; void CMMAPlayer::CloseL(void)
+	?RefreshControl@CMMAVolumeControl@@UAEXXZ @ 91 NONAME ; void CMMAVolumeControl::RefreshControl(void)
+	?SetAVCableConnStatus@CMMASurfaceWindow@@QAEXH@Z @ 92 NONAME ; void CMMASurfaceWindow::SetAVCableConnStatus(int)
+	?RefreshVolume@CMMAVolumeControl@@AAEXXZ @ 93 NONAME ; void CMMAVolumeControl::RefreshVolume(void)
+	?HandleActiveProfileEventL@CMMAVolumeControl@@UAEXW4TProfileEvent@@H@Z @ 94 NONAME ; void CMMAVolumeControl::HandleActiveProfileEventL(enum TProfileEvent, int)
+	??1CMMAVolumeControl@@UAE@XZ @ 95 NONAME ; CMMAVolumeControl::~CMMAVolumeControl(void)
+	??0CMMAVolumeControl@@IAE@PAVCMMAPlayer@@@Z @ 96 NONAME ; CMMAVolumeControl::CMMAVolumeControl(class CMMAPlayer *)
+	?ConstructBaseL@CMMAVolumeControl@@IAEXXZ @ 97 NONAME ; void CMMAVolumeControl::ConstructBaseL(void)
+	?ClassName@CMMAVolumeControl@@UBEABVTDesC16@@XZ @ 98 NONAME ; class TDesC16 const & CMMAVolumeControl::ClassName(void) const
 

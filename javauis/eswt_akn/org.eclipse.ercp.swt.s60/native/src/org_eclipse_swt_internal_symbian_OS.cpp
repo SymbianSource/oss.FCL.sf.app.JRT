@@ -1506,6 +1506,18 @@ extern "C"
         return reinterpret_cast<jint>(result);
     }
 
+    JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_symbian_OS_Image_1NewFromTheme(JNIEnv* aJniEnv, jclass, jint aDevice, jint aId)
+    {
+        ASwtDisplayBase* display = DisplayFromDevice(aDevice);
+        MSwtImage* result  = NULL;
+        TRAPD(error, CallMethodL(result, display, &ASwtDisplayBase::NewImageFromThemeL, aId));
+        ThrowIfError(error, aJniEnv);
+
+        INCREASE_INSTANCE_COUNT_USE_DISPLAY(result, Image, display);
+
+        return reinterpret_cast<jint>(result);
+    }
+
     JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_symbian_OS_Image_1Dispose(JNIEnv*, jclass, jint aDevice, jint aHandle)
     {
         CSwtDisplay* display = DisplayFromDevice(aDevice);
@@ -1553,6 +1565,20 @@ extern "C"
         CallMethod(static_cast<const MSwtRefCounted*>(image), &MSwtImage::RemoveRef);
     }
 
+    JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_symbian_OS_Image_1Scale(JNIEnv* aJniEnv, jclass,
+            jint aDevice, jint aHandle, jint aWidth, jint aHeight, jboolean aKeepAspectRatio)
+    {
+        ASwtDisplayBase* display = DisplayFromDevice(aDevice);
+        const MSwtImage* image = reinterpret_cast<MSwtImage*>(aHandle);
+        const TSize size(aWidth, aHeight);
+        MSwtImage* result  = NULL;
+        TRAPD(error, CallMethodL(result, display, &ASwtDisplayBase::ScaleImageL, *image, size, aKeepAspectRatio));
+        ThrowIfError(error, aJniEnv);
+
+        INCREASE_INSTANCE_COUNT_USE_DISPLAY(result, Image, display);
+
+        return reinterpret_cast<jint>(result);
+    }
 
     /*
      * Class Menu

@@ -64,6 +64,19 @@ public:
     // Helpers
     /**
     * Returns milliseconds from EPOCH.
+    * This can be overridden with the platform specific implementation. Use case for
+    * overriding is that in some platforms gettimeofday implementation can't handle
+    * correctly times after 2038.
+    * @param[in]  -
+    * @return - milliseconds from EPOCH in success, -1 if fails
+    */
+    virtual long long getPlatformCurrentJavaTime()
+    {
+        return -1LL;
+    }
+
+    /**
+    * Returns milliseconds from EPOCH.
     * @param[in]  -
     * @return - milliseconds from EPOCH in success, -1 if fails
     */
@@ -73,7 +86,8 @@ public:
         int err = gettimeofday(&tim, NULL);
         if (-1 == err)
         {
-            return -1LL;
+            WLOG(EJavaCaptain, "getCurrentJavaTime: gettimeofday returned -1");
+            return getPlatformCurrentJavaTime();
         }
 
         return (tim.tv_sec * 1000LL) +

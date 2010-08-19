@@ -128,6 +128,8 @@ private:
      */
     void UpdateFieldCounters(TBool aIsFieldNumeric, TBool aIsFieldChanged);
 
+    void UpdateTextColor();
+
 // From CCoeControl
 public:
     TInt CountComponentControls() const;
@@ -161,6 +163,8 @@ public:
     void SetBounds(const TRect& aRect);
     void SetWidgetSize(const TSize& aSize);
     TSwtPeer Dispose();
+    TInt PressBackgroundPolicy() const;
+    void HandleHighlightChange();
 
 // From ASwtControlBase
 protected:
@@ -246,6 +250,11 @@ private:
      */
     TBool iBgColorIsCustom;
     TBool iFgColorIsCustom;
+
+    /**
+     * Foreground color
+     */
+    TRgb iForegroundColor;
 };
 
 

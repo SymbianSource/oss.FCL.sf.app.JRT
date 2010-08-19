@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description:  OMJ S60 preinstaller process
+* Description:  OMJ Symbian preinstaller process
 *
 */
 
@@ -26,6 +26,8 @@
 
 #include "silentmidletinstall.h"
 #include "javacommonutils.h"
+#include "javauid.h"
+#include "javauids.h"
 #include "logger.h"
 #include "javaprocessconstants.h"
 #include "javasymbianoslayer.h"
@@ -51,6 +53,7 @@ const int NO_PREINSTALL = 2;
 _LIT(KMidletName, "MIDlet-Name");
 _LIT(KMidletVendor, "MIDlet-Vendor");
 _LIT(KMidletVersion, "MIDlet-Version");
+_LIT(KMidletUid, "Nokia-MIDlet-UID-1");
 
 _LIT(KJadExtension, "*.jad");
 
@@ -96,9 +99,9 @@ CSilentMIDletInstall::CSilentMIDletInstall(RFs& aFs) :
  */
 void CSilentMIDletInstall::ConstructL()
 {
-    JELOG2(EJavaPreinstaller);
     iMIDletName = HBufC::NewL(KMaxBufferSize);
     iMIDletVendor = HBufC::NewL(KMaxBufferSize);
+    iMIDletUid = HBufC::NewL(KMaxBufferSize);
     iPreinstallServer = new(ELeave) PreinstallCommsServer();
 
     iNumberOfAppsToInstall = 0;
@@ -111,7 +114,6 @@ void CSilentMIDletInstall::ConstructL()
  */
 CSilentMIDletInstall::~CSilentMIDletInstall()
 {
-    JELOG2(EJavaPreinstaller);
     iJadFiles.ResetAndDestroy();
     iJadFiles.Close();
 
@@ -124,6 +126,9 @@ CSilentMIDletInstall::~CSilentMIDletInstall()
     delete iMIDletVendor;
     iMIDletVendor = NULL;
 
+    delete iMIDletUid;
+    iMIDletUid = NULL;
+
     delete iPreinstallServer;
     iPreinstallServer = NULL;
 }
@@ -133,7 +138,6 @@ CSilentMIDletInstall::~CSilentMIDletInstall()
  */
 void CSilentMIDletInstall::Start()
 {
-    JELOG2(EJavaPreinstaller);
     iState = EFindOutDeviceDrives;
 
     // Check if an explicit roll-back of a previous installation is needed
@@ -187,8 +191,6 @@ void CSilentMIDletInstall::Exit()
  */
 void CSilentMIDletInstall::CompleteRequest()
 {
-    JELOG2(EJavaPreinstaller);
-
     TRequestStatus *status = &iStatus;
     User::RequestComplete(status, KErrNone);
     if (!IsActive())
@@ -241,8 +243,6 @@ void CSilentMIDletInstall::CompleteRequest()
  */
 void CSilentMIDletInstall::RunL()
 {
-    JELOG2(EJavaPreinstaller);
-
     switch (iState)
     {
     case EFindOutDeviceDrives:
@@ -449,7 +449,7 @@ void CSilentMIDletInstall::GetDirEntriesL(const TDesC& aDirectory,
         LOG1WSTR(EJavaPreinstaller, EInfo,
                  "CSilentMIDletInstall::GetDirEntriesL Adding file %s",
                  (wchar_t *)(pathPtr.PtrZ()));
-        aVector.Append(path);
+        aVector.AppendL(path);
         CleanupStack::Pop(path);
     }
 
@@ -580,13 +580,12 @@ void CSilentMIDletInstall::RollbackJavaInstaller()
 /**
  * Parse MIDlet-Name, MIDlet-Vendor and MIDlet-Version parameters from JAD file.
  * Parameters are used to determine whether to pre-install MIDlet or not.
+ * Parse also optional Nokia-MIDlet-UID-1 in case it is needed.
  *
  * @param ETrue if parsing succeeds otherwise EFalse.
  */
 TBool CSilentMIDletInstall::ParseJadL(const TDesC& aJadFileName)
 {
-    JELOG2(EJavaPreinstaller);
-
     HBufC *jadContent = NULL;
     // Trap leave thrown if reading jad content fails
     TRAPD(err, jadContent = GetJadContentL(aJadFileName));
@@ -646,6 +645,23 @@ TBool CSilentMIDletInstall::ParseJadL(const TDesC& aJadFileName)
     LOG3(EJavaPreinstaller, EInfo,
          "CSilentMIDletInstall::ParseJadL MIDlet-Version is %d.%d.%d",
          iMIDletVersion.iMajor, iMIDletVersion.iMinor, iMIDletVersion.iBuild);
+
+    HBufC *midletUid = ParseAttribute(jadContent, KMidletUid);
+    if (NULL == midletUid)
+    {
+        // Ok, all MIDlets do not predefine Symbian Uid
+        iMIDletUid->Des().Zero();
+    }
+    else
+    {
+        // store midlet Uid to member variable and log it
+        TPtr uidPtr(iMIDletUid->Des());
+        uidPtr.Copy(*midletUid);
+        LOG1WSTR(EJavaPreinstaller, EInfo,
+            "CSilentMIDletInstall::ParseJadL Nokia-MIDlet-UID-1 %s",
+            (wchar_t *)(uidPtr.PtrZ()));
+        delete midletUid;
+    }
 
     CleanupStack::PopAndDestroy(jadContent);
     return ETrue;
@@ -727,10 +743,17 @@ void CSilentMIDletInstall::CheckWhichAppsShouldBeInstalledL()
     // Do not preinstall application if it is found from this table
     // and the version number of the application is the same or less
     // than the version number in the table.
+    // If the application has been removed by javaupgradeupp or it has
+    // not yet been installed, the application is not in the table at all.
+    // Do not preinstall the application if there is a native application
+    // with the same Uid as the predefined Uid of the first Java
+    // application in the application suite.
 
+    TBool            apaSessionConnected(EFalse);
+    RApaLsSession    apaSession;
     JavaStorageEntry attribute;
     JavaStorageApplicationEntry_t findPattern;
-    JavaStorageApplicationList_t foundEntries;
+    JavaStorageApplicationList_t  foundEntries;
 
     for (TInt i = 0; i < iJadFiles.Count(); i++)
     {
@@ -778,8 +801,8 @@ void CSilentMIDletInstall::CheckWhichAppsShouldBeInstalledL()
                 {
                     // This application must not be preinstalled
                     LOG1WSTR(EJavaPreinstaller, EInfo,
-                             "CheckWhichAppsShouldBeInstalledL: User has removed application %s "
-                             "It must not be preinstalled again.", desToWstring(namePtr));
+                        "CheckWhichAppsShouldBeInstalledL: User has removed application %s "
+                        "It must not be preinstalled again.", desToWstring(namePtr));
                 }
                 else
                 {
@@ -817,9 +840,34 @@ void CSilentMIDletInstall::CheckWhichAppsShouldBeInstalledL()
             else
             {
                 skipInstall = EFalse;
+
                 LOG(EJavaPreinstaller, EInfo,
                     "CheckWhichAppsShouldBeInstalledL: Application has not "
                     "been installed previously");
+
+                // Check whether there is a native application installed
+                // with the same Uid as the predefined Uid of the first
+                // Java application in the suite.
+
+                // The string value of attribute Nokia-MIDlet-UID-1 from
+                // Jad file is in iMIDletUid if it was defined.
+                TInt err = KErrNone;
+                if (iMIDletUid->Length() > 0)
+                {
+                    if (!apaSessionConnected)
+                    {
+                        err = apaSession.Connect();
+                        apaSessionConnected = ETrue;
+                    }
+
+                    // If the presence of a possible native app cannot be
+                    // determined, let Java Installer try to install
+                    // the Java application
+                    if (KErrNone == err)
+                    {
+                        skipInstall = IsNativeAppPresent(apaSession);
+                    }
+                }
             }
 
             foundEntries.clear();
@@ -830,8 +878,8 @@ void CSilentMIDletInstall::CheckWhichAppsShouldBeInstalledL()
             skipInstall = ETrue;
             TPtr16 ptrJadName = iJadFiles[i]->Des();
             ELOG1WSTR(EJavaPreinstaller,
-                      "CheckWhichAppsShouldBeInstalledL: Parsing JAD %s failed",
-                      desToWstring(ptrJadName));
+                "CheckWhichAppsShouldBeInstalledL: Parsing JAD %s failed",
+                desToWstring(ptrJadName));
         }
 
         if (skipInstall)
@@ -843,6 +891,11 @@ void CSilentMIDletInstall::CheckWhichAppsShouldBeInstalledL()
         {
             iNumberOfAppsToInstall++;
         }
+    }
+
+    if (apaSessionConnected)
+    {
+        apaSession.Close();
     }
 
     js->close();
@@ -1165,3 +1218,53 @@ TAppVersion CSilentMIDletInstall::DesToAppVersion(const HBufC *aAppVersionString
 
     return midletVersion;
 } // DesToAppVersion
+
+
+/**
+ * Parses the Uid in iMIDletUid and returns ETrue if there is a native
+ * application with the same Uid installed into the device.
+ * Returns EFalse in case of any error.
+ *
+ * @param[in] aApaSession open AppArc session
+ * @return EFalse if no native application with Uid in iMIDletUid
+ */
+TBool CSilentMIDletInstall::IsNativeAppPresent(const RApaLsSession& aApaSession)
+{
+    std::wstring uidValue((wchar_t *)(iMIDletUid->Ptr()), iMIDletUid->Length());
+    TUid appUid;
+    Uid javaUid(uidValue);
+    TInt err = uidToTUid(javaUid, appUid);
+
+    if (KErrNone != err)
+    {
+        WLOG1(EJavaPreinstaller,
+            "CSilentMIDletInstall::IsNativeAppPresent: Cannot convert %S to TUid",
+            uidValue.c_str());
+        return EFalse;
+    }
+
+    TUid appTypeUid;
+    err = aApaSession.GetAppType(appTypeUid, appUid);
+    if (KErrNone != err)
+    {
+        if (KErrNotFound == err)
+        {
+            // No such application in device
+            return EFalse;
+        }
+
+        // Cannot check presence from AppArc
+        ELOG1(EJavaPreinstaller,
+            "CSilentMIDletInstall::IsNativeAppPresent: RApaLsSession GetAppType error %d", err);
+        return EFalse;
+    }
+
+    if (appTypeUid.iUid != KMidletApplicationTypeUid)
+    {
+        // The application is present and it is not a MIDlet
+        return ETrue;
+    }
+
+    return EFalse;
+} // IsNativeAppPresent
+

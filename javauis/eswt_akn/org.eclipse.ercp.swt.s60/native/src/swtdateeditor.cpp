@@ -62,6 +62,7 @@ CSwtDateEditor::CSwtDateEditor(MSwtDisplay& aDisplay,
         , iCurrentFieldLength(0)
         , iCurrentFieldDecimalPlacesCount(0)
         , iLastField(0)
+        , iFgColorIsCustom(EFalse)
 {
 }
 
@@ -281,8 +282,16 @@ void CSwtDateEditor::SetForegroundL(const MSwtColor* aColor)
 {
     ASwtControlBase::DoSetForegroundL(aColor);
 
-    TRgb color((aColor) ? aColor->RgbValue() : iEikonEnv->Color(EColorControlText));
-    iEditor->OverrideColorL(EColorControlText, color);
+    if (aColor)
+    {
+        iFgColorIsCustom = ETrue;
+        iForegroundColor = aColor->RgbValue();
+    }
+    else
+    {
+        iFgColorIsCustom = EFalse;
+        iForegroundColor = 0;
+    }
 
     // If a back color has been set, cannot go back to skin colors yet.
     if (!iBgColorIsCustom)
@@ -297,15 +306,7 @@ void CSwtDateEditor::SetForegroundL(const MSwtColor* aColor)
         }
     }
 
-    if (aColor)
-    {
-        iFgColorIsCustom = ETrue;
-    }
-    else
-    {
-        iFgColorIsCustom = EFalse;
-    }
-
+    UpdateTextColor();
     Redraw();
 }
 
@@ -584,6 +585,11 @@ void CSwtDateEditor::SwtHandleResourceChangeL(TInt aType)
             ProcessFontUpdate();
         }
         SizeChanged();
+
+        if (aType == KAknsMessageSkinChange)
+        {
+            UpdateTextColor();
+        }
     }
 #ifdef RD_JAVA_S60_RELEASE_9_2
     else if (aType == KAknSplitInputEnabled)
@@ -1013,7 +1019,7 @@ void CSwtDateEditor::SetDateEditorStyleL(TInt aDateEditorStyle)
         iEditor->SetFocus(IsFocused());
         iEditor->SetDimmed(IsDimmed());
         RetrieveDefaultFontL();
-        iEditor->SetSkinTextColorL(EAknsCIQsnTextColorsCG6);
+        iEditor->SetSkinTextColorL(KNonHighlightedTextColor);
 
 #ifdef RD_JAVA_S60_RELEASE_9_2
         if (iEditor->SupportsFeature(CEikMfne::EPartialScreenInput))
@@ -1023,6 +1029,11 @@ void CSwtDateEditor::SetDateEditorStyleL(TInt aDateEditorStyle)
 #endif
     }
     ActivateL();
+
+    // Because the creation of the contained editor is delayed
+    // we need to ensure that it redraws with correct size.
+    // Not doing this would result in empty list in CaptionedControl for instance.
+    SizeChanged();
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -1188,6 +1199,40 @@ TSwtPeer CSwtDateEditor::Dispose()
     return ASwtControlBase::Dispose();
 }
 
+void CSwtDateEditor::UpdateTextColor()
+{
+    if (iEditor)
+    {
+        if (HasHighlight())
+        {
+            // Highlighted foreground color, overrides all others.
+            iEditor->SetUseOverrideColors(EFalse);
+            TRAP_IGNORE(iEditor->SetSkinTextColorL(KHighlightedTextColor));
+        }
+        else if (iFgColorIsCustom)
+        {
+            // Custom foreground color, overrides the default.
+            iEditor->SetUseOverrideColors(ETrue);
+            TRAP_IGNORE(iEditor->OverrideColorL(EColorControlText, iForegroundColor));
+        }
+        else
+        {
+            // Default foreground color.
+            iEditor->SetUseOverrideColors(EFalse);
+            TRAP_IGNORE(iEditor->SetSkinTextColorL(KNonHighlightedTextColor));
+        }
+    }
+}
+
+TInt CSwtDateEditor::PressBackgroundPolicy() const
+{
+    return EPressBackground;
+}
+
+void CSwtDateEditor::HandleHighlightChange()
+{
+    UpdateTextColor();
+}
 
 // ---------------------------------------------------------------------------------------------
 // CSwtDateEditor::HandlePointerEventL
@@ -1211,8 +1256,28 @@ void CSwtDateEditor::HandlePointerEventL(const TPointerEvent& aPointerEvent)
         iPressed = hit && !isActiveSplitEditor;
 #endif
 
+    TBool forward(EFalse);
+
     if (!(aPointerEvent.iType == TPointerEvent::EButton1Up
             && (iDisplay.RevertPointerEvent() || !hit)))
+    {
+        forward = ETrue;
+    }
+
+    //Selected field might changed
+    iCurrentFieldLength = 0;
+    iCurrentFieldDecimalPlacesCount = 0;
+    iLastField = iEditor->CurrentField();
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    if (pressed != iPressed)
+    {
+        GetShell().UpdateHighlight(ETrue); // draw now
+    }
+#endif
+
+    // Forwarding this late due to splitview + pressed flicker issues.
+    if (forward)
     {
         iEditor->HandlePointerEventL(aPointerEvent);
 
@@ -1227,16 +1292,6 @@ void CSwtDateEditor::HandlePointerEventL(const TPointerEvent& aPointerEvent)
         }
         // End MSK
     }
-
-    //Selected field might changed
-    iCurrentFieldLength = 0;
-    iCurrentFieldDecimalPlacesCount = 0;
-    iLastField = iEditor->CurrentField();
-
-#ifdef RD_JAVA_S60_RELEASE_9_2
-    if (pressed != iPressed)
-        Redraw();
-#endif
 
     PostMouseEventL(aPointerEvent);
 }

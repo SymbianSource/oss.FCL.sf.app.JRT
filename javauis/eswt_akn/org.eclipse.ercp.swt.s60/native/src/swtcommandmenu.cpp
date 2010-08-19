@@ -94,11 +94,11 @@ void CSwtCommandMenu::InsertCommand(const MSwtCommand& aCommand,
     }
 }
 
-void CSwtCommandMenu::AppendSeparator()
+void CSwtCommandMenu::AppendSeparatorL()
 {
     // If append fails then separator won't appear in menu. It's a shame but
     // it's like that (nothing specific to do if this happens).
-    iSeparators.Append(iItems.Count() - 1);
+    iSeparators.AppendL(iItems.Count() - 1);
 }
 
 const RPointerArray<MSwtCommand>& CSwtCommandMenu::Commands() const

@@ -52,7 +52,7 @@ CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::~CMMAVideoUrlPlayerLiv
 void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::StartL(TBool /*aPostEvent*/)
 {
     // start can't be called to not ready player
-    ASSERT(iPlayer.iState == EPrefetched);
+    //ASSERT(iPlayer.iState == EPrefetched);
 
 
     iPlayer.PrefetchL();
@@ -122,7 +122,7 @@ void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::GetMediaTime(TInt
 
 void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::HandleEvent(const TMMFEvent& aEvent)
 {
-    DEBUG_INT("MMA:CMMAVideoUrlPlayer: Live stream: HandleEvent %d", aEvent.iEventType.iUid);
+    DEBUG_INT("MMA:CMMAVideoUrlPlayer: Live stream: HandleEvent -EventTypeUid = %u", aEvent.iEventType.iUid);
     DEBUG_INT("MMA:CMMAVideoUrlPlayer: Live stream: HandleEvent error code: %d", aEvent.iErrorCode);
 
     TInt err = aEvent.iErrorCode;
@@ -202,8 +202,13 @@ void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::HandleEvent(const
         // usually error condition -45 (KErrSessionClosed) or -33 (KErrTimedOut)
         if (err != KErrNone)
         {
-            DEBUG("MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoPlayerGeneralError Inform Parent");
-            iPlayer.HandleEventToParent(aEvent);
+      if(err == KErrSessionClosed || err == KErrMMAudioDevice)
+      {
+         DEBUG_INT("MMA:CMMAVideoUrlPlayer: Live stream: Ignoring error %d", err);
+         return;
+      }
+      DEBUG("MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoPlayerGeneralError Inform Parent");
+      iPlayer.HandleEventToParent(aEvent);
         }
         DEBUG("MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoPlayerGeneralError -");
     }

@@ -147,7 +147,7 @@ public: // from MMIDComponentNgaExtension
      * @see MMIDComponentNgaExtension#IsEglAvailable()
      * @since S60 9.2
      */
-    virtual TBool IsEglAvailable();
+    virtual TBool IsEglAvailable() const;
 
     /**
      * @see MMIDComponentNgaExtension#BindEglSurface()

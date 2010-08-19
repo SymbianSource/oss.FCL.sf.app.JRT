@@ -20,4 +20,5 @@ default
 
 #include "installerui/build/bld.inf"    
 #include "installer/build/bld.inf"    
-#include "appinstuiplugin/build/bld.inf"  
+#include "appinstuiplugin/build/bld.inf"    
+#include "iconsizenotifplugin/build/bld.inf"  

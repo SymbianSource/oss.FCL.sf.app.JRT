@@ -18,11 +18,11 @@
 PRJ_PLATFORMS
 default
 
+#include "build/bld.inf"    
+#include "jrt_plat/group/bld.inf"    
 #include "javacommons/bld.inf"    
 #include "javaruntimes/bld.inf"    
 #include "javauis/bld.inf"    
 #include "javamanager/bld.inf"    
 #include "javatools/bld.inf"    
-#include "javaextensions/bld.inf"    
-#include "build/bld.inf"    
-#include "jrt_plat/group/bld.inf"  
+#include "javaextensions/bld.inf"  

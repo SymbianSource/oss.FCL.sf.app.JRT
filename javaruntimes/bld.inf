@@ -23,5 +23,6 @@ default
 #include "jvmargmodifier/default/build/bld.inf"    
 #include "jvmargmodifier/file/build/bld.inf"    
 #include "starterutils/build/bld.inf"    
+#include "standalone/build/bld.inf"    
 #include "starter/build/bld.inf"    
 #include "midp/bld.inf"  

@@ -114,11 +114,6 @@ private:
     void DoSetSize(const TSize& aSize);
 
     /**
-     * Default foreground setter.
-     */
-    void SetDefaultForegroundL();
-
-    /**
      * Get the children of the current contained control.
      * @param aAllChildren returned array of children.
      * @param aParent parent for which the children will be returned.
@@ -147,6 +142,8 @@ private:
      * Resource change leaving helper
      */
     void SwtHandleResourceChangeL(TInt aType);
+
+    void UpdateTextColor();
 
 // From CCoeControl
 public:
@@ -186,6 +183,7 @@ public:
     MSwtCaptionedControl* CaptionedControlInterface() const;
     void UpdateDoNotDrawFlag();
     void SetForegroundL(const MSwtColor* aColor);
+    void HandleHighlightChange();
 
 // From ASwtControlBase
 protected:
@@ -261,9 +259,9 @@ private:
 
     /**
      * Current custom foreground.
-     * Not Own.
+     * Not own.
      */
-    const MSwtColor* iForegroundColor;
+    const MSwtColor* iCustomFg;
 
     /**
      * Can be the child or null.

@@ -43,7 +43,7 @@ public:
     virtual void cancel();
 
     // Helpers
-//    virtual long long getCurrentJavaTime();
+    virtual long long getPlatformCurrentJavaTime();
 
 protected:
     // CActive

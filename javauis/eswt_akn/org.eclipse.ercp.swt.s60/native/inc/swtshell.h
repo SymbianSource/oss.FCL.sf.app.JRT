@@ -36,8 +36,8 @@ protected:
     void ConstructL();
     MSwtShell& GetTopShell() const;
     void RemoveAndRememberFocus();
-    
-    // Relocating an editor's Shell must be delegated to UiUtils 
+
+    // Relocating an editor's Shell must be delegated to UiUtils
     // while split editing is on (@see SetSplitInputShellPos)
     // CCoeControl::SetRect must not be called directly.
     void DoSetRect(const TRect& aRect);
@@ -138,9 +138,7 @@ public:
     const MSwtCommand* DefaultCommand() const;
     void SetFullScreen(TBool aFullScreen);
     void SetControlGoingToStack(MSwtControl* aControl);
-    MSwtControl* ControlGoingToStack() const;
     void SetControlGainingFocus(MSwtControl* aControl);
-    MSwtControl* ControlGainingFocus() const;
     MSwtShell::TSwtStatusPaneStyle StatusPaneStyle() const
     {
         return MSwtShell::EStyleLargeStatusPane;
@@ -157,6 +155,8 @@ public:
     void SetTaskTip();
     TBool IsTaskTip() const;
     void DoSetLocation(const TPoint& aPoint);
+    void UpdateHighlight(TBool aDrawNow = EFalse);
+    void ControlDisposing(const MSwtControl& aControl);
 
 // From MEikStatusPaneObserver
 public:
@@ -164,6 +164,8 @@ public:
 
 private:
     void FinishRedraw() const;
+    void DoSetFocusControl(MSwtControl* aControl);
+    void DoSetHighlight(MSwtControl& aControl, TBool aEnabled);
 
 // Data
 private:
@@ -172,6 +174,15 @@ private:
      * Not own.
      */
     MSwtControl* iFocusControl;
+
+    /**
+     * Keep track of last known focused control for the purpose
+     * of switching off its highlight when new controls gets focused.
+     * Not intended to be used for any athoer purpose (set to NULL
+     * after the highlight is cleared).
+     * Not own.
+     */
+    MSwtControl* iPrevFocusControl;
 
     /**
      * This Shell's focus control before it got deactivated, may be NULL.

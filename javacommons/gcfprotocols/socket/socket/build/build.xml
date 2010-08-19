@@ -41,7 +41,8 @@
 
   <property name="javah.classnames" 
             value="com.nokia.mj.impl.socket.SocketConnectionImpl,
-                   com.nokia.mj.impl.socket.ServerSocketConnectionImpl"/>
+                   com.nokia.mj.impl.socket.ServerSocketConnectionImpl,
+                   com.nokia.mj.impl.properties.socket.SocketDynamicPropertyHandler"/>
 
   <target name="create.internal.api.jar">
   	<omj.internal.apis includes="com/nokia/mj/impl/gcf/protocol/socket/Protocol.class,
@@ -53,6 +54,12 @@
   <target name="create.public.api.jar">
   	<omj.public.apis includes="javax/microedition/io/SocketConnection.class,
   														 javax/microedition/io/ServerSocketConnection.class"/>
+  </target>
+  <target name="system.properties">
+    <properties>
+    		java.src.paths=${java.src.paths}
+        microedition.hostname=:socket.SocketDynamicPropertyHandler
+    </properties>
   </target>
   
 </project>

@@ -38,6 +38,7 @@
 class CEikProgressInfo;
 class CAknSlider;
 class CAknBitmapAnimation;
+class CAknsFrameBackgroundControlContext;
 
 /** This interface is implemented by the alert dialog (CMIDAlertDialog). The current
     design is such that the alert dialog uses its own animations (loaded from resource)
@@ -295,6 +296,8 @@ public:
 
     void SetGaugeListenerFromAlert(MMIDGaugeToAlertListner* aGaugeToAlertListner);
 
+    TTypeUid::Ptr MopSupplyObject(TTypeUid aId);
+
 private:
     /**
      * Ctor
@@ -357,6 +360,16 @@ private:
      * @since  S60 v5.0
      */
     TBool BitmapAnimationUsed() const;
+
+    /**
+     * Gets new correct instance of control context or null.
+     *
+     * @return New instance of CAknsFrameBackgroundControlContext.
+     *         Instance maybe a null.
+     *
+     * @since  S60 v5.0
+     */
+    CAknsFrameBackgroundControlContext* BackgroundControlContext();
 
 private:
     CEikProgressInfo* iProgressInfo;

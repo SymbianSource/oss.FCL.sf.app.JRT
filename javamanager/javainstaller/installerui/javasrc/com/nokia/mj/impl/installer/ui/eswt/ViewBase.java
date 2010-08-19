@@ -412,7 +412,11 @@ abstract public class ViewBase
         gridData.horizontalSpan = aColumns;
         gridData.horizontalAlignment = SWT.CENTER;
         gridData.verticalAlignment = SWT.TOP;
+        // This is to lower the image at the same level with the texts.
+        // eSWT's Label adds extra space around texts but not around images.
+        gridData.verticalIndent = iInstallerUi.iconLabelTopMargin();
         label.setLayoutData(gridData);
+        label.setFont(iInstallerUi.getBoldFont());
         return label;
     }
 

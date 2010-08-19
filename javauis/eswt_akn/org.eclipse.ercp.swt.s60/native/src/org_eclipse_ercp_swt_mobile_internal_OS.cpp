@@ -1483,12 +1483,19 @@ extern "C"
             jint* elements = aJniEnv->GetIntArrayElements(aIconsHandles, &isCopy);
             if (elements != NULL)
             {
-                for (TInt i=0; i<count; ++i)
+                TInt err = KErrNone;
+                for (TInt i=0; i<count && !err; ++i)
                 {
-                    iconsHandles.Append(reinterpret_cast<MSwtImage*>(elements[i]));
+                    err = iconsHandles.Append(reinterpret_cast<MSwtImage*>(elements[i]));
                 }
                 // Cleanup
                 aJniEnv->ReleaseIntArrayElements(aIconsHandles, elements, JNI_ABORT);
+
+                if (err != KErrNone )
+                {
+                    ThrowIfError(err, aJniEnv);
+                    return;
+                }
             }
         }
 

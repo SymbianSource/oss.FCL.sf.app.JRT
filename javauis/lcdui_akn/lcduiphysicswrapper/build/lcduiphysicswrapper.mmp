@@ -41,10 +41,10 @@ ALWAYS_BUILD_AS_ARM
 SOURCEPATH  ../src
 SOURCE  CMIDPhysicsWrapper.cpp
 
-USERINCLUDE     ../inc
-SYSTEMINCLUDE   ../../inc
-SYSTEMINCLUDE   ../../../inc
-SYSTEMINCLUDE   ../../../../inc
+USERINCLUDE   ../inc
+USERINCLUDE   ../../inc
+USERINCLUDE   ../../../inc
+USERINCLUDE   ../../../../inc
 
 // Dependencies to apps layer
 LIBRARY     aknphysics.lib

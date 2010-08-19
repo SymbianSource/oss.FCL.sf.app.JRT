@@ -150,6 +150,8 @@ private:
         const TPointerEvent& aPointerEvent) const;
 #endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
 
+    void UpdateTextColor();
+
 // From CCoeControl
 public:
     CCoeControl* ComponentControl(TInt aIndex) const;
@@ -185,6 +187,8 @@ public:
     TSize ComputeSizeL(TInt aWHint, TInt aHHint);
     MSwtButton* ButtonInterface();
     TInt FocusBackgroundPolicy() const;
+    TInt PressBackgroundPolicy() const;
+    void HandleHighlightChange();
 
 // From MSwtButton
 public:
@@ -242,6 +246,8 @@ private:
 #ifdef RD_JAVA_ADVANCED_TACTILE_FEEDBACK
     MTouchFeedback *iFeedback;
 #endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
+
+    const MSwtColor* iCustomFg;
 };
 
 #endif // SWTBUTTON_H

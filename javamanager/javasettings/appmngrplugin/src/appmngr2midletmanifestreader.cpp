@@ -119,7 +119,7 @@ void AppMngr2MidletManifestReader::ReadAttributesL(
         {
             CJavaAttribute* javaAttribute
             = CJavaAttribute::NewL(namePtr, valuePtr, EFalse);
-            aAttributes.Append(javaAttribute);
+            aAttributes.AppendL(javaAttribute);
         }
 
         CleanupStack::PopAndDestroy(value);

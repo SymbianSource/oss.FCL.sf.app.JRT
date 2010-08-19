@@ -75,7 +75,7 @@ CMIDToLcduiObserver::~CMIDToLcduiObserver()
 //
 #ifdef RD_JAVA_NGA_ENABLED
 void CMIDToLcduiObserver::RegisterControl(
-    CCoeControl& aControl, MDirectContainer* aCallbackContainer /*= NULL*/)
+    CCoeControl& aControl, MDirectContainer* /*aCallbackContainer*/)
 #else
 void CMIDToLcduiObserver::RegisterControl(CCoeControl& aControl)
 #endif
@@ -90,18 +90,6 @@ void CMIDToLcduiObserver::RegisterControl(CCoeControl& aControl)
             // Appending of control failed
             DEBUG("CMIDToLcduiObserver::RegisterControl - Append failed");
         }
-
-#ifdef RD_JAVA_NGA_ENABLED
-        if (aCallbackContainer)
-        {
-            TToLcduiEventData data;
-            data.iType = ENotifyContentAdded;
-            data.iContainer = aCallbackContainer;
-            data.iControl = &aControl;
-            data.iConsumer = NULL;
-            iEventQueue.Send(data);
-        }
-#endif
     }
 }
 
@@ -164,7 +152,7 @@ void CMIDToLcduiObserver::InvokeDSAResourcesCallback(
     TToLcduiEventData data;
     data.iType = EDSAResourcesCallbackEvent;
     data.iControl = &aControl;
-    data.iConsumer = &aConsumer;
+    data.iConsumer = (void*)&aConsumer;
 
     // Add event to the queue
     iEventQueue.Send(data);
@@ -187,7 +175,7 @@ void CMIDToLcduiObserver::InvokeUICallback(
     // Prepare event data
     TToLcduiEventData data;
     data.iType = EUICallbackEvent;
-    data.iConsumer = &aConsumer;
+    data.iConsumer = (void*)&aConsumer;
     data.iId = aCallbackId;
 
     // Add event to the queue
@@ -215,10 +203,13 @@ void CMIDToLcduiObserver::RunL()
         DoFlushControl(data.iControl, data.iRect);
         break;
     case EDSAResourcesCallbackEvent:
-        DoInvokeDSAResourcesCallback(data.iControl, data.iConsumer);
+        DoInvokeDSAResourcesCallback(data.iControl, (MUiEventConsumer*)data.iConsumer);
         break;
     case EUICallbackEvent:
-        DoInvokeUICallback(data.iConsumer, data.iId);
+        DoInvokeUICallback((MUiEventConsumer*)data.iConsumer, data.iId);
+        break;
+    case ELcduiEvent:
+        DoInvokeLcduiEvent((MMIDLcduiEventConsumer*)data.iConsumer,data.iId);
         break;
 #ifdef RD_JAVA_NGA_ENABLED
     case ENotifyContentAdded:
@@ -286,6 +277,15 @@ void CMIDToLcduiObserver::DoInvokeDSAResourcesCallback(
     }
 }
 
+void CMIDToLcduiObserver::DoInvokeLcduiEvent(
+    MMIDLcduiEventConsumer* aConsumer,
+    TInt aCallbackId)
+{
+    if (aConsumer)
+    {
+        aConsumer->HandleLcduiEvent(aCallbackId);
+    }
+}
 
 // ---------------------------------------------------------------------------
 // CMIDToLcduiObserver::DoInvokeUICallback
@@ -298,6 +298,7 @@ void CMIDToLcduiObserver::DoInvokeUICallback(
 {
     aConsumer->MdcUICallback(aCallbackId);
 }
+
 
 #ifdef RD_JAVA_NGA_ENABLED
 // ---------------------------------------------------------------------------
@@ -314,3 +315,26 @@ void CMIDToLcduiObserver::DoInvokeNotifyContentAdded(
     }
 }
 #endif
+
+// ---------------------------------------------------------------------------
+// CSwtDcObserver::InvokeDcEvent
+// Asynchronously sends an event into a consumer.
+// The call may origin in other than eswt thread.
+// ---------------------------------------------------------------------------
+//
+void CMIDToLcduiObserver::InvokeLcduiEvent(
+    MMIDLcduiEventConsumer& aConsumer,
+    TInt aCallbackId)
+{
+    // Can run in non lcdui thread
+
+    // Prepare event data
+    TToLcduiEventData data;
+    data.iType = ELcduiEvent;
+    data.iConsumer = (void*)&aConsumer;
+    data.iId = aCallbackId;
+
+    // Add event to the queue
+    iEventQueue.Send(data);
+}
+

@@ -263,12 +263,15 @@ class CanvasGraphicsItemPainter
      */
     final void registeredFinalize()
     {
-        synchronized (iToolkit)
+        if (mFinalizer != null)
         {
-            if (iHandle > 0)
+            synchronized (iToolkit)
             {
-                _dispose(iToolkit.getHandle(), iHandle);
-                iHandle = 0;
+                if (iHandle > 0)
+                {
+                    iToolkit.disposeObject(iHandle);
+                    iHandle = 0;
+                }
             }
         }
     }

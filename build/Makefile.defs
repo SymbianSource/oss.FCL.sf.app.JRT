@@ -262,10 +262,9 @@ endif
 endif
 
 generatereleasefile:
-ifeq ($(origin RD_JAVA_S60_RELEASE),command line)
 	@echo Writing $(RD_JAVA_S60_RELEASE_FILE) ... \
+	$(shell $(call CATCOMMAND,$(JAVA_SRC_ROOT)/build/templates/generated_header_hash.txt) > $(RD_JAVA_S60_RELEASE_FILE)) \
 	$(shell echo RD_JAVA_S60_RELEASE=$(RD_JAVA_S60_RELEASE)>$(RD_JAVA_S60_RELEASE_FILE))
-endif
 
 # Clean file on clean_generated
 clean_configure: clean_conffiles

@@ -58,7 +58,7 @@ ServerConnection* ServerConnectionBase::getServerConnection(
     return cbsConn;
 }
 
-CbsServerConnection::~CbsServerConnection()
+OS_EXPORT CbsServerConnection::~CbsServerConnection()
 {
     JELOG2(EWMA);
     removeDir(mMessageStoreDirName);
@@ -128,7 +128,7 @@ void CbsServerConnection::initializeL()
     }
 }
 
-void CbsServerConnection::open(ConnectionListener* aListener,
+OS_EXPORT void CbsServerConnection::open(ConnectionListener* aListener,
                                bool aIsAppLaunched)
 {
     JELOG2(EWMA);
@@ -282,7 +282,7 @@ void CbsServerConnection::DoCancel()
     }
 }
 
-int CbsServerConnection::retrieveMessage(TJavaMessageParametersBuf& aCbsBuf)
+OS_EXPORT int CbsServerConnection::retrieveMessage(TJavaMessageParametersBuf& aCbsBuf)
 {
     JELOG2(EWMA);
     TCBSParametersBuf cbsParametersBuf;
@@ -328,7 +328,7 @@ int CbsServerConnection::retrieveMessage(TJavaMessageParametersBuf& aCbsBuf)
 }
 
 
-void CbsServerConnection::close()
+OS_EXPORT void CbsServerConnection::close()
 {
     JELOG2(EWMA);
     // the close and RunL are synchronized to make it SMP safe.
@@ -524,7 +524,7 @@ void CbsServerConnection::readMessageFromStackL()
         }
         // Store the received page number, such that the message can
         // be reconstructed in the correct order later
-        mCbsMessagePagesRef.Append(currentPage);
+        mCbsMessagePagesRef.AppendL(currentPage);
 
         // Store the actual content of the message
         mCbsMessagePagesData->AppendL(messageData);

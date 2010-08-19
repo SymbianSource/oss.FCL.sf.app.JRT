@@ -61,6 +61,7 @@ class MSwtTree;
 class MSwtFontDialog;
 class MSwtDirectoryDialog;
 class MSwtHyperLink;
+class MSwtScrollable;
 
 static const TInt KSwtCommandBaseId = 0x1000;
 
@@ -214,7 +215,25 @@ public:
 
         // Captioned Controls use case, default focus background policy
         // applies to itself and children
-        ECaptionedCtrlFocusBackground
+        ECaptionedCtrlFocusBackground,
+
+        // This policy is similar to EEmbeddedFocusBackground.
+        // Its use case is for lists, listviews, tables, trees and listboxes.
+        // They don't have focus background at all even when placed
+        // to captioned control (only captioned control has highlight)
+        ENoFocusBackgroundInCaptionedControl
+    };
+
+    enum TPressBackgroundPolicy
+    {
+        // No need for pressed highlight.
+        ENoPressBackground = 0,
+
+        // Highlight is applied whenever the control is pressed.
+        EPressBackground = 1,
+
+        // The control has it's own pressed highlight.
+        EEmbeddedPressBackground = 2
     };
 
 public:
@@ -324,6 +343,12 @@ public:
      * See TFocusBackgroundPolicy.
      */
     virtual TInt FocusBackgroundPolicy() const =0;
+
+    /**
+     * Returns the policy of the pressed background.
+     * See TPressBackgroundPolicy.
+     */
+    virtual TInt PressBackgroundPolicy() const =0;
 
     /**
      * Returns true if the control is selectable by the user and is not dimmed
@@ -453,7 +478,7 @@ public:
     /**
      * Get the top CaptionedControl of the Control, if any
      */
-    virtual MSwtCaptionedControl* GetTopCaptionedControl() const =0;
+    virtual MSwtCaptionedControl* GetNearestCaptionedControl(TBool aIncludeSelf = ETrue) const =0;
 
     /**
      * Gets the control's width and height;
@@ -591,6 +616,7 @@ public:
     {
         return NULL;
     }
+
     virtual const MSwtShell* ShellInterface() const
     {
         return NULL;
@@ -772,7 +798,7 @@ public:
      * Only for 9.2
      */
     virtual void EnableFocusHighlight(TBool aEnable) = 0;
-    
+
     /**
      * Get the visible rectangle of this control.
      * Window coordinates.
@@ -782,6 +808,43 @@ public:
      *        else return visible client rectangle of the control.
      */
     virtual TRect VisibleRect(TBool aVisibleBounds = EFalse) const = 0;
+
+    /**
+     * Get the scrollable interface of control.
+     * If control is not scrollable method returns null
+     */
+    virtual MSwtScrollable* ScrollableInterface() const
+    {
+        return NULL;
+    }
+
+    /**
+     * True if the control owns a focus / pressed highlighted background.
+     * @param aIncludingParents - if true, the parent tree is checked also.
+     */
+    virtual TBool HasHighlight(TBool aIncludingParents = ETrue) const = 0;
+
+    /**
+     * Instructs the control to create and display a highlighted background.
+     * This is *not* supposed to repaint!
+     */
+    virtual void SetHighlight(TBool aEnabled) = 0;
+
+    /**
+     * React to highlight changes in itself or in the parent tree.
+     * This is *not* supposed to repaint!
+     */
+    virtual void HandleHighlightChange() = 0;
+
+    /**
+     * True if pressed by pointer.
+     */
+    virtual TInt Pressed() const = 0;
+
+    /**
+     * Get ready for traverse event
+     */
+    virtual void PrepareForTraverse() = 0;
 };
 
 
@@ -1362,19 +1425,9 @@ public:
     virtual void SetControlGoingToStack(MSwtControl* aControl) =0;
 
     /**
-     * Return the pointer  to the child which should be added to Control Stack.
-     */
-    virtual MSwtControl* ControlGoingToStack() const =0;
-
-    /**
      * Set the pointer to the child which gains the focus.
      */
     virtual void SetControlGainingFocus(MSwtControl* aControl) =0;
-
-    /**
-     * Return the pointer to the child which gains the focus.
-     */
-    virtual MSwtControl* ControlGainingFocus() const =0;
 
     /**
      * Get the current status pane style.
@@ -1425,11 +1478,24 @@ public:
      */
     virtual void SetTaskTip() = 0;
     virtual TBool IsTaskTip() const = 0;
-    
+
     /**
      * Sets the location even if top shell.
      */
     virtual void DoSetLocation(const TPoint& aPoint) = 0;
+
+    /**
+     * To be called whenever focus changes or controls get pressed.
+     * @param aDrawNow - immediate or deferred repaint.
+     *      For focus changes deferred repaint is preferred.
+     *      For pressed state changes immediate repaint is preferred.
+     */
+    virtual void UpdateHighlight(TBool aDrawNow = EFalse) = 0;
+
+    /**
+     * Remove any references to the disposing control.
+     */
+    virtual void ControlDisposing(const MSwtControl& aControl) = 0;
 };
 
 /**
@@ -2860,60 +2926,85 @@ public:
      * Returns the current control that is grabbing the pointer events.
      */
     virtual MSwtControl* PointerCaptureControl() = 0;
-    
+
     /**
-     * Rearranges the application layout (status pane, Shell position, split 
-     * input view size) for best editing experience. There can be only one 
-     * editor in split view mode at a time. Setting 0 clears the split view 
+     * Rearranges the application layout (status pane, Shell position, split
+     * input view size) for best editing experience. There can be only one
+     * editor in split view mode at a time. Setting 0 clears the split view
      * and restores the layout.
-     * 
+     *
      * Following actions must be delegated to UiUtils while split editing is on:
      * - Relocating the split input Shell (@see SetSplitInputShellPos)
      * - Resizing the split input view. (@see SetSplitInputViewSize)
-     * 
+     *
      * Following actions must be notified to UiUtils while split editing is on:
      * - Resizing the split input shell. (@see AdjustSplitInputShellPos)
      * - Relocating the split input view. (@see AdjustSplitInputShellPos)
      */
     virtual void SetSplitInputEditor(MSwtControl* aEditor) = 0;
-    
+
     /**
      * The currently active(focused) split input editor.
      * Can be any Text, TextExtension, ConstrainedText or DateEditor.
      */
     virtual MSwtControl* SplitInputEditor() const = 0;
-    
+
     /**
      * The currently active split input editor or a parent ScrolledComposite.
      * The view is getting resized automatically to fit in the available space
      * above the VKB.
      */
     virtual MSwtControl* SplitInputView() const = 0;
-    
+
     /**
      * The parent shell of the active split input editor is temporarily
      * moved vertically during split input editing therefore setting a new
      * location must be diverted trough UiUtils.
-     * @param aOriginalPos - The real position of the Shell, which will be 
+     * @param aOriginalPos - The real position of the Shell, which will be
      *                       applied when VKB closes.
      */
     virtual void SetSplitInputShellPos(const TPoint& aOriginalPos) = 0;
-    
+
     /**
-     * The active split input editor or its ScrolledComposite ancestor 
-     * is temporarily resized vertically during split input editing 
+     * The active split input editor or its ScrolledComposite ancestor
+     * is temporarily resized vertically during split input editing
      * therefore setting a new size must be diverted trough UiUtils.
-     * @param aOriginalSize - The real size of the control, which will be 
+     * @param aOriginalSize - The real size of the control, which will be
      *                        applied when VKB closes.
      */
     virtual void SetSplitInputViewSize(const TSize& aOriginalSize) = 0;
-    
+
     /**
      * The split input shell resized during split editing or
      * the split input view relocated during split editing.
      * The vertical position of the shell will be readjusted.
      */
     virtual void AdjustSplitInputShellPos() = 0;
+
+    /**
+     * Fixes the UI orientation on screen.
+     * The orientation remains fixed until UnRegisterFixScreenOrientation()
+     * is called for so many times as this method was called.
+     */
+    virtual void RegisterFixScreenOrientation() = 0;
+
+    /**
+     * Unregisters request to fix the UI orientation.
+     * Component which called RegisterFixScreenOrientation()
+     * must call this funtion when UI orientation fix is no more needed.
+     * The UI orientation remains fixed until this method is called
+     * so many times as registering methods was called.
+     */
+    virtual void UnRegisterFixScreenOrientation() = 0;
+
+    /**
+     * Indicates that the UI orientation is fixed.
+     * This means that some components requested it calling
+     * RegisterFixScreenOrientation().
+     *
+     * @return ETrue when the UI orientation is fixed.
+     */
+    virtual TBool IsScreenOrientationFixed() const = 0;
 };
 
 
@@ -3363,11 +3454,6 @@ public:
      *          This object must be deleted by the caller.
      */
     virtual TRgb* RunColorDialogL(TRgb* aDefaultColor) const=0;
-
-    /**
-     * Constructs a FontDialog
-     */
-    virtual MSwtFontDialog* NewFontDialogL() const =0;
 
     /**
      * Constructs a DirectoryDialog

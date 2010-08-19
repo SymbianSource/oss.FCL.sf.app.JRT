@@ -30,6 +30,12 @@
 #include <AknUtils.h>
 #include <hal.h>
 
+#ifndef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
+#include <SWInstLogTaskParam.h>
+#include <SWInstTask.h>
+#include <SWInstTaskManager.h>
+#endif // !SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
+
 #ifndef SYMBIAN_ENABLE_SPLIT_HEADERS
 #include <apgicnfl.h>
 #else
@@ -50,7 +56,13 @@
 
 // NAMESPACE DECLARATION
 using namespace java;
+#ifndef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
+using namespace SwiUI;
+#endif // !SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 
+IMPORT_C HBufC* CreateHBufCFromJavaStringLC(JNIEnv* aEnv, jstring aString);
+
+#ifndef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 /**
  * MIDP Stub SIS file UID. The application type Uid for MIDlets in S60
  */
@@ -66,6 +78,13 @@ _LIT(KPathSeperator, "\\");
  */
 _LIT(KAppPostfix, ".fakeapp");
 
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+const TInt KAppIconCount = 2;
+#else
+const TInt KAppIconCount = 1;
+#endif
+
 // ------------------------
 
 /**
@@ -80,14 +99,6 @@ jint registerApplicationL(JNIEnv *aEnv, jclass aClass, jint aSessionHandle,
                           jboolean aBackground);
 
 /**
- * Internal helper method for checking whether Application Shell is already running
- * Used JNI method ...1startAppShellUi
- *
- * @return ETrue if AppShell is running
- */
-TBool isAppShellUiRunning();
-
-/**
  * Internal helper method for checking whether this code is executing in
  * a device that has correctly working version of
  * RApaLsSession::ForceCommitNonNativeApplicationsUpdatesL()
@@ -95,6 +106,15 @@ TBool isAppShellUiRunning();
  * @return ETrue if force commit works well
  */
 TBool isForceCommitSupported();
+#endif // !SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
+
+/**
+ * Internal helper method for checking whether Application Shell is already running
+ * Used JNI method ...1startAppShellUi
+ *
+ * @return ETrue if AppShell is running
+ */
+TBool isAppShellUiRunning();
 
 /**
  * Internal helper method for starting menu application
@@ -129,8 +149,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_A
         return err;
     }
 
-#if 1
-//#ifndef RD_JAVA_USIF_APP_REG
+#ifndef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
     // Delete any pending (un)registrations (possible if
     // e.g. device rebooted before commit).
     // This call does nothing if there is no pending registrations.
@@ -145,7 +164,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_A
         pApaSession->Close();
         return err;
     }
-#endif // RD_JAVA_USIF_APP_REG
+#endif // !SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 
     // Return handle to session. Utilize the fact that in Symbian
     // all pointer addresses are MOD 4 so the last 2 bits are 0
@@ -169,8 +188,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_A
  * @param[in] aBackground
  * @return 0 if registration succeeded or Symbian error code
  */
-#if 0
-//#ifdef RD_JAVA_USIF_APP_REG
+#ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_ApplicationRegistrator__1registerApplication
 (JNIEnv */*aEnv*/, jclass /*aClass*/, jint /*aSessionHandle*/, jint /*aUid*/, jstring /*aGroupName*/,
  jstring /*aMIDletName*/, jstring /*aTargetDrive*/, jstring /*aIconFileName*/,
@@ -178,7 +196,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_A
 {
     return KErrNone;
 }
-#else
+#else // SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_ApplicationRegistrator__1registerApplication
 (JNIEnv *aEnv, jclass aClass, jint aSessionHandle, jint aUid, jstring aGroupName,
  jstring aMIDletName, jstring aTargetDrive, jstring aIconFileName,
@@ -345,7 +363,6 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_A
 
     return err;
 }
-#endif // RD_JAVA_USIF_APP_REG
 
 
 /**
@@ -361,7 +378,7 @@ jint registerApplicationL(
     RFile       appArcIcon;
     TUid        midletUid;
     TInt        err;
-    TInt        numberOfIcons = 1; // Conversion results always one icon in mbm.
+    TInt        numberOfIcons = KAppIconCount; // number of icons stored in MBM
     // Also default mbm has one icon.
 
     midletUid.iUid = aUid;
@@ -477,6 +494,7 @@ jint registerApplicationL(
 
     return err;
 }
+#endif // SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 
 
 /**
@@ -486,14 +504,13 @@ jint registerApplicationL(
  * @param[in] aUid The Uid of the application to be unregistered..
  * @return 0 if unregistration succeeded or Symbian error code
  */
-#if 0
-//#ifdef RD_JAVA_USIF_APP_REG
+#ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_ApplicationRegistrator__1unregisterApplication
 (JNIEnv *, jclass, jint /*aSessionHandle*/, jint /*aUid*/)
 {
     return KErrNone;
 }
-#else
+#else // SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_ApplicationRegistrator__1unregisterApplication
 (JNIEnv *, jclass, jint aSessionHandle, jint aUid)
 {
@@ -506,7 +523,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_A
     TRAPD(err, pApaSession->DeregisterNonNativeApplicationL(appUid));
     return err;
 }
-#endif // RD_JAVA_USIF_APP_REG
+#endif // SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 
 
 /**
@@ -527,8 +544,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_A
 
     TInt err = KErrNone;
 
-#if 1
-//#ifndef RD_JAVA_USIF_APP_REG
+#ifndef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
     if (aSynchronous)
     {
         // Make synchronous commit
@@ -556,12 +572,12 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_A
         // Use always this synchronous commit when running in emulator
         // to make writing autotest cases easier.
         TRAP(err, pApaSession->CommitNonNativeApplicationsUpdatesL());
-#else
+#else // __WINS__
         // asynchronous commit
         TRAP(err, pApaSession->ForceCommitNonNativeApplicationsUpdatesL());
 #endif // __WINS__
     }
-#endif // RD_JAVA_USIF_APP_REG
+#endif // !SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 
     if (KErrNone == err)
     {
@@ -586,10 +602,9 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_A
         reinterpret_cast<RApaLsSession*>(aSessionHandle<<2);
 
     TInt err = KErrNone;
-#if 1
-//#ifndef RD_JAVA_USIF_APP_REG
+#ifndef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
     err = pApaSession->RollbackNonNativeApplicationsUpdates();
-#endif // RD_JAVA_USIF_APP_REG
+#endif // !SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
     pApaSession->Close();
     delete pApaSession;
 
@@ -930,6 +945,7 @@ JNIEXPORT jboolean JNICALL Java_com_nokia_mj_impl_installer_applicationregistrat
 }
 
 
+#ifndef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 /**
  * Internal helper method for checking whether this code is executing in
  * a device that has correctly working version of
@@ -973,4 +989,76 @@ TBool isForceCommitSupported()
     {
         return EFalse;
     }
+}
+#endif // !SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
+
+/**
+ * See JNI method __1logComponent.
+ * This method makes calls that may leave.
+ */
+#ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
+void AddInstallLogEntryL(
+    JNIEnv */*aEnv*/, jint /*aAction*/, jint /*aUid*/,
+    jstring /*aName*/, jstring /*aVendor*/,
+    jint /*aMajorVersion*/, jint /*aMinorVersion*/, jint /*aMicroVersion*/)
+{
+}
+#else
+void AddInstallLogEntryL(
+    JNIEnv *aEnv, jint aAction, jint aUid, jstring aName, jstring aVendor,
+    jint aMajorVersion, jint aMinorVersion, jint aMicroVersion)
+{
+    TUid uid = TUid::Uid(aUid);
+    HBufC *name = CreateHBufCFromJavaStringLC(aEnv, aName);
+    HBufC *vendor = CreateHBufCFromJavaStringLC(aEnv, aVendor);
+    TVersion version(aMajorVersion, aMinorVersion, aMicroVersion);
+
+    // Create log task object.
+    CTask* task = CTask::NewL(KLogTaskImplUid, EFalse);
+    CleanupStack::PushL(task);
+
+    // Initalize log task parameters.
+    TLogTaskParam params;
+    params.iName.Copy(name->Left(KMaxLogNameLength));
+    params.iVendor.Copy(vendor->Left(KMaxLogVendorLength));
+    params.iVersion = version;
+    params.iUid = uid;
+    // Time must be universal time.
+    TTime time;
+    time.UniversalTime();
+    params.iTime = time;
+    params.iAction = (TLogTaskAction)aAction;
+    params.iIsStartup = EFalse; // Startup list was not modified.
+
+    TLogTaskParamPckg pckg(params);
+    task->SetParameterL(pckg, 0);
+
+    // Create log task manager.
+    CTaskManager* taskManager = CTaskManager::NewL();
+    CleanupStack::PushL(taskManager);
+
+    // Add the log task to the task list.
+    taskManager->AddTaskL(task);
+    taskManager->ExecutePendingTasksL();
+
+    // Cleanup.
+    CleanupStack::PopAndDestroy(taskManager);
+    CleanupStack::Pop(task);
+
+    CleanupStack::PopAndDestroy(vendor);
+    CleanupStack::PopAndDestroy(name);
+}
+#endif // SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
+
+/**
+ * Adds an entry to platform installation log.
+ */
+JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_ApplicationRegistrator__1addInstallLogEntry
+(JNIEnv *aEnv, jclass, jint aAction, jint aUid, jstring aName, jstring aVendor,
+ jint aMajorVersion, jint aMinorVersion, jint aMicroVersion)
+{
+    TRAPD(err, AddInstallLogEntryL(
+              aEnv, aAction, aUid, aName, aVendor,
+              aMajorVersion, aMinorVersion, aMicroVersion));
+    return err;
 }

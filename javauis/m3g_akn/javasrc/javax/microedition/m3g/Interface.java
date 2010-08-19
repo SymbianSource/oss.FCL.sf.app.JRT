@@ -427,15 +427,15 @@ class Interface implements ToolkitObserverNGAExtension
         }
         MemoryUtil.freeNativeMemory();
     }
-    
+
     /*
-     * @see ToolkitObserverNGAExtension#foregroundEvent(boolean)
+     * @see ToolkitObserverNGAExtension#freeGraphicsMemory()
      */
-    public void foregroundEvent(boolean foreground)
+    public void freeGraphicsMemory()
     {
         if (graphics3D != null)
         {
-            graphics3D.setForeground(foreground);
+            graphics3D.freeGraphicsMemory();
         }
     }
 

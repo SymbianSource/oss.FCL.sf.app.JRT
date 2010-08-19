@@ -213,12 +213,7 @@ void CSwtButton::CreateButtonL(const TDesC& aText)
     iButton->SetBackground(this);   // Back will be drawn by ASwtControlBase::Draw
 
     // Set default color
-    TRgb color;
-    AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
-                              color,
-                              KAknsIIDQsnTextColors,
-                              EAknsCIQsnTextColorsCG6);
-    iButton->OverrideColorL(EColorButtonText, color);
+    UpdateTextColor();
 }
 
 // ---------------------------------------------------------------------------
@@ -412,6 +407,7 @@ void CSwtButton::SwtHandleResourceChangeL(TInt aType)
             {
                 ChangeCheckOrRadioIconL(iSelected);
             }
+            UpdateTextColor();
         }
     }
 }
@@ -632,26 +628,9 @@ void CSwtButton::SetFontL(const MSwtFont* aFont)
 //
 void CSwtButton::SetForegroundL(const MSwtColor* aColor)
 {
-    TRgb color;
-
-    if (aColor)
-    {
-        color = aColor->RgbValue();
-    }
-    else
-    {
-        AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
-                                  color,
-                                  KAknsIIDQsnTextColors,
-                                  EAknsCIQsnTextColorsCG6);
-    }
-
-    if (iButton)
-    {
-        iButton->OverrideColorL(EColorButtonText, color);
-    }
-
     ASwtControlBase::DoSetForegroundL(aColor);
+    iCustomFg = aColor;
+    UpdateTextColor();
     Redraw();
 }
 
@@ -827,8 +806,76 @@ MSwtButton* CSwtButton::ButtonInterface()
 //
 TInt CSwtButton::FocusBackgroundPolicy() const
 {
-    return EEmbeddedFocusBackground;
+    TInt policy(EEmbeddedFocusBackground);
+    if (iStyle & (KSwtStyleCheck | KSwtStyleRadio))
+    {
+        policy = EDefaultFocusBackground;
+    }
+    return policy;
 };
+
+// ---------------------------------------------------------------------------
+// CSwtButton::PressBackgroundPolicy
+// From MSwtControl
+// ---------------------------------------------------------------------------
+//
+TInt CSwtButton::PressBackgroundPolicy() const
+{
+    return EEmbeddedPressBackground;
+}
+
+// ---------------------------------------------------------------------------
+// CSwtButton::UpdateTextColor
+// ---------------------------------------------------------------------------
+//
+void CSwtButton::UpdateTextColor()
+{
+    if (iButton)
+    {
+        TBool highlighted = HasHighlight() && (iStyle & (KSwtStyleCheck | KSwtStyleRadio));
+
+        TRgb color(0);
+        TInt err(KErrNone);
+
+        if (highlighted)
+        {
+            // Highlighted foreground color, overrides all others.
+            err = AknsUtils::GetCachedColor(AknsUtils::SkinInstance()
+                                            , color
+                                            , KAknsIIDQsnTextColors
+                                            , KHighlightedTextColor);
+        }
+        else if (iCustomFg)
+        {
+            // Custom foreground color, overrides the default.
+            color = iCustomFg->RgbValue();
+        }
+        else
+        {
+            // Default foreground color.
+            err = AknsUtils::GetCachedColor(AknsUtils::SkinInstance()
+                                            , color
+                                            , KAknsIIDQsnTextColors
+                                            , KNonHighlightedTextColor);
+        }
+
+        if (err == KErrNone)
+        {
+            TRAP_IGNORE(iButton->OverrideColorL(EColorButtonText, color));
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// CSwtButton::HandleHighlightChange
+// From MSwtControl
+// ---------------------------------------------------------------------------
+//
+void CSwtButton::HandleHighlightChange()
+{
+    if (iStyle & (KSwtStyleCheck | KSwtStyleRadio))
+        UpdateTextColor();
+}
 
 // ---------------------------------------------------------------------------
 // CSwtButton::Control
@@ -1180,6 +1227,15 @@ void CSwtButton::HandlePointerEventL(const TPointerEvent& aPointerEvent)
         }
 #endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
         iButton->HandlePointerEventL(aPointerEvent);
+    }
+
+    // If directly captioned, the CaptionedControl gets "pressed" as well.
+    if (aPointerEvent.iType == TPointerEvent::EButton1Up
+            || aPointerEvent.iType == TPointerEvent::EButton1Down)
+    {
+        iPressed = aPointerEvent.iType == TPointerEvent::EButton1Down;
+        if (iParent->Control()->CaptionedControlInterface())
+            GetShell().UpdateHighlight(ETrue);
     }
 
     PostMouseEventL(aPointerEvent);

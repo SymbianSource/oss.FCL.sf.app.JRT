@@ -25,7 +25,17 @@
 #include "swtfont.h"
 #include "swtprogressbar.h"
 
+
+/**
+ * Default value of the ProgressBar
+ */
+const TInt KDefaultProgressBarSelectionValue= 0;
+const TInt KDefaultProgressBarMinValue      = 0;
+const TInt KDefaultProgressBarMaxValue      = 100;
+
+
 // ======== MEMBER FUNCTIONS ========
+
 
 TInt CSwtProgressBar::AnimationCallBack(TAny* aPtr)
 {
@@ -143,8 +153,8 @@ void CSwtProgressBar::LoadImagesL()
         AknsUtils::CreateIconL(skin, KAknsIIDQgnGrafBarProgress, bitmap, mask,
                                KAvkonBitmapFile, EMbmAvkonQgn_graf_bar_progress, EMbmAvkonQgn_graf_bar_progress_mask);
 
-        iImagesToDelete.Append(bitmap);
-        iImagesToDelete.Append(mask);
+        iImagesToDelete.AppendL(bitmap);
+        iImagesToDelete.AppendL(mask);
         User::LeaveIfError(iBarImages.Append(bitmap));
         User::LeaveIfError(iBarMasks.Append(mask));
     }
@@ -177,8 +187,8 @@ void CSwtProgressBar::LoadImagesL()
             bitmap  = aknAnimation ->BitmapAnimData()->FrameArray().At(i)->Bitmap();
             mask = aknAnimation ->BitmapAnimData()->FrameArray().At(i)->Mask();
 
-            iImagesToDelete.Append(bitmap);
-            iImagesToDelete.Append(mask);
+            iImagesToDelete.AppendL(bitmap);
+            iImagesToDelete.AppendL(mask);
 
             User::LeaveIfError(iBarImages.Append(bitmap));
             if (mask)
@@ -195,23 +205,23 @@ void CSwtProgressBar::LoadImagesL()
                            iBarFrameLeftImage, iBarFrameLeftMask, KAvkonBitmapFile,
                            EMbmAvkonQgn_graf_bar_frame_side_l,
                            EMbmAvkonQgn_graf_bar_frame_side_l_mask);
-    iImagesToDelete.Append(iBarFrameLeftImage);
-    iImagesToDelete.Append(iBarFrameLeftMask);
+    iImagesToDelete.AppendL(iBarFrameLeftImage);
+    iImagesToDelete.AppendL(iBarFrameLeftMask);
 
     AknsUtils::CreateIconL(skin, KAknsIIDQgnGrafBarFrameCenter,
                            iBarFrameCenterImage, iBarFrameCenterMask, KAvkonBitmapFile,
                            EMbmAvkonQgn_graf_bar_frame_center,
                            EMbmAvkonQgn_graf_bar_frame_center_mask);
-    iImagesToDelete.Append(iBarFrameCenterImage);
-    iImagesToDelete.Append(iBarFrameCenterMask);
+    iImagesToDelete.AppendL(iBarFrameCenterImage);
+    iImagesToDelete.AppendL(iBarFrameCenterMask);
 
 
     AknsUtils::CreateIconL(skin, KAknsIIDQgnGrafBarFrameSideR,
                            iBarFrameRightImage, iBarFrameRightMask, KAvkonBitmapFile,
                            EMbmAvkonQgn_graf_bar_frame_side_r,
                            EMbmAvkonQgn_graf_bar_frame_side_r_mask);
-    iImagesToDelete.Append(iBarFrameRightImage);
-    iImagesToDelete.Append(iBarFrameRightMask);
+    iImagesToDelete.AppendL(iBarFrameRightImage);
+    iImagesToDelete.AppendL(iBarFrameRightMask);
 
     if (iStyle & KSwtStyleIndeterminate && IsVisible())
     {
@@ -268,12 +278,12 @@ void CSwtProgressBar::AddBitmapToRotator(CFbsBitmap*& aBitmap)
                 TRAP(error, (aBitmap = CreatePlainBitmapL(aBitmap)));
 
                 if (error == KErrNone)
-                    iImagesToDelete.Append(aBitmap);
+                    TRAP_IGNORE(iImagesToDelete.AppendL(aBitmap));
             }
         }
 
         if (error == KErrNone)
-            iImagesRotator->AddImage(aBitmap);
+            TRAP_IGNORE(iImagesRotator->AddImageL(aBitmap));
     }
 }
 

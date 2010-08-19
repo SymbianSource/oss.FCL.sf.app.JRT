@@ -272,7 +272,8 @@ void CMIDDisplayable::ConstructL()
         iSKPositionWithQwerty = ESoftkeysBottom;
     }
     else
-    {//default value
+    {
+        //default value
         iSKPositionWithQwerty = ESoftkeysRight;
     }
 
@@ -291,6 +292,8 @@ CMIDDisplayable::CMIDDisplayable(MMIDEnv& aEnv,CMIDUIManager& aUIManager)
         ,iPenInputServerConnected(EFalse)
 #endif //RD_TACTILE_FEEDBACK
         ,iIdOfMSKCommand(KErrNotFound)
+        ,iRestoreOrientation(EFalse)
+        ,iReleaseCnt(0)
 {
 #ifdef RD_JAVA_S60_RELEASE_9_2
     iSplitScreenKeyboard = EFalse;
@@ -359,7 +362,8 @@ CMIDDisplayable::~CMIDDisplayable()
     delete iCommandList;
 
     if (iMenuHandler->GetDisplayable() == this)
-    {//this may happen when the application is exiting
+    {
+        //this may happen when the application is exiting
         iMenuHandler->SetDisplayable(NULL);
     }
 
@@ -372,10 +376,6 @@ CMIDDisplayable::~CMIDDisplayable()
  **/
 void CMIDDisplayable::Dispose()
 {
-    if (iAppUi)
-    {
-        iAppUi->UnSetEnv();
-    }
     ReplaceBehindAlertIfNeeded();
 
     delete this;
@@ -396,7 +396,8 @@ void CMIDDisplayable::ReplaceBehindAlertIfNeeded()
             && IsVisible()
             && (iMenuHandler->GetDisplayable())
             && (iMenuHandler->GetDisplayable()->Component()->Type() == EAlert))
-    {// In this case we are a faded displayable behind a dialog
+    {
+        // In this case we are a faded displayable behind a dialog
         TInt numDisplayables = iAppUi->Displayables().Count();
         TInt index = -1;
         TInt currentPosition = 999;
@@ -632,7 +633,7 @@ void CMIDDisplayable::PopulateMenuItemsWithListL
             }
 #else
             User::LeaveIfError(aItems.Append(item));
-#endif // RD_JAVA_S60_RELEASE_9_2        
+#endif // RD_JAVA_S60_RELEASE_9_2
         }
     }
 }
@@ -671,7 +672,8 @@ void CMIDDisplayable::CreateMenuItemsL
         PopulateMenuItemsWithListL(aMenuType, aMenuItems, iCommandList, EFalse);
     }
     else if (aMenuType == CMIDMenuHandler::EHelpMenu)
-    { // Add the Help commands only
+    {
+        // Add the Help commands only
         PopulateMenuItemsWithListL(aMenuType, aMenuItems, iCommandList, EFalse);
     }
     else if (aMenuType == CMIDMenuHandler::EOptionsMenu)
@@ -693,7 +695,8 @@ void CMIDDisplayable::ProcessCommandL(TInt aCommandId)
     }
 
     if (aCommandId == EAknSoftkeyContextOptions)
-    { // MSK command to show context sensitive menu -> open it
+    {
+        // MSK command to show context sensitive menu -> open it
         ShowOkOptionsMenuL();
     }
     else if (aCommandId == KBuiltInMSKCommandId)
@@ -730,7 +733,7 @@ void CMIDDisplayable::ProcessCommandL(TInt aCommandId)
             form->PostPendingUpEventL();
         }
     }
-#endif // RD_JAVA_S60_RELEASE_9_2    
+#endif // RD_JAVA_S60_RELEASE_9_2
 }
 
 #ifdef RD_SCALABLE_UI_V2
@@ -752,7 +755,8 @@ void CMIDDisplayable::HandleStandardCommandL(const TCommandEntry& aCmdEntry)
 {
     TBool postJavaEvent = ETrue;
     if (aCmdEntry.iCommand->Id() < 0)
-    { //non-midlet command, see if there is an observer
+    {
+        //non-midlet command, see if there is an observer
         if (aCmdEntry.iCommand->Observer())
         {
             postJavaEvent = !(aCmdEntry.iCommand->Observer()->ProcessCommandL(aCmdEntry.iCommand));
@@ -770,7 +774,8 @@ void CMIDDisplayable::HandleItemCommandL(const TCommandEntry& aCmdEntry)
 {
     TBool postJavaEvent = ETrue;
     if (aCmdEntry.iCommand->Id() < 0)
-    { //non-midlet command, see if there is an observer
+    {
+        //non-midlet command, see if there is an observer
         if (aCmdEntry.iCommand->Observer())
         {
             postJavaEvent = !(aCmdEntry.iCommand->Observer()->ProcessCommandL(aCmdEntry.iCommand));
@@ -990,32 +995,40 @@ void CMIDDisplayable::HandleForegroundL(TBool aForeground)
         form->HandleForegroundL(aForeground);
     }
 
-    HandleCanvasForeground(aForeground);
+    // Notify canvas about gained foreground only if it is the current displayable
+    if (!aForeground || iActive)
+    {
+        HandleCanvasForeground(aForeground);
+    }
 
     if (aForeground)
     {
-        //If MIDlet is sent to foreground and JAD-attribute BackgroundEvent=Pause,
-        //then call startApp() method for the MIDlet.
+        // If MIDlet is sent to foreground and JAD-attribute BackgroundEvent=Pause,
+        // then call startApp() method for the MIDlet.
 
         if (iEnv.MidletAttributeIsSetToVal(LcduiMidletAttributes::KAttribBackgroundEvent,
                                            LcduiMidletAttributeValues::KPauseValue))
 
         {
             iEnv.PostMidletEvent(EStart);
+            iAppUi->SetPauseAppState(EFalse);
         }
     }
     else //to background
     {
 
-        //If MIDlet is sent to background and JAD-attribute BackgroundEvent=Pause,
-        //then call pauseApp() method for the MIDlet.
+        // If MIDlet is sent to background and JAD-attribute BackgroundEvent=Pause,
+        // and window is not faded yet or window is already faded but pauseApp was not called yet,
+        // then call pauseApp() method for the MIDlet.
+        TBool isfaded = this->DrawableWindow()->IsFaded();
 
         if (iEnv.MidletAttributeIsSetToVal(LcduiMidletAttributes::KAttribBackgroundEvent,
-                                           LcduiMidletAttributeValues::KPauseValue) &&
-                !this->DrawableWindow()->IsFaded())
+                                           LcduiMidletAttributeValues::KPauseValue) && (!isfaded ||
+                                                   (isfaded && !iAppUi->GetPauseAppState())))
 
         {
             iEnv.PostMidletEvent(EPause);
+            iAppUi->SetPauseAppState(ETrue);
         }
     }
     DEBUG("- CMIDDisplayable::HandleForegroundL");
@@ -1030,11 +1043,13 @@ void CMIDDisplayable::HandleResourceChangeL(TInt aType)
     DEBUG("+ CMIDDisplayable::HandleResourceChangeL");
 
     if (aType == KEikDynamicLayoutVariantSwitch)
-    { // dynamic orientation change
+    {
+        // dynamic orientation change
 
         // Correct rect is set for displayable
         if (iActive && iCanvasKeypad)
-        { //Update correct On-Screen Keypad type
+        {
+            //Update correct On-Screen Keypad type
             UpdateOnScreenKeypadSettings();
         }
         UpdateDisplayableRect();
@@ -1042,15 +1057,53 @@ void CMIDDisplayable::HandleResourceChangeL(TInt aType)
 
         // MIDlet icon is resized in cpane SizeChanged()
         if (!iActive && iContentControl)
-        {//The active displayable already gets this call by the CONE framework but
+        {
+            //The active displayable already gets this call by the CONE framework but
             //background displayables don't, so for example a background form won't be
             //re-laid-out if we don't call this here
             iContentControl->HandleResourceChange(aType);
         }
 #ifdef RD_SCALABLE_UI_V2
+        // When current Displayble is Canvas or popup Displayable and the last
+        // Displayble was Canvas, then OSK visual appearance is needed
+        //  to be change.
         if (iUseOnScreenKeypad && iCanvasKeypad && (iActive || this->DrawableWindow()->IsFaded()))
         {
-            iCanvasKeypad->UpdateVisualAppearanceL(*iCanvas, iOnScreenKeyboardType, *this);
+            if (iActive)
+            {
+                // Current is Canvas.
+                iCanvasKeypad->UpdateVisualAppearanceL(*iCanvas, iOnScreenKeyboardType, *this);
+            }
+            else
+            {
+                // Get current Displayable and the last fullscreen Displayble.
+                MMIDDisplayable* current = iEnv.Current();
+                const MMIDDisplayable* last = iEnv.LastFullscreenDisplayable();
+                if (current && last && current->Component()
+                        && last->Component())
+                {
+                    // Get types of Displayables.
+                    MMIDComponent::TType lastType = last->Component()->Type();
+                    MMIDComponent::TType currentType = current->Component()->Type();
+                    if (lastType == ECanvas)
+                    {
+                        if (currentType == EAlert)
+                        {
+                            // Current is Alert and the last fullscreen
+                            // Displayable was Canvas.
+                            iCanvasKeypad->UpdateVisualAppearanceL(
+                                *iCanvas, iOnScreenKeyboardType, *this);
+                        }
+                        else if (currentType == ETextBox && current->IsPopupTextBox())
+                        {
+                            // Current is popup TextBox and the last fullscreen
+                            // Displayable was Canvas.
+                            iCanvasKeypad->UpdateVisualAppearanceL(
+                                *iCanvas, iOnScreenKeyboardType, *this);
+                        }
+                    }
+                }
+            }
         }
 #endif // RD_SCALABLE_UI_V2
         iFullscreenCanvasLabelCacheIsValid = EFalse;
@@ -1058,7 +1111,8 @@ void CMIDDisplayable::HandleResourceChangeL(TInt aType)
     else if (aType == KEikColorResourceChange ||
              aType == KAknsMessageSkinChange  ||
              aType == KUidValueCoeColorSchemeChangeEvent)
-    { //skin or color change, may need to recreate ctx icon
+    {
+        //skin or color change, may need to recreate ctx icon
         // send skin change event to non-active controls so they can also
         // reload graphics
         if (!iActive && iContentControl)
@@ -1082,6 +1136,26 @@ void CMIDDisplayable::HandleResourceChangeL(TInt aType)
         iContentControl->HandleResourceChange(aType);
     }
 }
+
+#ifdef RD_JAVA_NGA_ENABLED
+void CMIDDisplayable::HandleFullOrPartialForegroundL(TBool aFullOrPartialFg)
+{
+    CMIDCanvas* canvas = GetContentCanvas();
+    if (canvas)
+    {
+        canvas->HandleFullOrPartialForegroundL(aFullOrPartialFg, iActive);
+    }
+}
+
+void CMIDDisplayable::HandleFreeGraphicsMemory()
+{
+    CMIDCanvas* canvas = GetContentCanvas();
+    if (canvas)
+    {
+        canvas->FreeGraphicsMemory(ETrue);
+    }
+}
+#endif // RD_JAVA_NGA_ENABLED
 
 /**
  * The container has changed it available drawing space, so resize
@@ -1150,122 +1224,133 @@ TRect CMIDDisplayable::GetCanvasRectFromLaf()
 {
     DEBUG("+ CMIDDisplayable::GetCanvasRectFromLaf");
 
-    TRect resultRect;
+    TRect resultRect = TRect(0,0,0,0);
     AknLayoutUtils::LayoutMetricsRect(AknLayoutUtils::EScreen, resultRect);
     TAknLayoutRect canvasRect;
     TAknLayoutRect mainPane;
     TAknLayoutRect mainMidpPane;
 
-    //Read canvasRect from LAF depending on keyboard type
-    switch (iOnScreenKeyboardType)
-    {
-    case EOnScreenKeypadValueNo:
-        break;
-    case EOnScreenKeypadValueNavigationKeys:
-    {
-        if (iIsFullScreenMode)
-        {
-            if (!Layout_Meta_Data::IsLandscapeOrientation())  //portrait
-            {
-                canvasRect.LayoutRect(resultRect, AknLayoutScalable_Avkon::midp_canvas_pane(1).LayoutLine());
-            }
-            else //landscape
-            {
-                canvasRect.LayoutRect(resultRect, AknLayoutScalable_Avkon::midp_canvas_pane(8).LayoutLine());
-            }
-        }
-        else //normal mode
-        {
-            if (!Layout_Meta_Data::IsLandscapeOrientation())  //portrait
-            {
-                mainPane.LayoutRect(resultRect, AknLayoutScalable_Avkon::main_pane(3).LayoutLine());
-                mainMidpPane.LayoutRect(mainPane.Rect(), AknLayoutScalable_Avkon::main_midp_pane(0).LayoutLine());
-                canvasRect.LayoutRect(mainMidpPane.Rect(), AknLayoutScalable_Avkon::midp_canvas_pane(4).LayoutLine());
-            }
-            else //landscape
-            {
-                mainPane.LayoutRect(resultRect, AknLayoutScalable_Avkon::main_pane(4).LayoutLine());
-                mainMidpPane.LayoutRect(mainPane.Rect(), AknLayoutScalable_Avkon::main_midp_pane(1).LayoutLine());
-                canvasRect.LayoutRect(mainMidpPane.Rect(), AknLayoutScalable_Avkon::midp_canvas_pane(7).LayoutLine());
-            }
-        }
-        resultRect = canvasRect.Rect();
-        break;
-    }
-    case EOnScreenKeypadValueGameActions:
-    {
-        if (iIsFullScreenMode)
-        {
-            if (!Layout_Meta_Data::IsLandscapeOrientation())  //portrait
-            {
-                canvasRect.LayoutRect(resultRect, AknLayoutScalable_Avkon::midp_canvas_pane(2).LayoutLine());
-            }
-            else //landscape
-            {
-                canvasRect.LayoutRect(resultRect, AknLayoutScalable_Avkon::midp_canvas_pane(3).LayoutLine());
-            }
-        }
-        else //normal mode
-        {
-            if (!Layout_Meta_Data::IsLandscapeOrientation())  //portrait
-            {
-                mainPane.LayoutRect(resultRect, AknLayoutScalable_Avkon::main_pane(3).LayoutLine());
-                mainMidpPane.LayoutRect(mainPane.Rect(), AknLayoutScalable_Avkon::main_midp_pane(0).LayoutLine());
-                canvasRect.LayoutRect(mainMidpPane.Rect(), AknLayoutScalable_Avkon::midp_canvas_pane(5).LayoutLine());
-            }
-            else//landscape
-            {
-                mainPane.LayoutRect(resultRect, AknLayoutScalable_Avkon::main_pane(4).LayoutLine());
-                mainMidpPane.LayoutRect(mainPane.Rect(), AknLayoutScalable_Avkon::main_midp_pane(1).LayoutLine());
-                canvasRect.LayoutRect(mainMidpPane.Rect(), AknLayoutScalable_Avkon::midp_canvas_pane(6).LayoutLine());
-            }
-        }
-        resultRect = canvasRect.Rect();
-        break;
-    }
-    case EOnScreenKeypadValueLskRsk:
-    {
-        if (iIsFullScreenMode)
-        {
-            if (!Layout_Meta_Data::IsLandscapeOrientation())  //portrait
-            {
-                canvasRect.LayoutRect(resultRect, AknLayoutScalable_Avkon::midp_canvas_pane(11).LayoutLine());
-            }
-            else //landscape
-            {
-                if (iSKPositionWithQwerty == ESoftkeysRight)
-                {
-                    canvasRect.LayoutRect(resultRect, AknLayoutScalable_Avkon::midp_canvas_pane(10).LayoutLine());
-                }
-                else
-                {
 #ifdef RD_JAVA_S60_RELEASE_9_2
-                    canvasRect.LayoutRect(resultRect, AknLayoutScalable_Avkon::midp_canvas_pane(9).LayoutLine());
-#else
-                    resultRect = TRect(80,0,560,360); // Layout data not defined in older releases.
-                    DEBUG("- CMIDDisplayable::GetCanvasRectFromLaf");
-                    return resultRect;
-#endif // RD_JAVA_S60_RELEASE_9_2
+    // If split screen is open, then it is needed return current size of Canvas.
+    if (iSplitScreenKeyboard)
+    {
+        CMIDCanvas* canvas = GetContentCanvas();
+        if (canvas)
+        {
+            resultRect = canvas->ViewRect();
+        }
+    }
+    else
+    {
+#endif // RD_JAVA_S60_RELEASE_9_2    
+        //Read canvasRect from LAF depending on keyboard type
+        switch (iOnScreenKeyboardType)
+        {
+        case EOnScreenKeypadValueNo:
+            break;
+        case EOnScreenKeypadValueNavigationKeys:
+        {
+            if (iIsFullScreenMode)
+            {
+                if (!Layout_Meta_Data::IsLandscapeOrientation())  //portrait
+                {
+                    canvasRect.LayoutRect(resultRect, AknLayoutScalable_Avkon::midp_canvas_pane(1).LayoutLine());
+                }
+                else //landscape
+                {
+                    canvasRect.LayoutRect(resultRect, AknLayoutScalable_Avkon::midp_canvas_pane(8).LayoutLine());
                 }
             }
+            else //normal mode
+            {
+                if (!Layout_Meta_Data::IsLandscapeOrientation())  //portrait
+                {
+                    mainPane.LayoutRect(resultRect, AknLayoutScalable_Avkon::main_pane(3).LayoutLine());
+                    mainMidpPane.LayoutRect(mainPane.Rect(), AknLayoutScalable_Avkon::main_midp_pane(0).LayoutLine());
+                    canvasRect.LayoutRect(mainMidpPane.Rect(), AknLayoutScalable_Avkon::midp_canvas_pane(4).LayoutLine());
+                }
+                else //landscape
+                {
+                    mainPane.LayoutRect(resultRect, AknLayoutScalable_Avkon::main_pane(4).LayoutLine());
+                    mainMidpPane.LayoutRect(mainPane.Rect(), AknLayoutScalable_Avkon::main_midp_pane(1).LayoutLine());
+                    canvasRect.LayoutRect(mainMidpPane.Rect(), AknLayoutScalable_Avkon::midp_canvas_pane(7).LayoutLine());
+                }
+            }
+            resultRect = canvasRect.Rect();
+            break;
         }
-        else//normal mode
+        case EOnScreenKeypadValueGameActions:
         {
-            //no need to present LSK&RSK in OSK when in normal mode Canvas
-            resultRect = TRect(0,0,0,0);
-
-            DEBUG("- CMIDDisplayable::GetCanvasRectFromLaf");
-            return resultRect;
+            if (iIsFullScreenMode)
+            {
+                if (!Layout_Meta_Data::IsLandscapeOrientation())  //portrait
+                {
+                    canvasRect.LayoutRect(resultRect, AknLayoutScalable_Avkon::midp_canvas_pane(2).LayoutLine());
+                }
+                else //landscape
+                {
+                    canvasRect.LayoutRect(resultRect, AknLayoutScalable_Avkon::midp_canvas_pane(3).LayoutLine());
+                }
+            }
+            else //normal mode
+            {
+                if (!Layout_Meta_Data::IsLandscapeOrientation())  //portrait
+                {
+                    mainPane.LayoutRect(resultRect, AknLayoutScalable_Avkon::main_pane(3).LayoutLine());
+                    mainMidpPane.LayoutRect(mainPane.Rect(), AknLayoutScalable_Avkon::main_midp_pane(0).LayoutLine());
+                    canvasRect.LayoutRect(mainMidpPane.Rect(), AknLayoutScalable_Avkon::midp_canvas_pane(5).LayoutLine());
+                }
+                else//landscape
+                {
+                    mainPane.LayoutRect(resultRect, AknLayoutScalable_Avkon::main_pane(4).LayoutLine());
+                    mainMidpPane.LayoutRect(mainPane.Rect(), AknLayoutScalable_Avkon::main_midp_pane(1).LayoutLine());
+                    canvasRect.LayoutRect(mainMidpPane.Rect(), AknLayoutScalable_Avkon::midp_canvas_pane(6).LayoutLine());
+                }
+            }
+            resultRect = canvasRect.Rect();
+            break;
         }
-        resultRect = canvasRect.Rect();
-        break;
+        case EOnScreenKeypadValueLskRsk:
+        {
+            if (iIsFullScreenMode)
+            {
+                if (!Layout_Meta_Data::IsLandscapeOrientation())  //portrait
+                {
+                    canvasRect.LayoutRect(resultRect, AknLayoutScalable_Avkon::midp_canvas_pane(11).LayoutLine());
+                }
+                else //landscape
+                {
+                    if (iSKPositionWithQwerty == ESoftkeysRight)
+                    {
+                        canvasRect.LayoutRect(resultRect, AknLayoutScalable_Avkon::midp_canvas_pane(10).LayoutLine());
+                    }
+                    else
+                    {
+#ifdef RD_JAVA_S60_RELEASE_9_2
+                        canvasRect.LayoutRect(resultRect, AknLayoutScalable_Avkon::midp_canvas_pane(9).LayoutLine());
+#else
+                        resultRect = TRect(80,0,560,360); // Layout data not defined in older releases.
+                        DEBUG("- CMIDDisplayable::GetCanvasRectFromLaf");
+                        return resultRect;
+#endif // RD_JAVA_S60_RELEASE_9_2
+                    }
+                }
+            }
+            else//normal mode
+            {
+                //no need to present LSK&RSK in OSK when in normal mode Canvas
+                resultRect = TRect(0,0,0,0);
+
+                DEBUG("- CMIDDisplayable::GetCanvasRectFromLaf");
+                return resultRect;
+            }
+            resultRect = canvasRect.Rect();
+            break;
+        }
+        }
+#ifdef RD_JAVA_S60_RELEASE_9_2
     }
-    default:
-    {
-        resultRect = TRect(0,0,0,0);
-        break;
-    }
-    }
+#endif // RD_JAVA_S60_RELEASE_9_2
 
     DEBUG("- CMIDDisplayable::GetCanvasRectFromLaf");
     return resultRect;
@@ -1371,10 +1456,10 @@ void CMIDDisplayable::HandleCurrentL(TBool aCurrent)
     iActive = aCurrent;
     const TType type = iContent->Type();
 
-    HandleCanvasForeground(aCurrent);
-
     if (aCurrent)
     {
+        HandleCanvasForeground(aCurrent);
+
         // when setting displayable as current remember to deactivate
         // the default displayable if it has not been done yet
         CMIDDisplayable* defaultDisplayable =
@@ -1406,14 +1491,16 @@ void CMIDDisplayable::HandleCurrentL(TBool aCurrent)
     }
 
     if (type == EAlert)
-    {// alerts do their on thing, they rely on sleeping dialogs in fact
+    {
+        // alerts do their on thing, they rely on sleeping dialogs in fact
         CMIDAlert* alert = static_cast<CMIDAlert*>(iContentControl);
         TRAP_IGNORE(alert->HandleCurrentL(aCurrent));
 
         UpdateTickerL();
     }
     else if (type == ETextBox && iIsPopupTextBox)
-    {// Pop-up TextBox do their on thing, they rely on sleeping dialogs in fact
+    {
+        // Pop-up TextBox do their on thing, they rely on sleeping dialogs in fact
         CMIDTextBoxDialogControl* textBoxDialogControl =
             static_cast<CMIDTextBoxDialogControl*>(iContentControl);
         TRAP_IGNORE(textBoxDialogControl->HandleCurrentL(aCurrent));
@@ -1436,6 +1523,9 @@ void CMIDDisplayable::HandleCurrentL(TBool aCurrent)
             {
                 MakeVisible(EFalse);
             }
+
+            // Notify canvas after changing the visibility
+            HandleCanvasForeground(aCurrent);
         }
 
         iContentControl->SetFocus(aCurrent);
@@ -1993,7 +2083,8 @@ void CMIDDisplayable::UpdateDisplayableRect()
         }
 #endif //RD_SCALABLE_UI_V2
         if (!iActive)
-        { // Restore pane visibility. There is one pane for all displayables.
+        {
+            // Restore pane visibility. There is one pane for all displayables.
             // Only active displayable can decide about the pane visibility.
             // Others should not change it.
             pane->MakeVisible(paneVisible);
@@ -2012,7 +2103,8 @@ void CMIDDisplayable::UpdateDisplayableRect()
             iCba->ReduceRect(iDisplayableRect);
 
             if (!iActive)
-            { // Restore cba visibility. There is one cba for all displayables.
+            {
+                // Restore cba visibility. There is one cba for all displayables.
                 // Only active displayable can decide about the cba visibility.
                 // Others should not change it.
                 iCba->MakeVisible(cbaVisible);
@@ -2050,7 +2142,8 @@ void CMIDDisplayable::SetFullScreenModeL(TBool aFullScreen)
     SetRect(iDisplayableRect);
 
     if (iActive)
-    { //this means we are the active displayable
+    {
+        //this means we are the active displayable
         UpdateVisualAppearanceL();
     }
 
@@ -2119,7 +2212,8 @@ void CMIDDisplayable::SetMSKCommand(CMIDCommand* aMSKCommand)
     CMIDCommand* oldMSKCommand = iMSKCommand;
     iMSKCommand = aMSKCommand;
     if (oldMSKCommand != iMSKCommand)
-    { // avoid unnecessary updating to avoid flickering
+    {
+        // avoid unnecessary updating to avoid flickering
         TRAP_IGNORE(InitializeCbasL());
     }
 }
@@ -2127,7 +2221,8 @@ void CMIDDisplayable::SetMSKCommand(CMIDCommand* aMSKCommand)
 void CMIDDisplayable::SetSelectCommand(CMIDCommand* aSelectCommand)
 {
     if (aSelectCommand != iSelectCommand)
-    { // avoid unnecessary updating to avoid flickering
+    {
+        // avoid unnecessary updating to avoid flickering
         iSelectCommand = aSelectCommand;
         TRAP_IGNORE(InitializeCbasL());
     }
@@ -2239,7 +2334,7 @@ void CMIDDisplayable::InitializeCbasL()
     if (iSelectCommand)
 #else
     if (!iSelectCommandEnabled && iSelectCommand)
-#endif // RD_JAVA_S60_RELEASE_9_2        
+#endif // RD_JAVA_S60_RELEASE_9_2
     {
         // remove the select command
         for (TInt j = 0; j < lists.Count(); j++)
@@ -2346,7 +2441,8 @@ void CMIDDisplayable::InitializeCbasL()
             // There is a explicitly set MSK command -> it takes the precedence and gets MSK
             TInt commandId = GetInternalCommandIdFor(iMSKCommand);
             if (commandId == KCommandIdNotFound)
-            {// it must be a built-in command, it is the only command not contained in the command lists
+            {
+                // it must be a built-in command, it is the only command not contained in the command lists
                 commandId = KBuiltInMSKCommandId;
             }
             iCba->SetCommandL(KMSKPositionInCBA, commandId, iMSKCommand->ShortLabel());
@@ -2357,7 +2453,7 @@ void CMIDDisplayable::InitializeCbasL()
             // There is no explicitly set MSK command and just one for the context menu.
             // Instead of a menu, put the command to MSK directly.
             RPointerArray<CMIDCommand> commands;
-            GetOkOptionsMenuCommands(commands);
+            GetOkOptionsMenuCommandsL(commands);
             ASSERT(commands.Count() == 1);
             CMIDCommand* command = commands[0];
             commands.Close();
@@ -2475,7 +2571,8 @@ TBool CMIDDisplayable::ShowOkOptionsMenuL()
         cmd.iCommand = NULL;
 
         if (iItemCommandList && iItemCommandList->Count() > 0)
-        {// there can only be one so pick the first one
+        {
+            // there can only be one so pick the first one
             cmd = iItemCommandList->At(0);
 
             if (cmd.iCommand->IsMappedToSoftKey())
@@ -2488,7 +2585,8 @@ TBool CMIDDisplayable::ShowOkOptionsMenuL()
         {
             TInt index = iCommandList->HighestPriorityCommand(MMIDCommand::EOk);
             if (index == KErrNotFound)
-            {// there can only be one so if the other one was KErrNotFound, this must be it
+            {
+                // there can only be one so if the other one was KErrNotFound, this must be it
                 index = iCommandList->HighestPriorityCommand(MMIDCommand::EItem);
             }
             cmd = iCommandList->At(index);
@@ -2510,6 +2608,47 @@ TBool CMIDDisplayable::ShowOkOptionsMenuL()
     return EFalse;
 }
 
+// ---------------------------------------------------------------------------
+// See how many commands eligible for the screen or help - optins menu we have.
+// If we have only one command call ProcessCommandL. Otherwise show
+// options menu. In these two cases return ETrue. If zero or negative
+// commands do nothing and return EFalse.
+// ---------------------------------------------------------------------------
+TBool CMIDDisplayable::ShowScreenOrHelpOptionsMenuL()
+{
+    TBool ret = EFalse;
+    TInt numOkCommands = NumCommandsForOkOptionsMenu();
+    TInt numScreenOrHelpCommands = NumCommandsForScreenOrHelpOptionsMenu();
+    TInt screenOrHelpCmdIndex = GetHighestPriorityScreenOrHelpCommand();
+
+    // There is no OK or ITEM command defined on form
+    // There are SCREEN or HELP commands
+    if (iCommandList && screenOrHelpCmdIndex != KErrNotFound && numOkCommands == 0)
+    {
+        CMIDCommand *command = NULL;
+        if (iCommandList->IsValidIndex(screenOrHelpCmdIndex))
+        {
+            command = iCommandList->At(screenOrHelpCmdIndex).iCommand;
+        }
+
+        if (command && (command->CommandType() == MMIDCommand::EScreen ||
+                        command->CommandType() == MMIDCommand::EHelp) && iMenuHandler)
+        {
+            if (numScreenOrHelpCommands > 1)
+            {
+                iMenuHandler->ShowMenuL(CMIDMenuHandler::EOptionsMenu);
+                ret = ETrue;
+            }
+            else if (numScreenOrHelpCommands == 1)
+            {
+                ProcessCommandL(iCommandList->CommandOffset());
+                ret = ETrue;
+            }
+        }
+    }
+
+    return ret;
+}
 
 // ---------------------------------------------------------------------------
 // Return the number of commands that can be displayed in the ok-options menu.
@@ -2572,6 +2711,47 @@ TInt CMIDDisplayable::NumCommandsForOkOptionsMenu() const
 }
 
 // ---------------------------------------------------------------------------
+// Return the number of commands that can be displayed in the screen or help - options menu.
+// Form item screen or help commands are ignored
+//
+// TextBox/TextField device-provided commands:
+// - "Fetch number"
+// - "Call"
+// - "Fetch e-mail address"
+// are exception. Those are visible ONLY in Options menu so here they are
+// removed from context menu commands count.
+// ---------------------------------------------------------------------------
+TInt CMIDDisplayable::NumCommandsForScreenOrHelpOptionsMenu() const
+{
+    TInt ret = 0;
+
+    // Add SCREEN and HELP commands from form
+    if (iCommandList)
+    {
+        TInt numCommands = iCommandList->Count();
+        for (TInt i = 0; i < numCommands; i++)
+        {
+            const CMIDCommand& command = *(iCommandList->At(i).iCommand);
+
+            if (((command.CommandType() == MMIDCommand::EScreen) ||
+                    (command.CommandType() == MMIDCommand::EHelp)) &&
+                    (command.Id() != CMIDEdwinUtils::EMenuCommandFetchPhoneNumber) &&
+                    (command.Id() != CMIDEdwinUtils::EMenuCommandFetchEmailAddress) &&
+                    (command.Id() != CMIDEdwinUtils::EMenuCommandCreatePhoneCall))
+            {
+                TBool selectCommand = (&command == iSelectCommand);
+                if (selectCommand && !iSelectCommandEnabled)
+                {
+                    continue;
+                }
+                ret++;
+            }
+        }
+    }
+    return ret;
+}
+
+// ---------------------------------------------------------------------------
 // Returns a pointer to the command in the iCommandList with the specified
 // ID number. If such command is not found, returns NULL.
 // ---------------------------------------------------------------------------
@@ -2603,7 +2783,7 @@ CMIDCommand* CMIDDisplayable::FindCommandWithId(TInt aCommandId) const
 // If there are item commands, there are placed first. Form commands of ITEM
 // and OK type are then included always.
 // ---------------------------------------------------------------------------
-void CMIDDisplayable::GetOkOptionsMenuCommands(RPointerArray<CMIDCommand>& aCommands) const
+void CMIDDisplayable::GetOkOptionsMenuCommandsL(RPointerArray<CMIDCommand>& aCommands) const
 {
     aCommands.Reset();
     if (iItemCommandList && iItemCommandList->Count() > 0)
@@ -2615,7 +2795,7 @@ void CMIDDisplayable::GetOkOptionsMenuCommands(RPointerArray<CMIDCommand>& aComm
                     (command->Id() != CMIDEdwinUtils::EMenuCommandFetchEmailAddress) &&
                     (command->Id() != CMIDEdwinUtils::EMenuCommandCreatePhoneCall))
             {
-                aCommands.Append(command);
+                aCommands.AppendL(command);
             }
         }
     }
@@ -2635,7 +2815,7 @@ void CMIDDisplayable::GetOkOptionsMenuCommands(RPointerArray<CMIDCommand>& aComm
             {
                 continue;
             }
-            aCommands.Append(command);
+            aCommands.AppendL(command);
         }
     }
 }
@@ -2725,7 +2905,7 @@ TBool CMIDDisplayable::TryDetectLongTapL(const TPointerEvent& aPointerEvent)
     if (NumCommandsForOkOptionsMenu() > 0)
 #else
     if (NumCommandsForOkOptionsMenu() > 1)
-#endif // RD_JAVA_S60_RELEASE_9_2        
+#endif // RD_JAVA_S60_RELEASE_9_2
     {
         iLongTapDetector->PointerEventL(aPointerEvent);
     }
@@ -2758,7 +2938,7 @@ void CMIDDisplayable::HandleLongTapEventL(const TPoint& /*aPenEventLocation*/,
         PopulateMenuItemsWithListL(CMIDMenuHandler::EPopUpMenu, menuItems, iItemCommandList, EFalse);
 #else
         PopulateMenuItemsWithListL(CMIDMenuHandler::EOkMenu, menuItems, iItemCommandList, EFalse);
-#endif // RD_JAVA_S60_RELEASE_9_2        
+#endif // RD_JAVA_S60_RELEASE_9_2
     }
 
     // Add form commands always
@@ -2766,12 +2946,12 @@ void CMIDDisplayable::HandleLongTapEventL(const TPoint& /*aPenEventLocation*/,
     PopulateMenuItemsWithListL(CMIDMenuHandler::EPopUpMenu, menuItems, iCommandList, EFalse);
 #else
     PopulateMenuItemsWithListL(CMIDMenuHandler::EOkMenu, menuItems, iCommandList, EFalse);
-#endif // RD_JAVA_S60_RELEASE_9_2    
+#endif // RD_JAVA_S60_RELEASE_9_2
 #ifdef RD_JAVA_S60_RELEASE_9_2
     if (menuItems.Count() > 0)
 #else
     if (menuItems.Count() > 1)
-#endif // RD_JAVA_S60_RELEASE_9_2        
+#endif // RD_JAVA_S60_RELEASE_9_2
     {
         // recreate stylus popup menu because it does not have method
         // for clearing the menu items
@@ -2975,8 +3155,15 @@ void CMIDDisplayable::AddDirectContentArea(const TRect& aRect)
                      rect, TIdentityRelation< TDirectContentsRect >(CMIDDisplayable::MatchDirectContentsRects));
     if (index == KErrNotFound)
     {
-        iDirectContentsRects.Append(rect);
-        UpdateDirectContentsRegion();
+        TInt err = iDirectContentsRects.Append(rect);
+        if (KErrNone == err)
+        {
+            UpdateDirectContentsRegion();
+        }
+        else
+        {
+            DEBUG_INT("CMIDDisplayable::AddDirectContentArea - RArray append error %d", err);
+        }
     }
     else
     {
@@ -3161,11 +3348,9 @@ void CMIDDisplayable::RenewFullscreenCanvasLabelCacheL()
 
 void CMIDDisplayable::HandleCanvasForeground(TBool aForeground)
 {
-    if (iContent && iContentControl &&
-            (iContent->Type() == MMIDComponent::ECanvas ||
-             iContent->Type() == MMIDComponent::EGameCanvas))
+    CMIDCanvas* canvas = GetContentCanvas();
+    if (canvas)
     {
-        CMIDCanvas* canvas = static_cast<CMIDCanvas*>(iContentControl);
         canvas->HandleForeground(aForeground);
     }
 }
@@ -3225,6 +3410,18 @@ void CMIDDisplayable::HideIndicators()
     HideIndicator(pane, EEikStatusPaneUidDigitalClock);
 }
 
+CMIDCanvas* CMIDDisplayable::GetContentCanvas()
+{
+    CMIDCanvas* ret = NULL;
+    if (iContent && iContentControl &&
+            (iContent->Type() == MMIDComponent::ECanvas ||
+             iContent->Type() == MMIDComponent::EGameCanvas))
+    {
+        ret = static_cast<CMIDCanvas*>(iContentControl);
+    }
+    return ret;
+}
+
 CPropertyWatch* CPropertyWatch::NewL(MMIDDisplayable* aDisplayable)
 {
     DEBUG("+ CPropertyWatch::NewL");
@@ -3237,6 +3434,48 @@ CPropertyWatch* CPropertyWatch::NewL(MMIDDisplayable* aDisplayable)
     DEBUG("- CPropertyWatch::NewL");
 
     return self;
+}
+
+void CMIDDisplayable::FixOrientation()
+{
+    TBool tmpRestoreOrientation;
+
+    if (!iAvkonAppUi)
+    {
+        return;
+    }
+
+    iOldUiOrientation = iAvkonAppUi->Orientation();
+    tmpRestoreOrientation = (iOldUiOrientation == CAknAppUiBase::EAppUiOrientationUnspecified) ? ETrue : EFalse;
+
+    // Fix the orientation when was set to unspecified only
+    if (tmpRestoreOrientation)
+    {
+        TRAP_IGNORE(iAvkonAppUi->SetOrientationL(CAknAppUiBase::EAppUiOrientationLandscape));
+
+        iRestoreOrientation = ETrue;
+        ++iReleaseCnt;
+    }
+
+}
+
+void CMIDDisplayable::ReleaseOrientation()
+{
+    if (!iAvkonAppUi)
+    {
+        return;
+    }
+
+    if (iReleaseCnt > 0)
+    {
+        --iReleaseCnt;
+        if (iReleaseCnt == 0 && iRestoreOrientation)
+        {
+            TRAP_IGNORE(iAvkonAppUi->SetOrientationL(iOldUiOrientation));
+            iRestoreOrientation = EFalse;
+        }
+
+    }
 }
 
 CPropertyWatch::CPropertyWatch()

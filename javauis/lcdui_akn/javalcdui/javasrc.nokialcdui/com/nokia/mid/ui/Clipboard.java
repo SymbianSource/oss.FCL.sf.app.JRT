@@ -66,7 +66,9 @@ public abstract class Clipboard
      * Copies characters from the system clipboard.
      * <P>
      * Returns empty string when there is nothing in the system clipboard.
-     *
+     * <P>
+     * This method is not supported on S40 platform, returns <code>null</code>.
+     * <P>
      * @return the content in clipboard
      */
     public static String copyFromClipboard()

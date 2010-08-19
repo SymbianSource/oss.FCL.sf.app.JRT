@@ -22,7 +22,6 @@ COMPONENTS += \
 	m2g_akn/build \
 	m3g_akn/build \
 	mmapi_akn/build \
-	nokiasound_akn/build \
 	remconobserver_akn/build \
 	runtimeui_akn/build \
 	softnotification_akn/build

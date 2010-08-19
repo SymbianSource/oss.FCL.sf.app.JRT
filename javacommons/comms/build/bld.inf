@@ -19,5 +19,5 @@ PRJ_PLATFORMS
 default
 
 PRJ_MMPFILES  
-comms_0x2002DCA6.mmp 
+javacomms_0x2002DCA6.mmp 
 #include "exports.inf" 

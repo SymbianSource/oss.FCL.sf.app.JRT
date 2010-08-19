@@ -148,9 +148,6 @@ CSwtCaptionedControl::~CSwtCaptionedControl()
         iDefaultFont->RemoveRef();
         iDefaultFont = NULL;
     }
-
-    // Not Own
-    iForegroundColor = NULL;
 }
 
 // ---------------------------------------------------------------------------
@@ -175,9 +172,10 @@ void CSwtCaptionedControl::ConstructL()
     iControl->SetFocusing(ETrue);
     iControl->ActivateL();
 
-    SetDefaultForegroundL();
     SetBackground(this);    // Back will be drawn by ASwtControlBase::Draw
     ActivateL();
+
+    UpdateTextColor();
 }
 
 // ---------------------------------------------------------------------------
@@ -228,20 +226,6 @@ inline void CSwtCaptionedControl::SetChild(MSwtControl* aChild)
 {
     ASSERT(iControl);
     static_cast<CControlProxy*>(iControl)->iChild = aChild;
-}
-
-// ---------------------------------------------------------------------------
-// CSwtCaptionedControl::SetEmphasis
-// ---------------------------------------------------------------------------
-//
-void CSwtCaptionedControl::SetEmphasis(TDrawNow /*aDrawNow*/)
-{
-    // If foreground color has not been set then update according to focus
-    if (!iForegroundColor)
-    {
-        TRAP_IGNORE(SetDefaultForegroundL());
-    }
-    Redraw();
 }
 
 // ---------------------------------------------------------------------------
@@ -310,29 +294,6 @@ void CSwtCaptionedControl::DoSetSize(const TSize& aSize)
     // Set our rect to its real value
     iPosition = realPosition;
     CEikCaptionedControl::SetSizeWithoutNotification(realSizeToSet);
-}
-
-// ---------------------------------------------------------------------------
-// CSwtCaptionedControl::SetDefaultForegroundL
-// ---------------------------------------------------------------------------
-//
-void CSwtCaptionedControl::SetDefaultForegroundL()
-{
-    TRgb defaultColor;
-    TAknsQsnTextColorsIndex colorIndex;
-    if (iDisplay.UiUtils().NaviKeyInput() && IsFocusedOrChildIsFocused())
-    {
-        colorIndex = EAknsCIQsnTextColorsCG10;
-    }
-    else
-    {
-        colorIndex = EAknsCIQsnTextColorsCG6;
-    }
-    if (AknsUtils::GetCachedColor(AknsUtils::SkinInstance(), defaultColor,
-                                  KAknsIIDQsnTextColors, colorIndex) == KErrNone)
-    {
-        OverrideColorL(EColorLabelText, defaultColor);
-    }
 }
 
 // ---------------------------------------------------------------------------
@@ -694,14 +655,6 @@ void CSwtCaptionedControl::HandlePointerEventL(const TPointerEvent& aPointerEven
 //
 void CSwtCaptionedControl::SwtHandleResourceChangeL(TInt aType)
 {
-    if (aType == KAknsMessageSkinChange || aType == KEikDynamicLayoutVariantSwitch)
-    {
-        if (!iForegroundColor)
-        {
-            SetDefaultForegroundL();
-        }
-    }
-
     CEikCaptionedControl::HandleResourceChange(aType);
 
     CCoeControl* coeChild = CoeChild();
@@ -751,6 +704,11 @@ void CSwtCaptionedControl::SwtHandleResourceChangeL(TInt aType)
                 }
             }
         }
+
+        if (aType == KAknsMessageSkinChange)
+        {
+            UpdateTextColor();
+        }
     }
 }
 
@@ -762,13 +720,62 @@ void CSwtCaptionedControl::SwtHandleResourceChangeL(TInt aType)
 void CSwtCaptionedControl::SetForegroundL(const MSwtColor* aColor)
 {
     ASwtControlBase::DoSetForegroundL(aColor);
-    SetColorL(EColorLabelText, aColor);
-    if (!aColor)
-    {
-        SetDefaultForegroundL();
-    }
-    iForegroundColor = aColor;
+    iCustomFg = aColor;
+    UpdateTextColor();
     Redraw();
+}
+
+// ---------------------------------------------------------------------------
+// CSwtCaptionedControl::UpdateTextColor
+// From MSwtControl
+// ---------------------------------------------------------------------------
+//
+void CSwtCaptionedControl::UpdateTextColor()
+{
+    TRgb color(0);
+    TInt err(KErrNone);
+
+    if (HasHighlight())
+    {
+        // Highlighted foreground color, overrides all others.
+        err = AknsUtils::GetCachedColor(AknsUtils::SkinInstance()
+                                        , color
+                                        , KAknsIIDQsnTextColors
+                                        , KHighlightedTextColor);
+    }
+    else if (iCustomFg)
+    {
+        // Custom foreground color, overrides the default.
+        color = iCustomFg->RgbValue();
+    }
+    else
+    {
+        // Default foreground color.
+        err = AknsUtils::GetCachedColor(AknsUtils::SkinInstance()
+                                        , color
+                                        , KAknsIIDQsnTextColors
+                                        , KNonHighlightedTextColor);
+    }
+
+    if (err == KErrNone)
+    {
+        TRAP_IGNORE(OverrideColorL(EColorLabelText, color));
+    }
+}
+
+// ---------------------------------------------------------------------------
+// CSwtCaptionedControl::HandleHighlightChange
+// From MSwtControl
+// ---------------------------------------------------------------------------
+//
+void CSwtCaptionedControl::HandleHighlightChange()
+{
+    UpdateTextColor();
+    MSwtControl* child = Child();
+    if (child)
+    {
+        child->HandleHighlightChange();
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -779,7 +786,6 @@ void CSwtCaptionedControl::SetForegroundL(const MSwtColor* aColor)
 void CSwtCaptionedControl::FocusChanged(TDrawNow aDrawNow)
 {
     HandleFocusChanged(aDrawNow);
-    SetEmphasis(aDrawNow);
 }
 
 // ---------------------------------------------------------------------------
@@ -1630,7 +1636,6 @@ const RSwtControlArray* CSwtCaptionedControl::Children() const
 //
 void CSwtCaptionedControl::ChildFocusChanged(MSwtControl& aControl)
 {
-    SetEmphasis(ENoDrawNow);
     GetParent()->ChildFocusChanged(aControl);
 }
 
@@ -1816,7 +1821,6 @@ void CSwtCaptionedControl::SetTextL(const TDesC& aString)
         iCaption->SetMopParent(this); // Absolutely necessary
         iCaption->MakeVisible(IsVisible());
         iCaption->SetDimmed(IsDimmed());
-        SetEmphasis(ENoDrawNow);
         if (AknLayoutUtils::LayoutMirrored())
         {
             iCaption->SetAlignment(EHRightVCenter);
@@ -1841,6 +1845,8 @@ void CSwtCaptionedControl::SetTextL(const TDesC& aString)
         {
             iCaption->iMargin.iTop = captionRealFontHeight - font.HeightInPixels();
         }
+
+        UpdateTextColor();
     }
 
     // We force a call to ( private ) SizeChanged to resize the components.
@@ -1873,7 +1879,6 @@ void CSwtCaptionedControl::SetTrailingTextL(const TDesC& aString)
         iTrailer->SetMopParent(this); // Absolutely necessary
         iTrailer->MakeVisible(IsVisible());
         iTrailer->SetDimmed(IsDimmed());
-        SetEmphasis(ENoDrawNow);
         iTrailer->ActivateL();
     }
 
@@ -1890,6 +1895,8 @@ void CSwtCaptionedControl::SetTrailingTextL(const TDesC& aString)
         {
             iTrailer->iMargin.iTop = captionRealFontHeight - font.HeightInPixels();
         }
+
+        UpdateTextColor();
     }
 
     // We force a call to ( private ) SizeChanged to resize the components.

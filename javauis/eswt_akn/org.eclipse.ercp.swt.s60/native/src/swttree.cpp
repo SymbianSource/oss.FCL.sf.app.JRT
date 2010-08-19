@@ -284,8 +284,12 @@ TBool CSwtTree::IsFocusable(TInt aReason /*=KSwtFocusByApi*/) const
 
 TInt CSwtTree::FocusBackgroundPolicy() const
 {
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    return ENoFocusBackgroundInCaptionedControl;
+#else
     // Bypass CSwtComposite's focus background.
     return ASwtControlBase::FocusBackgroundPolicy();
+#endif // RD_JAVA_S60_RELEASE_9_2
 };
 
 void CSwtTree::ProcessKeyEventL(const TKeyEvent& aKeyEvent, TEventCode aType)

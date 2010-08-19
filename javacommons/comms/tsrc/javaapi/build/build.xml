@@ -27,7 +27,6 @@
   <property name="src.dir" location="../javasrc"/>
   <property name="build.dir" location="../build"/>
   <property name="classes.dir" location="${build.dir}/javabuild"/>
-  <property name="dist" location="${java.bin.root}/jsr/classes"/>
 
   <property name="commstest.jar.filename" value="commstest.jar"/>
   <property name="junit.jar.dir" location="${java.src.root}/tools/junit"/>
@@ -41,9 +40,9 @@
 
   <target name="clean" depends="init.properties">
     <delete dir="${classes.dir}"/>
-    <delete file="${dist}/${commstest.jar.filename}"/>
-    <delete file="${dist}/${junit.jar.filename}"/>
-    <delete file="${dist}/${junit.omj.jar.filename}"/>
+    <delete file="${vm.extension.directory}/${commstest.jar.filename}"/>
+    <delete file="${vm.extension.directory}/${junit.jar.filename}"/>
+    <delete file="${vm.extension.directory}/${junit.omj.jar.filename}"/>
   </target>
 
   <target name="compile.ut" depends="init.properties">
@@ -64,7 +63,7 @@
   </target>
 
   <target name="deploy.ut" depends="compile.ut">
-      <mkdir dir="${dist}"/>
+      <mkdir dir="${vm.extension.directory}"/>
       <jar destfile="${vm.extension.directory}/${commstest.jar.filename}" basedir="${classes.dir}"/>
       <copy file="${junit.jar.dir}/${junit.jar.filename}"
             tofile="${vm.extension.directory}/${junit.jar.filename}"/>

@@ -280,6 +280,19 @@ const MSwtMenu* CSwtTextExtension::GetStylusPopupControlMenu() const
 //
 void CSwtTextExtension::FetchEmailL()
 {
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    // Closing the VKB. Otherwise opened dialog will not be drawn over
+    // the whole screen. After closing dialog, VKB opens itself again
+    if (Editor().IsFocused())
+    {
+        CCoeFep* fep = iDisplay.CoeEnv()->Fep();
+        if (fep)
+        {
+            fep->HandleDestructionOfFocusedItem();
+        }
+    }
+#endif //RD_JAVA_S60_RELEASE_9_2
+
     // The dialog used to select the address doesn't work properly if there is no
     // status pane. Therefore, the status pane is temporarily made visible for
     // the duration of showing the dialog.

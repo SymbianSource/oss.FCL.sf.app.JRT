@@ -19,10 +19,6 @@ TARGET=eswt
 CONFIG += omj java stl
 CONFIG -= qt
 
-INCLUDEPATH +=  /epoc32/include/domain/applications \
-                /epoc32/include/applications \
-                /epoc32/include/domain/middleware \
-                ../inc 
 SOURCES += ../src/cswtclient.cpp \
            ../src/methodcall.cpp \
            ../src/org_eclipse_ercp_swt_expanded_internal_OS.cpp \
@@ -132,7 +128,8 @@ SOURCES += ../src/cswtclient.cpp \
            ../src/swttree.cpp \
            ../src/swtuiutils.cpp \
            ../src/swtwindowgc.cpp \
-           ../src/utils.cpp
+           ../src/utils.cpp \
+           ../src/imagescaler.cpp
 
 
          

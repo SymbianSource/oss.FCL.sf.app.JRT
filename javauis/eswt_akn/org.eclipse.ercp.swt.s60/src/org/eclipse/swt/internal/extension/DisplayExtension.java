@@ -15,42 +15,41 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.symbian.OS;
 import org.eclipse.swt.widgets.Display;
 
-public final class DisplayExtension extends Display
+public final class DisplayExtension extends Display 
 {
-
     /* Image types, same values as MIDP */
     public static final int LIST_ELEMENT = 1;
     public static final int CHOICE_GROUP_ELEMENT = 2;
     public static final int ALERT = 3;
 
-    public DisplayExtension()
+    public DisplayExtension() 
     {
         super();
     }
 
     /**
      * Determine the best width for the given image type.
+     * 
      * @param imageType
      * @return Best height or -1 if invalid image type given.
      */
-    public int getBestImageWidth(int imageType)
+    public static int getBestImageWidth(int imageType) 
     {
-        checkDevice();
         return getBestImageSize(imageType).x;
     }
 
     /**
      * Determine the best height for the given image type.
+     * 
      * @param imageType
      * @return Best height or -1 if invalid image type given.
      */
-    public int getBestImageHeight(int imageType)
+    public static int getBestImageHeight(int imageType) 
     {
-        checkDevice();
         return getBestImageSize(imageType).y;
     }
 
-    private Point getBestImageSize(int imageType)
+    private static Point getBestImageSize(int imageType) 
     {
         return OS.DisplayExtension_getBestImageSize(imageType);
     }

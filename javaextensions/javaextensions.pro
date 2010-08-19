@@ -15,7 +15,7 @@
 #
 TEMPLATE = subdirs
 SUBDIRS += iapinfo/build/javaiapinfo.pro 
-SUBDIRS += mobinfo/build/mobinfo.pro 
+SUBDIRS += mobinfo/build/javamobinfo.pro 
 SUBDIRS += comm/build/javacomm.pro 
 SUBDIRS += globalindicators/build/javaglobalindicators.pro 
 SUBDIRS += webservices/build/javawebservices.pro 

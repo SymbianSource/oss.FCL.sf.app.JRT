@@ -59,6 +59,7 @@ public: // Methods derived from MMMADisplay
     TBool IsVisible();
     TBool IsFullScreen();
     virtual void SetForeground(TBool aIsForeground, TBool UseEventServer);
+    virtual void FixUIOrientation(TBool aFix);
 
     /**
      * Gets notification that there is container to draw assigned
@@ -90,6 +91,7 @@ public: // Methods derived from MMMADisplay
     virtual void UIGetCallback(
         MUiEventConsumer& aConsumer,
         TInt aCallbackId);
+
 public: // Methods derived from MDirectContent
     /**
      * Used to obtain RWindow rect

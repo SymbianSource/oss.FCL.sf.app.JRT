@@ -357,13 +357,13 @@ void CMIDTextEditor::SetParentL(
             // It sets edwin variables necessary for correct clipping.
             iTextEdwin->SetOnScreenCanvasRect(iUtils->GetOnScreenCanvasRect());
             iTextEdwin->SetScaling(IsScalingOn());
-    
+
             // It sets indicator variables necessary for correct clipping.
             iEditingStateIndicator->SetScalingOn(IsScalingOn());
             iEditingStateIndicator->SetCanvasRect(iUtils->GetOnScreenCanvasRect());
         }
     }
-    
+
     DEBUG("CMIDTextEditor::SetParentL -");
 }
 
@@ -614,9 +614,9 @@ void CMIDTextEditor::SetFocusStateL(TBool aFocusState)
             // Remove the selection at this point. The selection can be
             // set again with the API.
             SetCursorPositionL(iTextEdwin->CursorPos());
-            
+
             if (iEditingStateIndicator->EnabledState() ==
-                             CMIDEditingStateIndicator::EIndicatorStateRelative)
+                    CMIDEditingStateIndicator::EIndicatorStateRelative)
             {
                 // Enable the custom indicators as in Avkon if not controlled
                 // by the client application
@@ -1429,7 +1429,14 @@ void CMIDTextEditor::SetFontL(MMIDFont* aFont)
         TInt newEditorWindowHeight = iTextEdwin->EditorWindowHeight();
         if (size.iHeight != newEditorWindowHeight)
         {
-            SetEditorSize(size.iWidth, newEditorWindowHeight);
+            if (!IsScalingOn())
+            {
+                SetEditorSize(size.iWidth, newEditorWindowHeight);
+            }
+            else if (iUtils)
+            {
+                SetEditorSize(size.iWidth, iUtils->DoDescaling(newEditorWindowHeight, CMIDUtils::EVertical));
+            }
         }
         // SetEditorSize method resets the flag, make sure it remains true
         // here.
@@ -2187,6 +2194,17 @@ void CMIDTextEditor::HandleResourceChange(TInt aType)
     }
 }
 
+void CMIDTextEditor::HandleForeground(TBool aForeground)
+{
+    // If Canvas goes to foreground and scaling is on,
+    // then we resize a TextEditor.
+    if (aForeground && iUtils && iComponentContainer && iUtils->IsScalingEnabled() &&
+            iComponentContainer->IsFullScreen())
+    {
+        HandleChangeForScaling(EForegroundGained);
+    }
+}
+
 void CMIDTextEditor::HandleChangeForScaling(TChange aChange)
 {
     // It is needed to store iRowCountActive, because SetEditorSize resets it.
@@ -2207,7 +2225,9 @@ void CMIDTextEditor::HandleChangeForScaling(TChange aChange)
     // restoring of iRowCountActive
     iRowCountActive = rowCountActive;
 
-    if ((aChange == EFullscreenChange) || (aChange == EResolutionChange))
+    if (aChange == EFullscreenChange
+            || aChange == EResolutionChange
+            || aChange == EForegroundGained)
     {
         if (iUtils)
         {
@@ -2224,6 +2244,11 @@ void CMIDTextEditor::HandleChangeForScaling(TChange aChange)
             iTextEdwin->SetScaling(IsScalingOn());
             iEditingStateIndicator->SetScalingOn(IsScalingOn());
         }
+    }
+
+    if (aChange == EForegroundGained)
+    {
+        iEditingStateIndicator->MakeVisible(iEditingStateIndicator->EnabledState());
     }
 
 #ifdef RD_JAVA_S60_RELEASE_9_2

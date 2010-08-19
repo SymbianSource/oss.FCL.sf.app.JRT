@@ -374,12 +374,32 @@ public class ApplicationRegistratorTest extends TestCase implements InstallerMai
 
             appReg.startSession();
             groupName = appReg.getGroupName(uid);
-            assertTrue(
-                "The group name was not VeryVeryLongGrou, it was " + groupName,
-                "VeryVeryLongGrou".equals(groupName));
+            if (SifRegistrator.getSifMode() > 0)
+            {
+                // When USIF is in use ApplicationRegistrator should not
+                // have registered anything.
+                assertTrue(
+                    "The group name was not empty, it was " + groupName,
+                    "".equals(groupName));
+            }
+            else
+            {
+                assertTrue(
+                    "The group name was not VeryVeryLongGrou, it was " + groupName,
+                    "VeryVeryLongGrou".equals(groupName));
+            }
 
             uidInUse = appReg.uidInUse(uid);
-            assertTrue("uidInUse returned false value", true == uidInUse);
+            if (SifRegistrator.getSifMode() > 0)
+            {
+                // When USIF is in use ApplicationRegistrator should not
+                // have registered anything.
+                assertTrue("uidInUse returned true value", false == uidInUse);
+            }
+            else
+            {
+                assertTrue("uidInUse returned false value", true == uidInUse);
+            }
 
             appReg.closeSession();
         }
@@ -582,7 +602,16 @@ public class ApplicationRegistratorTest extends TestCase implements InstallerMai
                 "".equals(groupName));
 
             uidInUse = appReg.uidInUse(uid);
-            assertTrue("uidInUse returned false value", true == uidInUse);
+            if (SifRegistrator.getSifMode() > 0)
+            {
+                // When USIF is in use ApplicationRegistrator should not
+                // have registered anything.
+                assertTrue("uidInUse returned true value", false == uidInUse);
+            }
+            else
+            {
+                assertTrue("uidInUse returned false value", true == uidInUse);
+            }
 
             appReg.closeSession();
         }
@@ -703,12 +732,32 @@ public class ApplicationRegistratorTest extends TestCase implements InstallerMai
 
             appReg.startSession();
             groupName = appReg.getGroupName(uid);
-            assertTrue(
-                "The group name was not Suite, it was " + groupName,
-                "Suite".equals(groupName));
+            if (SifRegistrator.getSifMode() > 0)
+            {
+                // When USIF is in use ApplicationRegistrator should not
+                // have registered anything.
+                assertTrue(
+                    "The group name was not empty, it was " + groupName,
+                    "".equals(groupName));
+            }
+            else
+            {
+                assertTrue(
+                    "The group name was not Suite, it was " + groupName,
+                    "Suite".equals(groupName));
+            }
 
             uidInUse = appReg.uidInUse(uid);
-            assertTrue("uidInUse returned false value", true == uidInUse);
+            if (SifRegistrator.getSifMode() > 0)
+            {
+                // When USIF is in use ApplicationRegistrator should not
+                // have registered anything.
+                assertTrue("uidInUse returned true value", false == uidInUse);
+            }
+            else
+            {
+                assertTrue("uidInUse returned false value", true == uidInUse);
+            }
 
             appReg.closeSession();
         }

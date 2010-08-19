@@ -1,0 +1,50 @@
+/*
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Java notifier ecom plugin used to access the UI env 
+*               from non UI context.
+*/
+
+
+#include <platform_paths.hrh>
+
+
+TARGET          javaiconsizenotifplugin.dll
+TARGETTYPE      PLUGIN
+UID             0x10009D8D 0x101FD689
+
+CAPABILITY      CAP_ECOM_PLUGIN
+VENDORID        VID_DEFAULT
+
+PAGED
+
+APP_LAYER_SYSTEMINCLUDE
+
+START RESOURCE  ../data/javaiconsizenotifplugin.rss
+TARGET          javaiconsizenotifplugin.rsc
+END
+
+SOURCEPATH      ../src
+SOURCE          iconsizenotifier.cpp
+
+USERINCLUDE     .
+USERINCLUDE     ../inc
+USERINCLUDE     ../../../../inc
+
+LIBRARY         euser.lib
+LIBRARY         eiksrv.lib              // MEikSrvNotifierBase2
+LIBRARY         cdlengine.lib           // AknLayoutScalable_Avkon
+LIBRARY         aknlayout2scalable.lib  // TAknWindowComponentLayout
+LIBRARY         avkon.lib               // TAknLayoutRect
+LIBRARY         eikcore.lib             // TAknLayoutRect
+

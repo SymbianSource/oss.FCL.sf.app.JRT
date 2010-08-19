@@ -392,6 +392,12 @@ private:     // new functions
      * @since S60 9.1
      */
     void ReadCertificatesInfoL();
+    
+    /**
+     * Read the app's icon and store it in iAppBitmap & iAppMask.
+     * If not found or if error occured, iAppBitmap will remain NULL.
+     */
+    void GetAppIconL(TUid aMidletUid);
 
 
 private:    // data

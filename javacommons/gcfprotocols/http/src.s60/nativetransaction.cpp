@@ -20,7 +20,7 @@
 #include <centralrepository.h>
 
 #ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS
-#include <CUserAgent.h>
+#include <cuseragent.h>
 #else
 #include <cuseragent.h>
 #endif
@@ -220,7 +220,6 @@ JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_http_HttpConnectionNative__1get
 
 jstring GetUserAgentL(JNIEnv *aJni, jboolean aMidpRuntime)
 {
-
     jstring header = NULL;
 
     if (aMidpRuntime == false)
@@ -291,6 +290,6 @@ jstring GetUserAgentL(JNIEnv *aJni, jboolean aMidpRuntime)
 
         CleanupStack::PopAndDestroy(repository);
     }
-
+    LOG(ESOCKET,EInfo,"GetUserAgentL() -");
     return header;
 }

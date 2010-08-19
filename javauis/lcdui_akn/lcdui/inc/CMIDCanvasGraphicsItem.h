@@ -74,7 +74,6 @@ public: // Constructors and destructor
      */
     virtual ~CMIDCanvasGraphicsItem();
 
-
 public: // From MMIDCustomComponent
 
     /**
@@ -162,6 +161,15 @@ public: // From MMIDCustomComponent
      * @since S60 5.0
      */
     void HandleResourceChange(TInt aType);
+
+    /**
+     * Handles switching from foreground to background and vice versa.
+     *
+     * @param aForeground Flag if it switches to foreground or to backgound.
+     *
+     * @since S60 5.0
+     */
+    void HandleForeground(TBool aForeground);
 
 public: // From MMIDScalable
 
@@ -269,6 +277,14 @@ public: // From MMIDComponent
      * @since S60 5.0
      */
     void Dispose();
+public: // Own methods
+
+    /**
+     * Removes this component from component container 
+     * when its painter being disposed first (during finalization)
+     */
+    void CMIDCanvasGraphicsItem::DeregisterCanvasGraphicsItem();
+
 
 private: // own methods
     /**

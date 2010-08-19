@@ -31,8 +31,13 @@ VENDORID                VID_DEFAULT
 
 PAGED
 
-USERINCLUDE ../javapackagelookup/inc
-USERINCLUDE ../help/inc
+APP_LAYER_SYSTEMINCLUDE
+
+USERINCLUDE     ../inc
+USERINCLUDE     ../../../../inc
+USERINCLUDE     ../javapackagelookup/inc
+USERINCLUDE     ../help/inc
+USERINCLUDE 	../../../javainstaller/iconsizenotifplugin/inc
 
 SOURCEPATH  ../javapackagelookup/src
 SOURCE    jcfjadjarmatcher.cpp
@@ -66,11 +71,6 @@ TARGETPATH              /resource/java
 LANGUAGE_IDS
 END
 
-USERINCLUDE             ../inc
-
-APP_LAYER_SYSTEMINCLUDE
-SYSTEMINCLUDE           ../../../../inc
-
 LIBRARY                 bafl.lib                    // Syslibs BAFL
 LIBRARY                 appmngr2pluginapi.lib       // AppMngr2 Runtime API
 LIBRARY                 cone.lib                    // App Framework
@@ -101,6 +101,11 @@ LIBRARY                 javaconnectionmanager.lib   // ConnectionManager
 LIBRARY                 ezip.lib                    // CZipFile
 LIBRARY                 charconv.lib                // CnvUtfConverter
 LIBRARY                 hlplch.lib                  // Help
+LIBRARY                 apgrfx.lib                  // RApaLsSession
+LIBRARY                 aknicon.lib                 // CAknIcon
+LIBRARY	                fbscli.lib                  // CFbsBitmap
+LIBRARY                 cdlengine.lib               // AknLayoutScalable_Avkon
+LIBRARY                 aknlayout2scalable.lib      // TAknWindowComponentLayout
 
 DEBUGLIBRARY            flogger.lib                 // File logger API
 

@@ -692,6 +692,22 @@ void CSwtComposite::FocusChanged(TDrawNow aDrawNow)
 
 void CSwtComposite::PositionChanged()
 {
+    if (IsShell())
+    {
+        const TInt childCount = iChildren.Count();
+        for (TInt i = 0; i < childCount; ++i)
+        {
+            MSwtControl* child = iChildren[i];
+            // We reset the position of child control in order to
+            // correctly display scrollbar's background
+            if (!child->IsShell() && child->ScrollableInterface())
+            {
+                CCoeControl& coeChild = child->CoeControl();
+                TPoint pos(coeChild.Position());
+                coeChild.SetPosition(pos);
+            }
+        }
+    }
     RectChanged();
     HandlePositionChanged();
 }
@@ -973,6 +989,20 @@ void CSwtComposite::SetWidgetSize(const TSize& aSize)
     else
     {
         ASwtScrollableBase::SetWidgetSize(aSize);
+    }
+}
+
+void CSwtComposite::HandleHighlightChange()
+{
+    TInt count = iChildren.Count();
+
+    for (TInt i = 0; i < count; ++i)
+    {
+        MSwtControl* child = iChildren[i];
+        if (!child->IsShell())
+        {
+            child->HandleHighlightChange();
+        }
     }
 }
 
@@ -1419,7 +1449,7 @@ TInt CSwtComposite::ScrolledCompositePysicsAction() const
 
 // From MAknPhysicsObserver
 void CSwtComposite::ViewPositionChanged(const TPoint& aNewPosition,
-                                        TBool aDrawNow, TUint /*aFlags*/)
+                                        TBool /*aDrawNow*/, TUint /*aFlags*/)
 {
     if (!iScrlCompContent || iPhysicsViewPos == aNewPosition)
     {
@@ -1468,24 +1498,24 @@ void CSwtComposite::ViewPositionChanged(const TPoint& aNewPosition,
     coeCtrl.SetPosition(TPoint(x, y));
     iPhysicsViewPos = aNewPosition;
 
-    if (aDrawNow)
+    if (iVScroll)
     {
-        if (iVScroll)
-        {
-            TInt pos = viewRect.iTl.iY - y; // composite coords
-            pos = Min(pos, iVScroll->GetMaximum());
-            pos = Max(pos, 0);
-            TRAP_IGNORE(iVScroll->DoSetThumbPositionL(pos));
-        }
-        if (iHScroll)
-        {
-            TInt pos = viewRect.iTl.iX - x; // composite coords
-            pos = Min(pos, iHScroll->GetMaximum());
-            pos = Max(pos, 0);
-            TRAP_IGNORE(iHScroll->DoSetThumbPositionL(pos));
-        }
-        PaintUrgently();
+        TInt pos = viewRect.iTl.iY - y; // composite coords
+        pos = Min(pos, iVScroll->GetMaximum());
+        pos = Max(pos, 0);
+        TRAP_IGNORE(iVScroll->DoSetThumbPositionL(pos));
     }
+    if (iHScroll)
+    {
+        TInt pos = viewRect.iTl.iX - x; // composite coords
+        pos = Min(pos, iHScroll->GetMaximum());
+        pos = Max(pos, 0);
+        TRAP_IGNORE(iHScroll->DoSetThumbPositionL(pos));
+    }
+    // We have to always repaint the composite, since after setPosition
+    // some child controls might redraw themselves. This can cause distortions
+    // while panning the composite.
+    PaintUrgently();
 
 #ifdef RD_JAVA_ADVANCED_TACTILE_FEEDBACK
     // Flicking or panning the composite content should give the feedback

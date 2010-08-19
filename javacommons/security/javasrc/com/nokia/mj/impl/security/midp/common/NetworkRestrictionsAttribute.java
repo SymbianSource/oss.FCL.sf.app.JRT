@@ -25,9 +25,8 @@ import com.nokia.mj.impl.utils.OtaStatusCode;
 
 /**
  * Specifies the allowed MCC (3 digits) and MNC (2 or 3 digits) tuples,
- * separated by a hyphen (Unicode U+002D), to limit the execution to certain
- * networks for any MIDlets within a MIDlet suite bound to the Operator
- * Protection Domain
+ * separated by a space. The tuples are used to limit the execution of 
+ * Operator signed MIDlets
  */
 public class NetworkRestrictionsAttribute
 {
@@ -35,7 +34,7 @@ public class NetworkRestrictionsAttribute
      * The JAR attribute holding the network restriction info
      */
     public static final String ATTRIBUTE_NAME
-    = "MIDlet-Operator-Allowed";
+    = "Nokia-MIDlet-Operator-Allowed";
 
     /* The network restrictions contained in the attribute */
     private NetworkRestriction[] restrictions;

@@ -117,14 +117,7 @@ void CSwtLabel::CreateTextL()
     SetAlignment(iStyle & KSwtAlignmentMask);
     RetrieveDefaultFontL();
     DoSetFontL(&iDefaultFont->Font());
-
-    MAknsSkinInstance* skin = AknsUtils::SkinInstance();
-    TRgb defaultColor;
-    if (AknsUtils::GetCachedColor(skin, defaultColor,
-                                  KAknsIIDQsnTextColors, EAknsCIQsnTextColorsCG6) == KErrNone)
-    {
-        iEikLabel->OverrideColorL(EColorLabelText, defaultColor);
-    }
+    UpdateTextColor();
 
     // Correct position of CEikLabel will be set in PositionChanged()
 }
@@ -835,16 +828,10 @@ void CSwtLabel::SwtHandleResourceChangeL(TInt aType)
         {
             CreateSeparatorL();
         }
-        // If label foreground color has not been set then set ceiklabel to new skin default color
-        if ((!iForegroundColor) && iEikLabel)
+
+        if (aType == KAknsMessageSkinChange)
         {
-            MAknsSkinInstance* skin = AknsUtils::SkinInstance();
-            TRgb defaultColor;
-            if (AknsUtils::GetCachedColor(skin, defaultColor,
-                                          KAknsIIDQsnTextColors, EAknsCIQsnTextColorsCG6) == KErrNone)
-            {
-                iEikLabel->OverrideColorL(EColorLabelText, defaultColor);
-            }
+            UpdateTextColor();
         }
     }
     else if (aType == KEikDynamicLayoutVariantSwitch)
@@ -1227,7 +1214,60 @@ void CSwtLabel::SetFontL(const MSwtFont* aFont)
 }
 
 // ---------------------------------------------------------------------------
-// CSwtLabel::DefaultFont
+// CSwtLabel::UpdateTextColor
+// ---------------------------------------------------------------------------
+//
+void CSwtLabel::UpdateTextColor()
+{
+    // This method is used only when label has parent, that has gained focus
+    // highlight. In such case label gets focus highlight and text color
+    // has to be updated
+    if (iEikLabel)
+    {
+        TRgb color(0);
+        TInt err(KErrNone);
+
+        if (HasHighlight())
+        {
+            // Highlighted foreground color, overrides all others.
+            err = AknsUtils::GetCachedColor(AknsUtils::SkinInstance()
+                                            , color
+                                            , KAknsIIDQsnTextColors
+                                            , KHighlightedTextColor);
+        }
+        else if (iCustomFg)
+        {
+            // Custom foreground color, overrides the default.
+            color = iCustomFg->RgbValue();
+        }
+        else
+        {
+            // Default foreground color.
+            err = AknsUtils::GetCachedColor(AknsUtils::SkinInstance()
+                                            , color
+                                            , KAknsIIDQsnTextColors
+                                            , KNonHighlightedTextColor);
+        }
+
+        if (err == KErrNone)
+        {
+            TRAP_IGNORE(iEikLabel->OverrideColorL(EColorLabelText, color));
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// CSwtLabel::HandleHighlightChange
+// From MSwtControl
+// ---------------------------------------------------------------------------
+//
+void CSwtLabel::HandleHighlightChange()
+{
+    UpdateTextColor();
+}
+
+// ---------------------------------------------------------------------------
+// CSwtLabel::SetForegroundL
 // From MSwtControl
 // ---------------------------------------------------------------------------
 //
@@ -1235,20 +1275,8 @@ void CSwtLabel::SetForegroundL(const MSwtColor* aColor)
 {
     ASwtControlBase::DoSetForegroundL(aColor);
     SetColorL(EColorLabelText, aColor);
-
-    // if color is null then reset label to default color
-    if (aColor == NULL && iEikLabel != NULL)
-    {
-        MAknsSkinInstance* skin = AknsUtils::SkinInstance();
-        TRgb defaultColor;
-        if (AknsUtils::GetCachedColor(skin, defaultColor,
-                                      KAknsIIDQsnTextColors, EAknsCIQsnTextColorsCG6) == KErrNone)
-        {
-            iEikLabel->OverrideColorL(EColorLabelText, defaultColor);
-        }
-    }
-
-    iForegroundColor = aColor;
+    iCustomFg = aColor;
+    UpdateTextColor();
     Redraw();
 }
 

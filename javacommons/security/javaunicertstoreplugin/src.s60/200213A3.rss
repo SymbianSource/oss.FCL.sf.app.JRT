@@ -18,7 +18,7 @@
 
 // INCLUDES
 
-#include <registryinfov2.rh>
+#include <ecom/registryinfov2.rh>
 #include <ct/interfaceuid.hrh>
 
 // Some defines of useful values for attributes to simplify

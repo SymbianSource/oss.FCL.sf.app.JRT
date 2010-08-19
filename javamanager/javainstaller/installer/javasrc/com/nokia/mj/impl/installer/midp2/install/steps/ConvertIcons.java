@@ -258,10 +258,11 @@ public class ConvertIcons extends ExeStep
                     // the attribute MIDlet-<N>
                     iconName = newApp.getIconPath();
                 }
-                if (iconName.length() == 0)
+                if (iconName.length() == 0 || iconName.equals(suiteIconName))
                 {
-                    // No MIDlet icon defined, use already converted suite
-                    // icon if it exists
+                    // No MIDlet icon defined or MIDlet icon defined to be
+                    // the same as suite icon, use already converted suite
+                    // icon if it exists.
                     if (suiteIconFile.length() > 0)
                     {
                         // Must make separate copy of the suite icon for each

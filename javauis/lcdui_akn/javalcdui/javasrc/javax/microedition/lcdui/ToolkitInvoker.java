@@ -287,22 +287,5 @@ final class ToolkitInvoker extends com.nokia.mj.impl.rt.legacy.ToolkitInvoker
         }
         return ((Graphics)aGraphics).iHandle;
     }
-
-    /*
-     * @see com.nokia.mj.impl.rt.legacy.ToolkitInvoker#isForeground()
-     */
-    public boolean isForeground()
-    {
-        Toolkit toolkit = getCurrentToolkit();
-        if (toolkit != null)
-        {
-            Display display = toolkit.getDisplay();
-            if (display != null)
-            {
-                return display.IsForeground();
-            }
-        }
-        return false;
-    }
 }
 

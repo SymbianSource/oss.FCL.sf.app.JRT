@@ -49,7 +49,7 @@ class MMMADisplay;
 
 NONSHARABLE_CLASS(CMMACameraWindow): public CBase,
         public MMMADisplayWindow,
-        public MCameraObserver,
+        public MCameraObserver2,
         public MUiEventConsumer,
         public MDirectScreenAccess
 {
@@ -125,17 +125,11 @@ public:
     void ContainerDestroyed();
 
 
-// from base class MCameraObserver
-    void ReserveComplete(TInt aError);
-    void PowerOnComplete(TInt aError);
-    void ViewFinderFrameReady(CFbsBitmap& aFrame);
-
-    void ImageReady(CFbsBitmap* aBitmap,
-                    HBufC8* aData,
-                    TInt aError);
-
-    void FrameBufferReady(MFrameBuffer* aFrameBuffer,
-                          TInt aError);
+// from base class MCameraObserver2
+    void HandleEvent(const TECAMEvent& aEvent);
+    void ViewFinderReady(MCameraBuffer& aCameraBuffer,TInt aError);
+    void ImageBufferReady(MCameraBuffer& aCameraBuffer,TInt aError);
+    void VideoBufferReady(MCameraBuffer& aCameraBuffer,TInt aError);
 
 
 // from base class MUiEventConsumer

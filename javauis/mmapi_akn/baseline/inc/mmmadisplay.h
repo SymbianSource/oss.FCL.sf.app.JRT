@@ -182,6 +182,14 @@ public:
     virtual void UIGetCallback(
         MUiEventConsumer& aConsumer,
         TInt aCallbackId) = 0;
+
+    /**
+     * Fixes screen UI orientation.
+     *
+     * @param aFix If ETrue, the UI orientation will be fixed.
+     *                If EFalse, the standard UI orientation is restored.        
+     */
+    virtual void FixUIOrientation(TBool aFix) = 0;
 };
 
 #endif // MMMADISPLAY_H

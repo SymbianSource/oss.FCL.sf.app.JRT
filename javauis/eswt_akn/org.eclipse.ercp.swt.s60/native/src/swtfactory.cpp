@@ -459,13 +459,6 @@ MSwtTree* CSwtFactory::NewTreeL(
     return CSwtTree::NewL(aDisplay, aPeer, aParent, aStyle);
 }
 
-MSwtFontDialog* CSwtFactory::NewFontDialogL() const
-{
-    User::Leave(ESwtErrorNotImplemented);
-    return NULL;
-    //return new( ELeave ) CSwtFontDialog();
-}
-
 TRgb* CSwtFactory::RunColorDialogL(TRgb* aDefaultColor) const
 {
     return CSwtColorDialog::RunDlgL(aDefaultColor);

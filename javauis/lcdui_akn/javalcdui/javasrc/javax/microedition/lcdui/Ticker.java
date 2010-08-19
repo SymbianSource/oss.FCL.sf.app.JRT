@@ -28,6 +28,7 @@ public class Ticker
     private int iHandle;
     private String iText;
     private Finalizer mFinalizer;
+    private static final int MAX_TICKER_SIZE = 8000;    // less than 8KB
 
     public Ticker(String aText)
     {
@@ -35,6 +36,11 @@ public class Ticker
         {
             throw new NullPointerException();
         }
+        else if (aText.length() > MAX_TICKER_SIZE)
+        {
+            aText = aText.substring(0, MAX_TICKER_SIZE - 1);
+        }
+
         mFinalizer = new Finalizer()
         {
             public void finalizeImpl()
@@ -57,6 +63,11 @@ public class Ticker
         {
             throw new NullPointerException();
         }
+        else if (aText.length() > MAX_TICKER_SIZE)
+        {
+            aText = aText.substring(0, MAX_TICKER_SIZE - 1);
+        }
+
         synchronized (iToolkit)
         {
             if (iHandle <= 0) throw new RuntimeException("bad handle");

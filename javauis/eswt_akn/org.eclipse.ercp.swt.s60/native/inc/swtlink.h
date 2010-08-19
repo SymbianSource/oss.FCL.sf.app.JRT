@@ -54,7 +54,6 @@ private:
              TInt aStyle);
     void ConstructL();
     void SwtHandleResourceChangeL(TInt aType);
-    void UpdateSkinColor();
     void UpdateDefaultFontL();
     void UpdateMarginValues();
     TRect TextRect() const;
@@ -100,7 +99,10 @@ private:
                                        const TInt aCurrentLineIndex) const;
     void SetFocusedFragment();
     TBool IsRtl() const;
-
+    TRgb TextColor() const;
+    TRgb LinkColor() const;
+    TRgb LinkBgColor() const;
+    TRgb PressedLinkColor() const;
 
 // From base class CCoeControl
 public:
@@ -126,6 +128,7 @@ public:
     TSize ComputeSizeL(TInt aWHint, TInt aHHint);
     void  SetFontL(const MSwtFont* aFont);
     TBool SetSwtFocus(TInt aReason = KSwtFocusByApi);
+    TInt PressBackgroundPolicy() const;
 
 // From base class ASwtControlBase
 protected:
@@ -173,29 +176,10 @@ private:
     TInt iLineHeight;
 
     /**
-     * Plain text fragment text color.
+     * Custom foreground color used by the text and non pressed links.
+     * Not own.
      */
-    TRgb iTextColor;
-
-    /**
-     * Link fragment text color.
-     */
-    TRgb iLinkColor;
-
-    /**
-     * Link fragment text color when highlighted.
-     */
-    TRgb iHighlightedLinkColor;
-
-    /**
-     * Link fragment back highlight color.
-     */
-    TRgb iHighlightColor;
-
-    /**
-     * True if currently used text color is a color set by the Java application.
-     */
-    TBool iCustomTextColor;
+    const MSwtColor* iCustomFg;
 
     /**
      * The margins used for text positioning when drawing.
@@ -224,12 +208,6 @@ private:
      * Own.
      */
     const CSwtLinkFragmentDescriptor* iFocusedFragment;
-
-    /**
-     * True for as long as pressed by pointer.
-     * Eclipses ASwtControlBase::iPressed!
-     */
-    TBool iPressed;
 
     /**
      * True if 2 or more targets.

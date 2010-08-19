@@ -703,7 +703,6 @@ void CMIDUtils::MappingDataForKey(TKeyEvent& aEvent, TEventCode aType)
         iStickyHandler.Reset();
     }
 
-
 #ifdef RD_INTELLIGENT_TEXT_INPUT
     TPtiTextCase textCase = EPtiCaseLower;
 
@@ -731,6 +730,15 @@ void CMIDUtils::MappingDataForKey(TKeyEvent& aEvent, TEventCode aType)
 
     TBuf<KPTIEngineResultSize> mapData;
 
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    // Set keyboard type/layout just before mapping the key
+    TRAPD(err, SetPtiKeyboardL());
+    if (err != KErrNone)
+    {
+        DEBUG_INT("CMIDUtils::MappingDataForKey - SetPtiKeyboardL leaved with error = %d", err);
+    }
+#endif // RD_JAVA_S60_RELEASE_9_2
+
     iPtiEngine->MappingDataForKey(
         (TPtiKey)aEvent.iScanCode, mapData, textCase);
 
@@ -740,53 +748,35 @@ void CMIDUtils::MappingDataForKey(TKeyEvent& aEvent, TEventCode aType)
         aEvent.iCode = mapData[0];
     }
 #endif // RD_INTELLIGENT_TEXT_INPUT
-
 }
 
 void CMIDUtils::UpdatePTIEngineStatusL()
 {
-
 #ifdef RD_INTELLIGENT_TEXT_INPUT
-
     RProperty::Get(KCRUidAvkon, KAknQwertyInputModeActive, iQwertyMode);
 
-    // keyboard layout default value: 0 - No Keyboard
-    TInt keyboardLayout = 0;
     // Read keyboard layout from central repository
-    RProperty::Get(KCRUidAvkon, KAknKeyBoardLayout, keyboardLayout);
+    RProperty::Get(KCRUidAvkon, KAknKeyBoardLayout, iPtiKeyboardType);
+    SetPtiKeyboardL();
 
     TPtiEngineInputMode mode = EPtiEngineInputModeNone;
-    switch (keyboardLayout)
+    switch (iPtiKeyboardType)
     {
     case EPtiKeyboard12Key:
         mode = EPtiEngineMultitapping;
-#ifdef RD_JAVA_S60_RELEASE_5_0_IAD
-        CallToJavaPtiVariationL(keyboardLayout);
-#else
-        iPtiEngine->SetKeyboardType((TPtiKeyboardType)keyboardLayout);
-#endif
         break;
     case EPtiKeyboardQwerty4x12:
     case EPtiKeyboardQwerty4x10:
     case EPtiKeyboardQwerty3x11:
-#ifdef RD_JAVA_S60_RELEASE_5_0_IAD
-        CallToJavaPtiVariationL(keyboardLayout);
-#else
-        iPtiEngine->SetKeyboardType((TPtiKeyboardType)keyboardLayout);
-#endif
         mode = EPtiEngineQwerty;
         break;
     case EPtiKeyboardHalfQwerty:
-#ifdef RD_JAVA_S60_RELEASE_5_0_IAD
-        CallToJavaPtiVariationL(keyboardLayout);
-#else
-        iPtiEngine->SetKeyboardType((TPtiKeyboardType)keyboardLayout);
-#endif
         mode = EPtiEngineHalfQwerty;
         break;
     default:
         break;
     }
+
     // input language default value: 0 (automatic)
     TInt inputLang = 0;
     if (iRepository)
@@ -807,18 +797,15 @@ void CMIDUtils::UpdatePTIEngineStatusL()
             inputLang = ELangEnglish;
         }
     }
+
     TRAPD(err, iPtiEngine->ActivateLanguageL(inputLang, mode));
     if (KErrNone != err)
     {
         DEBUG_INT("CMIDUtils::UpdatePTIEngineStatusL - ActivateLanguageL leaved with error = %d", err);
         return;
     }
-
-
 #endif // RD_INTELLIGENT_TEXT_INPUT
-
 }
-
 
 void CMIDUtils::HandleResourceChangedL()
 {
@@ -841,6 +828,9 @@ CMIDUtils::CMIDUtils(MMIDEnv& aEnv, CMIDUIManager* aUIManager)
         : iEnv(&aEnv)
         , iUIManager(aUIManager)
         , iScalingData()
+#ifdef RD_INTELLIGENT_TEXT_INPUT
+        , iPtiKeyboardType(EPtiKeyboardNone)
+#endif // RD_INTELLIGENT_TEXT_INPUT
         , iQwertyMode(EFalse)
         , iStickyKey(0)
         , iLastScanCode(0)
@@ -865,7 +855,6 @@ CMIDUtils::~CMIDUtils()
     delete iRepository;
     iRepository = NULL;
 #endif //RD_INTELLIGENT_TEXT_INPUT
-
 }
 
 #ifdef RD_INTELLIGENT_TEXT_INPUT
@@ -1222,12 +1211,18 @@ void CMIDUtils::UpdateScalingData()
     {
         screenRect = current->GetCanvasRectFromLaf();
     }
+    else
+    {
+        // No displayable is current. It will be initialized in other time.
+        iScalingDataInitialized=EFalse;
+        return;
+    }
 
     // Traslate of rect of screen into size
     data.iScreenSize = screenRect.Size();
 
-    // Check if scaling is is on now.
-    if (iMenuHandler->IsScalingEffectiveInCurrentScreen())
+    // Check if scaling is ON now.
+    if (iMenuHandler->IsScalingEnabled())
     {
 
         // Get original and target size from JAD attributes
@@ -1625,5 +1620,19 @@ TRect CMIDUtils::GetOnScreenCanvasRect()
     TPoint canvasOrigin = TPoint(subtract.iWidth / 2, subtract.iHeight / 2);
     return TRect(canvasOrigin, iScalingData.iCanvasSize);
 }
+
+#ifdef RD_INTELLIGENT_TEXT_INPUT
+void CMIDUtils::SetPtiKeyboardL()
+{
+#ifdef RD_JAVA_S60_RELEASE_5_0_IAD
+    CallToJavaPtiVariationL(iPtiKeyboardType);
+#else
+    if (iPtiEngine)
+    {
+        iPtiEngine->SetKeyboardType((TPtiKeyboardType)iPtiKeyboardType);
+    }
+#endif // RD_JAVA_S60_RELEASE_5_0_IAD
+}
+#endif // RD_INTELLIGENT_TEXT_INPUT
 
 // End of File

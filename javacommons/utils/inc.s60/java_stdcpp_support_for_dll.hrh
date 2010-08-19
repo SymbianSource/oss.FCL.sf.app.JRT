@@ -49,9 +49,6 @@ MACRO  _WCHAR_T_DECLARED
 macro J9EPOC32
 #define J9EPOC32
 
-macro RD_JAVA_OMJ_FSERVER
-#define RD_JAVA_OMJ_FSERVER
-
 #include "build_defines.hrh"
 
 #ifdef RD_JAVA_STDCPPV5

@@ -78,7 +78,7 @@ void CAORotateImage::RemoveAllImages()
     iImages.Reset();
 }
 
-void CAORotateImage::AddImage(CFbsBitmap* aImage)
+void CAORotateImage::AddImageL(CFbsBitmap* aImage)
 {
     ASSERT(aImage);
     ASSERT(!aImage->IsCompressedInRAM());
@@ -86,11 +86,11 @@ void CAORotateImage::AddImage(CFbsBitmap* aImage)
     Cancel();
     if (!aImage->IsCompressedInRAM())
     {
-        iImages.Append(aImage);
+        iImages.AppendL(aImage);
     }
 }
 
-void CAORotateImage::AddImages(const RArray<CFbsBitmap*>& aImages)
+void CAORotateImage::AddImagesL(const RArray<CFbsBitmap*>& aImages)
 {
     Cancel();
     for (TInt i = 0; i < aImages.Count(); i++)
@@ -101,7 +101,7 @@ void CAORotateImage::AddImages(const RArray<CFbsBitmap*>& aImages)
 
             if (!aImages[i]->IsCompressedInRAM())
             {
-                iImages.Append(aImages[i]);
+                iImages.AppendL(aImages[i]);
             }
         }
     }

@@ -24,4 +24,11 @@ EXPORTS
 	_ZThn28_N4java3wma22S60MmsServerConnection9setFilterERKSbIwSt11char_traitsIwESaIwEE @ 23 NONAME ; #<thunk>#
 	_ZThn28_NK4java3wma22S60MmsServerConnection6getUriEv @ 24 NONAME ; #<thunk>#
 	_ZThn28_NK4java3wma22S60MmsServerConnection9getFilterEv @ 25 NONAME ; #<thunk>#
+	_ZN4java3wma22S60MmsServerConnection5closeEv @ 26 NONAME
+	_ZThn28_N4java3wma22S60MmsServerConnection5closeEv @ 27 NONAME
+	_ZN4java3wma22S60MmsServerConnectionD0Ev @ 28 NONAME
+	_ZN4java3wma22S60MmsServerConnectionD1Ev @ 29 NONAME
+	_ZN4java3wma22S60MmsServerConnectionD2Ev @ 30 NONAME
+	_ZThn28_N4java3wma22S60MmsServerConnectionD0Ev @ 31 NONAME
+	_ZThn28_N4java3wma22S60MmsServerConnectionD1Ev @ 32 NONAME
 

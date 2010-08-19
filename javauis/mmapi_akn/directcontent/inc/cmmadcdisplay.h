@@ -60,6 +60,7 @@ public: // From MMMADisplay
     void SetFullScreenL(TBool aFullScreen);
     void SourceSizeChanged(const TSize& aSourceSize);
     TBool IsVisible();
+    void FixUIOrientation(TBool aFix);
 
     /**
      * Gets notification that there is container to draw assigned
@@ -135,6 +136,8 @@ private: // data
 
     // Not own
     MMMAGuiPlayer* iPlayer;
+    
+    TBool iFixUIOrientation;
 };
 
 #endif // CMMADCDISPLAY_H

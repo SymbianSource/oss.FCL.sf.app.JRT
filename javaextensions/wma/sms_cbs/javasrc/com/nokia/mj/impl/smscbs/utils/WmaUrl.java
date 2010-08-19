@@ -95,7 +95,7 @@ public final class WmaUrl
         int index = iAbsoluteUri.indexOf("://");
         int nameLength = iAbsoluteUri.length();
         if ((index == -1) || (index != iAbsoluteUri.indexOf(':'))
-                || ((index + 3) > nameLength))
+                || ((index + 3) >= nameLength))
         {
             throw new IllegalArgumentException(INVALID_URL.concat(iAbsoluteUri));
         }

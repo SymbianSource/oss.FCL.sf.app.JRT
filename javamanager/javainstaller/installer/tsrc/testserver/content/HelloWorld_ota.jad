@@ -1,0 +1,10 @@
+MIDlet-1: HelloWorld, , helloworld.HelloWorld
+MIDlet-Jar-Size: 1511
+MIDlet-Jar-URL: HelloWorld.jar
+MIDlet-Name: HelloWorld
+MIDlet-Vendor: Nokia
+MIDlet-Version: 1.0
+MicroEdition-Configuration: CLDC-1.0
+MicroEdition-Profile: MIDP-2.0
+MIDlet-Install-Notify: http://<SERVER><CONTEXT>/notify?tID=900_success
+MIDlet-Delete-Notify: http://<SERVER><CONTEXT>/notify?tID=912_deletion

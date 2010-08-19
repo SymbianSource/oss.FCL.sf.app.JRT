@@ -274,6 +274,12 @@ void CMMADCDisplay::MdcSetContainer(MMMAContainer* aContainer)
         iWindow->SetVisible(aContainer->MdcContainerVisibility() &&
                             iVisible);
     }
+
+    if(iFixUIOrientation)
+    {
+        iContainer->MdcFixUIOrientation(ETrue);
+        iFixUIOrientation = EFalse;
+    }
 }
 
 // interface MMMADirectContent
@@ -309,6 +315,19 @@ void CMMADCDisplay::UIGetCallback(
     if (iContainer)
     {
         iContainer->MdcGetUICallback(aConsumer, aCallbackId);
+    }
+}
+
+void CMMADCDisplay::FixUIOrientation(TBool aFix)
+{
+    if (iContainer)
+    {
+        iContainer->MdcFixUIOrientation(aFix);
+    }
+    else
+    {
+        // fix orientation when container becomes available
+        iFixUIOrientation = aFix;
     }
 }
 
@@ -349,7 +368,8 @@ void CMMADCDisplay::SetDrawRectL(CMMADCDisplay* aDisplay, TSize* aSize)
 
 CMMADCDisplay::CMMADCDisplay(MMMAGuiPlayer* aPlayer,
                              CMMAEventSource* aEventSource,
-                             jobject aGUIObject)
+                             jobject aGUIObject):
+                             iFixUIOrientation(EFalse)
 {
     iPlayer = aPlayer;
     iEventSource = aEventSource;

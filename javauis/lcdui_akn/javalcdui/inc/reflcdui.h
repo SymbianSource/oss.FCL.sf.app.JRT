@@ -182,6 +182,14 @@ public:
      */
     virtual void MdcNotifyContentAdded() {}
 #endif
+        
+    /**
+     * Fixes screen UI orientation.
+     *
+     * @param aEnableFix If ETrue, the UI orientation will be fixed.
+     *                   If EFalse, the standard UI orientation is restored.        
+     */
+    virtual void MdcFixUIOrientation(TBool aEnableFix) = 0;
 };
 
 /**
@@ -240,6 +248,7 @@ public:
      */
     virtual void MdcResumeDSA() = 0;
 };
+
 
 #endif // REFLCDUI_H
 

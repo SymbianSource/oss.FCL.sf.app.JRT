@@ -303,17 +303,15 @@ void CSwtTraverseEvent::TraverseCallbackL()
     if (iControl.IsFocusControl())
     {
         // Find the Control's Shell
-        MSwtShell* shell;
         MSwtControl* ctrl = &iControl;
-        while ((shell = ctrl->ShellInterface()) == NULL)
-        {
-            ctrl = ctrl->GetParent()->Control();
-        }
+        MSwtShell& shell = ctrl->GetShell();
 
         // Find next focusable control
-        MSwtControl* newFocus = shell->FindTraversalTargetL(iDetail, iControl);
+        MSwtControl* newFocus = shell.FindTraversalTargetL(iDetail, iControl);
         if (newFocus)
         {
+            shell.Display().UiUtils().SetNaviKeyInput(ETrue);
+            newFocus->PrepareForTraverse();
             newFocus->CoeControl().SetFocus(ETrue, ENoDrawNow);
         }
     }

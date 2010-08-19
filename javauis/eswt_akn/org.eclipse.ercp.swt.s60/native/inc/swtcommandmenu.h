@@ -34,7 +34,7 @@ public:
     void Reset();
     void AppendCommand(const MSwtCommand& aCommand,
                        const MSwtMenu* aCascadeMenu);
-    void AppendSeparator();
+    void AppendSeparatorL();
     void InsertCommand(const MSwtCommand& aCommand,
                        const MSwtMenu* aCascadeMenu, TInt aPos);
     const RPointerArray<MSwtCommand>& Commands() const;

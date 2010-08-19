@@ -295,12 +295,13 @@ OS_EXPORT int CommsEndpoint::sendReceive(CommsMessage& aMessage, CommsMessage& a
             break;
 
         case ETIMEDOUT:
+        default:
             mSendReceiveListeners.erase(messageRef);
             done = 1;
-            break;
-
-        default:
-            ELOG2(EJavaComms, "pthread_cond_timedwait failed %d - %s", rc, strerror(rc));
+            if (rc != ETIMEDOUT)
+            {
+                ELOG2(EJavaComms, "pthread_cond_timedwait failed %d - %s", rc, strerror(rc));
+            }
             break;
         }
     }

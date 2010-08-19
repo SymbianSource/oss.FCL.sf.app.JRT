@@ -78,11 +78,10 @@ END
 
 APP_LAYER_SYSTEMINCLUDE
 
-SYSTEMINCLUDE   ../inc
-
-SYSTEMINCLUDE   ../../inc
-SYSTEMINCLUDE   ../../../inc
-SYSTEMINCLUDE   ../../../../inc
+USERINCLUDE   ../inc
+USERINCLUDE   ../../inc
+USERINCLUDE   ../../../inc
+USERINCLUDE   ../../../../inc
 
 LIBRARY		avkon.lib
 LIBRARY		gdi.lib

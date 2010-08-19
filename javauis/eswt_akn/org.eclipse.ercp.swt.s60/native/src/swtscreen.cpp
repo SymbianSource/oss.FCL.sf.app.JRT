@@ -389,6 +389,12 @@ TBool CSwtScreen::IsTouchScreen()
 //
 void CSwtScreen::SetOrientationL(TInt aOrientation)
 {
+    // Checks whether some component fixed the screen orientation
+    if (iDisplay.UiUtils().IsScreenOrientationFixed())
+    {
+        User::Leave(ESwtErrorCannotSetSelection);
+    }
+
     iOrientation = aOrientation;
     if (IsScreenOn())
     {

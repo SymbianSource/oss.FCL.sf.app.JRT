@@ -31,6 +31,7 @@
 //
 class CApaWindowGroupName;
 class CMIDToolkit;
+class MMIDDisplayable;
 
 /**
 Utility class providing access to the MIDlet suite attributes.
@@ -104,6 +105,9 @@ public:
     TBool PostSerialEvent(jobject aRunnable);
     void DisposeObject(MMIDComponent* aObject);
 
+    // Returns pointer to last fullscreen displayble.
+    inline const MMIDDisplayable* LastFullscreenDisplayable() const;
+
     //
     // Activate event sources
     //
@@ -165,6 +169,10 @@ public:
     void HandleForegroundL(TBool aForeground);
     void HandleSwitchOnEventL();
     void HandleResourceChangeL(TInt aType);
+#ifdef RD_JAVA_NGA_ENABLED
+    void HandleFullOrPartialForegroundL(TBool aFullOrPartialFg);
+    void HandleFreeGraphicsMemory();
+#endif
 
 private:
     /**
@@ -218,6 +226,15 @@ private:
 
     void LoadLibrariesL();
 
+    /**
+     * If current displayable is canvas,
+     * returns pointer to it.
+     *
+     * @return  pointer to the current canvas, if current displayable is canvas.
+     *          NULL, if current displayable is not canvas.
+     */
+    MMIDCanvas* GetCurrentCanvas() const;
+
 public:
     /*@ deprecated */
     jmethodID iHandleNotifyMethod;
@@ -242,7 +259,7 @@ private:
 
     struct TObjectEntry
     {
-public:
+    public:
         TObjectEntry(MMIDComponent* aComponent);
         union
         {
@@ -382,6 +399,11 @@ inline void CMIDToolkit::DisplayableIsDestructed(const MMIDDisplayable* aDisplay
             iCurrentDisplayable->DisplayableBehindPopupIsDestroyed();
         }
     }
+}
+
+inline const MMIDDisplayable* CMIDToolkit::LastFullscreenDisplayable() const
+{
+    return iOldFullScreenDisplayable;
 }
 
 #endif // CMIDTOOLKIT_H

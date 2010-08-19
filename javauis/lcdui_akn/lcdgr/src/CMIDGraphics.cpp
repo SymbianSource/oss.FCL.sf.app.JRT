@@ -587,7 +587,7 @@ void CMIDGraphics::UpdateEglContent()
 // CMIDGraphics::IsEglAvailable()
 // ---------------------------------------------------------------------------
 //
-TBool CMIDGraphics::IsEglAvailable()
+TBool CMIDGraphics::IsEglAvailable() const
 {
     return (iCanvasTarget ? iCanvasTarget->IsEglAvailable() : EFalse);
 }

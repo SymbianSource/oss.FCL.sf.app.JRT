@@ -149,6 +149,15 @@ int dllMain(int argc, char *argv[])
         return INSTALLER_ALREADY_RUNNING;
     }
 
+    // Check whether executing this process during first boot.
+    ret = JavaCommonUtils::initIsFirstBoot();
+    if (0 != ret)
+    {
+        ELOG1(EJavaRuntime, 
+            "INSTALLER main() Cannot create first_boot_done.dat flag file, errno.h err %d",
+            ret);
+    }
+
     int result = -1;
     try
     {
@@ -212,7 +221,7 @@ TInt startJavaCaptain()
 #endif
 
         // Wait 3 seconds so that Java Captain has time to start
-        User::After(3000000);
+        User::After(3000000); // codescanner::userafter
     }
     else
     {
@@ -348,6 +357,12 @@ int startJvm(int argc, char *argv[])
     const int oldHeapSize = 512;
     jvm->overrideOldHeapSize(oldHeapSize);
 
+#ifdef __WINSCW__
+    // Setting smaller max heap in the emulator.
+    const int maxHeapSize = 8 * 1024; // 8 MB
+    jvm->overrideMaxHeapSize(maxHeapSize);
+#endif  // __WINSCW__
+
     jvm->enableThreadDumping();
 
     jvm->setMainClass(INSTALLER_MAIN_CLASS);
@@ -369,7 +384,12 @@ int startJvm(int argc, char *argv[])
     jvm->appendSystemProperty(
         L"-Dcom.nokia.mj.impl.rt.ui="
         L"com.nokia.mj.impl.installer.ui.eswt2.InstallerRuntimeUi");
-#else
+#ifdef __SYMBIAN32__
+#ifndef __WINS__
+    //jvm->appendSystemProperty(L"-Dcom.nokia.mj.impl.installer.ui.disableui=1");
+#endif //__WINS__
+#endif // __SYMBIAN32__
+#else // RD_JAVA_S60_RELEASE_10_1_ONWARDS
     jvm->appendSystemProperty(
         L"-Dcom.nokia.mj.impl.installer.ui="
         L"com.nokia.mj.impl.installer.ui.eswt.InstallerUiEswt");

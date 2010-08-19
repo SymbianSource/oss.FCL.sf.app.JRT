@@ -31,10 +31,12 @@
 #include <appmngr2drmutils.h>           // TAppMngr2DRMUtils
 #include <appmngr2cleanuputils.h>       // CleanupResetAndDestroyPushL
 
-#include <javaapplicationsettings.rsg>           // Midlet resource IDs
+#include <apgcli.h>                     // RApaLsSession
+
+#include <javaapplicationsettings.rsg>  // Midlet resource IDs
 #include "appmngr2midletappinfo.h"      // CAppMngr2MidletAppInfo
 #include "appmngr2midletruntime.h"      // KAppMngr2MidletUid
-#include "javaapplicationsettings.hrh"           // Midlet command IDs
+#include "javaapplicationsettings.hrh"  // Midlet command IDs
 #include "appmngr2midletinfoiterator.h" // CAppMngr2MidletInfoIterator
 #include "appmngr2midletsettingsview.h" // CAppMngr2MidletSettingsView
 #include "appmngr2midletsettingshandler.h" // CAppMngr2MidletSettingsHandler
@@ -189,8 +191,12 @@ TInt CAppMngr2MidletAppInfo::IconIndex() const
 CGulIcon* CAppMngr2MidletAppInfo::SpecificIconL() const
 {
     LOG(EJavaAppMngrPlugin, EInfo, "CAppMngr2MidletAppInfo::SpecificIconL");
-    CGulIcon* icon = CGulIcon::NewL(iAppBitmap, iAppMask);
-    icon->SetBitmapsOwnedExternally(ETrue);
+    CGulIcon* icon = NULL;
+    if (iAppBitmap && iAppMask)
+    {
+        icon = CGulIcon::NewL(iAppBitmap, iAppMask);
+        icon->SetBitmapsOwnedExternally(ETrue);
+    }
     return icon;
 }
 
@@ -243,7 +249,7 @@ TInt CAppMngr2MidletAppInfo::IndicatorIconIndex() const
 void CAppMngr2MidletAppInfo::GetMenuItemsL(
     RPointerArray<CEikMenuPaneItem::SData>& aMenuCmds)
 {
-    LOG(EJavaAppMngrPlugin, EInfo, "CAppMngr2MidletAppInfo::GetMenuItemsL");
+    LOG(EJavaAppMngrPlugin, EInfo, "+ CAppMngr2MidletAppInfo::GetMenuItemsL");
     TInt resourceOffset = iResourceHandler.AddResourceFileL();
     CEikMenuPaneItem::SData* menuItemData = new(ELeave) CEikMenuPaneItem::SData;
     CleanupStack::PushL(menuItemData);
@@ -468,8 +474,7 @@ const TDesC& CAppMngr2MidletAppInfo::Vendor() const
 //
 const std::wstring CAppMngr2MidletAppInfo::SecurityDomainCategory() const
 {
-    LOG(EJavaAppMngrPlugin, EInfo, " + CAppMngr2MidletAppInfo::MidletSuiteSecurityDomainCategory ");
-    LOG(EJavaAppMngrPlugin, EInfo, " - CAppMngr2MidletAppInfo::MidletSuiteSecurityDomainCategory ");
+    LOG(EJavaAppMngrPlugin, EInfo, "CAppMngr2MidletAppInfo::MidletSuiteSecurityDomainCategory ");
     return iSecurityDomainCategory;
 }
 
@@ -767,10 +772,14 @@ void CAppMngr2MidletAppInfo::ConstructL(
     // MIDlet suite specific icons
     if (midletUids.Count() > 0)
     {
-        AknsUtils::CreateAppIconLC(AknsUtils::SkinInstance(), midletUids[ 0 ],
-                                   EAknsAppIconTypeList, iAppBitmap, iAppMask);
-        CleanupStack::Pop(2); // iAppBitmap, iAppMask
+        // Errors ignored so that the midlet is still displayed in the list with default icon.
+        TRAPD(err, GetAppIconL(midletUids[0]));
+        if (KErrNone != err)
+        {
+            ELOG1(EJavaAppMngrPlugin, "GetAppIconL error %d", err);
+        }
     }
+    
     CleanupStack::PopAndDestroy(&midletUids);
 
     // security domain
@@ -925,7 +934,7 @@ void CAppMngr2MidletAppInfo::ShowInfoUrlL()
 
     CleanupStack::PopAndDestroy(urlParam);
     CleanupStack::PopAndDestroy(launcher);
-    LOG(EJavaAppMngrPlugin, EInfo, "+ CAppMngr2MidletAppInfo::ShowInfoUrlL");
+    LOG(EJavaAppMngrPlugin, EInfo, "- CAppMngr2MidletAppInfo::ShowInfoUrlL");
 }
 
 // ---------------------------------------------------------------------------
@@ -984,4 +993,38 @@ void CAppMngr2MidletAppInfo::ReadCertificatesInfoL()
 
     iCertsRead = ETrue;
     LOG(EJavaAppMngrPlugin, EInfo, "- CAppMngr2MidletAppInfo::ReadCertificatesInfoL");
+}
+
+void CAppMngr2MidletAppInfo::GetAppIconL(TUid aMidletUid)
+{
+    LOG(EJavaAppMngrPlugin, EInfo, "+ CAppMngr2MidletAppInfo::GetAppIconL");
+    
+    ASSERT(!iAppBitmap);
+    ASSERT(!iAppMask);
+    
+    RApaLsSession lsSession;
+    User::LeaveIfError(lsSession.Connect()); 
+    CleanupClosePushL(lsSession);
+    CApaMaskedBitmap* apaBmp = CApaMaskedBitmap::NewLC();
+    
+    TSize size = static_cast<CAppMngr2MidletRuntime&>(Runtime()).JavaRasterIconSize();
+    TInt err = lsSession.GetAppIcon(aMidletUid, size, *apaBmp);
+    if (err == KErrNone)
+    {
+        iAppBitmap = new (ELeave) CFbsBitmap(); 
+        iAppMask = new (ELeave) CFbsBitmap();
+        User::LeaveIfError(iAppBitmap->Duplicate(apaBmp->Handle()));
+        User::LeaveIfError(iAppMask->Duplicate(apaBmp->Mask()->Handle()));
+    }
+    CleanupStack::PopAndDestroy(apaBmp);
+    CleanupStack::PopAndDestroy(&lsSession);
+
+    if (!iAppBitmap)
+    {
+        AknsUtils::CreateAppIconLC(AknsUtils::SkinInstance(), aMidletUid,
+                                   EAknsAppIconTypeList, iAppBitmap, iAppMask);
+        CleanupStack::Pop(2); // iAppBitmap, iAppMask
+    }
+    
+    LOG(EJavaAppMngrPlugin, EInfo, "- CAppMngr2MidletAppInfo::GetAppIconL");
 }

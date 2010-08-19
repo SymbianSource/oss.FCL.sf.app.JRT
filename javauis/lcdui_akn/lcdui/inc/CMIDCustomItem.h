@@ -35,6 +35,7 @@
 #include "CMIDTactileFeedbackExtension.h"
 #endif //RD_TACTILE_FEEDBACK
 
+
 // FORWARD DECLARATIONS
 class CMIDRemConObserver;
 class CMIDKeyDecoder;
@@ -48,7 +49,7 @@ NONSHARABLE_CLASS(CMIDCustomItem) : public CMIDControlItem, public MMIDCustomIte
 #ifdef RD_TACTILE_FEEDBACK
         , public MMIDTactileFeedbackComponent
 #endif // RD_TACTILE_FEEDBACK
-
+        , public MMIDLcduiEventConsumer
 {
 public:
     static CMIDCustomItem* NewL(MMIDEnv& aEnv, const TDesC& aLabel, CMIDUIManager* aUIManager);
@@ -231,6 +232,18 @@ public:
     void MdcRemoveContentBounds(const TRect& aRect);
     void MdcGetDSAResources(MUiEventConsumer& aConsumer);
     void MdcGetUICallback(MUiEventConsumer& aConsumer, TInt aCallbackId);
+    
+    /**
+     * From MDirectContainer.     
+     *
+     * @since  S60 v9.2
+     * @param TBool aEnableFix
+     */    
+    void MdcFixUIOrientation(TBool aEnableFix);
+     
+// From MMIDLcduiEventConsumer
+public: 
+    void HandleLcduiEvent(int aType);
 
 // From MMIDMediaKeysListener
 public:
@@ -335,6 +348,13 @@ private:
      * from another than MMAPI ES thread.
      */
     TPoint iLastWindowPosition;
+ 
+    /**
+     * using for Items on Form
+     * checking if Form was created
+     */    
+    TBool iUiFixed;
+    TBool iUiToBeFixedLater;
 
 };
 

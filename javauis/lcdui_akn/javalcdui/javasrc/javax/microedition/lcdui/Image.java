@@ -450,14 +450,6 @@ public class Image
             start = (long)aOffset + (long)aScanLength*((long)aHeight-1);
         }
 
-        //
-        // aScanLength may be < 0, hence end < start is valid.
-        //
-        if ((start < 0) || (start > limit) || (end < 0) || (end > limit))
-        {
-            throw new ArrayIndexOutOfBoundsException("destination range exceeds array bounds");
-        }
-
         final int width  = iWidth;
         final int height = iHeight;
 
@@ -478,6 +470,15 @@ public class Image
             final String info = "args=("+aX+','+aY+','+aWidth+','+aHeight+"), rect=("+sx1 +','+sy1+','+sx2+','+sy2+"), image width="+width+",height="+height;
             throw new IllegalArgumentException("getRGB: Exceeding bounds of source image: " + info);
         }
+
+        //
+        // aScanLength may be < 0, hence end < start is valid.
+        //
+        if ((start < 0) || (start > limit) || (end < 0) || (end > limit))
+        {
+            throw new ArrayIndexOutOfBoundsException("destination range exceeds array bounds");
+        }
+
         final int scanLength = Math.abs(aScanLength);
 
         if (scanLength < aWidth)

@@ -18,10 +18,11 @@ include(../../../../inc/build_defines.pri)
 TARGET=javahttp
 TEMPLATE=lib
 CONFIG += omj java stl
-CONFIG -= qt
 
 symbian {
-    LIBS += -leuser -lhttp -lecom -lbafl -linetprotutil -lhttpfiltercommon -lx509 -lx500 -lcrypto -lesock -lcentralrepository -lwebutils 
+
+    LIBS += -leuser -lhttp -lecom -lbafl -linetprotutil -lhttpfiltercommon -lx509 -lx500 -lcrypto -lesock -lcommdb -lcentralrepository -lwebutils
+
     contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_5_0) {
         LIBS += -lcommdb
     }
@@ -29,7 +30,5 @@ symbian {
         LIBS += -lextendedconnpref -lnetmeta
     }
 }
-
-
 
 include(../../../../build/omj.pri)

@@ -129,8 +129,15 @@ void J9StarterS60::setDefaultArguments()
     mJvmArgs.push_back(L"-Xmine16K"); // Minimum size for heap expansion.
     mJvmArgs.push_back(L"-Xmns64K");  // Initial new space size. Keep this in sync with MemoryLogger.java
     mJvmArgs.push_back(L"-Xmos64K");  // Initial old space size. Keep this in sync with MemoryLogger.java
+
+#ifdef __WINSCW__
     mJvmArgs.push_back(L"-Xmox16M");  // Maximum old space size.
     mJvmArgs.push_back(L"-Xmx16M");   // Memory maximum.
+#else // __WINSCW__
+    mJvmArgs.push_back(L"-Xmox64M");  // Maximum old space size.
+    mJvmArgs.push_back(L"-Xmx64M");   // Memory maximum.
+#endif  // __WINSCW__
+
     mJvmArgs.push_back(L"-Xmco16k");  // ROM class segment increment.
     mJvmArgs.push_back(L"-Xmr1k");    // Remembered set size.
 
@@ -163,6 +170,24 @@ void J9StarterS60::overrideOldHeapSize(int heapSize)
     oldSpace += JavaCommonUtils::intToWstring(heapSize);
     oldSpace += L"K";
     mJvmArgs.push_back(oldSpace);
+}
+
+
+void J9StarterS60::overrideMaxHeapSize(int heapSize)
+{
+    JELOG2(EJavaRuntime);
+    std::wstring heapAsString(JavaCommonUtils::intToWstring(heapSize));
+    doOverideHeap(L"-Xmox", heapAsString);
+    doOverideHeap(L"-Xmx", heapAsString);
+}
+
+void J9StarterS60::doOverideHeap(const std::wstring& arg, const std::wstring& size)
+{
+    JELOG2(EJavaRuntime);
+	std::wstring maxHeapArg(arg);
+    maxHeapArg += size;
+    maxHeapArg += L"K";
+    mJvmArgs.push_back(maxHeapArg);
 }
 
 void J9StarterS60::overrideNewHeapSize(int heapSize)
@@ -204,6 +229,10 @@ void J9StarterS60::setInternalOdcFiles()
     else if (mIdentifier == L"TCK_runner")
     {
         pathType = BOOT_CLASSPATH_TCKRUNNER;
+    }
+    else if (mIdentifier == L"JavaControlPanel")
+    {
+        pathType = BOOT_CLASSPATH_JAVACONTROLPANEL;
     }
 
     std::list<std::wstring> odcFiles;

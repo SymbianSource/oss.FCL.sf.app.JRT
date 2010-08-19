@@ -35,8 +35,12 @@ grant user "Write User Data Access" blanket,session,oneshot,no {
 }
 
 grant user "Messaging" blanket,session,oneshot,no {
-    permission javax.microedition.io.Connector.sms "sms://*" "send";
-    permission javax.microedition.io.Connector.mms "mms://*" "send";
+    permission javax.microedition.io.Connector.sms "sms://*" "open,send,receive";
+    permission javax.microedition.io.Connector.mms "mms://*" "open,send,receive";
+}
+
+grant user "Restricted Messaging" blanket,no {
+    permission javax.microedition.io.Connector.cbs "cbs://*" "open,receive";
 }
 
 grant user "Multimedia Recording" blanket,session,oneshot,no {
@@ -50,12 +54,6 @@ grant user "Application Auto Invocation" blanket,session,oneshot,no {
 
 grant user "Url start" blanket,session,oneshot,no {
     permission javax.microedition.midlet.CmdLineArgsPermission;
-}
-
-grant allowed {
-    permission javax.microedition.io.Connector.sms "sms://*" "open,receive";
-    permission javax.microedition.io.Connector.mms "mms://*" "open,receive";
-    permission javax.microedition.io.Connector.cbs "cbs://*" "open,receive";
 }
 
 grant assigned {

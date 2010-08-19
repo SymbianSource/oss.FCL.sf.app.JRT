@@ -57,6 +57,7 @@ private:
     void  DoSetFontL(const CFont* aFont);
     void  SwtHandleResourceChangeL(TInt aType);
     TInt  GetFontHeight(const CFont* aFont) const;
+    void  UpdateTextColor();
 
 // From CCoeControl
 public:
@@ -84,6 +85,7 @@ public:
     void  SetForegroundL(const MSwtColor* aColor);
     TSize ComputeSizeL(TInt aWHint, TInt aHHint);
     void  SetFontL(const MSwtFont* aFont);
+    void  HandleHighlightChange();
 
 // From ASwtControlbase
 protected:
@@ -114,7 +116,7 @@ private:
     TInt             iOriginalTextLineCount;// Count how many lines are in the text ('\n')
     MSwtFont*        iDefaultFont;          // The text's default font, owned, NULL only if iText is NULL
     const MSwtImage* iImage;                // The image to draw, may be NULL, ref counted
-    const MSwtColor* iForegroundColor;      // The set foreground color
+    const MSwtColor* iCustomFg;
     TBool            iDashedLineSeparatorInUse;
 };
 

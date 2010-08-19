@@ -22,7 +22,7 @@
 //  INCLUDES
 #include "cmmacontrol.h"
 #include "mmmaplayerstatelistener.h"
-#include <mprofilechangeobserver.h>
+#include <MProfileChangeObserver.h>
 
 // CONSTANS
 _LIT(KMMAVolumeControlName, "VolumeControl");
@@ -47,11 +47,11 @@ public:
     static void StaticGetLevelL(CMMAVolumeControl* aVolumeControl,
                                 TInt* aLevel);
 
-    ~CMMAVolumeControl();
+    IMPORT_C ~CMMAVolumeControl();
 
 protected:
-    CMMAVolumeControl(CMMAPlayer* aPlayer);
-    void ConstructBaseL();
+    IMPORT_C CMMAVolumeControl(CMMAPlayer* aPlayer);
+    IMPORT_C void ConstructBaseL();
 
     /**
      * Sets the level to player.
@@ -66,18 +66,18 @@ protected:
     virtual TInt DoGetLevelL() = 0;
 
 public: // From CMMAControl
-    const TDesC& ClassName() const;
+    IMPORT_C const TDesC& ClassName() const;
 
     /**
      * Refresh volume control.
      */
-    void RefreshControl();
+    IMPORT_C void RefreshControl();
 
 public: // From MMMAPlayerStateListener
-    void StateChanged(TInt aState);
+    IMPORT_C void StateChanged(TInt aState);
 
 public: // from MProfileChangeObserver
-    void HandleActiveProfileEventL(TProfileEvent aProfileEvent, TInt aProfileId );
+    IMPORT_C void HandleActiveProfileEventL(TProfileEvent aProfileEvent, TInt aProfileId );
 
 public: // New methods
     /**
@@ -105,6 +105,8 @@ public: // New methods
      * volume setting is done.
      */
     IMPORT_C void SetAudioOutputPreferenceL( TInt aRoutingPreference);
+    
+    void InitializeGlobalVolumeLevel(TInt aGlobalVolumeLevel);
 
 private: // New methods
 
@@ -144,6 +146,9 @@ protected: // data
     TInt iAudioOutputPreference;
     // Current profile Id.
     TInt iProfileId;
+private:
+    // The Global Volume level at the time when a player is created
+    TInt iInitialGlobalVolumeLevel;
 };
 
 #endif // CMMAVOLUMECONTROL_H

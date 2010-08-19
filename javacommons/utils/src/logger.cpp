@@ -30,6 +30,10 @@
 #include <sstream>
 #include <iomanip>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 #include "jdebug_omj.h"
 #include "logger.h"
 #include "javacommonutils.h"

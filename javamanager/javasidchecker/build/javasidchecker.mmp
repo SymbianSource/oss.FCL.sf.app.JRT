@@ -39,8 +39,7 @@ PAGED
 // Includes
 USERINCLUDE     .
 USERINCLUDE     ../inc
-
-SYSTEMINCLUDE ../../../inc /epoc32/include/ecom /epoc32/include/swi
+USERINCLUDE     ../../../inc
 
 // Sources
 SOURCEPATH    ../src

@@ -395,6 +395,7 @@ public:
     static TBool IsGaugeItem(CMIDControlItem& aControlItem);
     static TBool IsTextFieldItem(CMIDControlItem& aControlItem);
     static TBool IsChoiceGroup(CMIDControlItem& aControlItem);
+    static TBool IsPopupChoiceGroup(CMIDControlItem& aControlItem);
     static TBool IsDateField(CMIDControlItem& aControlItem);
     static TBool IsLabelContainerItem(CMIDControlItem& aControlItem);
     static TBool IsSpacerUsedForFormatting(CMIDControlItem& aControlItem);
@@ -403,6 +404,8 @@ public:
 #ifdef RD_JAVA_S60_RELEASE_9_2
 public:
     void PostPendingUpEventL();
+    TInt FormRowIndex(CMIDFormRow* aRow);
+    CMIDFormRow* FormRow(TInt aIndex);
 #endif // RD_JAVA_S60_RELEASE_9_2
 
 private:

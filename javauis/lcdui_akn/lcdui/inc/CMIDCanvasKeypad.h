@@ -170,7 +170,7 @@ private:
     *
     * @since S60 5.0
     */
-    void InitializeKeys();
+    void InitializeKeysL();
 
     /**
     * Sets key event struct for each button.

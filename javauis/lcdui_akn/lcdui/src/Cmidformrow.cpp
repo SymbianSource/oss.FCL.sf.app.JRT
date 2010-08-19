@@ -26,6 +26,18 @@
 #include "CMIDControlItem.h"
 #include "CMIDItemLabel.h"
 
+#ifdef RD_JAVA_S60_RELEASE_9_2
+#include "CMIDLabelContainerItem.h"
+
+#include <AknsUtils.h>
+#include <aknlayoutscalable_avkon.cdl.h>
+
+// CONSTANTS
+// Default for Form separator line color's alpha value, used if not
+// found from skin.
+const TInt KDefaultSeparatorAlpha = 32;
+const TInt KDefaultSeparatorColor = 0;
+#endif // RD_JAVA_S60_RELEASE_9_2
 
 CMIDFormRow* CMIDFormRow::NewL(CMIDForm& aForm)
 {
@@ -63,6 +75,49 @@ CCoeControl* CMIDFormRow::ComponentControl(TInt aIndex) const
 {
     return iItems[aIndex];
 }
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+void CMIDFormRow::Draw(const TRect& /*aRect*/) const
+{
+    if (iSeparator)
+    {
+        CWindowGc& gc = SystemGc();
+        MAknsSkinInstance* skin = AknsUtils::SkinInstance();
+        gc.SetBrushStyle(CGraphicsContext::ENullBrush);
+        gc.SetPenStyle(CGraphicsContext::ESolidPen);
+
+        TRgb color;
+        TInt err = AknsUtils::GetCachedColor(skin,
+                                             color,
+                                             KAknsIIDQsnTextColors,
+                                             EAknsCIQsnTextColorsCG6);
+        if (err != KErrNone)
+        {
+            color = KDefaultSeparatorColor;
+        }
+
+        TRgb colorFromSkin;
+        // Get alpha value from skin, if not successful, default is used.
+        err = AknsUtils::GetCachedColor(skin ? skin : AknsUtils::SkinInstance(),
+                                        colorFromSkin,
+                                        KAknsIIDQsnLineColors,
+                                        EAknsCIQsnLineColorsCG15);
+
+        color.SetAlpha(!err ? colorFromSkin.Red() : KDefaultSeparatorAlpha);
+        gc.SetDrawMode(CGraphicsContext::EDrawModePEN);
+        gc.SetPenColor(color);
+
+        // Draw line to upper part of the form row.
+        TRect lineRect(Rect());
+        // Using same margin value with avkon list box separator lines.
+        TInt gap = AknLayoutScalable_Avkon::listscroll_gen_pane(0).LayoutLine().it;
+        lineRect.Shrink(gap, 0);
+        lineRect.Move(0, 1);
+        gc.DrawLine(TPoint(lineRect.iTl.iX, lineRect.iTl.iY),
+                    TPoint(lineRect.iBr.iX, lineRect.iTl.iY));
+    }
+}
+#endif // RD_JAVA_S60_RELEASE_9_2
 
 void CMIDFormRow::SizeChanged()
 {
@@ -163,6 +218,10 @@ void CMIDFormRow::AppendL(CMIDControlItem* aItem)
         User::LeaveIfError(iItems.Insert(aItem, 0));
     }
     iCurrentWidth += aItem->Size().iWidth;
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    SetSeparator();
+#endif // RD_JAVA_S60_RELEASE_9_2   
 }
 
 void CMIDFormRow::SetAlignment(MMIDItem::TLayout aAlignment)
@@ -470,7 +529,7 @@ CMIDFormRow::CMIDFormRow(CMIDForm& aForm)
 {
 #ifdef RD_SCALABLE_UI_V2
     SetAllowStrayPointers();
-#endif
+#endif // RD_SCALABLE_UI_V2
 }
 
 void CMIDFormRow::ConstructL()
@@ -497,4 +556,95 @@ TBool CMIDFormRow::HasNonSpacerItems() const
     return ret;
 }
 
+#ifdef RD_JAVA_S60_RELEASE_9_2
+void CMIDFormRow::SetSeparator()
+{
+    // Separator is not drawn above the first row.
+    if (iForm.FormRowIndex(this) <= 0)
+    {
+        iSeparator = EFalse;
+        return;
+    }
+    else
+    {
+        iSeparator = ETrue;
+    }
+
+    // Separator is not drawn if the rows includes only spacers
+    if (!HasNonSpacerItems())
+    {
+        iSeparator = EFalse;
+        return;
+    }
+
+    if (Item(0)->HasLabel())
+    {
+        iSeparator = ETrue;
+        return;
+    }
+    else
+    {
+        // If the first item is other than StringItem then draw separator.
+        if (!CMIDForm::IsLabelContainerItem(*Item(0)))
+        {
+            iSeparator = ETrue;
+            return;
+        }
+        else
+        {
+            // If Button type StringItem then separator is drawn.
+            if (CMIDForm::IsStringItemButton(*Item(0)))
+            {
+                iSeparator = ETrue;
+                return;
+            }
+
+            CMIDLabelContainerItem* ucsi = static_cast<CMIDLabelContainerItem*>(Item(0));
+            // If the first item is label, then draw separator.
+            if (ucsi && !ucsi->IsStringItemContent())
+            {
+                iSeparator = ETrue;
+                return;
+            }
+            else
+            {
+                // If the last item in the previous row is StringItem,
+                // then do not draw separator.
+                TInt prevRowIndex = iForm.FormRowIndex(this) - 1;
+                if (prevRowIndex >= 0)
+                {
+                    CMIDFormRow* prevRow = iForm.FormRow(prevRowIndex);
+                    TInt index = 0;
+                    if (prevRow)
+                    {
+                        index = prevRow->NumItems();
+
+                        // If there are items in previous row check if row is StrinItem
+                        if (index >= 1)
+                        {
+                            CMIDControlItem* lastPrevItem = prevRow->Item(index - 1);
+
+                            if (lastPrevItem && CMIDForm::IsLabelContainerItem(*lastPrevItem))
+                            {
+                                iSeparator = EFalse;
+                                return;
+                            }
+                            else
+                            {
+                                iSeparator = ETrue;
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            iSeparator = ETrue;
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+#endif // RD_JAVA_S60_RELEASE_9_2
 // End of File

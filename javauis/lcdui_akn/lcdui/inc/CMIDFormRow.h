@@ -44,6 +44,9 @@ public:
 public: // From CCoeControl
     TInt CountComponentControls() const;
     CCoeControl* ComponentControl(TInt aIndex) const;
+#ifdef RD_JAVA_S60_RELEASE_9_2    
+    void Draw(const TRect& /*aRect*/) const;
+#endif // RD_JAVA_S60_RELEASE_9_2    
     virtual void SizeChanged();
     virtual TSize MinimumSize();
 
@@ -70,6 +73,13 @@ public: // interface to CMIDForm
 private:
     CMIDFormRow(CMIDForm& aForm);
     void ConstructL();
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    /**
+     * Checks whether the separator line must be drawn
+     * above this form row.
+     */
+    void SetSeparator();
+#endif // RD_JAVA_S60_RELEASE_9_2
 
 private:
     CMIDForm& iForm;
@@ -77,6 +87,13 @@ private:
     RArray<CMIDControlItem*> iItems;
     TSize  iEmptyRowSize; // size used for empty rows
     TInt iCurrentWidth;             // used when adding items to the row. Keeps track of the total width of items added to row
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    /**
+     * Separator line is drawn between Form rows (except between Form rows that
+     * belong together e.g. concatenated StringItems).
+     */
+    TBool iSeparator;
+#endif // RD_JAVA_S60_RELEASE_9_2    
 };
 
 

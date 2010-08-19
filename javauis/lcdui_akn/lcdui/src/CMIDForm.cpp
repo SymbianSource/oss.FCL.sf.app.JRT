@@ -159,7 +159,7 @@ void CMIDForm::SetItemL(MMIDItem& aItem,TInt aIndex)
 /**
  * Inserts a new Item.
  */
-void CMIDForm::InsertItemL(MMIDItem& aItem,TInt aIndex)
+void CMIDForm::InsertItemL(MMIDItem& aItem, TInt aIndex)
 {
     DEBUG("CMIDForm::InsertItemL");
 
@@ -338,6 +338,25 @@ TKeyResponse CMIDForm::OfferKeyEventL(const TKeyEvent& aKeyEvent,TEventCode aTyp
         CMIDControlItem& controlItem = ControlItem(iFocused);
         TRect controlRect = GetControlRect(iFocused);
         TBool visible = RectPartiallyVisible(controlRect);
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        TInt numItemCommands = controlItem.CommandList()->Count();
+
+        // If focused form item does not have any commands,
+        // and select key was pressed try to show screen\help option menu.
+        // ChoiceGroup and DateField handles this case separately.
+        // Gauge enter key is also handled here,
+        // so it would behave the same way as selection key.
+        if (numItemCommands == 0 && aType == EEventKey &&
+                controlItem.Type() != MMIDComponent::EChoiceGroup &&
+                controlItem.Type() != MMIDComponent::EDateField &&
+                (aKeyEvent.iScanCode == EStdKeyDevice3 ||
+                 (aKeyEvent.iScanCode == EStdKeyEnter &&
+                  controlItem.Type() == MMIDComponent::EGauge)))
+        {
+            iDisplayable.ShowScreenOrHelpOptionsMenuL();
+        }
+#endif // RD_JAVA_S60_RELEASE_9_2
 
         // arrow key events are not sent to the hidden focused item
         if ((visible || !isArrowKey) &&
@@ -2314,11 +2333,7 @@ void CMIDForm::ConstructL()
 
     // Background for highlighted item, frame rects are set later
     iHighlightedBackgroundCc = CAknsFrameBackgroundControlContext::NewL(
-#ifdef RD_JAVA_S60_RELEASE_9_2
-                                   KAknsIIDQsnFrPopupPreview,
-#else
                                    KAknsIIDQsnFrInput,
-#endif // RD_JAVA_S60_RELEASE_9_2
                                    TRect(), TRect(), ETrue);
 
     iDisplayable.SetComponentL(*this);
@@ -3156,9 +3171,28 @@ void CMIDForm::InsertContainerItemsL(CMIDStringItem& aStringItem,
 {
     TInt numLines = aTextControl.NumLines();
     for (TInt j = 0; j < numLines; j++)
-    { // insert every line as a CMIDLabelContainerItem
-        CreateAndAddLabelContainerItemL(
-            aStringItem, *(aTextControl.LabelAtIdx(j)), aIsStringItemContent);
+    {
+        CEikLabel* label = aTextControl.LabelAtIdx(j);
+
+        if (label)
+        {
+            CGraphicsContext::TTextAlign align = aTextControl.LabelAtIdx(j)->iAlignment.TextAlign();
+
+            // If aLabel aligment is incorrect relayout aLabel
+            if ((align != CGraphicsContext::ERight &&
+                    iInitialAlignment == MMIDItem::ERight) ||
+                    (align != CGraphicsContext::ELeft &&
+                     iInitialAlignment == MMIDItem::ELeft) ||
+                    (align != CGraphicsContext::ECenter &&
+                     iInitialAlignment == MMIDItem::ECenter))
+            {
+                aTextControl.LayoutItemLabel();
+            }
+
+            // insert every line as a CMIDLabelContainerItem
+            CreateAndAddLabelContainerItemL(
+                aStringItem, *(label), aIsStringItemContent);
+        }
 
         if (j != (numLines-1))
         { // insert a row break except for the last line
@@ -3547,6 +3581,22 @@ TBool CMIDForm::IsChoiceGroup(CMIDControlItem& aControlItem)
     return (aControlItem.iMMidItem->Type() == MMIDComponent::EChoiceGroup);
 }
 
+TBool CMIDForm::IsPopupChoiceGroup(CMIDControlItem& aControlItem)
+{
+    if (aControlItem.iMMidItem
+            && aControlItem.iMMidItem->Type() == MMIDComponent::EChoiceGroup)
+    {
+        CMIDChoiceGroupItem& cgItem = static_cast<CMIDChoiceGroupItem&>(aControlItem);
+        CMIDChoiceGroupControl* cgControl =
+            static_cast<CMIDChoiceGroupControl*>(cgItem.ComponentControl(1));
+        if (cgControl && cgControl->ChoiceType() == MMIDChoiceGroup::EPopup)
+        {
+            return ETrue;
+        }
+    }
+    return EFalse;
+}
+
 TBool CMIDForm::IsDateField(CMIDControlItem& aControlItem)
 {
     if (!aControlItem.iMMidItem)
@@ -3598,6 +3648,20 @@ void CMIDForm::PostPendingUpEventL()
             cgItem->PostPendingUpEventL();
         }
     }
+}
+
+TInt CMIDForm::FormRowIndex(CMIDFormRow* aRow)
+{
+    return iRows.Find(aRow);
+}
+
+CMIDFormRow* CMIDForm::FormRow(TInt aIndex)
+{
+    if (iRows.Count() > aIndex)
+    {
+        return iRows[aIndex];
+    }
+    return NULL;
 }
 #endif // RD_JAVA_S60_RELEASE_9_2
 
@@ -3969,13 +4033,18 @@ CMIDPopupNoteController* CMIDForm::GetPopupNoteController() const
 
 TInt CMIDForm::GetMidpNaviPos()
 {
-    // get main pane size from CEikAppU
-    TRect mainPane = iAvkonAppUi->ApplicationRect();
-
-    // get screen size in pixels
     TAknLayoutRect mainMidpPane;
+
+    // get main pane size from Avkon (size in pixels)
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    TRect mainPane;
+    AknLayoutUtils::LayoutMetricsRect(AknLayoutUtils::EMainPane, mainPane);
+    mainMidpPane.LayoutRect(mainPane,
+                            AknLayoutScalable_Avkon::main_midp_pane().LayoutLine());
+#else
     mainMidpPane.LayoutRect(iEikonEnv->ScreenDevice()->SizeInPixels(),
                             AknLayoutScalable_Avkon::main_midp_pane().LayoutLine());
+#endif // RD_JAVA_S60_RELEASE_9_2
 
     // getting form size depends on screen orientation
     TInt variety = Layout_Meta_Data::IsLandscapeOrientation() ? 1 : 0;
@@ -4168,6 +4237,10 @@ void CMIDForm::HandlePhysicsPointerEventL(const TPointerEvent& aPointerEvent)
                 if (iPointedControl)
                 {
                     TInt highlightTimeout = iPhysics->HighlightDelay() * 1000;
+                    if (IsPopupChoiceGroup(*iPointedControl))
+                    {
+                        highlightTimeout /= 2;
+                    }
                     iHighlightTimer->Start(TTimeIntervalMicroSeconds32(highlightTimeout),
                                            TTimeIntervalMicroSeconds32(highlightTimeout),
                                            TCallBack(HighlightTimerCallback, this));
@@ -4307,7 +4380,14 @@ void CMIDForm::ForwardPointerEventToItemL(const TPointerEvent& aPointerEvent)
         {
             if (iFocused != KErrNotFound)
             {
-                ControlItem(iFocused).HandlePointerEventL(aPointerEvent);
+                if (IsPopupChoiceGroup(*iPointedControl))
+                {
+                    iPointedControl->HandlePointerEventL(aPointerEvent);
+                }
+                else
+                {
+                    ControlItem(iFocused).HandlePointerEventL(aPointerEvent);
+                }
             }
 
             if (LayoutPending())

@@ -455,4 +455,12 @@ void CMMADisplay::UIGetCallback(
     }
 }
 
+void CMMADisplay::FixUIOrientation(TBool aFix)
+{
+    if (iDirectContainer)
+    {
+        iDirectContainer->MdcFixUIOrientation(aFix);
+    }
+}
+
 //  END OF FILE

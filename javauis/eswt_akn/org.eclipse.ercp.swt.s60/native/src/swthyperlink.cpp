@@ -86,7 +86,6 @@ void CSwtHyperLink::ConstructL()
     UpdateDefaultFontL();
     iFormattedText.CreateL(KNullDesC);
     iOriginalText.CreateL(KNullDesC);
-    UpdateSkinColor();
     SetBackground(this);   // Back will be drawn by ASwtControlBase::Draw
 
 #ifdef RD_TACTILE_FEEDBACK
@@ -102,13 +101,6 @@ void CSwtHyperLink::SwtHandleResourceChangeL(TInt aType)
     if (aType == KEikDynamicLayoutVariantSwitch)
     {
         UpdateDefaultFontL();
-    }
-    else if (aType == KAknsMessageSkinChange)
-    {
-        if (!iCustomTextColor)
-        {
-            UpdateSkinColor();
-        }
     }
 }
 
@@ -165,14 +157,14 @@ void CSwtHyperLink::DrawText(CWindowGc& aGc,
         textLocation.iX += alignmentSpace;
     }
 
-    TRgb textColor = iLinkColor;
+    TRgb textColor = LinkColor();
     // Same background highlight as that of Link
     if (iPressed || (iDisplay.UiUtils().NaviKeyInput() && IsFocused()))
     {
-        textColor = iHighlightedLinkColor;
+        textColor = PressedLinkColor();
         aGc.SetPenStyle(CGraphicsContext::ENullPen);
         aGc.SetBrushStyle(CGraphicsContext::ESolidBrush);
-        aGc.SetBrushColor(iHighlightColor);
+        aGc.SetBrushColor(LinkBgColor());
         aGc.DrawRect(TRect(TPoint(textLocation.iX, textLocation.iY - aFont->FontMaxAscent()),
                            TSize(textWidth, aFont->FontLineGap())));
     }
@@ -185,23 +177,6 @@ void CSwtHyperLink::DrawText(CWindowGc& aGc,
 
     aGc.DrawText(textToDraw, textLocation);
     convertedText.Close();
-}
-
-
-void CSwtHyperLink::UpdateSkinColor()
-{
-    AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
-                              iLinkColor,
-                              KAknsIIDQsnHighlightColors,
-                              EAknsCIQsnHighlightColorsCG3);
-    AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
-                              iHighlightColor,
-                              KAknsIIDQsnHighlightColors,
-                              EAknsCIQsnHighlightColorsCG2);
-    AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
-                              iHighlightedLinkColor,
-                              KAknsIIDQsnTextColors,
-                              EAknsCIQsnTextColorsCG24);
 }
 
 
@@ -272,6 +247,43 @@ TPtrC CSwtHyperLink::Scheme()
     return scheme;
 }
 
+TRgb CSwtHyperLink::LinkColor() const
+{
+    TBool highlighted = HasHighlight();
+    if (!highlighted && iCustomFg)
+    {
+        return iCustomFg->RgbValue();
+    }
+    else
+    {
+        TRgb res(0);
+        AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
+                                  res,
+                                  KAknsIIDQsnHighlightColors,
+                                  EAknsCIQsnHighlightColorsCG3);
+        return res;
+    }
+}
+
+TRgb CSwtHyperLink::PressedLinkColor() const
+{
+    TRgb res(0);
+    AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
+                              res,
+                              KAknsIIDQsnTextColors,
+                              EAknsCIQsnTextColorsCG24);
+    return res;
+}
+
+TRgb CSwtHyperLink::LinkBgColor() const
+{
+    TRgb res(0);
+    AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
+                              res,
+                              KAknsIIDQsnHighlightColors,
+                              EAknsCIQsnHighlightColorsCG2);
+    return res;
+}
 
 // ---------------------------------------------------------------------------
 // From class CCoeControl.
@@ -446,7 +458,7 @@ void CSwtHyperLink::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 #endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
         }
 #endif //RD_TACTILE_FEEDBACK
-        Redraw();
+        GetShell().UpdateHighlight(ETrue); // draw now
         break;
     }
 
@@ -463,7 +475,7 @@ void CSwtHyperLink::HandlePointerEventL(const TPointerEvent& aPointerEvent)
         }
         if (pressed != iPressed)
         {
-            Redraw();
+            GetShell().UpdateHighlight(ETrue); // draw now
         }
         break;
     }
@@ -478,7 +490,7 @@ void CSwtHyperLink::HandlePointerEventL(const TPointerEvent& aPointerEvent)
         }
         if (pressed != iPressed)
         {
-            Redraw();
+            GetShell().UpdateHighlight(ETrue); // draw now
         }
         break;
     }
@@ -497,18 +509,7 @@ void CSwtHyperLink::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 void CSwtHyperLink::SetForegroundL(const MSwtColor* aColor)
 {
     ASwtControlBase::DoSetForegroundL(aColor);
-    aColor ? iCustomTextColor = ETrue : iCustomTextColor = EFalse;
-    if (iCustomTextColor)
-    {
-        TRgb rgb;
-        TBool overrideColorSet(GetColor(EColorControlText, rgb));
-        ASSERT(overrideColorSet);
-        iLinkColor = rgb;
-    }
-    else
-    {
-        UpdateSkinColor();
-    }
+    iCustomFg = aColor;
     Redraw();
 }
 
@@ -542,6 +543,15 @@ TSize CSwtHyperLink::ComputeSizeL(TInt aWHint, TInt aHHint)
     return res;
 }
 
+// ---------------------------------------------------------------------------
+// CSwtHyperLink::PressBackgroundPolicy
+// From MSwtControl
+// ---------------------------------------------------------------------------
+//
+TInt CSwtHyperLink::PressBackgroundPolicy() const
+{
+    return EEmbeddedPressBackground;
+}
 
 // ---------------------------------------------------------------------------
 // From class ASwtControlBase.

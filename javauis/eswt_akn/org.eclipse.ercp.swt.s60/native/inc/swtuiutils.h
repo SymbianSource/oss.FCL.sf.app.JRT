@@ -15,6 +15,7 @@
 
 
 #include <AknPopupFader.h>
+#include <aknappui.h>
 #include "eswtwidgetscore.h"
 
 
@@ -187,10 +188,10 @@ private:
 
     void HideIndicator(TInt aId);
     void HideIndicators();
-    
+
     void DoSetSplitInputShellPos(const TPoint& aPos);
     void DoSetSplitInputViewSize(const TSize& aSize);
-    
+
     MSwtControl* ScrolledCompositeAncestor(const MSwtControl& aControl) const;
 
 // From MSwtUiUtils
@@ -240,7 +241,10 @@ public:
     void SetSplitInputShellPos(const TPoint& aOriginalPos);
     void SetSplitInputViewSize(const TSize& aOriginalSize);
     void AdjustSplitInputShellPos();
-    
+    void RegisterFixScreenOrientation();
+    void UnRegisterFixScreenOrientation();
+    TBool IsScreenOrientationFixed() const;
+
 protected:
     void HandleFreeRamEventL(TInt aEventType);
 
@@ -400,7 +404,7 @@ private:
      * Key input flag.
      */
     TBool iNaviKeyInput;
-    
+
     /**
      * Split input data.
      */
@@ -409,6 +413,9 @@ private:
     TSize iSplitInputViewSize;
     TPoint iSplitInputShellPos;
     TBool iSplitInputSPVisible;
+    TInt iFixScreenOrientationApplicantsCount;
+    TBool iRestoreOrientation;
+    CAknAppUiBase::TAppUiOrientation iOldUiOrientation;
 };
 
 /**
