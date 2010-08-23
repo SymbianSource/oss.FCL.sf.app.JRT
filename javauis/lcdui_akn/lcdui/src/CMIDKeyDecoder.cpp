@@ -222,9 +222,12 @@ void CMIDKeyDecoder::ConstructL()
     TRAP(err, repository = CRepository::NewL(KCRUidMidpLcdui));
     // 2 bytes in scan code
     TBuf8<2> scanCodeBuffer;
-    CleanupStack::PushL(repository);
-    err = repository->Get(KAdditionalSelectKeyMapping,scanCodeBuffer);
-    CleanupStack::PopAndDestroy(repository);
+    if (err == KErrNone)
+    {
+        CleanupStack::PushL(repository);
+        err = repository->Get(KAdditionalSelectKeyMapping,scanCodeBuffer);
+        CleanupStack::PopAndDestroy(repository);
+    }
     if (err == KErrNone)
     {
         TUint8 scanCodeLeft = scanCodeBuffer[0];
