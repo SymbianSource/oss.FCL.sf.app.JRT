@@ -342,8 +342,8 @@ void addCommand(String str) {
 String fetchEmail() {
 
     int serviceRequest = OS.XQServiceRequest_new(
-            "com.nokia.services.phonebookservices.Fetch",
-            "fetch(QString,QString,QString)", false);
+            "phonebookservices.com.nokia.symbian.IContactsFetch",
+            "singleFetch(QString,QString)", false);
     if (serviceRequest <= 0) {
         return null;
     }
@@ -370,8 +370,8 @@ String fetchEmail() {
             QObjectDeleteWrapper.deleteSafely(handler);
             QObjectDeleteWrapper.deleteSafely(serviceRequest);
             return email;
-        }
-    }
+        } 
+    } 
     QObjectDeleteWrapper.deleteSafely(handler);
     QObjectDeleteWrapper.deleteSafely(serviceRequest);
     return null;
@@ -380,8 +380,8 @@ String fetchEmail() {
 String getPhoneNumber() {
 
     int serviceRequest = OS.XQServiceRequest_new(
-            "com.nokia.services.phonebookservices.Fetch",
-            "fetch(QString,QString,QString)", false);
+            "phonebookservices.com.nokia.symbian.IContactsFetch",
+            "singleFetch(QString,QString)", false);
     if (serviceRequest <= 0) {
         return null;
     }
@@ -658,6 +658,7 @@ boolean qt_event_keyrelease(int widgetHandle, int key, int modifier, int charact
 
 void qt_signal_requestCompleted( int value ) {
     
+    System.out.println("qt_signal_requestCompleted "+value);
     if (value < 1) {
         serviceDone = true;
         return;

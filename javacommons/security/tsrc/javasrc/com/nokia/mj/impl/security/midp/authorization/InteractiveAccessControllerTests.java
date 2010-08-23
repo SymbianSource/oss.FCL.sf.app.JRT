@@ -626,8 +626,10 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(com.nokia.mj.impl.security.midp.common.PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.microedition.io.Connector.socket,javax.microedition.io.Connector.http"));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), credentials);
+        permissionGranter.addSecurityData(session, appUID, null);
         permissionGranter.getBlanketPermissions(appUID);
         ac.checkPermission(new HttpProtocolPermissionImpl("http://", "\n(choose ALLOW)"));
         ac.checkPermission(new HttpProtocolPermissionImpl("http://", "\n(IF YOU SEE THIS PROMPT THE TEST FAILED)"));
@@ -659,8 +661,10 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(com.nokia.mj.impl.security.midp.common.PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.microedition.io.Connector.socket,javax.microedition.io.Connector.http"));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,appUID,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID, appUID, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID,appUID,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, appUID);
+        permissionGranter.grantJarPermissions( appUID, appUID, securityAttributes.getPermissionAttributes(), credentials);
+        permissionGranter.addSecurityData(session, appUID, appUID);
         blanketPromptShown = storage.readUserSecuritySettingsPromptFlag(appUID, "Net Access");
         ac.checkPermission(new HttpProtocolPermissionImpl("http://", "\n(IF YOU SEE THIS PROMPT THE TEST FAILED)"));
         storage.removeAuthenticationStorageData(appUID);
@@ -687,8 +691,10 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(com.nokia.mj.impl.security.midp.common.PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.microedition.io.Connector.socket,javax.microedition.io.Connector.http"));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" + System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" + System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), credentials);
+        permissionGranter.addSecurityData(session, appUID, null);
         signingCerts = authenticationModule.getCertificatesDetails(session, appUID);
         assertTrue(signingCerts != null
                    && signingCerts.length == 1
@@ -725,8 +731,10 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" + System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" + System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), credentials);
+        permissionGranter.addSecurityData(session, appUID, null);
         signingCerts = authenticationModule.getCertificatesDetails(session, appUID);
         assertTrue(signingCerts == null);
         ac.checkPermission(new HttpProtocolPermissionImpl("http://url", "\n(choose ALLOW)"));

@@ -34,7 +34,7 @@ public abstract class IAPInfo
      * Please refer IapInfo Spec.
      */
 
-    public static IAPInfo getIAPInfo() throws IAPInfoException
+    public synchronized static IAPInfo getIAPInfo() throws IAPInfoException
     {
         if (instance == null)
             instance = new IAPInfoImpl();

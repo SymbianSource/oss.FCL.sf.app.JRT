@@ -249,14 +249,13 @@ TBool CSensorBase::EvaluateConditions(TReal aValue, TInt aChannelId)
             matched = ETrue;
             CSensorConditionBase *condition = iConditions[i];
             iConditions.Remove(i);
-            if (iSensorListener)
-            {
-                iSensorListener->ConditionMet(
-                    condition,
-                    condition->GetChannelId(),
-                    currentValue,
-                    javaTime);
-            }
+
+            iSensorListener->ConditionMet(
+                condition,
+                condition->GetChannelId(),
+                currentValue,
+                javaTime);
+          
             delete condition;
         }
     }
@@ -264,6 +263,7 @@ TBool CSensorBase::EvaluateConditions(TReal aValue, TInt aChannelId)
     // Also send all values separately if we have java side custom conditions
     if (iJavaConditionEval)
     {
+        if (iSensorListener != NULL)
         iSensorListener->ConditionMet(0, aChannelId, currentValue, javaTime);
     }
     return matched;

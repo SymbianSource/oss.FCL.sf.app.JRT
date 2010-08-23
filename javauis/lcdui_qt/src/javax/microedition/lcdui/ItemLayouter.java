@@ -396,7 +396,7 @@ abstract class ItemLayouter
         {
             ret = control;
         }
-        else if(control != null && control instanceof Composite)
+        else if(control instanceof Composite)
         {
             Control[] children = ((Composite) control).getChildren();
             for(int i = 0; i < children.length; i++)

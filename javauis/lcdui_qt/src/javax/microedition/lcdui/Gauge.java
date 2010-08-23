@@ -53,12 +53,10 @@ public class Gauge extends Item
      */
 	static final int UPDATE_MAXVALUE = UPDATE_ITEM_MAX << 1;
 	static final int UPDATE_VALUE = UPDATE_ITEM_MAX << 2;
-	
 
     private int maxValue;
     private int value;
     private boolean interactive;
-    private boolean isGaugeCreation;
 
     /**
      * Constructor.
@@ -68,75 +66,12 @@ public class Gauge extends Item
      * @param maxVal the maximum value.
      * @param initVal the initial value.
      */
-    public Gauge(String name, boolean interactive, int maxVal, int initVal)
+    public Gauge(String aName, boolean aInteractive, int aMaxVal, int aInitVal)
     {
-        setLabel(name);
-        isGaugeCreation = true;
-        this.interactive = interactive;
-        setMaxValue(maxVal);
-        setValue(initVal);
-        isGaugeCreation = false;
-    }
-
-    /**
-     * Check value validity.
-     *
-     * @param value the value.
-     * @param maxVal the maximum value.
-     * @return validated value.
-     */
-    private int checkValue(int value, int maxVal)
-    {
-        if(maxVal == INDEFINITE)
-        {
-            if(isGaugeCreation)
-            {
-                switch(value)
-                {
-                case CONTINUOUS_IDLE:
-                case INCREMENTAL_IDLE:
-                case CONTINUOUS_RUNNING:
-                case INCREMENTAL_UPDATING:
-                    break;
-                default:
-                    throw new IllegalArgumentException(
-                        MsgRepository.GAUGE_EXCEPTION_INVALID_VALUE);
-                }
-                
-                return value;
-            }
-            else
-            {
-            	return CONTINUOUS_IDLE;
-            }
-        }
-        else
-        {
-            // make sure the value is in [0, maxValue] range
-            value = (value < 0 ? 0 : value);
-            value = (value > maxVal ? maxVal : value);
-            return value;
-        }
-    }
-
-    /**
-     * Check maximum value validity.
-     *
-     * @param maxVal the maximum value.
-     * @param interactive is interactive.
-     * @return validated maximum value.
-     */
-    private static int checkMaxValue(int maxVal, boolean interactive)
-    {
-        if(interactive)
-        {
-            if(maxVal <= 0)
-            {
-                throw new IllegalArgumentException(
-                    MsgRepository.GAUGE_EXCEPTION_INVALID_MAXVALUE);
-            }
-        }
-        return maxVal;
+        maxValue = validateMaxValue(aMaxVal, aInteractive);
+		value = validateValue(aInitVal, maxValue);
+		interactive = aInteractive;
+        setLabel(aName);
     }
 
     /**
@@ -144,7 +79,7 @@ public class Gauge extends Item
      *
      * @param value New value. Must be between zero and maxvalue inclusive.
      */
-    public void setValue(int value)
+    public void setValue(int aValue)
     {
         // TODO: eSWT support required
         /*
@@ -152,7 +87,7 @@ public class Gauge extends Item
          * indefinite, we should update Gauge when this method is called, but
          * that requires eSWT extension.
          */
-        this.value = checkValue(value, this.maxValue);
+        value = validateValue(aValue, maxValue);
         updateParent(UPDATE_VALUE);
     }
 
@@ -171,10 +106,11 @@ public class Gauge extends Item
      *
      * @param maxValue the maximum value.
      */
-    public void setMaxValue(int maxValue)
+    public void setMaxValue(int aMaxValue)
     {
-        this.maxValue = checkMaxValue(maxValue, interactive);
-        this.value = checkValue(getValue(), this.maxValue);
+        int oldMaxValue = maxValue;
+		maxValue = validateMaxValue(aMaxValue, interactive);
+        value = validateValue(getValue(), maxValue, oldMaxValue);
         updateParent(UPDATE_MAXVALUE);
     }
 
@@ -196,6 +132,147 @@ public class Gauge extends Item
     public boolean isInteractive()
     {
         return interactive;
+    }
+
+    /**
+     * Check maximum value validity.
+     *
+     * @param aMaxVal the maximum value.
+     * @param aInteractive is interactive.
+     * @return validated maximum value.
+     */
+    private int validateMaxValue(int aMaxVal, boolean aInteractive)
+    {
+        if((!aInteractive) && (aMaxVal == INDEFINITE))
+        {
+			return aMaxVal;
+        }
+
+        if(aMaxVal <= 0)
+        {
+            throw new IllegalArgumentException(
+                MsgRepository.GAUGE_EXCEPTION_INVALID_MAXVALUE);
+        }
+
+        return aMaxVal;
+    }
+
+    /**
+     * Check value validity.
+     *
+     * @param aValue the value.
+     * @param aMaxVal the maximum value.
+     * @return validated value.
+     */
+	private int validateValue(int aValue, int aMaxVal)
+	{
+		if (aMaxVal == INDEFINITE)
+		{
+			switch (aValue)
+			{
+			case CONTINUOUS_IDLE:
+			case INCREMENTAL_IDLE:
+			case CONTINUOUS_RUNNING:
+			case INCREMENTAL_UPDATING:
+				break;
+			default:
+				throw new IllegalArgumentException();
+			}
+			return aValue;
+		}
+		else
+		{
+			return clampValue(aValue, aMaxVal);
+		}
+	}
+
+    /**
+     * Check value validity.
+     *
+     * @param aValue the value.
+     * @param aNewMaxVal the new maximum value.
+     * @param aOlddMaxVal the old maximum value.
+     * @return validated value.
+     */
+	private int validateValue(int aValue, int aNewMaxVal, int aOlddMaxVal)
+	{
+		if (aNewMaxVal == INDEFINITE)
+		{
+			return CONTINUOUS_IDLE;
+		}
+		else if (aOlddMaxVal == INDEFINITE)
+		{
+			return 0;
+		}
+		else
+		{
+			return clampValue(aValue, aNewMaxVal);
+		}
+	}
+
+	  /**
+	 * Validates the value against the range.
+	 *
+	 * @param aValue the value.
+	 * @param aMaxVal the maximum value.
+	 * @return validated value.
+	 */
+    private static int clampValue(int aValue, int aMaxVal)
+    {
+        aValue = Math.min(aValue, aMaxVal);
+        aValue = Math.max(aValue, 0);
+        return aValue;
+    }
+
+    /**
+     * @return if the Gauge is indefinite.
+     */
+    boolean isIndefinite()
+    {
+        return (maxValue == INDEFINITE);
+    }
+
+    /* (non-Javadoc)
+     * @see javax.microedition.lcdui.Item#isFocusable()
+     */
+    boolean isFocusable()
+    {
+        return (isInteractive() || (getNumCommands() > 0));
+    }
+
+    /**
+     * Returns if this indicator meets the restrictions for its use in an Alert.
+     */
+    boolean isSuitableForAlert()
+    {
+        return (!isInteractive()
+                && getParent() == null
+                && getLabel() == null
+                && getLayout() == Item.LAYOUT_DEFAULT
+                && !isSizeLocked()
+                && getNumCommands() == 0
+                && getItemCommandListener() == null);
+    }
+
+    /**
+     * Called by widget listeners to update Item value.
+     */
+    void internalSetValue(int newValue)
+    {
+        value = validateValue(newValue, maxValue);
+		updateParent(UPDATE_VALUE);
+        // notify item state listener
+        notifyStateChanged();
+    }
+
+    /**
+     * Return layout with optional custom flags.
+     *
+     * @return layout directive
+     */
+    int internalGetLayout()
+    {
+        return super.internalGetLayout() | Item.LAYOUT_NEWLINE_BEFORE;
     }
 
     /**
@@ -235,54 +312,5 @@ public class Gauge extends Item
         return GaugeLayouter.calculatePreferredBounds(this);
     }
 
-    /**
-     * Called by widget listeners to update Item value.
-     */
-    void internalSetValue(int newValue)
-    {
-        this.value = checkValue(newValue, this.maxValue);
-        // notify item state listener
-        notifyStateChanged();
-    }
-
-    /**
-     * Return layout with optional custom flags.
-     *
-     * @return layout directive
-     */
-    int internalGetLayout()
-    {
-        return super.internalGetLayout() | Item.LAYOUT_NEWLINE_BEFORE;
-    }
-
-    /**
-     * @return if the Gauge is indefinite.
-     */
-    boolean isIndefinite()
-    {
-        return (maxValue == INDEFINITE);
-    }
-
-    /**
-     * Returns if this indicator meets the restrictions for its use in an Alert.
-     */
-    boolean isSuitableForAlert()
-    {
-        return (!isInteractive()
-                && getParent() == null
-                && getLabel() == null
-                && getLayout() == Item.LAYOUT_DEFAULT
-                && !isSizeLocked()
-                && getNumCommands() == 0
-                && getItemCommandListener() == null);
-    }
-
-    /* (non-Javadoc)
-     * @see javax.microedition.lcdui.Item#isFocusable()
-     */
-    boolean isFocusable()
-    {
-        return (isInteractive() || (getNumCommands() > 0));
-    }
-
 }
+

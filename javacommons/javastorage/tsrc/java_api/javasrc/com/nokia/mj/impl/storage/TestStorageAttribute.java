@@ -136,10 +136,10 @@ public class TestStorageAttribute extends TestCase
      * 2. Test with Name and Value.
      * 3. Test Name null throws StorageException
      * 4. Test Name "" throws StorageException
-     * 5. Test value null. Type is not set SE thrown.
+     * 5. Test value null. It is allowed value.
      * 6. Test value "".
      * 7. Test one len name and value.
-     * 8. Test value null, type STRING throws StorageException.
+     * 8. Test value null, type STRING is allowed.
      */
     public void testNameValueConstructor()
     {
@@ -195,11 +195,10 @@ public class TestStorageAttribute extends TestCase
             String name = "AttrName";
             String value = null;
             sa = new StorageAttribute(name, value);
-            assertTrue("No exp when value Null", false);
         }
         catch (StorageException se)
         {
-            // PASSED
+            assertTrue("SE thrown when null value: " + se.toString(), false);
         }
         catch (Throwable t)
         {
@@ -246,11 +245,10 @@ public class TestStorageAttribute extends TestCase
             String name = "A";
             String value = null;
             sa = new StorageAttribute(name, value);
-            assertTrue("No exp thrown when null value, string type", false);
         }
         catch (StorageException se)
         {
-            // PASSED
+            assertTrue("SE thrown when null value: " + se.toString(), false);
         }
         catch (Throwable t)
         {

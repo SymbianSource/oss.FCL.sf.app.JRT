@@ -340,14 +340,16 @@ void Logger::Print(const char* txt, int index)
     int logFileNameLen = strlen(fileName);
     TPtr8 fileNamePtr((unsigned char*)fileName, logFileNameLen, logFileNameLen);
     RBuf nameBuf;
-    nameBuf.Create(fileNamePtr.MaxLength());
-    nameBuf.Copy(fileNamePtr);
+    int rc = nameBuf.Create(fileNamePtr.MaxLength());
+    if (rc == KErrNone)
+    {
+        nameBuf.Copy(fileNamePtr);
 
-    TInt len = strlen(txt);
-    TPtr8 ptr((unsigned char*)txt, len, len);
-    RFileLogger::Write(KJavaLogDir, nameBuf, EFileLoggingModeAppendRaw, ptr);
-
-    nameBuf.Close();
+        TInt len = strlen(txt);
+        TPtr8 ptr((unsigned char*)txt, len, len);
+        RFileLogger::Write(KJavaLogDir, nameBuf, EFileLoggingModeAppendRaw, ptr);
+        nameBuf.Close();
+    }
 
 #else //J_LOG_USE_RLOGGER_ENABLED
 

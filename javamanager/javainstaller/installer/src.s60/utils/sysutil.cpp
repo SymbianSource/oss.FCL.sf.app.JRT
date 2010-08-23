@@ -93,8 +93,8 @@ jint GetRepositoryStringValueL
     TUid repositoryUid = { aRepository };
     CRepository* repository = CRepository::NewLC(repositoryUid);
     RBuf buf;
-    buf.Create(NCentralRepositoryConstants::KMaxUnicodeStringLength);
     CleanupClosePushL(buf);
+    buf.CreateL(NCentralRepositoryConstants::KMaxUnicodeStringLength);
     TInt err = repository->Get(aKey, buf) ;
     if (KErrNone == err)
     {

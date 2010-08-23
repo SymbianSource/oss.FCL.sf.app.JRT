@@ -11465,7 +11465,7 @@ return NULL;
 
 JNIEXPORT void JNICALL OS_NATIVE( XQServiceRequest_1swt_1setArgumentsForFetchEmail )
 #ifdef __SYMBIAN32__
-(JNIEnv* aJniEnv, jclass, jint aHandle, jstring aTitle, jstring aAction, jstring aFilter)
+(JNIEnv* aJniEnv, jclass, jint aHandle, jstring aTitle, jstring aAction, jstring)
 #else
 (JNIEnv* aJniEnv, jclass, jint, jstring, jstring, jstring)
 #endif
@@ -11478,7 +11478,6 @@ JNIEXPORT void JNICALL OS_NATIVE( XQServiceRequest_1swt_1setArgumentsForFetchEma
         XQServiceRequest* request = reinterpret_cast<XQServiceRequest*>(aHandle);
         *request << swtApp->jniUtils().JavaStringToQString(aJniEnv, aTitle);
         *request << swtApp->jniUtils().JavaStringToQString(aJniEnv, aAction);
-        *request << swtApp->jniUtils().JavaStringToQString(aJniEnv, aFilter);
         }
     SWT_CATCH
 #endif    

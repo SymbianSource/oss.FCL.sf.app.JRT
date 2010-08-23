@@ -39,7 +39,8 @@ void RequestApp::sendRequest()
 
     QUrl uri(uriString);
     XQApplicationManager appMgr;
-    XQAiwRequest *request = appMgr.create(uri);
+    // Make the request in non-embedded mode
+    XQAiwRequest *request = appMgr.create(uri, false); 
     if (!request)
     {
         // No handlers for the URI

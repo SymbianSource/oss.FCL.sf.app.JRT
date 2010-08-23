@@ -21,8 +21,8 @@ LIBS += -ljavastorage -lcmapplsettingsui -ljavaconnectionmanager -ljavautils
 TRANSLATIONS = javaruntimeapplicationsettings.ts
 
 INCLUDEPATH += ../../../inc
-SOURCES += ..\src\javaapplicationsettingsview.cpp ..\src\javaapplicationsettingsview_p.cpp ..\src\javaapplicationsettings.cpp
-HEADERS += ..\src\javaapplicationsettingsview.h ..\src\javaapplicationsettingsview_p.h ..\src\javaapplicationsettings.h
+SOURCES += ../src/javaapplicationsettingsview.cpp ../src/javaapplicationsettingsview_p.cpp ../src/javaapplicationsettings.cpp
+HEADERS += ../src/javaapplicationsettingsview.h ../src/javaapplicationsettingsview_p.h ../src/javaapplicationsettings.h
 
 symbian : plugin {
     TARGET.EPOCALLOWDLLDATA = 1

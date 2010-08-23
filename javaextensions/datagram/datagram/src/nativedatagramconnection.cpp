@@ -133,6 +133,7 @@ int NativeDatagramConnection::sendDatagram(JNIEnv &aJni,
         writeBuffer = new char[requiredNativeBufferLength + 1];
     }
     /* Copy the data to be written from java buffer to the native buffer.  */
+    if (writeBuffer != NULL)
     JNIArrayUtils::CopyToNative(aJni, aJavaBuffer, aOffset,
                                 requiredNativeBufferLength, writeBuffer);
 

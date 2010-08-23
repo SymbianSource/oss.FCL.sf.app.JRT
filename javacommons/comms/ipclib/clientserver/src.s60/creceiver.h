@@ -31,12 +31,16 @@ class IpcClient;
 
 NONSHARABLE_CLASS(CReceiver): public CActive
 {
-public:
     CReceiver(IpcClient& aParent, IpcListener& aListener, RComms& aSession);
+public:
+    static CReceiver* NewLC(IpcClient& aParent, IpcListener& aListener, RComms& aSession);
+
     ~CReceiver();
     void Receive();
 
 private:
+    void ConstructL();
+
     virtual void RunL();
     virtual void DoCancel();
     virtual TInt RunError(TInt aError);

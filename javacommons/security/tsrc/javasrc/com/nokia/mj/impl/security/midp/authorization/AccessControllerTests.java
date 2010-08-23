@@ -47,6 +47,7 @@ import java.util.Vector;
 public class AccessControllerTests extends TestCase implements InstallerMain
 {
 
+    int assertTrace = 0;
     // Begin j2meunit test framework setup
     public void installerMain(String[] args)
     {
@@ -91,6 +92,12 @@ public class AccessControllerTests extends TestCase implements InstallerMain
     {
     }
 
+    private void assertWithTrace(boolean aCondition)
+    {
+        assertTrue("" + assertTrace, aCondition);
+        assertTrace++;
+    }
+
     protected void testAccessControllerFactory()
     {
         Uid appUID1 = Uid.createUid("appUID1");
@@ -100,17 +107,17 @@ public class AccessControllerTests extends TestCase implements InstallerMain
         String appName = "AccessControllerTests";
         // check null values
         ac1 = AccessControllerFactoryImpl.getAccessController(null, null);
-        assertTrue(ac1 == null);
+        assertWithTrace(ac1 == null);
         AccessControllerFactoryImpl.destroyAccessController(null);
         ac1 = AccessControllerFactoryImpl.getAccessController(null, "appName");
-        assertTrue(ac1 == null);
+        assertWithTrace(ac1 == null);
         AccessControllerFactoryImpl.destroyAccessController(null);
         // check duplicates
         AccessControllerFactoryImpl.destroyAccessController(appUID1);
         ac1 = AccessControllerFactoryImpl.getAccessController(appUID1, appName);
         ac2 = AccessControllerFactoryImpl.getAccessController(appUID1, appName);
         AccessControllerFactoryImpl.destroyAccessController(appUID1);
-        assertTrue(ac1 == ac2);
+        assertWithTrace(ac1 == ac2);
         // check destroy
         ac1 = AccessControllerFactoryImpl.getAccessController(appUID1, appName);
         AccessControllerFactoryImpl.destroyAccessController(appUID1);
@@ -118,7 +125,7 @@ public class AccessControllerTests extends TestCase implements InstallerMain
         // call destroy two times (or calling it on a UID which does not have an instance)
         AccessControllerFactoryImpl.destroyAccessController(appUID1);
         AccessControllerFactoryImpl.destroyAccessController(appUID1);
-        assertTrue(ac1 != ac2);
+        assertWithTrace(ac1 != ac2);
     }
 
     protected void testAccessController()
@@ -135,32 +142,32 @@ public class AccessControllerTests extends TestCase implements InstallerMain
         try
         {
             ac.checkPermission((Permission)null);
-            assertTrue(false);
+            assertWithTrace(false);
         }
         catch (AccessControlException e)
         {
-            assertTrue(true);
+            assertWithTrace(true);
         }
-        assertTrue(ac.checkPermission((String)null) == 0);
+        assertWithTrace(ac.checkPermission((String)null) == 0);
         // check permission which is not granted
         PermissionResolver.testClearCache();
         try
         {
             ac.checkPermission(new CommProtocolPermission("comm://"));
-            assertTrue(false);
+            assertWithTrace(false);
         }
         catch (AccessControlException e)
         {
-            assertTrue(true);
+            assertWithTrace(true);
         }
         try
         {
             ac.checkPermission(new CommProtocolPermission("comm://"));
-            assertTrue(false);
+            assertWithTrace(false);
         }
         catch (AccessControlException e)
         {
-            assertTrue(true);
+            assertWithTrace(true);
         }
         // check allowed permission which is granted
         PermissionResolver.testClearCache();
@@ -176,11 +183,11 @@ public class AccessControllerTests extends TestCase implements InstallerMain
         try
         {
             ac.checkPermission(new FileProtocolPermission("file://myFile.txt", "read"));
-            assertTrue(false);
+            assertWithTrace(false);
         }
         catch (AccessControlException e)
         {
-            assertTrue(true);
+            assertWithTrace(true);
         }
         storage.removeGrantedPermissions(appUID);
         // check permission not allowed
@@ -202,11 +209,11 @@ public class AccessControllerTests extends TestCase implements InstallerMain
         try
         {
             ac.checkPermission(new SocketProtocolPermission("socket://:100"));
-            assertTrue(false);
+            assertWithTrace(false);
         }
         catch (AccessControlException e)
         {
-            assertTrue(true);
+            assertWithTrace(true);
         }
         storage.removeGrantedPermissions(appUID);
         // check user permission with NO as interaction mode -> security exception thrown
@@ -228,35 +235,35 @@ public class AccessControllerTests extends TestCase implements InstallerMain
         try
         {
             ac.checkPermission(new HttpProtocolPermissionImpl("http://"));
-            assertTrue(false);
+            assertWithTrace(false);
         }
         catch (AccessControlException e)
         {
-            assertTrue(true);
+            assertWithTrace(true);
         }
         try
         {
             ac.checkPermission(new HttpProtocolPermission("http://"));
-            assertTrue(false);
+            assertWithTrace(false);
         }
         catch (AccessControlException e)
         {
-            assertTrue(true);
+            assertWithTrace(true);
         }
         storage.removeGrantedPermissions(appUID);
         // check the named permissions: unknown permission
-        assertTrue(ac.checkPermission("unknownPermission") == 0);
+        assertWithTrace(ac.checkPermission("unknownPermission") == 0);
         // check the named permissions: allowed permission
         PermissionResolver.testClearCache();
         grantedPermissions = new Vector();
         grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                                           "com.nokia.mj.impl.gcf.protocol.socket.SocketPermissionImpl",
-                                          "socket://",
+                                          "socket://*",
                                           null,
                                           null));
         storage.removeGrantedPermissions(appUID);
         storage.writeGrantedPermissions(appUID, null, grantedPermissions);
-        assertTrue(ac.checkPermission("javax.microedition.io.Connector.socket") == 1);
+        assertWithTrace(ac.checkPermission("javax.microedition.io.Connector.socket") == 1);
         // check the named permissions: user permission with NO interaction mode
         PermissionResolver.testClearCache();
         grantedPermissions = new Vector();
@@ -273,7 +280,7 @@ public class AccessControllerTests extends TestCase implements InstallerMain
                                                                                  })));
         storage.removeGrantedPermissions(appUID);
         storage.writeGrantedPermissions(appUID, null, grantedPermissions);
-        assertTrue(ac.checkPermission("javax.microedition.io.Connector.http") == 0);
+        assertWithTrace(ac.checkPermission("javax.microedition.io.Connector.http") == 0);
         // check the named permissions: user permission with ONESHOT interaction mode
         PermissionResolver.testClearCache();
         grantedPermissions = new Vector();
@@ -290,7 +297,7 @@ public class AccessControllerTests extends TestCase implements InstallerMain
                                                                                  })));
         storage.removeGrantedPermissions(appUID);
         storage.writeGrantedPermissions(appUID, null, grantedPermissions);
-        assertTrue(ac.checkPermission("javax.microedition.io.Connector.http") == -1);
+        assertWithTrace(ac.checkPermission("javax.microedition.io.Connector.http") == -1);
         // check the named permissions: user permission with BLANKET interaction mode (blanket prompt not shown yet)
         PermissionResolver.testClearCache();
         grantedPermissions = new Vector();
@@ -307,7 +314,7 @@ public class AccessControllerTests extends TestCase implements InstallerMain
                                                                                  })));
         storage.removeGrantedPermissions(appUID);
         storage.writeGrantedPermissions(appUID, null, grantedPermissions);
-        assertTrue(ac.checkPermission("javax.microedition.io.Connector.http") == -1);
+        assertWithTrace(ac.checkPermission("javax.microedition.io.Connector.http") == -1);
         // check the named permissions: user permission with BLANKET interaction mode (blanket prompt shown already)
         PermissionResolver.testClearCache();
         grantedPermissions = new Vector();
@@ -325,7 +332,7 @@ public class AccessControllerTests extends TestCase implements InstallerMain
         storage.removeGrantedPermissions(appUID);
         storage.writeGrantedPermissions(appUID, null, grantedPermissions);
         storage.writeUserSecuritySettingsPromptFlag(appUID, "Net Access", true);
-        assertTrue(ac.checkPermission("javax.microedition.io.Connector.http") == 1);
+        assertWithTrace(ac.checkPermission("javax.microedition.io.Connector.http") == 1);
         // check the named permissions: user permission with SESSION interaction mode (session prompt not shown already)
         PermissionResolver.testClearCache();
         grantedPermissions = new Vector();
@@ -343,7 +350,7 @@ public class AccessControllerTests extends TestCase implements InstallerMain
         storage.removeGrantedPermissions(appUID);
         storage.writeGrantedPermissions(appUID, null, grantedPermissions);
         storage.writeUserSecuritySettingsPromptFlag(appUID, "Net Access", true);
-        assertTrue(ac.checkPermission("javax.microedition.io.Connector.http") == -1);
+        assertWithTrace(ac.checkPermission("javax.microedition.io.Connector.http") == -1);
         // check the named permissions: denied permission
         PermissionResolver.testClearCache();
         grantedPermissions = new Vector();
@@ -354,7 +361,7 @@ public class AccessControllerTests extends TestCase implements InstallerMain
                                           null));
         storage.removeGrantedPermissions(appUID);
         storage.writeGrantedPermissions(appUID, null, grantedPermissions);
-        assertTrue(ac.checkPermission("javax.wireless.messaging.mms.send") == 0);
+        assertWithTrace(ac.checkPermission("javax.wireless.messaging.mms.send") == 0);
         // cleanup
         storage.removeGrantedPermissions(appUID);
         AccessControllerFactoryImpl.destroyAccessController(appUID);

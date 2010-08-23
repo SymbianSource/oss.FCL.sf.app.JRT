@@ -196,9 +196,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), credentials);
         permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID, null);
         signingCerts = authenticationModule.getCertificatesDetails(session, appUID);
         assertWithTrace(signingCerts != null
                         && signingCerts.length == 1
@@ -241,9 +243,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(com.nokia.mj.impl.security.midp.common.PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.microedition.io.Connector.socket,javax.microedition.io.Connector.http"));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), credentials);
         permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID, null);
         signingCerts = authenticationModule.getCertificatesDetails(session, appUID);
         assertWithTrace(signingCerts != null
                         && signingCerts.length == 1
@@ -285,9 +289,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(com.nokia.mj.impl.security.midp.common.PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.microedition.io.Connector.socket,javax.microedition.io.Connector.http"));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), credentials);
         permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID, null);
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICWDCCAcECBEhQwA0wDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX0RldmljZV9NYW51ZmFjdHVyZXIwHhcNMDgwNjEyMDYxOTU3WhcNMTgwNjEwMDYxOTU3WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfRGV2aWNlX01hbnVmYWN0dXJlcjCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEApi3ipIPj8O33/rZre1euh7Itd9d6ZVf2mvQ/tLpHEsFJe5XLOsVViMvFskhhKUzmDsRbP4J03L6827/vEDIi/1i8kJGLaoFqJYaLGFWI2Zmxlj6aJV8cfZyOjmQPWJn1IDEe1ZAWbvMSp8xibWRsCLNEGKIkxQvAr/QDK/6iS+kCAwEAATANBgkqhkiG9w0BAQQFAAOBgQCDXt6klAs6yKvdTab3D2wkdoi3Lu4YFsMgLexJOu5HhAUJ/9VYO+Q2+mjd95MRsTa5rWQ2Jjvhn57Z3z/KBOwfHbymmNtMk6Gl14H0vQRoHa31jh3mTuAy5KotDVthaDp30aOizk473NU68wY1WdP4gFk5ZhrpNea9q3st13BxIQ=="));
@@ -301,9 +307,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(com.nokia.mj.impl.security.midp.common.PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.microedition.io.Connector.socket,javax.microedition.io.Connector.http"));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID2,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID2, null, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID2,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID2, null);
+        permissionGranter.grantJarPermissions( appUID2, null, securityAttributes.getPermissionAttributes(), credentials);
         permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID2, null);
         // 2 legacy unsigned MIDlets, install from JAD -> checkPermission succeeds
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
@@ -317,9 +325,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), credentials);
         permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID, null);
         signingCerts = authenticationModule.getCertificatesDetails(session, appUID);
         assertWithTrace(signingCerts == null);
         ac.checkPermission(new java.util.PropertyPermission("microedition.version", "read"));
@@ -331,9 +341,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         securityAttributes = new SecurityAttributes();
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), credentials);
         permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID, null);
         signingCerts = authenticationModule.getCertificatesDetails(session, appUID);
         assertWithTrace(signingCerts == null);
         ac.checkPermission(new java.util.PropertyPermission("microedition.version", "read"));
@@ -356,7 +368,8 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(com.nokia.mj.impl.security.midp.common.PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.microedition.io.Connector.socket,javax.microedition.io.Connector.http"));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        credentials = authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, null);
         storage.removeAuthenticationStorageData(appUID2);
         permissionGranter.removeSecurityData(session,appUID2);
         PermissionResolver.testClearCache();
@@ -388,9 +401,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP3));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), credentials);
         permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID, null);
         storage.removeAuthenticationStorageData(appUID2);
         permissionGranter.removeSecurityData(session,appUID2);
         PermissionResolver.testClearCache();
@@ -426,9 +441,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), credentials);
         permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID, null);
         storage.removeAuthenticationStorageData(appUID2);
         permissionGranter.removeSecurityData(session,appUID2);
         PermissionResolver.testClearCache();
@@ -454,9 +471,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), credentials);
         permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID, null);
         storage.removeAuthenticationStorageData(appUID2);
         permissionGranter.removeSecurityData(session,appUID2);
         PermissionResolver.testClearCache();
@@ -475,9 +494,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID2,appUID,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID2, null, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID2,appUID,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID2, appUID);
+        permissionGranter.grantJarPermissions( appUID2, null, securityAttributes.getPermissionAttributes(), credentials);
         permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID2, null);
         // update from manufacturer to operator succeeds for legacy suites
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
@@ -495,7 +516,8 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(com.nokia.mj.impl.security.midp.common.PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.microedition.io.Connector.socket,javax.microedition.io.Connector.http"));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        credentials = authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, null);
         storage.removeAuthenticationStorageData(appUID2);
         permissionGranter.removeSecurityData(session,appUID2);
         PermissionResolver.testClearCache();
@@ -525,9 +547,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(com.nokia.mj.impl.security.midp.common.PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.microedition.io.Connector.socket,javax.microedition.io.Connector.http"));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), credentials);
         permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID, null);
         appPackageEntry = new StorageEntry();
         appPackageEntry.addAttribute(new StorageAttribute(
                                          StorageAttribute.ID,
@@ -556,9 +580,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(com.nokia.mj.impl.security.midp.common.PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.microedition.io.Connector.socket,javax.microedition.io.Connector.http"));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID2,appUID,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID2, appUID, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID2,appUID,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID2, appUID);
+        permissionGranter.grantJarPermissions( appUID2, appUID, securityAttributes.getPermissionAttributes(), credentials);
         permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID2, appUID);
         // update from identified third party to identified third party but with different organization for signing certificate fails for MIDP3 MIDlets
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
@@ -573,7 +599,8 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP3));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        credentials = authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, null);
         appPackageEntry = new StorageEntry();
         appPackageEntry.addAttribute(new StorageAttribute(
                                          StorageAttribute.ID,
@@ -623,9 +650,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(com.nokia.mj.impl.security.midp.common.PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.microedition.io.Connector.socket,javax.microedition.io.Connector.http"));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), credentials);
         permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID, null);
         appPackageEntry = new StorageEntry();
         appPackageEntry.addAttribute(new StorageAttribute(
                                          StorageAttribute.ID,
@@ -654,9 +683,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(com.nokia.mj.impl.security.midp.common.PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.microedition.io.Connector.socket,javax.microedition.io.Connector.http"));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID2,appUID,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID2, appUID, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID2,appUID,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID2, appUID);
+         permissionGranter.grantJarPermissions( appUID2, appUID, securityAttributes.getPermissionAttributes(), credentials);
         permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID2, appUID);
         // update from identified third party to identified third party succeeds (V1 requests P1 (Net), P2 (Messaging), P3 (Messaging), V2 requests P2 (Messaging), P4 (UserData), P5 (Net)) -> check that P1 is removed, P2 is retained (with old settings), P3 is removed, P4 and P5 are added with brand new settings
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
@@ -674,10 +705,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(com.nokia.mj.impl.security.midp.common.PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.microedition.io.Connector.socket,javax.wireless.messaging.sms.send,javax.wireless.messaging.mms.send"));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), credentials);
         permissionGranter.getBlanketPermissions(appUID);
-        permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID, null);
         appPackageEntry = new StorageEntry();
         appPackageEntry.addAttribute(new StorageAttribute(
                                          StorageAttribute.ID,
@@ -706,9 +738,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(com.nokia.mj.impl.security.midp.common.PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.wireless.messaging.sms.send,javax.microedition.io.Connector.file.read,javax.microedition.io.Connector.http"));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,appUID,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID, appUID, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID,appUID,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, appUID);
+        permissionGranter.grantJarPermissions( appUID, appUID, securityAttributes.getPermissionAttributes(), credentials);
         permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID, appUID);
         grantedPermissions = storage.readGrantedPermissions(appUID);
         MIDPPermission p1 = PermissionMappingTable.get("javax.wireless.messaging.sms.send");
         MIDPPermission p2 = PermissionMappingTable.get("javax.microedition.io.Connector.file.read");
@@ -724,7 +758,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
                                                                                                                          UserSecuritySettings.NO_INTERACTION_MODE,
                                                                                                                          UserSecuritySettings.ONESHOT_INTERACTION_MODE,
                                                                                                                          UserSecuritySettings.SESSION_INTERACTION_MODE})),
-                                                    new PolicyBasedPermissionImpl(p2.getName(), "*", p2.getActionList(),
+                                                    new PolicyBasedPermissionImpl(p2.getName(), p2.getTarget(), p2.getActionList(),
                                                                                   new UserSecuritySettingsImpl("Read User Data Access",
                                                                                                                UserSecuritySettings.SESSION_INTERACTION_MODE,
                                                                                                                new int[]{UserSecuritySettings.BLANKET_INTERACTION_MODE,
@@ -780,9 +814,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(com.nokia.mj.impl.security.midp.common.PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.microedition.io.Connector.socket,javax.wireless.messaging.sms.send,javax.wireless.messaging.mms.send"));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), credentials);
         blanketPermissions = permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID, null);
         assertWithTrace(checkStringArrays(blanketPermissions,
                                           new String[] {UserSecuritySettingsImpl.getLocalizedName(UserSecuritySettings.NET_ACCESS_SETTINGS),
                                                         UserSecuritySettingsImpl.getLocalizedName(UserSecuritySettings.MESSAGING_SETTINGS)
@@ -814,9 +850,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(com.nokia.mj.impl.security.midp.common.PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.wireless.messaging.sms.send,javax.microedition.io.Connector.file.read,javax.microedition.io.Connector.http"));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,appUID,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID, appUID, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID,appUID,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, appUID);
+        permissionGranter.grantJarPermissions( appUID, appUID, securityAttributes.getPermissionAttributes(), credentials);
         blanketPermissions = permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID, appUID);
         assertWithTrace(checkStringArrays(blanketPermissions,
                                           new String[] {UserSecuritySettingsImpl.getLocalizedName(UserSecuritySettings.NET_ACCESS_SETTINGS),
                                                         UserSecuritySettingsImpl.getLocalizedName(UserSecuritySettings.MESSAGING_SETTINGS),
@@ -839,9 +877,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(com.nokia.mj.impl.security.midp.common.PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.microedition.io.Connector.socket,javax.wireless.messaging.sms.send,javax.wireless.messaging.mms.send"));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), credentials);
         blanketPermissions = permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID, null);
         assertWithTrace(checkStringArrays(blanketPermissions,
                                           new String[] {UserSecuritySettingsImpl.getLocalizedName(UserSecuritySettings.NET_ACCESS_SETTINGS),
                                                         UserSecuritySettingsImpl.getLocalizedName(UserSecuritySettings.MESSAGING_SETTINGS)
@@ -872,9 +912,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(com.nokia.mj.impl.security.midp.common.PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.wireless.messaging.sms.send,javax.microedition.io.Connector.file.read,javax.microedition.io.Connector.http"));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,appUID,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID, appUID, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID,appUID,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, appUID);
+        permissionGranter.grantJarPermissions( appUID, appUID, securityAttributes.getPermissionAttributes(), credentials);
         blanketPermissions = permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID, appUID);
         assertWithTrace(checkStringArrays(blanketPermissions,
                                           new String[] {UserSecuritySettingsImpl.getLocalizedName(UserSecuritySettings.NET_ACCESS_SETTINGS),
                                                         UserSecuritySettingsImpl.getLocalizedName(UserSecuritySettings.READ_USER_DATA_ACCESS_SETTINGS)
@@ -894,9 +936,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(com.nokia.mj.impl.security.midp.common.PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.wireless.messaging.sms.send,javax.microedition.io.Connector.file.read,javax.microedition.io.Connector.http"));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,appUID,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID, appUID, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID,appUID,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, appUID);
+        permissionGranter.grantJarPermissions( appUID, appUID, securityAttributes.getPermissionAttributes(), credentials);
         blanketPermissions = permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID, appUID);
         assertWithTrace(blanketPermissions == null);
         // change some settings to e.g. Session and reinstall the same suite with same permissions -> check that only the settings which are not Blanket (due to being changed) are returned
         storage.writeUserSecuritySettings(appUID, "Messaging", UserSecuritySettings.SESSION_INTERACTION_MODE);
@@ -913,9 +957,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(com.nokia.mj.impl.security.midp.common.PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.wireless.messaging.sms.send,javax.microedition.io.Connector.file.read,javax.microedition.io.Connector.http"));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,appUID,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID, appUID, securityAttributes.getPermissionAttributes());
+        credentials = authenticationModule.authenticateJar(appUID,appUID,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, appUID);
+        permissionGranter.grantJarPermissions( appUID, appUID, securityAttributes.getPermissionAttributes(), credentials);
         blanketPermissions = permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID, appUID);
         assertWithTrace(checkStringArrays(blanketPermissions,
                                           new String[] {UserSecuritySettingsImpl.getLocalizedName(UserSecuritySettings.MESSAGING_SETTINGS)}));
         // upgrade tests for legacy suites
@@ -948,9 +994,10 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.microedition.io.Connector.http,javax.wireless.messaging.sms.send"));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
         permissionGranter.getBlanketPermissions(appUID);
         assertTrue(permissionGranter.getBlanketPermissionsDetails(appUID) == null);
+        permissionGranter.addSecurityData(session, appUID, null);
         // getBlanketPermissionsDetails for Multimedia Read User Data -> no details
         permissionGranter.removeSecurityData(session, appUID);
         storage.removeAuthenticationStorageData(appUID);
@@ -971,8 +1018,9 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.microedition.media.control.RecordControl,javax.microedition.io.Connector.file.read"));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
         permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID, null);
         assertTrue(permissionGranter.getBlanketPermissionsDetails(appUID) == null);
         // getBlanketPermissionsDetails for Multimedia, Local Connectivity -> privacy details
         permissionGranter.removeSecurityData(session, appUID);
@@ -994,10 +1042,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.microedition.media.control.RecordControl,javax.microedition.io.Connector.bluetooth.client"));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
         permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID, null);
         String blanketDetails = permissionGranter.getBlanketPermissionsDetails(appUID);
-        assertTrue("qtn_java_settings_inst_query_perm_sec".equals(blanketDetails) 
+        assertTrue("qtn_java_settings_inst_query_perm_sec".equals(blanketDetails)
             || "Allowing these permissions may result in compromised privacy".equals(
             blanketDetails));
         // getBlanketPermissionsDetails for Messaging, Multimedia -> net details
@@ -1020,10 +1069,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","javax.microedition.media.control.RecordControl,javax.wireless.messaging.sms.send"));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
         permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID, null);
         blanketDetails = permissionGranter.getBlanketPermissionsDetails(appUID);
-        assertTrue("qtn_java_settings_inst_query_perm_net".equals(blanketDetails) 
+        assertTrue("qtn_java_settings_inst_query_perm_net".equals(blanketDetails)
             || "Allowing these permissions may result in compromised privacy or increased network usage costs".equals(
             blanketDetails));
     }
@@ -1058,6 +1108,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
 
     private void upgradeDomain(ProtectionDomain domain1, ProtectionDomain domain2, boolean expectToFail, boolean legacySuite)
     {
+        AuthenticationCredentials[] credentials;
         boolean success1 = false;
         boolean success2 = false;
         storage.removeAuthenticationStorageData(appUID);
@@ -1081,9 +1132,11 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
                                          StorageNames.VALUE,
                                          (legacySuite ? "MIDP-2.0" : "MIDP-3.0")));
         session.write(StorageNames.APPLICATION_PACKAGE_ATTRIBUTES_TABLE, appPackageEntry);
-        authenticationModule.authenticateJar(session, appUID, null, domain1, TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar");
-        permissionGranter.grantJarPermissions(session, appUID, null, domain1);
+        credentials = authenticationModule.authenticateJar(appUID, null, domain1, TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar");
+        authenticationModule.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions(appUID, null, domain1);
         blanketPermissions = permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID, null);
         signingCerts = authenticationModule.getCertificatesDetails(session, appUID);
         success1 = (blanketPermissions == null && signingCerts == null);
         ac.checkPermission(new java.util.PropertyPermission("microedition.version", "read"));
@@ -1093,7 +1146,8 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         assertWithTrace(domainCategory.equals(domain1.getCategory()));
         try
         {
-            authenticationModule.authenticateJar(session, appUID, appUID, domain2, TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar");
+            credentials = authenticationModule.authenticateJar(appUID, appUID, domain2, TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar");
+            authenticationModule.addSecurityData(session, appUID, appUID);
             assertWithTrace(!expectToFail);
         }
         catch (InstallerSecurityException e)
@@ -1104,8 +1158,9 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
                             && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.DIFFERENT_SIGNERS, null)));
             return;
         }
-        permissionGranter.grantJarPermissions(session, appUID,appUID, domain2);
+        permissionGranter.grantJarPermissions(appUID,appUID, domain2);
         blanketPermissions = permissionGranter.getBlanketPermissions(appUID);
+        permissionGranter.addSecurityData(session, appUID, appUID);
         signingCerts = authenticationModule.getCertificatesDetails(session, appUID);
         success2 = (blanketPermissions == null && signingCerts == null);
         assertWithTrace(success1 == true && success2 == true);

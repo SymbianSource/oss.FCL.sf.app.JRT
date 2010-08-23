@@ -62,10 +62,8 @@ symbian {
 								 -lcertstore \
 								 -lcharconv \
 								 -lcms \
-								 -laknnotify \
 								 -leiksrv \
 								 -lctframework \
-								 -lctsecdlgs \
 								 -lcustomapi \
 								 -lefsrv \
 								 -letel \
@@ -78,6 +76,15 @@ symbian {
 								 -lcryptography \
 
 
+contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_5_0) {
+        LIBS +=    -laknnotify \
+        					 -lctsecdlgs \
+    }
+contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_9_2) {
+        LIBS +=    -laknnotify \
+        					 -lctsecdlgs \
+    }
+		
  }
 
 include(../../../build/omj.pri)

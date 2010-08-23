@@ -22,29 +22,23 @@ import com.nokia.mj.impl.installer.exetable.ExeBall;
 import com.nokia.mj.impl.installer.exetable.ExeStep;
 import com.nokia.mj.impl.installer.utils.Log;
 import com.nokia.mj.impl.security.midp.authentication.AuthenticationModule;
-import com.nokia.mj.impl.installer.storagehandler.SuiteInfo;
+import com.nokia.mj.impl.security.midp.authorization.PermissionGranter;
 
-public class AuthenticateJar extends ExeStep
+/**
+ * Writes application's security data into storage.
+ */
+public class AddSecurityData extends ExeStep
 {
     public void execute(ExeBall aBall)
     {
         InstallBall ball = (InstallBall)aBall;
-        if (ball.iJarAttributes == null || ball.iJarAuthenticated)
-        {
-            return;
-        }
-
-        ball.log("Authenticating Jar...");
-        ball.iAuthenticationCredentials =
-            AuthenticationModule.getInstance().authenticateJar
-            (ball.iSuite.getUid(),
-             (ball.iOldSuite != null? ball.iOldSuite.getUid(): null),
-             ball.iJarFilename,
-             (ball.iSuite.getContentInfo() == SuiteInfo.CONTENT_INFO_DRM? true: false));
-        ball.iJarAuthenticated = true;
-        // Unregister OCSP listener after Jar authentication.
-        AuthenticationModule.getInstance().unregisterOcspEventListener(
-            ball.iSuite.getUid());
+        ball.log("Writing security data...");
+        AuthenticationModule.getInstance().addSecurityData
+        (ball.iStorageHandler.getSession(), ball.iSuite.getUid(),
+        (ball.iOldSuite != null? ball.iOldSuite.getUid(): null));
+        PermissionGranter.getInstance().addSecurityData
+        (ball.iStorageHandler.getSession(), ball.iSuite.getUid(),
+        (ball.iOldSuite != null? ball.iOldSuite.getUid(): null));
     }
 
     public void cancel(ExeBall aBall)

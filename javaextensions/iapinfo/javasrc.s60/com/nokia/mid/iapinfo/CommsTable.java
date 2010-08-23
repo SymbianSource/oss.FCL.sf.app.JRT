@@ -19,6 +19,7 @@ package com.nokia.mid.iapinfo;
 
 import com.nokia.mj.impl.rt.support.Finalizer;
 import com.nokia.mj.impl.gcf.utils.NativeError;
+import com.nokia.mj.impl.utils.Logger;
 
 //import com.nokia.mj.impl.vmport.VmPort;
 
@@ -131,13 +132,6 @@ abstract class CommsTable
 
         iTableName = tableName;
 
-        // create native peer
-        iHandle = _construct();
-        if (iHandle < NativeError.KErrNone)
-        {
-            throw new CommDBException("Native constructor failed!", ERROR_NONE,
-                                      iHandle);
-        }
         // we need this so we can do some cleanup when we are garbage collected
         iFinalizer = createFinalizer();
         state = CREATED;
@@ -146,18 +140,20 @@ abstract class CommsTable
     /**
      * Opens the corresponding CommDB table.
      */
-    public void open() throws CommDBException
+    public void open(int aNativeSessionHandle) throws CommDBException
     {
 
-        int err = _open(iHandle, iTableName);
-        if (NativeError.KErrNone == err)
+        iHandle = _open(aNativeSessionHandle, iTableName);
+        Logger.LOG(Logger.EJavaIapInfo,Logger.EInfo, "iHandle ="+iHandle);
+
+        if (iHandle > 0)
         {
             state = OPENED;
             readFieldValues();
         }
         else
         {
-            throw new CommDBException("Open failed!", ERROR_OPEN_FAILED, err);
+            throw new CommDBException("Open failed!", ERROR_OPEN_FAILED, iHandle);
         }
 
     }
@@ -185,6 +181,7 @@ abstract class CommsTable
     {
 
         int rec = 0;
+
         rec = _findByName(iHandle, recordName);
         if (rec >= 0)
         {
@@ -230,6 +227,7 @@ abstract class CommsTable
      */
     public int getRecordCount() throws CommDBException
     {
+        Logger.LOG(Logger.EJavaIapInfo,Logger.EInfo,"+getRecordCount()");
         return _getRecordCount(iHandle);
     }
 
@@ -326,13 +324,6 @@ abstract class CommsTable
     /* Native funcions */
     /*----------------------------------------------------------------*/
     /*
-     * Creates native peer.
-     *
-     * @return handle for native peer
-     */
-    private static native int _construct();
-
-    /*
      * Destructs native peer.
      *
      * @param aHandle - handle for native peer
@@ -346,7 +337,7 @@ abstract class CommsTable
      *
      * @return - error code
      */
-    private static native int _open(int aHandle, String tableName);
+    private static native int _open(int aSessionHandle, String tableName);
 
     /*
      * Close the actual CommDB table.
