@@ -1,0 +1,92 @@
+<!--
+#
+# Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of the License "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<project name="openlcdui" default="deploy" basedir=".">
+
+    <description>
+        Builds OpenLCDUI
+    </description>
+
+    <import file="../../../build/utilities.xml"/>
+
+    <property name="java.src.paths" value="../src:../src_j2me"/>
+
+    <target name="system.properties">
+        <properties>
+            com.nokia.mid.ui.version=1.2
+            com.nokia.canvas.net.indicator.location=:lcduib.LcduiDynamicProperty
+            com.nokia.softkey1.label.location=:lcduib.LcduiDynamicProperty
+            com.nokia.softkey2.label.location=:lcduib.LcduiDynamicProperty
+            com.nokia.softkey3.label.location=:lcduib.LcduiDynamicProperty
+            com.nokia.softkey1.label.anchor=:lcduib.LcduiDynamicProperty
+            com.nokia.softkey2.label.anchor=:lcduib.LcduiDynamicProperty
+            com.nokia.softkey3.label.anchor=:lcduib.LcduiDynamicProperty
+            com.nokia.keyboard.type=:lcduib.LcduiDynamicProperty
+            com.nokia.key.scancode=:lcduib.LcduiDynamicProperty
+            com.nokia.key.modifier=:lcduib.LcduiDynamicProperty 
+        </properties>
+    </target>
+
+
+    <target name="create.public.api.jar">
+         <omj.public.apis includes="javax/microedition/lcdui/Alert.class, 
+                                    javax/microedition/lcdui/AlertType.class, 
+                                    javax/microedition/lcdui/Canvas.class, 
+                                    javax/microedition/lcdui/Choice.class, 
+                                    javax/microedition/lcdui/ChoiceGroup.class, 
+                                    javax/microedition/lcdui/Command.class, 
+                                    javax/microedition/lcdui/CommandListener.class, 
+                                    javax/microedition/lcdui/CustomItem.class, 
+                                    javax/microedition/lcdui/DateField.class, 
+                                    javax/microedition/lcdui/Display.class, 
+                                    javax/microedition/lcdui/Displayable.class, 
+                                    javax/microedition/lcdui/Font.class, 
+                                    javax/microedition/lcdui/Form.class, 
+                                    javax/microedition/lcdui/Gauge.class, 
+                                    javax/microedition/lcdui/Graphics.class, 
+                                    javax/microedition/lcdui/Image.class, 
+                                    javax/microedition/lcdui/ImageItem.class, 
+                                    javax/microedition/lcdui/Item.class, 
+                                    javax/microedition/lcdui/ItemCommandListener.class, 
+                                    javax/microedition/lcdui/ItemStateListener.class, 
+                                    javax/microedition/lcdui/List.class, 
+                                    javax/microedition/lcdui/Screen.class, 
+                                    javax/microedition/lcdui/Spacer.class, 
+                                    javax/microedition/lcdui/StringItem.class, 
+                                    javax/microedition/lcdui/TextBox.class, 
+                                    javax/microedition/lcdui/TextField.class, 
+                                    javax/microedition/lcdui/Ticker.class, 
+                                    com/nokia/mid/ui/DeviceControl.class,
+                                    com/nokia/mid/ui/DirectGraphics.class,
+                                    com/nokia/mid/ui/DirectGraphicsInvoker.class,
+                                    com/nokia/mid/ui/DirectUtils.class,
+                                    com/nokia/mid/ui/DisplayableInvoker.class,
+                                    com/nokia/mid/ui/Distribution.Policy.S60
+                                    com/nokia/mid/ui/FreeSizeFontInvoker.class,
+                                    com/nokia/mid/ui/FullCanvas.class,
+                                    com/nokia/mid/ui/TactileFeedback.class"/>
+    </target>
+    
+    
+  <target name="create.internal.api.jar">
+    <omj.internal.apis includes=
+                 "com/nokia/mj/impl/nokialcdui/LCDUIInvoker.class,
+                com/nokia/mj/impl/nokialcdui/ItemControlStateChangeListener.class"/>
+  </target>
+
+</project>

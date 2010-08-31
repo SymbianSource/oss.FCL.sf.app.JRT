@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="Eclipse SWT/common"/>
+	<classpathentry kind="src" path="Eclipse_SWT_PI/s60"/>
+	<classpathentry kind="src" path="Eclipse SWT/common_j2me"/>
+	<classpathentry kind="src" path="Eclipse SWT/qt"/>
+	<classpathentry kind="src" path="Eclipse SWT Browser/common"/>
+	<classpathentry kind="src" path="Eclipse SWT Browser/qt"/>
+	<classpathentry kind="src" path="Eclipse SWT Drag and Drop/qt"/>
+	<classpathentry kind="src" path="Eclipse_SWT_PI/common_j2me"/>
+	<classpathentry kind="src" path="Eclipse_SWT_PI/qt">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="org.eclipse.swt/Eclipse_SWT_PI/qt/library/release"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path="Nokia SWT/midp"/>
+	<classpathentry kind="src" path="Nokia SWT/extensions"/>
+	<classpathentry kind="var" path="S60_BUILD_ROOT/epoc32/release/winscw/udeb/java_impl_cldc.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

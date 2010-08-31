@@ -1,0 +1,65 @@
+<!--
+#
+# Copyright (c) 2008, 2010 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of the License "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<project name="eswtqt" default="deploy" basedir=".">
+
+    <description>
+        Builds eSWT on Qt
+    </description>
+
+    <import file="../../../../build/utilities.xml"/>
+    
+    <target name="init.component.properties">
+        <!-- Symbian MIDP specific properties-->
+        <condition property="java.src.paths" value="../../org.eclipse.swt/Eclipse_SWT_PI/s60:../../org.eclipse.swt/Eclipse_SWT_PI/qt:../../org.eclipse.swt/Eclipse_SWT_PI/webkit:../../org.eclipse.swt/Eclipse_SWT_PI/common_j2me:../../org.eclipse.swt/Eclipse SWT/qt:../../org.eclipse.swt/Eclipse SWT/common_j2me:../../org.eclipse.swt/Eclipse SWT/common:../../org.eclipse.swt/Eclipse SWT Drag and Drop/qt:../../org.eclipse.swt/Eclipse SWT Browser/qt:../../org.eclipse.swt/Eclipse SWT Browser/common:../../com.nokia.swt.extensions/extensions:../../com.nokia.swt.extensions/midp:../../org.eclipse.swt/Eclipse SWT Custom Widgets/common">
+            <isset property="target.s60" />
+        </condition> 
+        <condition property="javah.classnames" value="org.eclipse.swt.internal.qt.OS,org.eclipse.swt.internal.qt.graphics.OS,org.eclipse.swt.internal.qt.s60.OS,org.eclipse.swt.internal.extension.OS">
+            <isset property="target.s60" />
+        </condition>
+    
+        <!-- Linux MIDP specific properties-->
+        <condition property="java.src.paths" value="../../org.eclipse.swt/Eclipse_SWT_PI/linux:../../org.eclipse.swt/Eclipse_SWT_PI/qt:../../org.eclipse.swt/Eclipse_SWT_PI/webkit:../../org.eclipse.swt/Eclipse_SWT_PI/common_j2me:../../org.eclipse.swt/Eclipse SWT/qt:../../org.eclipse.swt/Eclipse SWT/common_j2me:../../org.eclipse.swt/Eclipse SWT/common:../../org.eclipse.swt/Eclipse SWT Drag and Drop/qt:../../org.eclipse.swt/Eclipse SWT Browser/qt:../../org.eclipse.swt/Eclipse SWT Browser/common:../../com.nokia.swt.extensions/extensions:../../com.nokia.swt.extensions/midp:../../org.eclipse.swt/Eclipse SWT Custom Widgets/common">
+            <isset property="target.linux" />
+        </condition>
+        <condition property="javah.classnames" value="org.eclipse.swt.internal.qt.OS,org.eclipse.swt.internal.qt.graphics.OS,org.eclipse.swt.internal.extension.OS">
+            <isset property="target.linux" />
+        </condition>
+
+        <echo message="java.src.paths = ${java.src.paths}"/>
+        <echo message="javah.classnames = ${javah.classnames}"/>
+    </target>
+
+    <!-- This property gets added to eswtqt.odc created by the build system -->
+    <target name="system.properties">
+      <properties>
+          org.eclipse.ercp.swt.defaultOrientation=system
+      </properties>
+    </target>
+
+    <!-- Exclude CDCCompatibilityDelegate class from the build since we are
+         building for CLDC. -->
+    <target name="compile">
+        <omj.javac excludes="**/CDCCompatibilityDelegate.java"/>
+    </target>
+
+    <target name="create.public.api.jar">
+        <omj.public.apis/>
+    </target>
+
+</project>

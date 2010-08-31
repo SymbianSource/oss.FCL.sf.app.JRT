@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="**/.svn/" kind="src" path="src"/>
+	<classpathentry kind="src" path="src_j2me"/>
+	<classpathentry kind="lib" path="S:/epoc32/RELEASE/WINSCW/udeb/Z/resource/java/jvm/lib/common/eswt.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="S:/epoc32/RELEASE/WINSCW/udeb/java_signature_test.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

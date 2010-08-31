@@ -480,7 +480,23 @@ int verifyCertChain(char **cert_chain, int no_certs,
             {
                 if (JavaCommonUtils::isFirstBoot())
                 {
-                    ret_code = KCertAndSignatureOk;
+                    // from the underlaying/openssl services point of view this
+                    // is a failure. In order to behave like everything is ok,
+                    // compute the root hash now so there is no need later to 
+                    // contact the underlaying/openssl services 
+                    // -> treat the last certificate from the chain as the user 
+                    // certificate
+                    X509 *user_cert = NULL;
+                    if (no_certs > 0)
+                    {
+                        user_cert = SecurityUtils::readCert(cert_chain[no_certs-1], strlen(cert_chain[no_certs-1]), PEM);
+                    }
+                    if (user_cert != NULL)
+                    {
+                        sprintf(root_hash,"%08lX",X509_issuer_name_hash(user_cert));
+                        X509_free(user_cert);
+                        ret_code = KCertAndSignatureOk;
+                    }
                 }
             }
 
@@ -519,7 +535,10 @@ int verifyCertChain(char **cert_chain, int no_certs,
         }
 
         // compute the root hash value if requested
-        sprintf(root_hash,"%08lX",X509_issuer_name_hash(x509_ctx->current_issuer));
+        if (x509_ctx->current_issuer != NULL)
+        {
+            sprintf(root_hash,"%08lX",X509_issuer_name_hash(x509_ctx->current_issuer));
+        }
         // add the '\0'
         root_hash[MD5_DIGEST_LEN] = '\0';
 

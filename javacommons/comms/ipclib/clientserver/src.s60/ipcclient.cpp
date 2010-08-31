@@ -176,8 +176,7 @@ void IpcClient::doMainL()
     User::LeaveIfError(mComms.Connect(serverName->Des()));
     LOG1(EJavaComms, EInfo, "IpcClient connected to %s", address.str().c_str());
 
-    mReceiver = new(ELeave) CReceiver(*this, *mListener, mComms);
-    CleanupStack::PushL(mReceiver);
+    mReceiver = CReceiver::NewLC(*this, *mListener, mComms);
     mReceiver->Receive();
 
     CActiveScheduler::Add(this);

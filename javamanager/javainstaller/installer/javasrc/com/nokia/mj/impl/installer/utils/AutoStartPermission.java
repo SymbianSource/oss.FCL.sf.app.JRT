@@ -75,6 +75,10 @@ public class AutoStartPermission extends PermissionBase
      */
     public boolean equals(Object obj)
     {
+        if (!(obj instanceof AutoStartPermission))
+        {
+            return false;
+        }
         return (obj.hashCode() == hashCode());
     }
 

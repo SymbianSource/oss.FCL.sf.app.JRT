@@ -42,6 +42,7 @@ int ApnSettings::setDefaultApn(int aType, int aApn)
             char * fret = if_indextoname(aApn,interfacename);
             strcpy(ifr.ifr_name, interfacename);
             ILOG1(ESOCKET, "interface name is %s",interfacename);
+            delete interfacename;
         }
         else
         {

@@ -24,6 +24,9 @@
 #include "logger.h"
 #include "javajniutils.h"
 
+#include "fs_methodcall.h"
+#include "com_nokia_mid_iapinfo_IAPInfoImpl.h"
+
 using namespace CommsDat;
 using namespace java::util;
 
@@ -35,47 +38,63 @@ _LIT(KGlobalSettingsTable, "GlobalSettings");
 _LIT(KFieldNameRecordId, "RecordId");
 _LIT(KFieldNameName, "Name");
 
+JNIEXPORT jint JNICALL Java_com_nokia_mid_iapinfo_IAPInfoImpl__1createSession
+(JNIEnv *, jobject)
+{
+    IapInfoSession *sess = NULL;
+    TRAPD(err,sess =  IapInfoSession::NewL(););
+    if (err!=KErrNone)
+    {
+        return err;
+    }
+    return reinterpret_cast<int>(sess);
+
+}
+
+
 JNIEXPORT void JNICALL Java_com_nokia_mid_iapinfo_CommsTable__1destroy(JNIEnv* ,
         jclass,
-        jint aHandle)
+        jint /*aHandle*/)
 {
-    LOG1(ESOCKET, EInfo, "CJAVACOMMDB + destroy() handle: %D", aHandle);
-    JavaCommDB* commdb = reinterpret_cast<JavaCommDB *>(aHandle);
-    delete commdb;
+    LOG(EJavaIapInfo, EInfo, "CJAVACOMMDB + destroy()");
+    // JavaCommDB* commdb = reinterpret_cast<JavaCommDB *>(aHandle);
+    //  delete commdb;
     LOG(EJavaIapInfo, EInfo, "CJAVACOMMDB - destroy()");
 }
 
-JNIEXPORT jint JNICALL Java_com_nokia_mid_iapinfo_CommsTable__1construct(JNIEnv* ,
-        jclass)
+
+JNIEXPORT jint JNICALL Java_com_nokia_mid_iapinfo_CommsTable__1open(JNIEnv* aJni,
+        jclass, jint aSessionHandle,
+        jstring aTableName)
 {
-    LOG(EJavaIapInfo, EInfo, "CJAVACOMMDB + construct()");
-    JavaCommDB *cdb = new JavaCommDB();
+    LOG(EJavaIapInfo, EInfo, "CJAVACOMMDB + open()gggggggggg");
+    IapInfoSession* session = reinterpret_cast<IapInfoSession *>(aSessionHandle);
+    JavaCommDB *cdb = new JavaCommDB(session);
+    JStringUtils table(*aJni, aTableName);
+    int err = -1;
+    TRAP(err,CallMethodL(cdb, &JavaCommDB::OpenL,table,cdb->iSession););
     TInt handle = reinterpret_cast<jint>(cdb);
-    LOG1(EJavaIapInfo, EInfo, "CJAVACOMMDB - construct() handle: %D", handle);
+    if (err < 0)
+        handle = err;
+    LOG(EJavaIapInfo, EInfo, "CJAVACOMMDB - open()hhhhhh");
     return handle;
 }
 
-JNIEXPORT jint JNICALL Java_com_nokia_mid_iapinfo_CommsTable__1open(JNIEnv* aJni,
-        jclass, jint aHandle,
-        jstring aTableName)
-{
-    LOG(EJavaIapInfo, EInfo, "CJAVACOMMDB + open()");
-    JavaCommDB* commdb = reinterpret_cast<JavaCommDB *>(aHandle);
-    JStringUtils table(*aJni, aTableName);
-
-    //LOG1(EJavaIapInfo,  EInfo,  "CJAVACOMMDB opening table: %S", table );
-    TRAPD(error, commdb->OpenL(table));
-    LOG(EJavaIapInfo, EInfo, "CJAVACOMMDB - open()");
-    return error;
-}
 
 JNIEXPORT void JNICALL Java_com_nokia_mid_iapinfo_CommsTable__1close(JNIEnv* ,
         jclass, jint aHandle)
 {
     LOG1(EJavaIapInfo, EInfo, "CJAVACOMMDB + close() handle: %D", aHandle);
     JavaCommDB* commdb = reinterpret_cast<JavaCommDB *>(aHandle);
-    TRAP_IGNORE(commdb->Close());
+    CallMethod(commdb, &JavaCommDB::Close,commdb->iSession);
+    //TRAP_IGNORE(commdb->Close());
     LOG(EJavaIapInfo, EInfo, "CJAVACOMMDB - close()");
+}
+
+void JavaCommDB::Destroy(JavaCommDB* aObj)
+{
+    delete aObj;
+
 }
 
 JNIEXPORT jint JNICALL Java_com_nokia_mid_iapinfo_CommsTable__1getRecordCount(JNIEnv* ,
@@ -85,7 +104,8 @@ JNIEXPORT jint JNICALL Java_com_nokia_mid_iapinfo_CommsTable__1getRecordCount(JN
     LOG(EJavaIapInfo, EInfo, "CJAVACOMMDB + getRecordCount()");
     JavaCommDB* commdb = reinterpret_cast<JavaCommDB *>(aHandle);
     TInt count = 0;
-    count = commdb->GetRecordCount();
+    CallMethod(count, commdb, &JavaCommDB::GetRecordCount,commdb->iSession);
+    //count = commdb->GetRecordCount();
     LOG1(EJavaIapInfo, EInfo, "CJAVACOMMDB returning value: %D", count);
     LOG(EJavaIapInfo, EInfo, "CJAVACOMMDB - getRecordCount()");
     return count;
@@ -104,7 +124,9 @@ JNIEXPORT jint JNICALL Java_com_nokia_mid_iapinfo_CommsTable__1readIntFieldValue
     JStringUtils field(*aJni, aFieldName);
 
     //LOG1(EJavaIapInfo,  EInfo,  "CJAVACOMMDB  reading field value: %S", field );
-    TRAPD(err, value = commdb->GetIntFieldValueL(field));
+
+    TRAPD(err,CallMethodL(value, commdb, &JavaCommDB::GetIntFieldValueL,field,commdb->iSession););
+    //TRAPD(err, value = commdb->GetIntFieldValueL(field));
 
     // Put the native error code into the Java error array
     jint javaError[1] =
@@ -131,7 +153,8 @@ JNIEXPORT jstring JNICALL Java_com_nokia_mid_iapinfo_CommsTable__1readStringFiel
     JStringUtils field(*aJni, aFieldName);
 
     //LOG1(EJavaIapInfo,  EInfo,  "CJAVACOMMDB  reading field value: %S", field );
-    TRAPD(err, value = commdb->GetStringFieldValueL(field));
+    TRAPD(err,CallMethodL(value, commdb, &JavaCommDB::GetStringFieldValueL,field,commdb->iSession););
+    // TRAPD(err, value = commdb->GetStringFieldValueL(field));
     if (NULL != value && KErrNone == err)
     {
         str = S60CommonUtils::NativeToJavaString(*aJni, value->Des());
@@ -153,7 +176,9 @@ JNIEXPORT jint JNICALL Java_com_nokia_mid_iapinfo_CommsTable__1next(JNIEnv* ,
 {
     LOG(EJavaIapInfo, EInfo, "CJAVACOMMDB + next()");
     JavaCommDB* commdb = reinterpret_cast<JavaCommDB *>(aHandle);
-    TInt rec = commdb->Next();
+    TInt rec;
+    CallMethod(rec, commdb, &JavaCommDB::Next,commdb->iSession);
+    //TInt rec = commdb->Next();
     LOG(EJavaIapInfo, EInfo, "CJAVACOMMDB - next()");
     return rec;
 }
@@ -174,7 +199,8 @@ JNIEXPORT jint JNICALL Java_com_nokia_mid_iapinfo_CommsTable__1findById(JNIEnv* 
     TInt recId = 0;
 
     JavaCommDB* commdb = reinterpret_cast<JavaCommDB *>(aHandle);
-    recId = commdb->FindById(aId);
+    CallMethod(recId, commdb, &JavaCommDB::FindById,aId,commdb->iSession);
+    //recId = commdb->FindById(aId);
     LOG(EJavaIapInfo, EInfo, "CJAVACOMMDB - findById()");
     return recId;
 }
@@ -189,7 +215,10 @@ JNIEXPORT jint JNICALL Java_com_nokia_mid_iapinfo_CommsTable__1findByName(JNIEnv
     JStringUtils name(*aJni, aName);
 
     JavaCommDB* commdb = reinterpret_cast<JavaCommDB *>(aHandle);
-    TRAP(recId, recId = commdb->FindByNameL(name));
+    TRAPD(err,CallMethodL(recId, commdb, &JavaCommDB::FindByNameL,name,commdb->iSession););
+    if (err < KErrNone)
+        recId = err;
+    //TRAP(recId, recId = commdb->FindByNameL(name));
     LOG(EJavaIapInfo, EInfo, "CJAVACOMMDB - findByName()");
     return recId;
 }
@@ -198,6 +227,13 @@ JNIEXPORT jint JNICALL Java_com_nokia_mid_iapinfo_CommsTable__1findByName(JNIEnv
  *    JavaCommDB class implementation ;
  * ---------------------------------------------------------------------------
  */
+
+JavaCommDB::JavaCommDB(IapInfoSession *aSession)
+{
+    iSession = aSession;
+
+
+}
 
 // ---------------------------------------------------------------------------
 //    Delete allocated member objects.
@@ -211,19 +247,18 @@ JavaCommDB::~JavaCommDB()
 
 // ---------------------------------------------------------------------------
 //    Delete allocated member objects.
-//    @return error code
 // -----------------------------------------------------------------------------
-TInt JavaCommDB::Close()
+void JavaCommDB::Close()
 {
     LOG(EJavaIapInfo, EInfo, "CJAVACOMMDB + Close()");
     iCurrentRecord = 0;
-    delete iTable;
+    if (iTable)
+        delete iTable;
+
     iTable = NULL;
-    delete iDb;
-    iDb = NULL;
 
     LOG(EJavaIapInfo, EInfo, "CJAVACOMMDB - Close()");
-    return KErrNone;
+
 }
 
 // ---------------------------------------------------------------------------
@@ -234,7 +269,7 @@ TInt JavaCommDB::Close()
 void JavaCommDB::OpenL(const TDesC& aTableName)
 {
     //LOG1(EJavaIapInfo, EInfo, "CJAVACOMMDB + OpenL(): open table: %S",   aTableName);
-    iDb = CMDBSession::NewL(KCDVersion1_1);
+    //iDb = CMDBSession::NewL(KCDVersion1_1);
     iCurrentRecord = 0;
 
     if (0 == aTableName.Compare(KIAPTable))
@@ -259,7 +294,8 @@ void JavaCommDB::OpenL(const TDesC& aTableName)
             "CJAVACOMMDB  OpenL(): ConnectionPreferences table opened.");
     }
     // Load the table
-    iTable->LoadL(*iDb);
+
+    iTable->LoadL(*(iSession->iDb));
     LOG(EJavaIapInfo, EInfo, "CJAVACOMMDB - OpenL()");
 }
 

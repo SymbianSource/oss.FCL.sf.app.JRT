@@ -26,7 +26,7 @@
 
 #include <CUIUtils.h>
 #include <eikenv.h>
-#include <SisxUIData.rsg>
+#include <sisxuidata.rsg>
 
 #include <javadomainpskeys.h>
 

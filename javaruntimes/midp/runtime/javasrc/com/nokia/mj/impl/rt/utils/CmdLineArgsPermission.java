@@ -77,6 +77,10 @@ public class CmdLineArgsPermission extends PermissionBase
      */
     public boolean equals(Object obj)
     {
+        if (!(obj instanceof CmdLineArgsPermission))
+        {
+            return false;
+        }
         return (obj.hashCode() == hashCode());
     }
 

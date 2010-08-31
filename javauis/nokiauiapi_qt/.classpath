@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="**/.svn/" kind="src" path="src"/>
+	<classpathentry kind="src" path="src_j2me"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="var" path="CLDC_JAR"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

@@ -1,3 +1,0 @@
-EXPORTS
-	?NewL@CLcdGraphicsDriver@@SAPAV1@W4TDisplayMode@@@Z @ 1 NONAME ; class CLcdGraphicsDriver * CLcdGraphicsDriver::NewL(enum TDisplayMode)
-

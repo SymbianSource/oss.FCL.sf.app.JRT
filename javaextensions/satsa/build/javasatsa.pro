@@ -14,12 +14,21 @@
 # Description:
 #
 
+include(../../../inc/build_defines.pri)
+
 TARGET=javasatsa
 TEMPLATE=lib
-CONFIG += omj java  stl
-CONFIG -= qt
+CONFIG += omj java stl
 
-
+contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_5_0) {
+    CONFIG -= qt
+}
+contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_9_2) {
+    CONFIG -= qt
+}
+contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_10_1_ONWARDS) {
+    CONFIG += hb
+}
 
 symbian {
 
@@ -30,12 +39,6 @@ symbian {
  							../../inc	\
  							../../../inc \
 
- 			contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_10_1_ONWARDS) {
-        
-        INCLUDEPATH += /epoc32/include/mw/hb/hbcore  \
-                     	/epoc32/include/mw/QtCore   \
-                      /epoc32/include/mw/QtGui   \
-             }
 
 
  			SOURCES +=  ../pki/src.s60/*.cpp \
@@ -59,10 +62,8 @@ symbian {
 								 -lcertstore \
 								 -lcharconv \
 								 -lcms \
-								 -laknnotify \
 								 -leiksrv \
 								 -lctframework \
-								 -lctsecdlgs \
 								 -lcustomapi \
 								 -lefsrv \
 								 -letel \
@@ -74,15 +75,16 @@ symbian {
 								 -lestlib	\
 								 -lcryptography \
 
-		contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_10_1_ONWARDS) {
-        
-        LIBS += -lHbCore\
-								-lQtGui\
-								-lQtCore\
 
-				}
-
-
+contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_5_0) {
+        LIBS +=    -laknnotify \
+        					 -lctsecdlgs \
+    }
+contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_9_2) {
+        LIBS +=    -laknnotify \
+        					 -lctsecdlgs \
+    }
+		
  }
 
 include(../../../build/omj.pri)

@@ -134,7 +134,7 @@ public class UDPDatagramConnectionImpl implements UDPDatagramConnection
 
             /* security related stuff */
             ApplicationUtils appUtils = ApplicationUtils.getInstance();
-            DatagramPermissionImpl per = new DatagramPermissionImpl("datagram://");
+            DatagramPermissionImpl per = new DatagramPermissionImpl(DatagramPermissionImpl.SERVER_TARGET);
             Logger.LOG(Logger.ESOCKET, Logger.EInfo,
                        "calling check permissions from UDPDatagramConnectionImpl");
             appUtils.checkPermission(per);
@@ -171,7 +171,7 @@ public class UDPDatagramConnectionImpl implements UDPDatagramConnection
             {
                 /* security related stuff, server mode datagram connection */
                 ApplicationUtils appUtils = ApplicationUtils.getInstance();
-                DatagramPermissionImpl per = new DatagramPermissionImpl("datagram://");
+                DatagramPermissionImpl per = new DatagramPermissionImpl(DatagramPermissionImpl.SERVER_TARGET);
                 Logger.LOG(Logger.ESOCKET, Logger.EInfo,
                            "calling check permissions from UDPDatagramConnectionImpl");
                 appUtils.checkPermission(per);
@@ -183,7 +183,7 @@ public class UDPDatagramConnectionImpl implements UDPDatagramConnection
             {
                 /* security related stuff, client mode datagram connection */
                 ApplicationUtils appUtils = ApplicationUtils.getInstance();
-                DatagramPermissionImpl per = new DatagramPermissionImpl("datagram://*");
+                DatagramPermissionImpl per = new DatagramPermissionImpl(DatagramPermissionImpl.CLIENT_TARGET);
                 Logger.LOG(Logger.ESOCKET, Logger.EInfo,
                            "calling check permissions from UDPDatagramConnectionImpl");
                 appUtils.checkPermission(per);

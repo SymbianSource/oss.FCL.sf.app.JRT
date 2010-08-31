@@ -146,15 +146,16 @@ void CNetworkFieldIntensitySensor::SignalLevelReceivedL(TInt aLevel)
     SensorData* data = iData[ KNISensorChannel ];
 
     TTime currentTime;
-    if (data->iTimeStamps || (iBufferingPeriod > 0))
-    {
-        currentTime.UniversalTime();
-        if (iStartTime == KErrNotFound)
+   
+        if ((data->iTimeStampsIncluded) || (iBufferingPeriod > 0))
         {
-            iStartTime = currentTime;
+            currentTime.UniversalTime();
+            if (iStartTime == KErrNotFound)
+            {
+                iStartTime = currentTime;
+            }
         }
-    }
-
+    
     // P&S sensors are assumed to have one channel only
     TInt interpretedValue = InterpretValue(aLevel);
 

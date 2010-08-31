@@ -9,8 +9,8 @@ MIDlet-Version: 1.0
 Nokia-MIDlet-UID-1: 0xefef0001
 Nokia-MIDlet-UID-3: 0xefef0003
 Nokia-MIDlet-On-Screen-Keypad: no
-Nokia-MIDlet-Auto-Start-1: true
-Nokia-MIDlet-Auto-Start-2: false
+Nokia-MIDlet-auto-start: true
+Nokia-MIDlet-auto-start-2: false
 Nokia-MIDlet-Auto-Start-3: once
 MIDlet-Install-Notify: http://195.134.231.83:7070/java-server/getresult.jsp?phone=CE00C90A2EF00F07C210A061BD15A4EC&tID=900_success
 MIDlet-Delete-Notify: http://195.134.231.83:7070/java-server/getresult.jsp?phone=CE00C90A2EF00F07C210A061BD15A4EC&tID=912_deletion_notification

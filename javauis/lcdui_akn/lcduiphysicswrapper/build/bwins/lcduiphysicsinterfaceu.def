@@ -1,3 +1,0 @@
-EXPORTS
-	?GetInstanceImpl@@YAPAVMMIDLcduiPhysicsInterface@@PAVCCoeControl@@PAVMMIDLcduiPhysicsObserver@@@Z @ 1 NONAME ; class MMIDLcduiPhysicsInterface * GetInstanceImpl(class CCoeControl *, class MMIDLcduiPhysicsObserver *)
-

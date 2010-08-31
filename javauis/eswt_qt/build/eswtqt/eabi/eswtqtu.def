@@ -1,0 +1,6 @@
+EXPORTS
+	_Z10jni_lookupPKc @ 1 NONAME
+	_ZN4Java4eSWT8JniUtils19JavaStringToQStringEP7JNIEnv_P8_jstring @ 2 NONAME
+	_ZN4Java4eSWT8JniUtils19QStringToJavaStringEP7JNIEnv_RK7QString @ 3 NONAME
+	_ZN4Java4eSWT8JniUtils5ThrowEP7JNIEnv_RKi @ 4 NONAME
+

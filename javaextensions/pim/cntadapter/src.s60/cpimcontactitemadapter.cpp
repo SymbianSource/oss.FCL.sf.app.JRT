@@ -193,12 +193,12 @@ void CPIMContactItemAdapter::UpdateCategoriesL(const MPIMContactItem& aItem, // 
     JELOG2(EPim);
     const CDesCArray& pimCategories = aItem.ItemData().Categories();
     const TInt pimCategoryCount = pimCategories.Count();
-    TBool* newCategoryTable = new(ELeave) TBool[pimCategoryCount];
-    CleanupArrayDeletePushL(newCategoryTable);
+    CArrayFix<TInt>* newCategoryTable = new(ELeave) CArrayFixFlat<TInt> (pimCategoryCount);
+    CleanupStack::PushL(newCategoryTable);    
     TInt i = 0;
     for (i = 0; i < pimCategoryCount; i++)
     {
-        newCategoryTable[i] = ETrue;
+        newCategoryTable->InsertL(TRUE,i);
     }
 
     CContactIdArray* cardCategories = aCard.GroupsJoinedLC();
@@ -220,14 +220,14 @@ void CPIMContactItemAdapter::UpdateCategoriesL(const MPIMContactItem& aItem, // 
         }
         else
         {
-            // old group
-            newCategoryTable[pos] = EFalse;
+			// old group
+            newCategoryTable->InsertL(FALSE,pos);
         }
     }
     // then add new categories
     for (i = 0; i < pimCategoryCount; i++)
     {
-        if (newCategoryTable[i])
+        if (newCategoryTable->At(i))
         {
             TPtrC category = pimCategories[i];
             iCategoryManager.AddToGroupL(id, category);

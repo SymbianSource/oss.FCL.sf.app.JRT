@@ -1,0 +1,85 @@
+/*
+* ==============================================================================
+*  Name        : eswtCore.loc
+*  Part of     : java / eswt
+*  Description : Localization file for the eswt mobile java api
+*  Version     : 1.0
+*
+* Copyright (c) 2007 Nokia Corporation.
+* All rights reserved. This program and the accompanying materials 
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+* 
+* Contributors:
+*     Nokia Corporation - S60 implementation
+* ==============================================================================
+*
+*
+* Syntax of a logical name entry in this file is the following:
+*
+* // d:context description (line 1)
+* // d:context description (line N)
+* // l:P_No
+* // w:
+* // r:n.n (n=0..N)
+* //
+* #define qtn_?feature/?module_name_?freetext "?text"
+* #define text_?feature/?module_name_?freetext "?text"
+*
+*   where
+*         "qtn_" or "text_" starts a logical name, which does not
+*          contain dots.
+*         "d:" starts description line(s), which
+*              clarify entry's context with information like:
+*              1. Is a word a verb in imperative or is it a noun ?
+*                   - what does text "Set" mean ?
+*              2. What will replace %U (unicode text parameter) or
+*                 %N (number parameter) included in texts ?
+*                   - is it phone number or email address ?
+*         "l:" starts a layout information (one line).
+*              "P" and "No" are symbols in LAF's information table
+*                 - "P" is parent pane or current pane
+*                 - "No" is reference number in table
+*         "w:" not used by Series 60
+*         "r:" starts the release information line. Write here the release
+*              where the text will be used for the first time.	
+*
+* ==============================================================================
+*/
+
+
+// LOCALISATION STRINGS
+
+//d:Command text associated to a softkey in the control pane.
+//d:Opens options menu.
+//l:control_pane_t1/opt7
+//w:
+//r:3.2
+//
+#define qtn_eswt_softkey_options "Options"
+
+//d:Command text associated to a softkey in the control pane.
+//d:Selects or accepts item.
+//l:control_pane_t1/opt7
+//w:
+//r:3.2
+//
+#define qtn_eswt_softkey_ok "Ok"
+
+//d:Command text associated to a softkey in the control pane.
+//d:Cancels previous operation without action.
+//l:control_pane_t1/opt7
+//w:
+//r:3.2
+//
+#define qtn_eswt_softkey_cancel "Cancel"
+
+//d:Default heading text for folder selection.
+//l:heading_pane_t1
+//w:
+//r:3.2
+//
+#define qtn_eswt_folder_select_heading "Select folder"
+
+// End of File

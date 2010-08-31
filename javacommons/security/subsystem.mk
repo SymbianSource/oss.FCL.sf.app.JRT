@@ -17,15 +17,13 @@
 include $(JAVA_SRC_ROOT)/build/Makefile.defs
 
 COMPONENTS = \
-	build
+	build \
+	javaunicertstoreplugin/build
 
 ifdef RD_JAVA_S60_RELEASE_5_0_IAD
 SUBSYSTEMS = \
 	legacysupport
 endif
-
-NONQTSUBSYSTEMS = \
-	javaunicertstoreplugin/build
 
 SYMBIAN_ONLY = \
     javaunicertstoreplugin/build
