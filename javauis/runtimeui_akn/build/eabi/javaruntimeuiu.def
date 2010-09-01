@@ -1,0 +1,10 @@
+EXPORTS
+	_Z10jni_lookupPKc @ 1 NONAME
+	_ZN4java9runtimeui14RuntimeUiAvkon5errorERK7TDesC16S4_S4_ @ 2 NONAME
+	_ZN4java9runtimeui14RuntimeUiAvkon7confirmERK7TDesC16RNS0_11ConfirmDataEb @ 3 NONAME
+	_ZN4java9runtimeui17GlobalMsgObserver4NewLEv @ 4 NONAME
+	_ZN4java9runtimeui17GlobalMsgObserver5NewLCEv @ 5 NONAME
+	_ZN4java9runtimeui17GlobalMsgObserver9getAnswerEv @ 6 NONAME
+	_ZTIN4java9runtimeui17GlobalMsgObserverE @ 7 NONAME ; #<TI>#
+	_ZTVN4java9runtimeui17GlobalMsgObserverE @ 8 NONAME ; #<VT>#
+

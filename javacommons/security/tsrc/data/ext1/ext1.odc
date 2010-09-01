@@ -1,5 +1,5 @@
 [properties]
 -Dcom.nokia.mj.addon.protected.ext1=com.nokia.mj.impl.,com.nokia.ext1.internal.,java.security.
 -Dcom.nokia.mj.addon.restricted.ext1=com.nokia.ext1.public.,com.nokia.mj.impl.
--Dcom.nokia.mj.addon.permissions.ext1=com.nokia.ext1.public.Ext1Perm,com.nokia.mj.impl.gcf.protocol.socket.SocketPermissionImpl;javax.microedition.io.Connector.socket,com.nokia.ext1.internal.Ext1Perm;com.nokia.ext1.public.Ext1Perm,com.nokia.ext1.internal.Ext1Perm;
+-Dcom.nokia.mj.addon.permissions.ext1=com.nokia.ext1.public.Ext1Perm,com.nokia.mj.impl.gcf.protocol.socket.SocketPermissionImpl;javax.microedition.io.Connector.socket,com.nokia.ext1.internal.Ext1Perm;com.nokia.ext1.public.Ext1Perm,com.nokia.ext1.internal.Ext1Perm,*;
 -Dcom.nokia.mj.addon.policies.ext1=c:\resource\java\security\extensions\ext1\policies\untrusted.ser;c:\resource\java\security\extensions\ext1\policies\trustedthirdparty.ser;

@@ -25,7 +25,6 @@
 #include "s60filesystemutilities.h"
 #include "javasymbianoslayer.h"
 
-#define BUF_LEN 255
 using namespace std;
 using namespace java::util;
 using namespace java::fileutils;
@@ -95,9 +94,8 @@ OS_EXPORT bool FileUtilities::isHidden(const std::wstring& aFile)
 OS_EXPORT std::wstring FileUtilities::listRoots()
 {
     JELOG2(EJavaFile);
-    TBuf<BUF_LEN> buf;
-    buf.Copy(S60FileSystemUtilities::GetSupportedDrives());    
-    std::wstring retString((wchar_t*)buf.Ptr());
+    TDesC16 aDes(S60FileSystemUtilities::GetSupportedDrives());
+    std::wstring retString((wchar_t*)aDes.Ptr());
     return retString;
 }
 

@@ -163,7 +163,7 @@ void StorageHandler::addToValidCerts(
     {
         aCerts.push_back(JavaCommonUtils::wstringToInt(aValue));
     }
-    catch (ExceptionBase& eb)
+    catch (ExceptionBase eb)
     {
         WLOG1WSTR(EJavaStorage,
                   "Invalid cert index skipped: %s", aValue);

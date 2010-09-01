@@ -1,0 +1,34 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.7 [en] (WinNT; I) [Netscape]">
+   <title>org.eclipse.ercp.swt.core.common</title>
+</head>
+<body>
+<b>org.eclipse.ercp.swt.core.common</b>
+<p>This folder holds common SWT code that can be used across Core eSWT 
+implementations.  The classes are contained in subfolders that match the 
+SWT desktop source folder names.  This folder represents a Simple Project 
+(i.e., it is not a Java Project).  It is not meant to be loaded in your 
+Eclipse workspace.  It is meant to be shared across eSWT implementations 
+via CVS modules.  CVS modules work like linked resources (Eclipse concept) 
+or symbolic resources (Linux concept).  A CVS module is defined for each 
+subfolder in the org.eclipse.ercp.swt.core.common folder:
+<ul>
+<li>eswt-core-common --> module for SWT-common folder</li>
+<li>eswt-core-common-j2me --> module for SWT-common-j2me folder</li>
+<li>eswt-core-common-j2se --> module for SWT-common-j2se folder</li>
+</ul>
+<p>These above definitions exist in the modules file of the CVSROOT repository 
+component.  A Core eSWT implementation can then reference these modules.  For example, the 
+org.eclipse.ercp.swt.core.win project (i.e., the win32/wm2003 implementation of 
+Core eSWT) defines itself in the modules file as follows:
+<pre>   org.eclipse.ercp.swt.core.win  org.eclipse.ercp/org.eclipse.ercp.swt.core.win  &eswt-core-common &eswt-core-common-j2me &eswt-core-common-j2se</pre>
+<p>The above indicates that the org.eclipse.ercp.swt.core.win module consists of 
+the org.eclipse.ercp/org.eclipse.ercp.swt.core.win folder plus the common SWT code 
+modules.  Access to the modules file in CVSROOT is restricted.  To define a module, 
+you must send a request to webmaster@eclipse.org.  Please follow module naming 
+conventions similar to what is defined for the Core eSWT win implementation.
+</body>
+</html>

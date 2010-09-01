@@ -62,7 +62,7 @@ public class TestPermissionMappingTable
                 "com.nokia.mj.impl.security.midp.authorization.DatagramProtocolPermissionImpl", "datagram://"));
         TEST_PERMISSION_MAPPING_TABLE.put(
             "javax.microedition.io.Connector.comm", new MIDPPermission(
-                "com.nokia.mj.impl.security.midp.authorization.CommProtocolPermissionImpl", "comm:*"));
+                "com.nokia.mj.impl.security.midp.authorization.CommProtocolPermissionImpl", "comm://*"));
         TEST_PERMISSION_MAPPING_TABLE.put(
             "javax.microedition.io.PushRegistry", new MIDPPermission(
                 "javax.microedition.io.PushRegistryPermission", "*"));

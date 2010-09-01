@@ -20,6 +20,8 @@
 
 #include <javausermessages.rsg>
 
+#include <avkon.rsg>
+#include <AknGlobalConfirmationQuery.h>
 #include <stringresourcereader.h>
 #include <StringLoader.h>
 #include <data_caging_path_literals.hrh>
@@ -41,12 +43,6 @@
 #include "s60commonutils.h"
 #include "securitycommsmessagedefs.h"
 
-#ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS
-#include "confirmquery.h"
-#else
-#include <avkon.rsg>
-#include <AknGlobalConfirmationQuery.h>
-#endif
 
 
 //_LIT(KMIDP2TrustRoot, "J2ME MIDP2 Trust Root");
@@ -64,11 +60,8 @@ using namespace java::comms;
  *
  */
 CJavaCertStoreImpl::CJavaCertStoreImpl(CJavaCertStoreToken& aToken)
-        : CActive(EPriorityNormal),mToken(aToken),mClientStatus(NULL),mState(EInitial),mTempCertData(0)
+        : CActive(EPriorityNormal),mToken(aToken),mClientStatus(NULL),mState(EInitial),mQuery(0),mTempCertData(0)
 {
-#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
-    mQuery.reset(0);
-#endif        
 }
 
 /**
@@ -884,9 +877,7 @@ void CJavaCertStoreImpl::HandleDeleteDisableQuery(TRequestStatus &aRequestStatus
         SetActive();
         return;
     }
-#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
     delete mQuery.release();
-#endif        
     mState = EInitial;
     TRequestStatus* pRequestStatus = &aRequestStatus;
     User::RequestComplete(pRequestStatus,KErrCancel);
@@ -903,24 +894,8 @@ void CJavaCertStoreImpl::ShowQueryL(TInt resourceId)
     std::auto_ptr<CStringResourceReader> reader(CStringResourceReader::NewL(resourceFileName));
     std::auto_ptr<HBufC> queryPrompt(reader->ReadResourceString(resourceId).AllocL());
 
-#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
     mQuery.reset(CAknGlobalConfirmationQuery::NewL());
     mQuery->ShowConfirmationQueryL(iStatus,queryPrompt->Des(),R_AVKON_SOFTKEYS_OK_CANCEL);
-#else
-    int completeStatus = KErrCancel;
-    ConfirmQuery* query = new ConfirmQuery();
-    QString queryText = QString::fromStdWString(
-            std::wstring((wchar_t*) queryPrompt->Ptr(), 
-                    queryPrompt->Length())); 
-    if (query->accept(queryText))
-    {
-        completeStatus = KErrNone;
-    }
-    delete query; query = NULL;
-    TRequestStatus* status = &iStatus;
-    User::RequestComplete(status, completeStatus);
-#endif
-    
 }
 
 /**
@@ -930,15 +905,9 @@ void CJavaCertStoreImpl::SendDisableMsg(TInt aStatus)
 {
 
     mState = EInitial;
-#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
     delete mQuery.release();
-#endif        
     mState = EInitial;
-#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
     if (EAknSoftkeyOk != aStatus)
-#else
-    if (KErrNone != aStatus)
-#endif        
     {
         User::RequestComplete(mClientStatus,KErrCancel);
         return;
@@ -953,15 +922,9 @@ void CJavaCertStoreImpl::SendDeleteMsg(TInt aStatus)
 {
 
     mState = EInitial;
-#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
     delete mQuery.release();
-#endif        
     mState = EInitial;
-#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
     if (EAknSoftkeyOk != aStatus)
-#else
-    if (KErrNone != aStatus)
-#endif        
     {
         User::RequestComplete(mClientStatus,KErrCancel);
         return;

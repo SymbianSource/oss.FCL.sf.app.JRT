@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description:  A file argument reader implementation for JvmArgs modifier.
+* Description:  A default empty implementation for JvmArgs modifier.
 *
 */
 
@@ -23,17 +23,33 @@
 #include "jvmargsfilereader.h"
 #include "argsmodifier.h"
 
+#ifdef __SYMBIAN32__
+#include <AknGlobalNote.h>
+_LIT(KArgsTxt, "Note! Modified VM arguments used!");
+#endif
+
 void logArguments(std::wstring aArg)
 {
     WLOG1(EJavaRuntime, " '%S'", aArg.c_str());
 }
+
+#ifdef __SYMBIAN32__
+void showWarningDialogL()
+{
+    ::CAknGlobalNote* globalNote = CAknGlobalNote::NewL();
+    CleanupStack::PushL(globalNote);
+    globalNote->ShowNoteL(EAknGlobalInformationNote, KArgsTxt);
+    CleanupStack::PopAndDestroy(globalNote);
+}
+#endif
+
 
 OS_EXPORT
 void java::runtime::modifyJvmArguments(const std::wstring& aIdentifier,
                                        std::list<std::wstring>& aJvmArgs,
                                        std::list<std::wstring>& aApplicationAndArgs)
 {
-    PLOG(EJavaRuntime, "JVM File Argument modifier in use");
+    JELOG2(EJavaRuntime);
 
 #ifdef __SYMBIAN32__
     // Open the extension directory of the J9 VM.
@@ -54,6 +70,9 @@ void java::runtime::modifyJvmArguments(const std::wstring& aIdentifier,
         std::for_each(aJvmArgs.begin(), aJvmArgs.end(), logArguments);
         WLOG(EJavaRuntime, "new App arguments");
         std::for_each(aApplicationAndArgs.begin(), aApplicationAndArgs.end(), logArguments);
+#ifdef __SYMBIAN32__
+        TRAP_IGNORE(showWarningDialogL());
+#endif
     }
 }
 

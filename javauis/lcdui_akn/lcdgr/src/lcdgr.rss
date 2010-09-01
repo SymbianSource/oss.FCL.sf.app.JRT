@@ -1,0 +1,186 @@
+/*
+* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
+
+#include <uikon.rh>
+
+NAME LCGR
+
+RESOURCE RSS_SIGNATURE { }
+
+// TTransparency - from lcdgdrv.h
+enum TTransparency
+    {
+    ETransparencyNone           = 0x0,
+    ETransparencyMaskBitmap     = 0x1,
+    ETransparencyAlphaBitmap    = 0x2,
+    ETransparencyAlphaChannel   = 0x3,
+    ETransparencyMaskChannel    = 0x4
+    };
+
+// TDisplayMode - from gdi.h
+enum TDisplayMode
+    {
+    ENone       = 0,
+    EGray2      = 1,
+    EGray256    = 4,
+    EColor64K   = 7,
+    EColor16M   = 8,
+    EColor4K    = 10,
+    EColor16MU  = 11,
+    EColor16MA  = 12
+    };
+
+/**
+ * EDefaultDisplayMode - from MMIDBitmapImage in lcdgr.h
+ * match screen display mode
+ */
+#define EDefaultDisplayMode -1
+
+STRUCT GRAPHICS_MODE
+    {
+    /**
+     * The screen displaymode.
+     */
+    WORD    screenMode;
+
+    /**
+     * Primary mode used for Images and Canvas and CustomItem framebuffers.
+     */
+    WORD    primaryMode;
+
+    /**
+     * Display mode for images with binary transparency. Note that images
+     * with full 256 level alpha transparency will always use either the
+     * alpha channel in the primary mode (if available) or will use EGray256
+     * alpha bitmaps.
+     *
+     * This will be ignored if the primary mode supports transparency.
+     */
+    WORD    transparencyMode;
+
+    /**
+     * Default display mode to use for color bitmaps in Items and
+     * Displayble titlebar icons.
+     */
+    WORD    uiColorBitmapMode;
+
+    /**
+     * Default display mode to use for alpha/transparency bitmaps in
+     * Items and Displayable titlebar icons.
+     */
+    WORD    uiAlphaBitmapMode;
+
+    /**
+     * Whether alpha/transparency bitmaps for Items and Displayable titlebar
+     * icons should be inverted.
+     */
+    WORD    uiAlphaBitmapInverted;
+    }
+
+STRUCT GRAPHICS_CONFIG
+    {
+    /**
+     * Array of graphics modes indicating primary displaymode to use for Canvas/CustomItem/Image
+     * for each supported screen displaymode. Also contains default displaymodes to use for
+     * bitmap images for UI components.
+     */
+    STRUCT graphicsModes[];
+
+    /**
+     * Set to true if your hardware requires CFbsScreenDevice::Update(region) for
+     * the framebuffer to update the screen.
+     */
+    WORD updateRequired;
+
+    /**
+     * Set to true if you wish Canvas to be double buffered. Note that GameCanvas is always
+     * double buffered so this will not effect games that use GameCanvas. Furthermore some
+     * MIDlets always allocate their own double buffer ( in effect triple buffering ), so
+     * the value of double buffered canvas may have reduced given that MIDlet writers could
+     * do the right thing - either use GameCanvas, or roll their own after testing
+     * Canvas.isDoubleBuffered().
+     *
+     * NOTE: This configuration parameter will be overridden to true if your MMIDCanvas
+     * implementation supplies a native frame buffer.
+     */
+    WORD useDoubleBuffer;
+    }
+
+/**
+ * lcdgr graphics configuration. This version contains a fairly extensive
+ * list of graphics modes that should cover all modes supported by lcdgd.
+ *
+ * To test lcdgr in a particular mode, ensure that there is a GRAPHICS_MODE
+ * entry for each screen mode your device supports and set the primary mode
+ * in each entry to the mode you wish to test.
+ */
+RESOURCE GRAPHICS_CONFIG R_GRAPHICS_CONFIG
+    {
+    graphicsModes=
+        {
+        GRAPHICS_MODE
+            {
+            screenMode        = EColor64K;
+            primaryMode       = EColor64K;
+            transparencyMode  = EDefaultDisplayMode;
+            uiColorBitmapMode = EDefaultDisplayMode;
+            uiAlphaBitmapMode = EDefaultDisplayMode;
+            uiAlphaBitmapInverted = 0;
+            },
+        GRAPHICS_MODE
+            {
+            screenMode        = EColor16M;
+            primaryMode       = EColor16MA;
+            transparencyMode  = ENone;
+            uiColorBitmapMode = EDefaultDisplayMode;
+            uiAlphaBitmapMode = EDefaultDisplayMode;
+            uiAlphaBitmapInverted = 0;
+            },
+        GRAPHICS_MODE
+            {
+            screenMode        = EColor4K;
+            primaryMode       = EColor4K;
+            transparencyMode  = EDefaultDisplayMode;
+            uiColorBitmapMode = EDefaultDisplayMode;
+            uiAlphaBitmapMode = EDefaultDisplayMode;
+            uiAlphaBitmapInverted = 0;
+            },
+        GRAPHICS_MODE
+            {
+            screenMode        = EColor16MU;
+            primaryMode       = EColor16MA;
+            transparencyMode  = EDefaultDisplayMode;
+            uiColorBitmapMode = EDefaultDisplayMode;
+            uiAlphaBitmapMode = EDefaultDisplayMode;
+            uiAlphaBitmapInverted = 0;
+            },
+        GRAPHICS_MODE
+            {
+            screenMode        = EColor16MA;
+            primaryMode       = EColor16MA;
+            transparencyMode  = ENone;
+            uiColorBitmapMode = EColor16MU;
+            uiAlphaBitmapMode = EGray2;
+            uiAlphaBitmapInverted = 0;
+            }
+        };
+
+
+    updateRequired = 0;
+    useDoubleBuffer = 1;
+    }

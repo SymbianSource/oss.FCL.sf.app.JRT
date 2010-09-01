@@ -1,0 +1,75 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+PRJ_EXPORTS
+#include <platform_paths.hrh>
+#include "dc_exports.inf"
+#include "../../../inc/build_defines.hrh"
+
+../camerasound/data/CamcorderJavaCapture.wav		/epoc32/release/winscw/udeb/z/system/sounds/digital/CamcorderJavaCapture.wav
+../camerasound/data/CamcorderJavaCapture.wav		/epoc32/release/winscw/urel/z/system/sounds/digital/CamcorderJavaCapture.wav
+../camerasound/data/CamcorderJavaCapture.wav		/epoc32/release/armv5/udeb/z/system/sounds/digital/CamcorderJavaCapture.wav
+../camerasound/data/CamcorderJavaCapture.wav		/epoc32/release/armv5/urel/z/system/sounds/digital/CamcorderJavaCapture.wav
+
+../camerasound/data/CamcorderJavaStart.wav			/epoc32/release/winscw/udeb/z/system/sounds/digital/CamcorderJavaStart.wav
+../camerasound/data/CamcorderJavaStart.wav			/epoc32/release/winscw/urel/z/system/sounds/digital/CamcorderJavaStart.wav
+../camerasound/data/CamcorderJavaStart.wav			/epoc32/release/armv5/udeb/z/system/sounds/digital/CamcorderJavaStart.wav
+../camerasound/data/CamcorderJavaStart.wav			/epoc32/release/armv5/urel/z/system/sounds/digital/CamcorderJavaStart.wav
+
+// Added exports to javauis as other components such as broadcast/amms can use these headers
+../baseline/inc/cmmaevent.h                         |../../inc/cmmaevent.h
+../baseline/inc/cmmaplayer.h                        |../../inc/cmmaplayer.h
+../baseline/inc/cmmacontrol.h                       |../../inc/cmmacontrol.h
+../baseline/inc/cmmaeventsource.h                   |../../inc/cmmaeventsource.h
+../baseline/inc/cmmaplayerevent.h                   |../../inc/cmmaplayerevent.h
+../baseline/inc/cmmasourcestream.h                  |../../inc/cmmasourcestream.h
+../baseline/inc/cmmavideocontrol.h                  |../../inc/cmmavideocontrol.h
+../baseline/inc/cmmaaudioplayer.h                   |../../inc/cmmaaudioplayer.h
+../baseline/inc/cmmamidiplayer.h                    |../../inc/cmmamidiplayer.h
+../baseline/inc/cmmammfplayerbase.h                 |../../inc/cmmammfplayerbase.h
+../baseline/inc/cmmavolumecontrol.h                 |../../inc/cmmavolumecontrol.h
+../baseline/inc/cmmammfplayerfactory.h              |../../inc/cmmammfplayerfactory.h
+../baseline/inc/cmmaaudiovolumecontrol.h            |../../inc/cmmaaudiovolumecontrol.h
+../baseline/inc/mmmadisplay.h                       |../../inc/mmmadisplay.h
+../baseline/inc/mmmasnapshot.h                      |../../inc/mmmasnapshot.h
+../baseline/inc/mmmaguiplayer.h                     |../../inc/mmmaguiplayer.h
+../baseline/inc/mmmaeventposter.h                   |../../inc/mmmaeventposter.h
+../baseline/inc/mmmadisplaywindow.h                 |../../inc/mmmadisplaywindow.h
+../baseline/inc/mmmaplayerfactory.h                 |../../inc/mmmaplayerfactory.h
+../baseline/inc/mmmaplayerstatelistener.h           |../../inc/mmmaplayerstatelistener.h
+../baseline/inc/mmmaplayerinstanceobserver.h        |../../inc/mmmaplayerinstanceobserver.h
+../baseline/inc/mmmacallstateobserver.h             |../../inc/mmmacallstateobserver.h
+../baseline/inc/mmmasourcestreamlistener.h          |../../inc/mmmasourcestreamlistener.h
+../baseline/inc/mmmasnapshotreadycallback.h         |../../inc/mmmasnapshotreadycallback.h
+
+#ifdef RD_JAVA_NGA_ENABLED
+../baseline/inc.nga/cmmavideoplayer.h               |../../inc/cmmavideoplayer.h
+../baseline/inc.nga/cmmasurfacewindow.h             |../../inc/cmmasurfacewindow.h
+#else
+../baseline/inc.dsa/cmmadsawindow.h                 |../../inc/cmmadsawindow.h
+../baseline/inc.dsa/cmmavideoplayer.h               |../../inc/cmmavideoplayer.h
+#endif
+
+#ifdef RD_JAVA_HTTP_EMC_ENABLED
+../baseline/inc.emc/cmmamanager.h                   |../../inc/cmmamanager.h
+../baseline/inc.emc/cmmaemcaudioplayer.h            |../../inc/cmmaemcaudioplayer.h
+../baseline/inc.emc/cmmaemcplayerbase.h             |../../inc/cmmaemcplayerbase.h
+#endif
+
+// Generic configuration interface for mobilemedia cenrep settings  
+// mobilemedia_102828A1 implementation specifics for cenrep data
+../conf/mobilemedia.confml          APP_LAYER_CONFML(mobilemedia.confml)
+../conf/mobilemedia_102828A1.crml   APP_LAYER_CRML(mobilemedia_102828A1.crml)

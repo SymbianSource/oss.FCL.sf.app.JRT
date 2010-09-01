@@ -1,0 +1,226 @@
+/*
+* Copyright (c) 2003 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  The project specification file for midp lcdui
+*
+*/
+
+
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+#include <bldvariant.hrh>
+#include <data_caging_paths.hrh>
+#include "../../../inc/capabilities.mmh"
+
+#include <../../../../inc/project_defines.hrh>
+#include <../../../../inc/java_stdcpp_support_for_dll.hrh>
+#include <../../../../inc/build_defines.hrh>
+
+TARGET          lcdui.dll
+TARGETTYPE      dll
+CAPABILITY  J2ME_VMS_CAPABILITIES
+VENDORID    VID_DEFAULT
+UID      0x10003D1C 0x10003D1F
+
+PAGED
+
+// Modify default options to optimize for speed over size in this module.
+// 12.9.2009: Disabled the optimizations, as RVCT2.2 [Build 686] breaks on ARMV5 UDEB
+// OPTION ARMCC -O3
+// OPTION ARMCC -Otime
+// ALWAYS_BUILD_AS_ARM
+
+SOURCEPATH  ../src
+
+SOURCE  CMIDApplication.cpp CMIDAppUi.cpp
+SOURCE  CMIDAlert.cpp
+SOURCE  CMIDAlertDialog.cpp
+SOURCE  CMIDCanvas.cpp
+SOURCE  CMIDCanvasKeypad.cpp
+SOURCE  CMIDCommand.cpp
+SOURCE  CMIDCommandList.cpp
+SOURCE  CMIDComponentFactory.cpp
+SOURCE  CMIDControlItem.cpp
+SOURCE  CMIDCustomItem.cpp
+SOURCE  CMIDDisplayable.cpp
+SOURCE  CMIDFont.cpp
+SOURCE  CMIDForm.cpp
+SOURCE  CMIDFormPhysics.cpp
+SOURCE  CMIDGaugeItem.cpp
+SOURCE  CMIDDateFieldItem.cpp
+SOURCE  CMIDDefaultBackground.cpp
+SOURCE  CMIDImageItem.cpp
+SOURCE  CMIDItem.cpp
+SOURCE  CMIDList.cpp
+SOURCE  CMIDScaler.cpp
+SOURCE  CMIDSpacer.cpp
+SOURCE  CMIDStringItem.cpp
+SOURCE  Cmidformrow.cpp
+SOURCE  CMIDLabelContainerItem.cpp
+SOURCE  CMIDTextBoxControl.cpp
+SOURCE  CMIDEdwin.cpp
+SOURCE  CMIDEdwinUtils.cpp
+SOURCE  CMIDTextBoxDialogControl.cpp
+SOURCE  CMIDTextBoxEdwin.cpp
+SOURCE  CMIDTextBoxEdwinCustomDraw.cpp
+SOURCE  CMIDTextBoxQueryDialog.cpp
+SOURCE  CMIDTextFieldEdwin.cpp
+SOURCE  CMIDTextFieldItem.cpp
+SOURCE  CMIDTicker.cpp
+SOURCE  CMIDUIManager.cpp
+SOURCE  CMIDUtils.cpp
+SOURCE  CMIDMenuHandler.cpp
+SOURCE  CMIDNetworkIndicator.cpp
+SOURCE  CMIDCallIndicator.cpp
+SOURCE  CMIDChoiceGroupItem.cpp
+SOURCE  CMIDChoiceGroupControl.cpp
+SOURCE  CMIDChoiceGroupListBox.cpp
+SOURCE  CMIDChoiceGroupModel.cpp
+SOURCE  CMIDChoiceGroupElement.cpp
+SOURCE  CMIDItemLabel.cpp
+SOURCE  CMIDSoftKey.cpp
+SOURCE  CMIDKeyDecoder.cpp
+SOURCE  CMIDRemConObserver.cpp
+SOURCE  CMIDQwertyWatch.cpp
+SOURCE  CMIDPopupNoteController.cpp
+SOURCE  CMIDTactileFeedbackExtension.cpp
+SOURCE  CMIDTextEditor.cpp
+SOURCE  CMIDTextEditorEdwin.cpp
+SOURCE  CMIDTextEditorEdwinCustomDraw.cpp
+SOURCE  CMIDEditingStateIndicator.cpp
+SOURCE  CMIDCanvasGraphicsItem.cpp
+SOURCE  CMIDCanvasGraphicsItemPainter.cpp
+
+START RESOURCE  lcdui.rss
+targetpath      /resource/java
+HEADER
+LANGUAGE_IDS
+END
+
+// registration resource file
+START RESOURCE lcdui_reg.rss
+TARGETPATH private/10003a3f/apps
+END
+
+USERINCLUDE   ../inc
+USERINCLUDE   ../../inc
+USERINCLUDE   ../../../inc
+USERINCLUDE   ../../../../inc
+USERINCLUDE   ../../../../inc/j2me
+USERINCLUDE   ../../../../inc/j2me/midp2/data
+USERINCLUDE   ../../../../inc/j2me/midp2/security
+
+// LCDUI had dependencies to apps layer
+
+LIBRARY  AknIcon.lib    // Needed for AvkonIconFileName
+LIBRARY  AknSkins.lib // Needed for ticker skin support
+LIBRARY  avkon.lib
+LIBRARY  bafl.lib
+LIBRARY  bitgdi.lib
+LIBRARY  cone.lib
+LIBRARY  efsrv.lib
+LIBRARY  egul.lib
+LIBRARY  eikcoctl.lib
+LIBRARY  eikcore.lib
+LIBRARY  eikctl.lib
+LIBRARY  eikdlg.lib
+LIBRARY  estor.lib
+LIBRARY  etext.lib
+LIBRARY  fbscli.lib
+LIBRARY  form.lib
+LIBRARY  gdi.lib
+LIBRARY  hal.lib
+LIBRARY  javaremconobserver.lib
+
+LIBRARY VPbkEng.lib             // phonebook2
+LIBRARY Pbk2Presentation.lib    // phonebook2
+LIBRARY ServiceHandler.lib      // needed for AIW service handler; used for making phone calls
+                                // & phonebook2 too
+
+LIBRARY  aiwdialdata.lib        // needed for textbox/field: create call
+LIBRARY  ws32.lib
+LIBRARY  ektran.lib
+LIBRARY  DSClient.lib
+LIBRARY  fontutils.lib
+LIBRARY  CdlEngine.lib    // for layouts according to LAF specs
+LIBRARY  aknlistloadertfx.lib
+LIBRARY  javaregistryclient.lib // needed for access to java registery
+
+LIBRARY  AknLayout2Scalable.lib
+
+LIBRARY  ConnMon.lib  // for network indicator on the fullcanvas
+LIBRARY  etel3rdparty.lib // for call indicator on the fullcanvas
+LIBRARY  CentralRepository.lib
+
+LIBRARY  CommonEngine.lib // shared data stuff for form
+LIBRARY  javalegacyutils.lib
+LIBRARY  aknpictograph.lib  // need for Pictograph
+LIBRARY  bmpanim.lib  // for animation in Alert
+
+LIBRARY  hwrmlightclient.lib // for backlight
+LIBRARY  hwrmvibraclient.lib // for vibra
+
+LIBRARY FeatMgr.lib //For picking up static features at runtime (eg QWERTY)
+LIBRARY uiklaf.lib // Used by CMIDTextBoxCustomDraw
+
+LIBRARY remconcoreapi.lib       // For media key events
+LIBRARY remconinterfacebase.lib // For media key events
+
+LIBRARY PtiEngine.lib // for listing the available keyboards
+LIBRARY fepbase.lib   // for MCoeCaptionRetrieverForFep
+LIBRARY javacoreui.lib
+
+// libraries that are only needed for HW targets
+#if !defined (WINS) && !defined (WINSCW)
+LIBRARY DosSrv.lib
+LIBRARY DSClientDos.lib
+LIBRARY Powermgrcli.lib
+LIBRARY syslangutil.lib
+LIBRARY rfs.lib
+#endif
+LIBRARY apparc.lib apgrfx.lib
+
+#ifdef RD_TACTILE_FEEDBACK
+LIBRARY touchfeedback.lib
+#endif //RD_TACTILE_FEEDBACK
+
+#ifdef RD_SCALABLE_UI_V2
+LIBRARY peninputclient.lib
+#endif
+library         ESOCK.LIB
+
+LIBRARY flogger.lib
+LIBRARY javastorage.lib
+
+#ifdef RD_JAVA_ADVANCED_TACTILE_FEEDBACK
+//for informations about transition effects presence
+LIBRARY akntransitionutils.lib
+#endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
+
+#ifdef RD_JAVA_NGA_ENABLED
+LIBRARY libEGL.lib
+LIBRARY libGLESv1_CM.lib
+LIBRARY alfdecoderserverclient.lib
+LIBRARY	goommonitor.lib
+#endif // RD_JAVA_NGA_ENABLED
+
+NOSTRICTDEF
+
+#if defined(WINS)
+DEFFILE         bwins/lcdui.def
+#elif defined(ARMCC)
+DEFFILE         eabi/lcdui.def
+#endif
+
+
+// End of File

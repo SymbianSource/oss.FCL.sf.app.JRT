@@ -596,8 +596,6 @@ public class Installer
                   StopApplication());
         // Update new application info in the following steps.
         table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
-                  AddSecurityData());
-        table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
                   AddToStorage());
         table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
                   RegisterPush());

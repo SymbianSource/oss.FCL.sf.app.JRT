@@ -15,5 +15,5 @@
 #
 TEMPLATE = subdirs
 SUBDIRS += build/javasecurity.pro 
-SUBDIRS += javaunicertstoreplugin/build/javaunicertstoreplugin.pro 
+BLD_INF_RULES.prj_extensions += "$${LITERAL_HASH}include \"javaunicertstoreplugin/build/bld.inf\""  
 BLD_INF_RULES.prj_extensions += "prj_extensions" 

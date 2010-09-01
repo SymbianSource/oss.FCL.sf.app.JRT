@@ -25,13 +25,6 @@ import com.nokia.mj.impl.security.utils.SecurityPromptMessage;
 
 public class DatagramPermissionImpl extends PermissionBase
 {
-    /**
-     * Constants for identifying the target/uri of connection: client or server
-     */
-     public static String CLIENT_TARGET = "datagram://*";
-     public static String SERVER_TARGET = "datagram://";
-
-     private String iTarget;
 
     /**
      * Returns the question (as localized text) associated with the security
@@ -44,7 +37,6 @@ public class DatagramPermissionImpl extends PermissionBase
     public DatagramPermissionImpl(String uri)
     {
         super(uri);
-        iTarget = uri;
     }
 
     public String getSecurityPromptQuestion(int aInteractionMode)
@@ -64,10 +56,6 @@ public class DatagramPermissionImpl extends PermissionBase
 
     public String toString()
     {
-        if (SERVER_TARGET.equals(iTarget))
-        {
-            return "javax.microedition.io.Connector.datagramreceiver";
-        }
         return "javax.microedition.io.Connector.datagram";
     }
 
@@ -75,12 +63,7 @@ public class DatagramPermissionImpl extends PermissionBase
     {
         if (p instanceof DatagramPermissionImpl)
         {
-            DatagramPermissionImpl o = (DatagramPermissionImpl)p;
-            if ((iTarget != null && iTarget.equals(o.getTarget()))
-                || (iTarget == null && o.getTarget() == null))
-            {
-                return true;
-            }
+            return true;
         }
         return false;
     }
@@ -105,8 +88,4 @@ public class DatagramPermissionImpl extends PermissionBase
         return null;
     }
 
-    String getTarget()
-    {
-        return iTarget;
-    }
 }

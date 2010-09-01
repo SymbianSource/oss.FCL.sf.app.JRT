@@ -25,13 +25,6 @@ import com.nokia.mj.impl.security.utils.SecurityPromptMessage;
 
 public class SocketPermissionImpl extends PermissionBase
 {
-    /**
-     * Constants for identifying the target/uri of connection: client or server
-     */
-     static String CLIENT_TARGET = "socket://*";
-     static String SERVER_TARGET = "socket://";
-
-     private String iTarget;
 
     /**
      * Returns the question (as localized text) associated with the security
@@ -43,7 +36,6 @@ public class SocketPermissionImpl extends PermissionBase
     public SocketPermissionImpl(String uri)
     {
         super(uri);
-        iTarget = uri;
     }
 
     public String getSecurityPromptQuestion(int aInteractionMode)
@@ -63,10 +55,6 @@ public class SocketPermissionImpl extends PermissionBase
 
     public String toString()
     {
-        if (SERVER_TARGET.equals(iTarget))
-        {
-            return "javax.microedition.io.Connector.serversocket";
-        }
         return "javax.microedition.io.Connector.socket";
     }
 
@@ -74,12 +62,7 @@ public class SocketPermissionImpl extends PermissionBase
     {
         if (p instanceof SocketPermissionImpl)
         {
-            SocketPermissionImpl o = (SocketPermissionImpl)p;
-            if ((iTarget != null && iTarget.equals(o.getTarget()))
-                || (iTarget == null && o.getTarget() == null))
-            {
-                return true;
-            }
+            return true;
         }
         return false;
     }
@@ -104,8 +87,4 @@ public class SocketPermissionImpl extends PermissionBase
         return null;
     }
 
-    String getTarget()
-    {
-        return iTarget;
-    }
 }

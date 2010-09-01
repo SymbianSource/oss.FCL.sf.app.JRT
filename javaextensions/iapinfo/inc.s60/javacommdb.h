@@ -23,7 +23,6 @@
 #include <commsdat.h>
 #include <metadatabase.h>
 #include "com_nokia_mid_iapinfo_CommsTable.h"
-#include "iapinfosession.h"
 
 using namespace CommsDat;
 
@@ -42,8 +41,6 @@ class JavaCommDB
 public:
 
     ~ JavaCommDB();
-    
-    JavaCommDB(IapInfoSession *aSess);
 
     /**
      * Opens the given table.
@@ -53,12 +50,12 @@ public:
      */
     void OpenL(const TDesC&);
 
-    static void Destroy(JavaCommDB* aObj);
     /**
      * Close the table and delete allocated member objects.
-     * @since S60 v3.0     
+     * @since S60 v3.0
+     * @return error code
      */
-    void Close();
+    TInt Close();
 
     /**
      * Get number of records in the current table.
@@ -136,9 +133,6 @@ private:
      * Initialized in the Open() function.
      */
     CMDBRecordSet<CCDRecordBase>* iTable;
-
-public:    
-    IapInfoSession* iSession; 
 };
 
 #endif // JAVACOMMDB_H

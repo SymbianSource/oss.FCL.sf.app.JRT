@@ -266,14 +266,14 @@ public final class AuthenticationModule
      *                       (if applicable)
      * @param appJARPath     the path to the JAR being authenticated
      */
-    public AuthenticationCredentials[] authenticateJar(
+    public void authenticateJar(
+        StorageSession storageSession,
         Uid msUID,
         Uid oldMSUID,
         String appJARPath,
         boolean drmContent)
     {
         AuthenticationStorageData data = null;
-        Credentials selectedCredentials = null;
         try
         {
             Vector allAuthCredentials = (Vector)iAuthCredentials.get(msUID);
@@ -307,15 +307,15 @@ public final class AuthenticationModule
                     null /*validatedChainIndexes*/,
                     null /* jarPath*/,
                     iSecurityWarningsMode);
-                selectedCredentials = new Credentials(
-                    data.getProtectionDomain(),
-                    data.getProtectionDomainCategory(),
-                    jarHash,
-                    null /* root hash */,
-                    -1 /* validated chain index*/,
-                    null /* signing cert */);
                 verifyUpdate(
-                    new Credentials[] {selectedCredentials},
+                    new Credentials[] {new Credentials(
+                                           data.getProtectionDomain(),
+                                           data.getProtectionDomainCategory(),
+                                           jarHash,
+                                           null /* root hash */,
+                                           -1 /* validated chain index*/,
+                                           null /* signing cert */)
+                                      },
                     oldMSUID);
             }
             else
@@ -328,7 +328,7 @@ public final class AuthenticationModule
                 String jarHashValue = null;
                 String rootHashValue = null;
                 Vector validatedChainIndexes = new Vector();
-                selectedCredentials = selectCredentials(jarHash, allAuthCredentials, validatedChainIndexes);
+                Credentials selectedCredentials = selectCredentials(jarHash, allAuthCredentials, validatedChainIndexes);
                 if (selectedCredentials == null
                         || selectedCredentials.getProtectionDomainName() == null)
                 {
@@ -378,6 +378,8 @@ public final class AuthenticationModule
                     validatedChainIndexes,
                     iSecurityWarningsMode);
             }
+
+            writeAuthenticationStorageData(storageSession, msUID, data, (oldMSUID != null && oldMSUID.equals(msUID)));
         }
         finally
         {
@@ -387,18 +389,17 @@ public final class AuthenticationModule
                 iSelectedAuthCredentials.put(msUID, data);
             }
         }
-        return new AuthenticationCredentials[] {selectedCredentials};
     }
 
     /**
      */
-    public AuthenticationCredentials[] authenticateJar(
+    public void authenticateJar(
+        StorageSession storageSession,
         Uid uid,
         Uid oldUid,
         ProtectionDomain protectionDomain,
         String appJARPath)
     {
-        Credentials selectedCredentials = null;
         if (protectionDomain == null
                 || (!protectionDomain.equals(ProtectionDomain.getManufacturerDomain())
                     && !protectionDomain.equals(ProtectionDomain.getOperatorDomain())
@@ -437,20 +438,18 @@ public final class AuthenticationModule
             null /*validatedChainIndexes*/,
             null /* jarPath*/,
             iSecurityWarningsMode);
-        selectedCredentials = new Credentials(
-            data.getProtectionDomain(),
-            data.getProtectionDomainCategory(),
-            jarHash,
-            null /* root hash */,
-            -1 /* validated chain index*/,
-            null /* signing cert */);
         verifyUpdate(
-            new Credentials[] {selectedCredentials},
+            new Credentials[] {new Credentials(
+                                   data.getProtectionDomain(),
+                                   data.getProtectionDomainCategory(),
+                                   jarHash,
+                                   null /* root hash */,
+                                   -1 /* validated chain index*/,
+                                   null /* signing cert */)
+                              },
             oldUid);
 
-        iSelectedAuthCredentials.put(uid, data);
-
-        return new AuthenticationCredentials[] {selectedCredentials};
+        writeAuthenticationStorageData(storageSession, uid, data, (oldUid != null && oldUid.equals(uid)));
     }
 
     /**
@@ -582,24 +581,6 @@ public final class AuthenticationModule
     }
 
     /**
-     * Writes to storage all the security data related to a certain MIDlet suite
-     *
-     * @param sessionID the JavaStorage session to be used when
-     *                  writing the security data into storage
-     * @param msUID     the UID if the MIDlet suite whose security data is
-     *                  being written
-     */
-    public void addSecurityData(StorageSession storageSession, Uid msUID, Uid oldMsUID)
-    {
-        Logger.log("Write authentication data to storage");
-        AuthenticationStorageData authStorageData =
-            (AuthenticationStorageData)iSelectedAuthCredentials.remove(
-                msUID);
-        writeAuthenticationStorageData(storageSession, msUID, authStorageData,
-            (oldMsUID != null && oldMsUID.equals(msUID)));
-    }
-
-    /**
      * Returns the details of the certificates used for authenticating a
      * MIDlet suite. This method is used at installation time.
      *
@@ -680,20 +661,31 @@ public final class AuthenticationModule
      * @param aMediaId        the identifier of the media where the MIDlet
      *                        suite is installed
      */
-    public void setMediaId(Uid aMsUid, int aMediaId)
+    public void setMediaId(StorageSession aStorageSession, Uid aMsUid, int aMediaId)
     {
         // store the jar hash only if the suite was installed on a non-protected media
         if (isDriveProtected(aMediaId))
         {
-            AuthenticationStorageData authStorageData =
-                (AuthenticationStorageData)iSelectedAuthCredentials.get(
-                    aMsUid);
-            if (authStorageData != null)
+            SecurityStorage storage = new SecurityStorage(aStorageSession);
+            try
             {
-                Logger.log("Suite installed on protected media -> the runtime tamper detection is disabled");
-                authStorageData.setJarHashValue(null);
-                iSelectedAuthCredentials.put(aMsUid, authStorageData);
+                AuthenticationStorageData authStorageData =
+                    (AuthenticationStorageData)iSelectedAuthCredentials.get(
+                        aMsUid);
+                if (authStorageData != null)
+                {
+                    Logger.log("Suite installed on protected media -> the runtime tamper detection is disabled");
+                    authStorageData.setJarHashValue(null);
+                    storage.writeAuthenticationStorageData(aMsUid,
+                                                           authStorageData,
+                                                           true /* this is an update */);
+                }
             }
+            finally
+            {
+                iSelectedAuthCredentials.remove(aMsUid);
+            }
+
         }
     }
 
@@ -841,13 +833,13 @@ public final class AuthenticationModule
                 && authStorageData.getJarHashValue().length() > 0)
         {
             Logger.log("  Doing tamper detection");
-            String computedJarHash = null;
+            String computedJarHash = null;            
             try
             {
                 computedJarHash = _computeHash(authStorageData.getJarPath());
-            }catch(AuthenticationException e)
+            }catch(AuthenticationException e) 
             {
-                if (e.getErrorCode()
+                if (e.getErrorCode() 
                     == AuthenticationException.JAR_NOT_FOUND)
                 {
                     Logger.logWarning("    Jar not found while trying to compute hash");

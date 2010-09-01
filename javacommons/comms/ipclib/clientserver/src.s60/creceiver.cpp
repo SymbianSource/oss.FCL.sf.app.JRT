@@ -33,20 +33,8 @@ const TInt DEFAULT_BUFFER_SIZE  = 2048;
 CReceiver::CReceiver(IpcClient& aParent, IpcListener& aListener, RComms& aSession)
         : CActive(EPriorityStandard), mParent(aParent), mListener(aListener), mSession(aSession)
 {
-}
-
-CReceiver* CReceiver::NewLC(IpcClient& aParent, IpcListener& aListener, RComms& aSession)
-{
-    CReceiver* self = new(ELeave) CReceiver(aParent, aListener, aSession);
-    CleanupStack::PushL(self);
-    self->ConstructL();
-    return self;
-}
-
-void CReceiver::ConstructL()
-{
     CActiveScheduler::Add(this);
-    mBuffer.CreateL(DEFAULT_BUFFER_SIZE);
+    mBuffer.Create(DEFAULT_BUFFER_SIZE);
 }
 
 CReceiver::~CReceiver()

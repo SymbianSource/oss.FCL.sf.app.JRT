@@ -1,0 +1,34 @@
+EXPORTS
+	_Z11CheckBoundsRK5TSizeS1_RK5TRectRK13TLcdTransform @ 1 NONAME
+	_Z11ReflectDiagv @ 2 NONAME
+	_Z11ReflectHorzRK5TSize @ 3 NONAME
+	_Z11ReflectVertRK5TSize @ 4 NONAME
+	_Z13CalcTransformRK5TRectS1_14TTransformType @ 5 NONAME
+	_Z14CheckTransformRK5TRectS1_13TLcdTransform @ 6 NONAME
+	_Z17ClipTransformRectR5TRectS0_RKS_S2_R13TLcdTransform @ 7 NONAME
+	_Z8Identityv @ 8 NONAME
+	_Z9ClipRectsR5TRectRKS_S0_S2_ @ 9 NONAME
+	_Z9Transform14TTransformTypeRK5TSize @ 10 NONAME
+	_Z9TranslateRK6TPoint @ 11 NONAME
+	_ZN22CLcdGraphicsDriverImpl10CopyRegionEPK22TAcceleratedBitmapInfoS2_13TTransparencyRK5TRectS2_S2_S3_S6_14TTransformTypeS6_ @ 12 NONAME
+	_ZN22CLcdGraphicsDriverImpl10DrawRegionEPK22TAcceleratedBitmapInfoRK5TRectS2_S2_13TTransparencyS5_14TTransformTypeS5_ @ 13 NONAME
+	_ZN22CLcdGraphicsDriverImpl15DetectCollisionEPK22TAcceleratedBitmapInfo13TTransparencyRK5TSizeRK5TRectiRK6TPointS2_S3_S6_S9_iSC_ @ 14 NONAME
+	_ZN22CLcdGraphicsDriverImpl4NewLE12TDisplayMode @ 15 NONAME
+	_ZN22CLcdGraphicsDriverImplC1ERKN18CLcdGraphicsDriver11TDriverInfoEPK14TImageRendereriPK9TColorMapiPK18TCollisionDetectoriPK14TDrawFunctionsi @ 16 NONAME
+	_ZN22CLcdGraphicsDriverImplC2ERKN18CLcdGraphicsDriver11TDriverInfoEPK14TImageRendereriPK9TColorMapiPK18TCollisionDetectoriPK14TDrawFunctionsi @ 17 NONAME
+	_ZN22CLcdGraphicsDriverImplD0Ev @ 18 NONAME
+	_ZN22CLcdGraphicsDriverImplD1Ev @ 19 NONAME
+	_ZN22CLcdGraphicsDriverImplD2Ev @ 20 NONAME
+	_ZNK13TLcdTransform7InverseEv @ 21 NONAME
+	_ZNK13TLcdTransformclERK6TPoint @ 22 NONAME
+	_ZNK13TLcdTransformeqERKS_ @ 23 NONAME
+	_ZNK13TLcdTransformmlERKS_ @ 24 NONAME
+	_ZNK22CLcdGraphicsDriverImpl13GetDriverInfoERN18CLcdGraphicsDriver11TDriverInfoE @ 25 NONAME
+	_ZNK22CLcdGraphicsDriverImpl16GetDrawFunctionsE12TDisplayMode @ 26 NONAME
+	_ZTI16CRenderFunctions @ 27 NONAME ; #<TI>#
+	_ZTI22CLcdGraphicsDeviceImpl @ 28 NONAME ; #<TI>#
+	_ZTI22CLcdGraphicsDriverImpl @ 29 NONAME ; #<TI>#
+	_ZTV16CRenderFunctions @ 30 NONAME ; #<VT>#
+	_ZTV22CLcdGraphicsDeviceImpl @ 31 NONAME ; #<VT>#
+	_ZTV22CLcdGraphicsDriverImpl @ 32 NONAME ; #<VT>#
+

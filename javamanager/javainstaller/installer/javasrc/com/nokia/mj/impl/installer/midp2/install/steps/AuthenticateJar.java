@@ -35,12 +35,12 @@ public class AuthenticateJar extends ExeStep
         }
 
         ball.log("Authenticating Jar...");
-        ball.iAuthenticationCredentials =
-            AuthenticationModule.getInstance().authenticateJar
-            (ball.iSuite.getUid(),
-             (ball.iOldSuite != null? ball.iOldSuite.getUid(): null),
-             ball.iJarFilename,
-             (ball.iSuite.getContentInfo() == SuiteInfo.CONTENT_INFO_DRM? true: false));
+        AuthenticationModule.getInstance().authenticateJar
+        (ball.iStorageHandler.getSession(),
+         ball.iSuite.getUid(),
+         (ball.iOldSuite != null? ball.iOldSuite.getUid(): null),
+         ball.iJarFilename,
+         (ball.iSuite.getContentInfo() == SuiteInfo.CONTENT_INFO_DRM? true: false));
         ball.iJarAuthenticated = true;
         // Unregister OCSP listener after Jar authentication.
         AuthenticationModule.getInstance().unregisterOcspEventListener(

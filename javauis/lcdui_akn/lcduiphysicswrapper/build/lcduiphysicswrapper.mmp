@@ -1,0 +1,54 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  build information for the s60lcduiphysicswrapper plugin
+*
+*/
+
+
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+#include <bldvariant.hrh>
+#include "../../../inc/capabilities.mmh"
+
+#include <../../../../inc/project_defines.hrh>
+#include <../../../../inc/java_stdcpp_support_for_dll.hrh>
+
+TARGET          lcduiphysicswrap.dll
+TARGETTYPE      DLL
+VENDORID        VID_DEFAULT
+CAPABILITY      J2ME_VMS_CAPABILITIES
+
+UID      0x10003D1C 0x10003D1F
+
+PAGED
+
+// Modify default options to optimize for speed over size in this module.
+OPTION ARMCC -O3
+OPTION ARMCC -Otime
+ALWAYS_BUILD_AS_ARM
+
+SOURCEPATH  ../src
+SOURCE  CMIDPhysicsWrapper.cpp
+
+USERINCLUDE   ../inc
+USERINCLUDE   ../../inc
+USERINCLUDE   ../../../inc
+USERINCLUDE   ../../../../inc
+
+// Dependencies to apps layer
+LIBRARY     aknphysics.lib
+
+deffile ./~/lcduiphysicsinterface.def
+
+// End of File

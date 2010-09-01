@@ -173,9 +173,7 @@ public class ApplicationUtilsImpl extends ApplicationUtils
             {
                 if (iSilent)
                 {
-                    // Do not prompt the user in case of silent installation 
-                    // -> don't enforce security, just query the permission 
-                    // to see if it is not allowed
+                    // Do not prompt the user in case of silent installation.
                     int permissionResult =
                         iAccessController.checkPermission(aPermission.toString());
                     Log.log("ApplicationUtilsImpl.checkPermission: appUid: " +
@@ -190,8 +188,7 @@ public class ApplicationUtilsImpl extends ApplicationUtils
                 }
                 else
                 {
-                    // Not a silent installation -> enforce security (an user
-                    // prompt might be displayed)
+                    // Not a silent installation, display user prompt.
                     iAccessController.checkPermission(aPermission);
                     Log.log("ApplicationUtilsImpl.checkPermission: appUid: " +
                             aAppUid + ", " + aPermission.toString() + " ok");
@@ -199,17 +196,15 @@ public class ApplicationUtilsImpl extends ApplicationUtils
             }
             else
             {
-                // No user prompt allowed for this permission -> don't enforce
-                // security, just query the permission to see if it is not 
-                // allowed
+                // No user prompt allowed for this permission.
                 int permissionResult =
                     iAccessController.checkPermission(aPermission.toString());
                 Log.log("ApplicationUtilsImpl.checkPermission: appUid: " +
                         aAppUid + ", " + aPermission.toString() +
                         " result " + permissionResult);
-                if (permissionResult == 0)
+                if (permissionResult <= 0)
                 {
-                    // Permission is denied
+                    // Permission is either denied or requires user prompt.
                     throw new AccessControlException(
                         "Permission " + aPermission.toString() + " not allowed");
                 }

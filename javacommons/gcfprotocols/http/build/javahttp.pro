@@ -18,7 +18,6 @@ include(../../../../inc/build_defines.pri)
 TARGET=javahttp
 TEMPLATE=lib
 CONFIG += omj java stl
-CONFIG -= qt
 
 symbian {
 

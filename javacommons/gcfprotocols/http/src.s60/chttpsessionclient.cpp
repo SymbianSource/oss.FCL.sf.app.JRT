@@ -244,36 +244,35 @@ void HttpSessionClient::ConstructL(TInt aType, TInt aAPNId, TInt * apnerr)
     } // end of else
 
     LOG1(ESOCKET,EInfo,"apnerr = %d",*apnerr);
-    LOG(ESOCKET,EInfo,"now no re prompting");
 
     // This is special case when that IAP/SNAP is not found
     // Override the http stack's feaute of using device default
-//    if (*apnerr < 0)
-//    {
-//        LOG(ESOCKET,EInfo,"ECommDbDialogPrefPrompt set for the http session");
-//        int ret = iSocketServ.Connect();
-//        ret = iConnection.Open(iSocketServ);
-//#ifdef RD_JAVA_S60_RELEASE_9_2_ONWARDS
-//        TConnPrefList prefList;
-//        TExtendedConnPref prefs;
-//        prefs.SetConnSelectionDialog(ETrue);
-//        prefList.AppendL(&prefs);
-//        ret = iConnection.Start(prefList);
-//        LOG(ESOCKET,EInfo,"+HttpSessionClient:: using extended connection prefernce - error case ");
-//#else
-//        TCommDbConnPref pref;
-//        pref.SetDialogPreference(ECommDbDialogPrefPrompt);
-//        ret = iConnection.Start(pref);
-//        LOG(ESOCKET,EInfo,"+HttpSessionClient:: using commdb con pref - error case ");
-//#endif
-//
-//        RHTTPConnectionInfo connInfo = iHttpSession.ConnectionInfo();
-//        connInfo.SetPropertyL(iHttpSession.StringPool().StringF(
-//                                  HTTP::EHttpSocketServ, RHTTPSession::GetTable()), THTTPHdrVal(iSocketServ.Handle()));
-//        TInt connPtr = REINTERPRET_CAST(TInt, &iConnection);
-//        connInfo.SetPropertyL(iHttpSession.StringPool().StringF(
-//                                  HTTP::EHttpSocketConnection, RHTTPSession::GetTable()), THTTPHdrVal(connPtr));
-//    }
+    if (*apnerr < 0)
+    {
+        LOG(ESOCKET,EInfo,"ECommDbDialogPrefPrompt set for the http session");
+        int ret = iSocketServ.Connect();
+        ret = iConnection.Open(iSocketServ);
+#ifdef RD_JAVA_S60_RELEASE_9_2_ONWARDS
+        TConnPrefList prefList;
+        TExtendedConnPref prefs;
+        prefs.SetConnSelectionDialog(ETrue);
+        prefList.AppendL(&prefs);
+        ret = iConnection.Start(prefList);
+        LOG(ESOCKET,EInfo,"+HttpSessionClient:: using extended connection prefernce - error case ");
+#else
+        TCommDbConnPref pref;
+        pref.SetDialogPreference(ECommDbDialogPrefPrompt);
+        ret = iConnection.Start(pref);
+        LOG(ESOCKET,EInfo,"+HttpSessionClient:: using commdb con pref - error case ");
+#endif
+
+        RHTTPConnectionInfo connInfo = iHttpSession.ConnectionInfo();
+        connInfo.SetPropertyL(iHttpSession.StringPool().StringF(
+                                  HTTP::EHttpSocketServ, RHTTPSession::GetTable()), THTTPHdrVal(iSocketServ.Handle()));
+        TInt connPtr = REINTERPRET_CAST(TInt, &iConnection);
+        connInfo.SetPropertyL(iHttpSession.StringPool().StringF(
+                                  HTTP::EHttpSocketConnection, RHTTPSession::GetTable()), THTTPHdrVal(connPtr));
+    }
 
     //Add proxy support
     TRAP_IGNORE(LoadProxyLibraryL(aAPNId));

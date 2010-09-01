@@ -14,4 +14,5 @@
 # Description: Generated file - do not edit manually
 #
 TEMPLATE = subdirs
+BLD_INF_RULES.prj_extensions += "$${LITERAL_HASH}include \"appmngrplugin/build/bld.inf\""  
 BLD_INF_RULES.prj_extensions += "prj_extensions" 

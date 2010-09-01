@@ -1,0 +1,65 @@
+/*
+* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+#include "../../../inc/capabilities.mmh"
+#include "../inc/lcdgd_uids.h"
+
+#include <../../../../inc/project_defines.hrh>
+
+
+TARGET 		LCDC4K.DLL
+TARGETTYPE 	PLUGIN
+UID      	0x10009D8D	LCDGD_COLOR4K_DLL_UID
+
+CAPABILITY J2ME_VMS_CAPABILITIES
+
+PAGED
+
+// Modify default options to optimize for speed over size in this module.
+OPTION ARMCC -O3
+OPTION ARMCC -Otime
+ALWAYS_BUILD_AS_ARM
+
+APP_LAYER_SYSTEMINCLUDE
+
+USERINCLUDE ../inc
+USERINCLUDE	../../../../inc
+
+SOURCEPATH	../src
+SOURCE		lcdc4k.cpp
+SOURCE		lcd16bpp.cpp
+SOURCE		lcdbitblt.cpp
+SOURCE		collision.cpp
+SOURCE		lcdgdrvutil.cpp
+
+//
+// ECOM plugin resource file.
+//
+SOURCEPATH		../resource
+START RESOURCE 10208164.RSS
+TARGET LCDC4K.RSC
+END
+
+
+LIBRARY	euser.lib
+LIBRARY	gdi.lib
+LIBRARY bitgdi.lib
+LIBRARY	fbscli.lib
+LIBRARY	lcdgdrvi.lib
+

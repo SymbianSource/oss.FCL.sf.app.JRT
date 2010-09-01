@@ -493,7 +493,7 @@ public class GetComponentInfo
                 {
                     // Authenticate jar.
                     AuthenticationModule.getInstance().authenticateJar(
-                        suiteUid, null, iJarFilename,
+                        null, suiteUid, null, iJarFilename,
                         FileUtils.isDrmProtected(iJarFilename));
                 }
             }

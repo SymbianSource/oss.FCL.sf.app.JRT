@@ -58,7 +58,7 @@ public class PermissionMappingTable
                 "com.nokia.mj.impl.gcf.protocol.datagram.DatagramPermissionImpl", "datagram://"));
         PERMISSION_MAPPING_TABLE.put(
             "javax.microedition.io.Connector.comm", new MIDPPermission(
-                "com.nokia.mj.impl.gcf.protocol.comm.CommPermissionImpl", "comm:*"));
+                "com.nokia.mj.impl.gcf.protocol.comm.CommPermissionImpl", "comm://*"));
         PERMISSION_MAPPING_TABLE.put(
             "javax.microedition.io.PushRegistry", new MIDPPermission(
                 "com.nokia.mj.impl.gcf.PushRegistryPermissionImpl", "*"));

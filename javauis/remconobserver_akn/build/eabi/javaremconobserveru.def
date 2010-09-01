@@ -1,0 +1,13 @@
+EXPORTS
+	_ZN18CJavaRemConManager12SetObserverLER19CJavaRemConObserver @ 1 NONAME
+	_ZN18CJavaRemConManager14RemoveObserverER19CJavaRemConObserver @ 2 NONAME
+	_ZN18CJavaRemConManager4NewLEv @ 3 NONAME
+	_ZN18CJavaRemConManager5NewLCEv @ 4 NONAME
+	_ZN19CJavaRemConObserver4NewLER28MRemConCoreApiTargetObserver @ 5 NONAME
+	_ZTI18CJavaRemConManager @ 6 NONAME ; #<TI>#
+	_ZTI19CJavaRemConObserver @ 7 NONAME ; #<TI>#
+	_ZTI21CJavaRemConObservable @ 8 NONAME ; #<TI>#
+	_ZTV18CJavaRemConManager @ 9 NONAME ; #<VT>#
+	_ZTV19CJavaRemConObserver @ 10 NONAME ; #<VT>#
+	_ZTV21CJavaRemConObservable @ 11 NONAME ; #<VT>#
+

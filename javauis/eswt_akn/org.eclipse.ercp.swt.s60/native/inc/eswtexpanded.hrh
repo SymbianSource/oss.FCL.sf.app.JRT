@@ -1,0 +1,77 @@
+/*******************************************************************************
+ * Copyright (c) 2005, 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Nokia Corporation - S60 implementation
+ *******************************************************************************/
+
+
+#ifndef ESWTEXPANDED_HRH
+#define ESWTEXPANDED_HRH
+
+
+
+// FullScreen
+enum TWmlSettingsFullScreen
+{
+    EWmlSettingsFullScreenSoftkeysOnly,
+    EWmlSettingsFullScreenFullScreen
+};
+
+// MediaVolume
+enum TWmlSettingsMediaVolume
+{
+    EWmlSettingsVolumeMuted = 0,
+    EWmlSettingsVolume1     = 2,
+    EWmlSettingsVolume2     = 5,
+    EWmlSettingsVolume3     = 8,
+    EWmlSettingsVolume4     = 10
+};
+
+// Automatic updating
+enum TWmlSettingsAutomaticUpdating
+{
+    EWmlSettingsAutomaticUpdatingWeekly,
+    EWmlSettingsAutomaticUpdatingDaily,
+    EWmlSettingsAutomaticUpdating4hours,
+    EWmlSettingsAutomaticUpdatingHourly,
+    EWmlSettingsAutomaticUpdating15min,
+    EWmlSettingsAutomaticUpdatingOff
+};
+
+// Cookies
+enum TWmlSettingsCookies
+{
+    EWmlSettingsCookieReject,
+    EWmlSettingsCookieAllow
+};
+
+// ECMA
+enum TWmlSettingsECMA
+{
+    EWmlSettingsECMADisable,
+    EWmlSettingsECMAEnable
+};
+
+// IMEI
+enum TWmlSettingsIMEI
+{
+    EWmlSettingsIMEIDisable,
+    EWmlSettingsIMEIEnable
+};
+
+// Default Access Point
+enum TWmlSettingsAccessPointSelectionMode
+{
+    EWmlSettingsAccessPointSelectionModeUserDefined,
+    EWmlSettingsAccessPointSelectionModeAlwaysAsk
+};
+
+#endif // ESWTEXPANDED_HRH
+
+
+// End of file
