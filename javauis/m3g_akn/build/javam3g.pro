@@ -32,7 +32,7 @@ LIBS += -lcone \
         -lfbscli \
         -ljavalegacyutils \
 #ifdef RD_JAVA_NGA_ENABLED
-        -llibegl \
+        -llibegl_sw \
         -llibglesv1_cm \
 #else        
         -llibGLES_CM \
