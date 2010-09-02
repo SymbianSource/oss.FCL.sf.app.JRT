@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008, 2010 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,25 +16,25 @@
 
 using namespace Java::eSWT;
 
-SwtScopeLog::SwtScopeLog( const char* aFunctionName, const SwtLogType& aEnterType, const SwtLogType& aExitType )
+SWTQT_EXPORT SwtScopeLog::SwtScopeLog( const char* aFunctionName, const SwtLogType& aEnterType, const SwtLogType& aExitType )
     : mExitLogType( aExitType )
-	{
-	mFunctionName = new QString( aFunctionName );
-	SwtDataLog::LogData( "%s", mFunctionName->toLatin1().data(), aEnterType );
-	}
+    {
+    mFunctionName = new QString( aFunctionName );
+    SwtDataLog::LogData( "%s", mFunctionName->toLatin1().data(), aEnterType );
+    }
 
 SwtScopeLog::SwtScopeLog()
-	{
-	// Not used
-	}
+    {
+    // Not used
+    }
 
-SwtScopeLog::~SwtScopeLog()
-	{
-	if( mFunctionName )
-		{
-		SwtDataLog::LogData( "%s", mFunctionName->toLatin1().data(), mExitLogType );
-		delete mFunctionName;
-		mFunctionName = NULL;
-		}
-	}
+SWTQT_EXPORT SwtScopeLog::~SwtScopeLog()
+    {
+    if( mFunctionName )
+        {
+        SwtDataLog::LogData( "%s", mFunctionName->toLatin1().data(), mExitLogType );
+        delete mFunctionName;
+        mFunctionName = NULL;
+        }
+    }
 

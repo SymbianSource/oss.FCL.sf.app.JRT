@@ -174,9 +174,11 @@ jobjectArray CreateJavaStringArray(JNIEnv* aJniEnv,
     JELOG2(EPim);
     const TInt numElems = aNativeArray.Count();
 
+
     // Initializes the array with NULLs
     jobjectArray javaStringArray = aJniEnv->NewObjectArray(numElems,
                                    aJniEnv->FindClass("java/lang/String"), NULL);
+
 
     if (!javaStringArray)
     {
@@ -208,7 +210,6 @@ jobjectArray CreateJavaStringArray(JNIEnv* aJniEnv,
         // Avoid running out of local references
         aJniEnv->DeleteLocalRef(javaElem);
     }
-
     return javaStringArray;
 }
 

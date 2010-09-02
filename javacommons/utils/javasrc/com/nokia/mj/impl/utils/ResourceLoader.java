@@ -34,9 +34,6 @@ import java.util.*;
  *   Label noteLabel = createLabel(
  *       res.string("note"), horizontalSpan, labelStyle);
  * </pre>
- *
- * @author Nokia Corporation
- * @version 1.0
  */
 public class ResourceLoader
 {
@@ -67,8 +64,11 @@ public class ResourceLoader
                                              String qtFileName,
                                              String qtPrefix)
     {
-        // Avkon name prefix pair is used as key and this is same between platforms.
-        String key = avkonFileName + ":" + avkonPrefix;
+        // Construct key from filenames and prefixes, this is the same
+        // between platforms.
+        String key = (new StringBuffer()).append(avkonFileName).append(":")
+            .append(avkonPrefix).append(":").append(qtFileName).append(":")
+            .append(qtPrefix).toString();
         ResourceLoader result = (ResourceLoader)resourceLoaders.get(key);
 
         if (result == null)
@@ -146,6 +146,7 @@ public class ResourceLoader
      */
     public ResourceLoader(String resourceName, String aPrefix)
     {
+        locType = AVKON;
         prefix = aPrefix;
         loadFile(resourceName, true);  // Avkon
     }
@@ -159,7 +160,7 @@ public class ResourceLoader
      */
     public Formatter format(String id)
     {
-        return new Formatter(string(id));
+        return new Formatter(string(id), locType);
     }
 
     /**
@@ -174,11 +175,11 @@ public class ResourceLoader
     {
         if (locType == AVKON)
         {
-            return new Formatter(string(avkonId));
+            return new Formatter(string(avkonId), locType);
         }
         else
         {
-            return new Formatter(string(qtId));        
+            return new Formatter(string(qtId), locType);
         }
     }
 
@@ -195,11 +196,11 @@ public class ResourceLoader
     {
         if (locType == AVKON)
         {
-            return new Formatter(string(avkonId)).format(textParameters);
+            return new Formatter(string(avkonId), locType).format(textParameters);
         }
         else
         {
-            return new Formatter(string(qtId)).format(textParameters);
+            return new Formatter(string(qtId), locType).format(textParameters);
         }
     }
 
@@ -212,7 +213,7 @@ public class ResourceLoader
      */
     public Formatter format(Id id)
     {
-        return new Formatter(id.getString(locType));
+        return new Formatter(id.getString(locType), locType);
     }
 
     /**
@@ -225,7 +226,7 @@ public class ResourceLoader
      */
     public String format(String id, Object[] textParameters)
     {
-        return new Formatter(string(id)).format(textParameters);
+        return new Formatter(string(id), locType).format(textParameters);
     }
 
     /**
@@ -238,7 +239,7 @@ public class ResourceLoader
      */
     public String format(Id id, Object[] textParameters)
     {
-        return new Formatter(string(id.getString(locType))).format(textParameters);
+        return new Formatter(string(id.getString(locType)), locType).format(textParameters);
     }
 
 
@@ -331,13 +332,13 @@ public class ResourceLoader
         if (!avkon)  // Qt resources.
         {
             String langName = getLocaleIdQt();
-           
+
             // Emulator returns falsely en_GB as engineering English locale name.
             if (langName.equals("en_GB"))
             {
                 langName = "en";
             }
-            
+
             // Load with real locale id
             is = this.getClass().getResourceAsStream(
                 LOC_RESOURCE_BASE + resourceName + "_" + langName + ".loc");

@@ -19,5 +19,6 @@ SUBDIRS += tckrunner/runner/build/tckrunner.pro
 SUBDIRS += javacontrolpanel/starter/build/javacontrolpanel.pro 
 SUBDIRS += javacontrolpanel/controlpanel/build/javacontrolpanel.pro 
 SUBDIRS += javasecuritycustomization/build/javasecuritycustomization.pro 
+SUBDIRS += javafinishjrtinstall/build/javafinishjrtinstall.pro 
 BLD_INF_RULES.prj_extensions += "$${LITERAL_HASH}include \"testcerts/bld.inf\""  
 BLD_INF_RULES.prj_extensions += "prj_extensions" 

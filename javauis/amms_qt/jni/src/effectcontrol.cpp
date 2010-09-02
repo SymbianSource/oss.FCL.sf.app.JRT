@@ -25,7 +25,6 @@
 #include "jstringutils.h"
 #include "s60commonutils.h"
 using namespace java::util;
-#include <JniEnvWrapper.h>
 
 /**
  * wrapper for CAMMSEffectControlGroup::PresetNamesL()

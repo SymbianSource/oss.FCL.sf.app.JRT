@@ -172,16 +172,6 @@ private:
     int FillVectorWithStorageData();
 
     /**
-     * A utility function which converts a wstring into a TDesC
-     * and writes it into the stream.
-     *
-     * @param stream an RDesWriteStream into which the converted
-     *        string is written
-     * @param tempString the wstring which is to be converted.
-     */
-    void WriteStringtoStreamL(RDesWriteStream& aStream, std::wstring aTempString);
-
-    /**
      * A utility function which reads a TDesC from the stream, converts it
      * to a wstring and writes it into the vector.
      *
@@ -200,6 +190,17 @@ private:
      *         has completed successfully or not.
      */
     int WriteDataToStorage();
+
+
+    void FetchStorageEntryToStringVector(
+        const java::storage::JavaStorageEntry& aAttribute,
+        java::storage::JavaStorageApplicationList_t::const_iterator& aApplicationsIter
+        );
+
+    void WriteItemToStorageEntry(const std::wstring& aEntryName,
+                                 const std::wstring& aEntryValue,
+                                 java::storage::JavaStorageApplicationEntry_t& aInsertEntry);
+
 public:
     /**
      * Utility function which fills the vector with data got from storage.
@@ -396,6 +397,19 @@ private:
      * Own
      */
     int iBufferSpaceLeft;
+
+    /**
+     * During backup data fromJavaStorage will be temporarily stored
+     * in serialised format in this buffer.
+     */
+    HBufC8* iBufForJavaStorageItemsPtr;
+
+    /**
+     * Stores the position in iBufForJavaStorageItemsPtr from where data is
+     * being read during backup operation.
+     */
+    TPtrC8 iBuffReadPointer;
+
 };
 
 } // namespace backup

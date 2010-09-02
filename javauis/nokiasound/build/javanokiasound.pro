@@ -22,7 +22,7 @@ CONFIG -= qt
 LIBS += -lcenrepnotifhandler \
         -lcentralrepository \
         -lmediaclientaudio \
-        -lcommonengine \
+        -lCommonEngine \
         -ljavautils
 
 include(../../../build/omj.pri)

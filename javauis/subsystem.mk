@@ -28,10 +28,8 @@ COMPONENTS += nokiasound/build
 #
 # Common legacy utilities
 #
-SUBSYSTEMS += javalegacyutils
 
-
-SYMBIAN_ONLY += javalegacyutils nokiasound/build
+SYMBIAN_ONLY += nokiasound/build
 
 
 

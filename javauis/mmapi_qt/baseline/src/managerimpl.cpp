@@ -17,8 +17,6 @@
 
 #include <logger.h>
 
-#include <JniEnvWrapper.h>
-
 #include "com_nokia_microedition_media_ManagerImpl.h"
 #include "cmmamanager.h"
 #include "cmmaplayer.h"
@@ -108,7 +106,10 @@ LOCAL_C void InvokeConstructSvrL(MMAFunctionServer* aEventSource)
 JNIEXPORT jint JNICALL Java_com_nokia_microedition_media_ManagerImpl__1createEventSource
 (JNIEnv* aJni, jobject aPeer)
 {
-    TInt eventSourceHandle = MMAFunctionServer::NewL(*aJni, aPeer);
+    TInt eventSourceHandle = -1;
+    TRAPD(err,eventSourceHandle = MMAFunctionServer::NewL(*aJni, aPeer));
+    if (err != KErrNone)
+        eventSourceHandle = err;
     if (eventSourceHandle > KErrNone)
     {
         MMAFunctionServer* eventSource =

@@ -25,6 +25,8 @@ import com.nokia.mj.impl.rt.ui.ConfirmData;
 import com.nokia.mj.impl.rt.ui.RuntimeUi;
 import com.nokia.mj.impl.rt.ui.RuntimeUiFactory;
 
+import com.nokia.mj.impl.rt.midp.SchemeHandlerBase;
+
 import com.nokia.mj.impl.rt.support.ApplicationInfo;
 
 import com.nokia.mj.impl.security.midp.authorization.AccessControllerFactoryImpl;
@@ -33,6 +35,7 @@ import com.nokia.mj.impl.security.utils.SecurityPromptMessage;
 
 import com.nokia.mj.impl.utils.Id;
 import com.nokia.mj.impl.utils.Logger;
+
 
 /**
  * A class to be extended by the MIDlet applcation. See MIDP spec for
@@ -55,6 +58,8 @@ public abstract class MIDlet
      * For allowing of MIDlet constructor to be called only once.
      */
     private static boolean mConstructionAllowed = true;
+
+    private static final int DOMAIN_MANUFACTURER_OR_OPERATOR = 1;
 
     /*** ----------------------------- PUBLIC ------------------------------ */
 
@@ -139,6 +144,7 @@ public abstract class MIDlet
     {
         Logger.PLOG(Logger.EJavaRuntime,
                     "MIDlet.platformRequest(): " + url);
+
         if (null == url)
         {
             throw new NullPointerException(
@@ -153,23 +159,29 @@ public abstract class MIDlet
             return false;
         }
 
+        ApplicationInfo appInfo = ApplicationInfo.getInstance();
+        String domain = appInfo.getProtectionDomain();
+
+        // Handling for java scheme.
+        /*if (url.startsWith("java://"))
+        {
+            String handlerName = parseHandlerName(url);
+
+            if (handlerName.equals("taskmanager"))
+            {
+                // Check application is bound either Manufacturer or Operator domain.
+                enforceSecurityDomain(DOMAIN_MANUFACTURER_OR_OPERATOR, domain);
+            }
+
+            return invokeSchemeHandler(handlerName, url);
+        }*/
+
         // If the platform request is used to start arbitrary native application,
         // check that MIDlet is in manufacturer or operator domain
         if (startsArbitraryNativeApp(url))
         {
-            ApplicationInfo appInfo = ApplicationInfo.getInstance();
-            String domain = appInfo.getProtectionDomain();
-            if ((ApplicationInfo.MANUFACTURER_DOMAIN.equals(domain) != true) &&
-                    (ApplicationInfo.OPERATOR_DOMAIN.equals(domain) != true))
-            {
-                Logger.WLOG(Logger.EJavaRuntime,
-                            "Only manufacturer or operator domain MIDlets can start arbitrary native apps.");
-
-                throw new ConnectionNotFoundException(
-                    "Request allowed only for manufacturer or operator MIDlets");
-            }
+            enforceSecurityDomain(DOMAIN_MANUFACTURER_OR_OPERATOR, domain);
         }
-
 
         Logger.ILOG(Logger.EJavaRuntime,
                     "Before handleConfirmationNote()");
@@ -360,6 +372,72 @@ public abstract class MIDlet
         }
 
         return false;
+    }
+
+    private String parseHandlerName(String url) throws ConnectionNotFoundException
+    {
+        // Parse handler name from URL. Remove java:// prefix.
+        String handlerName = url.substring(7).trim();
+
+        // name format: handlername?query
+        int nameEndIndex = handlerName.indexOf('?');
+
+        if (nameEndIndex != -1)
+        {
+            handlerName = handlerName.substring(0, nameEndIndex);
+            return handlerName;
+        }
+        else
+        {
+            throw new ConnectionNotFoundException("Handler not found for URL");
+        }
+    }
+
+    private boolean invokeSchemeHandler(String handlerName, String url)
+        throws ConnectionNotFoundException
+    {
+        try
+        {
+            // Avoid loading whatever class from the system using handler
+            // as package name.
+            Class clazz = Class.forName("com.nokia.mj.impl.rt." + handlerName + ".SchemeHandler");
+
+            SchemeHandlerBase handler = (SchemeHandlerBase)clazz.newInstance();
+
+            handler.execute(url);
+            return false;  // No need to close MIDlet.
+        }
+        catch (Throwable t)
+        {
+            Logger.ELOG(Logger.EJavaRuntime, "Cannot invoke scheme handler: " + t.toString());
+            // ClassNotFoundException, IllegalAccessException or InstantionException.
+            throw new ConnectionNotFoundException("Handler not found for URL");
+        }
+    }
+
+    private void enforceSecurityDomain(int type, String domain)
+        throws ConnectionNotFoundException
+    {
+        if (DOMAIN_MANUFACTURER_OR_OPERATOR == type)
+        {
+            if ((ApplicationInfo.MANUFACTURER_DOMAIN.equals(domain) != true) &&
+                    (ApplicationInfo.OPERATOR_DOMAIN.equals(domain) != true))
+            {
+                Logger.WLOG(Logger.EJavaRuntime,
+                            "Only manufacturer or operator domain MIDlets can invoke scheme");
+
+                throw new ConnectionNotFoundException(
+                    "Request allowed only for manufacturer or operator MIDlets");
+            }
+        }
+        else
+        {
+            Logger.ELOG(Logger.EJavaRuntime,
+                        "Security enforcement failed: unknown domain category");
+
+            throw new ConnectionNotFoundException(
+                "Security enforcement failed: unknown domain category");
+        }
     }
 
     /*** ----------------------------- NATIVE ----------------------------- */

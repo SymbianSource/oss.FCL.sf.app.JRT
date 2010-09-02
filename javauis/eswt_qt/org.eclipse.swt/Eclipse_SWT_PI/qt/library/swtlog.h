@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2008, 2010 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,7 @@
 
 #include <QString>
 #include <QTime>
+#include "swtexport.h"
 
 // Un-comment the following line to enable JNI logging
 //#define SWT_ENABLE_LOGGING
@@ -64,7 +65,8 @@ static const char* const swtLogUnknownDataDescription = "Unknown";
 
 #ifdef SWT_ENABLE_LOGGING
 
-#ifdef Q_CC_NOKIAX86
+// For some reason Symbian Q_FUNC_INFO doesn't use __LINE__ but "(line number unavailable)"
+#ifdef Q_OS_SYMBIAN
 #define SWT_FUNC_INFO (QString(__FILE__ ":") += QString::number(__LINE__)).toLatin1().data()
 #else
 #define SWT_FUNC_INFO Q_FUNC_INFO
@@ -126,8 +128,8 @@ static const char* const swtLogUnknownDataDescription = "Unknown";
 class SwtScopeLog
 {
 public:
-    SwtScopeLog( const char* aFunctionName, const SwtLogType& aEnterType, const SwtLogType& aExitType );
-    virtual ~SwtScopeLog();
+    SWTQT_EXPORT SwtScopeLog( const char* aFunctionName, const SwtLogType& aEnterType, const SwtLogType& aExitType );
+    SWTQT_EXPORT virtual ~SwtScopeLog();
 protected:
     SwtScopeLog();
 private:

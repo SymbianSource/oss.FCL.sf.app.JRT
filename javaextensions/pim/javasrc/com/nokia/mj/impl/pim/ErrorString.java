@@ -217,4 +217,7 @@ public final class ErrorString
 
     /** Error description. */
     public final static String SEARCHING_FAILED_COLON = "Searching failed:";
+
+    /** Error description. */
+    public final static String CALENDAR_ALREADY_EXISTS = "Calendar already Exists:";
 }

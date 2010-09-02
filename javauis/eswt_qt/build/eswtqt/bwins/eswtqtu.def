@@ -3,4 +3,6 @@ EXPORTS
 	?Throw@JniUtils@eSWT@Java@@QAEXPAUJNIEnv_@@ABH@Z @ 2 NONAME ; void Java::eSWT::JniUtils::Throw(struct JNIEnv_ *, int const &)
 	?JavaStringToQString@JniUtils@eSWT@Java@@QAE?AVQString@@PAUJNIEnv_@@PAV_jstring@@@Z @ 3 NONAME ; class QString Java::eSWT::JniUtils::JavaStringToQString(struct JNIEnv_ *, class _jstring *)
 	?QStringToJavaString@JniUtils@eSWT@Java@@QAEPAV_jstring@@PAUJNIEnv_@@ABVQString@@@Z @ 4 NONAME ; class _jstring * Java::eSWT::JniUtils::QStringToJavaString(struct JNIEnv_ *, class QString const &)
+	??1SwtScopeLog@eSWT@Java@@UAE@XZ @ 5 NONAME ; Java::eSWT::SwtScopeLog::~SwtScopeLog(void)
+	??0SwtScopeLog@eSWT@Java@@QAE@PBDABW4SwtLogType@12@1@Z @ 6 NONAME ; Java::eSWT::SwtScopeLog::SwtScopeLog(char const *, enum Java::eSWT::SwtLogType const &, enum Java::eSWT::SwtLogType const &)
 

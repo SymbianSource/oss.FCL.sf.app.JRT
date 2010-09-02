@@ -1,0 +1,51 @@
+<!--
+#
+# Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description:
+#
+-->
+
+<project name="javacommonutilstest" basedir="." default="deploy">
+
+  <import file="../../../../../build/utilities.xml"/>
+  <property file="../../../../../build/unittest.properties"/>
+
+  <property name="java.src.paths" value="../../javasrc"/>
+  <property name="java.bin.root" value="${env.JAVA_BIN_ROOT}"/>
+
+  <target name="run" depends="deploy">
+      <echo>Running BufferedReaderTests</echo>
+      <exec executable="${java.bin.root}/bin/javaunittester">
+          <arg line="-mainclass=com.nokia.mj.impl.utils.BufferedReaderTests"/>
+      </exec>
+
+      <echo>Running ConcurrencyTests</echo>
+      <exec executable="${java.bin.root}/bin/javaunittester">
+          <arg line="-mainclass=com.nokia.mj.impl.utils.concurrent.ConcurrentTests"/>
+      </exec>
+
+      <echo>Running SystemPropertyTests</echo>
+      <exec executable="${java.bin.root}/bin/javaunittester">
+          <arg line="-mainclass=com.nokia.mj.impl.rt.SystemPropertyTests"/>
+      </exec>
+
+      <echo>Running DebugUtilsTests tests</echo>
+      <exec executable="${java.bin.root}/bin/javaunittester">
+          <arg line="-mainclass=com.nokia.mj.impl.utils.DebugUtilsTests"/>
+      </exec>
+  </target>
+
+  <target name="main" depends="clean,run"/>
+
+</project>

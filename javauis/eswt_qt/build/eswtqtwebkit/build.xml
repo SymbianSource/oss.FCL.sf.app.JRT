@@ -26,7 +26,7 @@
 
     <target name="init.component.properties">
         <property name="java.src.paths" value="../../org.eclipse.swt/Eclipse_SWT_PI/webkit"/>
-        <property name="javah.classnames" value="org.eclipse.swt.internal.qt.webkit.OS_webkit"/>
+        <property name="javah.classnames" value="org.eclipse.swt.internal.qt.webkit.WebkitOS"/>
         <echo message="java.src.paths = ${java.src.paths}"/>
         <echo message="javah.classnames = ${javah.classnames}"/>
     </target>

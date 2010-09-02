@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -183,16 +183,16 @@ public class AttributeValidatorTest extends TestCase implements InstallerMain
         Hashtable tbl = getTestTbl();
         String attrName = "MIDlet-Version";
         assertValidValue(tbl, attrName, "1");
-        assertValidValue(tbl, attrName, "1."); // OPEN: Is this valid? If we are lenient it is.
+        assertValidValue(tbl, attrName, "1.");
         assertValidValue(tbl, attrName, "1.1");
-        assertValidValue(tbl, attrName, "1.1."); // OPEN: Is this valid? If we are lenient it is.
+        assertValidValue(tbl, attrName, "1.1.");
         assertValidValue(tbl, attrName, "1.1.1");
+        assertValidValue(tbl, attrName, "1.1:1"); // invalid chars are ignored
         assertInvalidValue(tbl, attrName, ""); // invalid, attr is mandatory
         assertInvalidValue(tbl, attrName, " "); // invalid, attr is mandatory
-        assertInvalidValue(tbl, attrName, "1.1:1"); // invalid char
         assertInvalidValue(tbl, attrName, "1.1.1."); // invalid, only three parts allowed
         assertInvalidValue(tbl, attrName, "1.1.1.1"); // invalid, only three parts allowed
-        assertInvalidValue(tbl, attrName, "abc"); // invalid chars
+        assertInvalidValue(tbl, attrName, "abc"); // invalid, version is mandatory
     }
 
     public void testRuntimeExecutionEnvironment()

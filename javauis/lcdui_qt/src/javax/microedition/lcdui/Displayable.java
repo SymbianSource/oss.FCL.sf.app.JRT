@@ -255,15 +255,18 @@ public abstract class Displayable
     {
         // Implementation in child-classes
         // Logger.method(this, "handleShellActivatedEvent");
-        if(ESWTUIThreadRunner.getInstance().getDisplay().getActiveShell()
-                != null)
+        if(!isShellActive)
         {
-            if(JadAttributeUtil.isValue(JadAttributeUtil.ATTRIB_NOKIA_MIDLET_BACKGROUND_EVENT,
-                                        JadAttributeUtil.VALUE_PAUSE))
-            {
-                ApplicationUtils.getInstance().resumeApplication();
-            }
-            isShellActive = true;
+			if(JadAttributeUtil.isValue(JadAttributeUtil.ATTRIB_NOKIA_MIDLET_BACKGROUND_EVENT,
+										JadAttributeUtil.VALUE_PAUSE))
+	        {
+				if(ESWTUIThreadRunner.getInstance().getDisplay().getActiveShell()
+						!= null)
+	            {
+	                ApplicationUtils.getInstance().resumeApplication();
+	            }
+	            isShellActive = true;
+	        }
         }
     }
 
@@ -276,11 +279,11 @@ public abstract class Displayable
         // Logger.method(this, "handleShellDeActivatedEvent");
         if(isShellActive)
         {
-            if(ESWTUIThreadRunner.getInstance().getDisplay().getActiveShell()
-                    == null)
+			if(JadAttributeUtil.isValue(JadAttributeUtil.ATTRIB_NOKIA_MIDLET_BACKGROUND_EVENT,
+										JadAttributeUtil.VALUE_PAUSE))
             {
-                if(JadAttributeUtil.isValue(JadAttributeUtil.ATTRIB_NOKIA_MIDLET_BACKGROUND_EVENT,
-                                            JadAttributeUtil.VALUE_PAUSE))
+				if(ESWTUIThreadRunner.getInstance().getDisplay().getActiveShell()
+						== null)
                 {
                     ApplicationUtils.getInstance().pauseApplication();
                     isShellActive = false;

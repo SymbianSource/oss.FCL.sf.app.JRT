@@ -164,7 +164,7 @@ class StringItemLayouter extends ItemLayouter
                 // BUTTON
                 LayoutObject lo = formLayouter.getLayoutObject(item);
                 formLayouter.eswtAddNewLayoutObject(lo == null ? 
-					new LayoutObject(item, eswtGetCaptionedControl(item)) : lo);
+					new LayoutObject(item, eswtGetCaptionedControl(formComposite, item)) : lo);
             }
             else
             {

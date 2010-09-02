@@ -109,6 +109,7 @@ public class CommandBufferingTest extends SWTTestCase
         methodNames.addElement("testFillRect");
         methodNames.addElement("testFillRoundRect");
         methodNames.addElement("testFillTriangle");
+        
 
         return methodNames;
     }
@@ -129,7 +130,6 @@ public class CommandBufferingTest extends SWTTestCase
     	else if(getName().equals("testFillRect")) testFillRect();
     	else if(getName().equals("testFillRoundRect")) testFillRoundRect();
     	else if(getName().equals("testFillTriangle")) testFillTriangle();
-
         else super.runTest();
     }
 
@@ -765,32 +765,332 @@ public class CommandBufferingTest extends SWTTestCase
     	}	
 	}
 	
+	/**
+	 * Test drawString with two graphics
+	 */
 	void testDrawString()
 	{
-		
+	 	boolean pass = true;
+    	String errorMsg = "Pixel check failed at: ";
+    	
+    	Graphics g1 = testImage.getGraphics();
+    	Graphics g2 = testImage.getGraphics();
+    	
+    	// run different settings in the graphics instances
+    	applyGraphicsSettings(g1, GRAPHICS_SETTINGS_1);
+    	applyGraphicsSettings(g2, GRAPHICS_SETTINGS_2);
+    	
+    	final int anchor = Graphics.TOP | Graphics.LEFT;
+    	
+    	g1.drawString("I", 0, -9, anchor);
+    	g2.drawString("I", -2, -3, anchor);
+    	g1.drawString("I", 11, -9, anchor);
+
+     	// read image pixels to member array
+    	readTestImagePixels();
+    	
+    	//print(pixelData, testImageWidth);
+    	
+    	// Most of the points to validate are based on the values 
+    	// set by applyGraphicsSettings() -method
+    	final int[] spotsToValidate = {
+    			// "I" with large font 1
+    		  3, 1, BLUE,  // top inside 
+    		  3, 19, BLUE, // bottom inside
+    		  3, 0, WHITE, // top outside
+    		    
+    		  // "I" with small font
+    		  10, 4, RED, // top inside
+    		  10, 15, RED, // bottom inside
+    		  10,  3, WHITE, // top outside
+    		  10,  16, WHITE, // bottom outside
+    		    
+    		  // "I" with large font 2
+    		  15, 1, BLUE,  // top inside 
+    		  15, 19, BLUE, // bottom inside
+    		  15, 0, WHITE // top outside
+    	};
+    	
+    	// Validate test points against reference color
+    	for(int i = 0; i < spotsToValidate.length ; i=i+3) 
+    	{
+    		if(!validatePixel(spotsToValidate[i], spotsToValidate[i+1], spotsToValidate[i+2]))
+        	{
+        		pass = false;
+        		errorMsg += "("+spotsToValidate[i]+","+spotsToValidate[i+1]+"), expected "+colorToString(spotsToValidate[i+2])+
+        		            ", got "+ colorToString(getPixelIgnoreAlpha(spotsToValidate[i], spotsToValidate[i+1]))+" : ";
+        	}
+    	}
+    	
+    	if(!pass) 
+    	{
+    		fail(errorMsg);
+    	}
 	}
 	
+	/**
+	 * Test fillArc with two graphics
+	 */
 	void testFillArc()
 	{
-		
+    	boolean pass = true;
+    	String errorMsg = "Pixel check failed at: ";
+    	Graphics g1 = testImage.getGraphics();
+    	Graphics g2 = testImage.getGraphics();
+    	
+    	// run different settings in the graphics instances
+    	applyGraphicsSettings(g1, GRAPHICS_SETTINGS_1);
+    	applyGraphicsSettings(g2, GRAPHICS_SETTINGS_2);
+    	
+    	g1.fillArc(0, 0, 8, 8, 0, 180);
+    	g2.fillArc(0, 0, 8, 8, 0, 180);
+    	g1.fillArc(0, 8, 8, 8, 0, 180);
+    	
+     	// read image pixels to member array
+    	readTestImagePixels();
+    	
+    	// Most of the points to validate are based on the values 
+    	// set by applyGraphicsSettings() -method
+    	final int[] spotsToValidate = {
+    			2,  8, BLUE, // Starting point of the first arc 
+    			8,  8, BLUE, // end point
+    			5,  6, BLUE, // tip of the arc 
+    			11, 7, RED,  // start arc 2
+    			17, 7, RED,  // end arc 2
+    			14, 5, RED,  // tip of arc 2
+    			2,  16, BLUE, // start arc 3
+    			8,  16, BLUE, // end arc 3
+    			5,  14, BLUE, // tip of arc 3	
+    			1,  1, WHITE // one point to validate that whole image is not filled
+    	};
+    	
+    	// Validate test points against reference color
+    	for(int i = 0; i < spotsToValidate.length ; i=i+3) 
+    	{
+    		if(!validatePixel(spotsToValidate[i], spotsToValidate[i+1], spotsToValidate[i+2]))
+        	{
+        		pass = false;
+        		errorMsg += "("+spotsToValidate[i]+","+spotsToValidate[i+1]+"), expected "+colorToString(spotsToValidate[i+2])+
+        		            ", got "+ colorToString(getPixelIgnoreAlpha(spotsToValidate[i], spotsToValidate[i+1]))+" : ";
+        	}
+    	}
+    	
+    	if(!pass) 
+    	{
+    		fail(errorMsg);
+    	}
 	}
 	
+	/**
+	 * Test fillRect with two graphics
+	 */
 	void testFillRect()
 	{
-		
+		boolean pass = true;
+    	String errorMsg = "Pixel check failed at: ";
+    	
+    	Graphics g1 = testImage.getGraphics();
+    	Graphics g2 = testImage.getGraphics();
+    	
+    	// run different settings in the graphics instances
+    	applyGraphicsSettings(g1, GRAPHICS_SETTINGS_1);
+    	applyGraphicsSettings(g2, GRAPHICS_SETTINGS_2);
+    	
+    	g1.fillRect(0, 0, 6, 6);
+    	g2.fillRect(0, 0, 6, 6);
+    	g1.fillRect(0, 8, 3, 3);
+    	
+     	// read image pixels to member array
+    	readTestImagePixels();
+    	
+    	// Most of the points to validate are based on the values 
+    	// set by applyGraphicsSettings() -method
+    	final int[] spotsToValidate = {
+    			// filled rectangle 1
+    			1, 5, BLUE,  // top-left corner of rectangle 1
+    			6, 5, BLUE,  // top-right corner of rectangle 1
+    			1, 10, BLUE, // bottom-left corner of rectangle 1 
+    		    6, 10, BLUE, // bottom-right corner of rectangle 1
+    		    
+    		    0, 7, WHITE, // Left border (outside) of rectangle 1
+    		    7, 7, WHITE, // Right border (outside) of rectangle 1
+    		    3, 4, WHITE, // Top border (outside) of rectangle 1
+    		    3, 11, WHITE, // Bottom border (outside) of rectangle 1
+    		    
+    		    // filled rectangle 2
+    			10, 4, RED,  // top-left corner of rectangle 2
+    			15, 4, RED,  // top-right corner of rectangle 2
+    			10, 9, RED, // bottom-left corner of rectangle 2 
+    		    15, 9, RED, // bottom-right corner of rectangle 2
+    		    
+    		    9, 6, WHITE, // Left border (outside) of rectangle 2
+    		    16, 6, WHITE, // Right border (outside) of rectangle 2
+    		    12, 3, WHITE, // Top border (outside) of rectangle 2
+    		    14, 10, WHITE, // Bottom border (outside) of rectangle 2
+    		    
+    		    // filled rectangle 3
+    			1, 13, BLUE,  // top-left corner of rectangle 3
+    			3, 13, BLUE,  // top-right corner of rectangle 3
+    			1, 15, BLUE, // bottom-left corner of rectangle 3 
+    		    3, 15, BLUE, // bottom-right corner of rectangle 3
+    		    
+    		    0, 14, WHITE, // Left border (outside) of rectangle 3
+    		    4, 14, WHITE, // Right border (outside) of rectangle 3
+    		    3, 12, WHITE, // Top border (outside) of rectangle 3
+    		    3, 16, WHITE, // Bottom border (outside) of rectangle 3
+    	};
+    	
+    	// Validate test points against reference color
+    	for(int i = 0; i < spotsToValidate.length ; i=i+3) 
+    	{
+    		if(!validatePixel(spotsToValidate[i], spotsToValidate[i+1], spotsToValidate[i+2]))
+        	{
+        		pass = false;
+        		errorMsg += "("+spotsToValidate[i]+","+spotsToValidate[i+1]+"), expected "+colorToString(spotsToValidate[i+2])+
+        		            ", got "+ colorToString(getPixelIgnoreAlpha(spotsToValidate[i], spotsToValidate[i+1]))+" : ";
+        	}
+    	}
+    	
+    	if(!pass) 
+    	{
+    		fail(errorMsg);
+    	}	
 	}
 	
+	/**
+	 * Test fillRoundRect with two graphics
+	 */
 	void testFillRoundRect()
 	{
-		
+	 	boolean pass = true;
+    	String errorMsg = "Pixel check failed at: ";
+    	
+    	Graphics g1 = testImage.getGraphics();
+    	Graphics g2 = testImage.getGraphics();
+    	
+    	// run different settings in the graphics instances
+    	applyGraphicsSettings(g1, GRAPHICS_SETTINGS_1);
+    	applyGraphicsSettings(g2, GRAPHICS_SETTINGS_2);
+    	
+    	g1.fillRoundRect(0, 0, 6, 6, 2, 2);
+    	g2.fillRoundRect(0, 0, 6, 6, 2, 2);
+    	g1.fillRoundRect(0, 8, 5, 5, 2, 2);
+    	
+     	// read image pixels to member array
+    	readTestImagePixels();
+    	
+    	// Most of the points to validate are based on the values 
+    	// set by applyGraphicsSettings() -method
+    	final int[] spotsToValidate = {
+    			// rectangle 1
+    			1, 6, BLUE,  // left side of rectangle 1
+    			6, 6, BLUE,  // right side of rectangle 1
+    			3, 5, BLUE, // top side of rectangle 1 
+    		    3, 10, BLUE, // bottom side of rectangle 1
+    		    
+    		    0, 7, WHITE, // Left border (outside) of rectangle 1
+    		    7, 7, WHITE, // Right border (outside) of rectangle 1
+    		    3, 4, WHITE, // Top border (outside) of rectangle 1
+    		    3, 11, WHITE, // Bottom border (outside) of rectangle 1
+    		    
+    		    // rectangle 2
+    			10, 6, RED,  // left side of rectangle 2
+    			15, 5, RED,  // right side of rectangle 2
+    			12, 4, RED, // top side of rectangle 2 
+    		    12, 9, RED, // bottom side corner of rectangle 2
+    		    
+    		    9, 6, WHITE, // Left border (outside) of rectangle 2
+    		    16, 6, WHITE, // Right border (outside) of rectangle 2
+    		    12, 3, WHITE, // Top border (outside) of rectangle 2
+    		    14, 10, WHITE, // Bottom border (outside) of rectangle 2
+    		    
+    		    // rectangle 3
+    			1, 15, BLUE,  // left side of of rectangle 3
+    			5, 14, BLUE,  // right side of of rectangle 3
+    			2, 13, BLUE, // top side of rectangle 3 
+    		    3, 17, BLUE, // bottom side of rectangle 3
+    		    
+    		    0, 14, WHITE, // Left border (outside) of rectangle 3
+    		    6, 14, WHITE, // Right border (outside) of rectangle 3
+    		    3, 12, WHITE, // Top border (outside) of rectangle 3
+    		    3, 18, WHITE, // Bottom border (outside) of rectangle 3
+    	};
+    	
+    	// Validate test points against reference color
+    	for(int i = 0; i < spotsToValidate.length ; i=i+3) 
+    	{
+    		if(!validatePixel(spotsToValidate[i], spotsToValidate[i+1], spotsToValidate[i+2]))
+        	{
+        		pass = false;
+        		errorMsg += "("+spotsToValidate[i]+","+spotsToValidate[i+1]+"), expected "+colorToString(spotsToValidate[i+2])+
+        		            ", got "+ colorToString(getPixelIgnoreAlpha(spotsToValidate[i], spotsToValidate[i+1]))+" : ";
+        	}
+    	}
+    	
+    	if(!pass) 
+    	{
+    		fail(errorMsg);
+    	}	
 	}
 	
+	/**
+	 * Test fillTriangle with two graphics
+	 */
 	void testFillTriangle()
 	{
-		
+	 	boolean pass = true;
+    	String errorMsg = "Pixel check failed at: ";
+    	
+    	Graphics g1 = testImage.getGraphics();
+    	Graphics g2 = testImage.getGraphics();
+    	
+    	// run different settings in the graphics instances
+    	applyGraphicsSettings(g1, GRAPHICS_SETTINGS_1);
+    	applyGraphicsSettings(g2, GRAPHICS_SETTINGS_2);
+    	
+    	g1.fillTriangle(0, 0, 5, 6, 5, 0);
+    	g2.fillTriangle(0, 0, 5, 6, 5, 0);
+    	g1.fillTriangle(0, 8, 5, 14, 5, 8);
+    	
+     	// read image pixels to member array
+    	readTestImagePixels();
+    	
+    	// Most of the points to validate are based on the values 
+    	// set by applyGraphicsSettings() -method
+    	final int[] spotsToValidate = {
+    			// triangle 1
+    			1, 5, BLUE,  // top-left
+    			6, 5, BLUE,  // top-right
+    			4, 4, WHITE, // outside near triangle 1
+    		    
+    			// triangle 2
+    			10, 4, RED,  // top-left
+    			15, 4, RED,  // top-right
+    			13, 3, WHITE, // outside near triangle 1
+    		    
+    			// triangle 3
+    			1, 13, BLUE,  // top-left
+    			6, 13, BLUE,  // top-right
+    			4, 12, WHITE, // outside near triangle 1
+    	};
+    	
+    	// Validate test points against reference color
+    	for(int i = 0; i < spotsToValidate.length ; i=i+3) 
+    	{
+    		if(!validatePixel(spotsToValidate[i], spotsToValidate[i+1], spotsToValidate[i+2]))
+        	{
+        		pass = false;
+        		errorMsg += "("+spotsToValidate[i]+","+spotsToValidate[i+1]+"), expected "+colorToString(spotsToValidate[i+2])+
+        		            ", got "+ colorToString(getPixelIgnoreAlpha(spotsToValidate[i], spotsToValidate[i+1]))+" : ";
+        	}
+    	}
+    	
+    	if(!pass) 
+    	{
+    		fail(errorMsg);
+    	}
 	}
   
-    
 	private void applyGraphicsSettings(Graphics g, int settings) 
 	{
 		
@@ -801,6 +1101,7 @@ public class CommandBufferingTest extends SWTTestCase
 			g.setColor(BLUE);
 			g.translate(1, 5);
 			g.setStrokeStyle(Graphics.DOTTED);
+			g.setFont(font);
 		}
 		else if(settings == GRAPHICS_SETTINGS_2)
 		{
@@ -808,6 +1109,7 @@ public class CommandBufferingTest extends SWTTestCase
 			g.setColor(RED);
 			g.translate(10, 4);
 			g.setStrokeStyle(Graphics.SOLID);
+			g.setFont(font);
 		}
 	}
 	

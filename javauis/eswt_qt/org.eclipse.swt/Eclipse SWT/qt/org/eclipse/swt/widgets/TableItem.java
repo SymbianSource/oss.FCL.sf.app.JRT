@@ -212,9 +212,6 @@ public class TableItem extends Item {
             radioButtonHandle = OS.QRadioButton_new();
             OS.QObject_setProperty(radioButtonHandle, "swt_obj_idx", OS.QObject_property(parent.topHandle, "swt_obj_idx"));
             
-            int signalProxy = OS.SignalHandler_new(radioButtonHandle, OS.QSIGNAL_RELEASED);
-            OS.QObject_connectOrThrow(radioButtonHandle, "released()", signalProxy, "widgetSignal()", OS.QT_AUTOCONNECTION);
-            
             OS.QWidget_setFocusPolicy(radioButtonHandle, OS.QT_FOCUSPOLICY_NOFOCUS);
             OS.QTableWidget_setCellWidget(parent.topHandle, index, 0, radioButtonHandle);
         }

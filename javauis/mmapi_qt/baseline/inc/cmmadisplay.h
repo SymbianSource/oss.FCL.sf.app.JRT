@@ -25,7 +25,6 @@
 #include "mmafunctionserver.h"
 #include "qwidget.h"
 #include "jni.h"
-#include "jutils.h"
 #include "mmmaguiplayer.h"
 
 //  FORWARD DECLARATIONS

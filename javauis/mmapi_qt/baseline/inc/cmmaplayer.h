@@ -134,7 +134,7 @@ public: // static methods
      * @param aPlayer Player to use.
      * @param aIndex Control's index.
      */
-    IMPORT_C static CMMAControl* StaticControl(CMMAPlayer* aPlayer,
+    static CMMAControl* StaticControl(CMMAPlayer* aPlayer,
             TInt aIndex);
 
 public: // New methods
@@ -335,9 +335,9 @@ public: // methods for informing java player listeners
      */
     IMPORT_C void PostActionCompleted(TInt aError);
     
-    IMPORT_C void PostActionCompletedFile();   //LC work for S60 3.2
+    void PostActionCompletedFile();   //LC work for S60 3.2
     
-    IMPORT_C void PostActionCompletedStart();
+    void PostActionCompletedStart();
 protected: // new methods
     /**
      * @see StaticAddSourceStreamL

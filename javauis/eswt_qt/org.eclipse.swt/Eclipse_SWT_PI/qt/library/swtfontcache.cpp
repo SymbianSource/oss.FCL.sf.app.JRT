@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2009, 2010 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,12 +19,12 @@ namespace Java { namespace eSWT {
 
 SwtFontCache::SwtFontCache() : mFonts(NULL), mSize(0), mCount(0)
 {
-    SWT_LOG_JNI_CALL();
+    SWT_LOG_FUNC_CALL();
 }
 
 SwtFontCache::~SwtFontCache()
 {
-    SWT_LOG_JNI_CALL();
+    SWT_LOG_FUNC_CALL();
         
     for(int i = 0; i < mCount; ++i)
     {
@@ -37,7 +37,7 @@ SwtFontCache::~SwtFontCache()
 
 QFont* SwtFontCache::cache(QFont* aFont)
 {
-    SWT_LOG_JNI_CALL();
+    SWT_LOG_FUNC_CALL();
     
     QFont* cached = findEqual( aFont );
     if( cached )
@@ -55,7 +55,7 @@ QFont* SwtFontCache::cache(QFont* aFont)
 
 bool SwtFontCache::isCached(const QFont* const aFont)
 {
-    SWT_LOG_JNI_CALL();
+    SWT_LOG_FUNC_CALL();
     
     for(int i = 0; i < mCount; ++i)
     {
@@ -69,7 +69,7 @@ bool SwtFontCache::isCached(const QFont* const aFont)
 
 QFont* SwtFontCache::findEqual(QFont* aFont)
 {
-    SWT_LOG_JNI_CALL();
+    SWT_LOG_FUNC_CALL();
 
     if(aFont == NULL)
     {
@@ -87,7 +87,7 @@ QFont* SwtFontCache::findEqual(QFont* aFont)
 
 void SwtFontCache::add(QFont* aFont)
 {
-    SWT_LOG_JNI_CALL();
+    SWT_LOG_FUNC_CALL();
 
     if(mSize == mCount)
     {

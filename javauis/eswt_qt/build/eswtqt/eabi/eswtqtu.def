@@ -3,4 +3,6 @@ EXPORTS
 	_ZN4Java4eSWT8JniUtils19JavaStringToQStringEP7JNIEnv_P8_jstring @ 2 NONAME
 	_ZN4Java4eSWT8JniUtils19QStringToJavaStringEP7JNIEnv_RK7QString @ 3 NONAME
 	_ZN4Java4eSWT8JniUtils5ThrowEP7JNIEnv_RKi @ 4 NONAME
+	_ZN4Java4eSWT11SwtScopeLogC1EPKcRKNS0_10SwtLogTypeES6_ @ 5 NONAME
+	_ZN4Java4eSWT11SwtScopeLogD1Ev @ 6 NONAME
 

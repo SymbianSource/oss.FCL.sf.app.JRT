@@ -82,7 +82,6 @@ public class RuntimeUiQtTests extends TestCase implements InstallerMain
 
     private void doTest(RuntimeUi runtimeUi)
     {
-        System.out.println("+doTest()");
         // error message with details -> make sure both are available to the user
         ExceptionBase exc = new ExceptionBase(
             new ShortErrorMessage(),
@@ -103,13 +102,6 @@ public class RuntimeUiQtTests extends TestCase implements InstallerMain
             null,
             0,
             null /* no params for detailed msg */);
-        System.out.println("3");
-
-        runtimeUi.error("MyApplication", exc);
-
-        // Test no crash happen.
-        runtimeUi.error("NullException", null);
-
 
         boolean answerAvailable = false;
 
@@ -130,6 +122,5 @@ public class RuntimeUiQtTests extends TestCase implements InstallerMain
         runtimeUi.confirm("Null Application", nullConf);
 
         runtimeUi.destroy();
-        System.out.println("-doTest()");
     }
 }

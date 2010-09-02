@@ -32,12 +32,12 @@ NONQTSUBSYSTEMS += \
 	eswt_akn/eswtphysics/group
 
 SUBSYSTEMS += \
+	javalegacyutils \
 	lcdui_akn
 
 ifdef RD_JAVA_S60_RELEASE_5_0_IAD
     SUBSYSTEMS += ptivariation_akn
 endif
-
 
 #
 # Additional dependencies between the components

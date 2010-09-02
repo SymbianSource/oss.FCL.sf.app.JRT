@@ -20,8 +20,6 @@
 #include <logger.h>
 //#include <lcdui.h>
 
-#include <JniEnvWrapper.h>
-
 #include "com_nokia_microedition_media_control_VideoControl.h"
 
 #include "cmmavideocontrol.h"

@@ -24,7 +24,7 @@ symbian {
     SOURCES += ../src.s60/*.cpp
 
     LIBS += -lefsrv \
-            -lPlatformEnv \
+            -lplatformenv \
             -ljavacomms \
             -lcharconv \
             -ljavastorage \

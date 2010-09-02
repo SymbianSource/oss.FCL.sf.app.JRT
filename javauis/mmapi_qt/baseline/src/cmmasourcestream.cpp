@@ -17,8 +17,6 @@
 
 #include <logger.h>
 
-#include <JniEnvWrapper.h>
-
 #include "mmafunctionserver.h"
 #include "cmmasourcestream.h"
 #include "cmmasourcestreamevent.h"

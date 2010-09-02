@@ -55,9 +55,13 @@ USERINCLUDE             ../src.s60
 USERINCLUDE             ../../inc.s60
 USERINCLUDE             ../../../../inc
 
-start resource          ../data/10282474.rss
+START RESOURCE          ../data/10282474.rss
 TARGET                  midp2backupplugin.rsc
-end
+END
+START RESOURCE          ../data/10282474_iad.rss
+TARGET                  midp2backupplugin.rsc
+TARGETPATH              resource/java/iad
+END
 
 LIBRARY                 ecom.lib 
 LIBRARY                 efsrv.lib

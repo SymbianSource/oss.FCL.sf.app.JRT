@@ -589,14 +589,14 @@ public class Installer
         table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
                   ConfirmPermissions()); // Show UI confirmation dialog.
         table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
+                  AddSecurityData());
+        table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
                   HandleCustomAttributes());
         table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
                   CheckJarPackages());
         table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
                   StopApplication());
         // Update new application info in the following steps.
-        table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
-                  AddSecurityData());
         table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
                   AddToStorage());
         table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
@@ -607,12 +607,13 @@ public class Installer
                   RegisterApplicationToSif());
         table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
                   CopyAppFiles());
-        if (Platform.isS60())   // PrepareSplashScreen uses eSWT which is
+        if (Platform.isS60())
         {
-            // not available in Linux.
+            // PrepareSplashScreen uses eSWT which is not available in Linux.
+            // Create splash screen images after app dir exists,
+            // that is after CopyAppFiles step.
             table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
-                      PrepareSplashScreen()); // Create splash screen images
-            // after app dir exists (after CopyAppFiles step).
+                      PrepareSplashScreen());
         }
         table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
                   NotifyJsrPlugins());

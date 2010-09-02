@@ -18,8 +18,6 @@
 //  INCLUDE FILES
 #include <logger.h>
 
-#include <JniEnvWrapper.h>
-
 #include "cmmaplayer.h"
 #include "mmafunctionserver.h"
 #include "cmmadurationupdater.h"

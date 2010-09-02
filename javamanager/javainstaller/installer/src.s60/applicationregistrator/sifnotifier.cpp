@@ -23,6 +23,9 @@
 
 #ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 
+#include <hb/hbcore/hbindicatorsymbian.h>
+#include <hb/hbcore/hbsymbianvariant.h>
+#include <sifuiinstallindicatordefinitions.h>
 #include <usif/sif/sifnotification.h>
 #include <usif/usifcommon.h>
 
@@ -51,7 +54,7 @@ JNIEXPORT jboolean JNICALL Java_com_nokia_mj_impl_installer_applicationregistrat
  * This method makes calls that may leave (the actual notifying).
  */
 void NotifyStartL(
-    JNIEnv *aEnv, CPublishSifOperationInfo *aNotifier,
+    JNIEnv *aEnv, CPublishSifOperationInfo *aNotifier, jint aOperation,
     jstring aGlobalComponentId, jstring aComponentName,
     jobjectArray aApplicationNames, jobjectArray aApplicationIcons,
     jint aComponentSize, jstring aIconDir, jstring /*aComponentIcon*/)
@@ -106,7 +109,8 @@ void NotifyStartL(
         CSifOperationStartData::NewLC(
             *globalComponentId, *componentName, applicationNames, applicationIcons,
             aComponentSize, /*aIconPath=*/ (NULL != aIconDir? *iconDir: KNullDesC()),
-            /*aComponentIcon=*/ KNullDesC(), Usif::KSoftwareTypeJava);
+            /*aComponentIcon=*/ KNullDesC(), Usif::KSoftwareTypeJava,
+            (TSifOperationPhase)aOperation);
 
     aNotifier->PublishStartL(*startData);
 
@@ -130,16 +134,17 @@ void NotifyStartL(
  * Signature: (IILjava/lang/String;Ljava/lang/String;[Ljava/lang/String;I)I
  */
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifNotifier__1notifyStart
-(JNIEnv *aEnv, jclass, jint aHandle, jstring aGlobalComponentId,
- jstring aComponentName, jobjectArray aApplicationNames,
- jobjectArray aApplicationIcons, jint aComponentSize,
- jstring aIconDir, jstring aComponentIcon)
+(JNIEnv *aEnv, jclass, jint aHandle, jint aOperation,
+ jstring aGlobalComponentId, jstring aComponentName,
+ jobjectArray aApplicationNames, jobjectArray aApplicationIcons,
+ jint aComponentSize, jstring aIconDir, jstring aComponentIcon)
 {
     CPublishSifOperationInfo *pNotifier =
         reinterpret_cast<CPublishSifOperationInfo*>(aHandle<<2);
-    TRAPD(err, NotifyStartL(aEnv, pNotifier, aGlobalComponentId, aComponentName,
-                            aApplicationNames, aApplicationIcons,
-                            aComponentSize, aIconDir, aComponentIcon));
+    TRAPD(err, NotifyStartL(aEnv, pNotifier, aOperation, aGlobalComponentId,
+                            aComponentName, aApplicationNames,
+                            aApplicationIcons, aComponentSize,
+                            aIconDir, aComponentIcon));
     return err;
 }
 
@@ -297,6 +302,103 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
     return KErrNone;
 }
 
+/*
+ * Class:     com_nokia_mj_impl_installer_applicationregistrator_SifNotifier
+ * Method:    _initIndicator
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifNotifier__1initIndicator
+(JNIEnv *, jclass)
+{
+    CHbIndicatorSymbian *pIndicator = NULL;
+    TRAPD(err, pIndicator = CHbIndicatorSymbian::NewL());
+    if (KErrNone != err)
+    {
+        ELOG1(EJavaInstaller,
+              "SifNotifier.initIndicator: Creating indicator failed, error %d",
+              err);
+        return err;
+    }
+    // Return handle to the object. Utilize the fact that in Symbian
+    // all pointer addresses are MOD 4 so the last 2 bits are 0
+    // and can be shifted out. This way the returned handle is
+    // always positive whereas Symbian error codes are always negative.
+    return reinterpret_cast<TUint>(pIndicator)>>2;
+}
+
+/**
+ * See JNI method __1updateIndicator.
+ * This method makes calls that may leave (the actual notifying).
+ */
+void UpdateIndicatorL(
+    JNIEnv *aEnv, CHbIndicatorSymbian *pIndicator, jstring aName, jint aPhase, jint aProgress)
+{
+    HBufC *name = CreateHBufCFromJavaStringLC(aEnv, aName);
+
+    CHbSymbianVariantMap *variantMap = CHbSymbianVariantMap::NewL();
+    CleanupStack::PushL(variantMap);
+    CHbSymbianVariant *variantName = CHbSymbianVariant::NewL(name, CHbSymbianVariant::EDes);
+    variantMap->Add(KSifUiInstallIndicatorAppName, variantName);
+    CHbSymbianVariant *variantPhase = CHbSymbianVariant::NewL(&aPhase, CHbSymbianVariant::EInt);
+    variantMap->Add(KSifUiInstallIndicatorPhase, variantPhase);
+    CHbSymbianVariant *variantProgress = CHbSymbianVariant::NewL(&aProgress, CHbSymbianVariant::EInt);
+    variantMap->Add(KSifUiInstallIndicatorProgress, variantProgress);
+
+    CHbSymbianVariant *variant = CHbSymbianVariant::NewL(variantMap, CHbSymbianVariant::EVariantMap);
+    CleanupStack::PushL(variant);
+
+    TInt err = KErrNone;
+    if (!pIndicator->Activate(KSifUiInstallIndicatorType, variant))
+    {
+        err = pIndicator->Error();
+        ELOG1(EJavaInstaller,
+              "SifNotifier.updateIndicator: activating indicator failed, error %d",
+              err);
+        err = KErrGeneral;
+    }
+
+    CleanupStack::PopAndDestroy(variant);
+    CleanupStack::PopAndDestroy(variantMap);
+    CleanupStack::PopAndDestroy(name);
+}
+
+/*
+ * Class:     com_nokia_mj_impl_installer_applicationregistrator_SifNotifier
+ * Method:    _updateIndicator
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifNotifier__1updateIndicator
+(JNIEnv *aEnv, jclass, jint aHandle, jstring aName, jint aPhase, jint aProgress)
+{
+    CHbIndicatorSymbian *pIndicator =
+        reinterpret_cast<CHbIndicatorSymbian*>(aHandle<<2);
+    TRAPD(err, UpdateIndicatorL(aEnv, pIndicator, aName, aPhase, aProgress));
+    return err;
+}
+
+/*
+ * Class:     com_nokia_mj_impl_installer_applicationregistrator_SifNotifier
+ * Method:    _destroyIndicator
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifNotifier__1destroyIndicator
+(JNIEnv *, jclass, jint aHandle, jint aState)
+{
+    CHbIndicatorSymbian *pIndicator =
+        reinterpret_cast<CHbIndicatorSymbian*>(aHandle<<2);
+    TInt err = KErrNone;
+    if (aState && !pIndicator->Deactivate(KSifUiInstallIndicatorType))
+    {
+        err = pIndicator->Error();
+        ELOG1(EJavaInstaller,
+              "SifNotifier.destroyIndicator: Deactivating indicator failed, error %d",
+              err);
+        err = KErrGeneral;
+    }
+    delete pIndicator;
+    return err;
+}
+
 #else // SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 
 /*
@@ -316,7 +418,7 @@ JNIEXPORT jboolean JNICALL Java_com_nokia_mj_impl_installer_applicationregistrat
  * Signature: (IILjava/lang/String;Ljava/lang/String;[Ljava/lang/String;I)I
  */
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifNotifier__1notifyStart
-(JNIEnv *, jclass, jint, jstring, jstring, jobjectArray, jobjectArray, jint, jstring, jstring)
+(JNIEnv *, jclass, jint, jint, jstring, jstring, jobjectArray, jobjectArray, jint, jstring, jstring)
 {
     LOG(EJavaInstaller, EInfo, "SifNotifier.notifyStart");
     return KErrNone;
@@ -378,6 +480,42 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
 (JNIEnv *, jclass, jint)
 {
     LOG(EJavaInstaller, EInfo, "SifNotifier.destroy");
+    return KErrNone;
+}
+
+/*
+ * Class:     com_nokia_mj_impl_installer_applicationregistrator_SifNotifier
+ * Method:    _initIndicator
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifNotifier__1initIndicator
+(JNIEnv *, jclass)
+{
+    LOG(EJavaInstaller, EInfo, "SifNotifier.initIndicator");
+    return 1; // return dummy object handle
+}
+
+/*
+ * Class:     com_nokia_mj_impl_installer_applicationregistrator_SifNotifier
+ * Method:    _updateIndicator
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifNotifier__1updateIndicator
+(JNIEnv *, jclass, jint, jstring, jint, jint)
+{
+    LOG(EJavaInstaller, EInfo, "SifNotifier.updateIndicator");
+    return KErrNone;
+}
+
+/*
+ * Class:     com_nokia_mj_impl_installer_applicationregistrator_SifNotifier
+ * Method:    _destroyIndicator
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifNotifier__1destroyIndicator
+(JNIEnv *, jclass, jint, jint)
+{
+    LOG(EJavaInstaller, EInfo, "SifNotifier.destroyIndicator");
     return KErrNone;
 }
 

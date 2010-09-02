@@ -167,10 +167,25 @@ abstract class ItemLayouter
     	LayoutObject lo = formLayouter.getLayoutObject(item);
     	if(lo == null)
     	{
-        	lo = new LayoutObject(item, eswtGetCaptionedControl(item));
+        	lo = new LayoutObject(item, createItemControl(formComposite, item));
     	}
 		return lo;
     }
+
+    /**
+     * Creates eSWT Control for the given Item.
+     *
+     * For any Item, if it is needed to create non CaptionControl based Control
+     * then this fucntion can be overrided in the derived Item Layouter.
+     *
+     * @param item Item to create the Control
+     * @param parent formComposite as parent to create the Control
+     * @return eSWT Control
+     */
+	Control createItemControl(Composite parent, Item item)
+	{
+		return eswtGetCaptionedControl(parent, item);
+	}
 
     /**
      * Wraps this item's control in the necessary composites.<br>
@@ -183,9 +198,9 @@ abstract class ItemLayouter
      *
      * @param item Item to be layouted
      */
-    final Control eswtGetCaptionedControl(Item item)
+    final Control eswtGetCaptionedControl(Composite parent, Item item)
     {
-        CaptionedControl captioned = new CaptionedControl(formComposite, SWT.VERTICAL);
+        CaptionedControl captioned = new CaptionedControl(parent, SWT.VERTICAL);
         if(item.hasLabel())
         {
 	        captioned.setText(item.getLabel());

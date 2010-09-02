@@ -20,7 +20,7 @@ CONFIG += omj java stl
 CONFIG -= qt
 
 symbian {
-    LIBS+= -leuser -lefsrv -lPlatformEnv
+    LIBS+= -leuser -lefsrv -lplatformenv
 }
 
 include(../../../../build/omj.pri)

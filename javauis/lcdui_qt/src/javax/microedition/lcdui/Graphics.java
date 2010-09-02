@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2009, 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -110,7 +110,7 @@ public class Graphics
     
     private com.nokia.mj.impl.rt.support.Finalizer finalizer;
 
-    //Constructor
+    // Constructor
     Graphics(Buffer buffer, Rectangle clipRect)
     {
         finalizer = ((finalizer != null) ? finalizer
@@ -123,14 +123,7 @@ public class Graphics
                     finalizer = null;
                     if(!ESWTUIThreadRunner.isDisposed())
                     {
-                        ESWTUIThreadRunner.safeSyncExec(new Runnable()
-                        {
-                            public void run()
-                            {
-                                dispose();
-                            }
-                        });
-
+                        dispose();
                     }
                 }
             }
@@ -142,8 +135,6 @@ public class Graphics
         setDefaultSettings();
         graphicsBuffer = buffer;
     }
-
-
 
     /**
      * Disposes objects with native counterparts
@@ -162,14 +153,14 @@ public class Graphics
      */
     void reset()
     {
-    	synchronized(graphicsBuffer) {
-    		// setDefaultSettings() must be called 
-    		// before the setGraphicsDefaults() since
-    		// graphicsBuffer (Buffer implementation) uses 
-    		// the member values of this instance when setting the defaults
-    		setDefaultSettings();
-    		graphicsBuffer.setGraphicsDefaults(this);
-    	}
+        synchronized(graphicsBuffer) {
+            // setDefaultSettings() must be called 
+            // before the setGraphicsDefaults() since
+            // graphicsBuffer (Buffer implementation) uses 
+            // the member values of this instance when setting the defaults
+            setDefaultSettings();
+            graphicsBuffer.setGraphicsDefaults(this);
+        }
     }
 
     void setDefaultSettings() 

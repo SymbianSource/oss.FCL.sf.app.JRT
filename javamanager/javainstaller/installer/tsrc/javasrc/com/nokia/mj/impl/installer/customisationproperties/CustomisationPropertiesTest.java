@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -216,14 +216,16 @@ public class CustomisationPropertiesTest extends TestCase implements InstallerMa
         // second possible drive
         drive = (String)value.get(1);
         assertTrue("PossibleInstallationDrives is null", (drive != null));
-        assertTrue("Second PossibleInstallationDrive is not E:, it is " + drive, drive.equals("E:"));
+        //assertTrue("Second PossibleInstallationDrive is not E:, it is " + drive, drive.equals("E:"));
+        assertTrue("Second PossibleInstallationDrive is not T:, it is " + drive, drive.equals("T:"));
 
         value = cust.getIntegerProperty(CustomisationProperties.PossibleInstallationDrives);
         assertTrue("PossibleInstallationDrives value is null", (value != null));
         assertTrue("PossibleInstallationDrives value does not contain any integers", (value.size() > 0));
 
         Integer idrive = (Integer)value.get(1);
-        assertTrue("Second PossibleInstallationDrive is not E:, it is " + idrive, idrive.intValue() == 4);
+        //assertTrue("Second PossibleInstallationDrive is not E:, it is " + idrive, idrive.intValue() == 4);
+        assertTrue("Second PossibleInstallationDrive is not T:, it is " + idrive, idrive.intValue() == 19);
     }
 
     public void testTypesOfPossibleInstallationDrives()

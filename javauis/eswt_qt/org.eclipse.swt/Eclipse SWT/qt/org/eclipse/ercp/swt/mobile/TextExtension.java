@@ -658,7 +658,6 @@ boolean qt_event_keyrelease(int widgetHandle, int key, int modifier, int charact
 
 void qt_signal_requestCompleted( int value ) {
     
-    System.out.println("qt_signal_requestCompleted "+value);
     if (value < 1) {
         serviceDone = true;
         return;

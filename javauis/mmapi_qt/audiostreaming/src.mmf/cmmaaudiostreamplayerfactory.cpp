@@ -19,7 +19,7 @@
 //  INCLUDE FILES
 #include <logger.h>
 #include "CMMAAudioStreamPlayerFactory.h"
-#include "CMMAAudioStreamPlayer.h"
+#include "cmmaaudiostreamplayer.h"
 #include "CMMAAudioVolumeControl.h"
 #include "CMMAStopTimeControl.h"
 #include "CMMAMMFResolver.h"

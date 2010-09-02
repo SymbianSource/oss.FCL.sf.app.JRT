@@ -43,6 +43,7 @@ class CPIMContactValidator;
 class CPIMEventValidator;
 class CPIMToDoValidator;
 class MPIMAdapterAccess;
+class CCalSession;
 
 // CLASS DECLARATION
 
@@ -77,6 +78,7 @@ public: // Constructors and destructor
      * Destructor.
      */
     virtual ~CPIMManager();
+    void DeleteSessions();
 
 public: // New functions
 
@@ -113,6 +115,8 @@ public: // New functions
      * @param aPimListName Name of the list. The name must be valid list
      *        name. If not present, name is resolved to the default list
      *        of the given type.
+     * @param aCalName Name of the Canlendar. The name must be valid Canlendar
+     *        name. If not present, name is resolved to the default Canlendar.
      *
      * @return PIM list. Type of the list corresponds to
      *         \a aPimListType argument.
@@ -130,6 +134,7 @@ public: // New functions
     pimbaselist* openPimList(
         const TPIMListType& aPimListType,
         jstring aPimListName,
+        jstring aCalName,
         JNIEnv* aJniEnv);
 
     /**
@@ -149,6 +154,48 @@ public: // New functions
         const TPIMListType& aPimListType,
         jintArray aError,
         JNIEnv* aJniEnv);
+    /**
+     * Lists list of Calendars existsing the mobile database.
+     *
+     * @return Array of list names.
+     *         Caller takes the ownership of the returned object.
+     *
+     */
+    jobjectArray listCalendars(jintArray aError, JNIEnv* aJniEnv);
+
+    /**
+     * Lists list of Calendars names existsing the mobile database.
+     *
+     * @return Array of list names.
+     *         Caller takes the ownership of the returned object.
+     */
+    jobjectArray listCalendarNames(jintArray aError, JNIEnv* aJniEnv);
+
+    /**
+     * create new calendar which you given name.
+     *
+     * @param calendar name Sting type this is used as filename.
+     *
+     * @param calendar name Sting type this is used as diaplay to the user.
+     *
+     * @return void.
+     *
+     * @par Leaving:
+     * @li \c KErrArgument - \if name already exists
+     */
+    void createCalendar(jstring aCalName, jstring aDisplayName, JNIEnv* aJniEnv);
+
+    /**
+    * delete the calendar which you given name.
+    *
+    * @param calendar name Sting type this is used as canlader filename
+    *        which it will delete.
+    * @return void.
+    *
+    * @par Leaving:
+    * @li \c KErrArgument - \a calendar name is not valid or not exists.
+    */
+    void deleteCalendar(jstring aCalName, JNIEnv* aJniEnv);
 
     /**
      * Provides a Contact validator.
@@ -187,27 +234,101 @@ protected: // New functions
      * @return A new list or NULL if no matching list was found.
      */
     CPIMEventList* DoOpenEventListL(
-        const TDesC* aListName);
+        const TDesC* aListName, const TDesC* aCalName);
 
     /**
      * Opens a to-do list.
      *
      * @param aListName Name of the list or NULL to indicate
      *        default list.
-     *
-     * @return A new list or NULL if no matching list was found.
+     * @param aCalName Name of the calendar or NULL to indicate
+     *        default calendar.
+     * @return A new list or NULL if no matching list and calendar was found.
      */
-    CPIMToDoList* DoOpenToDoListL(
-        const TDesC* aListName);
+    CPIMToDoList* DoOpenToDoListL(const TDesC* aListName, const TDesC* aCalName);
 
-    CDesCArray* DoListPimListsL(
+
+    /**
+    * Opens a to-do list.
+    *
+    * @param aPimListType Name of the list or NULL to indicate
+    *        default list.
+    * @return A new list or NULL if no matching list and calendar was found.
+    */
+    CDesCArray* CPIMManager::DoListPimListsL(
         const TPIMListType& aPimListType);
 
-    pimbaselist* DoOpenPimListL(
+    /**
+     * list all the calendars this function will call by ListCalendars function
+     *
+     * @return void.
+     */
+    void CPIMManager::DoListCalendarsL();
+
+    /**
+     * list all the calendars names this function will call by ListCalendatNames function
+     *
+     * @return void.
+     */
+    void CPIMManager::DoListCalendarNamesL();
+
+
+    /**
+     * creates the new calendar by given name.
+     *
+     * @param aFileName name of the calendar file this is string type.
+     *
+     * @param aDisplayName name of the calendar to display this is string type
+     *
+     * @return void.
+     */
+    void CPIMManager::DoCreateCalFileL(const TDesC &aFileName,const TDesC &aDisplayName);
+
+    /**
+     * delets the calendar by given name.
+     *
+     * @param aFileName name of the calendar file this is string type.
+     *
+     * @return void.
+     */
+    void CPIMManager::DoDeleteCalFileL(const TDesC& aFileName);
+
+    /**
+    * Opens a PIM list of given type.
+    *
+    * @param aPimListType List type.
+    * @param aPimListName Name of the list. The name must be valid list
+    *        name. If not present, name is resolved to the default list
+    *        of the given type.
+    * @param aCalName Name of the Canlendar. The name must be valid Canlendar
+    *        name. If not present, name is resolved to the default Canlendar.
+    *
+    * @return PIM list. Type of the list corresponds to
+    *         \a aPimListType argument.
+    *
+    * @par Leaving:
+    * The method leaves on error. Error codes should be interpreted as
+    * follows:
+    * @li \c KErrArgument - \a aPimListType is invalid.
+    * @li \c KErrNotSupported - \a aPimListType is not supported.
+    * @li \c KErrNotFound - No list was found by \a aPimListName.
+    * @li \c KErrAlreadyExists - The list was already opened and multiple
+    *     instances of the list are not supported.
+    * @li Other - Internal error.
+    */
+    pimbaselist* CPIMManager::DoOpenPimListL(
         const TPIMListType& aPimListType,
-        const TDesC* aPimListName);
+        const TDesC* aPimListName,
+        const TDesC* aCalName);
+    /**
+     * this method will create the Sessions with every calendar using file server.
+     *
+     */
+
+    void CPIMManager::createCalSessionL();
 
     void dispose();
+
 
 private: // Constructors
 
@@ -239,6 +360,23 @@ private: // Data
 
     /** Owned. */
     CPIMToDoValidator* iToDoValidator;
+
+    /** (Owned.) */
+    RLibrary iLocalizationLibrary;
+
+    CDesCArray* iCalList;
+    /** Session to calendar server. Owned. */
+    //CCalSession* iCalSession;
+
+    RPointerArray<CCalSession> iCalSessions;
+
+    CDesCArray* iCalendarNamesDesCArray;
+
+    CDesCArray* iCalSessionArray;
+
+    CDesCArray* iCalListName;
+    CDesCArrayFlat* iDesCArray;
+    CCalSession* iCalSession;
 
 
 };

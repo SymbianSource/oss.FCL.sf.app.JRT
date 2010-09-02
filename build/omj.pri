@@ -132,7 +132,11 @@ omj {
           MMP_RULES += " OS_LAYER_STDCPP_SYSTEMINCLUDE"
         }
       }
+
   }
+
+  # Set version if not defined
+  isEmpty(VERSION):!isEmpty(RD_JAVA_BIN_VERSION): VERSION = $${RD_JAVA_BIN_VERSION}
 
   # Define generated paths
   JXE_SOURCE_PATH    = $${JAVA_ARTIFACTS}

@@ -25,7 +25,7 @@
 #include  "cpimitem.h"
 #include  "cpimitemmatcher.h"
 #include  "cpimstringmatcher.h"
-#include  "javasymbianoslayer.h"
+#include  "cleanupresetanddestroy.h"
 #include  "pimexternalchanges.h"
 #include  "pimpanics.h"
 #include  "pimjnitools.h"
@@ -927,9 +927,9 @@ RPointerArray<CPIMItem>* CPIMList::UpdateListL(CPIMItem* aMatchingItem)
         User::LeaveIfError(newAndRemovedItems->Append(
                                tempRemovedItems[i]));
     }
-		CleanupStack::Pop(newAndRemovedItems);
+
     CleanupStack::Pop(); // newAndRemovedItems cleanup close
-    
+    CleanupStack::Pop(newAndRemovedItems);
 
     CleanupStack::PopAndDestroy(); // tempRemovedItems cleanup close
     CleanupStack::PopAndDestroy(); // tempNewItems cleanup close
@@ -1163,6 +1163,7 @@ void CPIMList::HandleItemChangeNewL(const TPIMItemID aNewItemId,
                                     RPointerArray<CPIMItem>& aTempNewItems, CPIMItem* aMatchingItem)
 {
     JELOG2(EPim);
+
     // Create new item
     CPIMItem* newItem = NULL;
     TRAPD(errCreateItem, newItem = DoCreateItemL(aNewItemId,
@@ -1179,13 +1180,10 @@ void CPIMList::HandleItemChangeNewL(const TPIMItemID aNewItemId,
     {
         User::LeaveIfError(errCreateItem);
     }
-
-    // OK
     newItem->SetModified(EFalse);
     CleanupStack::PushL(newItem);
     User::LeaveIfError(iItems.Append(newItem));
     CleanupStack::Pop(newItem);
-
     // Add to list of new items
     CleanupClosePushL(aTempNewItems);
     TInt errAddToNewItems = aTempNewItems.Append(newItem);
@@ -1217,8 +1215,6 @@ void CPIMList::HandleItemChangeModifiedL(CPIMItem& aModifiedItem)
     {
         User::LeaveIfError(errUpdateItem);
     }
-
-    // OK
     aModifiedItem.SetModified(EFalse);
 }
 

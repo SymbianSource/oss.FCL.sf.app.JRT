@@ -139,6 +139,14 @@ public class TestRecordEnumeration extends TestCase
             }
         }));
 
+        aSuite.addTest(new TestRecordEnumeration("testEnumerationOrder", new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((TestRecordEnumeration) tc).testEnumerationOrder();
+            }
+        }));
+
         return aSuite;
     }
 
@@ -1126,6 +1134,57 @@ public class TestRecordEnumeration extends TestCase
 
             enumeration.destroy();
             enumeration2.destroy();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            fail("Unexpected exception " + e);
+        }
+        finally
+        {
+            try
+            {
+                store.closeRecordStore();
+            }
+            catch (Exception e) {}
+            try
+            {
+                RecordStore.deleteRecordStore(rec_store_name);
+            }
+            catch (Exception e) {}
+        }
+    }
+
+    public void testEnumerationOrder()
+    {
+        // This test checks that record enumeration returns records in FIFO order
+        // if null RecordComparator is provided
+        // MIDP spec says that order is undefined in this case but many acceptance tests
+        // assume this order
+        System.out.println("TestRecordEnumeration.testEnumerationOrder()");
+        RecordStore store = null;
+        String rec_store_name = "testEnumerationOrder";
+
+        try
+        {
+            // 0: Init
+            System.out.println("0: Init");
+            try
+            {
+                RecordStore.deleteRecordStore(rec_store_name);
+            }
+            catch (Exception e) {}
+            store = RecordStore.openRecordStore(rec_store_name, true);
+            populateRecordStore(store);
+
+            // 1: check order
+            System.out.println("1: check order");
+            RecordEnumeration enumeration = store.enumerateRecords(null, null, false);
+            for(int i = 0; enumeration.hasNextElement(); i++)
+            {
+                byte[] r = enumeration.nextRecord();
+                assertEquals(r, iData[i].getBytes());
+            }
         }
         catch (Exception e)
         {

@@ -118,6 +118,7 @@ enum TComponents
     EJavaAMMS,          //  =37
     EJavaSettings,      //  =38
     EJavaQtServiceApp,  //  =39
+	EJavaCentrep        //  =40
     // add id of new components here
 };
 
@@ -177,6 +178,7 @@ const struct
     {"JavaMMAPI.log",         "[ MMAPPI ]"},          // EJavaAMMS
     {"JavaSettings.log",     "[ JavaSettings ]"},     // EJavaSettings
     {"JavaQtServiceApp.log", "[ QtServiceApp ]"},     // EJavaQtServiceApp
+	{"JavaCentrep.log",      "[ JavaCentrep  ]"},     // EJavaCentrep
     // add new component file name and nickname here
 };
 

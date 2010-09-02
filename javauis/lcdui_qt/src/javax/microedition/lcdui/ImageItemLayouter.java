@@ -38,20 +38,16 @@ class ImageItemLayouter extends ItemLayouter
     }
 
     /**
-     * Creates LayoutObject for the given Item.
+     * Creates eSWT Control for the given Item.
      *
-     * @param item Item to layout
-     * @return LayoutObject
+     * @param item Item to create the Control
+     * @param parent parent to create the Control
+     * @return eSWT Control
      */
-    LayoutObject getLayoutObject(Item item)
-    {
-    	LayoutObject lo = formLayouter.getLayoutObject(item);
-    	if(lo == null)
-    	{
-        	lo = new LayoutObject(item, eswtGetControl(formComposite, item));
-    	}
-		return lo;
-    }	
+	Control createItemControl(Composite parent, Item item)
+	{
+		return eswtGetControl(parent, item);
+	}
 
     /**
      * Creates the eSWT CaptionedControl or Composite for this item.

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SystemDefinition xmlns:sf="http://www.symbian.org/system-definition" xmlns:qt="http://www.nokia.com/qt" schema="3.0.1" id-namespace="http://www.nokia.com/schema/drd/system-definition">
+  <package id="sf:jrt" name="Java Runtime" levels="util generic rt ui">
+  
+    <!-- Redefines some of the SF collections with Nokia versions. This file
+         can be removed after the jrt package has been split properly. -->
+    
+    <collection id="sf:javacommons" name="Java Commons" level="generic" replace="sf:javacommons">
+      <component id="javacommons_build" filter="s60" name="Java Commons Build">
+        <unit bldFile="../../javacommons" qt:proFile="javacommons.pro"/>
+      </component>
+    </collection>
+    <collection id="sf:javaruntimes" name="Java Runtimes" level="rt" replace="sf:javaruntimes">
+      <component id="javaruntimes_build" filter="s60" name="Java Runtimes Build">
+        <unit bldFile="../../javaruntimes" qt:proFile="javaruntimes.pro"/>
+      </component>
+    </collection>
+    <collection id="sf:javauis" name="Java UIs" level="ui" replace="sf:javauis">
+      <component id="javauis_build" filter="s60" name="Java UIs Build">
+        <unit bldFile="../../javauis" qt:proFile="javauis.pro"/>
+      </component>
+    </collection>
+    <collection id="sf:javamanager" name="Java Manager" level="generic" replace="sf:javamanager">
+      <component id="javamanager_build" filter="s60" name="Java Manager Build">
+        <unit bldFile="../../javamanager" qt:proFile="javamanager.pro"/>
+      </component>
+    </collection>
+    <collection id="sf:javatools" name="Java Tools" level="util" replace="sf:javatools">
+      <component id="javatools_build" filter="s60" name="Java Tools Build">
+        <unit bldFile="../../javatools" qt:proFile="javatools.pro"/>
+      </component>
+    </collection>
+    <collection id="sf:javaextensions" name="Java Extensions" level="generic" replace="sf:javaextensions">
+      <component id="javaextensions_build" filter="s60" name="Java Extensions Build">
+        <unit bldFile="../../javaextensions" qt:proFile="javaextensions.pro"/>
+      </component>
+    </collection>
+    
+  </package>
+</SystemDefinition>

@@ -345,6 +345,9 @@ data=JAVA_VM_RES_BLD\javafile.odc                                           JAVA
 file=ABI_DIR\BUILD_DIR\javaiapinfo.dll                                      SHARED_LIB_DIR\javaiapinfo.dll
 data=JAVA_VM_RES_BLD\javaiapinfo.odc                                        JAVA_VM_RES_IMG\javaiapinfo.odc
 
+// CentralRepository API
+file=ABI_DIR\BUILD_DIR\javacentrep.dll                                      SHARED_LIB_DIR\javacentrep.dll
+data=JAVA_VM_RES_BLD\javacentrep.odc                                        JAVA_VM_RES_IMG\javacentrep.odc
 
 ///////////////////
 // Miscellaneous //

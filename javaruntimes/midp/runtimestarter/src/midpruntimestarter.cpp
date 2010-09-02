@@ -63,7 +63,7 @@ const wchar_t* const TRUE_WSTR          = L"true";
 
 
 MidpRuntimeStarter::MidpRuntimeStarter(): mMidletInfo(new MidletInfo()), // codescanner::nonleavenew
-        mRuntimeState(Constructed), mShudownOk(false)
+    mRuntimeState(Constructed), mShudownOk(false)
 {
     JELOG2(EJavaRuntime);
 }
@@ -350,8 +350,6 @@ void MidpRuntimeStarter::parseArgs(int argc, char* argv[])
 
 void MidpRuntimeStarter::startCoreUi(std::auto_ptr<java::util::DynamicLibLoader>& coreUiLoader)
 {
-    CoreUi& coreUi = CoreUi::getUiInstance(coreUiLoader);
-
     // Create the default UI only if not going into pre-warmed state.
     if (!mMidletInfo->mPreWarmStart)
     {
@@ -442,7 +440,7 @@ void MidpRuntimeStarter::startCoreUi(std::auto_ptr<java::util::DynamicLibLoader>
 
         // Start the coreUI.
         JavaOsLayer::startUpTrace("Starting CoreUI", -1, -1);
-        coreUi.start(mMidletInfo->mMIDletUid, &uiParams);
+        CoreUi::start(coreUiLoader, mMidletInfo->mMIDletUid, &uiParams);
         JavaOsLayer::startUpTrace("CoreUI started", -1, -1);
 
         getMIDletSuiteInfoFromStorage(javaStorage.get(), JAR_PATH,
@@ -610,16 +608,16 @@ std::wstring MidpRuntimeStarter::encodeArgs(const std::wstring& str)
         if (c & 0xFF00)
         {
             // 16 bit char, must send all bits
-            res += ( L'A' + (c >> 12) );
-            res += ( L'A' + ((c & 0x0F00) >> 8) );
-            res += ( L'A' + ((c & 0x00F0) >> 4) );
-            res += ( L'A' + ((c & 0x000F)) );
+            res += (L'A' + (c >> 12));
+            res += (L'A' + ((c & 0x0F00) >> 8));
+            res += (L'A' + ((c & 0x00F0) >> 4));
+            res += (L'A' + ((c & 0x000F)));
         }
         else
         {
             // 8 bit char, send only lowest 8 bits
-            res += ( L'a' + ((c & 0x00F0) >> 4) );
-            res += ( L'a' + ((c & 0x000F)) );
+            res += (L'a' + ((c & 0x00F0) >> 4));
+            res += (L'a' + ((c & 0x000F)));
         }
     }
 

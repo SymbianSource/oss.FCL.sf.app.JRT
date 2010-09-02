@@ -69,6 +69,7 @@ JNICALL Java_com_nokia_mj_impl_pim_PIMManager__1openPIMList(
     jint aManagerHandle,
     jint aPimListType,
     jstring aPimListName,
+    jstring aCalName,
     jintArray aError)
 {
     JELOG2(EPim);
@@ -77,13 +78,15 @@ JNICALL Java_com_nokia_mj_impl_pim_PIMManager__1openPIMList(
     int error = 0;
     try
     {
+
         list = manager->openPimList(
-                   static_cast< TPIMListType>(aPimListType),aPimListName, aJniEnv);
+                   static_cast< TPIMListType>(aPimListType),aPimListName,aCalName, aJniEnv);
     }
     catch (int aError)
     {
         error = aError;
     }
+
     SetJavaErrorCode(aJniEnv, aError, error);
 
     // We now own the list (through the handle). The ownership of
@@ -114,6 +117,86 @@ JNICALL Java_com_nokia_mj_impl_pim_PIMManager__1listPIMLists(
     return javaStringArray;
 }
 
+JNIEXPORT jint
+JNICALL Java_com_nokia_mj_impl_pim_PIMManager__1createCalendar(
+    JNIEnv* aJniEnv,
+    jobject /*aPeer*/,
+    jint aManagerHandle,
+    jstring aCalName,
+    jstring aDisplayName)
+{
+    JELOG2(EPim);
+    pimbasemanager* manager =
+        reinterpret_cast< pimbasemanager *>(aManagerHandle);
+    TInt error = 0;
+    try
+    {
+        manager->createCalendar(aCalName, aDisplayName,aJniEnv);
+    }
+    catch (int aError)
+    {
+        error = aError;
+    }
+    return error;
 
+}
+
+JNIEXPORT jint
+JNICALL Java_com_nokia_mj_impl_pim_PIMManager__1deleteCalendar(
+    JNIEnv* aJniEnv,
+    jobject /*aPeer*/,
+    jint aManagerHandle,
+    jstring aCalName)
+{
+    JELOG2(EPim);
+    pimbasemanager* manager =
+        reinterpret_cast< pimbasemanager *>(aManagerHandle);
+    TInt error = 0;
+
+    try
+    {
+        manager->deleteCalendar(aCalName,aJniEnv);
+    }
+    catch (int aError)
+    {
+        error = aError;
+    }
+
+    return error;
+
+}
+
+JNIEXPORT jobjectArray
+JNICALL Java_com_nokia_mj_impl_pim_PIMManager__1listCalendars(
+    JNIEnv* aJniEnv,
+    jobject /*aPeer*/,
+    jint aManagerHandle,
+    jintArray aError)
+{
+    JELOG2(EPim);
+    pimbasemanager* manager =
+        reinterpret_cast< pimbasemanager *>(aManagerHandle);
+    jobjectArray javaStringArray = NULL;
+    javaStringArray = manager->listCalendars(aError,
+                      aJniEnv);
+    return javaStringArray;
+}
+
+JNIEXPORT jobjectArray
+JNICALL Java_com_nokia_mj_impl_pim_PIMManager__1listCalendarNames(
+    JNIEnv* aJniEnv,
+    jobject /*aPeer*/,
+    jint aManagerHandle,
+    jintArray aError)
+{
+    JELOG2(EPim);
+    pimbasemanager* manager =
+        reinterpret_cast< pimbasemanager *>(aManagerHandle);
+
+    jobjectArray javaStringArray = NULL;
+    javaStringArray = manager->listCalendarNames(aError,
+                      aJniEnv);
+    return javaStringArray;
+}
 
 // End of File

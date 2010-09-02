@@ -535,9 +535,16 @@ int verifyCertChain(char **cert_chain, int no_certs,
         }
 
         // compute the root hash value if requested
-        if (x509_ctx->current_issuer != NULL)
+        if (x509_ctx->chain != NULL)
         {
-            sprintf(root_hash,"%08lX",X509_issuer_name_hash(x509_ctx->current_issuer));
+            X509* root = sk_X509_value(x509_ctx->chain,sk_X509_num(x509_ctx->chain) - 1);
+            if (root != NULL)
+            {
+                sprintf(root_hash,"%08lX",X509_issuer_name_hash(root));
+                // no need to free the root explicitly since it will be 
+                // freed when freeing all the roots from roots_certs_st 
+                // stack
+            }
         }
         // add the '\0'
         root_hash[MD5_DIGEST_LEN] = '\0';

@@ -809,8 +809,7 @@ void CPIMContactListAdapter::DoReadContactItemL(MPIMContactItem& aContactItem,
                                         EPIMPanicInvalidItemID));
     // Read contact item using the item view definition
     CContactCard* contactItem =
-        static_cast<CContactCard*>(iDatabase->ReadContactLC(id,
-                                   aContactItemViewDef));
+        static_cast<CContactCard*>(iDatabase->ReadContactLC(id,aContactItemViewDef));
     // Set date and fill the PIM item
     TTime lastModified = contactItem->LastModified();
     aContactItem.SetLastModifiedL(lastModified);

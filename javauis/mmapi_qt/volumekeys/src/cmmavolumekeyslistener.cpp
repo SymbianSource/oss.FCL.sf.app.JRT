@@ -63,11 +63,12 @@ CMMAVolumeKeysListener::~CMMAVolumeKeysListener()
          iJavaRemConManager = NULL;
      }
     */
+    /*
     if (NULL != iTimer)
     {
         iTimer->Cancel();
         delete iTimer;
-    }
+    }*/
     LOG(EJavaMMAPI, EInfo, "CMMAVolumeKeysListener::~CMMAVolumeKeysListener() -");
 }
 
@@ -83,7 +84,8 @@ void CMMAVolumeKeysListener::ConstructL(MMMAVolumeKeysListener* aListener)
     iJavaRemConManager->SetObserverL(*iJavaRemConObserver);
     */
     // Timer for implementing Pressed/Released/Clicked feature.
-    iTimer = CPeriodic::NewL(CActive::EPriorityStandard);
+    //TODO For Mediakey(Hard VolumeKey)
+    //iTimer = CPeriodic::NewL(CActive::EPriorityStandard);
 
     iListener = aListener;
     LOG(EJavaMMAPI, EInfo, "CMMAVolumeKeysListener::ConstructL -");

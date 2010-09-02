@@ -263,7 +263,7 @@ run.tests          : Run JUnit and MT tests
 
     <target name="build.lib.common.webkit" depends="init" description="params: config">
         <javah destdir="${lib.path}/${generated.native.dir.webkit}/" classpath="${plugin.dir}/bin" verbose="yes">
-            <class name="org.eclipse.swt.internal.qt.webkit.OS_webkit"/>
+            <class name="org.eclipse.swt.internal.qt.webkit.WebkitOS"/>
         </javah>
         <antcall target="qmake">
             <param name="qmake.dir" value="${lib.path}/webkit"/>

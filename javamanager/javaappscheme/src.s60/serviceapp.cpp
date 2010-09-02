@@ -56,6 +56,7 @@ ServiceApp::~ServiceApp()
 void ServiceApp::quit()
 {
     LOG(EJavaQtServiceApp, EInfo, "ServiceApp quit() called");
+    exit(KErrNone); // Exit with OK status
 }
 
 
@@ -88,13 +89,8 @@ bool UriService::view(const QString& uri, bool retValue)
     LOG(EJavaQtServiceApp, EInfo, "UriService::view(uri, retValue) called");
     std::wstring stdWStrUri = uri.toStdWString();
     LOG1(EJavaQtServiceApp, EInfo, "url is %S", stdWStrUri.c_str());
-    if (retValue)
-    {
-        LOG(EJavaQtServiceApp, EInfo, "UriService::view retValue parameter is true");
-    }
 
     XQRequestInfo info = requestInfo();
-    bool asyncAnswer = !info.isSynchronous();
 
     // Start javalauncher.exe and pass the Url to it
     _LIT(KJavaLauncherExe, "javalauncher.exe");

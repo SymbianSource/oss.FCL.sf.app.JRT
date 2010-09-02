@@ -203,11 +203,23 @@ public class SifRegistratorTest extends TestCase implements InstallerMain
         {
             SuiteInfo si = getTestSuite();
             ComponentId cid = getComponentId(si.getGlobalId());
+
             // Check for USIF Phase 2 registration.
             Uid uid = sifReg.getUid(cid.getId());
             assertTrue("Suite uid " + si.getUid() + " does not match" +
                        " to uid " + uid + " from SCR",
                        si.getUid().equals(uid));
+
+            Uid appUid = PlatformUid.createUid("[e0001001]");
+            sifReg.startSession(false);
+            ComponentId cidForApp = sifReg.getComponentId(appUid);
+            sifReg.closeSession();
+            assertTrue("Null component id from SCR for application uid " +
+                       appUid, cidForApp != null);
+            assertTrue("Component id " + cid + " does not match" +
+                       " to uid " + cidForApp + " from SCR",
+                       cid.getId() == cidForApp.getId());
+
             // Check for USIF Phase 1 registration.
             //Vector apps = si.getApplications();
             //for (int i = 0; i < apps.size(); i++)

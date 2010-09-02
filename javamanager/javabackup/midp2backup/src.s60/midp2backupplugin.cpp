@@ -125,7 +125,7 @@ void CMidp2BackupPlugin::InitialiseGetBackupDataL(TDriveNumber aDrive)
 
 void CMidp2BackupPlugin::GetBackupDataSectionL(TPtr8& aBuffer, TBool& aFinished)
 {
-    LOG(EBackup, EInfo, "CMidp2BackupPlugin::GetBackupDataSectionL");
+    ILOG(EBackup, "+CMidp2BackupPlugin::GetBackupDataSectionL()");
 
     iBufferSpaceLeft = aBuffer.MaxLength();
     RDesWriteStream stream(aBuffer);
@@ -144,7 +144,7 @@ void CMidp2BackupPlugin::GetBackupDataSectionL(TPtr8& aBuffer, TBool& aFinished)
         aFinished = EFalse;
     }
 
-    else
+    if (!iStorageDataBackup)
     {
         if (iFirstCallToGetBackupDataSection)
         {
@@ -301,12 +301,13 @@ void CMidp2BackupPlugin::GetBackupDataSectionL(TPtr8& aBuffer, TBool& aFinished)
         {
             aFinished = ETrue;
             iFirstCallToGetBackupDataSection = ETrue;
-            iStorageDataBackup = ETrue;
+            // iStorageDataBackup = ETrue;
         }
 
         delete fullFileName;
     }
     CleanupStack::PopAndDestroy(&stream);
+    ILOG(EBackup, "-CMidp2BackupPlugin::GetBackupDataSectionL()");
 }
 
 
@@ -318,7 +319,7 @@ void CMidp2BackupPlugin::InitialiseRestoreBaseDataL(TDriveNumber aDrive)
 
 void CMidp2BackupPlugin::RestoreBaseDataSectionL(TDesC8& aBuffer, TBool aFinished)
 {
-    LOG(EBackup, EInfo, "CMidp2BackupPlugin::RestoreBaseDataSectionL");
+    ILOG(EBackup, "+CMidp2BackupPlugin::RestoreBaseDataSectionL()");
 
     iBufferSpaceLeft = aBuffer.Size();
     RDesReadStream stream(aBuffer);
@@ -349,6 +350,7 @@ void CMidp2BackupPlugin::RestoreBaseDataSectionL(TDesC8& aBuffer, TBool aFinishe
 
     if (iRestoreState == EStorage)
     {
+        ILOG1(EBackup, "Restoring Storage for drive %d", iDrive);
         iStorageBackupUtil -> RestoreStorageDataL(stream, iRestoreState, iBufferSpaceLeft);
     }
 
@@ -372,12 +374,14 @@ void CMidp2BackupPlugin::RestoreBaseDataSectionL(TDesC8& aBuffer, TBool aFinishe
         if (aFinished)
         {
             // Set state to EStorage
-            iRestoreState = EStorage;
+            ILOG1(EBackup, "Restore of drive %d complete, resetting statemachine for next drive", iDrive);
+            iRestoreState = EAppArc;
         }
     }
 
-    aFinished = ETrue;
+    // aFinished = ETrue;
     CleanupStack::PopAndDestroy(&stream);
+    ILOG(EBackup, "-CMidp2BackupPlugin::RestoreBaseDataSectionL()");
 }
 
 void CMidp2BackupPlugin::InitialiseRestoreIncrementDataL(TDriveNumber /* aDrive */)

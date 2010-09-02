@@ -11,14 +11,18 @@
 *
 * Contributors:
 *
-* Description:  ECOM resource definition for MIME type recognizer for Symbian
-*                application framework
+* Description:	ECOM resource definition for MIME type recognizer for Symbian
+*		 application framework
 *
 */
 
 
 #include <ecom/registryinfov2.rh>
 #include "javauids.h"
+
+#ifndef ECOM_VERSION_NO
+#define ECOM_VERSION_NO 2
+#endif
 
 RESOURCE REGISTRY_INFO r_registry
 {
@@ -34,12 +38,11 @@ RESOURCE REGISTRY_INFO r_registry
 			IMPLEMENTATION_INFO
 				{
 				implementation_uid = KRecognizerEcomImplUid;
-				// Version number is 2 so that this implementation should override the old one in ROM
-                version_no         =  2;
+				version_no	   =  ECOM_VERSION_NO;
 				display_name = "recjar";
 				default_data = ""; // This means it accepts ALL types
 				opaque_data = "";
-				rom_only           =  0;
+				rom_only	   =  0;
 				}
 			};
 		}

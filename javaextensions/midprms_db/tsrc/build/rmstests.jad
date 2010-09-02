@@ -4,7 +4,7 @@ MIDlet-Vendor: Nokia
 MicroEdition-Profile: MIDP-2.0
 MIDlet-1: RmsUnitTests,,j2meunitomj.MIDletTestRunner
 MIDlet-Name: RmsUnitTests
-MIDlet-Jar-Size: 69757
+MIDlet-Jar-Size: 70423
 MIDlet-Jar-URL: rmstests.jar
 J2MEUnitTestClasses: com.nokia.mj.test.rms.AllTests
 

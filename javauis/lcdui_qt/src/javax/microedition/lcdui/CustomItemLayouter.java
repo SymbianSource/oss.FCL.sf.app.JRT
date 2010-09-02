@@ -38,12 +38,12 @@ class CustomItemLayouter extends ItemLayouter
     /**
      * Key name for paint listener.
      */
-    private static final String PAINT_LISTENER = "paint";
+    private static final String PAINT_LISTENER = "PaintListener";
 
     /**
      * Key name for mouse listener.
      */
-    private static final String MOUSE_LISTENER = "mouse";
+    private static final String MOUSE_LISTENER = "MouseListener";
 
     boolean noBackground;
 
@@ -93,26 +93,20 @@ class CustomItemLayouter extends ItemLayouter
                     twips = Integer.parseInt(twipString);
                     timeout = Integer.parseInt(timeoutString);
 
-                    // Check for Negative Values
-                    if((twips < 0) && (timeout < 0))
-                    {
-                        setDefaultTapValues();
-                    }
-
+					// If any one of the value is zero or Negative, set defaults.
+					// If both are zero disable the tapdetection.
                     if((twips == 0)  && (timeout == 0))
                     {
                         disableTapDetection = true;
                     }
-
-                    // if any one of the value is zero, set defaults
-                    if(!((twips != 0) && (timeout != 0)))
+                    else if((twips <= 0) || (timeout <= 0))
                     {
                         setDefaultTapValues();
                     }
                 }
                 catch(NumberFormatException e)
                 {
-                    // Alpha Numeric Values of Timeouts and Timeout
+                    // Alpha Numeric Values of Twips and Timeout
                     setDefaultTapValues();
                 }
             }
@@ -149,8 +143,7 @@ class CustomItemLayouter extends ItemLayouter
     void eswtResizeControl(Item item, Control control, int width, int height)
     {
         super.eswtResizeControl(item, control, width, height);
-        CustomItem customitem = (CustomItem) item;
-        customitem.internalHandleSizeChanged(width, height);
+        ((CustomItem)item).internalHandleSizeChanged(width, height);
     }
 
     /**
@@ -558,19 +551,25 @@ class CustomItemLayouter extends ItemLayouter
 
             // If the rectange width falls outside the custom area
             if(LeftX < 0)
+            {
                 LeftX = 0;
+            }
 
             int TopY = pointerDownY - (int) yPixelHeight;
 
             // If the rectange height falls outside the custom area
             if(TopY < 0)
+        	{
                 TopY = 0;
+            }
 
             int DownY = pointerDownY + (int) yPixelHeight;
 
             // If the rectange heightfalls outside the custom area.
             if(DownY > customItem.getContentHeight())
+            {
                 DownY = customItem.getContentHeight();
+            }
 
             // Find the PointerUp is withing rectange
             if((x >= LeftX) && (x <= RightX))

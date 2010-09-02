@@ -12,7 +12,7 @@
 # Contributors:
 #
 # Description: QT Service application the implements support for
-#               starting Java applications using "javaapp:" QUrl
+#              starting Java applications using "javaapp:" QUrl
 #
 
 TEMPLATE=app

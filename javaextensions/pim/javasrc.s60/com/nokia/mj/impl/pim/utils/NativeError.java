@@ -644,7 +644,81 @@ public final class NativeError
         }
         }
     }
+    public static void handleCreateCalendarError(int aNativeErrorCode, String aCalName)
+    {
 
+
+        if (aNativeErrorCode == OsErrorMessage.SUCCESS)
+        {
+            return; // OK
+        }
+
+        switch (aNativeErrorCode)
+        {
+        case OsErrorMessage.KERR_ARGUMENT:
+        {
+            throw new IllegalArgumentException(
+                "Creation of calendar failed: calendar name is invalid"
+                + aCalName);
+        }
+        case OsErrorMessage.KERR_BAD_NAME:
+        {
+            throw new IllegalArgumentException(
+                "Creation of calendar failed: calendar name is not valid "
+                + aCalName);
+        }
+        case OsErrorMessage.KERR_ALREADY_EXISTS:
+        {
+            throw new RuntimeException(ErrorString.CALENDAR_ALREADY_EXISTS);
+        }
+        default:
+        {
+            throw new GenericException(ErrorString.GENERAL_ERROR_COLON + aNativeErrorCode);
+        }
+        }
+    }
+
+    public static void handleDeleteCalendarError(int aNativeErrorCode, String aCalName)
+    {
+
+
+        if (aNativeErrorCode == OsErrorMessage.SUCCESS)
+        {
+            return; // OK
+        }
+
+        switch (aNativeErrorCode)
+        {
+        case OsErrorMessage.KERR_ACCESS_DENIED:
+        {
+            throw new IllegalArgumentException(
+                "Deletion of calendar failed: phone default calendar cannot be deleted");
+        }
+        case OsErrorMessage.KERR_ARGUMENT:
+        {
+            // we should never end up here since the calendar name is
+            // verified to be not empty before making   the native call
+            throw new IllegalArgumentException(
+                "Deletion of calendar failed: calendar name is null");
+        }
+        case OsErrorMessage.KERR_NOT_FOUND:
+        {
+            throw new IllegalArgumentException(
+                "Deletion of calendar failed: calendar by name "
+                + aCalName + " cannot be found");
+        }
+        case OsErrorMessage.KERR_BAD_NAME:
+        {
+            throw new IllegalArgumentException(
+                "Deletion of calendar failed: calendar name "
+                + aCalName + " includes a path explicitly");
+        }
+        default:
+        {
+            throw new GenericException(ErrorString.GENERAL_ERROR_COLON + aNativeErrorCode);
+        }
+        }
+    }
     /**
      * Construction prohibited.
      */

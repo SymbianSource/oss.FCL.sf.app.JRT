@@ -18,8 +18,6 @@
 
 #include <logger.h>
 
-#include <JniEnvWrapper.h>
-
 #include "com_nokia_microedition_media_control_RecordControl.h"
 #include "mmafunctionserver.h"
 #include "cmmarecordcontrol.h"

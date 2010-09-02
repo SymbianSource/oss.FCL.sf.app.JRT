@@ -47,7 +47,7 @@ public class InstallationNotifier implements ExeProgressListener
     // Maximum number of progress updates to SysUtil.setProperty().
     private static final int MAX_PROPERTY_PROGRESS_UPDATES = 5;
     // Maximum number of progress updates to SIF.
-    private static final int MAX_SIF_PROGRESS_UPDATES = 5;
+    private static final int MAX_SIF_PROGRESS_UPDATES = 8;
     // Maximum number of progress updates to UI.
     private static final int MAX_UI_PROGRESS_UPDATES = 20;
 
@@ -132,18 +132,6 @@ public class InstallationNotifier implements ExeProgressListener
     public void ended()
     {
         Log.log("InstallationNotifier.ended");
-        if (iInstallerUi != null)
-        {
-            try
-            {
-                iInstallerUi.ended();
-            }
-            catch (Throwable t)
-            {
-                Log.logError(
-                    "InstallationNotifier: InstallerUi.ended threw exception", t);
-            }
-        }
         if (iSifNotifier != null)
         {
             // After this SifNotifier is no longer used, destroy it.
@@ -155,6 +143,18 @@ public class InstallationNotifier implements ExeProgressListener
             catch (Throwable t)
             {
                 Log.logError("InstallationNotifier: SifNotifier.destroy failed", t);
+            }
+        }
+        if (iInstallerUi != null)
+        {
+            try
+            {
+                iInstallerUi.ended();
+            }
+            catch (Throwable t)
+            {
+                Log.logError(
+                    "InstallationNotifier: InstallerUi.ended threw exception", t);
             }
         }
     }

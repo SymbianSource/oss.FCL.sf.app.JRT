@@ -25,8 +25,6 @@
 #include "cmmadeleterefevent.h"
 #include <logger.h>
 
-#include <JniEnvWrapper.h>
-
 //#include <mswtclient.h>
 //#include <swtcliententry.h>
 #include "s60commonutils.h"

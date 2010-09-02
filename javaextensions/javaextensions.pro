@@ -22,6 +22,7 @@ SUBDIRS += webservices/build/javawebservices.pro
 SUBDIRS += satsa/build/javasatsa.pro 
 SUBDIRS += location/build/javalocation.pro 
 SUBDIRS += sensor/build/javasensor.pro 
+SUBDIRS += centralrepository/build/javacentrep.pro 
 SUBDIRS += midppush 
 SUBDIRS += bluetooth 
 SUBDIRS += datagram 

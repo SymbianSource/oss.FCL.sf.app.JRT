@@ -2195,7 +2195,7 @@ JNIEXPORT jint JNICALL OS_NATIVE( QDesktopWidget_1screenNumber )
     SWT_TRY
         {
         SWT_LOG_JNI_CALL();
-        SWT_LOG_DATA_2("handle=%x widgetHandle=%x", aDesktopHandle, widgetHandle);
+        SWT_LOG_DATA_2("desktopHandle=%x widgetHandle=%x", aDesktopHandle, aWidgetHandle);
         HANDLE_TO_POINTER( QDesktopWidget*, desktopWidget, aDesktopHandle );
         HANDLE_TO_POINTER( QWidget*, widget, aWidgetHandle );
         screenNum = desktopWidget->screenNumber( widget );
@@ -11620,7 +11620,7 @@ JNIEXPORT void JNICALL OS_NATIVE( MobileDevice_1destroy )
     SWT_TRY
         {
         SWT_LOG_JNI_CALL();
-        SWT_LOG_DATA_1( "handle=%x", aHandle );
+        SWT_LOG_DATA_1( "handle=%x", swtApp );
         swtApp->destroyMobileDevice();
         }
     SWT_CATCH
@@ -11976,7 +11976,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SignalHandler_1new)
     SWT_TRY
         {
         SWT_LOG_JNI_CALL();
-        SWT_LOG_DATA_1("peer=%x", aPeer);
+        SWT_LOG_DATA_2("widget=%x signalId=%d", aWidget, aSignalId);
 
         HANDLE_TO_POINTER( QObject*, widget, aWidget );
 

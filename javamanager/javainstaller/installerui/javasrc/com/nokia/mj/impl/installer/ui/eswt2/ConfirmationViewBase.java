@@ -102,7 +102,6 @@ abstract public class ConfirmationViewBase extends ViewBase
                 }
                 iInstallerUi.loadCss();
                 setVisible(true);
-                iInstallerUi.unhide();
             }
         });
         // The UI thread must not be blocked. Let's wait for the answer

@@ -48,13 +48,14 @@ public:
      * @param aPlayer provides content
      */
     static CMMADCDisplay* NewLC(MMMAGuiPlayer* aPlayer,
-    MMAFunctionServer* aEventSource,
-    jobject aGUIObject);
-    virtual ~CMMADCDisplay();
+							    MMAFunctionServer* aEventSource,
+							    JNIEnv* aJni,
+							    jobject aGUIObject);
+							    virtual ~CMMADCDisplay();
 
 public: // From MMMADisplay
     void DrawFrameL(const CFbsBitmap* aBitmap);
-    void SetDisplaySizeL(const TSize& aSize);
+    //void SetDisplaySizeL(const TSize& aSize);
     void SetDisplayLocationL(const TPoint& aPosition);
     TPoint DisplayLocation();
     void SetFullScreenL(TBool aFullScreen);

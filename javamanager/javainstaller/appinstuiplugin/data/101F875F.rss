@@ -23,6 +23,10 @@
 
 //  RESOURCE DEFINITIONS 
 
+#ifndef ECOM_VERSION_NO
+#define ECOM_VERSION_NO 2
+#endif
+
 RESOURCE REGISTRY_INFO registry_info
     {
     resource_format_version = RESOURCE_FORMAT_VERSION_2;
@@ -42,8 +46,7 @@ RESOURCE REGISTRY_INFO registry_info
                 IMPLEMENTATION_INFO
                     {
                     implementation_uid  =  KInstallerFrontEndEcomImplUid;
-                    // Version number is 2 so that this implementation should override the old one in ROM
-                    version_no          =  2;
+                    version_no          =  ECOM_VERSION_NO;
                     display_name        =  "Midlet installation ui implementation";
                     default_data        =  "application/java-archive||text/vnd.sun.j2me.app-descriptor||application/x-java-archive||application/java";
                     opaque_data         =  " ";

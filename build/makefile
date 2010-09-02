@@ -73,10 +73,20 @@ prep: sysdefsetup generatereleasefile
 ifdef RD_JAVA_S60_RELEASE_9_2
 prep: configure qmake
 endif
+ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS
+prep: pkgdefsetup
+endif
 
 SYSDEF_TEMPLATE = $(JAVA_SRC_ROOT)/build/templates/$(RD_JAVA_S60_RELEASE).layers.sysdef.xml
 sysdefsetup:
 	$(call CATCOMMAND,$(wildcard $(SYSDEF_TEMPLATE)))>$(JAVA_SRC_ROOT)/layers.sysdef.xml
+
+pkgdefsetup:
+	$(call MKDIR, $(call PATHFIX, $(JAVA_SRC_ROOT)/jrt_info))
+	$(call MKDIR, $(call PATHFIX, $(JAVA_SRC_ROOT)/jrt_info/nokia_jrt_metadata))
+	$(call CATCOMMAND,$(JAVA_SRC_ROOT)/build/templates/pkgmap_template.xml)>$(JAVA_SRC_ROOT)/package_map.xml
+	$(call CATCOMMAND,$(JAVA_SRC_ROOT)/build/templates/pkgdef_template.xml)>$(JAVA_SRC_ROOT)/package_definition.xml
+	$(call CATCOMMAND,$(JAVA_SRC_ROOT)/build/templates/nokia_pkgdef_template.xml)>$(JAVA_SRC_ROOT)/jrt_info/nokia_jrt_metadata/package_definition.xml
 
 # Cleaning java from top level cleans also the API jars
 clean_java: cleanapijars

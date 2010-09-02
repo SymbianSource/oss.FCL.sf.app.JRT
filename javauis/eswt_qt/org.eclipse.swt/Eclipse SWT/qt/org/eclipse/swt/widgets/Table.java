@@ -140,8 +140,8 @@ public class Table extends Composite {
     boolean wrap;
     
     /*
-     * Flag to check between the press and release event, 
-     * mouse is not moved over the clicked item.
+     * Flag to indicate that selection is happening with mouse in RADIO 
+     * style Table
      */
     boolean mouseSelection;
     
@@ -1396,74 +1396,61 @@ public class Table extends Composite {
         
         return retval;
     }
-    /*
-     * Three Mouse events(press, move and release) are needed to select the radio button, 
-     * when the user clicks(press event) on tableItem and release event is also 
-     * happened without moving away(move event) from that time 
-     */
-    boolean qt_event_mouseButtonPress_pp(int widgetHandle, int button,
-            int x, int y, int state, int buttons) {
-       
-        if(widgetHandle == handle && (style & SWT.SINGLE) != 0 && (style & SWT.RADIO) != 0){
-            
-            int itemHandle = OS.QTableWidget_itemAt(topHandle, x, y);
-            
-            if (itemHandle != 0) {
-                oldIndex = OS.QTableWidget_row(topHandle, itemHandle);
-            }
-            mouseSelection = true;
+    
+    // Returns row index based on mouse event handle and coordinates
+    int getRow(int widgetHandle, int x, int y) {
+        int row = -1; 
+        if (widgetHandle == handle) {
+            // User has pressed on a TableItem
+            row = OS.QTableView_rowAt(topHandle, y);
+        } else {
+            // User has pressed on a radio button (the coordinates are 
+            // relative to the button, not the Table)
+            Point mapped = OS.QWidget_mapTo(widgetHandle, handle, x, y);
+            row = OS.QTableView_rowAt(topHandle, mapped.y);
         }
-        return super.qt_event_mouseButtonPress_pp(widgetHandle, button, x, y, state, buttons);
-    }
-
-    boolean qt_event_mouseButtonRelease_pp(int widgetHandle, int button,
-            int x, int y, int state, int buttons) {
-       
-        if(widgetHandle == handle && mouseSelection && (style & SWT.SINGLE) != 0 && (style & SWT.RADIO) != 0){
-            // there is a chance that if we click on radio button, oldIndex is not going to update
-            // in the mouseButtonPress. 
-            if(oldIndex != -1){
-                OS.QAbstractButton_setChecked(items[oldIndex].radioButtonHandle, true);
-                sendSelectionEvent();
-            } else if(currentItem != null){
-                Rectangle rect = OS.QTableWidget_visualItemRect(topHandle, currentItem.topHandle()); 
-                if((rect.y <= y) && (y <= (rect.y+rect.height)) && (x<=rect.x+rect.width)){
-                    OS.QAbstractButton_setChecked(currentItem.radioButtonHandle, true);
-                    sendSelectionEvent();
-                }
-            }
-            mouseSelection = false;
-            oldIndex = -1;
-        }
-        return super.qt_event_mouseButtonRelease_pp(widgetHandle, button, x, y, state, buttons);
-    }
-
-    boolean qt_event_mouseMove(int widgetHandle, int button, int x, int y,
-            int state, int buttons) {
-        if( mouseSelection && widgetHandle == handle && (style & SWT.SINGLE) != 0 && (style & SWT.RADIO) != 0){
-            int itemHandle = OS.QTableWidget_itemAt(topHandle, x, y);
-            int index = -1;
-            if (itemHandle != 0) {
-                index = OS.QTableWidget_row(topHandle, itemHandle);
-            }
-            Rectangle rect = OS.QTableWidget_visualItemRect(topHandle, currentItem.topHandle());
-            if(index != oldIndex){
-                if (!((rect.y <= y) && (y <= (rect.y+rect.height)) &&(x<=rect.x+rect.width))){
-                    mouseSelection = false;
-                    oldIndex = -1;
-                }
-            } else if(index == -1){
-                if (!((rect.y <= y) && (y <= (rect.y+rect.height)) && (x<rect.x+rect.width))){
-                    mouseSelection = false;
-                }
-            }
-        }
-        return super.qt_event_mouseMove(widgetHandle, button, x, y, state, buttons);
+        return row;
     }
     
-    void qt_signal_released()
-    {
-        sendSelectionEvent();
+    boolean qt_event_mouseButtonPress_pp(int widgetHandle, int button,
+            int x, int y, int state, int buttons) {
+        
+        if (button == OS.QT_LEFTBUTTON && 
+            (style & SWT.SINGLE) != 0 && (style & SWT.RADIO) != 0) {
+            
+            int row = getRow(widgetHandle, x, y); 
+            
+            if (row != -1 && row != OS.QTableWidget_currentRow(topHandle)) {
+                apiSelection = true;
+                mouseSelection = true;
+                OS.QTableWidget_setCurrentCell(topHandle, row, 1);
+                apiSelection = false;
+            }
+        }
+        
+        return super.qt_event_mouseButtonPress_pp(widgetHandle, button, x, y, state, buttons);
+    }
+    
+    boolean qt_event_mouseButtonRelease_pp ( int widgetHandle, int button, int x, int y, int state, int buttons  ) {
+        // Update the radio button manually in case of SWT.RADIO Table. 
+        // In such a Table we have manually added QRadioButtons to QTableWidget
+        // cells, so that table selection would not happen automatically
+        if (button == OS.QT_LEFTBUTTON && 
+            (style & SWT.SINGLE) != 0 && (style & SWT.RADIO) != 0) {
+            int row = getRow(widgetHandle, x, y);
+
+            // Update selection if the row is valid
+            if (row != -1) {
+                TableItem item = _getItem(row);
+                OS.QAbstractButton_setChecked(item.radioButtonHandle, true);
+                if (mouseSelection) {
+                    sendSelectionEvent();
+                    mouseSelection = false;
+                }
+            }
+        }
+
+        return super.qt_event_mouseButtonRelease_pp(widgetHandle, button, x, y, state, buttons);
     }
     
     void qt_signal_table_cellActivated(int row, int column)

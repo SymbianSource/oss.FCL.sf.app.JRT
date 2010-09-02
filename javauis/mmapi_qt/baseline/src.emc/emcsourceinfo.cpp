@@ -16,8 +16,6 @@
 */
 #include <logger.h>
 
-#include <JniEnvWrapper.h>
-
 #include "com_nokia_microedition_media_protocol_EMCSourceInfo.h"
 #include "cmmamanager.h"
 

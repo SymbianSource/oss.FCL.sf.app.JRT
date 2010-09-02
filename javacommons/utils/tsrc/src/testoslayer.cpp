@@ -37,6 +37,22 @@ TEST_GROUP(TestOsLayer)
     }
 };
 
+void removeTestJar(list <wstring>& list, const wstring& jar)
+{
+
+    std::list<wstring>::iterator iter = find(list.begin(), list.end(), jar);
+    if (iter != list.end())
+    {
+        list.erase(iter);
+    }
+}
+
+void removeTestJars(list <wstring>& list)
+{
+    removeTestJar(list, L"Z:\\resource\\java\\jvm\\lib\\jrt\\javacommonutilstest.jar");
+    removeTestJar(list, L"Z:\\resource\\java\\jvm\\lib\\jrt\\j2meunitomj.jar");
+}
+
 /**
  * Test JavaOsLayer::bootClassPath().
  *
@@ -54,6 +70,7 @@ TEST(TestOsLayer, bootClassPath)
     const wstring delim = L";";
     JavaOsLayer::bootClassPath(odcs, bc, BOOT_CLASSPATH_MIDP);
     CHECK(odcs.size() > 35);
+    removeTestJars(bc);
     CHECK(bc.size() == 1);
     odcs.clear();
     bc.clear();
@@ -61,13 +78,15 @@ TEST(TestOsLayer, bootClassPath)
     // 2. Test installer cp.
     JavaOsLayer::bootClassPath(odcs, bc, BOOT_CLASSPATH_INSTALLER);
     CHECK(odcs.size() > 24);
+    removeTestJars(bc);
     CHECK(bc.size() == 1);
     odcs.clear();
     bc.clear();
 
     // 3. Test tckrunner cp.
     JavaOsLayer::bootClassPath(odcs, bc, BOOT_CLASSPATH_TCKRUNNER);
-    CHECK(bc.size() > 10);
+    CHECK(odcs.size() > 10);
+    removeTestJars(bc);
     CHECK(bc.size() == 1);
     odcs.clear();
     bc.clear();
@@ -75,6 +94,7 @@ TEST(TestOsLayer, bootClassPath)
     // 4. Test negative type.
     JavaOsLayer::bootClassPath(odcs, bc, -1);
     CHECK(odcs.size() > 35);
+    removeTestJars(bc);
     CHECK(bc.size() == 1);
     odcs.clear();
     bc.clear();
@@ -82,6 +102,7 @@ TEST(TestOsLayer, bootClassPath)
     // 5. Test positive greater boyndary.
     JavaOsLayer::bootClassPath(odcs, bc, 50);
     CHECK(odcs.size() > 4);
+    removeTestJars(bc);
     CHECK(bc.size() == 1);
     odcs.clear();
     bc.clear();

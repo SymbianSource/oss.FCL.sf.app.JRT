@@ -187,7 +187,24 @@ OS_EXPORT int NativeSocketConnection::socketOpen(int aSockDesc, int aType, int a
             struct hostent* hp = gethostbyname(mHost);
             if (hp ==  NULL)
             {
-                return -(h_errno);
+                 //error condition, we have to handle -18 error.
+                ELOG1(ESOCKET,"NativeSocketConnection:: gthostbyname error : %d" , h_errno);                 
+                int tmp = ApnSettings::retryConnection(h_errno,aType,aApn);
+                if(tmp == 0)
+                {
+                    // connection reset done, attempt once again
+                    hp = gethostbyname(mHost);
+                    if(hp == NULL)
+                    {
+                        return -(h_errno);    
+                    }
+                 }
+                 else
+                 {
+                     // retry not supported/failed
+                     return tmp; 
+                  
+                 }
             }
             addr.sin_addr.s_addr = ((struct in_addr*)(hp->h_addr))->s_addr;
         }

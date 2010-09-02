@@ -25,7 +25,6 @@
 #include <mmf/common/mmfcontroller.h>
 #include <midiclientutility.h>
 #include <cammscustomcommandutility.h>
-#include <JniEnvWrapper.h>
 // CONSTANTS
 _LIT(KErrAudioOutputControlError, "AMMS AudioOutputControl error: %d");
 const TInt KEventMessageSize = 64;

@@ -25,6 +25,5 @@ SUBDIRS += javacaptain
 SUBDIRS += javainstaller 
 SUBDIRS += javaregistry 
 SUBDIRS += javabackup 
-SUBDIRS += javasettings 
 BLD_INF_RULES.prj_extensions += "$${LITERAL_HASH}include \"javarecognizer/build/bld.inf\""  
 BLD_INF_RULES.prj_extensions += "prj_extensions" 

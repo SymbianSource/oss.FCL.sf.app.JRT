@@ -153,10 +153,6 @@ data=JAVA_VM_RES_BLD\javanokiasound.odc                                     JAVA
 /*file=ABI_DIR\BUILD_DIR\javaremconobserver.dll                               SHARED_LIB_DIR\javaremconobserver.dll
 */
 
-// Legacy utilities
-file=ABI_DIR\BUILD_DIR\javalegacyutils.dll                                  SHARED_LIB_DIR\javalegacyutils.dll
-data=JAVA_VM_RES_BLD\javalegacyutils.odc                                    JAVA_VM_RES_IMG\javalegacyutils.odc
-
 
 /////////////////////////////
 // Java Runtimes collection //
@@ -340,6 +336,10 @@ data=ABI_DIR\BUILD_DIR\z\system\sounds\digital\CamcorderJavaStart.wav       \Sys
 // AMMS
 file=ABI_DIR\BUILD_DIR\javaamms.dll                                      SHARED_LIB_DIR\javaamms.dll
 data=JAVA_VM_RES_BLD\javaamms.odc                                        JAVA_VM_RES_IMG\javaamms.odc
+
+// CentralRepository API
+file=ABI_DIR\BUILD_DIR\javacentrep.dll                                      SHARED_LIB_DIR\javacentrep.dll
+data=JAVA_VM_RES_BLD\javacentrep.odc                                        JAVA_VM_RES_IMG\javacentrep.odc
 
 ///////////////////
 // Miscellaneous //

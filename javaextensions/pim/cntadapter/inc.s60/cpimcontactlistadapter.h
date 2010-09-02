@@ -195,7 +195,7 @@ public: // MPIMListAdapter
      */
     void Close();
 
-    void DoClose();
+    void CPIMContactListAdapter::DoClose();
 
 public: // MPIMContactListAdapter
 
@@ -223,7 +223,8 @@ public: // MPIMContactListAdapter
      */
     void CreateContactItemL(MPIMContactItem& aContactItem);
 
-    void DoCreateContactItemL(MPIMContactItem& aContactItem);
+    void CPIMContactListAdapter::DoCreateContactItemL(
+        MPIMContactItem& aContactItem);
 
     /**
      * Reads an existing contact item from the native database.
@@ -248,7 +249,8 @@ public: // MPIMContactListAdapter
      */
     void ReadContactItemL(MPIMContactItem& aContactItem);
 
-    void DoCallReadContactItemL(MPIMContactItem& aContactItem);
+    void CPIMContactListAdapter::DoCallReadContactItemL(
+        MPIMContactItem& aContactItem);
 
     /**
      * Reads an existing contact item from the native database
@@ -269,9 +271,11 @@ public: // MPIMContactListAdapter
      *        native database.
      * @li Other - The list adapter is non-functional.
      */
-    void ReadMinimalContactItemL(MPIMContactItem& aContactItem);
+    void ReadMinimalContactItemL(
+        MPIMContactItem& aContactItem);
 
-    void DoCallReadMinimalContactItemL(MPIMContactItem& aContactItem);
+    void CPIMContactListAdapter::DoCallReadMinimalContactItemL(
+        MPIMContactItem& aContactItem);
 
     /**
      * Reads an existing contact item from the native database
@@ -311,7 +315,7 @@ public: // MPIMContactListAdapter
     void ReadContactFieldL(MPIMContactItem& aContactItem,
                            TPIMContactField aContactField);
 
-    void DoReadContactFieldL(
+    void CPIMContactListAdapter::DoReadContactFieldL(
         MPIMContactItem& aContactItem,
         TPIMContactField aContactField);
 
@@ -339,7 +343,8 @@ public: // MPIMContactListAdapter
      */
     void WriteContactItemL(MPIMContactItem& aContactItem);
 
-    void DoWriteContactItemL(MPIMContactItem& aContactItem);
+    void CPIMContactListAdapter::DoWriteContactItemL(
+        MPIMContactItem& aContactItem);
 
     /**
      * Removes an existing contact from the native database.
@@ -410,7 +415,7 @@ private:
      * @param aContactItemViewDef View definition which is used for
      *        reading the contact item from the database
      */
-    void DoReadContactItemL(
+    void CPIMContactListAdapter::DoReadContactItemL(
         MPIMContactItem& aContactItem,
         const CContactItemViewDef& aContactItemViewDef);
 

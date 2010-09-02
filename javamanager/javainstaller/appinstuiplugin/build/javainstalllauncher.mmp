@@ -40,6 +40,10 @@ PAGED
 START RESOURCE  ../data/101F875F.rss
 TARGET          ifeui.rsc
 END
+START RESOURCE  ../data/101F875F_iad.rss
+TARGET          ifeui.rsc
+TARGETPATH      resource/java/iad
+END
 
 // Sources
 SOURCEPATH      ../src
@@ -51,8 +55,6 @@ SOURCE          asyncwaitcallback.cpp
 USERINCLUDE     .
 USERINCLUDE     ../inc
 USERINCLUDE     ../../../../inc
-
-SYSTEMINCLUDE   ../../../../inc
 
 // Libraries
 LIBRARY         charconv.lib

@@ -661,7 +661,7 @@ void GraphicsContextImpl::drawRGB(int aRgbData[], int aRgbDataLength, int aOffse
 
 void GraphicsContextImpl::drawRGB(char aRgbData[], char aTransparenceMask[],  int aRgbDataLength,
                                                         int aOffset, int aScanlength, int aX, int aY, int aWidth, int aHeight,
-                                                        int aTransform, int aFormat) {
+                                                        int aTransform, int /*aFormat*/) {
     GFX_LOG_FUNC_CALL();
     Q_ASSERT(aRgbData != NULL);
 

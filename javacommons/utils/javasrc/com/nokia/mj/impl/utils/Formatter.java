@@ -48,9 +48,10 @@ import java.util.Date;
  * </pre>
  * <br>
  * Limitation: more than 10 positional arguments are not supported (only 0...9)
- *
- * @author Nokia Corporation
- * @version 1.0
+ * <br>
+ * Note that Formatter supports Avkon and Qt based localisation.
+ * Text parameter indices start from 0 when Avkon is used and from 1
+ * when Qt is used.
  */
 public class Formatter
 {
@@ -60,8 +61,19 @@ public class Formatter
     /** String with latest replacements */
     private String replaced;
 
+    /**
+     * Platform localisation type.
+     * Either ResourceLoader.AVKON or ResourceLoader.QT. */
+    private final int locType;
+
+    /**
+     * The first text parameter replacement index. For Avkon based
+     * localisation this is 0, for Qt based localisation this is 1.
+     */
+    private final int startIndex;
+
     /** Next replacement index */
-    private int nextIndex = (ResourceLoader.getLocaleIdQt() == null? 0: 1);
+    private int nextIndex;
 
     /*** ----------------------------- PUBLIC ------------------------------ */
 
@@ -72,8 +84,22 @@ public class Formatter
      */
     Formatter(String aPattern)
     {
+        this(aPattern, ResourceLoader.AVKON);
+    }
+
+    /**
+     * Create a new formatter
+     *
+     * @param pattern formatter pattern
+     * @param aLocType platform localisation type
+     */
+    Formatter(String aPattern, int aLocType)
+    {
         pattern = aPattern;
         replaced = aPattern;
+        locType = aLocType;
+        startIndex = (locType == ResourceLoader.QT? 1: 0);
+        nextIndex = startIndex;
     }
 
     /**
@@ -215,21 +241,9 @@ public class Formatter
 
         // Reset for next usage
         replaced = pattern;
-        nextIndex = (ResourceLoader.getLocaleIdQt() == null? 0: 1);
+        nextIndex = startIndex;
 
         return result;
-    }
-
-    /**
-     * Gets a clone of this formatter. This can be used for caching preparsed
-     * Formatters.
-     *
-     * @return clone of the formatter, as if new Formatter were created with
-     * same pattern as current one.
-     */
-    public Formatter getClone()
-    {
-        return new Formatter(pattern);
     }
 
     /**
@@ -268,11 +282,11 @@ public class Formatter
         return toString();
     }
     /**
-     * Applies convertion from european digits into arabic-indic digits 
+     * Applies convertion from european digits into arabic-indic digits
      * based on existing language settings
      *
      * @param str String which might contain european digits
-     * @return A string identical with the provided string but with the 
+     * @return A string identical with the provided string but with the
      *         european digits (if any) converted to arabic-indic digits
      */
     public static String formatDigits(String str)
@@ -383,7 +397,7 @@ public class Formatter
      * based on existing language settings
      *
      * @param str String which might contain european digits
-     * @return A string identical with the provided string but with the 
+     * @return A string identical with the provided string but with the
      *         european digits (if any) converted to arabic-indic digits
      */
     private static native String _formatDigits(String str);

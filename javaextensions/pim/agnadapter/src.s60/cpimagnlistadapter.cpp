@@ -19,7 +19,7 @@
 // INCLUDE FILES
 #include "cpimagnlistadapter.h"
 #include "mpimitemdata.h"
-#include "javasymbianoslayer.h"
+#include "cleanupresetanddestroy.h"
 #include "cpimagnserverwait.h"
 #include "logger.h"
 
@@ -54,12 +54,14 @@ CPIMAgnListAdapter::CPIMAgnListAdapter(java::util::FunctionServer* aFuncServer)
 // -----------------------------------------------------------------------------
 //
 void CPIMAgnListAdapter::ConstructL(
-    MCalChangeCallBack::TChangeEntryType aEntryType)
+
+    MCalChangeCallBack::TChangeEntryType aEntryType,
+    CCalSession* aCalSession)
 {
     JELOG2(EPim);
+
     iServerWait = CPIMAgnServerWait::NewL();
-    iCalSession = CCalSession::NewL();
-    iCalSession->OpenL(iCalSession->DefaultFileNameL());
+    iCalSession = aCalSession;
     iCalEntryView = CCalEntryView::NewL(*iCalSession, *iServerWait);
     iServerWait->WaitCompleteL(KServerMaxWait);
 
@@ -285,10 +287,9 @@ CCalEntry* CPIMAgnListAdapter::FetchNativeEntryL(TPIMItemID aItemId,
 void CPIMAgnListAdapter::CloseAgendaSession()
 {
     JELOG2(EPim);
+    iCalSession->StopChangeNotification();
     delete iCalEntryView;
     iCalEntryView = NULL;
-
-    delete iCalSession;
     iCalSession = NULL;
 
     iChangesRead = ETrue;

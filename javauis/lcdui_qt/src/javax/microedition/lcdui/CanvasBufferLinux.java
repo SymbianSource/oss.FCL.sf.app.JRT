@@ -40,19 +40,22 @@ final class CanvasBufferLinux extends Buffer {
         host = canvas;
 	}
     
-	protected void init() 
-    {
-    	super.init();
-    	surface = Internal_PackageSupport.getWindowsurface(host.getShell());
-    }
-	
 	void bindToHost(GraphicsContext gc) 
 	{
 		gc.bindTarget(surface);
 	}
 
+    void ensureWindowSurface() 
+    {
+    	if(surface == null)
+    	{
+    		surface = Internal_PackageSupport.getWindowsurface(host.getShell());
+    	}
+    }
+	
 	void beginPaint(int x, int y, int w, int h) 
 	{
+		ensureWindowSurface();
 		paintX = x; 
 		paintY = y;
 		paintW = w;

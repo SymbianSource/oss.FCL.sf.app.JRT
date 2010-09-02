@@ -139,7 +139,8 @@ TBool CPIMEventAdapterAccess::OpenContactListL(const TDesC* /*aListName*/,
     return EFalse;
 }
 
-TBool CPIMEventAdapterAccess::OpenEventListL(const TDesC* aListName,
+TBool CPIMEventAdapterAccess::OpenEventListL(CCalSession* aCalSession,
+        const TDesC* aListName,
         MPIMEventAdapterManager** aRetAdapterManager,
         MPIMEventListAdapter** aRetListAdapter,
         MPIMLocalizationData** aRetLocalizationData)
@@ -181,8 +182,8 @@ TBool CPIMEventAdapterAccess::OpenEventListL(const TDesC* aListName,
         CPIMAgnApptAdapter* adapter = CPIMAgnApptAdapter::NewL(iFuncServer);
         CleanupStack::PushL(adapter);
 
-        listAdapter = CPIMEventListAdapter::NewL(CCalEntry::EAppt, adapter,
-                      iFuncServer);
+        listAdapter = CPIMEventListAdapter::NewL(CCalEntry::EAppt,adapter,
+                      iFuncServer, aCalSession);
 
         CleanupStack::Pop(adapter);
         CleanupStack::Pop(adapterManager);
@@ -200,8 +201,8 @@ TBool CPIMEventAdapterAccess::OpenEventListL(const TDesC* aListName,
         CPIMAgnMemoAdapter* adapter = CPIMAgnMemoAdapter::NewL(iFuncServer);
         CleanupStack::PushL(adapter);
 
-        listAdapter = CPIMEventListAdapter::NewL(CCalEntry::EEvent, adapter,
-                      iFuncServer);
+        listAdapter = CPIMEventListAdapter::NewL(CCalEntry::EEvent,adapter,
+                      iFuncServer, aCalSession);
 
         CleanupStack::Pop(adapter);
         CleanupStack::Pop(adapterManager);
@@ -219,8 +220,8 @@ TBool CPIMEventAdapterAccess::OpenEventListL(const TDesC* aListName,
         CPIMAgnAnnivAdapter* adapter = CPIMAgnAnnivAdapter::NewL(iFuncServer);
         CleanupStack::PushL(adapter);
 
-        listAdapter = CPIMEventListAdapter::NewL(CCalEntry::EAnniv, adapter,
-                      iFuncServer);
+        listAdapter = CPIMEventListAdapter::NewL(CCalEntry::EAnniv,adapter,
+                      iFuncServer, aCalSession);
 
         CleanupStack::Pop(adapter);
         CleanupStack::Pop(adapterManager);
@@ -244,9 +245,11 @@ TBool CPIMEventAdapterAccess::OpenEventListL(const TDesC* aListName,
     return ETrue;
 }
 
-TBool CPIMEventAdapterAccess::OpenToDoListL(const TDesC* /*aListName*/,
+TBool CPIMEventAdapterAccess::OpenToDoListL(CCalSession* /*aCalSession*/,
+        const TDesC* /*aListName*/,
         MPIMToDoAdapterManager** /*aRetAdapterManager*/,
-        MPIMToDoListAdapter** /*aRetListAdapter*/, MPIMLocalizationData** /*aRetLocalizationData*/)
+        MPIMToDoListAdapter** /*aRetListAdapter*/,
+        MPIMLocalizationData** /*aRetLocalizationData*/)
 {
     JELOG2(EPim);
     // no ToDo lists

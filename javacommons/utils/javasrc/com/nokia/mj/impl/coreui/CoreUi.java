@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -19,6 +19,7 @@ package com.nokia.mj.impl.coreui;
 
 import java.util.Hashtable;
 
+import com.nokia.mj.impl.utils.Logger;
 import com.nokia.mj.impl.utils.Uid;
 
 /**
@@ -49,10 +50,12 @@ public abstract class CoreUi
                 Class clazz = Class.forName(className);
                 sInstance = (CoreUi)clazz.newInstance();
             }
-            catch (Exception e)
+            catch (Throwable t)
             {
-                throw new RuntimeException("Not able to instantiate class " +
-                                           className+". Reason is: " + e);
+                String err = "Not able to instantiate class " +
+                             className+". Reason is: ";
+                Logger.LOG(Logger.EJavaUI, Logger.EInfo, err, t);
+                throw new RuntimeException(err + t);
             }
         }
     }
@@ -78,13 +81,18 @@ public abstract class CoreUi
     /**
      * For creating the UI from Java side. This is meant for the pre-warmed
      * VM use case. Calling this method will lead creation of the CoreUI.
-     * @param uid The UID of the application.
+     * @param uid The UID of the application. If null NullPointerException
+     *            will be thrown.
      * @param backGroundStart Should the UI be put into background.
      */
     public static void createUi(Uid uid, boolean backGroundStart)
     {
         if (sInstance != null)
         {
+            if (uid == null)
+            {
+                throw new NullPointerException("Null UID when creating UI");
+            }
             sInstance.createUiImpl(uid, backGroundStart);
         }
     }
@@ -125,9 +133,18 @@ public abstract class CoreUi
         return fg;
     }
 
+    public static void hideApplication(boolean hide)
+    {
+        if (sInstance != null)
+        {
+            sInstance.hideApplicationImpl(hide);
+        }
+    }
+
     protected abstract boolean connectToUiImpl();
     protected abstract void createUiImpl(Uid uid, boolean backGroundStart);
     protected abstract void shutdownRequestImpl();
     protected abstract void foregroundRequestImpl();
     protected abstract boolean isUiInForegroundImpl();
+    protected abstract void hideApplicationImpl(boolean hide);
 }

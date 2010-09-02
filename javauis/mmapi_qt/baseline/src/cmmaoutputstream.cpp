@@ -17,7 +17,6 @@
 
 #include <logger.h>
 
-#include <JniEnvWrapper.h>
 #include "cmmaoutputstream.h"
 #include "mmmaeventposter.h"
 #include "cmmaoutputstreamevent.h"

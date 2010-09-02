@@ -41,8 +41,6 @@
 
 #include "logger.h"
 
-QTM_USE_NAMESPACE
-
 using namespace java::settings;
 using namespace java::storage;
 using namespace java::util;
