@@ -60,7 +60,7 @@
 #include <eikappui.h>
 #include <coecntrl.h>
 
-#include <EIKCOCTL.rsg>
+#include <eikcoctl.rsg>
 
 #include <aknenv.h>
 #include <AknUtils.h>

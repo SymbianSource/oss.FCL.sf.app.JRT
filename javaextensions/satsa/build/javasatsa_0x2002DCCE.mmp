@@ -163,7 +163,6 @@ LIBRARY		bafl.lib
 LIBRARY		certstore.lib
 LIBRARY		charconv.lib
 LIBRARY		cms.lib
-LIBRARY		aknnotify.lib
 LIBRARY		eiksrv.lib
 LIBRARY		ctframework.lib
 LIBRARY		ctsecdlgs.lib
@@ -177,6 +176,7 @@ LIBRARY		hash.lib
 LIBRARY		WimClient.lib
 LIBRARY		estlib.lib
 LIBRARY		cryptography.lib
+LIBRARY		aknnotify.lib
 LIBRARY		javautils.lib
 LIBRARY		libpthread.lib
 LIBRARY		libstdcppv5.lib

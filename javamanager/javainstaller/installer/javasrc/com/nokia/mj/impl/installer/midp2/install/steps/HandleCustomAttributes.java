@@ -102,6 +102,11 @@ public class HandleCustomAttributes extends ExeStep
         }
         for (int i = 1; true; i++)
         {
+            if (apps.size() < i)
+            {
+                break;
+            }
+
             String attrName = "Nokia-MIDlet-Auto-Start-" + i;
             String attrValue = aBall.getAttributeValue(attrName);
 
@@ -122,9 +127,12 @@ public class HandleCustomAttributes extends ExeStep
 
             if (attrValue != null)
             {
-                if (apps.size() < i)
+                if (!aBall.attributeExistsInJar(attrName))
                 {
-                    break;
+                    // The attribute is only in .jad, ignore it.
+                    Log.logWarning("Attribute " + attrName +
+                        " ignored because it is not in Manifest");
+                    continue;
                 }
 
                 // Check if MIDlet has permission for Auto-start
@@ -170,10 +178,6 @@ public class HandleCustomAttributes extends ExeStep
                       OtaStatusCode.INVALID_DESCRIPTOR:
                       OtaStatusCode.INVALID_JAR));
                 }
-            }
-            else
-            {
-                break;
             }
         }
     }

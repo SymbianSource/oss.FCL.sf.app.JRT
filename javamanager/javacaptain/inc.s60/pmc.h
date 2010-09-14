@@ -23,9 +23,6 @@
 
 #include <map>
 
-#include <AknGlobalNote.h>
-
-
 #include "javaoslayer.h"
 #include "logger.h"
 #include "scopedlocks.h"
@@ -143,13 +140,6 @@ protected:
         void showErrorNote()
         {
             LOG(EJavaCaptain, EInfo, "Process failed to exit gracefully");
-#ifdef RD_JAVA_EXIT_ERROR_DIALOG
-            //Print the dialog showing that force process kill was done.
-            CAknGlobalNote* globalNote = CAknGlobalNote::NewL();
-            globalNote->ShowNoteL(EAknGlobalErrorNote,
-                                  _L("Midp process failed to exit gracefully."));
-            delete globalNote;
-#endif
         }
 
     private:

@@ -153,6 +153,16 @@ protected:// New Methods
      * Add clip region
      */
     void AddClippingRegion();
+    
+    /**
+     * Set whether java side had set the size or not
+     */
+    void UserRectSet();
+
+   /**
+     * Is user rect set
+     */
+    TBool IsUserRectSet();
 
 protected:  // Data
 
@@ -186,6 +196,11 @@ protected:  // Data
      * Draw rect set from java.
      */
     TRect iUserRect;
+    
+    /**
+     * Is User Rect Set?
+     */
+     TBool iUserRectSet;
 
     /**
      * Not owned, obtained from lcdui components.

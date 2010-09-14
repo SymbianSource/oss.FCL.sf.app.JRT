@@ -103,7 +103,9 @@ jstring java::util::getLocaleImpl(JNIEnv* env)
     JELOG2(EUtils);
 
     // microedition.locale
-    switch (User::Language()) {
+    ILOG1(EUtils, "User::Language: %d", User::Language()); 
+    // KDialectMask enables support for operator specific language variants
+    switch (User::Language() & KDialectMask) {
         case ELangAfrikaans:
             return S60CommonUtils::NativeToJavaString(*env, KMicroeditionLocaleAfrikaans);
         case ELangAlbanian:

@@ -99,7 +99,6 @@ LIBRARY		javaipc.lib
 LIBRARY		javafileutils.lib
 LIBRARY		javastorage.lib
 LIBRARY		efsrv.lib
-LIBRARY		AknNotify.lib
 LIBRARY		javautils.lib
 LIBRARY		libpthread.lib
 LIBRARY		libstdcppv5.lib

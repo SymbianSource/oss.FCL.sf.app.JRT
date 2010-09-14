@@ -54,7 +54,7 @@ const TInt KTimeUnknown = -1;
 */
 
 class CMMAPlayer : public CBase,
-        public MMMASourceStreamListener, MMMACallStateObserver
+        public MMMASourceStreamListener, public MMMACallStateObserver
 
 {
 public:
@@ -219,8 +219,7 @@ public: // New methods
     HBufC* ContentType() const;
 
 public: // from MMMACallStateObserver
-	
-    void HandleCallStateEventL(TUid aUid, TInt aKey);
+    IMPORT_C void HandleCallStateEventL(TUid aUid, TInt aKey);
     
 public: // new methods
     /**
@@ -457,7 +456,7 @@ protected: // Memeber data
      */
     CMMADurationUpdater* iDurationUpdater;
 
-		/**
+    /**
     * Used to get the callback for Call State Events.
     */
     CMMACallStateMonitor* iStateObserver; 

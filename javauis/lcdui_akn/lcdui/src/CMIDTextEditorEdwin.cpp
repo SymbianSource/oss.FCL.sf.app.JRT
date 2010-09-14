@@ -157,9 +157,9 @@ TKeyResponse CMIDTextEditorEdwin::OfferKeyEventL(
 
         // Not handled, try with CEikEdwin
         // Consume down and up type of keyevents
-        if ((response == EKeyWasConsumed) || 
-                (aType != EEventKey && aKeyEvent.iScanCode != 
-                EStdKeyApplication0))
+        if ((response == EKeyWasConsumed) ||
+                (aType != EEventKey && aKeyEvent.iScanCode !=
+                 EStdKeyApplication0))
         {
             response = EKeyWasConsumed;
         }
@@ -178,8 +178,9 @@ TKeyResponse CMIDTextEditorEdwin::OfferKeyEventL(
             CleanupStack::PushL(oldContent);
 
             response = CEikEdwin::OfferKeyEventL(aKeyEvent, aType);
-            
-            if (response == EKeyWasConsumed) {
+
+            if (response == EKeyWasConsumed)
+            {
                 // Validate new content and undo if not valid.
                 if (!iEdwinUtils.ConstraintsValidForText(
                             Read(), iConstraints, EFalse))
@@ -192,14 +193,13 @@ TKeyResponse CMIDTextEditorEdwin::OfferKeyEventL(
                 }
             }
             else
-            { 
-                // Consuming the up/down arrows, because edwin does not 
-                // consume them if at first/last line. 
-                if ((aType == EEventKey) &&
-                        (((aKeyEvent.iCode == EKeyUpArrow) ||
-                          (aKeyEvent.iCode == EKeyDownArrow)) ||
-                         ((aKeyEvent.iScanCode == EStdKeyUpArrow) ||
-                          (aKeyEvent.iScanCode == EStdKeyDownArrow))))
+            {
+                // Consuming the up/down arrows, because edwin does not
+                // consume them when using predictive text
+                if (((aKeyEvent.iCode == EKeyUpArrow) ||
+                        (aKeyEvent.iCode == EKeyDownArrow)) ||
+                        ((aKeyEvent.iScanCode == EStdKeyUpArrow) ||
+                         (aKeyEvent.iScanCode == EStdKeyDownArrow)))
                 {
                     response = EKeyWasConsumed;
                 }

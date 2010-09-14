@@ -28,6 +28,8 @@ NONSHARABLE_CLASS(MMMACallStateObserver)
     {
 public:
 
+    virtual ~MMMACallStateObserver() {};
+
     /**
     * Handle Call state event
     *

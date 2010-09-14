@@ -75,4 +75,5 @@ EXPORTS
 	?RefreshControl@CMMAVolumeControl@@UAEXXZ @ 74 NONAME ; void CMMAVolumeControl::RefreshControl(void)
 	?RefreshVolume@CMMAVolumeControl@@AAEXXZ @ 75 NONAME ; void CMMAVolumeControl::RefreshVolume(void)
 	?StateChanged@CMMAVolumeControl@@UAEXH@Z @ 76 NONAME ; void CMMAVolumeControl::StateChanged(int)
+	?HandleCallStateEventL@CMMAPlayer@@UAEXVTUid@@H@Z @ 77 NONAME ; void CMMAPlayer::HandleCallStateEventL(class TUid, int)
 

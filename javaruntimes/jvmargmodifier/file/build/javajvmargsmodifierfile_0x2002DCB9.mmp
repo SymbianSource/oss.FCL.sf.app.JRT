@@ -68,7 +68,6 @@ SOURCE		jvmargsmodifier.cpp
 
 
 LIBRARY		javafileutils.lib
-LIBRARY		aknnotify.lib
 LIBRARY		javautils.lib
 LIBRARY		libpthread.lib
 LIBRARY		libstdcppv5.lib

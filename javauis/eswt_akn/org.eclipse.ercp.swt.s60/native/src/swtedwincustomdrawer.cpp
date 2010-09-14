@@ -100,7 +100,10 @@ void CSwtEdwinCustomDrawer::DrawText(
     {
         return;
     }
-    aParam.iGc.SetClippingRect(iClippingRect);
+    if (!iEdwin.SelectionLength())
+    {
+        aParam.iGc.SetClippingRect(iClippingRect);
+    }
     iEdWinDrawer->DrawText(
         aParam,
         aLineInfo,
@@ -130,7 +133,10 @@ void CSwtEdwinCustomDrawer::DrawText(
     {
         return;
     }
-    aParam.iGc.SetClippingRect(iClippingRect);
+    if (!iEdwin.SelectionLength())
+    {
+        aParam.iGc.SetClippingRect(iClippingRect);
+    }
     iEdWinDrawer->DrawText(
         aParam,
         aLineInfo,

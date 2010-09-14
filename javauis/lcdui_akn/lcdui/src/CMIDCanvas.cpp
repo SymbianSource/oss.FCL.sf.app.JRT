@@ -483,7 +483,7 @@ TKeyResponse CMIDCanvas::OfferKeyEventL(
              CustomComponentControl(KComponentMainControl)->IsVisible()))
     {
         // Traversal check
-        if ((aType == EEventKeyDown) &&
+        if ((aType == EEventKey) &&
                 (((aEvent.iCode == EKeyUpArrow) ||
                   (aEvent.iCode == EKeyDownArrow)) ||
                  ((aEvent.iScanCode == EStdKeyUpArrow) ||
@@ -2458,7 +2458,10 @@ void CMIDCanvas::HandlePointerEventL(const TPointerEvent& aPointerEvent)
             }
 
             // To have the cursor on focused control
-            if (iFocusedComponent != KComponentFocusedNone)
+            if ((iFocusedComponent != KComponentFocusedNone) &&
+                    (iFocusedComponent < iCustomComponents.Count()) &&
+                    iCustomComponents[iFocusedComponent]->
+                    CustomComponentControl(KComponentMainControl)->IsVisible())
             {
                 iCustomComponents[iFocusedComponent]->
                 CustomComponentControl(KComponentMainControl)->
@@ -2656,13 +2659,13 @@ void CMIDCanvas::SizeChanged()
             iLandscape = landscape;
 
             PostEvent(ESizeChanged, iContentSize.iWidth, iContentSize.iHeight);
-
             if (IsWindowVisible() && iWndUpdate)
             {
                 // Post forced paint to enable Canvas repaint behind
                 // Alert or Pop-up TextBox
                 PostForcedPaint();
             }
+
 #else
             iContentSize = contentSize;
             PostEvent(ESizeChanged, iContentSize.iWidth, iContentSize.iHeight);
@@ -2688,6 +2691,14 @@ void CMIDCanvas::SizeChanged()
         // We cannot determine whether the control size actually did change or
         // not, so we have to do the layout no matter what.
         Layout();
+#ifdef RD_JAVA_NGA_ENABLED
+        if (IsWindowVisible() && iWndUpdate)
+        {
+            // Post forced paint to enable Canvas repaint behind
+            // Alert or Pop-up TextBox
+            PostForcedPaint();
+        }
+#endif // RD_JAVA_NGA_ENABLED
     }
     DEBUG("- CMIDCanvas::SizeChanged");
 }

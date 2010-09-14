@@ -1251,7 +1251,7 @@ public class M2GSVGElement extends M2GObject implements SVGElement
                 /*SF*/"The element being removed or one of its decendants have non-null id."/*SF*/);
         }
         // The removedChildHandle handle should be same as the removableChild handle
-        int removedChildHandle  = removedChildHandle = _removeChild(
+        int removedChildHandle = _removeChild(
                                       getNativeEventSourceHandle(), getNativeSVGProxyHandle(),
                                       getHandle(), removableChild.getHandle(), iUIToolkit);
         // Remove the element from the live elements

@@ -139,6 +139,10 @@ void CMMADCDisplay::SourceSizeChanged(const TSize& aSourceSize)
     }
 #endif
 
+    if(IsUserRectSet() || iFullScreen)
+    {
+       return;
+    }
     if (iWindow)
     {
         TRect tmp(TPoint(0, 0), aSourceSize);

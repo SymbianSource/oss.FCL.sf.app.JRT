@@ -64,7 +64,6 @@ SYSTEMINCLUDE		../mmacontrol/inc
 SYSTEMINCLUDE		../module/inc
 SYSTEMINCLUDE		../src_tuner/native/external_include
 SYSTEMINCLUDE		../src_tuner/native/inc
-SYSTEMINCLUDE		../../mmapi_akn/baseline/inc
 SYSTEMINCLUDE		../mmacontrol/inc.emc
 SYSTEMINCLUDE		../../inc
 SYSTEMINCLUDE		../../../inc

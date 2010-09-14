@@ -24,7 +24,8 @@ symbian {
     SOURCES += ../src.s60/javacommdb.cpp \
         ../src.s60/iapinfoimpl.cpp \
         ../src.s60/javaapncontrol.cpp \
-        ../src.s60/stringbuffer.cpp 
+        ../src.s60/stringbuffer.cpp \
+        ../src.s60/iapinfosession.cpp
     LIBS +=   -leuser -lcommsdat  -lcommdb -lagentdialog -lcmmanager
 }
 

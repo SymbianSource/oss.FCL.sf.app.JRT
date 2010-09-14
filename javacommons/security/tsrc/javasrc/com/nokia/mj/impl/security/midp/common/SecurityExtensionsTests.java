@@ -48,6 +48,7 @@ import j2meunit.framework.TestSuite;
 public class SecurityExtensionsTests extends TestCase implements InstallerMain
 {
     private static String TEST_DATA_DIR;
+    int assertTrace = 0;
 
     static
     {
@@ -128,7 +129,7 @@ public class SecurityExtensionsTests extends TestCase implements InstallerMain
         SecurityAttributes securityAttributes;
         AuthenticationCredentials[] credentials;
         // package names
-        assertTrue(find(SecurityExtensionsReader.getExtProtectedPackages(), new String[] {"com.nokia.ext1.internal.", "com.nokia.ext2.internal."})
+        assertWithTrace(find(SecurityExtensionsReader.getExtProtectedPackages(), new String[] {"com.nokia.ext1.internal.", "com.nokia.ext2.internal."})
                    && !find(SecurityExtensionsReader.getExtProtectedPackages(), new String[] {"com.nokia.ext1.public."})
                    && !find(SecurityExtensionsReader.getExtProtectedPackages(), new String[] {"com.nokia.ext2.public."})
                    && find(SecurityExtensionsReader.getExtRestrictedPackages(), new String[] {"com.nokia.ext1.public.", "com.nokia.ext2.public."})
@@ -136,10 +137,10 @@ public class SecurityExtensionsTests extends TestCase implements InstallerMain
                    && !find(SecurityExtensionsReader.getExtRestrictedPackages(), new String[] {"com.nokia.ext2.internal."}));
         // mappings
         MIDPPermission perm = SecurityExtensionsReader.getExtPermission("com.nokia.ext1.public.Ext1Perm");
-        assertTrue(perm != null && perm.getName() != null && perm.getName().equals("com.nokia.ext1.internal.Ext1Perm") && perm.getTarget() != null && perm.getTarget().equals("*")&& perm.getActionList() == null);
-        assertTrue(SecurityExtensionsReader.getExtPermission("com.nokia.mj.impl.gcf.protocol.socket.SocketPermissionImpl") == null);
+        assertWithTrace(perm != null && perm.getName() != null && perm.getName().equals("com.nokia.ext1.internal.Ext1Perm") && perm.getTarget() == null && perm.getActionList() == null);
+        assertWithTrace(SecurityExtensionsReader.getExtPermission("com.nokia.mj.impl.gcf.protocol.socket.SocketPermissionImpl") == null);
         perm = SecurityExtensionsReader.getExtPermission("com.nokia.ext2.public.Ext2Perm");
-        assertTrue(perm != null && perm.getName() != null && perm.getName().equals("com.nokia.ext2.internal.Ext2Perm") && perm.getTarget() != null && perm.getTarget().equals("*")&& perm.getActionList() == null);
+        assertWithTrace(perm != null && perm.getName() != null && perm.getName().equals("com.nokia.ext2.internal.Ext2Perm") && perm.getTarget() == null && perm.getActionList() == null);
         // policies (unsigned suite, check that ext1 perms are granted and the base permissions were not altered)
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
@@ -153,9 +154,11 @@ public class SecurityExtensionsTests extends TestCase implements InstallerMain
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
-        assertTrue(checkGrantedPermissions(storage.readGrantedPermissions(appUID),
+        credentials = authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions(appUID, null, securityAttributes.getPermissionAttributes(), credentials);
+        permissionGranter.addSecurityData(session, appUID, null);
+        assertWithTrace(checkGrantedPermissions(storage.readGrantedPermissions(appUID),
                                            new PolicyBasedPermissionImpl[]
                                            {
                                                new PolicyBasedPermissionImpl("com.nokia.ext1.internal.Ext1Perm", "ext1.target1", "ext1.action1", new UserSecuritySettingsImpl("Ext1", UserSecuritySettings.ONESHOT_INTERACTION_MODE, new int[] {UserSecuritySettings.ONESHOT_INTERACTION_MODE, UserSecuritySettings.SESSION_INTERACTION_MODE, UserSecuritySettings.BLANKET_INTERACTION_MODE, UserSecuritySettings.NO_INTERACTION_MODE})),
@@ -180,11 +183,11 @@ public class SecurityExtensionsTests extends TestCase implements InstallerMain
             securityAttributes.addDescriptorAttributes(allAttributes);
             credentials = authenticationModule.authenticateJad(appUID,null,securityAttributes.getAuthenticationAttributes());
             permissionGranter.grantJadPermissions(appUID, null, securityAttributes.getPermissionAttributes(), credentials);
-            assertTrue(false);
+            assertWithTrace(false);
         }
         catch (InvalidAttributeException e)
         {
-            assertTrue(
+            assertWithTrace(
                 e.getOtaStatusCode() == OtaStatusCode.APPLICATION_AUTHORIZATION_FAILURE
                 && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                 && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_UNSUPPORTED,
@@ -205,11 +208,11 @@ public class SecurityExtensionsTests extends TestCase implements InstallerMain
             securityAttributes.addDescriptorAttributes(allAttributes);
             credentials = authenticationModule.authenticateJad(appUID,null,securityAttributes.getAuthenticationAttributes());
             permissionGranter.grantJadPermissions(appUID, null, securityAttributes.getPermissionAttributes(), credentials);
-            assertTrue(false);
+            assertWithTrace(false);
         }
         catch (InvalidAttributeException e)
         {
-            assertTrue(
+            assertWithTrace(
                 e.getOtaStatusCode() == OtaStatusCode.APPLICATION_AUTHORIZATION_FAILURE
                 && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                 && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_UNSUPPORTED,
@@ -230,11 +233,11 @@ public class SecurityExtensionsTests extends TestCase implements InstallerMain
             securityAttributes.addDescriptorAttributes(allAttributes);
             credentials = authenticationModule.authenticateJad(appUID,null,securityAttributes.getAuthenticationAttributes());
             permissionGranter.grantJadPermissions(appUID, null, securityAttributes.getPermissionAttributes(), credentials);
-            assertTrue(false);
+            assertWithTrace(false);
         }
         catch (InvalidAttributeException e)
         {
-            assertTrue(
+            assertWithTrace(
                 e.getOtaStatusCode() == OtaStatusCode.APPLICATION_AUTHORIZATION_FAILURE
                 && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                 && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_UNSUPPORTED,
@@ -256,9 +259,11 @@ public class SecurityExtensionsTests extends TestCase implements InstallerMain
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
-        assertTrue(checkGrantedPermissions(storage.readGrantedPermissions(appUID),
+        credentials = authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
+        authenticationModule.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions(appUID, null, securityAttributes.getPermissionAttributes(), credentials);
+        permissionGranter.addSecurityData(session, appUID, null);
+        assertWithTrace(checkGrantedPermissions(storage.readGrantedPermissions(appUID),
                                            new PolicyBasedPermissionImpl[]
                                            {
                                                new PolicyBasedPermissionImpl("com.nokia.ext2.internal.Ext2Perm", "ext2.target1", "ext2.action1", new UserSecuritySettingsImpl("Ext1", UserSecuritySettings.BLANKET_INTERACTION_MODE, new int[] {UserSecuritySettings.BLANKET_INTERACTION_MODE, UserSecuritySettings.NO_INTERACTION_MODE})),
@@ -267,6 +272,12 @@ public class SecurityExtensionsTests extends TestCase implements InstallerMain
                                                new PolicyBasedPermissionImpl("com.nokia.ext2.internal.Ext2Perm", "ext2.target4", "ext2.action4", null),
                                                new PolicyBasedPermissionImpl("com.nokia.ext2.internal.Ext2Perm", "ext2.target5", "ext2.action5", new UserSecuritySettingsImpl("Messaging", UserSecuritySettings.SESSION_INTERACTION_MODE, new int[] {UserSecuritySettings.ONESHOT_INTERACTION_MODE, UserSecuritySettings.NO_INTERACTION_MODE, UserSecuritySettings.BLANKET_INTERACTION_MODE, UserSecuritySettings.SESSION_INTERACTION_MODE}))
                                            }));
+    }
+
+    private void assertWithTrace(boolean aCondition)
+    {
+        assertTrue("" + assertTrace, aCondition);
+        assertTrace++;
     }
 
     private static boolean checkGrantedPermissions(Vector grantedPermissions, PolicyBasedPermissionImpl[] expectedPerms)

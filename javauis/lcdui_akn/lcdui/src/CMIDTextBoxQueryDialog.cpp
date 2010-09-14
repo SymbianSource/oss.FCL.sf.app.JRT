@@ -20,7 +20,7 @@
 
 #include "lcdui.hrh"
 #include <lcdui.rsg>
-#include <EIKCOCTL.rsg>
+#include <eikcoctl.rsg>
 
 #include "CMIDEdwinUtils.h"
 

@@ -592,6 +592,10 @@ private: //data
     TInt iTactileFeedbackDensity;
     TInt iLastPointerEventType;
 #endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
+
+    // Storing index to last pointed control
+    // before Form layout is performed
+    TInt iLastPointedControl;
 };
 
 inline void CMIDForm::Dispose()

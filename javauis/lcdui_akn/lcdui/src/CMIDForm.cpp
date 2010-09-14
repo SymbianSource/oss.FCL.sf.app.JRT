@@ -2072,7 +2072,8 @@ CMIDForm* CMIDForm::NewL(MMIDEnv& aEnv,MMIDDisplayable& aDisplayable)
 CMIDForm::CMIDForm(MMIDEnv& aEnv, CMIDDisplayable& aDisplayable)
         : iDisplayable(aDisplayable), iEnv(&aEnv), iFocused(KErrNotFound),
         iInitialAlignment(MMIDItem::ELeft), iHasScrolled(EFalse),
-        iLastFadeMessage(0)
+        iLastFadeMessage(0),
+        iLastPointedControl(KErrNotFound)
 {
 }
 
@@ -3378,6 +3379,12 @@ void CMIDForm::AssignItemsToRowsL()
         // add any additional row breaks if needed
         InsertNewlinesL(NumNewLinesAfter(ci), &ci);
     }
+
+    // Restore pointed control
+    if (iLastPointedControl != KErrNotFound)
+    {
+        iPointedControl = &ControlItem(iLastPointedControl);
+    }
 }
 
 /** Return true if the item is an unconstrained string item, false otherwise */
@@ -3730,6 +3737,13 @@ void CMIDForm::DeleteRows()
     // CMIDForm::HandleHighlightTimer or
     // in CMIDForm::HandlePhysicsPointerEventL),
     // iPointedControl must be set to NULL.
+    if (iPointedControl)
+    {
+        // Store the index to last poited control. It will
+        // be restored after item are placed to new rows
+        // (see CMIDForm::AssignItemsToRowsL).
+        iLastPointedControl = ItemIndex(*iPointedControl);
+    }
     iPointedControl = NULL;
 
     for (TInt i=0; i < iRows.Count(); i++)

@@ -35,16 +35,14 @@ import java.util.Vector;
 class IAPInfoImpl extends IAPInfo
 {
 
-    // variable to store the network preferences
-    private IAPTable iIAPTable = null;
-
+    private int iSessionHandle;
     static
     {
         try
         {
-            Logger.ILOG(Logger.ESOCKET, "loading javaiapinfo");
+            Logger.LOG(Logger.EJavaIapInfo,Logger.EInfo, "loading javaiapinfo");
             Jvm.loadSystemLibrary("javaiapinfo");
-            Logger.ILOG(Logger.ESOCKET, "javaiapinfo loaded");
+            Logger.LOG(Logger.EJavaIapInfo,Logger.EInfo, "javaiapinfo loaded");
         }
         catch (Exception e)
         {
@@ -57,42 +55,48 @@ class IAPInfoImpl extends IAPInfo
      */
     public IAPInfoImpl() throws IAPInfoException
     {
+        iSessionHandle = _createSession();
+        if (iSessionHandle <0)
+            throw new IAPInfoException("Error: symbian os error: "+iSessionHandle);
+
+    }
+
+    /**
+     * Please refer IapInfo Spec.
+     */
+    public synchronized AccessPoint[] getAccessPoints() throws IAPInfoException
+    {
+        IAPTable iIAPTable = null;
+        Logger.LOG(Logger.EJavaIapInfo,Logger.EInfo, "+getAccessPoints()  - this = "+Thread.currentThread().toString() +"hascode= " +Thread.currentThread().hashCode());
         try
         {
-            this.iIAPTable = new IAPTable();
+            iIAPTable = new IAPTable();
         }
         catch (CommDBException e)
         {
             e.printStackTrace();
             throw new IAPInfoException(e.getMessage());
         }
-    }
-
-    /**
-     * Please refer IapInfo Spec.
-     */
-    public AccessPoint[] getAccessPoints() throws IAPInfoException
-    {
         AccessPoint[] _ac = null;
         try
         {
-            this.iIAPTable.open();
-            int _nr_of_access_points = this.iIAPTable.getRecordCount();
+            iIAPTable.open(iSessionHandle);
+            int _nr_of_access_points = iIAPTable.getRecordCount();
             _ac = new AccessPoint[_nr_of_access_points];
             for (int i = 0; i < _nr_of_access_points; i++)
             {
-                AccessPoint _c = new AccessPoint(this.iIAPTable.iRecordId,
-                                                 this.iIAPTable.iRecordName, this.iIAPTable.iBearerType,
-                                                 this.iIAPTable.iServiceType);
+                AccessPoint _c = new AccessPoint(iIAPTable.iRecordId,
+                                                 iIAPTable.iRecordName, iIAPTable.iBearerType,
+                                                 iIAPTable.iServiceType);
                 _ac[i] = _c;
                 if (i != _nr_of_access_points - 1)
-                    this.iIAPTable.nextRecord();
+                    iIAPTable.nextRecord();
             }
-            this.iIAPTable.close();
+            iIAPTable.close();
         }
         catch (CommDBException _exception)
         {
-            this.iIAPTable.close();
+            iIAPTable.close();
             throw new IAPInfoException(_exception.getMessage());
         }// end of catch
         return _ac;
@@ -101,24 +105,35 @@ class IAPInfoImpl extends IAPInfo
     /**
      * Please refer IapInfo Spec.
      */
-    public AccessPoint getAccessPoint(int aID) throws IAPInfoException
+    public synchronized AccessPoint getAccessPoint(int aID) throws IAPInfoException
     {
         AccessPoint _ac = null;
+        IAPTable iIAPTable = null;
+        Logger.LOG(Logger.EJavaIapInfo,Logger.EInfo, "+getAccessPoint() - aID = "+aID +" this = "+Thread.currentThread().toString() +"hascode= " +Thread.currentThread().hashCode());
         try
         {
-            this.iIAPTable.open();
-            int _ret = this.iIAPTable.findById(aID);
+            iIAPTable = new IAPTable();
+        }
+        catch (CommDBException e)
+        {
+            e.printStackTrace();
+            throw new IAPInfoException(e.getMessage());
+        }
+        try
+        {
+            iIAPTable.open(iSessionHandle);
+            int _ret = iIAPTable.findById(aID);
             if (_ret != IAPTable.RECORD_NOT_FOUND)
             {
-                _ac = new AccessPoint(this.iIAPTable.iRecordId,
-                                      this.iIAPTable.iRecordName, this.iIAPTable.iBearerType,
-                                      this.iIAPTable.iServiceType);
+                _ac = new AccessPoint(iIAPTable.iRecordId,
+                                      iIAPTable.iRecordName, iIAPTable.iBearerType,
+                                      iIAPTable.iServiceType);
             }
-            this.iIAPTable.close();
+            iIAPTable.close();
         }
         catch (CommDBException _exception)
         {
-            this.iIAPTable.close();
+            iIAPTable.close();
             throw new IAPInfoException(_exception.getMessage());
         }// end catch
         return _ac;
@@ -127,8 +142,19 @@ class IAPInfoImpl extends IAPInfo
     /**
      * Please refer IapInfo Spec.
      */
-    public AccessPoint getAccessPoint(String aName) throws IAPInfoException
+    public synchronized AccessPoint getAccessPoint(String aName) throws IAPInfoException
     {
+        Logger.LOG(Logger.EJavaIapInfo,Logger.EInfo, "+getAccessPoint() - aName = "+aName +" this = "+Thread.currentThread().toString() +"hascode= " +Thread.currentThread().hashCode());
+        IAPTable iIAPTable = null;
+        try
+        {
+            iIAPTable = new IAPTable();
+        }
+        catch (CommDBException e)
+        {
+            e.printStackTrace();
+            throw new IAPInfoException(e.getMessage());
+        }
         if (aName == null)
         {
             throw new IAPInfoException("Parameter is NULL");
@@ -136,57 +162,71 @@ class IAPInfoImpl extends IAPInfo
         AccessPoint _ac = null;
         try
         {
-            this.iIAPTable.open();
-            int _ret = this.iIAPTable.findByName(aName);
+            iIAPTable.open(iSessionHandle);
+            Logger.LOG(Logger.EJavaIapInfo,Logger.EInfo, "+getAccessPoint() - aName = after iaptable.open()");
+            int _ret = iIAPTable.findByName(aName);
             if (_ret != IAPTable.RECORD_NOT_FOUND)
             {
-                _ac = new AccessPoint(this.iIAPTable.iRecordId,
-                                      this.iIAPTable.iRecordName, this.iIAPTable.iBearerType,
-                                      this.iIAPTable.iServiceType);
+                _ac = new AccessPoint(iIAPTable.iRecordId,
+                                      iIAPTable.iRecordName, iIAPTable.iBearerType,
+                                      iIAPTable.iServiceType);
             }
-            this.iIAPTable.close();
+            iIAPTable.close();
         }
         catch (CommDBException _exception)
         {
-            this.iIAPTable.close();
+            iIAPTable.close();
             throw new IAPInfoException(_exception.getMessage());
         }// end catch
+        Logger.LOG(Logger.EJavaIapInfo,Logger.EInfo, "-getAccessPoint() - aName = "+aName);
         return _ac;
+//return null;
     }
 
     /**
      * Please refer IapInfo Spec.
      */
-    public AccessPoint getLastUsedAccessPoint() throws IAPInfoException
+    public synchronized AccessPoint getLastUsedAccessPoint() throws IAPInfoException
     {
+        Logger.LOG(Logger.EJavaIapInfo,Logger.EInfo, "+getLastUsedAccessPoint() " +" this = "+Thread.currentThread().toString() +"hascode= " +Thread.currentThread().hashCode());
+        IAPTable iIAPTable = null;
+        try
+        {
+            iIAPTable = new IAPTable();
+        }
+        catch (CommDBException e)
+        {
+            e.printStackTrace();
+            throw new IAPInfoException(e.getMessage());
+        }
         APNControl _control = new APNControl();
         int _lastIAP = _control.getLastIAP();
         AccessPoint _ac = null;
         int _nr_of_access_points = 0;
         try
         {
-            this.iIAPTable.open();
-            _nr_of_access_points = this.iIAPTable.getRecordCount();
+            iIAPTable.open(iSessionHandle);
+            _nr_of_access_points = iIAPTable.getRecordCount();
             for (int i = 0; i < _nr_of_access_points; i++)
             {
-                if (this.iIAPTable.iRecordId == _lastIAP)
+                if (iIAPTable.iRecordId == _lastIAP)
                 {
-                    _ac = new AccessPoint(this.iIAPTable.iRecordId,
-                                          this.iIAPTable.iRecordName,
-                                          this.iIAPTable.iBearerType,
-                                          this.iIAPTable.iServiceType);
+                    _ac = new AccessPoint(iIAPTable.iRecordId,
+                                          iIAPTable.iRecordName,
+                                          iIAPTable.iBearerType,
+                                          iIAPTable.iServiceType);
                     break;
                 }// end if
                 if (i != _nr_of_access_points - 1)
                 {
-                    this.iIAPTable.nextRecord();
+                    iIAPTable.nextRecord();
                 }
             }// end for
-            this.iIAPTable.close();
+            iIAPTable.close();
         }
         catch (CommDBException _exception)
         {
-            this.iIAPTable.close();
+            iIAPTable.close();
             throw new IAPInfoException(_exception.getMessage());
         }
         return _ac;
@@ -294,16 +334,27 @@ class IAPInfoImpl extends IAPInfo
     /**
      * Please refer IapInfo Spec.
      */
-    public AccessPoint[] getConnectionPreferences() throws IAPInfoException
+    public synchronized AccessPoint[] getConnectionPreferences() throws IAPInfoException
     {
 
         ConnectionPreferencesTable _prefTable = null;
         AccessPoint[] _ac = null;
+        IAPTable iIAPTable = null;
+        Logger.LOG(Logger.EJavaIapInfo,Logger.EInfo, "+getConnectionPreferences() " +" this = "+Thread.currentThread().toString() +"hascode= " +Thread.currentThread().hashCode());
+        try
+        {
+            iIAPTable = new IAPTable();
+        }
+        catch (CommDBException e)
+        {
+            e.printStackTrace();
+            throw new IAPInfoException(e.getMessage());
+        }
 
         try
         {
             _prefTable = new ConnectionPreferencesTable();
-            _prefTable.open();
+            _prefTable.open(iSessionHandle);
             int recNr = _prefTable.getRecordCount();
 
             HelperObject[] hp = new HelperObject[recNr];
@@ -336,20 +387,20 @@ class IAPInfoImpl extends IAPInfo
             }// end while
 
             // get the AccesssPoints from IAPTable
-            this.iIAPTable.open();
+            iIAPTable.open(iSessionHandle);
 
             Vector apv = new Vector();
             for (int i = 0; i < recNr; i++)
             {
-                // int _ret = this.iIAPTable.findById( ids[ i ] );
-                int _ret = this.iIAPTable.findById(hp[i].Id);
+                // int _ret = iIAPTable.findById( ids[ i ] );
+                int _ret = iIAPTable.findById(hp[i].Id);
                 if (_ret != IAPTable.RECORD_NOT_FOUND)
                 {
 
-                    apv.addElement(new AccessPoint(this.iIAPTable.iRecordId,
-                                                   this.iIAPTable.iRecordName,
-                                                   this.iIAPTable.iBearerType,
-                                                   this.iIAPTable.iServiceType));
+                    apv.addElement(new AccessPoint(iIAPTable.iRecordId,
+                                                   iIAPTable.iRecordName,
+                                                   iIAPTable.iBearerType,
+                                                   iIAPTable.iServiceType));
                 }// end if
             }// end for
 
@@ -359,14 +410,14 @@ class IAPInfoImpl extends IAPInfo
                 _ac[i] = (AccessPoint) apv.elementAt(i);
             }
 
-            this.iIAPTable.close();
+            iIAPTable.close();
             _prefTable.close();
 
         }
         catch (CommDBException e)
         {
             _prefTable.close();
-            this.iIAPTable.close();
+            iIAPTable.close();
             throw new IAPInfoException(e.getMessage());
         }
         return _ac;
@@ -426,5 +477,7 @@ class IAPInfoImpl extends IAPInfo
     throws IAPInfoException;
     static native String _getDestinationNetworkByName(String aName)
     throws IAPInfoException;
+
+    private native int _createSession();
 
 }

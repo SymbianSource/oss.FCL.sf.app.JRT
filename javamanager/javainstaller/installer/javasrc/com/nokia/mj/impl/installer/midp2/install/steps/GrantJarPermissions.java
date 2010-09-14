@@ -45,9 +45,10 @@ public class GrantJarPermissions extends ExeStep
         }
         ball.iSecurityAttributes.addManifestAttributes(ball.iJarAttributes);
         PermissionGranter.getInstance().grantJarPermissions
-        (ball.iStorageHandler.getSession(), ball.iSuite.getUid(),
+        (ball.iSuite.getUid(),
          (ball.iOldSuite != null? ball.iOldSuite.getUid(): null),
-         ball.iSecurityAttributes.getPermissionAttributes());
+         ball.iSecurityAttributes.getPermissionAttributes(),
+         ball.iAuthenticationCredentials);
         ball.iJarPermissionsGranted = true;
     }
 

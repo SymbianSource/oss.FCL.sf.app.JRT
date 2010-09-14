@@ -125,7 +125,7 @@ public class PushValidatorImpl extends PushValidator
         /* security check */
         Logger.LOG(Logger.ESOCKET, Logger.EInfo,"datagram - push validator : before security check");
         ApplicationUtils appUtils = ApplicationUtils.getInstance();
-        DatagramPermissionImpl per = new DatagramPermissionImpl("datagram://");
+        DatagramPermissionImpl per = new DatagramPermissionImpl(DatagramPermissionImpl.SERVER_TARGET);
         appUtils.checkPermission(per);
         /* security check */
         Logger.LOG(Logger.ESOCKET, Logger.EInfo,"datagram - push validator : after security check");

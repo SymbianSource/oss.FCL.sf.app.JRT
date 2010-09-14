@@ -70,25 +70,28 @@ void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerClipStreamDelegate::HandleEvent(const
     if ((aEvent.iEventType == KMMFEventCategoryVideoLoadingComplete) &&
             (iPlayer.iState == ERealized))
     {
-        // Call pause only when doing prefetch.
-        // Loading complete will come also when looping.
-        if (err == KErrNone)
-        {
-            err = iPlayer.iController.Pause();
-        }
-
-        // VideoLoadingComplete-event only completes prefetch sequence
-        // for non-live streams.
-        iPlayer.CompletePrefetch(err);
-    }
+          DEBUG("MMA:CMMAVideoUrlPlayer: Clip stream: HandleEvent KMMFEventCategoryVideoLoadingComplete player State = 200");
+        
+            // Call pause only when doing prefetch.
+            // Loading complete will come also when looping.
+            if (err == KErrNone)
+            {
+                err = iPlayer.iController.Pause();
+            }
+    
+            // VideoLoadingComplete-event only completes prefetch sequence
+            // for non-live streams.
+            iPlayer.CompletePrefetch(err);
+            iPlayer.PrepareDisplay();
+   }
     else if (aEvent.iEventType == KMMFEventCategoryVideoPrepareComplete)
     {
         // going to prefetch state, after Play
         // KMMFEventCategoryVideoLoadingComplete event will be received
-
+        DEBUG("MMA:CMMAVideoUrlPlayer: Clip stream: HandleEvent KMMFEventCategoryVideoPrepareComplete");
         if (err == KErrNone)
         {
-            iPlayer.PrepareDisplay();
+            //iPlayer.PrepareDisplay();
 
             // Buffering is done only for non-live streams.
             err = iPlayer.iController.Play();

@@ -39,6 +39,7 @@ import j2meunit.framework.TestSuite;
  */
 public class SecurityDescriptorAttributesTests extends TestCase implements InstallerMain
 {
+    int assertTrace = 0;
 
     /**
      * Hashtable holding all the attributes. Tests populate this hashtable
@@ -78,7 +79,7 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
         midp2PermissionTargets.put(INTERNAL_HTTPS_PERMISSION, "https://*");
         midp2PermissionTargets.put(INTERNAL_SSL_PERMISSION, "ssl://*");
         midp2PermissionTargets.put(INTERNAL_DATAGRAM_PERMISSION,"datagram://*");
-        midp2PermissionTargets.put(INTERNAL_COMM_PERMISSION, "comm://*");
+        midp2PermissionTargets.put(INTERNAL_COMM_PERMISSION, "comm:*");
         midp2PermissionTargets.put(INTERNAL_PUSH_REGISTRY_PERMISSION, "*");
     }
 
@@ -164,7 +165,7 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
         // no attributes
         allAttributes.clear();
         authAttributes = securityAttributes.getAuthenticationAttributes();
-        assertTrue((authAttributes == null) || (authAttributes.length == 0));
+        assertWithTrace((authAttributes == null) || (authAttributes.length == 0));
         // empty certificate attribute
         try
         {
@@ -172,11 +173,11 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
             allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("", ""));
             securityAttributes = new SecurityAttributes();
             securityAttributes.addDescriptorAttributes(allAttributes);
-            assertTrue(EMPTY_CERTIFICATE_MSG, false);
+            assertWithTrace(false);
         }
         catch (InvalidAttributeException e)
         {
-            assertTrue(EMPTY_CERTIFICATE_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
+            assertWithTrace(
                        e.getOtaStatusCode() == OtaStatusCode.APPLICATION_AUTHENTICATION_FAILURE
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_HANDLING_FAILED,
@@ -189,11 +190,11 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
             allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("","?%cert"));
             securityAttributes = new SecurityAttributes();
             securityAttributes.addDescriptorAttributes(allAttributes);
-            assertTrue(INVALID_CERTIFICATE_MSG, false);
+            assertWithTrace(false);
         }
         catch (InvalidAttributeException e)
         {
-            assertTrue(INVALID_CERTIFICATE_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
+            assertWithTrace(
                        e.getOtaStatusCode() == OtaStatusCode.APPLICATION_AUTHENTICATION_FAILURE
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_HANDLING_FAILED,
@@ -204,7 +205,7 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("","cert"));
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
-        assertTrue(securityAttributes.getAuthenticationAttributes() == null);
+        assertWithTrace(securityAttributes.getAuthenticationAttributes() == null);
         // missing certificate attribute
         try
         {
@@ -212,11 +213,11 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
             allAttributes.put(AuthenticationAttribute.SECOND_LEGACY_ATTRIBUTE_NAME, new Attribute("","signature"));
             securityAttributes = new SecurityAttributes();
             securityAttributes.addDescriptorAttributes(allAttributes);
-            assertTrue(MISSING_CERTIFICATE_ATTRIBUTE_MSG, false);
+            assertWithTrace(false);
         }
         catch (InvalidAttributeException e)
         {
-            assertTrue(MISSING_CERTIFICATE_ATTRIBUTE_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
+            assertWithTrace(
                        e.getOtaStatusCode() == OtaStatusCode.APPLICATION_AUTHENTICATION_FAILURE
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_MISSING,
@@ -230,11 +231,11 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
             allAttributes.put(AuthenticationAttribute.SECOND_LEGACY_ATTRIBUTE_NAME, new Attribute("","?signature"));
             securityAttributes = new SecurityAttributes();
             securityAttributes.addDescriptorAttributes(allAttributes);
-            assertTrue(INVALID_CERTIFICATE_SIGNATURE_MSG, false);
+            assertWithTrace(false);
         }
         catch (InvalidAttributeException e)
         {
-            assertTrue(INVALID_CERTIFICATE_SIGNATURE_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
+            assertWithTrace(
                        e.getOtaStatusCode() == OtaStatusCode.APPLICATION_AUTHENTICATION_FAILURE
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_HANDLING_FAILED,
@@ -249,11 +250,11 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
             allAttributes.put(AuthenticationAttribute.SECOND_ATTRIBUTE_PREFIX + "1", new Attribute("","?signature"));
             securityAttributes = new SecurityAttributes();
             securityAttributes.addDescriptorAttributes(allAttributes);
-            assertTrue(INVALID_CERTIFICATE_SIGNATURE_MSG, false);
+            assertWithTrace(false);
         }
         catch (InvalidAttributeException e)
         {
-            assertTrue(INVALID_CERTIFICATE_SIGNATURE_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
+            assertWithTrace(
                        e.getOtaStatusCode() == OtaStatusCode.APPLICATION_AUTHENTICATION_FAILURE
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_HANDLING_FAILED,
@@ -268,11 +269,11 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
             allAttributes.put(AuthenticationAttribute.SECOND_ATTRIBUTE_PREFIX + "2", new Attribute("","signature"));
             securityAttributes = new SecurityAttributes();
             securityAttributes.addDescriptorAttributes(allAttributes);
-            assertTrue(MISSING_CERTIFICATE_ATTRIBUTE_MSG, false);
+            assertWithTrace(false);
         }
         catch (InvalidAttributeException e)
         {
-            assertTrue(MISSING_CERTIFICATE_ATTRIBUTE_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
+            assertWithTrace(
                        e.getOtaStatusCode() == OtaStatusCode.APPLICATION_AUTHENTICATION_FAILURE
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_MISSING,
@@ -286,11 +287,11 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
             allAttributes.put(AuthenticationAttribute.SECOND_ATTRIBUTE_PREFIX + "1", new Attribute("","signature"));
             securityAttributes = new SecurityAttributes();
             securityAttributes.addDescriptorAttributes(allAttributes);
-            assertTrue(MIDP3_ATTRIBUTE_NOT_ALLOWED_MSG, false);
+            assertWithTrace(false);
         }
         catch (InvalidAttributeException e)
         {
-            assertTrue(MIDP3_ATTRIBUTE_NOT_ALLOWED_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
+            assertWithTrace(
                        e.getOtaStatusCode() == OtaStatusCode.INVALID_DESCRIPTOR
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_HANDLING_FAILED,
@@ -305,11 +306,11 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
             allAttributes.put(AuthenticationAttribute.SECOND_LEGACY_ATTRIBUTE_NAME, new Attribute("","signature"));
             securityAttributes = new SecurityAttributes();
             securityAttributes.addDescriptorAttributes(allAttributes);
-            assertTrue(MIDP2_SIGNATURE_NOT_ALLOWED_MSG, false);
+            assertWithTrace(false);
         }
         catch (InvalidAttributeException e)
         {
-            assertTrue(MIDP2_SIGNATURE_NOT_ALLOWED_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
+            assertWithTrace(
                        e.getOtaStatusCode() == OtaStatusCode.INVALID_DESCRIPTOR
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_HANDLING_FAILED,
@@ -326,11 +327,11 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
             allAttributes.put(AuthenticationAttribute.SECOND_LEGACY_ATTRIBUTE_NAME, new Attribute("","signature"));
             securityAttributes = new SecurityAttributes();
             securityAttributes.addDescriptorAttributes(allAttributes);
-            assertTrue(MIDP2_SIGNATURE_NOT_ALLOWED_MSG, false);
+            assertWithTrace(false);
         }
         catch (InvalidAttributeException e)
         {
-            assertTrue(MIDP2_SIGNATURE_NOT_ALLOWED_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
+            assertWithTrace(
                        e.getOtaStatusCode() == OtaStatusCode.INVALID_DESCRIPTOR
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_HANDLING_FAILED,
@@ -344,7 +345,7 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         authAttributes = securityAttributes.getAuthenticationAttributes();
-        assertTrue(authAttributes != null
+        assertWithTrace(authAttributes != null
                    && authAttributes.length == 1
                    && checkChainsAndSignatures(authAttributes,
                                                new String[] {"cert1", "cert2"},
@@ -360,7 +361,7 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         authAttributes = securityAttributes.getAuthenticationAttributes();
-        assertTrue(authAttributes != null
+        assertWithTrace(authAttributes != null
                    && authAttributes.length == 1
                    && checkChainsAndSignatures(authAttributes,
                                                new String[] {"cert1", "cert2"},
@@ -377,7 +378,7 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         authAttributes = securityAttributes.getAuthenticationAttributes();
-        assertTrue(authAttributes != null
+        assertWithTrace(authAttributes != null
                    && authAttributes.length == 1
                    && checkChainsAndSignatures(authAttributes,
                                                new String[] {"cert1", "cert2"},
@@ -391,7 +392,7 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         authAttributes = securityAttributes.getAuthenticationAttributes();
-        assertTrue(authAttributes != null
+        assertWithTrace(authAttributes != null
                    && authAttributes.length == 1
                    && checkChainsAndSignatures(authAttributes,
                                                new String[] {"cert1", "cert2"},
@@ -410,7 +411,7 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         authAttributes = securityAttributes.getAuthenticationAttributes();
-        assertTrue(authAttributes != null
+        assertWithTrace(authAttributes != null
                    && authAttributes.length == 1
                    && checkChainsAndSignatures(authAttributes,
                                                new String[] {"cert11", "cert12"},
@@ -430,11 +431,11 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
             allAttributes.put(AuthenticationAttribute.SECOND_ATTRIBUTE_PREFIX + "2" , new Attribute("","signature2"));
             securityAttributes = new SecurityAttributes();
             securityAttributes.addDescriptorAttributes(allAttributes);
-            assertTrue(CERTIFICATE_WITHOUT_SIGNATURE_MSG, false);
+            assertWithTrace(false);
         }
         catch (InvalidAttributeException e)
         {
-            assertTrue(INVALID_CERTIFICATE_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
+            assertWithTrace(
                        e.getOtaStatusCode() == OtaStatusCode.APPLICATION_AUTHENTICATION_FAILURE
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_HANDLING_FAILED,
@@ -452,11 +453,11 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
             allAttributes.put(AuthenticationAttribute.SECOND_ATTRIBUTE_PREFIX + "1" , new Attribute("","signature1"));
             securityAttributes = new SecurityAttributes();
             securityAttributes.addDescriptorAttributes(allAttributes);
-            assertTrue(INVALID_CERTIFICATE_MSG, false);
+            assertWithTrace(false);
         }
         catch (InvalidAttributeException e)
         {
-            assertTrue(INVALID_CERTIFICATE_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
+            assertWithTrace(
                        e.getOtaStatusCode() == OtaStatusCode.APPLICATION_AUTHENTICATION_FAILURE
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_HANDLING_FAILED,
@@ -479,7 +480,7 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         authAttributes = securityAttributes.getAuthenticationAttributes();
-        assertTrue(authAttributes != null
+        assertWithTrace(authAttributes != null
                    && authAttributes.length == 2
                    && checkChainsAndSignatures(authAttributes,
                                                new String[] {"cert11", "cert12", "cert21", "cert22", "cert23"},
@@ -498,18 +499,18 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         authAttributes = securityAttributes.getAuthenticationAttributes();
-        assertTrue(authAttributes != null && authAttributes.length == 100);
+        assertWithTrace(authAttributes != null && authAttributes.length == 100);
         for (int i=0; i<100; i++)
         {
             // make sure we have 10 certs in each chain and a corresponding signature
-            assertTrue(authAttributes[i].getCertChain() != null
+            assertWithTrace(authAttributes[i].getCertChain() != null
                        && authAttributes[i].getSignature() != null
                        && authAttributes[i].getCertChain().length == 10
                        && authAttributes[i].getSignature().equals("signature" + (i+1)));
             // check each chain
             for (int j=0; j<10; j++)
             {
-                assertTrue((authAttributes[i].getCertChain())[j]
+                assertWithTrace((authAttributes[i].getCertChain())[j]
                            .equals("cert" + (i+1) + "" + (j+1)));
             }
         }
@@ -526,11 +527,11 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
             allAttributes.put(PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","Perm1, Perm2"));
             securityAttributes = new SecurityAttributes();
             securityAttributes.addDescriptorAttributes(allAttributes);
-            assertTrue(LEGACY_NOT_ALLOWED_MSG, false);
+            assertWithTrace(false);
         }
         catch (InvalidAttributeException e)
         {
-            assertTrue(LEGACY_NOT_ALLOWED_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
+            assertWithTrace(
                        e.getOtaStatusCode() == OtaStatusCode.INVALID_DESCRIPTOR
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_HANDLING_FAILED,
@@ -544,11 +545,11 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
             allAttributes.put(PermissionAttribute.OPTIONAL_LEGACY_ATTRIBUTE_NAME, new Attribute("","Perm1, Perm2"));
             securityAttributes = new SecurityAttributes();
             securityAttributes.addDescriptorAttributes(allAttributes);
-            assertTrue(LEGACY_NOT_ALLOWED_MSG, false);
+            assertWithTrace(false);
         }
         catch (InvalidAttributeException e)
         {
-            assertTrue(LEGACY_NOT_ALLOWED_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
+            assertWithTrace(
                        e.getOtaStatusCode() == OtaStatusCode.INVALID_DESCRIPTOR
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_HANDLING_FAILED,
@@ -563,11 +564,11 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
                               new Attribute("","PermissionClassName TargetName ActionList"));
             securityAttributes = new SecurityAttributes();
             securityAttributes.addDescriptorAttributes(allAttributes);
-            assertTrue(MIDP3_ATTRIBUTE_NOT_ALLOWED_MSG, false);
+            assertWithTrace(false);
         }
         catch (InvalidAttributeException e)
         {
-            assertTrue(MIDP3_ATTRIBUTE_NOT_ALLOWED_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
+            assertWithTrace(
                        e.getOtaStatusCode() == OtaStatusCode.INVALID_DESCRIPTOR
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_HANDLING_FAILED,
@@ -582,11 +583,11 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
                               new Attribute("","PermissionClassName TargetName ActionList"));
             securityAttributes = new SecurityAttributes();
             securityAttributes.addDescriptorAttributes(allAttributes);
-            assertTrue(MIDP3_ATTRIBUTE_NOT_ALLOWED_MSG, false);
+            assertWithTrace(false);
         }
         catch (InvalidAttributeException e)
         {
-            assertTrue(MIDP3_ATTRIBUTE_NOT_ALLOWED_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
+            assertWithTrace(
                        e.getOtaStatusCode() == OtaStatusCode.INVALID_DESCRIPTOR
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_HANDLING_FAILED,
@@ -601,7 +602,7 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         permissionAttributes = securityAttributes.getPermissionAttributes();
-        assertTrue(permissionAttributes != null
+        assertWithTrace(permissionAttributes != null
                    && permissionAttributes.length == 1
                    && permissionAttributes[0].isLegacyAttribute());
         // MIDP2 mandatory permissions handling - invalid permission value
@@ -616,11 +617,11 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
             allAttributes.put(AuthenticationAttribute.SECOND_LEGACY_ATTRIBUTE_NAME, new Attribute("","signature"));
             securityAttributes = new SecurityAttributes();
             securityAttributes.addDescriptorAttributes(allAttributes);
-            assertTrue(UNKNOWN_PERMISSION_MSG, false);
+            assertWithTrace(false);
         }
         catch (InvalidAttributeException e)
         {
-            assertTrue(UNKNOWN_PERMISSION_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
+            assertWithTrace(
                        e.getOtaStatusCode() == OtaStatusCode.APPLICATION_AUTHORIZATION_FAILURE
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_UNSUPPORTED,
@@ -640,11 +641,11 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
             allAttributes.put(AuthenticationAttribute.SECOND_LEGACY_ATTRIBUTE_NAME, new Attribute("","signature"));
             securityAttributes = new SecurityAttributes();
             securityAttributes.addDescriptorAttributes(allAttributes);
-            assertTrue(UNKNOWN_PERMISSION_MSG, false);
+            assertWithTrace(false);
         }
         catch (InvalidAttributeException e)
         {
-            assertTrue(UNKNOWN_PERMISSION_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
+            assertWithTrace(
                        e.getOtaStatusCode() == OtaStatusCode.APPLICATION_AUTHORIZATION_FAILURE
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_UNSUPPORTED,
@@ -663,7 +664,7 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         permissionAttributes = securityAttributes.getPermissionAttributes();
-        assertTrue(permissionAttributes != null
+        assertWithTrace(permissionAttributes != null
                    && permissionAttributes.length == 2
                    && checkImportance(permissionAttributes, 0, 2)
                    && checkNamesAndTargets(permissionAttributes,
@@ -681,7 +682,7 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         permissionAttributes = securityAttributes.getPermissionAttributes();
-        assertTrue(permissionAttributes != null
+        assertWithTrace(permissionAttributes != null
                    && permissionAttributes.length == 1
                    && checkImportance(permissionAttributes, 0, 1)
                    && checkNamesAndTargets(permissionAttributes,
@@ -698,11 +699,11 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
             allAttributes.put(AuthenticationAttribute.SECOND_LEGACY_ATTRIBUTE_NAME, new Attribute("","signature"));
             securityAttributes = new SecurityAttributes();
             securityAttributes.addDescriptorAttributes(allAttributes);
-            assertTrue(UNKNOWN_PERMISSION_MSG, true);
+            assertWithTrace(true);
         }
         catch (InvalidAttributeException e)
         {
-            assertTrue(UNKNOWN_PERMISSION_MSG, false);
+            assertWithTrace(false);
         }
         // MIDP2 optional permissions handling - unknown permission value
         try
@@ -716,11 +717,11 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
             allAttributes.put(AuthenticationAttribute.SECOND_LEGACY_ATTRIBUTE_NAME, new Attribute("","signature"));
             securityAttributes = new SecurityAttributes();
             securityAttributes.addDescriptorAttributes(allAttributes);
-            assertTrue(UNKNOWN_PERMISSION_MSG, true);
+            assertWithTrace(true);
         }
         catch (InvalidAttributeException e)
         {
-            assertTrue(UNKNOWN_PERMISSION_MSG, false);
+            assertWithTrace(false);
         }
         // MIDP2 optional permissions handling - known permission value
         allAttributes.clear();
@@ -734,7 +735,7 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         permissionAttributes = securityAttributes.getPermissionAttributes();
-        assertTrue(permissionAttributes != null
+        assertWithTrace(permissionAttributes != null
                    && permissionAttributes.length == 2
                    && checkImportance(permissionAttributes, 2, 0)
                    && checkNamesAndTargets(permissionAttributes,
@@ -756,7 +757,7 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         permissionAttributes = securityAttributes.getPermissionAttributes();
-        assertTrue(permissionAttributes != null
+        assertWithTrace(permissionAttributes != null
                    && permissionAttributes.length == 1
                    && checkImportance(permissionAttributes, 1, 0)
                    && checkNamesAndTargets(permissionAttributes,
@@ -777,7 +778,7 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         permissionAttributes = securityAttributes.getPermissionAttributes();
-        assertTrue(permissionAttributes != null
+        assertWithTrace(permissionAttributes != null
                    && permissionAttributes.length == 4
                    && checkImportance(permissionAttributes, 2, 2)
                    && checkNamesAndTargets(permissionAttributes,
@@ -797,7 +798,7 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         permissionAttributes = securityAttributes.getPermissionAttributes();
-        assertTrue(permissionAttributes != null
+        assertWithTrace(permissionAttributes != null
                    && permissionAttributes.length == 2
                    && checkImportance(permissionAttributes, 1, 1)
                    && checkNamesAndTargets(permissionAttributes,
@@ -811,7 +812,7 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         permissionAttributes = securityAttributes.getPermissionAttributes();
-        assertTrue(permissionAttributes != null
+        assertWithTrace(permissionAttributes != null
                    && permissionAttributes.length == 2
                    && checkImportance(permissionAttributes, 1, 1)
                    && checkNamesAndTargets(permissionAttributes,
@@ -825,7 +826,7 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         permissionAttributes = securityAttributes.getPermissionAttributes();
-        assertTrue(permissionAttributes != null
+        assertWithTrace(permissionAttributes != null
                    && permissionAttributes.length == 2
                    && checkImportance(permissionAttributes, 1, 1)
                    && checkNamesAndTargets(permissionAttributes,
@@ -841,7 +842,7 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         permissionAttributes = securityAttributes.getPermissionAttributes();
-        assertTrue(permissionAttributes != null
+        assertWithTrace(permissionAttributes != null
                    && permissionAttributes.length == 2
                    && checkImportance(permissionAttributes, 1, 1)
                    && checkNamesAndTargets(permissionAttributes,
@@ -855,11 +856,11 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
             allAttributes.put(PermissionAttribute.MANDATORY_ATTRIBUTE_PREFIX + "1",new Attribute("","MyMandatoryClass MyMandatoryTarget MyMandatoryAction1 MyMandatoryAction2"));
             securityAttributes = new SecurityAttributes();
             securityAttributes.addDescriptorAttributes(allAttributes);
-            assertTrue(INVALID_PERMISSION_VALUE_MSG, false);
+            assertWithTrace(false);
         }
         catch (InvalidAttributeException e)
         {
-            assertTrue(INVALID_PERMISSION_VALUE_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
+            assertWithTrace(
                        e.getOtaStatusCode() == OtaStatusCode.APPLICATION_AUTHENTICATION_FAILURE
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_HANDLING_FAILED,
@@ -873,11 +874,11 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
             allAttributes.put(PermissionAttribute.MANDATORY_ATTRIBUTE_PREFIX + "1",new Attribute("","MyMandatoryClass   MyMandatoryTarget   MyMandatoryAction1 MyMandatoryAction2"));
             securityAttributes = new SecurityAttributes();
             securityAttributes.addDescriptorAttributes(allAttributes);
-            assertTrue(INVALID_PERMISSION_VALUE_MSG, false);
+            assertWithTrace(false);
         }
         catch (InvalidAttributeException e)
         {
-            assertTrue(INVALID_PERMISSION_VALUE_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
+            assertWithTrace(
                        e.getOtaStatusCode() == OtaStatusCode.APPLICATION_AUTHENTICATION_FAILURE
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_HANDLING_FAILED,
@@ -890,7 +891,7 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         permissionAttributes = securityAttributes.getPermissionAttributes();
-        assertTrue(permissionAttributes != null
+        assertWithTrace(permissionAttributes != null
                    && permissionAttributes.length == 1
                    && checkImportance(permissionAttributes, 1, 0)
                    && checkNamesAndTargets(permissionAttributes,
@@ -932,7 +933,7 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
                 allAttributes.put(PermissionAttribute.OPTIONAL_ATTRIBUTE_PREFIX + "1",new Attribute("",className + "            MyMandatoryTarget  MyMandatoryAction      "));
                 securityAttributes = new SecurityAttributes();
                 securityAttributes.addDescriptorAttributes(allAttributes);
-                assertTrue(INVALID_PERMISSION_VALUE_MSG, false);
+                assertWithTrace(false);
             }
             catch (InvalidAttributeException e)
             {
@@ -1109,6 +1110,13 @@ public class SecurityDescriptorAttributesTests extends TestCase implements Insta
         }
         return (checkBoolArray(certsChecked) && checkBoolArray(signaturesChecked));
     }
+
+    private void assertWithTrace(boolean aCondition)
+    {
+        assertTrue("" + assertTrace, aCondition);
+        assertTrace++;
+    }
+
 
     private int findString(String str, String[] strings)
     {

@@ -124,7 +124,10 @@ void CMMAItemDisplay::SourceSizeChanged(const TSize& aSourceSize)
 #endif
 
     iSourceSize = aSourceSize;
-
+    if(IsUserRectSet() || iFullScreen)
+    {
+        return;
+    }
     if (iWindow)
     {
         TRect clientRect(iUserRect.iTl, aSourceSize);

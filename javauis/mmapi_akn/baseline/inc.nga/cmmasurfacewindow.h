@@ -168,6 +168,8 @@ public: // from base class MUiEventConsumer
 
 public: // New methods
     TBool IsVisible() const;
+    TInt PlayerState();
+    TBool IsVideoPlayer();
     IMPORT_C void SetDisplay(MMMADisplay *aDisplay);
 
     /**

@@ -163,6 +163,15 @@ public:
     {
         // Empty
     }
+    virtual TInt PlayerState()
+    {
+        return -1;
+    }
+    
+    virtual TBool IsVideoPlayer()
+     {
+        return EFalse;
+     }
 #endif
 
     /**

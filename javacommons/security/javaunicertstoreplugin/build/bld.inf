@@ -11,16 +11,13 @@
 *
 * Contributors:
 *
-* Description: 
+* Description: Generated bld.inf -file
 *
 */
 
 PRJ_PLATFORMS
 default
 
-PRJ_MMPFILES
-javaunicertstoreplugin.mmp
-
-#ifdef RD_JAVA_UI_QT
+PRJ_MMPFILES  
+javaunicertstoreplugin_0x200213A3.mmp 
 #include "exports.inf" 
-#endif

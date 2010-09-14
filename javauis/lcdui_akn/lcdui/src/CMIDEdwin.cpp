@@ -20,7 +20,7 @@
 #include <eikappui.h>
 #include <coecntrl.h>
 // macros for resources
-#include <EIKCOCTL.rsg>
+#include <eikcoctl.rsg>
 
 #include <AknUtils.h>
 // usied for playing error sounds when text input

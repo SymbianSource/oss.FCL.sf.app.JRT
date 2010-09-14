@@ -21,6 +21,8 @@
 
 #include "cmmadisplay.h"
 #include "mmmadisplaywindow.h"
+// below include is added to get the enumerated player's state
+#include "cmmaplayer.h"
 
 // Destructor (virtual by CBase)
 CMMADisplay::~CMMADisplay()
@@ -31,12 +33,16 @@ CMMADisplay::~CMMADisplay()
         // Remove clip rect if set
         if (!iClipRect.IsEmpty())
         {
-            DEBUG("CMMADisplay::~CMMADisplay(): Removing clip rect");
+            DEBUG_INT2("CMMADisplay::~CMMADisplay(): Removing clip rect iTL = %d X %d",
+                                             iClipRect.iTl.iX,iClipRect.iTl.iY);
+            DEBUG_INT2("CMMADisplay::~CMMADisplay(): Removing clip rect iBr = %d X %d",
+                                             iClipRect.iBr.iX,iClipRect.iBr.iY);
             iDirectContainer->MdcRemoveContentBounds(iClipRect);
         }
 
         // Remove this object from MDirectContainer
         iDirectContainer->MdcRemoveContent(this);
+        DEBUG("~CMMADisplay() is done");
     }
 }
 
@@ -45,6 +51,7 @@ CMMADisplay::CMMADisplay():
         iVisible(EFalse),
         iFullScreen(EFalse),
         iContainerVisible(EFalse),
+        iUserRectSet(EFalse),
         iIsForeground(ETrue),
         iResetDrawRect(EFalse)
 {
@@ -138,7 +145,18 @@ void CMMADisplay::SetClippingRegion()
     {
         return;
     }
-
+    
+#ifdef RD_JAVA_NGA_ENABLED
+    
+    if(iWindow->IsVideoPlayer() && iWindow->PlayerState() < CMMAPlayer::EPrefetched)
+    {
+      // dont snatch window from UI too early. wait till its PREFETCHED or STARTED 
+      // because UI could be showing some progressive indicator for playback start and that should continue
+      // at the last possible moment 
+      
+        return;
+    }
+#endif
     TBool refreshScreen(EFalse);
     // Remove first the current clip rect if set
     if (!iClipRect.IsEmpty())
@@ -155,7 +173,10 @@ void CMMADisplay::SetClippingRegion()
 
         if (!iClipRect.IsEmpty())
         {
-            DEBUG("CMMADisplay::SetClippingRegion: Adding new rect");
+            DEBUG_INT2("CMMADisplay::SetClippingRegion: Adding new rect iTL = %d X %d",
+                                          iClipRect.iTl.iX,iClipRect.iTl.iY);
+            DEBUG_INT2("CMMADisplay::SetClippingRegion: Adding new rect iBr = %d X %d",
+                                          iClipRect.iBr.iX,iClipRect.iBr.iY);
             // Add new clipping rect
             iDirectContainer->MdcAddContentBounds(iClipRect);
             refreshScreen = ETrue;
@@ -202,6 +223,17 @@ void CMMADisplay::AddClippingRegion()
     {
         return;
     }
+    
+#ifdef RD_JAVA_NGA_ENABLED
+    
+    if(iWindow->IsVideoPlayer() && iWindow->PlayerState() < CMMAPlayer::EPrefetched)
+     {
+      // dont snatch window from UI too early. wait till its PREFETCHED or STARTED 
+      // because UI could be showing some progressive indicator for playback start and that should continue
+      // at the last possible moment 
+       return;
+     }
+#endif  
     // If visible then set a new clip rect
     if (iVisible)
     {
@@ -209,7 +241,10 @@ void CMMADisplay::AddClippingRegion()
 
         if (!iClipRect.IsEmpty())
         {
-            DEBUG("CMMADisplay::AddClippingRegion: Adding new rect");
+            DEBUG_INT2("CMMADisplay::AddClippingRegion: Adding new rect iTL = %d X %d",
+                                          iClipRect.iTl.iX,iClipRect.iTl.iY);
+            DEBUG_INT2("CMMADisplay::AddClippingRegion: Adding new rect iBr = %d X %d",
+                                          iClipRect.iBr.iX,iClipRect.iBr.iY);
             // Add new clipping rect
             iDirectContainer->MdcAddContentBounds(iClipRect);
             // refresh screen
@@ -237,7 +272,7 @@ void CMMADisplay::SetDisplaySizeL(const TSize& aSize)
 {
     // user rect contains size set from java.
     iUserRect.SetSize(aSize);
-
+    UserRectSet();
     // Size change has no effect if fullscreen mode is on.
     // New size could be used when fullscreen is turned off.
     if (iContainerVisible && !iFullScreen && iWindow)
@@ -250,6 +285,17 @@ void CMMADisplay::SetDisplaySizeL(const TSize& aSize)
     {
         iResetDrawRect = ETrue;
     }
+}
+
+void CMMADisplay::UserRectSet()
+{
+    if(!IsUserRectSet())
+        iUserRectSet = ETrue;
+}
+
+TBool CMMADisplay::IsUserRectSet()
+{
+    return iUserRectSet;
 }
 
 // from MMMADisplay

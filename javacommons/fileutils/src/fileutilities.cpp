@@ -323,7 +323,8 @@ OS_EXPORT int FileUtilities::makeDirAll(const std::wstring& aDirPath)
         char *dirName = JavaCommonUtils::wstringToUtf8(path);
         if (ableToOpen)
         {
-            if (!opendir(dirName))
+            DIR* wDirHandle = opendir(dirName);
+            if (!wDirHandle)
             {
                 ableToOpen = false;
                 if (mkdir(dirName,0666)<0)
@@ -334,6 +335,7 @@ OS_EXPORT int FileUtilities::makeDirAll(const std::wstring& aDirPath)
                     return -1;
                 }
             }
+            closedir(wDirHandle); 
         }
         else
         {

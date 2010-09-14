@@ -779,15 +779,15 @@ void CAppMngr2MidletAppInfo::ConstructL(
             ELOG1(EJavaAppMngrPlugin, "GetAppIconL error %d", err);
         }
     }
-    
+
     CleanupStack::PopAndDestroy(&midletUids);
 
     // security domain
     CAppMngr2MidletSettingsHandler* settingsHandler
     = CAppMngr2MidletSettingsHandler::NewL(*iLocalizedMIDletName, iEntry->Uid(), iResourceHandler);
     CleanupStack::PushL(settingsHandler);
-    iSecurityDomainCategory = settingsHandler->GetSecurityDomainCategory();
-    iSecurityDomainName = settingsHandler->GetSecurityDomainName();
+    iSecurityDomainCategory = settingsHandler->GetSecurityDomainCategoryL();
+    iSecurityDomainName = settingsHandler->GetSecurityDomainNameL();
     CleanupStack::PopAndDestroy(settingsHandler);
     if (iSecurityDomainCategory != UNIDENTIFIED_THIRD_PARTY_DOMAIN_CATEGORY)
     {
@@ -998,20 +998,20 @@ void CAppMngr2MidletAppInfo::ReadCertificatesInfoL()
 void CAppMngr2MidletAppInfo::GetAppIconL(TUid aMidletUid)
 {
     LOG(EJavaAppMngrPlugin, EInfo, "+ CAppMngr2MidletAppInfo::GetAppIconL");
-    
+
     ASSERT(!iAppBitmap);
     ASSERT(!iAppMask);
-    
+
     RApaLsSession lsSession;
-    User::LeaveIfError(lsSession.Connect()); 
+    User::LeaveIfError(lsSession.Connect());
     CleanupClosePushL(lsSession);
     CApaMaskedBitmap* apaBmp = CApaMaskedBitmap::NewLC();
-    
+
     TSize size = static_cast<CAppMngr2MidletRuntime&>(Runtime()).JavaRasterIconSize();
     TInt err = lsSession.GetAppIcon(aMidletUid, size, *apaBmp);
     if (err == KErrNone)
     {
-        iAppBitmap = new (ELeave) CFbsBitmap(); 
+        iAppBitmap = new (ELeave) CFbsBitmap();
         iAppMask = new (ELeave) CFbsBitmap();
         User::LeaveIfError(iAppBitmap->Duplicate(apaBmp->Handle()));
         User::LeaveIfError(iAppMask->Duplicate(apaBmp->Mask()->Handle()));
@@ -1025,6 +1025,6 @@ void CAppMngr2MidletAppInfo::GetAppIconL(TUid aMidletUid)
                                    EAknsAppIconTypeList, iAppBitmap, iAppMask);
         CleanupStack::Pop(2); // iAppBitmap, iAppMask
     }
-    
+
     LOG(EJavaAppMngrPlugin, EInfo, "- CAppMngr2MidletAppInfo::GetAppIconL");
 }

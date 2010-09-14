@@ -20,6 +20,7 @@ package com.nokia.mj.impl.rt.tckrunner;
 import com.nokia.mj.impl.rt.support.ApplicationInfo;
 import com.nokia.mj.impl.rt.support.ApplicationUtils;
 import com.nokia.mj.impl.utils.Uid;
+import com.nokia.mj.impl.utils.Logger;
 
 import java.security.Permission;
 import java.security.AccessControlException;
@@ -39,6 +40,8 @@ public class ApplicationUtilsImpl extends ApplicationUtils
 
     public void notifyExitCmd()
     {
+        Logger.ILOG(Logger.ETckRunner, "notifyExitCmd() - exiting");
+        System.exit(0);
     }
 
     public void checkPermission(Permission aPermission)

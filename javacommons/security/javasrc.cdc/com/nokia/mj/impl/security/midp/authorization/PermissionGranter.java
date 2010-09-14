@@ -58,6 +58,9 @@ public final class PermissionGranter
      * different aplications being installed
      */
     private Hashtable iBlanketPermissionsDetails = new Hashtable();
+    
+    private static final int NOT_FOUND = -2;
+    private static final int REMOVED = -1;
 
     /**
      * Creates an instance of the PermissionGranter
@@ -171,23 +174,22 @@ public final class PermissionGranter
      *                             SecurityAttributes.addManifestAttributes())
      */
     public void grantJarPermissions(
-        StorageSession storageSession,
         Uid msUID,
         Uid oldMSUID,
-        PermissionAttribute[] requestedPermissions)
+        PermissionAttribute[] requestedPermissions,
+        AuthenticationCredentials[] authCredentials)
     {
-        if (storageSession == null
-                || msUID == null)
+        if (msUID == null)
         {
             return;
         }
 
-        // take the domain from storage
-        SecurityStorage storage = new SecurityStorage(storageSession);
-        String protectionDomainName = storage.readProtectionDomain(msUID);
         // filter the already granted permissions
+        String protectionDomainName = authCredentials[0].getProtectionDomainName();
         Object o = iGrantedPermissions.remove(
-                       msUID.getStringValue() + protectionDomainName);
+            msUID.getStringValue()
+            + protectionDomainName);
+
         Vector preGrantedPermissions = null;
         if (o != null)
         {
@@ -215,10 +217,15 @@ public final class PermissionGranter
                 }
             }
         }
-        storage.writeGrantedPermissions(
-            msUID,
-            oldMSUID,
-            resolvedPermissions);
+        // in case of update preserve the settings of the "old" suite
+        if (oldMSUID != null)
+        {
+            updateGrantedPermissions(
+                msUID,
+                oldMSUID,
+                resolvedPermissions);
+        }
+        
         // update the cache with the full set of permissions
         iGrantedPermissions.put(msUID.getStringValue() + protectionDomainName,
                                 resolvedPermissions);
@@ -240,7 +247,6 @@ public final class PermissionGranter
      *                             the MIDlet suite.
      */
     public void grantJarPermissions(
-        StorageSession storageSession,
         Uid uid,
         Uid oldUid,
         ProtectionDomain protectionDomain)
@@ -265,15 +271,17 @@ public final class PermissionGranter
                                          protectionDomain.getName(),
                                          securityAttributes.getPermissionAttributes(),
                                          true /* add the assigned permissions */);
-
-        // store the permissions
-        SecurityStorage storage = new SecurityStorage(storageSession);
-        storage.writeGrantedPermissions(
-            uid,
-            oldUid,
-            resolvedPermissions);
+        // in case of update preserve the settings
+        if (oldUid != null)
+        {
+            updateGrantedPermissions(
+                uid,
+                oldUid,
+                resolvedPermissions);
+        }
+        
         // update the cache with the full set of permissions
-        iGrantedPermissions.put(uid.getStringValue() + protectionDomain,
+        iGrantedPermissions.put(uid.getStringValue() + protectionDomain.getName(),
                                 resolvedPermissions);
         Logger.logGrantedPermissions(resolvedPermissions);
     }
@@ -315,7 +323,7 @@ public final class PermissionGranter
             String key = (String)e.nextElement();
             if (key.startsWith(msUidKey))
             {
-                grantedPermissions = (Vector)iGrantedPermissions.remove(key);
+                grantedPermissions = (Vector)iGrantedPermissions.get(key);
                 if (key.endsWith("UnidentifiedThirdParty"))
                 {
                     // if the suite is not signed, there is no blanket
@@ -360,7 +368,7 @@ public final class PermissionGranter
                     ((PolicyBasedPermission)grantedPermissions.elementAt(i));
                 UserSecuritySettings settings =
                     permission.getUserSecuritySettings();
-                if (permission.getType() != PolicyBasedPermission.USER_TYPE 
+                if (permission.getType() != PolicyBasedPermission.USER_TYPE
                     || settings == null)
                 {
                     // not a user permission -> move on to the next permission
@@ -458,24 +466,24 @@ public final class PermissionGranter
             if (permissions_from_sensitive_combination_list_1
                     && permissions_from_sensitive_combination_list_2)
             {
-                /*String blanketPermissionsDetails = ( 
+                /*String blanketPermissionsDetails = (
                     ((call_control == true && multimedia == true)
-                    || (call_control == true && read_user_data == true) 
+                    || (call_control == true && read_user_data == true)
                     || (net_access == true && multimedia == true)
                     || (net_access == true && read_user_data == true)
                     || (messaging == true && multimedia == true)
-                    || (messaging == true && read_user_data == true)) ? 
-                    "settings_inst_query_perm_net" : 
+                    || (messaging == true && read_user_data == true)) ?
+                    "settings_inst_query_perm_net" :
                     "settings_inst_query_perm_sec");*/
 
-                Id blanketPermissionsDetails = ( 
+                Id blanketPermissionsDetails = (
                     ((call_control == true && multimedia == true)
-                    || (call_control == true && read_user_data == true) 
+                    || (call_control == true && read_user_data == true)
                     || (net_access == true && multimedia == true)
                     || (net_access == true && read_user_data == true)
                     || (messaging == true && multimedia == true)
-                    || (messaging == true && read_user_data == true)) ? 
-                    new Id("settings_inst_query_perm_net", "N/A") : 
+                    || (messaging == true && read_user_data == true)) ?
+                    new Id("settings_inst_query_perm_net", "N/A") :
                     new Id("settings_inst_query_perm_sec", "N/A"));
 
                 iBlanketPermissionsDetails.put(msUidKey,
@@ -532,6 +540,8 @@ public final class PermissionGranter
         storage.writeUserSecuritySettings(msUID,
                                           UserSecuritySettings.BLANKET_INTERACTION_MODE,
                                           true /* blanket prompt shown */);
+        // cleanup the cache as well
+        cleanup(msUID);
     }
 
     /**
@@ -544,7 +554,7 @@ public final class PermissionGranter
         iGrantedPermissions.clear();
         iBlanketPermissionsDetails.clear();
     }
-
+    
     /**
      * Removes all the security data related to a certain MIDlet suite
      *
@@ -559,6 +569,25 @@ public final class PermissionGranter
         SecurityStorage storage = new SecurityStorage(storageSession);
         storage.removeGrantedPermissions(msUID);
         // clear the cache
+        cleanup(msUID);
+    }
+
+    /**
+     * Writes to storage all the security data related to a certain MIDlet suite
+     *
+     * @param sessionID the JavaStorage session to be used when
+     *                  writing the security data into storage
+     * @param msUID     the UID if the MIDlet suite whose security data is
+     *                  being written
+     */
+    public void addSecurityData(StorageSession storageSession, Uid msUID, Uid oldMsUID)
+    {
+        Logger.log("Write granted permissions to storage");
+        if (storageSession == null || msUID == null)
+        {
+            return;
+        }
+        SecurityStorage storage = new SecurityStorage(storageSession);
         String msUidKey = msUID.getStringValue();
         for (Enumeration e = iGrantedPermissions.keys() ;
                 e.hasMoreElements() ;)
@@ -566,11 +595,13 @@ public final class PermissionGranter
             String key = (String)e.nextElement();
             if (key.startsWith(msUidKey))
             {
-                iGrantedPermissions.remove(key);
-                break;
+                storage.writeGrantedPermissions(
+                    msUID,
+                    oldMsUID,
+                    (Vector)iGrantedPermissions.remove(key));
+                return;
             }
         }
-        iBlanketPermissionsDetails.remove(msUidKey);
     }
 
     private Vector resolvePermissions(Uid msUID,
@@ -599,8 +630,8 @@ public final class PermissionGranter
                 for (int i=0; i<policyPermissions.length; i++)
                 {
                     if (policyPermissions[i].getType()
-                            == PolicyBasedPermission.ASSIGNED_TYPE 
-                            || policyPermissions[i].getType() 
+                            == PolicyBasedPermission.ASSIGNED_TYPE
+                            || policyPermissions[i].getType()
                             == PolicyBasedPermission.USER_ASSIGNED_TYPE)
                     {
                         PolicyBasedPermissionImpl p1 = new PolicyBasedPermissionImpl(
@@ -640,5 +671,131 @@ public final class PermissionGranter
     {
         return resolvePermissions(msUID, protectionDomainName,
                                   requestedPermissions, true /* add assigned permissions */);
+    }
+    
+    private void cleanup(Uid msUID)
+    {
+        // clear the cache
+        String msUidKey = msUID.getStringValue();
+        for (Enumeration e = iGrantedPermissions.keys() ;
+                e.hasMoreElements() ;)
+        {
+            String key = (String)e.nextElement();
+            if (key.startsWith(msUidKey))
+            {
+                iGrantedPermissions.remove(key);
+                break;
+            }
+        }
+        iBlanketPermissionsDetails.remove(msUidKey);
+    }
+    
+    private void updateGrantedPermissions(Uid newAppUID, Uid oldAppUID, Vector grantedPermissions)
+    {
+        // the vector containing the newGrantedPermissions
+        Vector newGrantedPermissions = new Vector();
+
+        // get the old permissions & settings
+        SecurityStorage storage = new SecurityStorage();
+        Vector oldPermissions = storage.readGrantedPermissions(oldAppUID);
+        storage.close();
+
+        // filter out the the brand new permissions
+        // (permissions which are not found among the old permissions)
+        if (oldPermissions != null)
+        {
+            int index=0;
+            while (index < grantedPermissions.size())
+            {
+                // instead of calling Vector.removeElement(p) we will do the
+                // remove manually, since the search is to be based on
+                // the permission without the settings
+                PolicyBasedPermission p = (PolicyBasedPermission)
+                                          grantedPermissions.elementAt(index);
+                int status = removeElement(oldPermissions, p);
+                switch (status)
+                {
+                case REMOVED:
+                case NOT_FOUND:
+                    index++;
+                    break;
+                default:
+                    // different settings
+                    UserSecuritySettings oldSettings
+                    = ((PolicyBasedPermission)oldPermissions
+                       .elementAt(status)).getUserSecuritySettings();
+                    UserSecuritySettings newSettings
+                    = p.getUserSecuritySettings();
+                    if (oldSettings != null
+                            && newSettings != null)
+                    {
+                        boolean activeSettings = false;
+                        if (oldSettings.isActive() 
+                            || newSettings.isActive())
+                        {
+                            activeSettings = true;
+                        }
+                        newGrantedPermissions.addElement(
+                            new PolicyBasedPermissionImpl(
+                                p.getName(),
+                                p.getTarget(),
+                                p.getActionList(),
+                                p.getType(),
+                                new UserSecuritySettingsImpl(
+                                    newSettings.getName(),
+                                    oldSettings.getCurrentInteractionMode(),
+                                    newSettings.getAllowedInteractionModes(),
+                                    oldSettings.getBlanketPrompt(),
+                                    activeSettings)));
+                    }
+                    else
+                    {
+                        newGrantedPermissions.addElement(p);
+                    }
+                    grantedPermissions.removeElementAt(index);
+                    break;
+                }
+            }
+        }
+        // write what's left from the granted permissions
+        for (int i=0; i<newGrantedPermissions.size(); i++)
+        {
+            grantedPermissions.addElement(newGrantedPermissions.elementAt(i));
+        }
+    }
+    
+    private int removeElement(Vector elements, PolicyBasedPermission element)
+    {
+        PolicyBasedPermissionImpl p1 = new PolicyBasedPermissionImpl(
+            element.getName(),
+            element.getTarget(),
+            element.getActionList(),
+            null);
+        for (int i=0; i<elements.size(); i++)
+        {
+            PolicyBasedPermission tmp = (PolicyBasedPermission)elements
+                                        .elementAt(i);
+            PolicyBasedPermissionImpl p2 = new PolicyBasedPermissionImpl(
+                tmp.getName(),
+                tmp.getTarget(),
+                tmp.getActionList(),
+                null);
+            if (p1.equals(p2))
+            {
+                UserSecuritySettings s1 = element.getUserSecuritySettings();
+                UserSecuritySettings s2 = tmp.getUserSecuritySettings();
+                if ((s1 == null && s2 == null)
+                        || (s1 != null
+                            && s2 != null
+                            && s1.equals(s2)))
+                {
+                    // identical permissions
+                    elements.removeElementAt(i);
+                    return REMOVED;
+                }
+                return i;
+            }
+        }
+        return NOT_FOUND;
     }
 }

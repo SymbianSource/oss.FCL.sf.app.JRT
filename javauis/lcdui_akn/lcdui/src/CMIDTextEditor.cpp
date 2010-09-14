@@ -452,7 +452,7 @@ void CMIDTextEditor::TraverseL(const TKeyEvent& aEvent)
     }
     else
     {
-        iTextEdwin->OfferKeyEventL(aEvent, EEventKeyDown);
+        iTextEdwin->OfferKeyEventL(aEvent, EEventKey);
     }
 }
 

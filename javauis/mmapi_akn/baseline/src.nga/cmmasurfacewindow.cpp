@@ -23,6 +23,9 @@
 #include "cmmasurfacewindow.h"
 #include "cmmaplayer.h"
 
+// Used for const. KMMAVideoPlayer
+#include "cmmavideoplayer.h"
+
 // Used for iDisplay member
 #include "mmmadisplay.h"
 
@@ -677,4 +680,15 @@ EXPORT_C void CMMASurfaceWindow::SetAVCableConnStatus(TBool aStatus)
     }
 }
 
+TInt CMMASurfaceWindow::PlayerState()
+{
+    return iPlayer->State();
+}
+
+TBool CMMASurfaceWindow::IsVideoPlayer()
+{
+    return (iPlayer->Type()== KMMAVideoPlayer);
+}
+    
+   
 //  END OF FILE

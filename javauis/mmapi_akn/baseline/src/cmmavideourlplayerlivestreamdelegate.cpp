@@ -151,6 +151,9 @@ void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::HandleEvent(const
         if (iActiveSchedulerWait->IsStarted())
         {
             DEBUG("MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoLoadingComplete ASW Stop");
+            // calling PrepareDisplay() in the nick of time as this takes over the control of window and 
+            // any UI widget can't be drawn after this call at the prescribed area for video display.
+            iPlayer.PrepareDisplay();
             iActiveSchedulerWait->AsyncStop();
         }
         if (err != KErrNone)
@@ -166,10 +169,7 @@ void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::HandleEvent(const
         // going to prefetch state, after Play
         // KMMFEventCategoryVideoLoadingComplete event will be received
 
-        if (err == KErrNone)
-        {
-            iPlayer.PrepareDisplay();
-        }
+
 
         // For live streams: complete prefetch.
         // if activeschedulerwait is started, then

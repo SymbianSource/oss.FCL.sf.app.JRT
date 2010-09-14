@@ -38,7 +38,6 @@ public class CheckJarPackages extends ExeStep
         // the installation drive. This is needed to determine
         // if tamper detection is needed.
         AuthenticationModule.getInstance().setMediaId(
-            ball.iStorageHandler.getSession(),
             ball.iSuite.getUid(), ball.iSuite.getMediaId());
 
         // Application package scanning must be skipped if instructed so

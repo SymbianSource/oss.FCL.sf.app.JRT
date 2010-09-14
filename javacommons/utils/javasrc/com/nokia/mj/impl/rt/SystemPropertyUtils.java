@@ -98,7 +98,7 @@ class SystemPropertyUtils
 
                 try
                 {
-                    Class clazz = clazz = Class.forName(className);
+                    Class clazz = Class.forName(className);
                     Object providerImpl = clazz.newInstance();
 
                     boolean isFrozen = false;
