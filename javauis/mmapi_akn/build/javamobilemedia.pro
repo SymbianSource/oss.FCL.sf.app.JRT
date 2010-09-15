@@ -84,13 +84,13 @@ LIBS += -lAknIcon \
         -laknskinsrv \
         -lapgrfx \
         -lapmime \
-        -lBitmapTransforms \
+        -lbitmaptransforms \
         -lDRMHelper \
         -lDrmAudioPlayUtility \
-        -lImageConversion \
+        -limageconversion \
         -lIHL \
         -lMMFControllerFramework \
-        -lMediaClientAudio \
+        -lmediaclientaudio \
         -lMmfStandardCustomCommands \
         -lRemConCoreApi \
         -lRemConInterfaceBase \

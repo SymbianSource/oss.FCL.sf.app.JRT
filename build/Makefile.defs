@@ -42,13 +42,17 @@ ifeq ($(BUILDENV),symbian)
   export JAVA_HOME=$(JAVA_6_HOME)
 
   ifeq ($(notdir $(basename $(SHELL))),sh)
-    # Cygwin definitions
+    # Cygwin & Linux definitions
     BATPREFIX =
     RMFILE = rm $(call PATHFIX, $(1))
     RMFILES = $(RMFILE)
     CATCOMMAND = cat $(call PATHFIX, $(1))
     PATHFIX = $(subst \,/,$(1))
-    ANT := sh ant
+    ifeq ($(OS),Windows_NT)
+      ANT := sh ant
+    else
+      ANT := ant
+    endif
     SBS = MAKELEVEL=&&MAKEFLAGS=&&MFLAGS=&&sbs
     CPPCMD = gcc -E -x assembler-with-cpp -P -undef -w -traditional-cpp
     IFNOTEXIST = if [ ! -f $(1) ]; then $(2); fi
@@ -245,10 +249,12 @@ configure: generateconffiles generatereleasefile
 generateconffiles:
 	@echo Writing $(BUILDDEFINEFILE) ... \
 	$(shell $(call CATCOMMAND,$(JAVA_SRC_ROOT)/build/templates/generated_header.txt) > $(BUILDDEFINEFILE)) \
-	$(shell echo #define RD_JAVA_VERSION $(JAVA_VERSION_) >> $(BUILDDEFINEFILE)) \
+	$(shell echo #define RD_JAVA_VERSION $(JAVA_VERSION_)>> $(BUILDDEFINEFILE)) \
+	$(shell echo #define RD_JAVA_BIN_VERSION_NONQT $(shell python $(JAVA_SRC_ROOT)/build/buildutils/ver2binver.py mmp $(JAVA_VERSION))>> $(BUILDDEFINEFILE)) \
 	$(foreach d, $(PROJECT_DEFINES), $(shell echo #define $d >> $(BUILDDEFINEFILE)))
 	@echo Writing $(QBUILDDEFINEFILE) ... \
 	$(shell $(call CATCOMMAND,$(JAVA_SRC_ROOT)/build/templates/generated_header_hash.txt) > $(QBUILDDEFINEFILE)) \
+	$(shell echo RD_JAVA_BIN_VERSION = $(shell python $(JAVA_SRC_ROOT)/build/buildutils/ver2binver.py qmake $(JAVA_VERSION))>> $(QBUILDDEFINEFILE)) \
 	$(shell echo PROJECT_DEFINES *= $(PROJECT_DEFINES) >> $(QBUILDDEFINEFILE))
 	@echo Writing $(JAVAVERSIONFILE) \
 	$(shell echo $(JAVA_VERSION)>$(JAVAVERSIONFILE))

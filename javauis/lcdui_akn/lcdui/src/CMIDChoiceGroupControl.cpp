@@ -216,8 +216,21 @@ void CMIDChoiceGroupControl::CreateControlL(
     }
 
     //in case skin or resolution has changed
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    TBool highlighted = EFalse;
+    if (iItem)
+    {
+        highlighted = iItem->IsHighlighted();
+    }
+#endif // RD_JAVA_S60_RELEASE_9_2
+
     iModel->ReConstructSelectionIconsL();
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    iModel->UpdateIconArrayL(highlighted);
+#else
     iModel->UpdateIconArrayL();
+#endif // RD_JAVA_S60_RELEASE_9_2
 
     iListBox = CreateListBoxL(aParent);
 
@@ -629,6 +642,19 @@ void CMIDChoiceGroupControl::HandleChoiceGroupModelEventL(
     }
 }
 
+#ifdef RD_JAVA_S60_RELEASE_9_2
+TBool CMIDChoiceGroupControl::IsControlOnFormHighlighted()
+{
+    if (iItem)
+    {
+        return iItem->IsHighlighted();
+    }
+    else
+    {
+        return EFalse;
+    }
+}
+#endif // RD_JAVA_S60_RELEASE_9_2
 
 // --- from MEikListBoxObserver ---
 // Handles choice listbox events (as in selection)
@@ -1199,13 +1225,15 @@ void CMIDChoiceGroupControl::DrawText(const TDesC& aText) const
         TRgb rgb = AKN_LAF_COLOR(215);
         TInt textColor;
 
+        // Set color for text according to item highlight
+        // (logical color constants are defined in lcdui.h)
         if (iItem && iItem->IsHighlighted())
         {
-            textColor = EAknsCIQsnTextColorsCG8;
+            textColor = KHighlightedItemTextColor;
         }
         else
         {
-            textColor = EAknsCIQsnTextColorsCG6;
+            textColor = KNonHighlightedItemTextColor;
         }
 
         AknsUtils::GetCachedColor(AknsUtils::SkinInstance(),
@@ -1390,7 +1418,12 @@ void CMIDChoiceGroupControl::DoPopupL()
 {
     //in case skin or resolution has changed
     iModel->ReConstructSelectionIconsL();
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    iModel->UpdateIconArrayL(EFalse);
+#else
     iModel->UpdateIconArrayL();
+#endif
 
     // In order for the listbox to have popup as parent, it
     // needs to be allocated and constructed separately
@@ -1887,5 +1920,20 @@ TInt CMIDChoiceGroupControl::FirstInvisibleElement(CMIDForm::TDirection aScrollD
 CMIDForm* CMIDChoiceGroupControl::Form() const
 {
     return iItem->Form();
+}
+
+CMIDControlItem* CMIDChoiceGroupControl::ControlItem() const
+{
+    return iItem;
+}
+
+CMIDChoiceGroupListBox* CMIDChoiceGroupControl::InnerListBoxControl() const
+{
+    return iListBox;
+}
+
+CMIDChoiceGroupModel* CMIDChoiceGroupControl::InnerListBoxModel() const
+{
+    return iModel;
 }
 #endif // RD_JAVA_S60_RELEASE_9_2    

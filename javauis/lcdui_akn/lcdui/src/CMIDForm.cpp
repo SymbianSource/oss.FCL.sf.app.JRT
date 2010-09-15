@@ -2004,6 +2004,13 @@ void CMIDForm::SetFocusedItem(TInt aFocusIdx, TDirection aDirection /*= ENone*/,
         control.PostFocusTransferEvent(EFalse, aDirection);
         // setting highlight must be called before setting focus
         control.SetHighlight(EFalse);
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        if (IsChoiceGroup(control))
+        {
+            CMIDChoiceGroupItem& cg = static_cast< CMIDChoiceGroupItem& >(control);
+            cg.SetHighlight(EFalse);
+        }
+#endif // RD_JAVA_S60_RELEASE_9_2
         control.SetFocus(EFalse);
         UpdateItemCommands(NULL, NULL);
     }
@@ -2032,11 +2039,16 @@ void CMIDForm::SetFocusedItem(TInt aFocusIdx, TDirection aDirection /*= ENone*/,
     if (iFocused != KErrNotFound)
     { // actions for the item gaining focus
         CMIDControlItem& control = ControlItem(iFocused);
-
         SetHighlightBackgroundRects();
-
         control.PostFocusTransferEvent(ETrue, aDirection);
         control.SetHighlight(ETrue);
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        if (IsChoiceGroup(control))
+        {
+            CMIDChoiceGroupItem& cg = static_cast< CMIDChoiceGroupItem& >(control);
+            cg.SetHighlight(ETrue);
+        }
+#endif // RD_JAVA_S60_RELEASE_9_2
         control.SetFocus(ETrue);
         // msk: deliver also the possible MSK command to displayable
         UpdateItemCommands(control.CommandList(), control.GetMSKCommand());

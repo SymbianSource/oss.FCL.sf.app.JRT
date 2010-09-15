@@ -87,7 +87,7 @@ LIBRARY		avkon.lib
 LIBRARY		gdi.lib
 LIBRARY		bitgdi.lib
 LIBRARY		fbscli.lib
-LIBRARY		ImageConversion.lib
+LIBRARY		imageconversion.lib
 LIBRARY		lcdgdrv.lib
 LIBRARY		bafl.lib
 library		efsrv.lib

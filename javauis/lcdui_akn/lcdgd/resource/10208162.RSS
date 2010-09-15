@@ -22,6 +22,10 @@
 #include <ecom/registryinfov2.rh>
 #include "lcdgd.hrh"
 
+#ifndef ECOM_VERSION_NO
+#define ECOM_VERSION_NO 2
+#endif
+
 RESOURCE REGISTRY_INFO r_registry
     {
     resource_format_version = RESOURCE_FORMAT_VERSION_2;
@@ -36,7 +40,7 @@ RESOURCE REGISTRY_INFO r_registry
                 IMPLEMENTATION_INFO
                     {
                     implementation_uid = LCDGD_COLOR64K_IMPLEMENTATION_UID;
-                    version_no   = 2;
+                    version_no   = ECOM_VERSION_NO;
                     display_name = "J2ME_COLOR64K_DRIVER";
                     default_data = LCDGD_COLOR64K_DRIVER_ID_STR;
                     opaque_data  = "0;";

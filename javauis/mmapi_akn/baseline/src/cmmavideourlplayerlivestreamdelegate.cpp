@@ -99,6 +99,9 @@ void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::StopL(TBool aPost
         // Call stop instead of Pause as per the suggestions from helix
         // Pause has no meaning for live streaming
         iPlayer.iController.Stop();
+#ifdef RD_JAVA_NGA_ENABLED
+        iPlayer.FreeClipRectForUI();
+#endif
     }
     DEBUG("MMA:CMMAVideoUrlPlayer: Live stream: StopL - ");
 }
@@ -153,6 +156,9 @@ void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerLiveStreamDelegate::HandleEvent(const
             DEBUG("MMA:CMMAVideoUrlPlayer: Live stream: KMMFEventCategoryVideoLoadingComplete ASW Stop");
             // calling PrepareDisplay() in the nick of time as this takes over the control of window and 
             // any UI widget can't be drawn after this call at the prescribed area for video display.
+#ifdef RD_JAVA_NGA_ENABLED
+			iPlayer.GetClipRectFromUI();
+#endif
             iPlayer.PrepareDisplay();
             iActiveSchedulerWait->AsyncStop();
         }

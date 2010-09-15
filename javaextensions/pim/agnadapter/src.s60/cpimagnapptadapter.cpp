@@ -46,6 +46,7 @@ CPIMAgnApptAdapter* CPIMAgnApptAdapter::NewL(
     CPIMAgnApptAdapter* self = new(ELeave) CPIMAgnApptAdapter(aFuncServer);
     CleanupStack::PushL(self);
     CallMethodL(self, &CPIMAgnApptAdapter::ConstructL, self->iFuncServer);
+
     CleanupStack::Pop(self);
     return self;
 }

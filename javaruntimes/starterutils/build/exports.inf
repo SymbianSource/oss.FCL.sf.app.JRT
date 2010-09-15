@@ -17,6 +17,8 @@
 
 PRJ_EXPORTS
 
+#include "../../../inc/build_defines.hrh"
+
 ../inc/jvmstarter.h             |../../../javaruntimes/inc/jvmstarter.h
 ../inc/runtimestarterutils.h    |../../../javaruntimes/inc/runtimestarterutils.h
 

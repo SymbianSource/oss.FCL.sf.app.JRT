@@ -856,67 +856,104 @@ TBool CMIDCanvas::ProcessL(
         return EFalse;
     }
 
-    switch (aRead->OpCode())
+    // Usually only one op code is processed by Canvas.
+    // Exception is the video overlay case, where MIDlet
+    // does not draw anything inside Canvas.paint().
+    // In this case EDrwOpcPaintStarted and EDrwOpcBitBltRect/EDrwOpcBitBlt
+    // are received in one ProcessL(). Also EDrwOpcPaintStarted and EDrwOpcM3GContentStart
+    // may be processed in one ProcessL(), if overlays are enabled.
+    while (aRead < aEnd)
     {
-    case EDrwOpcM3GContentStart:
-    {
-        // EGL surface is created if canvas window is currently visible
-        // even if MIDlet would be on background.
-        if (!iM3GContent &&
-                i3DAccelerated &&
-                iDirectContents.Count() == 0 &&
-                IsWindowVisible())
+        switch (aRead->OpCode())
         {
-            DEBUG("CMIDCanvas::ProcessL - M3G content start");
-            iM3GContent = ETrue;
-            iM3GStart = ETrue;
-            PostEvent(EM3GDraw, iM3GContent, 0);
-            // First time when M3G content is drawn =>
-            // switch to EGL surface drawing.
-            // Pixel source must be disposed first.
-            DisposePixelSource();
-            OpenEglL();
-
-            // if we are scaling with m3g and HW acceleration
-            // create a pbuffer surface to be used with m3g rendering
-            if (iScalingOn && iFullScreen)
+        case EDrwOpcM3GContentStart:
+        {
+            // EGL surface is created if canvas window is currently visible
+            // even if MIDlet would be on background.
+            if (!iM3GContent &&
+                    i3DAccelerated &&
+                    iDirectContents.Count() == 0 &&
+                    IsWindowVisible())
             {
-                CreatePBufferSurfaceL();
+                DEBUG("CMIDCanvas::ProcessL - M3G content start");
+                iM3GContent = ETrue;
+                iM3GStart = ETrue;
+                PostEvent(EM3GDraw, iM3GContent, 0);
+                // First time when M3G content is drawn =>
+                // switch to EGL surface drawing.
+                // Pixel source must be disposed first.
+                DisposePixelSource();
+                OpenEglL();
+
+                // if we are scaling with m3g and HW acceleration
+                // create a pbuffer surface to be used with m3g rendering
+                if (iScalingOn && iFullScreen)
+                {
+                    CreatePBufferSurfaceL();
+                }
+                // Draw the whole framebuffer content (as a texture) on top of
+                // the EGL window surface.
+                iUpperUpdateRect = TRect(Size());
+                UpdateEglContent();
             }
-            // Draw the whole framebuffer content (as a texture) on top of
-            // the EGL window surface.
-            iUpperUpdateRect = TRect(Size());
-            UpdateEglContent();
-        }
-    }
-    break;
-    case EDrwOpcBitBltRect:
-    {
-        if (iFirstPaintState == EFirstPaintNeverOccurred)
-        {
-            iFirstPaintState = EFirstPaintInitiated;
-        }
 
-        const TBitBltData& data = BitBltData(aRead);
-        UpdateL(data.iRect);
-    }
-    break;
-    case EDrwOpcBitBlt:
-    {
-        if (iFirstPaintState == EFirstPaintNeverOccurred)
-        {
-            iFirstPaintState = EFirstPaintInitiated;
+            ASSERT(aRead + aRead->Size() == aEnd);
         }
-
-        UpdateL(iViewRect);
-    }
-    break;
-    default:
-        User::Leave(KErrNotSupported);
         break;
+        case EDrwOpcBitBltRect:
+        {
+            if (iFirstPaintState == EFirstPaintNeverOccurred)
+            {
+                iFirstPaintState = EFirstPaintInitiated;
+            }
+
+            const TBitBltData& data = BitBltData(aRead);
+            UpdateL(data.iRect);
+
+            ASSERT(aRead + aRead->Size() == aEnd);
+        }
+        break;
+        case EDrwOpcBitBlt:
+        {
+            if (iFirstPaintState == EFirstPaintNeverOccurred)
+            {
+                iFirstPaintState = EFirstPaintInitiated;
+            }
+
+            UpdateL(iViewRect);
+
+            ASSERT(aRead + aRead->Size() == aEnd);
+        }
+        break;
+        case EDrwOpcPaintStarted:
+        {
+            // Clear MMAPI content areas on Canvas to enable overlays.
+            if (IsVideoOverlayActive())
+            {
+                RRegion directContents;
+                iDisplayable->GetDirectContentsRegion(directContents);
+                TInt count = directContents.Count();
+
+                iFrameContext->SetBrushColor(KTransparentClearColor);
+                iFrameContext->SetDrawMode(CGraphicsContext::EDrawModeWriteAlpha);
+
+                for (TInt i = 0; i < count; ++i)
+                {
+                    const TRect rect = directContents[i];
+                    iFrameContext->Clear(rect);
+                }
+                directContents.Close();
+            }
+        }
+        break;
+        default:
+            User::Leave(KErrNotSupported);
+            break;
+        }
+
+        aRead += aRead->Size();
     }
 
-    aRead += aRead->Size();
     ASSERT(aRead == aEnd);
 
     // iFrameReady tells if this is async operation.
@@ -1145,7 +1182,7 @@ void CMIDCanvas::MdcRemoveContent(MDirectContent* aContent)
 // Adds a rectangle to be excluded from redrawing.
 // ---------------------------------------------------------------------------
 //
-void CMIDCanvas::MdcAddContentBounds(const TRect& aRect)
+void CMIDCanvas::MdcAddMMAPIContentBounds(const TRect& aRect)
 {
     if (iDisplayable)
     {
@@ -1160,11 +1197,29 @@ void CMIDCanvas::MdcAddContentBounds(const TRect& aRect)
 // Removes a rectangle to be excluded from redrawing.
 // ---------------------------------------------------------------------------
 //
-void CMIDCanvas::MdcRemoveContentBounds(const TRect& aRect)
+void CMIDCanvas::MdcRemoveMMAPIContentBounds(const TRect& aRect)
 {
     if (iDisplayable)
     {
+#ifdef RD_JAVA_NGA_ENABLED
+        if (iEnv.VideoOverlayEnabled())
+        {
+            // iMMAPIAreaUpdated may be modified in LCDUI and MMAPI threads.
+            // Lock must be released before RemoveDirectContentArea().
+            RCriticalSection& lock(iEnv.GetMMAPILock());
+            lock.Wait();
+            iMMAPIAreaUpdated = ETrue;
+            lock.Signal();
+
+            iDisplayable->RemoveDirectContentArea(aRect);
+        }
+        else
+        {
+            iDisplayable->RemoveDirectContentArea(aRect);
+        }
+#else
         iDisplayable->RemoveDirectContentArea(aRect);
+#endif // RD_JAVA_NGA_ENABLED        
     }
 }
 
@@ -1902,6 +1957,17 @@ void CMIDCanvas::DrawWindow(const TRect& aRect) const
         gc.SetDrawMode(CGraphicsContext::EDrawModeWriteAlpha);
     }
 
+#ifdef RD_JAVA_NGA_ENABLED
+    // If overlay is enabled, need to clear previous content
+    // from CWindowGc.
+    CMIDCanvas* myself = const_cast<CMIDCanvas*>(this);
+    if (myself->IsVideoOverlayActive())
+    {
+        gc.SetBrushColor(KTransparentClearColor);
+        gc.Clear(aRect);
+    }
+#endif
+
     TRect windowRect(aRect);
     PrepareDraw(gc, windowRect);
 
@@ -2199,7 +2265,7 @@ void CMIDCanvas::HandleResourceChange(TInt aType)
     {
         // We need inform TextEditor that input language is changed.
         if ((iFocusedComponent != KComponentFocusedNone) &&
-        (iFocusedComponent < iCustomComponents.Count()))
+                (iFocusedComponent < iCustomComponents.Count()))
         {
             iCustomComponents[iFocusedComponent]->
             CustomComponentControl(KComponentMainControl)->
@@ -2743,7 +2809,9 @@ void CMIDCanvas::Draw(const TRect& aRect) const
         {
             myself->ClearUiSurface(ETrue);
         }
-        else if (iAlfCompositionPixelSource)
+        // Pixel source is not activated if Canvas is not visible,
+        // in order that graphics memory is not reserved while being on background
+        else if (iAlfCompositionPixelSource && IsWindowVisible())
         {
             myself->ClearUiSurface(ETrue);
             TRAP_IGNORE(myself->ActivatePixelSourceL(ETrue));
@@ -2840,24 +2908,24 @@ CMIDCanvas::CMIDCanvas(
     TBool aUpdateRequired
 #endif // CANVAS_DIRECT_ACCESS
 ) :
-        CCoeControl()
-        ,iEnv(aEnv)
+    CCoeControl()
+    ,iEnv(aEnv)
 #ifdef CANVAS_DOUBLE_BUFFER
-        ,iFrameBuffer(NULL)
+    ,iFrameBuffer(NULL)
 #endif // CANVAS_DOUBLE_BUFFER
-        ,iIsGameCanvas((
-                           aComponentType == MMIDComponent::EGameCanvas ? ETrue : EFalse))
-        ,iFlags(EPostKeyEvents)
-        ,iFullScreen(EFalse)
-        ,iScalingOn(EFalse)
-        ,iS60SelectionKeyCompatibility(EFalse)
-        ,iRestoreContentWhenUnfaded(EFalse)
-        ,iLastFadeMessage(0)
+    ,iIsGameCanvas((
+                       aComponentType == MMIDComponent::EGameCanvas ? ETrue : EFalse))
+    ,iFlags(EPostKeyEvents)
+    ,iFullScreen(EFalse)
+    ,iScalingOn(EFalse)
+    ,iS60SelectionKeyCompatibility(EFalse)
+    ,iRestoreContentWhenUnfaded(EFalse)
+    ,iLastFadeMessage(0)
 #ifdef CANVAS_DIRECT_ACCESS
-        ,iDcDsaToStart(EFalse)
+    ,iDcDsaToStart(EFalse)
 #endif // CANVAS_DIRECT_ACCESS
-        ,iDragEventsStartedInside(EFalse)
-        ,iFirstPaintState(EFirstPaintNeverOccurred)
+    ,iDragEventsStartedInside(EFalse)
+    ,iFirstPaintState(EFirstPaintNeverOccurred)
 {
     DEBUG("+ CMIDCanvas::CMIDCanvas - EDirectEnabled");
 
@@ -3651,14 +3719,16 @@ void CMIDCanvas::HandleForeground(TBool aForeground)
 void CMIDCanvas::HandleFullOrPartialForegroundL(
     TBool aFullOrPartialFg, TBool aCurrentDisplayable)
 {
-    if (!aFullOrPartialFg && aCurrentDisplayable)
+    if (!aFullOrPartialFg)
     {
         FreeGraphicsMemory(ETrue);
     }
-    else if (!iPrevM3GContent && iAlfCompositionPixelSource)
+
+    // If canvas is not the current displayable but visible when MIDlet has gained
+    // foreground, need to invoke forced paint to get content updated on screen
+    if (aFullOrPartialFg && !aCurrentDisplayable && IsVisible())
     {
-        SuspendPixelSource();
-        ActivatePixelSourceL(ETrue);
+        PostForcedPaint();
     }
 }
 
@@ -4676,6 +4746,28 @@ void CMIDCanvas::MidletExiting()
 }
 
 // ---------------------------------------------------------------------------
+// CMIDCanvas::IsVideoOverlayActive
+// ---------------------------------------------------------------------------
+//
+TBool CMIDCanvas::IsVideoOverlayActive()
+{
+    if (iEnv.VideoOverlayEnabled() && !iIsGameCanvas)
+    {
+        // This method is called also from CMIDGraphics.
+        // Need to check here if MMAPI video area was removed by calling CheckDirectContentUpdated()
+        // in order that lcdgr can use the correct alpha blending
+        // (opaque or transparent target, see CMIDGraphcis.cpp and lcd16ma.cpp).
+        TBool ret = iDisplayable->DirectContentsCount() > 0;
+        CheckDirectContentUpdated();
+        return ret;
+    }
+    else
+    {
+        return EFalse;
+    }
+}
+
+// ---------------------------------------------------------------------------
 // CMIDCanvas::BlitFrameBufferPixels
 // Sets up OpenGL state for 2D texture rendering and renders the textures for
 // updated frame buffer areas by calling BlitSubRect().
@@ -5300,6 +5392,41 @@ void CMIDCanvas::PostForcedPaint()
     TInt posPacked  = 0;
     TInt sizePacked = (iContentSize.iWidth << 16) | (iContentSize.iHeight);
     PostEvent(EForcedPaint, posPacked, sizePacked);
+}
+
+// ---------------------------------------------------------------------------
+// CMIDCanvas::CheckDirectContentUpdated
+// Restores opaque alpha channel to direct content areas in
+// framebuffer bitmap after video is removed from canvas.
+// ---------------------------------------------------------------------------
+//
+void CMIDCanvas::CheckDirectContentUpdated()
+{
+    if (iEnv.VideoOverlayEnabled() && iMMAPIAreaUpdated)
+    {
+        // iMMAPIAreaUpdated is modified in LCDUI and MMAPI threads.
+        // Lock must be released before GetDirectContentsRegion().
+        RCriticalSection& lock(iEnv.GetMMAPILock());
+        lock.Wait();
+        iMMAPIAreaUpdated = EFalse;
+        lock.Signal();
+
+        RRegion clearedRegion;
+        RRegion directContentRegion;
+        iDisplayable->GetDirectContentsRegion(directContentRegion);
+        clearedRegion.AddRect(TRect(iFrameBuffer->SizeInPixels()));
+        clearedRegion.SubRegion(directContentRegion);
+
+        iFrameContext->CancelClipping();
+        iFrameContext->SetClippingRegion(clearedRegion);
+        iFrameContext->SetBrushColor(KOpaqueBlackColor);
+        iFrameContext->SetDrawMode(CGraphicsContext::EDrawModeOR);
+        iFrameContext->Clear();
+        // Restore full clip area
+        iFrameContext->CancelClipping();
+        clearedRegion.Close();
+        directContentRegion.Close();
+    }
 }
 #endif // RD_JAVA_NGA_ENABLED        
 // End of File.

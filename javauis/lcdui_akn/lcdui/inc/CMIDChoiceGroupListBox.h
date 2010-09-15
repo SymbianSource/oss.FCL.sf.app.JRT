@@ -85,6 +85,8 @@ public:  // from CCoeControl
     void SetHighlight(TBool aVisible);
     TBool GetHighlight();
 
+    void UpdateColors();
+
 #endif // RD_JAVA_S60_RELEASE_9_2
 
 #ifdef RD_TACTILE_FEEDBACK

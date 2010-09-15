@@ -71,6 +71,10 @@ CMIDChoiceGroupModel::~CMIDChoiceGroupModel()
     // Delete icons
     delete iIconSelected;
     delete iIconNotSelected;
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    delete iIconSelectedHighlighted;
+    delete iIconNotSelectedHighlighted;
+#endif // RD_JAVA_S60_RELEASE_9_2
     delete iIconDummy;
 }
 
@@ -128,6 +132,8 @@ void CMIDChoiceGroupModel::ReConstructSelectionIconsL()
 
     TSize iconSize(layoutRect.Rect().Width(), layoutRect.Rect().Height());
 
+    // create icons for non-highlighted mode
+
     AknsUtils::CreateColorIconLC(skin, notSelectedSkinId, KAknsIIDQsnIconColors,
                                  EAknsCIQsnIconColorsCG14, bitmap, mask, avkonbmpFilename, notSelectedIconId,
                                  notSelectedMaskId, KRgbBlue, iconSize, EAspectRatioPreservedAndUnusedSpaceRemoved);
@@ -147,6 +153,29 @@ void CMIDChoiceGroupModel::ReConstructSelectionIconsL()
 
     delete iIconSelected;
     iIconSelected = iconSelected;
+
+    // create icons for highlighted mode
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    AknsUtils::CreateColorIconLC(skin, notSelectedSkinId, KAknsIIDQsnIconColors,
+                                 EAknsCIQsnIconColorsCG15, bitmap, mask, avkonbmpFilename, notSelectedIconId,
+                                 notSelectedMaskId, KRgbBlue, iconSize, EAspectRatioPreservedAndUnusedSpaceRemoved);
+
+    CGulIcon* iconNotSelectedHighlighted = CGulIcon::NewL(bitmap, mask);
+    CleanupStack::Pop(2); //bitmap, mask
+
+    delete iIconNotSelectedHighlighted;
+    iIconNotSelectedHighlighted = iconNotSelectedHighlighted;
+
+    AknsUtils::CreateColorIconLC(skin, selectedSkinId, KAknsIIDQsnIconColors,
+                                 EAknsCIQsnIconColorsCG15, bitmap, mask, avkonbmpFilename, selectedIconId,
+                                 selectedMaskId, KRgbBlue, iconSize, EAspectRatioPreservedAndUnusedSpaceRemoved);
+
+    CGulIcon* iconSelectedHighlighted = CGulIcon::NewL(bitmap, mask);
+    CleanupStack::Pop(2); //bitmap, mask
+
+    delete iIconSelectedHighlighted;
+    iIconSelectedHighlighted = iconSelectedHighlighted;
+#endif // RD_JAVA_S60_RELEASE_9_2
 }
 
 // Base class overrides
@@ -212,7 +241,14 @@ void CMIDChoiceGroupModel::AppendElementL(CMIDChoiceGroupElement* aElement)
     if (!iUpdating)
     {
         // Refresh icon array
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        if (iObserver)
+        {
+            UpdateIconArrayL(iObserver->IsControlOnFormHighlighted());
+        }
+#else
         UpdateIconArrayL();
+#endif // RD_JAVA_S60_RELEASE_9_2
 
         // Report event
         ReportEventL(MMIDChoiceGroupModelObserver::EElementAdded);
@@ -240,7 +276,14 @@ void CMIDChoiceGroupModel::InsertElementL(
         if (!iUpdating)
         {
             // Refresh icon array
+#ifdef RD_JAVA_S60_RELEASE_9_2
+            if (iObserver)
+            {
+                UpdateIconArrayL(iObserver->IsControlOnFormHighlighted());
+            }
+#else
             UpdateIconArrayL();
+#endif // RD_JAVA_S60_RELEASE_9_2
 
             // Report element addition
             ReportEventL(MMIDChoiceGroupModelObserver::EElementAdded);
@@ -292,7 +335,14 @@ void CMIDChoiceGroupModel::DeleteElementL(TInt aIndex)
         if (!iUpdating)
         {
             // Refresh icon array.
+#ifdef RD_JAVA_S60_RELEASE_9_2
+            if (iObserver)
+            {
+                UpdateIconArrayL(iObserver->IsControlOnFormHighlighted());
+            }
+#else
             UpdateIconArrayL();
+#endif // RD_JAVA_S60_RELEASE_9_2
 
             // Update the looks of the control
             ReportEventL(MMIDChoiceGroupModelObserver::EElementDeleted);
@@ -316,7 +366,14 @@ void CMIDChoiceGroupModel::DeleteAllL()
         if (!iUpdating)
         {
             // Recreate icon array
+#ifdef RD_JAVA_S60_RELEASE_9_2
+            if (iObserver)
+            {
+                UpdateIconArrayL(iObserver->IsControlOnFormHighlighted());
+            }
+#else
             UpdateIconArrayL();
+#endif // RD_JAVA_S60_RELEASE_9_2
 
             // Report event
             ReportEventL(MMIDChoiceGroupModelObserver::EElementDeleted);
@@ -351,7 +408,14 @@ void CMIDChoiceGroupModel::SetElementL(
         if (!iUpdating)
         {
             // Icon may have changed, recreate array.
+#ifdef RD_JAVA_S60_RELEASE_9_2
+            if (iObserver)
+            {
+                UpdateIconArrayL(iObserver->IsControlOnFormHighlighted());
+            }
+#else
             UpdateIconArrayL();
+#endif // RD_JAVA_S60_RELEASE_9_2
 
             // Report event
             ReportEventL(MMIDChoiceGroupModelObserver::EElementModified);
@@ -390,7 +454,15 @@ CArrayPtr<CGulIcon>* CMIDChoiceGroupModel::IconArray(TBool aReCreate)
     if (aReCreate)
     {
         // Recreate, trap & ignore leaves
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        if (iObserver)
+        {
+            TRAP_IGNORE(
+                UpdateIconArrayL(iObserver->IsControlOnFormHighlighted()));
+        }
+#else
         TRAP_IGNORE(UpdateIconArrayL());
+#endif // RD_JAVA_S60_RELEASE_9_2
     }
 
     return iIconArray;
@@ -455,10 +527,17 @@ void CMIDChoiceGroupModel::EndUpdate()
     iUpdating = EFalse;
 
     // Create array, refresh control
-    TRAPD(ignore, UpdateIconArrayL());
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    if (iObserver)
+    {
+        TRAP_IGNORE(UpdateIconArrayL(iObserver->IsControlOnFormHighlighted()));
+    }
+#else
+    TRAP_IGNORE(UpdateIconArrayL());
+#endif // RD_JAVA_S60_RELEASE_9_2
 
     // Report update end (observer should redraw)
-    TRAP(ignore, ReportEventL(MMIDChoiceGroupModelObserver::EUpdateEnded));
+    TRAP_IGNORE(ReportEventL(MMIDChoiceGroupModelObserver::EUpdateEnded));
 }
 
 
@@ -531,7 +610,11 @@ void CMIDChoiceGroupModel::ReportEventL(
 // NOTE that the indices in the array and the item strings should
 // be synchronised. The selection icon is always at index
 // 0 (selected) and 1 (not selected)
+#ifdef RD_JAVA_S60_RELEASE_9_2
+void CMIDChoiceGroupModel::UpdateIconArrayL(TBool aHighlighted)
+#else
 void CMIDChoiceGroupModel::UpdateIconArrayL()
+#endif // RD_JAVA_S60_RELEASE_9_2
 {
     ASSERT(iElements);
     ASSERT(iIconArray);
@@ -547,8 +630,21 @@ void CMIDChoiceGroupModel::UpdateIconArrayL()
     }
 
     // First add the selection icons
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    if (aHighlighted)
+    {
+        iIconArray->AppendL(iIconSelectedHighlighted);
+        iIconArray->AppendL(iIconNotSelectedHighlighted);
+    }
+    else
+    {
+        iIconArray->AppendL(iIconSelected);
+        iIconArray->AppendL(iIconNotSelected);
+    }
+#else
     iIconArray->AppendL(iIconSelected);
     iIconArray->AppendL(iIconNotSelected);
+#endif // RD_JAVA_S60_RELEASE_9_2
 
     // Then loop through the elements and add their icons
     for (TInt i = 0; i < nCount; i++)

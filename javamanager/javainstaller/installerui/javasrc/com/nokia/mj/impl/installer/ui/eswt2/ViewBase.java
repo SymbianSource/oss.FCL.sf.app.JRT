@@ -78,7 +78,7 @@ abstract public class ViewBase
     private int iColumns = 1;
     /** Default content size. */
     private Point iDefaultContentSize = null;
-    /** Certificate details view.  */
+    /** Certificate details view. */
     private CertificateDetailsView iCertificateDetailsView = null;
     /** Certificates for this application. */
     protected SigningCertificate[] iCertificates = null;
@@ -803,6 +803,7 @@ abstract public class ViewBase
         {
             public void run()
             {
+                iInstallerUi.setCertificateDetailsView(iCertificateDetailsView);
                 if (iCertificateDetailsView.confirm())
                 {
                     log("certificateDetailsView confirmed");
@@ -813,6 +814,7 @@ abstract public class ViewBase
                 }
                 iCertificateDetailsView.dispose();
                 iCertificateDetailsView = null;
+                iInstallerUi.setCertificateDetailsView(null);
                 setVisible(true);
             }
         }, "InstallerUiCertViewThread").start();

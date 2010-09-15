@@ -63,14 +63,14 @@ LIBS += -lAudioEqualizerEffect \
         -lAudioEqualizerUtility \
         -lCustomCommandUtility \
         -lDistanceAttenuationEffect \
-        -lDopplerBase \
+        -lDopplerbase \
         -lEnvironmentalReverbEffect \
         -lEnvironmentalReverbUtility \
         -lListenerDopplerEffect \
         -lListenerLocationEffect \
         -lListenerOrientationEffect \
         -lLocationBase \
-        -lMediaClientAudio \
+        -lmediaclientaudio \
         -lOrientationBase \
         -lRoomLevelEffect \
         -lSourceDopplerEffect \

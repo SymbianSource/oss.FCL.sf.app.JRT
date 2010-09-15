@@ -11,11 +11,12 @@
 @rem
 @rem Contributors:
 @rem
-@rem Description: 
+@rem Description:
 @rem
 rem Script for running JavaInstaller unit tests from S60 eshell
 rem Start SifServer before running any tests
 sifserver
+javainstaller uninstallall -silent -forceuninstall
 javainstaller test -mainclass=com.nokia.mj.impl.installer.downloader.NotificationPosterTest
 javainstaller test -mainclass=com.nokia.mj.impl.installer.downloader.DownloaderTest
 javainstaller test -mainclass=com.nokia.mj.impl.installer.storagehandler.OtaStatusHandlerTest

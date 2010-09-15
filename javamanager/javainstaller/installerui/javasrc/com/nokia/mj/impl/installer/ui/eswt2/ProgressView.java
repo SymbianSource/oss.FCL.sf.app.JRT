@@ -80,7 +80,7 @@ public class ProgressView extends ViewBase
         if (iInstallerUi != null && iInstallerUi.getInstallInfo() != null)
         {
             // Add header.
-            addHeader(aMsg, iInstallerUi.getInstallInfo(), null, false);
+            addHeader(aMsg, iInstallerUi.getInstallInfo(), null);
         }
         else
         {
@@ -174,10 +174,9 @@ public class ProgressView extends ViewBase
             public void run()
             {
                 // Set horizontalSpan to 2 for one button,
-                // and to 1 for one two buttons.
-                int horizontalSpan = 2;
+                // and to 1 for two buttons.
+                int horizontalSpan = 1;
                 GridData gridData = null;
-                /*
                 iHideCommand = new Button(getCommandComposite(), SWT.PUSH);
                 setCssId(iHideCommand, "softKeyButton");
                 gridData = new GridData(GridData.FILL_HORIZONTAL);
@@ -196,10 +195,10 @@ public class ProgressView extends ViewBase
                     }
                 });
                 addSoftKeyListenerFor(iHideCommand);
-                */
 
                 iCancelCommand = new Button(getCommandComposite(), SWT.PUSH);
-                setCssId(iCancelCommand, "softKeyButtonWide");
+                setCssId(iCancelCommand, "softKeyButton");
+                //setCssId(iCancelCommand, "softKeyButtonWide");
                 gridData = new GridData(GridData.FILL_HORIZONTAL);
                 gridData.horizontalSpan = horizontalSpan;
                 iCancelCommand.setLayoutData(gridData);

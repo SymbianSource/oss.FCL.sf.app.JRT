@@ -151,6 +151,16 @@ public:
      */
     virtual MMIDToLcduiObserver& ToLcduiObserver();
 
+    /**
+     * @see MMIDEnv#VideoOverlayEnabled()
+     */
+    virtual TBool VideoOverlayEnabled() const;
+    
+    /**
+     * @see MMIDEnv#GetMMAPILock()
+     */
+    RCriticalSection& GetMMAPILock();
+    
 #ifdef RD_JAVA_NGA_ENABLED
     /**
      * @see MMIDEnv#IsHardwareAccelerated()
@@ -275,6 +285,8 @@ private:
      */
     CMIDToLcduiObserver*        iToLcduiObserver;
 
+    TBool                       iVideoOverlayEnabled;
+    RCriticalSection            iMMAPILock;
 #ifdef RD_JAVA_NGA_ENABLED
     TInt                        iHardwareStatus;
     TBool                       iFullOrPartialFg;

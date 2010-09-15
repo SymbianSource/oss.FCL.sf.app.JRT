@@ -382,6 +382,7 @@ public class FontDialog extends Dialog
     public void setRGB(RGB rgb)
     {
         resRgb = rgb;
+        resRgbChanged = true;
     }
 
     /**

@@ -27,6 +27,7 @@ default
 #include "location/build/bld.inf"    
 #include "sensor/build/bld.inf"    
 #include "broadcast_stub/build/bld.inf"    
+#include "centralrepository/build/bld.inf"    
 #include "midppush/bld.inf"    
 #include "bluetooth/bld.inf"    
 #include "datagram/bld.inf"    

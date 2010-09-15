@@ -40,6 +40,10 @@ SOURCE  proxy.cpp
 START RESOURCE  ../data/2002875F.rss
 TARGET javaappschemeplugin.rsc
 END
+START RESOURCE  ../data/2002875F_iad.rss
+TARGET javaappschemeplugin.rsc
+TARGETPATH resource/java/iad
+END
 
 USERINCLUDE     ../inc
 

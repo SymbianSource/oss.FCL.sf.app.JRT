@@ -1,0 +1,9 @@
+EXPORTS
+	?jni_lookup@@YAP6AXXZPBD@Z @ 1 NONAME ; void (*)(void) jni_lookup(char const *)
+	?findDllMethod@@YAP6APAXXZPBD@Z @ 2 NONAME ; void * (*)(void) findDllMethod(char const *)
+	??_ERuntimeException@runtime@java@@UAE@I@Z @ 3 NONAME ; java::runtime::RuntimeException::~RuntimeException(unsigned int)
+	??_ELibraryLoaderException@util@java@@UAE@I@Z @ 4 NONAME ; java::util::LibraryLoaderException::~LibraryLoaderException(unsigned int)
+	?setTestHandler@CoreUiTestImpl@ui@java@@SAXPAVCoreUiTestHandler@23@@Z @ 5 NONAME ; void java::ui::CoreUiTestImpl::setTestHandler(class java::ui::CoreUiTestHandler *)
+	??0RuntimeException@runtime@java@@QAE@ABV012@@Z @ 6 NONAME ; java::runtime::RuntimeException::RuntimeException(class java::runtime::RuntimeException const &)
+	??0LibraryLoaderException@util@java@@QAE@ABV012@@Z @ 7 NONAME ; java::util::LibraryLoaderException::LibraryLoaderException(class java::util::LibraryLoaderException const &)
+

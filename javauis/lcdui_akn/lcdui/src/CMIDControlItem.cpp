@@ -261,10 +261,12 @@ void CMIDControlItem::SetLabelColor(CMIDItemLabel* aLabelControl)
 {
     TRgb color;
 
+    // Set color for label text according to item highlight
+    // (logical color constants are defined in lcdui.h)
     TInt labelColor = (iHighlighted
                        && Type() != MMIDComponent::ECustomItem
                        && Type() != MMIDComponent::EImageItem)
-                      ? EAknsCIQsnTextColorsCG8 : EAknsCIQsnTextColorsCG6;
+                      ? KHighlightedItemTextColor : KNonHighlightedItemTextColor;
 
     // Get color from skin
     if ((AknsUtils::GetCachedColor(AknsUtils::SkinInstance(), color,

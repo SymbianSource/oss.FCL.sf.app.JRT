@@ -19,7 +19,10 @@
 
 
 #include <../../../inc/project_defines.hrh>
+#include <data_caging_paths.hrh>
 #include <platform_paths.hrh>
+
+#include <../../../inc/java_stdcpp_support_for_dll.hrh>
 
 
 TARGET          recjar.dll
@@ -42,6 +45,10 @@ SOURCEPATH      ../src
 SOURCE          recjar.cpp
 START RESOURCE  ../data/102031FB.rss
 TARGET          recjar.rsc
+END
+START RESOURCE  ../data/102031FB_iad.rss
+TARGET          recjar.rsc
+TARGETPATH      resource/java/iad
 END
 
 

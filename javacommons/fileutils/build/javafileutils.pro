@@ -19,7 +19,7 @@ TEMPLATE=lib
 CONFIG += omj java staticdata stl
 CONFIG -= qt
 
-symbian : LIBS += -lefsrv -lPlatformEnv -lcaf
+symbian : LIBS += -lefsrv -lplatformenv -lcaf
 
 LIBS+= -ljavautils -ljavacomms
 

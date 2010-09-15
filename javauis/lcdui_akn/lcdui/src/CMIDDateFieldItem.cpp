@@ -964,15 +964,17 @@ void CMIDDateFieldItem::CursorUpdate()
 
 void CMIDDateFieldItem::UpdateTextColorsL()
 {
+    // Set color for content text according to item highlight
+    // (logical color constants are defined in lcdui.h)
     if (iHighlighted)
     {
         // Text colour from skin - highlighted
-        iEditor->SetSkinTextColorL(EAknsCIQsnTextColorsCG8);
+        iEditor->SetSkinTextColorL(KHighlightedItemTextColor);
     }
     else
     {
         // Text colour from skin - unfocused
-        iEditor->SetSkinTextColorL(EAknsCIQsnTextColorsCG6);
+        iEditor->SetSkinTextColorL(KNonHighlightedItemTextColor);
     }
 }
 

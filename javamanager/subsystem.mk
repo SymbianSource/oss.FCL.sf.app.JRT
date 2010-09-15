@@ -20,8 +20,7 @@ SUBSYSTEMS = \
 	javacaptain \
 	javainstaller \
 	javaregistry \
-	javabackup \
-	javasettings 
+	javabackup
 
 COMPONENTS = \
 	preinstaller/build \
@@ -53,6 +52,8 @@ endif
 ifdef RD_JAVA_APPLICATION_SETTINGS_QT
 COMPONENTS += javasettings_qt/build 
 SYMBIAN_ONLY += javasettings_qt/build 
+else
+SUBSYSTEMS += javasettings
 endif
 
 # Declare that release preparation removes subdirectories not in build, except

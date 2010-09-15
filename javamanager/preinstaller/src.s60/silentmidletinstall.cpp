@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -155,16 +155,17 @@ void CSilentMIDletInstall::Start()
     {
         iISRollbackNeeded = ETrue;
         // If JavaInstaller is running, then existence of the Java Installer
-        // integrity service directory is ok and rollback is not needed
+        // integrity service directory is ok and rollback is not needed.
         TFullName processName;
-        _LIT(KJavaInstallerProcess, "*Installer*");
+        _LIT(KJavaInstallerProcess, "Installer*");
         TFindProcess finder(KJavaInstallerProcess);
         err = finder.Next(processName);
         if (err == KErrNone)
         {
             iISRollbackNeeded = EFalse;
-            WLOG(EJavaPreinstaller,
-                 "Java Installer is running while checking need to rollback");
+            WLOG1(EJavaPreinstaller,
+                  "Java Installer is running while checking need to rollback (%S)",
+                  (wchar_t *)(processName.PtrZ()));
         }
     }
 

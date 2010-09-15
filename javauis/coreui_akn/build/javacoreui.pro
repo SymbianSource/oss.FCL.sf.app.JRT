@@ -18,7 +18,7 @@ TEMPLATE=lib
 TARGET=javacoreui
 CONFIG += omj staticdata java stl
 CONFIG -= qt
-LIBS += -laknicon \
+LIBS += -lAknIcon \
         -laknlayout2 \
         -laknskins \
         -laknskinsrv \

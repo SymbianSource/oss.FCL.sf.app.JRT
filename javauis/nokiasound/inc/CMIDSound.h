@@ -17,7 +17,6 @@
 
 
 //  INCLUDES
-#include <mevents.h>
 #include <e32base.h>
 #include <cenrepnotifyhandler.h>
 #include "MMIDEventSender.h"

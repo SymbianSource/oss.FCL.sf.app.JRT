@@ -45,9 +45,13 @@ USERINCLUDE     ../../../inc
 SOURCEPATH    ../src
 SOURCE        javasidchecker.cpp
 
-start RESOURCE ../data/10281FBE.rss
-target javasidchecker.rsc
-end
+START RESOURCE ../data/10281FBE.rss
+target         javasidchecker.rsc
+END
+START RESOURCE ../data/10281FBE_iad.rss
+TARGET         javasidchecker.rsc
+TARGETPATH     resource/java/iad
+END
 
 #ifdef RD_JAVA_OLD_SIDCHECKER_LIBRARY
 LIBRARY apfile.lib

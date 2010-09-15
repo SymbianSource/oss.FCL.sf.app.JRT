@@ -75,16 +75,16 @@ TBool CPIMCMAdapterAccess::OpenContactListL(const TDesC* aListName,
     return ETrue;
 }
 
-TBool CPIMCMAdapterAccess::OpenEventListL(const TDesC* /*aListName*/,
+TBool CPIMCMAdapterAccess::OpenEventListL(CCalSession* /*aCalSession*/, const TDesC* /*aListName*/,
         MPIMEventAdapterManager** /*aRetAdapterManager*/,
-        MPIMEventListAdapter** /*aRetListAdapter*/, MPIMLocalizationData** /*aRetLocalizationData */)
+        MPIMEventListAdapter** /*aRetListAdapter*/, MPIMLocalizationData** /*aRetLocalizationData*/)
 {
     JELOG2(EPim);
     // no Event lists
     return EFalse;
 }
 
-TBool CPIMCMAdapterAccess::OpenToDoListL(const TDesC* /*aListName*/,
+TBool CPIMCMAdapterAccess::OpenToDoListL(CCalSession* /*aCalSession*/, const TDesC* /*aListName*/,
         MPIMToDoAdapterManager** /*aRetAdapterManager*/,
         MPIMToDoListAdapter** /*aRetListAdapter*/, MPIMLocalizationData** /*aRetLocalizationData */)
 {

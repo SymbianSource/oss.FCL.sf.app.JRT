@@ -53,6 +53,9 @@ public:
     virtual void HandleChoiceGroupModelEventL(
         CMIDChoiceGroupModel* aModel,
         TChoiceGroupModelEvent aEvent) = 0;
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    virtual TBool IsControlOnFormHighlighted() = 0;
+#endif // RD_JAVA_S60_RELEASE_9_2
 };
 
 
@@ -159,7 +162,11 @@ public:  // New functions
     // NOTE that the indices in the array and the item strings should
     // be synchronised. The selection icon is always at index
     // 0 (selected) and 1 (not selected)
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    void UpdateIconArrayL(TBool aHighlighted);
+#else
     void UpdateIconArrayL();
+#endif // RD_JAVA_S60_RELEASE_9_2
 
     // Returns true if there is at least one item that has icon
     TBool HasIcons() const;
@@ -182,6 +189,13 @@ private:
     // choice type this is either a radiobutton or a checkbox
     CGulIcon* iIconSelected;
     CGulIcon* iIconNotSelected;
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    // The same icons as above, but used when whole ChoiceGroup
+    // gets highlighted on Form
+    CGulIcon* iIconSelectedHighlighted;
+    CGulIcon* iIconNotSelectedHighlighted;
+#endif // RD_JAVA_S60_RELEASE_9_2
 
     // Dummy icon for elements that have no icon
     CGulIcon* iIconDummy;

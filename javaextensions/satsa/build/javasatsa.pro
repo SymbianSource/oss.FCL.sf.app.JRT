@@ -64,7 +64,6 @@ symbian {
 								 -lcms \
 								 -leiksrv \
 								 -lctframework \
-								 -lctsecdlgs \
 								 -lcustomapi \
 								 -lefsrv \
 								 -letel \
@@ -79,9 +78,11 @@ symbian {
 
 contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_5_0) {
         LIBS +=    -laknnotify \
+        					 -lctsecdlgs \
     }
 contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_9_2) {
         LIBS +=    -laknnotify \
+        					 -lctsecdlgs \
     }
 		
  }

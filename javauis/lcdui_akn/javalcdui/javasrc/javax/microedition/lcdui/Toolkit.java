@@ -151,6 +151,10 @@ final class Toolkit
     // Op code indicating M3G content start
     private static final int M3G_CONTENT_START = 2;
 
+    // Used for notifying native canvas about start of paint method,
+    // needed by video overlay implementation
+    private static final int PAINT_START = 3;
+
     Toolkit(ToolkitInvoker aInvoker)
     {
         iInvoker     = aInvoker;
@@ -686,6 +690,17 @@ final class Toolkit
             final int y2=aY+aH;
             iBuffer.write(aDrawable, SYNC_RECT, aX, aY, x2, y2);
             iBuffer.sync();
+        }
+    }
+
+    void canvasPaintStarted(int aDrawable)
+    {
+        if (checkFlags(FLAG_NGA))
+        {
+            synchronized (iBuffer)
+            {
+                iBuffer.write(aDrawable, PAINT_START);
+            }
         }
     }
 

@@ -178,22 +178,22 @@ public class PermissionMappingTable
                 "com.nokia.mj.impl.properties.mobinfo.MobileInfoPermission", "*", "read"));
         PERMISSION_MAPPING_TABLE.put(
             "javax.microedition.contactless.ndef.NDEFTagConnection.write", new MIDPPermission(
-                "com.nokia.mj.impl.ccapi.utils.ContactlessCommunicationPermission", "ndef://*", "write"));
+                "com.nokia.mj.impl.nfc.utils.ContactlessCommunicationPermission", "ndef://*", "write"));
         PERMISSION_MAPPING_TABLE.put(
             "javax.microedition.contactless.DiscoveryManager", new MIDPPermission(
-                "com.nokia.mj.impl.ccapi.utils.ContactlessCommunicationPermission", "discoveryManager", "get_instance"));
+                "com.nokia.mj.impl.nfc.utils.ContactlessCommunicationPermission", "DiscoveryManager", "get_instance"));
         PERMISSION_MAPPING_TABLE.put(
             "javax.microedition.io.Connector.ndef", new MIDPPermission(
-                "com.nokia.mj.impl.ccapi.utils.ContactlessCommunicationPermission", "ndef://*", "open"));
+                "com.nokia.mj.impl.nfc.utils.ContactlessCommunicationPermission", "ndef://*", "open"));
         PERMISSION_MAPPING_TABLE.put(
             "javax.microedition.io.Connector.rf", new MIDPPermission(
-                "com.nokia.mj.impl.ccapi.utils.ContactlessCommunicationPermission", "rf://*", "open"));
+                "com.nokia.mj.impl.nfc.utils.ContactlessCommunicationPermission", "rf://*", "open"));
         PERMISSION_MAPPING_TABLE.put(
             "javax.microedition.io.Connector.sc", new MIDPPermission(
-                "com.nokia.mj.impl.ccapi.utils.ContactlessCommunicationPermission", "sc://*", "open"));
+                "com.nokia.mj.impl.nfc.utils.ContactlessCommunicationPermission", "sc://*", "open"));
         PERMISSION_MAPPING_TABLE.put(
             "javax.microedition.io.Connector.vtag", new MIDPPermission(
-                "com.nokia.mj.impl.ccapi.utils.ContactlessCommunicationPermission", "vtag://*", "open"));
+                "com.nokia.mj.impl.nfc.utils.ContactlessCommunicationPermission", "vtag://*", "open"));
         PERMISSION_MAPPING_TABLE.put(
             "javax.microedition.io.SocketProtocolPermission", new MIDPPermission(
                 "com.nokia.mj.impl.gcf.protocol.socket.SocketPermissionImpl", "socket://*"));

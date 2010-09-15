@@ -66,4 +66,29 @@ int ApnSettings::setDefaultApn(int aType, int aApn)
     return def;
 }
 
-
+void ApnSettings::removeDefaultApn()
+{ 
+    #ifdef RD_JAVA_OPENC_BETA_PATCH
+        setdefaultif(0);
+        ILOG(ESOCKET, "sedefaultif called");
+        ILOG1(ESOCKET, "remove default apn returned %d",setdefaultif(NULL));
+    #endif  
+}
+int ApnSettings::retryConnection(int aErrCode, int aType, int aApn)
+{
+    if ( aErrCode > __EMAXERRNO )
+    {
+        // errno out of range, check for KErrNotReady
+        int errCode = -(aErrCode - __EMAXERRNO);
+        ELOG1(ESOCKET,"ApnSettings:: retryConnection symbian error : %d" , errCode);
+        if( (errCode == KErrNotReady) && (aType == 2) )
+        {
+            // call reset and setDefaultif() again to make a new conn and use  
+            ApnSettings::removeDefaultApn();
+            int ret = ApnSettings::setDefaultApn(aType,aApn);
+            return ret;
+        }
+     }     
+     return -(aErrCode);
+     
+}

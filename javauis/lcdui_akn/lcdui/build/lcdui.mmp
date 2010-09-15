@@ -160,7 +160,7 @@ LIBRARY  AknLayout2Scalable.lib
 
 LIBRARY  ConnMon.lib  // for network indicator on the fullcanvas
 LIBRARY  etel3rdparty.lib // for call indicator on the fullcanvas
-LIBRARY  CentralRepository.lib
+LIBRARY  centralrepository.lib
 
 LIBRARY  CommonEngine.lib // shared data stuff for form
 LIBRARY  javalegacyutils.lib

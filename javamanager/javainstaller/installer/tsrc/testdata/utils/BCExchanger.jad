@@ -5,6 +5,7 @@ MIDlet-Description: Demonstrates the usage of the JSR-82 Bluetooth OBEX API by e
 MIDlet-Jar-Size: 29967
 MIDlet-Name: BCExchanger
 MIDlet-Vendor: Forum Nokia
-MIDlet-Version: 1.0.0
+
+MIDlet-Version: 1.0 rev.2
 MicroEdition-Configuration: CLDC-1.1
 MicroEdition-Profile: MIDP-2.0

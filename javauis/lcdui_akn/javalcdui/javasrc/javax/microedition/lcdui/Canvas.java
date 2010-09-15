@@ -61,7 +61,8 @@ public abstract class Canvas extends Displayable
     private static final int ATTRIB_HEIGHT_INDEX              = 2;
     private static final int ATTRIB_NATIVE_FRAME_BUFFER_INDEX = 3;
     private static final int ATTRIB_BACKGROUND_INDEX          = 4;
-    private static final int ATTRIB_COUNT                     = 5;
+    private static final int ATTRIB_VIDEO_OVERLAY_INDEX       = 5;
+    private static final int ATTRIB_COUNT                     = 6;
 
     /**
     * Static constants for media key keycodes
@@ -94,6 +95,7 @@ public abstract class Canvas extends Displayable
      * attribute is "CanvasHasBackground". The attribute may be placed in the JAD or the manifest.
      */
     private boolean iHasBackgroundImage;
+    private boolean iVideoOverlayEnabled;
     private boolean iIsGameCanvas;
     private Object iPaintLock;
 
@@ -132,6 +134,9 @@ public abstract class Canvas extends Displayable
             // Save the info about background.
             iHasBackgroundImage =
                 (canvasAttribs[ATTRIB_BACKGROUND_INDEX] != 0);
+
+            iVideoOverlayEnabled = 
+                (canvasAttribs[ATTRIB_VIDEO_OVERLAY_INDEX] != 0);
 
             // If is Toolkit activated, we can add Displayable to Vector
             // Displayables are removed from Vector when SizeChangedEvent arrives see Displayable.sizeChangedEvent()
@@ -446,6 +451,16 @@ public abstract class Canvas extends Displayable
                 {
                     drawBackground(true);
                 }
+
+                if (iVideoOverlayEnabled)
+                {
+                    // Send op code to native canvas about the start of paint,
+                    // to enable overlays. This is done after 
+                    // drawBackground() so that framebuffer can be cleared
+                    // correctly on native side.
+                    iToolkit.canvasPaintStarted(getContentHandle());
+                }
+
                 paint(graphics);
             }
 

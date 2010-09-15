@@ -358,7 +358,7 @@ std::wstring *S60BluetoothPlatformControl::getBluetoothAddress()
  */
 std::wstring *S60BluetoothPlatformControl::getBluetoothName()
 {
-    TBuf16<KHCILocalDeviceNameMaxLength> bluetoothName;
+    TBuf16<KMaxBluetoothNameLen> bluetoothName;
 
     JELOG2(EJavaBluetooth);
     TInt error = RProperty::Get(KPropertyUidBluetoothCategory,

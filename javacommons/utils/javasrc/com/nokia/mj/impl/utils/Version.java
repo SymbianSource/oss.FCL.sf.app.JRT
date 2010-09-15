@@ -58,7 +58,12 @@ public class Version
         {
             return null;
         }
-        String str = aStr.trim();
+        // Remove all invalid characters from string
+        String str = normalizeVersion(aStr);
+        if (str.length() == 0)
+        {
+            return null;
+        }
 
         int major = 0;
         int minor = 0;
@@ -229,6 +234,25 @@ public class Version
         if (iMicro != 0)
         {
             buf.append(".").append(getMicro());
+        }
+        return buf.toString();
+    }
+
+    /**
+     * Remove the illegal characters from version string,
+     * for example "1.1 rev.2" becomes "1.1.2"
+     */
+    private static String normalizeVersion(String aString)
+    {
+        StringBuffer buf = new StringBuffer();
+        int len = aString.length();
+        for (int ind = 0; ind < len; ind++)
+        {
+            char ch = aString.charAt(ind);
+            if ((ch == '.') || Character.isDigit(ch))
+            {
+                buf.append(ch);
+            }
         }
         return buf.toString();
     }

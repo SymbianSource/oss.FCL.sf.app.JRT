@@ -233,6 +233,31 @@ public final class InstallBall extends ExeBall
     }
 
     /**
+     * Called when InstallerUi is hidden or unhidden.
+     *
+     * @param aHidden true if UI was hidden, false if UI was unhidden.
+     */
+    public void uiIsHidden(boolean aHidden)
+    {
+        log("InstallBall.uiIsHidden " + aHidden);
+        if (iSifNotifier == null)
+        {
+            Log.logWarning("InstallBall.uiIsHidden(" + aHidden +
+                           ") called when SifNotifier does not exist");
+            return;
+        }
+        iSifNotifier.setInstallerUi(getInstallerUi());
+        if (aHidden)
+        {
+            iSifNotifier.activateIndicator();
+        }
+        else
+        {
+            iSifNotifier.deactivateIndicator();
+        }
+    }
+
+    /**
      * Called when user cancels the execution from the InstallerUi.
      * This method must return quickly.
      */

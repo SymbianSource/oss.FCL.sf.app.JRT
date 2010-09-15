@@ -39,6 +39,10 @@ PAGED
 START RESOURCE  ../data/2002BC6F.rss
 TARGET          javasifplugin.rsc
 END
+START RESOURCE  ../data/2002BC6F_iad.rss
+TARGET          javasifplugin.rsc
+TARGETPATH      resource/java/iad
+END
 
 // Sources
 SOURCEPATH      ../src

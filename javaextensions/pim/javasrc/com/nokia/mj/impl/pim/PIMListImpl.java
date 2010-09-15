@@ -111,12 +111,14 @@ public abstract class PIMListImpl implements PIMList
     PIMListImpl(int aListHandle, int aMode)
     {
         iListHandle = aListHandle;
+        iMode = aMode;
         Logger.LOG(Logger.EPim,Logger.EInfo,"+PIMListImpl() = iListHandle = "+iListHandle);
+        if (iListHandle != 0)
+        {
+            iItems = new ItemTable();
+        }
         setShutdownListener();
         iFinalizer = registerForFinalization();
-        iMode = aMode;
-
-        iItems = new ItemTable();
     }
 
     public Finalizer registerForFinalization()
@@ -359,8 +361,11 @@ public abstract class PIMListImpl implements PIMList
         if (iIsOpen == true)
         {
             iIsOpen = false;
-            int err = _close(iListHandle);
-            NativeError.handlePIMListCloseError(err);
+            if (iListHandle != 0)
+            {
+                int err = _close(iListHandle);
+                NativeError.handlePIMListCloseError(err);
+            }
             iItems = null;
         }
         else

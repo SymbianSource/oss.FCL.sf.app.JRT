@@ -823,4 +823,22 @@ TRect CMIDChoiceGroupItem::FormRect()
     }
 }
 
+#ifdef RD_JAVA_S60_RELEASE_9_2
+void CMIDChoiceGroupItem::SetHighlight(const TBool aHighlight)
+{
+    CMIDControlItem::SetHighlight(aHighlight);
+    if (iChoiceGroupControl
+            && iChoiceGroupControl->ChoiceType() != MMIDChoiceGroup::EPopup
+            && iChoiceGroupControl->InnerListBoxControl()
+            && iChoiceGroupControl->InnerListBoxModel())
+    {
+        // Try to update icons (due to color change), if it leaves
+        // do nothing
+        TRAP_IGNORE(iChoiceGroupControl->InnerListBoxModel()->UpdateIconArrayL(aHighlight));
+        iChoiceGroupControl->InnerListBoxControl()->UpdateColors();
+    }
+}
+#endif // RD_JAVA_S60_RELEASE_9_2  
+
+
 // End of File

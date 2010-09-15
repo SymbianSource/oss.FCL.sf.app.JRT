@@ -39,6 +39,9 @@ using namespace std;
 using namespace java::storage;
 using namespace java::backup;
 
+const wchar_t * const JBNULLSTRING = L"ABBAABBA_NULL";
+const int JBNULLSTRINGLENGTH = -1;
+
 // ======== MEMBER FUNCTIONS ========
 
 CStorageBackupUtil::CStorageBackupUtil()
@@ -82,60 +85,134 @@ CStorageBackupUtil::~CStorageBackupUtil()
 
     // clear the vectors to free all the heap data.
     iStringVector.clear();
+    if (iBufForJavaStorageItemsPtr)
+    {
+        delete iBufForJavaStorageItemsPtr;
+        iBufForJavaStorageItemsPtr = 0;
+    }
+
 }
 
 
 void CStorageBackupUtil::BackupStorageDataL(RDesWriteStream& aStream, TBool& aBackupNotFinished, TInt& aBufferSpaceLeft)
 {
-    LOG(EBackup, EInfo, "CStorageBackupUtil::BackupStorageDataL");
+    ILOG(EBackup, "CStorageBackupUtil::BackupStorageDataL()");
 
     iBufferSpaceLeft = aBufferSpaceLeft;
 
     if (iFirstCalltoBackupStorageData)
     {
+        ILOG(EBackup, "First call to BackupStorageData()");
         int err = FillVectorWithStorageData();
 
         if (err != KErrNone)
         {
+            ELOG1(EBackup, "Error (%d) in filling wstring vector", err);
             User::Leave(err);
         }
-        LOG1(EBackup, EInfo, "Total no of rows in vector: %d", iStringVector.size());
+        ILOG1(EBackup, "Total no of rows in vector: %d", iStringVector.size());
 
-        // First write the total no of rows in the vector to the stream
-
-        aStream.WriteInt32L(iStringVector.size());
-        iBufferSpaceLeft -= sizeof(TInt32);
-
-        /* Then write the number of rows in each table to the stream.
-           This will be used while writing the data to storage. */
-
-        for (int tableNumber = 0; tableNumber < NUMBER_OF_TABLES; tableNumber++)
+        // 1. Find out the size of the buffer needed for containing JavaStorage
+        //    data in "streamed" format.
+        TUint totalStringLengthInBytes = 0;
+        for (int i = 0; i < iStringVector.size(); ++i)
         {
-            aStream.WriteInt16L(iTableSize[tableNumber]);
-            iBufferSpaceLeft -= sizeof(TInt16);
+            if (iStringVector[i] == JBNULLSTRING ){
+                continue;
+            }
+            totalStringLengthInBytes += iStringVector[i].length()*sizeof(wchar_t);
         }
+        ILOG1(EBackup, "Total string length calculated: %d", totalStringLengthInBytes);
 
+        // Calculate the total length of the buffer.
+        // The content of the buffer will be as follows:
+
+        TUint totalBuffSize = sizeof(TInt32) + NUMBER_OF_TABLES*sizeof(TInt16)
+            + iStringVector.size()*sizeof(TInt16) + totalStringLengthInBytes;
+
+        // 2. Reserve the buffer with adequate space
+        iBufForJavaStorageItemsPtr = HBufC8::NewL(totalBuffSize);
+        ILOG1(EBackup, "javaStorage Buffer(size %d) allocated SUCCESSFULLY", totalBuffSize);
+
+        // 3. Create temporary stream operator and with it write stuff to buffer
+        TPtr8 buffPtr(iBufForJavaStorageItemsPtr->Des());
+        RDesWriteStream buffStream(buffPtr);
+        CleanupClosePushL(buffStream);
+        buffStream.WriteInt32L(iStringVector.size());
+        for (int tableNumber = 0; tableNumber < NUMBER_OF_TABLES; ++tableNumber)
+        {
+            buffStream.WriteInt16L(iTableSize[tableNumber]);
+        }
+        ILOG(EBackup, "JavaStorage table sizes writen to buffer");
+        TUint writenStringLength = 0;
+        for (int i = 0; i < iStringVector.size(); ++i)
+        {
+            TInt16 lenOf8byteString = JBNULLSTRINGLENGTH;
+            if ( iStringVector[i] == JBNULLSTRING )
+            {
+                buffStream.WriteInt16L(lenOf8byteString);
+                continue;
+            }
+            lenOf8byteString = iStringVector[i].length()*sizeof(wchar_t);
+            buffStream.WriteInt16L(lenOf8byteString);
+            if (lenOf8byteString > 0 )
+            {
+                HBufC* tempstring = java::util::S60CommonUtils::wstringToDes(
+                    iStringVector[i].c_str());
+                if (!tempstring)
+                {
+                    ELOG(EBackup, "Out of memory in JavaStorage backup(in wstring -> des conv)!");
+                    User::Leave(KErrNoMemory);
+                }
+                CleanupStack::PushL(tempstring);
+                TPtrC tempStr = tempstring->Des();
+                writenStringLength += tempStr.Size();
+                buffStream.WriteL(tempStr); //length of the string will not be written
+                CleanupStack::PopAndDestroy(tempstring);
+            }
+        }
+        ILOG1(EBackup, "Total string length writen: %d", writenStringLength);
+        ILOG(EBackup, "Whole Java Storage String vector writen to streambuffer");
+
+        // 4. Clear not needed resources
+        iStringVector.clear();
+        CleanupStack::PopAndDestroy(&buffStream);
+        ILOG(EBackup, "Not needed resources cleared");
+
+        // 5. Set the read pointer to the beginning of the buffer data
+        //    Note that the length of the HBufC8 buffer is exact.
+        iBuffReadPointer.Set(iBufForJavaStorageItemsPtr->Des());
         iFirstCalltoBackupStorageData = EFalse;
     }
 
-    // Now write the actual string data into the stream.
-
-    while (iBufferSpaceLeft > 0 && iStrCount < iStringVector.size())
+    // 6. Start to provide data to SBE from the buffer.
+    ILOG(EBackup, "Extracting data from buffer to SBE");
+    ILOG1(EBackup, "Length of the data in stream buffer: %d", iBuffReadPointer.Length());
+    ILOG1(EBackup, "Space available in SBE buffer: %d", aBufferSpaceLeft);
+    if (iBuffReadPointer.Length() <= aBufferSpaceLeft )
     {
-        WriteStringtoStreamL(aStream, iStringVector[iStrCount]);
-        LOG1(EBackup, EInfo, "StrCount = %d", iStrCount);
+        aStream.WriteL(iBuffReadPointer);
+        aBufferSpaceLeft -= iBuffReadPointer.Length();
+        iBuffReadPointer.Set(NULL,0);
+        delete iBufForJavaStorageItemsPtr;
+        iBufForJavaStorageItemsPtr = 0;
+        ILOG(EBackup, "BACKUP OF STORAGE DATA FINISHED");
+        aBackupNotFinished = EFalse; // Indicate to caller that we are ready
     }
-
-    if (iStrCount >= iStringVector.size())
+    else // All data from internal buffer does not fit at once to buffer received from SBE
     {
-        LOG(EBackup, EInfo, "Backup of storage data finished");
-        aBackupNotFinished = EFalse;
+        aStream.WriteL(iBuffReadPointer, aBufferSpaceLeft);
+        TInt lengthOfWritenData = aBufferSpaceLeft;
+        iBuffReadPointer.Set(iBuffReadPointer.Ptr() + lengthOfWritenData,
+                                       iBuffReadPointer.Length() - lengthOfWritenData);
+        aBufferSpaceLeft = 0;
+        ILOG(EBackup, "Not all of the storage data fit into SBE buffer, new buffer from SBE needed.");
     }
 }
 
 void CStorageBackupUtil::RestoreStorageDataL(RDesReadStream& aStream, TInt& aRestoreState, TInt& aBufferSpaceLeft)
 {
-    LOG(EBackup, EInfo, "CStorageBackupUtil::RestoreStorageDataL()");
+    ILOG(EBackup, "+CStorageBackupUtil::RestoreStorageDataL()");
 
     iBufferSpaceLeft = aBufferSpaceLeft;
 
@@ -177,49 +254,11 @@ void CStorageBackupUtil::RestoreStorageDataL(RDesReadStream& aStream, TInt& aRes
         updater.update();
 
         // Storage restore is over; Set state to EAppArc
+        ILOG(EBackup, "JAVASTORAGE RESTORED SUCCESSFULLY");
         aRestoreState = EAppArc;
         aBufferSpaceLeft = iBufferSpaceLeft;
     }
-}
-
-
-void CStorageBackupUtil::WriteStringtoStreamL(RDesWriteStream& aStream, wstring aStr)
-{
-    iLenOfString = aStr.length();
-
-    // if length of string is 0, do not write any string to the stream.
-    if (iLenOfString == 0)
-    {
-        aStream.WriteInt16L(iLenOfString*2);
-        iBufferSpaceLeft -= sizeof(TInt16);
-        iStrCount++;
-    }
-
-    else
-    {
-        /* if space is not enough for writing the complete string,
-           do not write it. Could be written next time.  */
-        if (((iLenOfString*2) + sizeof(TInt16)) > iBufferSpaceLeft)
-        {
-            LOG(EBackup, EInfo, "Stream size is not enough to hold the string");
-            // set the bufferspaceleft to zero
-            iBufferSpaceLeft = 0;
-        }
-        // stream has enough space for the length and the string data.
-        else
-        {
-            aStream.WriteInt16L(iLenOfString*2);
-            iBufferSpaceLeft -= sizeof(TInt16);
-
-            HBufC* tempstr = java::util::S60CommonUtils::wstringToDes(aStr.c_str());
-            TPtrC tempStr = tempstr->Des();
-            aStream.WriteL(tempStr);
-            iBufferSpaceLeft -= (iLenOfString*2);
-            delete tempstr;
-
-            iStrCount++;
-        }
-    }
+    ILOG(EBackup, "-CStorageBackupUtil::RestoreStorageDataL()");
 }
 
 void CStorageBackupUtil::ReadStringfromStreamL(RDesReadStream& aStream)
@@ -271,7 +310,7 @@ void CStorageBackupUtil::ReadStringfromStreamL(RDesReadStream& aStream)
         }
     }
 
-    else
+    else /* handling new string */
     {
         iLenOfString = aStream.ReadInt16L();
         iBufferSpaceLeft -= sizeof(TInt16);
@@ -325,6 +364,12 @@ void CStorageBackupUtil::ReadStringfromStreamL(RDesReadStream& aStream)
                 iStrCount--;
                 delete data;
             }
+        }
+        /* */
+        else if (iLenOfString == JBNULLSTRINGLENGTH )
+        {
+            iStringVector.push_back(JBNULLSTRING);
+            iStrCount--;
         }
         /* if length of string is 0, do not read anything from the stream;
            just push an empty string into the vector */
@@ -657,6 +702,20 @@ int CStorageBackupUtil::FillVectorWithStorageData()
 }
 
 
+void CStorageBackupUtil::WriteItemToStorageEntry(
+    const std::wstring& aEntryName,
+    const std::wstring& aEntryValue,
+    JavaStorageApplicationEntry_t& aInsertEntry
+    )
+{
+    JavaStorageEntry attribute;
+    if (aEntryValue != JBNULLSTRING )
+    {
+        attribute.setEntry(aEntryName, aEntryValue);
+        aInsertEntry.insert(attribute);
+    }
+}
+
 int CStorageBackupUtil::WriteDataToStorage()
 {
     JELOG2(EBackup);
@@ -706,7 +765,7 @@ int CStorageBackupUtil::WriteDataToStorage()
             js->remove(RUNTIME_SETTINGS_TABLE, emptyEntry);
             js->remove(PREINSTALL_TABLE, emptyEntry);
 
-            ILOG(EBackup, "Data removed successfully from table");
+            ELOG(EBackup, "Data removed successfully from table");
         }
         catch (JavaStorageException jse)
         {
@@ -716,7 +775,6 @@ int CStorageBackupUtil::WriteDataToStorage()
         }
     }
 
-    JavaStorageEntry attribute;
     JavaStorageApplicationEntry_t insertEntry;
 
     ILOG(EBackup, "Start transaction for writing into the database");
@@ -728,47 +786,20 @@ int CStorageBackupUtil::WriteDataToStorage()
 
         for (int rowNumber = 0; rowNumber < iTableSize[0]; rowNumber++)
         {
-            attribute.setEntry(ID, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(PACKAGE_NAME, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(VENDOR, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(VERSION, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(ROOT_PATH, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(MEDIA_ID, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(INITIAL_SIZE, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(JAD_PATH, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(JAR_PATH, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(JAD_URL, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(JAR_URL, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(ACCESS_POINT, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(CONTENT_INFO, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(CONTENT_ID, iStringVector[count++]);
-            insertEntry.insert(attribute);
+            WriteItemToStorageEntry(ID, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(PACKAGE_NAME, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(VENDOR, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(VERSION, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(ROOT_PATH, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(MEDIA_ID, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(INITIAL_SIZE, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(JAD_PATH, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(JAR_PATH, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(JAD_URL, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(JAR_URL, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(ACCESS_POINT, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(CONTENT_INFO, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(CONTENT_ID, iStringVector[count++], insertEntry);
 
             try
             {
@@ -791,20 +822,11 @@ int CStorageBackupUtil::WriteDataToStorage()
 
         for (int rowNumber = 0; rowNumber < iTableSize[1]; rowNumber++)
         {
-            attribute.setEntry(ID, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(PACKAGE_ID, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(NAME, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(MAIN_CLASS, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(AUTORUN, iStringVector[count++]);
-            insertEntry.insert(attribute);
+            WriteItemToStorageEntry(ID, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(PACKAGE_ID, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(NAME, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(MAIN_CLASS, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(AUTORUN, iStringVector[count++], insertEntry);
 
             try
             {
@@ -827,17 +849,10 @@ int CStorageBackupUtil::WriteDataToStorage()
 
         for (int rowNumber = 0; rowNumber < iTableSize[2]; rowNumber++)
         {
-            attribute.setEntry(ID, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(NAME, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(VALUE, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(TRUSTED, iStringVector[count++]);
-            insertEntry.insert(attribute);
+            WriteItemToStorageEntry(ID, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(NAME, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(VALUE, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(TRUSTED, iStringVector[count++], insertEntry);
 
             try
             {
@@ -860,35 +875,16 @@ int CStorageBackupUtil::WriteDataToStorage()
 
         for (int rowNumber = 0; rowNumber < iTableSize[3]; rowNumber++)
         {
-            attribute.setEntry(ID, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(TYPE, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(SECURITY_DOMAIN, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(SECURITY_DOMAIN_CATEGORY, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(HASH, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(CERT_HASH, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(RMS, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(VALID_CERTS, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(ON_SCREEN_KEYPAD, iStringVector[count++]);
-            insertEntry.insert(attribute);
-            
-            attribute.setEntry(SECURITY_WARNINGS, iStringVector[count++]);
-            insertEntry.insert(attribute);
+            WriteItemToStorageEntry(ID, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(TYPE, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(SECURITY_DOMAIN, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(SECURITY_DOMAIN_CATEGORY, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(HASH, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(CERT_HASH, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(RMS, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(VALID_CERTS, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(ON_SCREEN_KEYPAD, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(SECURITY_WARNINGS, iStringVector[count++], insertEntry);
 
             try
             {
@@ -911,20 +907,11 @@ int CStorageBackupUtil::WriteDataToStorage()
 
         for (int rowNumber = 0; rowNumber < iTableSize[4]; rowNumber++)
         {
-            attribute.setEntry(ID, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(CLASS, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(NAME, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(ACTION, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(FUNCTION_GROUP, iStringVector[count++]);
-            insertEntry.insert(attribute);
+            WriteItemToStorageEntry(ID, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(CLASS, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(NAME, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(ACTION, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(FUNCTION_GROUP, iStringVector[count++], insertEntry);
 
             try
             {
@@ -947,20 +934,11 @@ int CStorageBackupUtil::WriteDataToStorage()
 
         for (int rowNumber = 0; rowNumber < iTableSize[5]; rowNumber++)
         {
-            attribute.setEntry(ID, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(FUNCTION_GROUP, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(ALLOWED_SETTINGS, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(CURRENT_SETTING, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(BLANKET_PROMPT, iStringVector[count++]);
-            insertEntry.insert(attribute);
+            WriteItemToStorageEntry(ID, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(FUNCTION_GROUP, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(ALLOWED_SETTINGS, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(CURRENT_SETTING, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(BLANKET_PROMPT, iStringVector[count++], insertEntry);
 
             try
             {
@@ -983,20 +961,11 @@ int CStorageBackupUtil::WriteDataToStorage()
 
         for (int rowNumber = 0; rowNumber < iTableSize[6]; rowNumber++)
         {
-            attribute.setEntry(ID, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(URL, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(NAME, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(FILTER, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(REGISTRATION_TYPE, iStringVector[count++]);
-            insertEntry.insert(attribute);
+            WriteItemToStorageEntry(ID, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(URL, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(NAME, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(FILTER, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(REGISTRATION_TYPE, iStringVector[count++], insertEntry);
 
             try
             {
@@ -1019,11 +988,8 @@ int CStorageBackupUtil::WriteDataToStorage()
 
         for (int rowNumber = 0; rowNumber < iTableSize[7]; rowNumber++)
         {
-            attribute.setEntry(ID, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(ALARM_TIME, iStringVector[count++]);
-            insertEntry.insert(attribute);
+            WriteItemToStorageEntry(ID, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(ALARM_TIME, iStringVector[count++], insertEntry);
 
             try
             {
@@ -1047,8 +1013,7 @@ int CStorageBackupUtil::WriteDataToStorage()
 
         for (int rowNumber = 0; rowNumber < iTableSize[8]; rowNumber++)
         {
-            attribute.setEntry(EXTENSIONS, iStringVector[count++]);
-            insertEntry.insert(attribute);
+            WriteItemToStorageEntry(EXTENSIONS, iStringVector[count++], insertEntry);
 
             try
             {
@@ -1071,17 +1036,10 @@ int CStorageBackupUtil::WriteDataToStorage()
 
         for (int rowNumber = 0; rowNumber < iTableSize[9]; rowNumber++)
         {
-            attribute.setEntry(NAME, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(VENDOR, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(VERSION, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(INSTALL_STATE, iStringVector[count++]);
-            insertEntry.insert(attribute);
+            WriteItemToStorageEntry(NAME, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(VENDOR, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(VERSION, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(INSTALL_STATE, iStringVector[count++], insertEntry);
 
             try
             {
@@ -1170,26 +1128,13 @@ int CStorageBackupUtil::WriteDataToStorage()
 
         for (int rowNumber = 0; rowNumber < iTableSize[10]; rowNumber++)
         {
-            attribute.setEntry(ID, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(CREATION_TIME, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(TYPE, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(OTA_CODE, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(URL, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(LATEST_RETRY_TIME, iStringVector[count++]);
-            insertEntry.insert(attribute);
-
-            attribute.setEntry(RETRY_COUNT, iStringVector[count++]);
-            insertEntry.insert(attribute);
+            WriteItemToStorageEntry(ID, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(CREATION_TIME, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(TYPE, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(OTA_CODE, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(URL, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(LATEST_RETRY_TIME, iStringVector[count++], insertEntry);
+            WriteItemToStorageEntry(RETRY_COUNT, iStringVector[count++], insertEntry);
 
             try
             {
@@ -1247,144 +1192,46 @@ int CStorageBackupUtil::FillVectorwithAppPackageTableData(JavaStorageApplication
     for (applications = foundEntries.begin(); applications != foundEntries.end(); applications++)
     {
         attribute.setEntry(ID, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(PACKAGE_NAME, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(VENDOR, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(VERSION, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(ROOT_PATH, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(MEDIA_ID, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(INITIAL_SIZE, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(JAD_PATH, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(JAR_PATH, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(JAD_URL, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(JAR_URL, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(ACCESS_POINT, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(CONTENT_INFO, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(CONTENT_ID, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         rowsCount++;
     }
@@ -1408,54 +1255,19 @@ int CStorageBackupUtil::FillVectorwithAppTableData(JavaStorageApplicationList_t&
     for (applications = afoundEntries.begin(); applications != afoundEntries.end(); applications++)
     {
         attribute.setEntry(ID, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(PACKAGE_ID, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(NAME, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(MAIN_CLASS, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(AUTORUN, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         rowsCount++;
     }
@@ -1479,49 +1291,39 @@ int CStorageBackupUtil::FillVectorwithAppPackageAttTableData(JavaStorageApplicat
     for (applications = afoundEntries.begin(); applications != afoundEntries.end(); applications++)
     {
         attribute.setEntry(ID, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(NAME, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(VALUE, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(TRUSTED, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         rowsCount++;
     }
     ILOG1(EBackup, "for loop crossed with i = %d", rowsCount);
     return rowsCount;
+}
+
+void CStorageBackupUtil::FetchStorageEntryToStringVector(const JavaStorageEntry& aAttribute,
+    JavaStorageApplicationList_t::const_iterator& aApplicationsIter)
+{
+    const wstring emptyString;
+    wstring str;
+    JavaStorageApplicationEntry_t::const_iterator findIterator;
+    str = emptyString;
+    findIterator = (*aApplicationsIter).find(aAttribute);
+
+    if (findIterator != (*aApplicationsIter).end())
+    {
+        str = (*findIterator).entryValue();
+        iStringVector.push_back(str);
+    } else {
+        iStringVector.push_back(JBNULLSTRING);
+    }
 }
 
 int CStorageBackupUtil::FillVectorwithMidpPackageTableData(JavaStorageApplicationList_t& afoundEntries)
@@ -1534,110 +1336,39 @@ int CStorageBackupUtil::FillVectorwithMidpPackageTableData(JavaStorageApplicatio
     /* Initialise Iterators to iterate through all applications
        matched with search patterns.  */
     JavaStorageApplicationList_t::const_iterator applications;
-    JavaStorageApplicationEntry_t::const_iterator findIterator;
 
     int rowsCount=0;
     for (applications = afoundEntries.begin(); applications != afoundEntries.end(); applications++)
     {
         attribute.setEntry(ID, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(TYPE, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(SECURITY_DOMAIN, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(SECURITY_DOMAIN_CATEGORY, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(HASH, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(CERT_HASH, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(RMS, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(VALID_CERTS, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(ON_SCREEN_KEYPAD, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
+        FetchStorageEntryToStringVector(attribute, applications);
 
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
-        
         attribute.setEntry(SECURITY_WARNINGS, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         rowsCount++;
     }
@@ -1661,54 +1392,19 @@ int CStorageBackupUtil::FillVectorwithMidpPermTableData(JavaStorageApplicationLi
     for (applications = afoundEntries.begin(); applications != afoundEntries.end(); applications++)
     {
         attribute.setEntry(ID, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(CLASS, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(NAME, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(ACTION, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(FUNCTION_GROUP, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         rowsCount++;
     }
@@ -1732,54 +1428,19 @@ int CStorageBackupUtil::FillVectorwithMidpFuncGrpSetTableData(JavaStorageApplica
     for (applications = afoundEntries.begin(); applications != afoundEntries.end(); applications++)
     {
         attribute.setEntry(ID, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(FUNCTION_GROUP, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(ALLOWED_SETTINGS, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(CURRENT_SETTING, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(BLANKET_PROMPT, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         rowsCount++;
     }
@@ -1803,54 +1464,19 @@ int CStorageBackupUtil::FillVectorwithPushRegTableData(JavaStorageApplicationLis
     for (applications = afoundEntries.begin(); applications != afoundEntries.end(); applications++)
     {
         attribute.setEntry(ID, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(URL, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(NAME, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(FILTER, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(REGISTRATION_TYPE, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         rowsCount++;
     }
@@ -1874,24 +1500,10 @@ int CStorageBackupUtil::FillVectorwithAlarmRegTableData(JavaStorageApplicationLi
     for (applications = afoundEntries.begin(); applications != afoundEntries.end(); applications++)
     {
         attribute.setEntry(ID, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(ALARM_TIME, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         rowsCount++;
     }
@@ -1915,14 +1527,7 @@ int CStorageBackupUtil::FillVectorwithRuntimeSetTableData(JavaStorageApplication
     for (applications = afoundEntries.begin(); applications != afoundEntries.end(); applications++)
     {
         attribute.setEntry(EXTENSIONS, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         rowsCount++;
     }
@@ -1946,44 +1551,16 @@ int CStorageBackupUtil::FillVectorwithPreinstallTableData(JavaStorageApplication
     for (applications = afoundEntries.begin(); applications != afoundEntries.end(); applications++)
     {
         attribute.setEntry(NAME, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(VENDOR, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(VERSION, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(INSTALL_STATE, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         rowsCount++;
     }
@@ -2007,74 +1584,25 @@ int CStorageBackupUtil::FillVectorwithOtaStatusTableData(JavaStorageApplicationL
     for (applications = afoundEntries.begin(); applications != afoundEntries.end(); applications++)
     {
         attribute.setEntry(ID, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(CREATION_TIME, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(TYPE, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(OTA_CODE, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(URL, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(LATEST_RETRY_TIME, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         attribute.setEntry(RETRY_COUNT, L"");
-        str = emptyString;
-        findIterator = (*applications).find(attribute);
-
-        if (findIterator != (*applications).end())
-        {
-            str = (*findIterator).entryValue();
-        }
-        iStringVector.push_back(str);
+        FetchStorageEntryToStringVector(attribute, applications);
 
         rowsCount++;
     }

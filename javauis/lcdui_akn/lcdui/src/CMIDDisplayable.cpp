@@ -284,16 +284,16 @@ void CMIDDisplayable::ConstructL()
 }
 
 CMIDDisplayable::CMIDDisplayable(MMIDEnv& aEnv,CMIDUIManager& aUIManager)
-        :CEikBorderedControl(TGulBorder(KMIDLetBorder)),
-        iUIManager(&aUIManager),iEnv(aEnv),
-        iIsFullScreenMode(EFalse),iActive(EFalse), iSelectCommand(NULL), iSelectCommandEnabled(ETrue),
-        iFullscreenCanvasLabelCacheIsValid(EFalse)
+    :CEikBorderedControl(TGulBorder(KMIDLetBorder)),
+     iUIManager(&aUIManager),iEnv(aEnv),
+     iIsFullScreenMode(EFalse),iActive(EFalse), iSelectCommand(NULL), iSelectCommandEnabled(ETrue),
+     iFullscreenCanvasLabelCacheIsValid(EFalse)
 #ifdef RD_TACTILE_FEEDBACK
-        ,iPenInputServerConnected(EFalse)
+     ,iPenInputServerConnected(EFalse)
 #endif //RD_TACTILE_FEEDBACK
-        ,iIdOfMSKCommand(KErrNotFound)
-        ,iRestoreOrientation(EFalse)
-        ,iReleaseCnt(0)
+     ,iIdOfMSKCommand(KErrNotFound)
+     ,iRestoreOrientation(EFalse)
+     ,iReleaseCnt(0)
 {
 #ifdef RD_JAVA_S60_RELEASE_9_2
     iSplitScreenKeyboard = EFalse;
@@ -424,14 +424,29 @@ void CMIDDisplayable::Draw(const TRect& aRect) const
 {
     CWindowGc& gc = SystemGc();
 
-    // Set up update region - preventing DSA to be destroyed by redrawing
+    // Set up update region - preventing MMAPI content area to
+    // be destroyed by redrawing
+#ifdef RD_JAVA_NGA_ENABLED
+    // Video overlays supported only for Canvas
+    CMIDCanvas* canvas = GetContentCanvas();
+    TBool overlayEnabled = iEnv.VideoOverlayEnabled() &&
+                           canvas && !canvas->IsGameCanvas();
+
+    if (!iDirectContentsRegion.IsEmpty() && !overlayEnabled)
+#else
     if (!iDirectContentsRegion.IsEmpty())
+#endif // RD_JAVA_NGA_ENABLED
     {
         gc.CancelClippingRect();
         iUpdateRegion.Clear();
         iUpdateRegion.AddRect(aRect);
+
+        // Protect access to iDirectContentsRegion,
+        // because it may be modified in MMAPI thread.
+        MMIDEnv::TCriticalSectionAutoLock autoLock(iEnv.GetMMAPILock());
         // Remove occupied areas out from update region
         iUpdateRegion.SubRegion(iDirectContentsRegion);
+
         // Set the update region for the context
         gc.SetClippingRegion(iUpdateRegion);
     }
@@ -533,11 +548,11 @@ void CMIDDisplayable::PopulateMenuItemsWithListL
 #endif // RD_JAVA_S60_RELEASE_9_2            
         {
             if ((!isItemCommands &&
-            (command->CommandType() != MMIDCommand::EOk) &&
-            (command->CommandType() != MMIDCommand::EItem)) ||
-            (command->Id() == CMIDEdwinUtils::EMenuCommandFetchPhoneNumber) ||
-            (command->Id() == CMIDEdwinUtils::EMenuCommandFetchEmailAddress) ||
-            (command->Id() == CMIDEdwinUtils::EMenuCommandCreatePhoneCall))
+                    (command->CommandType() != MMIDCommand::EOk) &&
+                    (command->CommandType() != MMIDCommand::EItem)) ||
+                    (command->Id() == CMIDEdwinUtils::EMenuCommandFetchPhoneNumber) ||
+                    (command->Id() == CMIDEdwinUtils::EMenuCommandFetchEmailAddress) ||
+                    (command->Id() == CMIDEdwinUtils::EMenuCommandCreatePhoneCall))
             {
                 continue;
             }
@@ -3212,6 +3227,9 @@ TBool CMIDDisplayable::MatchDirectContentsRects
 //
 void CMIDDisplayable::UpdateDirectContentsRegion()
 {
+    // iDirectContentsRegion is accessed both in LCDUI and MMAPI threads
+    MMIDEnv::TCriticalSectionAutoLock autoLock(iEnv.GetMMAPILock());
+
     iDirectContentsRegion.Clear();
     TInt count = iDirectContentsRects.Count();
     for (int index = 0; index < count; index++)
@@ -3220,11 +3238,6 @@ void CMIDDisplayable::UpdateDirectContentsRegion()
     }
 }
 
-
-TBool CMIDDisplayable::NoDirectContentAreaDefined()
-{
-    return iDirectContentsRegion.IsEmpty();
-}
 
 void CMIDDisplayable::SetPopupTextBox(TBool aPopup)
 {
@@ -3375,6 +3388,21 @@ void CMIDDisplayable::ProcessMSKCommandL()
     }
 }
 
+#ifdef RD_JAVA_NGA_ENABLED
+void CMIDDisplayable::GetDirectContentsRegion(RRegion& region) const
+{
+    // Protect access to iDirectContentsRegion,
+    // because it may be modified in MMAPI thread.
+    MMIDEnv::TCriticalSectionAutoLock autoLock(iEnv.GetMMAPILock());
+    region.Copy(iDirectContentsRegion);
+}
+
+TInt CMIDDisplayable::DirectContentsCount() const
+{
+    return iDirectContentsRegion.Count();
+}
+#endif // RD_JAVA_NGA_ENABLED
+
 void CMIDDisplayable::DisplayableBehindPopupIsDestroyed()
 {
     // Old fullscreen Displayable is destroyed.
@@ -3410,7 +3438,7 @@ void CMIDDisplayable::HideIndicators()
     HideIndicator(pane, EEikStatusPaneUidDigitalClock);
 }
 
-CMIDCanvas* CMIDDisplayable::GetContentCanvas()
+CMIDCanvas* CMIDDisplayable::GetContentCanvas() const
 {
     CMIDCanvas* ret = NULL;
     if (iContent && iContentControl &&
@@ -3479,7 +3507,7 @@ void CMIDDisplayable::ReleaseOrientation()
 }
 
 CPropertyWatch::CPropertyWatch()
-        : CActive(0)
+    : CActive(0)
 {
 }
 

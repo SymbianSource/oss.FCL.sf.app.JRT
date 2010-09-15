@@ -20,6 +20,8 @@
 #include <platform_paths.hrh>
 #include <data_caging_paths.hrh>
 
+// Do not use global Java version for binaries
+#define RD_JAVA_NO_BIN_VERSION
 
 // java/inc
 #include <../../../../inc/project_defines.hrh>
@@ -83,9 +85,9 @@ SOURCE swtmidremconobserver.cpp
 
 
 LIBRARY avkon.lib
-LIBRARY cdlengine.lib
+LIBRARY CdlEngine.lib
 LIBRARY aknlayout2.lib
-LIBRARY aknlayout2scalable.lib
+LIBRARY AknLayout2Scalable.lib
 LIBRARY centralrepository.lib
 LIBRARY browserdialogsprovider.lib
 LIBRARY apengine.lib

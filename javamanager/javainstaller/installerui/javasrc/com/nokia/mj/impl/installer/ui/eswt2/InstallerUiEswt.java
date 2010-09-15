@@ -104,6 +104,9 @@ public class InstallerUiEswt extends InstallerUi
     /** Flag telling if the first progress bar update has been traced. */
     private boolean iProgressBarUpdateTraced = false;
 
+    /** Certificate details view, owned by the view where it was opened. */
+    private CertificateDetailsView iCertificateDetailsView = null;
+
     /** Hashtable for storing the loaded icons. */
     private static Hashtable iImageTable = null;
     /** Best size for application icon. */
@@ -253,6 +256,10 @@ public class InstallerUiEswt extends InstallerUi
     public void cancelConfirmations()
     {
         super.cancelConfirmations();
+        if (iCertificateDetailsView != null)
+        {
+            iCertificateDetailsView.confirmCancel();
+        }
         if (iInstallConfirmationView != null)
         {
             iInstallConfirmationView.confirmCancel();
@@ -390,6 +397,9 @@ public class InstallerUiEswt extends InstallerUi
             return true;
         }
 
+        // Ensure that UI is visible when this prompt is displayed.
+        unhide();
+
         synchronized (iProgressSyncObject)
         {
             // Do not display progress bar during dialog.
@@ -471,7 +481,8 @@ public class InstallerUiEswt extends InstallerUi
                 // do not display installation progress.
                 return;
             }
-            if (iDisplayProgress && !iProgressView.isVisible())
+            if (iDisplayProgress && !iProgressView.isVisible() &&
+                iCertificateDetailsView == null)
             {
                 // Re-create iProgressView here so that it gets
                 // application info that was set when confirm()
@@ -605,7 +616,8 @@ public class InstallerUiEswt extends InstallerUi
 
         synchronized (iProgressSyncObject)
         {
-            if (iDisplayProgress && !iDlProgressView.isVisible())
+            if (iDisplayProgress && !iDlProgressView.isVisible() &&
+                iCertificateDetailsView == null)
             {
                 iDlProgressView.setVisible(true);
             }
@@ -641,7 +653,8 @@ public class InstallerUiEswt extends InstallerUi
         }
         synchronized (iProgressSyncObject)
         {
-            if (iDisplayProgress && !iProgressView.isVisible())
+            if (iDisplayProgress && !iProgressView.isVisible() &&
+                iCertificateDetailsView == null)
             {
                 iProgressView.setVisible(true);
             }
@@ -682,7 +695,8 @@ public class InstallerUiEswt extends InstallerUi
             }
             if (iOcspProgressView != null)
             {
-                if (!iOcspProgressView.isVisible())
+                if (!iOcspProgressView.isVisible() &&
+                    iCertificateDetailsView == null)
                 {
                     iOcspProgressView.setVisible(true);
                 }
@@ -761,7 +775,8 @@ public class InstallerUiEswt extends InstallerUi
         if (DISABLE_UI) return; // Disable UI temporarily.
 
         waitForUi();
-        if (!isUiReady()) {
+        waitForCertificateDetailsView();
+        if (!isUiReady() || iHidden || iConfirmationsCanceled) {
             return;
         }
 
@@ -821,6 +836,14 @@ public class InstallerUiEswt extends InstallerUi
         if (!isUiReady()) {
             return true;
         }
+        waitForCertificateDetailsView();
+        if (iConfirmationsCanceled)
+        {
+            return false;
+        }
+
+        // Ensure that UI is visible when this prompt is displayed.
+        unhide();
 
         if (iRuntimeConfirmationView == null)
         {
@@ -857,10 +880,14 @@ public class InstallerUiEswt extends InstallerUi
     {
         if (DISABLE_UI) return new String[] { "", "" }; // Disable UI temporarily.
         waitForUi();
-        if (!isUiReady())
+        waitForCertificateDetailsView();
+        if (!isUiReady() || iConfirmationsCanceled)
         {
             return null;
         }
+
+        // Ensure that UI is visible when this prompt is displayed.
+        unhide();
 
         synchronized (iProgressSyncObject)
         {
@@ -913,10 +940,13 @@ public class InstallerUiEswt extends InstallerUi
     {
         if (DISABLE_UI) return false; // Disable UI temporarily.
         waitForUi();
-        if (!isUiReady() || iConfirmationsCanceled || getInstallInfo() == null)
+        waitForCertificateDetailsView();
+        if (!isUiReady() || iConfirmationsCanceled ||
+            iHidden || getInstallInfo() == null)
         {
-            // Either UI is not yet ready, or user has cancelled
-            // installation, in both cases do nothing.
+            // Either UI is not yet ready, user has cancelled
+            // installation or UI is hidden; in all these cases
+            // do nothing.
             return false;
         }
 
@@ -954,7 +984,10 @@ public class InstallerUiEswt extends InstallerUi
      */
     public void syncExec(Runnable aRunnable)
     {
-        iParent.getDisplay().syncExec(aRunnable);
+        if (!iParent.getDisplay().isDisposed())
+        {
+            iParent.getDisplay().syncExec(aRunnable);
+        }
     }
 
     /**
@@ -962,14 +995,14 @@ public class InstallerUiEswt extends InstallerUi
      */
     public void hide(boolean aHide)
     {
-        final boolean hide = aHide;
-        if (iParent != null)
+        iHidden = aHide;
+        if (iDialog != null)
         {
-            iParent.getDisplay().syncExec(new Runnable()
+            iDialog.getDisplay().syncExec(new Runnable()
             {
                 public void run()
                 {
-                    iParent.setMinimized(hide);
+                    iDialog.setMinimized(iHidden);
                 }
             });
         }
@@ -984,6 +1017,45 @@ public class InstallerUiEswt extends InstallerUi
         if (iHidden)
         {
             hide(false);
+        }
+    }
+
+    /**
+     * Sets flag telling if certificate details view is open.
+     */
+    protected void setCertificateDetailsView(CertificateDetailsView aView)
+    {
+        if (iCertificateDetailsView != null && aView == null)
+        {
+            // Certificate details view has been closed,
+            // notify possible waiters.
+            synchronized (iCertificateDetailsView)
+            {
+                iCertificateDetailsView.notify();
+            }
+        }
+        iCertificateDetailsView = aView;
+    }
+
+    /**
+     * Waits until certificate details view is closed.
+     */
+    protected void waitForCertificateDetailsView()
+    {
+        if (iCertificateDetailsView != null)
+        {
+            // If certificate details view is open, wait until
+            // user closes it.
+            synchronized (iCertificateDetailsView)
+            {
+                try
+                {
+                    iCertificateDetailsView.wait();
+                }
+                catch (InterruptedException ie)
+                {
+                }
+            }
         }
     }
 

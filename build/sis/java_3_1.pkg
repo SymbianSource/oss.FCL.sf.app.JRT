@@ -163,7 +163,8 @@
 "\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\tckrunner.odc"-"c:\resource\java\jvm\lib\jrt\tckrunner.odc"
 "\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javacontrolpanel.odc"-"c:\resource\java\jvm\lib\jrt\javacontrolpanel.odc"
 
-
+"\epoc32\release\armv5\urel\javacentrep.dll"-"c:\sys\bin\javacentrep.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javacentrep.odc"-"c:\resource\java\jvm\lib\jrt\javacentrep.odc"
 
 ; Misc dlls
 
@@ -227,10 +228,10 @@
 "\epoc32\data\z\resource\java\java_3_trusted.png"-"c:\resource\java\java_3_trusted.png"
 "\epoc32\data\z\resource\java\java_3_untrusted.png"-"c:\resource\java\java_3_untrusted.png"
 "\epoc32\data\z\resource\java\javaapplicationinstaller.css"-"c:\resource\java\javaapplicationinstaller.css"
-"\epoc32\data\z\resource\plugins\javaunicertstoreplugin.rsc" -"c:\resource\plugins\javaunicertstoreplugin.rsc"
-"\epoc32\data\z\resource\plugins\midp2backupplugin.rsc"-"c:\resource\plugins\midp2backupplugin.rsc"
+"\epoc32\data\z\resource\java\iad\javaunicertstoreplugin.rsc" -"c:\resource\plugins\javaunicertstoreplugin.rsc"
+"\epoc32\data\z\resource\java\iad\midp2backupplugin.rsc"-"c:\resource\plugins\midp2backupplugin.rsc"
 #ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
-"\epoc32\data\z\resource\plugins\javasifplugin.rsc"-"c:\resource\plugins\javasifplugin.rsc"
+"\epoc32\data\z\resource\java\iad\javasifplugin.rsc"-"c:\resource\plugins\javasifplugin.rsc"
 #endif
 
 "\epoc32\data\z\resource\java\javausermessages.r01"-"c:\resource\java\javausermessages.r01"
@@ -322,9 +323,6 @@
 
 "\epoc32\release\armv5\urel\javaamms.dll"-"c:\sys\bin\javaamms.dll"
 "\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javaamms.odc"-"c:\resource\java\jvm\lib\jrt\javaamms.odc"
-
-;"\epoc32\release\armv5\urel\javalegacyutils.dll"-"c:\sys\bin\javalegacyutils.dll"
-;"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javalegacyutils.odc"-"c:\resource\java\jvm\lib\jrt\javalegacyutils.odc"
 
 "\epoc32\release\armv5\urel\javamobilemedia.dll"-"c:\sys\bin\javamobilemedia.dll"
 "\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javamobilemedia.odc"-"c:\resource\java\jvm\lib\jrt\javamobilemedia.odc"

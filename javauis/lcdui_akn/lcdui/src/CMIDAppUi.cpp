@@ -268,6 +268,11 @@ TBool CMIDAppUi::HandleWsEventL(const TWsEvent& aEvent,
     }
 #endif // RD_JAVA_NGA_ENABLED
 
+    if (aEvent.Type() == KAknShutOrHideApp)
+    {
+        java::ui::CoreUiAvkonLcdui::getInstance().shutDownRequestFromWindowServer();
+    }
+
     return EFalse;
 }
 

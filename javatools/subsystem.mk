@@ -42,6 +42,11 @@ COMPONENTS += \
 	usersettingsconfigurator/build \
 	javarestoreconverter/build 
 
+else
+
+COMPONENTS += \
+	javafinishjrtinstall/build
+
 endif
 
 NONQTSUBSYSTEMS += \

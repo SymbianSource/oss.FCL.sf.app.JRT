@@ -445,10 +445,7 @@ void CSwtCommandArranger::ComputeAndRefreshCbaAndMenuL(TBool aFocusedControlOnly
                 iCbaCommands[cbaIndex]->Text());
 
             // Dimming
-            if (!iCbaCommands[cbaIndex]->IsEnabled())
-            {
-                iCba.DimCommand(commandId, ETrue);
-            }
+            iCba.DimCommand(commandId, !iCbaCommands[cbaIndex]->IsEnabled());
 
             // Set default command
             if (iCbaCommands[cbaIndex] == iDefaultCommand)

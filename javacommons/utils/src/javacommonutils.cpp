@@ -285,7 +285,8 @@ OS_EXPORT std::string JavaCommonUtils::base64encode(const std::string& aData)
     std::string result;
     result.insert(0, bptr->data, bptr->length);
     BIO_free_all(b64);
-
+    CRYPTO_cleanup_all_ex_data();
+    
     return result;
 }
 
@@ -313,7 +314,8 @@ OS_EXPORT std::wstring JavaCommonUtils::wbase64encode(const std::wstring& aData)
         result.push_back((wchar_t)*(bptr->data + i));
     }
     BIO_free_all(b64);
-
+    CRYPTO_cleanup_all_ex_data();
+    
     return result;
 }
 
@@ -338,7 +340,8 @@ OS_EXPORT std::string JavaCommonUtils::base64decode(const std::string& aData)
 
     BIO_free_all(bmem);
     delete[] buf;
-
+    CRYPTO_cleanup_all_ex_data();
+    
     return result;
 }
 

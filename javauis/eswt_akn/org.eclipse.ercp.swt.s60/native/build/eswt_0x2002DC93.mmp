@@ -45,6 +45,7 @@ MACRO		RD_JAVA_EPOCALLOWDLLDATA_FIX
 MACRO		RD_JAVA_HTTP_EMC_ENABLED
 MACRO		RD_JAVA_NGA_ENABLED
 MACRO		RD_JAVA_PROXIMITY_LISTENER_ENABLED
+MACRO		RD_JAVA_PIM_MULTICAL_ENABLED
 MACRO		RD_JAVA_OPENC_BETA_PATCH
 MACRO		RD_JAVA_INSTALLERUI_ENABLED
 MACRO		RD_JAVA_PREWARM
@@ -176,7 +177,7 @@ SOURCE		utils.cpp
 SOURCE		imagescaler.cpp
 
 
-LIBRARY		aknicon.lib
+LIBRARY		AknIcon.lib
 LIBRARY		aknhlist.lib
 LIBRARY		aknlayout.lib
 LIBRARY		aknpictograph.lib
@@ -191,11 +192,11 @@ LIBRARY		bafl.lib
 LIBRARY		bitgdi.lib
 LIBRARY		bitmaptransforms.lib
 LIBRARY		bmpanim.lib
-LIBRARY		cdlengine.lib
+LIBRARY		CdlEngine.lib
 LIBRARY		centralrepository.lib
 LIBRARY		commdb.lib
 LIBRARY		commondialogs.lib
-LIBRARY		commonengine.lib
+LIBRARY		CommonEngine.lib
 LIBRARY		commonui.lib
 LIBRARY		cone.lib
 LIBRARY		ecom.lib

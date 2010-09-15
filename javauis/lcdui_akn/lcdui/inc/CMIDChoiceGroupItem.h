@@ -149,6 +149,11 @@ public: // New stuff (for control use mainly)
 public:
     void PostPendingUpEventL();
     TBool LongTapDetected();
+
+    /**
+     * Overrides function from CMIDControlItem
+     */
+    void SetHighlight(const TBool aHighlight);
 #endif // RD_JAVA_S60_RELEASE_9_2
 
 private:

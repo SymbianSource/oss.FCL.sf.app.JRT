@@ -25,17 +25,15 @@ class WarningHandler:
     # Counters for various warnings
     totalWarnings = 0
     badOnes = 0
-    deprecatedWarnings = 0
+    pragmaWarnings = 0
     compilerWarnings = 0
     linkerWarnings = 0
     postlinkerWarnings = 0
     flmWarnings = 0
 
-    # Constants for matching warnings related to deprecation
-    deprecatedStart = "warning: preprocessor #warning directive"
-    deprecatedSecondLine = "warning: #warning This header file"
-    deprecatedOptionalThirdLine = "warning: (included from:"
-    deprecatedOptionalRest = "warning:  "
+    # Constants for matching pragma generated warnings
+    pragmaStart = "warning: preprocessor #warning directive"
+    pragmaOptionalRest = "warning: "
 
     # This list includes strings from which the BAD warnings can be recognized.
     # Note that these must be in lower case!
@@ -61,7 +59,7 @@ class WarningHandler:
         print ""
         print "Details:"
         print "  FLM warnings:            ", self.flmWarnings
-        print "  Use of deprecated api:   ", self.deprecatedWarnings
+        print "  Pragma warnings:         ", self.pragmaWarnings
         print "  Other compiler warnings: ", self.compilerWarnings
         print "  Linker warnings:         ", self.linkerWarnings
         print "  Post-linker warnings:    ", self.postlinkerWarnings
@@ -71,7 +69,7 @@ class WarningHandler:
 class PrintSettings:
     """Class parsing and maintaining the printing settings related to warnings"""
   
-    printDeprecatedWarnings = False
+    printPragmaWarnings = False
     printCompilerWarnings = False
     printLinkerWarnings = False
     printFlmWarnings = False
@@ -87,8 +85,8 @@ class PrintSettings:
             default=False, help="Prints compiler warnings")
         parser.add_option("--pl", dest="printlinkerwarnings", action="store_true", 
             default=False, help="Prints linker warnings")
-        parser.add_option("--pd", dest="printdeprecatedwarnings", action="store_true", 
-            default=False, help="Prints deprecation warnings")
+        parser.add_option("--pp", dest="printpragmawarnings", action="store_true", 
+            default=False, help="Prints pragma warnings")
         parser.add_option("--pf", dest="printflmwarnings", action="store_true", 
             default=False, help="Prints FLM warnings")
         (opts, args) = parser.parse_args()
@@ -98,12 +96,12 @@ class PrintSettings:
             sys.exit(-1)
             
         if opts.printall:
-            self.printDeprecatedWarnings = True
+            self.printPragmaWarnings = True
             self.printCompilerWarnings = True
             self.printLinkerWarnings = True
             self.printFlmWarnings = True
         else:
-            self.printDeprecatedWarnings = opts.printdeprecatedwarnings
+            self.printPragmaWarnings = opts.printpragmawarnings
             self.printCompilerWarnings = opts.printcompilerwarnings
             self.printLinkerWarnings = opts.printlinkerwarnings
             self.printFlmWarnings = opts.printflmwarnings
@@ -119,7 +117,7 @@ class PrintSettings:
 # should have always zero of them. The related log message strings are defined
 # in the variable badWarnings above.
 #
-# The warnings are further categorized as deprecated API warnings, compiler
+# The warnings are further categorized as pragma warnings, compiler
 # warnings, linker, and post-linker warnings.
 #
 def main():
@@ -168,12 +166,12 @@ def stateMachine(state, line, underCompilation, settings, wh):
     # Looking for any warning related to the current target
     if state == 1:
     
-        # Check first for the start of a multiline deprecation warning
-        if wh.deprecatedStart in line:
-            if settings.printDeprecatedWarnings:
+        # Check first for the start of a multiline pragma warning
+        if wh.pragmaStart in line:
+            if settings.printPragmaWarnings:
                 print underCompilation,
                 print line,
-            wh.deprecatedWarnings += 1
+            wh.pragmaWarnings += 1
             wh.totalWarnings += 1
             return 2
             
@@ -220,37 +218,17 @@ def stateMachine(state, line, underCompilation, settings, wh):
                     
             return 1
     
-    # Looking for the second line of the multiline deprecation warning
+    # Looking for the optional trailing lines of the multiline pragma warning
     if state == 2:
-        if wh.deprecatedSecondLine in line:
-            if settings.printDeprecatedWarnings:
+        if wh.pragmaOptionalRest in line:
+            if settings.printPragmaWarnings:
                 print line,
-            return 3
-        else:
-            print "Missing second line"
-            return 1           
-    
-    # Looking for the optional third line of the multiline deprecation warning
-    if state == 3:
-        if wh.deprecatedOptionalThirdLine in line:
-            if settings.printDeprecatedWarnings:
-                print line,
-            return 4
-        else:
-            # Hmm... went one line too far -> need to check the current line again
-            # but now in the state 1
-            return stateMachine(1, line, underCompilation, settings, wh)            
-
-    # Looking for the optional trailing lines of the multiline deprecation warning
-    if state == 4:
-        if wh.deprecatedOptionalRest in line:
-            if settings.printDeprecatedWarnings:
-                print line,
-            return 4
+            return 2
         else:
             # Hmm... went one line too far -> need to check the current line again
             # but now in the state 1           
             return stateMachine(1, line, underCompilation, settings, wh)
+
                     
     # Looking for MAKEDEF detailed information lines
     if state == 5:

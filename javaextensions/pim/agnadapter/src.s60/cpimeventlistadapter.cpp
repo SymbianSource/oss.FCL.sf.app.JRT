@@ -49,10 +49,13 @@ CPIMEventListAdapter::CPIMEventListAdapter(
 // -----------------------------------------------------------------------------
 //
 void CPIMEventListAdapter::ConstructL(CCalEntry::TType aEntryType,
-                                      CPIMAgnEventAdapter* aEventAdapter)
+
+                                      CPIMAgnEventAdapter* aEventAdapter,
+                                      TInt aCalSessionInt)
 {
     JELOG2(EPim);
-    CPIMAgnListAdapter::ConstructL(MCalChangeCallBack::EChangeEntryEvent);
+    CCalSession* calSession = reinterpret_cast <CCalSession*>(aCalSessionInt);
+    CPIMAgnListAdapter::ConstructL(MCalChangeCallBack::EChangeEntryEvent, calSession);
     iEntryType = aEntryType;
     iAgnAdapter = aEventAdapter;
 }
@@ -63,13 +66,17 @@ void CPIMEventListAdapter::ConstructL(CCalEntry::TType aEntryType,
 // -----------------------------------------------------------------------------
 //
 CPIMEventListAdapter* CPIMEventListAdapter::NewL(CCalEntry::TType aEntryType,
-        CPIMAgnEventAdapter* aEventAdapter, java::util::FunctionServer* aFuncServer)
+        CPIMAgnEventAdapter* aEventAdapter,
+        java::util::FunctionServer* aFuncServer, CCalSession *aCalSession
+                                                )
 {
     JELOG2(EPim);
     CPIMEventListAdapter* self = new(ELeave) CPIMEventListAdapter(aFuncServer);
     CleanupStack::PushL(self);
+    TInt calSessionInt = reinterpret_cast <TInt>(aCalSession);
     CallMethodL(self, &CPIMEventListAdapter::ConstructL, aEntryType,
-                aEventAdapter, self->iFuncServer);
+                aEventAdapter, calSessionInt,self->iFuncServer);
+
     CleanupStack::Pop(self);
     return self;
 }

@@ -44,6 +44,10 @@ SUBSYSTEMS = \
     wma \
     pim
 
+ifdef RD_JAVA_S60_RELEASE_9_2_ONWARDS
+    COMPONENTS += centralrepository/build
+endif
+
 ifdef RD_JAVA_MIDPRMS_DB
     SUBSYSTEMS += midprms_db
 else

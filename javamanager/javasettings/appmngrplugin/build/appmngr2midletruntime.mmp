@@ -64,6 +64,10 @@ SOURCE                  appmngr2midletresourcehandler.cpp
 START RESOURCE          ../data/20016bf7.rss
 TARGET                  appmngr2midletplugin.rsc
 END
+START RESOURCE          ../data/20016bf7_iad.rss
+TARGET                  appmngr2midletplugin.rsc
+TARGETPATH              resource/java/iad
+END
 
 START RESOURCE          ../data/javaapplicationsettings.rss
 HEADER
@@ -82,9 +86,9 @@ LIBRARY                 eikcoctl.lib                // S60 UI Framework
 LIBRARY                 aknskins.lib                // S60 UI Framework
 LIBRARY                 efsrv.lib                   // File server
 LIBRARY                 egul.lib                    // Icons
-LIBRARY                 PlatformEnv.lib             // PathInfo
+LIBRARY                 platformenv.lib             // PathInfo
 LIBRARY                 featmgr.lib                 // FeatureManager
-LIBRARY                 commonengine.lib            // StringLoader
+LIBRARY                 CommonEngine.lib            // StringLoader
 LIBRARY                 sendui.lib                  // Send UI
 LIBRARY                 browserlauncher.lib         // BrowserLauncher API
 LIBRARY                 imut.lib                    // Encoding
@@ -102,10 +106,10 @@ LIBRARY                 ezip.lib                    // CZipFile
 LIBRARY                 charconv.lib                // CnvUtfConverter
 LIBRARY                 hlplch.lib                  // Help
 LIBRARY                 apgrfx.lib                  // RApaLsSession
-LIBRARY                 aknicon.lib                 // CAknIcon
+LIBRARY                 AknIcon.lib                 // CAknIcon
 LIBRARY	                fbscli.lib                  // CFbsBitmap
-LIBRARY                 cdlengine.lib               // AknLayoutScalable_Avkon
-LIBRARY                 aknlayout2scalable.lib      // TAknWindowComponentLayout
+LIBRARY                 CdlEngine.lib               // AknLayoutScalable_Avkon
+LIBRARY                 AknLayout2Scalable.lib      // TAknWindowComponentLayout
 
 DEBUGLIBRARY            flogger.lib                 // File logger API
 

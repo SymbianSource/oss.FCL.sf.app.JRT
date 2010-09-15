@@ -21,8 +21,7 @@ package com.nokia.mj.impl.utils.concurrent;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import com.nokia.mj.impl.installer.utils.InstallerMain;
-import com.nokia.mj.impl.utils.DebugUtils;
+import com.nokia.mj.impl.rt.test.UnitTestSuiteCreator;
 
 import j2meunit.framework.Test;
 import j2meunit.framework.TestCase;
@@ -32,7 +31,7 @@ import j2meunit.framework.TestSuite;
 /**
  * BufferedReader unit tests.
  */
-public class ConcurrentTests extends TestCase implements InstallerMain
+public class ConcurrentTests extends TestCase implements UnitTestSuiteCreator
 {
     private int mMaxThreadId;
     private int mReleaseThreadId;
@@ -42,7 +41,7 @@ public class ConcurrentTests extends TestCase implements InstallerMain
     private Object mLockEnd;
 
     // Begin j2meunit test framework setup
-    public void installerMain(String[] args)
+    public TestSuite createTestSuite(String[] args)
     {
         createDumperThread(false);
         TestSuite suite = new TestSuite(this.getClass().getName());
@@ -123,9 +122,7 @@ public class ConcurrentTests extends TestCase implements InstallerMain
             }
         }));
 
-
-
-        com.nokia.mj.impl.utils.OmjTestRunner.run(suite);
+        return suite;
 
     }
 
@@ -142,7 +139,8 @@ public class ConcurrentTests extends TestCase implements InstallerMain
     {
         if (doCreate)
         {
-            new Thread(new Runnable(){
+            new Thread(new Runnable()
+            {
                 public void run()
                 {
                     threadSleep(5000);
@@ -189,8 +187,8 @@ public class ConcurrentTests extends TestCase implements InstallerMain
     {
         if (doTrace)
         {
-        //System.out.println(str);
-        mTrace.addElement(str);
+            //System.out.println(str);
+            mTrace.addElement(str);
         }
     }
 
@@ -250,7 +248,7 @@ public class ConcurrentTests extends TestCase implements InstallerMain
 
         try
         {
-            
+
             testLock(true);
         }
         catch (Throwable t)
@@ -269,7 +267,7 @@ public class ConcurrentTests extends TestCase implements InstallerMain
 
         try
         {
-            
+
             testLock(true);
         }
         catch (Throwable t)
@@ -288,7 +286,7 @@ public class ConcurrentTests extends TestCase implements InstallerMain
 
         try
         {
-            
+
             testLock(false);
         }
         catch (Throwable t)
@@ -307,7 +305,7 @@ public class ConcurrentTests extends TestCase implements InstallerMain
 
         try
         {
-            
+
             testLock(false);
         }
         catch (Throwable t)
@@ -359,13 +357,13 @@ public class ConcurrentTests extends TestCase implements InstallerMain
     {
         private int mId;
         private boolean mCheck;
-        
+
         private LockTestThread(int id, boolean check)
         {
             mId = id;
             mCheck = check;
         }
-        public void run() 
+        public void run()
         {
             threadSleep(20);
             trace("run: "+mId);
@@ -389,7 +387,7 @@ public class ConcurrentTests extends TestCase implements InstallerMain
             trace("Got lock: "+mId);
             if (mCheck)
             {
-                String errorTxt = "Incorrect release order. mId: "+ mId + 
+                String errorTxt = "Incorrect release order. mId: "+ mId +
                                   ", next: " +mNextReleasedThreadId;
                 assertTrue(errorTxt, mNextReleasedThreadId == mId);
             }
@@ -500,12 +498,12 @@ public class ConcurrentTests extends TestCase implements InstallerMain
     private class ConditionTestThread extends Thread
     {
         private int mId;
-        
+
         private ConditionTestThread(int id)
         {
             mId = id;
         }
-        public void run() 
+        public void run()
         {
             threadSleep(20);
             trace("run: "+mId);

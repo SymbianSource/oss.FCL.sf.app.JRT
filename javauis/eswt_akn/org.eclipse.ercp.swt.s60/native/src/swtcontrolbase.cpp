@@ -804,6 +804,18 @@ TKeyResponse ASwtControlBase::OfferKeyEventToCommandAndMenuArrangersL(
                 return EKeyWasConsumed;
             }
         }
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        // On 9.2 MSK is never shown, so we have to always handle
+        // the Selection key
+        else if (aKeyEvent.iCode == EKeyOK && !IsKeyUsed(EKeyOK)
+                 && commandArranger->IsContextSensitiveOperationSet())
+        {
+            if (commandArranger->DoContextSensitiveOperationL())
+            {
+                return EKeyWasConsumed;
+            }
+        }
+#else
         else if (!AknLayoutUtils::MSKEnabled() ||
                  (activeTopShell && activeTopShell->FullScreenMode()))
         {
@@ -819,6 +831,7 @@ TKeyResponse ASwtControlBase::OfferKeyEventToCommandAndMenuArrangersL(
                 }
             }
         }
+#endif //RD_JAVA_S60_RELEASE_9_2
         else if (aKeyEvent.iCode == EKeyEnter && !IsKeyUsed(EKeyEnter))
         {
             if (commandArranger->HandleEnterKeyL())

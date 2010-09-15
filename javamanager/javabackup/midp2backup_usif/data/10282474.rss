@@ -19,6 +19,10 @@
 #include <ecom/registryinfov2.rh>
 #include "javauids.h"
 
+#ifndef ECOM_VERSION_NO
+#define ECOM_VERSION_NO 1
+#endif
+
 // Declares info for one implementation
 RESOURCE REGISTRY_INFO theInfo
 {
@@ -36,7 +40,7 @@ RESOURCE REGISTRY_INFO theInfo
                                          IMPLEMENTATION_INFO
                                          {
                                              implementation_uid = KBackupEcomImplUid;
-                                             version_no = 1;
+                                             version_no = ECOM_VERSION_NO;
                                              display_name = "MIDP2 Backup Plugin";
                                              default_data = "midp2";
                                              opaque_data = "test_params";

@@ -18,6 +18,10 @@
 
 #include "ecom/registryinfo.rh"
 
+#ifndef ECOM_VERSION_NO
+#define ECOM_VERSION_NO 1
+#endif
+
 RESOURCE REGISTRY_INFO theInfo
     {
     dll_uid = 0x20016BF7;
@@ -31,7 +35,7 @@ RESOURCE REGISTRY_INFO theInfo
                 IMPLEMENTATION_INFO
                     {
                     implementation_uid = 0x20016BF8;
-                    version_no = 1;
+                    version_no = ECOM_VERSION_NO;
                     display_name = "Midlet plugin";
                     default_data = "";
                     opaque_data = "";

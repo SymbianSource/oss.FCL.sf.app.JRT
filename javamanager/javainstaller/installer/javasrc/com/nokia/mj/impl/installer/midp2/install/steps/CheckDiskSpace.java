@@ -42,15 +42,8 @@ public class CheckDiskSpace extends ExeStep
     public void execute(ExeBall aBall)
     {
         InstallBall ball = (InstallBall)aBall;
-
         int initialSize = ball.iSuite.calculateInitialSize();
-        if (initialSize == 0 && ball.iJarFilename != null)
-        {
-            // Get initialSize from jar file size.
-            initialSize = (int)FileUtils.getSize(ball.iJarFilename);
-
-        }
-        int requiredSize = initialSize + (100 * 1024); // +100kB
+        int requiredSize = getRequiredSize(ball);
 
         if (ball.iUserConfirmation == null)
         {
@@ -103,6 +96,25 @@ public class CheckDiskSpace extends ExeStep
     }
 
     /**
+     * Returns amount of disk space this application requires.
+     */
+    static int getRequiredSize(InstallBall aBall)
+    {
+        int initialSize = aBall.iSuite.getInitialSize();
+        if (initialSize <= 0)
+        {
+            initialSize = aBall.iSuite.calculateInitialSize();
+        }
+        if (initialSize == 0 && aBall.iJarFilename != null)
+        {
+            // Get initialSize from jar file size.
+            initialSize = (int)FileUtils.getSize(aBall.iJarFilename);
+
+        }
+        return initialSize + (100 * 1024); // +100kB
+    }
+
+    /**
      * Checks if given drive has enough free disk space. Throws
      * InstallerException if there is not enough free disk space.
      */
@@ -139,9 +151,9 @@ public class CheckDiskSpace extends ExeStep
             int driveId = drive.getNumber();
             if (SysUtil.isDiskSpaceBelowCriticalLevel(aSizeInBytes, driveId))
             {
-                Log.logWarning("Drive " + driveId +
-                               " space below critical level, required space " +
-                               aSizeInBytes + " bytes");
+                Log.log("Drive " + driveId +
+                        " space below critical level, required space " +
+                        aSizeInBytes + " bytes");
             }
             else
             {

@@ -267,12 +267,6 @@ public:
     void RemoveDirectContentArea(const TRect& aRect);
 
     /**
-    Checks if there were some direct content area added
-    @return ETrue if there no DC Area has been added
-    */
-    TBool NoDirectContentAreaDefined();
-
-    /**
      * Sets popup style TextBox boolean value. Called by CMIDTextBoxDialogControl when
      * TextBox presentation is pop-up.
      *
@@ -344,6 +338,19 @@ public:
      * @since S60 9.2
      */
     void ReleaseOrientation();
+
+#ifdef RD_JAVA_NGA_ENABLED    
+    /**
+     * Gets the direct content areas that
+     * have been added to this displayable.
+     */
+    void GetDirectContentsRegion(RRegion& region) const;
+
+    /**
+     * Returns the number of direct content areas currently added to this displayable.
+     */
+    TInt DirectContentsCount() const;
+#endif
 
 private:
     // Construction and destruction
@@ -481,7 +488,7 @@ private:
      * If content control is CMIDCanvas, returns pointer to it, NULL otherwise.
      * @since S60 9.2
      */
-    CMIDCanvas* GetContentCanvas();
+    CMIDCanvas* GetContentCanvas() const;
 
 private:
     CMIDAppUi* iAppUi;

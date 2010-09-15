@@ -19,7 +19,7 @@
 package com.nokia.mj.impl.rt;
 
 
-import com.nokia.mj.impl.installer.utils.InstallerMain;
+import com.nokia.mj.impl.rt.test.UnitTestSuiteCreator;
 import com.nokia.mj.impl.rt.support.JvmInternal;
 
 import j2meunit.framework.Test;
@@ -30,11 +30,11 @@ import j2meunit.framework.TestSuite;
 /**
  * SystemProperty unit tests.
  */
-public class SystemPropertyTests extends TestCase implements InstallerMain
+public class SystemPropertyTests extends TestCase implements UnitTestSuiteCreator
 {
 
     // Begin j2meunit test framework setup
-    public void installerMain(String[] args)
+    public TestSuite createTestSuite(String[] args)
     {
         TestSuite suite = new TestSuite(this.getClass().getName());
 
@@ -62,8 +62,7 @@ public class SystemPropertyTests extends TestCase implements InstallerMain
             }
         }));
 
- 
-        com.nokia.mj.impl.utils.OmjTestRunner.run(suite);
+        return suite;
 
     }
 
@@ -118,7 +117,7 @@ public class SystemPropertyTests extends TestCase implements InstallerMain
             res = System.getProperty(testPropertyKey1);
             assertTrue("Fail3, got: "+ res, testPropertyVal2.equals(res));
 
-            // Set a null value to same system property and check that an 
+            // Set a null value to same system property and check that an
             // exception is thrown and the value is not changed.
             try
             {
@@ -146,7 +145,7 @@ public class SystemPropertyTests extends TestCase implements InstallerMain
             res = System.getProperty(testPropertyKey2);
             assertTrue("Fail7, got: "+ res, testPropertyVal4.equals(res));
 
-            // Set a null value to same user property and check that an 
+            // Set a null value to same user property and check that an
             // exception is thrown and the value is not changed.
             try
             {
@@ -159,7 +158,7 @@ public class SystemPropertyTests extends TestCase implements InstallerMain
             res = System.getProperty(testPropertyKey2);
             assertTrue("Fail8, got: "+ res, testPropertyVal4.equals(res));
 
-            // Set the same system and user property and check that the user property 
+            // Set the same system and user property and check that the user property
             // doesn't override the system property.
             JvmInternal.setSystemProperty(testPropertyKey3, testPropertyVal5);
             JvmInternal.setUserProperty(testPropertyKey3, testPropertyVal6);

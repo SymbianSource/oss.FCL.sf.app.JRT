@@ -26,7 +26,7 @@
 #include "cpimcardpropertyconverter.h"
 #include "fs_methodcall.h"
 #include "logger.h"
-#include "javasymbianoslayer.h"
+#include "cleanupresetanddestroy.h"
 #include <vcard.h>
 
 // ============================ MEMBER FUNCTIONS ===============================

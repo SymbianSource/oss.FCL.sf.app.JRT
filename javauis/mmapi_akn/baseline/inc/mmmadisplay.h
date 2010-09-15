@@ -190,6 +190,20 @@ public:
      *                If EFalse, the standard UI orientation is restored.        
      */
     virtual void FixUIOrientation(TBool aFix) = 0;
+    
+    
+    /**
+     * Allow player to free the clipping rect for
+     * UI usage. required in case of RTSP live streaming player
+     * stop and then start, to avoid the black screen in that time gap
+     */
+    virtual void RemoveClippingRegionPublic() = 0;
+    /**
+     * Allow player to get the clipping rect from
+     * UI usage. required in case of RTSP live streaming player
+     * start after stop, to avoid the black screen while its playing video
+     */
+    virtual void SetClippingRegionPublic() = 0;
 };
 
 #endif // MMMADISPLAY_H

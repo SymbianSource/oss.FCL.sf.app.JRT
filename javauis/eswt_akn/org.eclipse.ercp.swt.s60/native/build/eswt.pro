@@ -148,7 +148,7 @@ MMP_RULES += "END // RESOURCE"
 
 
 
-LIBS += -laknicon \
+LIBS += -lAknIcon \
         -laknhlist \
         -laknlayout \
         -laknpictograph \
@@ -163,11 +163,11 @@ LIBS += -laknicon \
         -lbitgdi \
         -lbitmaptransforms \
         -lbmpanim \
-        -lcdlengine \
+        -lCdlEngine \
         -lcentralrepository \
         -lcommdb \
         -lcommondialogs \
-        -lcommonengine \
+        -lCommonEngine \
         -lcommonui \
         -lcone \
         -lecom \

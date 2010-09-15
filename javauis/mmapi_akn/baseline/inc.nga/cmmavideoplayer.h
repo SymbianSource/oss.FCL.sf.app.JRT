@@ -80,7 +80,9 @@ public: // From MMMAGuiPlayer
                                         const TDesC& aStringEventData);
 
     IMPORT_C MMMASnapshot* SnapshoterL();
-
+    void FreeClipRectForUI();
+    void GetClipRectFromUI();
+    
 public: // From MMMASnapshot
     IMPORT_C MMMASnapshot::TEncoding TakeSnapshotL(TRequestStatus* aStatus,
             const TSize& aSize,

@@ -35,12 +35,21 @@ public:
     virtual MPIMLocalizationManager* localizationManager() const = 0;
 
     virtual pimbaselist* openPimList(const TPIMListType& aPimListType,
-                                     jstring aPimListName, JNIEnv* aJniEnv) = 0;
+                                     jstring aPimListName, jstring aCalName,
+                                     JNIEnv* aJniEnv) = 0;
 
     virtual jobjectArray listPimLists(const TPIMListType& aPimListType,
                                       jintArray aError, JNIEnv* aJniEnv) = 0;
+    virtual jobjectArray listCalendars(jintArray aError,
+                                       JNIEnv* aJniEnv) = 0;
+    virtual jobjectArray listCalendarNames(jintArray aError,
+                                           JNIEnv* aJniEnv) = 0;
 
     virtual void dispose()= 0;
+
+    virtual void createCalendar(jstring aCalName, jstring aDisplayName, JNIEnv* aJniEnv) = 0;
+
+    virtual void deleteCalendar(jstring aCalName, JNIEnv* aJniEnv) = 0;
 
     static pimbasemanager* getInstance();
 };

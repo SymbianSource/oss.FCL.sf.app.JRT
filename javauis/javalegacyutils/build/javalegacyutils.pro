@@ -18,7 +18,7 @@ TEMPLATE=lib
 TARGET=javalegacyutils
 CONFIG += omj java staticdata stl
 CONFIG -= qt
-LIBS += -lhal -lcommonengine
+LIBS += -lhal -lCommonEngine
 
 
 include(../../../build/omj.pri)

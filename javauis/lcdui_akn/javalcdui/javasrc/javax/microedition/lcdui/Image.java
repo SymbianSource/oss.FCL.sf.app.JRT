@@ -325,16 +325,15 @@ public class Image
 
     public static Image createRGBImage(int[] aRgb, int aWidth, int aHeight, boolean aProcessAlpha)
     {
-        if (aRgb.length < (aWidth * aHeight))
-        {
-            throw new ArrayIndexOutOfBoundsException();
-        }
-
         if (aWidth <= 0 || aHeight <= 0)
         {
             throw new IllegalArgumentException();
         }
 
+        if (aRgb.length < (aWidth * aHeight) || (aWidth * aHeight) < 0)
+        {
+            throw new ArrayIndexOutOfBoundsException();
+        }
         try
         {
             return new Image(aRgb, aWidth, aHeight, aProcessAlpha);

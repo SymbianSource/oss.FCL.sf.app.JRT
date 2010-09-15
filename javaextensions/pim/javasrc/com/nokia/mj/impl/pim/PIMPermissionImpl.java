@@ -96,7 +96,7 @@ public class PIMPermissionImpl extends PermissionBase
             {
                 return (SecurityPromptMessage.getInstance()).getText(
                            SecurityPromptMessage.QUESTION_ID_DELETING_ITEM,
-                           new String[] {iListName});
+                           new String[] {iItemInfo, iListName});
             }
         }
         else if (iOperation == OPERATION_ITEM_COMMIT)
@@ -111,7 +111,7 @@ public class PIMPermissionImpl extends PermissionBase
             {
                 return (SecurityPromptMessage.getInstance()).getText(
                            SecurityPromptMessage.QUESTION_ID_UPDATING_ITEM,
-                           new String[] {iListName});
+                           new String[] {iItemInfo, iListName});
             }
         }
         else if (iOperation == OPERATION_CATEGORY_DELETION)
