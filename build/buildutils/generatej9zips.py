@@ -26,7 +26,7 @@ class J9PackageConverter:
         self.currentDestRoot = None
 
     def convert(self):
-        self.createPackages("weme")
+        # self.createPackages("weme")
         self.createPackages("wece")
         return
 
@@ -325,8 +325,8 @@ j9FilesToCopy = [
           ('winscw/udeb/z/resource/ive/lib/jclFoundation11/locale.zip', 'locale.fp.zip'),
           ('winscw/udeb/z/resource/ive/lib/jclCdc11/locale.zip', 'locale.cdc.zip'),
           ('../../../../../../info.txt', None),
-          ('../../../../copyright.txt', None),
-          ('../../../../../ReleaseNotes-12-10-2009.doc', 'releasenotes/ReleaseNotes.doc')
+          ('../../../../../copyright.txt', None),
+          #('../../../../../ReleaseNotes-12-10-2009.doc', 'releasenotes/ReleaseNotes.doc')
           ]
 
 j9FilesToIgnore = [
