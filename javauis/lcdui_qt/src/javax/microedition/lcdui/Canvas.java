@@ -159,7 +159,6 @@ public abstract class Canvas extends Displayable
     private static final int DISABLE_TAPDETECTION = 1 << 3;
     private static final int SUPPRESS_GAMEKEYS = 1 << 4;
     private static final int SUPPRESS_DRAGEVENT = 1 << 5;
-    private static final int CLEANUP_NEEDED = 1 << 6;
     private static final int REPAINT_PENDING = 1 << 7;
     private static final int SELECTIONKEY_COMPATIBILITY = 1 << 8;
 
@@ -205,7 +204,6 @@ public abstract class Canvas extends Displayable
 
     private int mode;
     private Object modeLock;
-    private Object cleanupLock;
     private Object repaintLock;
     private Object flushLock;
 
@@ -239,7 +237,6 @@ public abstract class Canvas extends Displayable
 
         modeLock = new Object();
         repaintLock = new Object();
-        cleanupLock = new Object();
         flushLock = new Object();
         setMode(GAME_CANVAS, this instanceof GameCanvas);
         construct();
@@ -299,13 +296,13 @@ public abstract class Canvas extends Displayable
     {
         if(isMode(GAME_CANVAS))
         {
-            mShell = super.eswtConstructShell(style);
+            mShell = super.eswtConstructShell(style|SWT.NO_BACKGROUND);
         }
         else
         {
             if(sharedShell == null)
             {
-                sharedShell = super.eswtConstructShell(style);
+                sharedShell = super.eswtConstructShell(style|SWT.NO_BACKGROUND);
             }
             mShell = sharedShell;
         }
@@ -581,7 +578,7 @@ public abstract class Canvas extends Displayable
     /**
      * Issues the request to repaint the whole Canvas.
      */
-    public void repaint()
+     public final void repaint()
     {
         repaint(0, 0, getWidth(), getHeight());
     }
@@ -595,7 +592,7 @@ public abstract class Canvas extends Displayable
      * @param width - width of the rectangle to redraw.
      * @param height - height of the rectangle to redraw.
      */
-    public void repaint(int x, int y, int width, int height)
+    public final void repaint(int x, int y, int width, int height)
     {
         // Paint callback event is posted without any invalid area info.
         // Invalid area info is kept in the member variables. Only one event
@@ -719,15 +716,20 @@ public abstract class Canvas extends Displayable
     }
 
     /**
-     * Returns game action for a specified key code.
+     * Returns game action associated with key code.
      *
      * @param keyCode Key code to map to game action.
-     * @return Game action for a a specified key code or
-     *         IllegalArgumentException.
+     * @return game action corresponding to key, or 0 if none
+     * @throws IllegalArgumentException if keyCode is not a valid
      */
-    public int getGameAction(int keyCode)
+    public int getGameAction(int aKeyCode)
     {
-        return KeyTable.getGameAction(keyCode);
+        if (aKeyCode == 0)
+        {
+            throw new IllegalArgumentException(
+                MsgRepository.CANVAS_EXCEPTION_INVALID_KEY_CODE);
+        }
+        return KeyTable.getGameAction(aKeyCode);
     }
 
     /**
@@ -735,10 +737,18 @@ public abstract class Canvas extends Displayable
      *
      * @param gameAction - game action to be mapped to the key code.
      * @return Key code that is mapped to the specified game action.
+     * @throws IllegalArgumentException for not valid gameAction
      */
-    public int getKeyCode(int gameAction)
+    public int getKeyCode(int aGameAction)
     {
-        return KeyTable.getKeyCode(gameAction);
+        int keyCode = KeyTable.getKeyCode(aGameAction);
+
+        if (keyCode == 0)
+        {
+            throw new IllegalArgumentException(
+                MsgRepository.CANVAS_EXCEPTION_INVALID_GAME_ACTION);
+        }
+        return keyCode;
     }
 
     /**
@@ -748,9 +758,9 @@ public abstract class Canvas extends Displayable
      * @return String that contains textual name of the key specified by the key
      *         code.
      */
-    public String getKeyName(int keyCode)
+    public String getKeyName(int aKeyCode)
     {
-        return KeyTable.getKeyName(keyCode);
+        return KeyTable.getKeyName(aKeyCode);
     }
 
     /**
@@ -963,11 +973,6 @@ public abstract class Canvas extends Displayable
         // reset the game key state
         gameKeyState = 0;
 
-        synchronized(cleanupLock)
-        {
-            setMode(CLEANUP_NEEDED, true);
-        }
-
         LCDUIEvent event = EventDispatcher.instance().newEvent(LCDUIEvent.CANVAS_SHOWNOTIFY, this);
         EventDispatcher.instance().postEvent(event);
     }
@@ -992,10 +997,6 @@ public abstract class Canvas extends Displayable
         // this call must not be synchronized as we
         // cannot use locking in UI thread
         graphicsBuffer.setControlBounds(getContentComp());
-        synchronized(cleanupLock)
-        {
-            setMode(CLEANUP_NEEDED, true);
-        }
     }
 
     /*
@@ -1174,20 +1175,10 @@ public abstract class Canvas extends Displayable
             }
 
             // Clean the background if dirty, buffer the operations.
-            synchronized(cleanupLock)
+            if(isMode(NO_BACKGROUND) && event.type == LCDUIEvent.CANVAS_PAINT_NATIVE_REQUEST)
             {
-                if(isMode(CLEANUP_NEEDED) && isMode(NO_BACKGROUND))
-                {
-                    // UI thread can change the contentArea object reference at
-                    // any time. Store the object reference locally to ensure it
-                    // points to the same rectangle all the time.
-                    Rectangle contentArea = getContentArea();
-
-                    canvasGraphics.setClip(contentArea.x, contentArea.y,
-                                           contentArea.width, contentArea.height);
-                    canvasGraphics.cleanBackground(contentArea);
-                    setMode(CLEANUP_NEEDED, false);
-                }
+                canvasGraphics.setClip(event.x, event.y, event.width, event.height);
+                canvasGraphics.cleanBackground(new Rectangle(event.x, event.y, event.width, event.height));
             }
 
             // Clip must define the invalid area
@@ -1338,7 +1329,7 @@ public abstract class Canvas extends Displayable
     /**
      * Updates game key states and returns if the key was a game key.
      */
-    private boolean updateGameKeyState(int keyCode, boolean addKeyState)
+    private boolean updateGameKeyState(int aKeyCode, boolean aAddKeyState)
     {
         // Ignore key repeat events
         if(ESWTUIThreadRunner.getKeyRepeatCount() > 1)
@@ -1347,13 +1338,21 @@ public abstract class Canvas extends Displayable
         }
         try
         {
-            int gameAction = KeyTable.getGameAction(keyCode);
-            if(addKeyState)
+            int gameAction = getGameAction(aKeyCode);
+            boolean result = false;
+
+            // Key state should be updated only if game action 
+            // is associated with keyCode
+            if(gameAction != 0)
             {
-                // set bitfield
-                gameKeyState |= (1 << gameAction);
+                if(aAddKeyState)
+                {
+                    // set bitfield
+                    gameKeyState |= (1 << gameAction);
+                }
+                result = true;
             }
-            return true;
+            return result;
         }
         catch(IllegalArgumentException iae)
         {

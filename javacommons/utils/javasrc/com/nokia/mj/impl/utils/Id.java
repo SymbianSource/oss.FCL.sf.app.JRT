@@ -40,7 +40,7 @@ public class Id
         this.iQtLocString = aQtLocString;
     }
 
-    public String getString(int aPlatform)
+    String getString(int aPlatform)
     {
         if (aPlatform == ResourceLoader.QT)
         {

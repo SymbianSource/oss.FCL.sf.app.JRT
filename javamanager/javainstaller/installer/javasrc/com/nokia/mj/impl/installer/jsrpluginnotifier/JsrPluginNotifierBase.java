@@ -82,25 +82,31 @@ public class JsrPluginNotifierBase
     public void notifyInstallation(InstallerExtensionInfo aInfo)
     {
         Log.log("JsrPluginNotifierBase.NotifyInstallation called");
-
-        // Are there any plugins to be notified
-        if (iJsrPlugins.size() > 0)
+        boolean continueInstallation = true;
+        InstallerExtension plugin = null;
+        for (int i = 0; i < iJsrPlugins.size(); i++)
         {
-            boolean continueInstallation = true;
-            Iterator iter = iJsrPlugins.iterator();
-            InstallerExtension plugin;
-            while (iter.hasNext())
+            try
             {
-                plugin = (InstallerExtension)iter.next();
+                plugin = (InstallerExtension)iJsrPlugins.elementAt(i);
+                Log.log("Jsr plugin install " + plugin.getClass().getName());
                 continueInstallation = plugin.install(aInfo);
-
-                // Check whether JSR plugin cancels installation
-                if (!continueInstallation)
-                {
-                    InstallerException.internalError(
-                        "Jsr plugin " + plugin.getClass().getName() +
-                        " cancelled installation.");
-                }
+            }
+            catch (Throwable t)
+            {
+                Log.logError("Installer Jsr plugin " +
+                             plugin.getClass().getName() +
+                             " install exception " + t, t);
+                continueInstallation = false;
+            }
+            // Check if JSR plugin cancelled installation.
+            if (!continueInstallation)
+            {
+                // Rollback those plugins which already got notified.
+                notifyRollbackInstall(aInfo, i);
+                InstallerException.internalError(
+                    "Jsr plugin " + plugin.getClass().getName() +
+                    " cancelled installation.");
             }
         }
     }
@@ -116,25 +122,31 @@ public class JsrPluginNotifierBase
     public void notifyUninstallation(InstallerExtensionInfo aInfo)
     {
         Log.log("JsrPluginNotifierBase.notifyUninstallation called");
-
-        // Are there any plugins to be notified
-        if (iJsrPlugins.size() > 0)
+        boolean continueUninstallation = true;
+        InstallerExtension plugin = null;
+        for (int i = 0; i < iJsrPlugins.size(); i++)
         {
-            boolean continueUninstallation = true;
-            Iterator iter = iJsrPlugins.iterator();
-            InstallerExtension plugin;
-            while (iter.hasNext())
+            try
             {
-                plugin = (InstallerExtension)iter.next();
+                plugin = (InstallerExtension)iJsrPlugins.elementAt(i);
+                Log.log("Jsr plugin uninstall " + plugin.getClass().getName());
                 continueUninstallation = plugin.uninstall(aInfo);
-
-                // Check whether JSR plugin cancels uninstallation
-                if (!continueUninstallation)
-                {
-                    InstallerException.internalError(
-                        "Jsr plugin " + plugin.getClass().getName() +
-                        " cancelled uninstallation.");
-                }
+            }
+            catch (Throwable t)
+            {
+                Log.logError("Installer Jsr plugin " +
+                             plugin.getClass().getName() +
+                             " uninstall exception " + t, t);
+                continueUninstallation = false;
+            }
+            // Check if JSR plugin cancelled uninstallation.
+            if (!continueUninstallation)
+            {
+                // Rollback those plugins which already got notified.
+                notifyRollbackUninstall(aInfo, i);
+                InstallerException.internalError(
+                    "Jsr plugin " + plugin.getClass().getName() +
+                    " cancelled uninstallation.");
             }
         }
     }
@@ -150,18 +162,7 @@ public class JsrPluginNotifierBase
     public void notifyRollbackInstall(InstallerExtensionInfo aInfo)
     {
         Log.log("JsrPluginNotifierBase.notifyRollbackInstall called");
-
-        // Are there any plugins to be notified
-        if (iJsrPlugins.size() > 0)
-        {
-            Iterator iter = iJsrPlugins.iterator();
-            InstallerExtension plugin;
-            while (iter.hasNext())
-            {
-                plugin = (InstallerExtension)iter.next();
-                plugin.rollbackInstall(aInfo);
-            }
-        }
+        notifyRollbackInstall(aInfo, iJsrPlugins.size());
     }
 
     /**
@@ -175,18 +176,7 @@ public class JsrPluginNotifierBase
     public void notifyRollbackUninstall(InstallerExtensionInfo aInfo)
     {
         Log.log("JsrPluginNotifierBase.notifyRollbackUninstall called");
-
-        // Are there any plugins to be notified
-        if (iJsrPlugins.size() > 0)
-        {
-            Iterator iter = iJsrPlugins.iterator();
-            InstallerExtension plugin;
-            while (iter.hasNext())
-            {
-                plugin = (InstallerExtension)iter.next();
-                plugin.rollbackUninstall(aInfo);
-            }
-        }
+        notifyRollbackUninstall(aInfo, iJsrPlugins.size());
     }
 
     /**
@@ -240,19 +230,19 @@ public class JsrPluginNotifierBase
             }
             catch (ClassNotFoundException e2)
             {
-                Log.logError("Jsr plugin class" + className + " is not found.");
+                Log.logError("Installer Jsr plugin class" + className + " not found.");
             }
             catch (InstantiationException e3)
             {
-                Log.logError("Cannot instantiate Jsr plugin " + className);
+                Log.logError("Installer cannot instantiate Jsr plugin " + className);
             }
             catch (IllegalAccessException e4)
             {
-                Log.logError("Cannot access Jsr plugin " + className);
+                Log.logError("Installer cannot access Jsr plugin " + className);
             }
             catch (ClassCastException e5)
             {
-                Log.logError("Jsr plugin " + className +
+                Log.logError("Installer Jsr plugin " + className +
                              " does not implement interface InstallerExtension.");
             }
         }
@@ -300,7 +290,7 @@ public class JsrPluginNotifierBase
         }
         catch (IOException e)
         {
-            Log.logError("JsrPluginNotifier cannot read plugin " +
+            Log.logError("Installer JsrPluginNotifier cannot read plugin " +
                          "config file " + aFileName, e);
             return;
         }
@@ -316,11 +306,70 @@ public class JsrPluginNotifierBase
                 catch (IOException ioe)
                 {
                     Log.logError(
-                        "JsrPluginNotifier: exception while closing reader",
+                        "Installer JsrPluginNotifier: exception while closing reader",
                         ioe);
                 }
             }
         }
     }
 
+    /**
+     * Notifies Jsr plugins in iJsrPlugins vector that the installation of
+     * a MIDlet suite has been cancelled by calling the rollbackInstall()
+     * method of the plugins.
+     *
+     * @param aInfo notification information object
+     * @param aCount number of plugins to notify
+     * @see InstallerExtension#rollbackInstall
+     */
+    private void notifyRollbackInstall(InstallerExtensionInfo aInfo, int aCount)
+    {
+        InstallerExtension plugin = null;
+        for (int i = aCount - 1; i >= 0; i--)
+        {
+            try
+            {
+                plugin = (InstallerExtension)iJsrPlugins.elementAt(i);
+                Log.log("Jsr plugin rollbackInstall " +
+                        plugin.getClass().getName());
+                plugin.rollbackInstall(aInfo);
+            }
+            catch (Throwable t)
+            {
+                Log.logError("Installer Jsr plugin " +
+                             plugin.getClass().getName() +
+                             " rollbackInstall exception " + t, t);
+            }
+        }
+    }
+
+    /**
+     * Notifies Jsr plugins in iJsrPlugins vector that the uninstallation of
+     * a MIDlet suite has been cancelled by calling the rollbackUninstall()
+     * method of the plugins.
+     *
+     * @param aInfo notification information object
+     * @param aCount number of plugins to notify
+     * @see InstallerExtension#rollbackUninstall
+     */
+    private void notifyRollbackUninstall(InstallerExtensionInfo aInfo, int aCount)
+    {
+        InstallerExtension plugin = null;
+        for (int i = aCount - 1; i >= 0; i--)
+        {
+            try
+            {
+                plugin = (InstallerExtension)iJsrPlugins.elementAt(i);
+                Log.log("Jsr plugin rollbackUninstall " +
+                        plugin.getClass().getName());
+                plugin.rollbackUninstall(aInfo);
+            }
+            catch (Throwable t)
+            {
+                Log.logError("Installer Jsr plugin " +
+                             plugin.getClass().getName() +
+                             " rollbackUninstall exception " + t, t);
+            }
+        }
+    }
 }

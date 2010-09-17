@@ -49,11 +49,7 @@ final class KeyTable
         {Canvas.KEY_NUM7,  Canvas.GAME_A},
         {Canvas.KEY_NUM9,  Canvas.GAME_B},
         {Canvas.KEY_STAR,  Canvas.GAME_C},
-        {Canvas.KEY_POUND,  Canvas.GAME_D},
-        
-        {Canvas.KEY_NUM0, 0},
-        {Canvas.KEY_NUM1, 0},
-        {Canvas.KEY_NUM3, 0}
+        {Canvas.KEY_POUND,  Canvas.GAME_D}
     };
 
     /**
@@ -63,37 +59,38 @@ final class KeyTable
     {
     }
 
-    static int getGameAction(int keyCode)
+    static int getGameAction(int aKeyCode)
     {
         for(int i = 0; i < KEY_TO_GAME_TABLE.length; i++)
         {
-            if(KEY_TO_GAME_TABLE[i][0] == keyCode)
+            if(KEY_TO_GAME_TABLE[i][0] == aKeyCode)
             {
                 return KEY_TO_GAME_TABLE[i][1];
             }
         }
-        throw new IllegalArgumentException(
-            MsgRepository.CANVAS_EXCEPTION_INVALID_KEY_CODE);
+
+        //No game action corresponding to this key
+        return 0;
     }
 
-    static int getKeyCode(int gameAction)
+    static int getKeyCode(int aGameAction)
     {
         for(int i = 0; i < KEY_TO_GAME_TABLE.length; i++)
         {
-            if(KEY_TO_GAME_TABLE[i][1] == gameAction)
+            if(KEY_TO_GAME_TABLE[i][1] == aGameAction)
             {
                 return KEY_TO_GAME_TABLE[i][0];
             }
         }
-        throw new IllegalArgumentException(
-            MsgRepository.CANVAS_EXCEPTION_INVALID_GAME_ACTION);
+
+        //No key code corresponding to this game action
+        return 0;
     }
 
 
-    static String getKeyName(int keyCode)
+    static String getKeyName(int aKeyCode)
     {
-
-        switch(keyCode)
+        switch(aKeyCode)
         {
         case Canvas.KEY_NUM0:
             return "0";

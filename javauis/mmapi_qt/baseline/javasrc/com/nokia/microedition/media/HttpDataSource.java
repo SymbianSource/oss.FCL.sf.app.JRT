@@ -23,6 +23,7 @@ import java.io.IOException;
 import javax.microedition.io.Connection;
 import javax.microedition.io.HttpConnection;
 import javax.microedition.media.Control;
+import com.nokia.mj.impl.utils.Logger;
 
 /**
  * This class extends ConnectorDataSource and adds http connection
@@ -73,6 +74,7 @@ public class HttpDataSource extends ConnectorDataSource implements SeekControl
             if (!iClosed)
             {
                 connect();
+                Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"HttpDataSource seek() after open");
             }
 
             if (iClosed)

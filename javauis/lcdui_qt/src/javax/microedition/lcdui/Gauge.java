@@ -108,9 +108,15 @@ public class Gauge extends Item
      */
     public void setMaxValue(int aMaxValue)
     {
-        int oldMaxValue = maxValue;
-		maxValue = validateMaxValue(aMaxValue, interactive);
-        value = validateValue(getValue(), maxValue, oldMaxValue);
+        if (maxValue == aMaxValue)
+        {
+            return;
+        }
+        int tempMaxValue = validateMaxValue(aMaxValue, interactive);
+        int tempValue    = validateValue(getValue(), tempMaxValue, maxValue);
+        
+        maxValue = tempMaxValue;
+        value = tempValue;
         updateParent(UPDATE_MAXVALUE);
     }
 

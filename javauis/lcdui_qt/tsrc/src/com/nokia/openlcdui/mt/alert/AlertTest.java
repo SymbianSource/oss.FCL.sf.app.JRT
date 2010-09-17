@@ -329,6 +329,64 @@ public class AlertTest extends SWTTestCase
         }
 
         alert.setIndicator(null);
+        
+        setIndicatorAdditionalTests();
+    }
+
+    private void setIndicatorAdditionalTests()
+    {
+        boolean failed = false;
+        String s = "";
+        
+        Gauge[] g = 
+        {
+          new Gauge(null, true, 10, 1),      // interactive
+          new Gauge("", false, 10, 1),        // has a label
+          new Gauge("Label", false, 10, 1),   // has a label
+
+          new Gauge(null, false, 10, 1),  // preferred width will be locked
+          new Gauge(null, false, 10, 1),  // preferred height will be locked
+          new Gauge(null, false, 10, 1),  // preferred width and height will be locked
+
+          new Gauge(null, false, 10, 1), // layout will be changed
+          new Gauge(null, false, 10, 1),  // to be added into another Alert
+          new Gauge(null, false, 10, 1),  // to be added into Form
+          new Gauge(null, false, 10, 1), // some Command(s) will be added using addCommand method
+          new Gauge(null, false, 10, 1), // some Command(s) will be added using setDefaultCommand method
+
+          new Gauge(null, false, 10, 1), // ItemCommandListener will be added to
+      };
+
+      g[3].setPreferredSize(5, -1);
+      g[4].setPreferredSize(-1, 5);
+      g[5].setPreferredSize(5, 5);
+      g[6].setLayout(Item.LAYOUT_CENTER);
+      new Alert("Another Alert").setIndicator(g[7]);
+      new Form("Another Form", new Item[]{g[8]});
+      g[9].addCommand(new Command("Command", Command.OK, 0));
+      g[10].setDefaultCommand(new Command("Command", Command.OK, 0));
+      g[11].setItemCommandListener(new ItemCommandListener() 
+      { 
+          public void commandAction(Command c, Item item)
+          {}
+      });
+
+      for(int i=0; i != g.length; ++i) 
+      {
+          try 
+          {
+            new Alert("Test Alert").setIndicator(g[i]);
+            s = "IllegalStateException expected: index = "+i;
+            failed = true;
+          } catch(IllegalArgumentException ise) {
+          }
+      }
+
+      if (failed)
+      {
+          fail("8. " + s);
+      }
+      return; 
     }
 
     /**

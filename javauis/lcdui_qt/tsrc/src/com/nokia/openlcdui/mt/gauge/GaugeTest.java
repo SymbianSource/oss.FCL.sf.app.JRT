@@ -89,12 +89,14 @@ public class GaugeTest extends SWTTestCase
     {
         java.util.Vector methodNames = new java.util.Vector();
         methodNames.addElement("testAccessors");
+        methodNames.addElement("gaugeCurrentValuesTest");
         return methodNames;
     }
 
     protected void runTest() throws Throwable
     {
         if(getName().equals("testAccessors")) testAccessors();
+        else if(getName().equals("gaugeCurrentValuesTest")) gaugeCurrentValuesTest();
         else super.runTest();
     }
     /**
@@ -203,5 +205,41 @@ public class GaugeTest extends SWTTestCase
                    gauge4.getMinimumWidth() > 0);
         //print("labeled interactive minimum width: "
         //        + gauge4.getMinimumWidth());
+    }
+
+    /**
+     * Tests Non-interactive INDEFINITE Gauge with different current values.
+     * <p>
+    * Test passes if current values of the Gauge will not be changed.
+     * <p>
+    * Test fails if current values of the Gauge will be changed.
+    * <p>
+     */
+    public void gaugeCurrentValuesTest()
+    {
+        Gauge  gaugeObj;
+        int[]  values = {Gauge.CONTINUOUS_IDLE, Gauge.CONTINUOUS_RUNNING,
+                         Gauge.INCREMENTAL_IDLE, Gauge.INCREMENTAL_UPDATING};
+
+        for (int i=0; i != values.length; ++i) 
+        {
+            gaugeObj = new Gauge("MT Gauge", false, Gauge.INDEFINITE, values[i]);
+
+            gaugeObj.setMaxValue(Gauge.INDEFINITE);
+
+            if (gaugeObj.getMaxValue() != Gauge.INDEFINITE) 
+            {
+                String s = "Test FAILED\n Passed: Gauge.INDEFINITE ("+
+                Gauge.INDEFINITE+"), got:" + gaugeObj.getMaxValue();
+                fail("1. "+s);
+            }
+
+            if (gaugeObj.getValue() != values[i]) 
+            {
+                String s = "Test FAILED\n Current value was changed. Was: " +
+                values[i] + ", became: "+gaugeObj.getValue();
+                fail("2. "+s);
+            }
+        }
     }
 }

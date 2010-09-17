@@ -126,6 +126,7 @@ contains(TARGET, eswtqtwebkit): TARGET.UID3 = 0x2002FFA9
 contains(TARGET, javaopengles): TARGET.UID3 = 0x20031DD1
 contains(TARGET, javacentrep): TARGET.UID3 = 0x2002DCE1
 contains(TARGET, javachapi): TARGET.UID3 = 0x2002DCE4
+contains(TARGET, javasoftindicatorplugin): TARGET.UID3 = 0x20031E8E
 
 isEmpty(TARGET.UID3): error($${TEMPLATE} $${TARGET} : UID3 not defined. Please allocate UID3 and configure it either on $${TARGET}.pro file or in command symbian_uids.pri)
 

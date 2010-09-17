@@ -364,11 +364,11 @@ std::wstring *S60BluetoothPlatformControl::getBluetoothName()
     TInt error = RProperty::Get(KPropertyUidBluetoothCategory,
                                 KPropertyKeyBluetoothGetDeviceName, bluetoothName);
 
-    if (error != KErrNone)
+    if (error != KErrNone || (0 == bluetoothName.Length()))
     {
+        ELOG(EJavaBluetooth, "Bluetooth friendly name was not set");
         return NULL;
     }
-
     std::wstring *deviceName =
         new std::wstring((wchar_t*) bluetoothName.Ptr());
 

@@ -25,7 +25,7 @@ import com.nokia.mj.impl.rt.ui.ConfirmData;
 import com.nokia.mj.impl.rt.ui.RuntimeUi;
 import com.nokia.mj.impl.rt.ui.RuntimeUiFactory;
 
-import com.nokia.mj.impl.rt.midp.SchemeHandlerBase;
+import com.nokia.mj.impl.rt.midp.SchemeHandler;
 
 import com.nokia.mj.impl.rt.support.ApplicationInfo;
 
@@ -60,6 +60,8 @@ public abstract class MIDlet
     private static boolean mConstructionAllowed = true;
 
     private static final int DOMAIN_MANUFACTURER_OR_OPERATOR = 1;
+
+    private static final String JRT_SCHEME = "jrt:";
 
     /*** ----------------------------- PUBLIC ------------------------------ */
 
@@ -163,7 +165,7 @@ public abstract class MIDlet
         String domain = appInfo.getProtectionDomain();
 
         // Handling for java scheme.
-        /*if (url.startsWith("java://"))
+        if (url.startsWith(JRT_SCHEME))
         {
             String handlerName = parseHandlerName(url);
 
@@ -174,7 +176,7 @@ public abstract class MIDlet
             }
 
             return invokeSchemeHandler(handlerName, url);
-        }*/
+        }
 
         // If the platform request is used to start arbitrary native application,
         // check that MIDlet is in manufacturer or operator domain
@@ -376,21 +378,17 @@ public abstract class MIDlet
 
     private String parseHandlerName(String url) throws ConnectionNotFoundException
     {
-        // Parse handler name from URL. Remove java:// prefix.
-        String handlerName = url.substring(7).trim();
+        // Parse handler name from URL. Remove JRT_SCHEME prefix.
+        String handlerName = url.substring(JRT_SCHEME.length()).trim();
 
         // name format: handlername?query
         int nameEndIndex = handlerName.indexOf('?');
 
         if (nameEndIndex != -1)
         {
-            handlerName = handlerName.substring(0, nameEndIndex);
-            return handlerName;
+            return handlerName.substring(0, nameEndIndex);
         }
-        else
-        {
-            throw new ConnectionNotFoundException("Handler not found for URL");
-        }
+        throw new ConnectionNotFoundException("Handler not found for URL: " + url);
     }
 
     private boolean invokeSchemeHandler(String handlerName, String url)
@@ -400,18 +398,19 @@ public abstract class MIDlet
         {
             // Avoid loading whatever class from the system using handler
             // as package name.
-            Class clazz = Class.forName("com.nokia.mj.impl.rt." + handlerName + ".SchemeHandler");
+            Class clazz = Class.forName("com.nokia.mj.impl.rt." + handlerName + ".SchemeHandlerImpl");
 
-            SchemeHandlerBase handler = (SchemeHandlerBase)clazz.newInstance();
+            SchemeHandler handler = (SchemeHandler)clazz.newInstance();
 
             handler.execute(url);
             return false;  // No need to close MIDlet.
         }
         catch (Throwable t)
         {
-            Logger.ELOG(Logger.EJavaRuntime, "Cannot invoke scheme handler: " + t.toString());
+            Logger.ELOG(Logger.EJavaRuntime, "Cannot invoke scheme handler for url: "
+                + url + " : " + t.toString());
             // ClassNotFoundException, IllegalAccessException or InstantionException.
-            throw new ConnectionNotFoundException("Handler not found for URL");
+            throw new ConnectionNotFoundException("Handler not found for URL: " + url);
         }
     }
 

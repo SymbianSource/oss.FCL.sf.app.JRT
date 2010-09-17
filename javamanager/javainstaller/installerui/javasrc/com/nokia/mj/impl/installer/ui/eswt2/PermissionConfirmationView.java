@@ -227,7 +227,7 @@ public class PermissionConfirmationView extends ConfirmationViewBase
 
         // After other widgets have been added, add content to
         // application info Composite.
-        addAppInfo(iInstallInfo, false);
+        addAppInfo(iInstallInfo, false, false);
     }
 
     /**

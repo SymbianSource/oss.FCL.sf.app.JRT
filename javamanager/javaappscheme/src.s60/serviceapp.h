@@ -35,8 +35,7 @@ public:
     ServiceApp(int &argc, char **argv);
     ~ServiceApp();
 
-// TEMP TEST
-public slots:    
+public slots:
     static void quit();
 
 private:
@@ -54,9 +53,6 @@ class UriService : public XQServiceProvider
     public slots:
         bool view(const QString& uri);
         bool view(const QString& uri, bool returnValue);
-
-    private:
-        ServiceApp* mServiceApp;
 };
 
 

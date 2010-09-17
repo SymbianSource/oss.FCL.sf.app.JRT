@@ -1,0 +1,4 @@
+EXPORTS
+	_Z10jni_lookupPKc @ 1 NONAME
+	_Z13findDllMethodPKc @ 2 NONAME
+

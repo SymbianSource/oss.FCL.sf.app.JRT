@@ -46,7 +46,7 @@ public class PermissionDetailsView extends ConfirmationViewBase
         super(aInstallerUi, aParent, 1, true);
         iPermissionInfo = aPermissionInfo;
         setTitle(aTitle);
-        setCommands(null, InstallerUiTexts.get(InstallerUiTexts.OK));
+        setCommands(null, InstallerUiTexts.get(InstallerUiTexts.CLOSE));
     }
 
     /**

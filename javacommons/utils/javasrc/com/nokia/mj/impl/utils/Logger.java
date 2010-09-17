@@ -172,7 +172,7 @@ public final class Logger
         catch (Exception e)
         {
 
-            System.out.println(e.toString());
+            System.err.println(e.toString());
         }
     }
 
@@ -183,7 +183,7 @@ public final class Logger
      */
     public static void ELOG(int component, String str)
     {
-        _logging(component, EError, str);
+        logImpl(component, EError, str);
     }
 
     /**
@@ -194,12 +194,7 @@ public final class Logger
      */
     public static void ELOG(int component, String str, Throwable thrown)
     {
-
-        ByteArrayOutputStream byte_stream = new ByteArrayOutputStream();
-        PrintStream print_stream = new PrintStream(byte_stream);
-
-        _loggingException(component, EError, str, thrown, byte_stream, print_stream);
-
+        logImpl(component, EError, str, thrown);
     }
 
     /**
@@ -209,7 +204,7 @@ public final class Logger
      */
     public static void WLOG(int component, String str)
     {
-        _logging(component, EWarning, str);
+        logImpl(component, EWarning, str);
     }
 
     /**
@@ -220,10 +215,7 @@ public final class Logger
      */
     public static void WLOG(int component, String str, Throwable thrown)
     {
-        ByteArrayOutputStream byte_stream = new ByteArrayOutputStream();
-        PrintStream print_stream = new PrintStream(byte_stream);
-
-        _loggingException(component, EWarning, str, thrown, byte_stream, print_stream);
+        logImpl(component, EWarning, str, thrown);
     }
 
     /**
@@ -233,7 +225,7 @@ public final class Logger
      */
     public static void PLOG(int component, String str)
     {
-        _logging(component, EInfoPrd, str);
+        logImpl(component, EInfoPrd, str);
     }
 
     /**
@@ -245,9 +237,7 @@ public final class Logger
      */
     public static void PLOG(int component, String str, Throwable thrown)
     {
-        ByteArrayOutputStream byte_stream = new ByteArrayOutputStream();
-        PrintStream print_stream = new PrintStream(byte_stream);
-        _loggingException(component, EInfoPrd, str, thrown, byte_stream, print_stream);
+        logImpl(component, EInfoPrd, str, thrown);
     }
 
     /**
@@ -257,7 +247,7 @@ public final class Logger
      */
     public static void ILOG(int component, String str)
     {
-        _logging(component, EInfo, str);
+        logImpl(component, EInfo, str);
     }
 
     /**
@@ -269,9 +259,7 @@ public final class Logger
      */
     public static void ILOG(int component, String str, Throwable thrown)
     {
-        ByteArrayOutputStream byte_stream = new ByteArrayOutputStream();
-        PrintStream print_stream = new PrintStream(byte_stream);
-        _loggingException(component, EInfoPrd, str, thrown, byte_stream, print_stream);
+        logImpl(component, EInfo, str, thrown);
     }
 
     /**
@@ -284,7 +272,7 @@ public final class Logger
     {
         if (Activated[component])
         {
-            _logging(component, EEntry, str);
+            logImpl(component, EEntry, str);
         }
     }
 
@@ -297,7 +285,7 @@ public final class Logger
     {
         if (Activated[component])
         {
-            _logging(component, EInfoHeavyLoad, str);
+            logImpl(component, EInfoHeavyLoad, str);
         }
     }
 
@@ -311,7 +299,9 @@ public final class Logger
     public static void LOG(int component, int level, String str)
     {
         if (Activated[component])
-            _logging(component, level, str);
+        {
+            logImpl(component, level, str);
+        }
     }
 
     /**
@@ -326,19 +316,47 @@ public final class Logger
     {
         if (Activated[component])
         {
-            ByteArrayOutputStream byte_stream = new ByteArrayOutputStream();
-            PrintStream print_stream = new PrintStream(byte_stream);
+            logImpl(component, level, str, thrown);
+        }
+    }
+    /**
+     * Function for printing a log without an exception.
+     * @param component a unique id of component
+     * @param level id level of tracing information
+     * @param str emiting information
+     */
+    private static void logImpl(int component, int level, String str)
+    {
+        logImpl(component, level, str, null);
+    }
 
-            _loggingException(component, level, str, thrown, byte_stream, print_stream);
+    /**
+     * Function for printing a log with optional exception.
+     * @param component a unique id of component
+     * @param level id level of tracing information
+     * @param str emiting information
+     * @param thrown exception object. If null then ignored
+     */
+    private static void logImpl(int component, int level, String str, Throwable thrown)
+    {
+        if (str == null)
+        {
+            ELOG(component, "str argument was null!", new NullPointerException());
+        }
+        else
+        {
+            _logging(component, level, str, DebugUtils.getStackTrace(thrown));
         }
     }
 
-
-    /** Native function prototype. */
-    private static native void _logging(int component, int level, String str);
-
-    /** Native function for logging stack trace when exception happend */
-    private static native void _loggingException(int component, int level, String str, Throwable thrown,
-            ByteArrayOutputStream byte_stream, PrintStream print_stream);
-
+    /**
+     * Native function for printing a log with optional stack trace.
+     * @param component a unique id of component
+     * @param level id level of tracing information
+     * @param str emiting information. Must not be null.
+     * @param stackTrace of the exception object. Can be null and will then
+     *                   be ignored.
+     */
+    private static native void _logging(int component, int level, String str,
+                                        String stackTrace);
 }

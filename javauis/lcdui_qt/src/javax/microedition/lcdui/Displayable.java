@@ -125,7 +125,7 @@ public abstract class Displayable
         {
             public void run()
             {
-                shell = eswtConstructShell(SWT.SHELL_TRIM | SWT.PRIMARY_MODAL);
+                shell = eswtConstructShell(SWT.SHELL_TRIM);
                 eswtSetTitle();
                 contentComp = eswtConstructContent(SWT.NONE);
                 contentArea = eswtLayoutShellContent();
@@ -198,7 +198,9 @@ public abstract class Displayable
         if(!shell.isDisposed())
         {
             eswtUpdateSizes();
-            if(ticker != null)
+
+            // If it is popup textbox ticker should not be visible
+            if (ticker != null && !isPopup())
             {
                 ticker.start();
             }
@@ -327,7 +329,7 @@ public abstract class Displayable
     {
         if(isDialogShell())
         {
-            // aHeight += Config.DISPLAYABLE_DIALOGSHELL_HEIGHT_DISPLACEMENT;
+            //aHeight += Config.DISPLAYABLE_DIALOGSHELL_HEIGHT_DISPLACEMENT;
 
             Logger.method(this, "eswtSetPreferredContentSize",
                           String.valueOf(aWidth), String.valueOf(aHeight));
@@ -344,16 +346,29 @@ public abstract class Displayable
             Rectangle shellBounds = shell.getBounds();
             // compute the trimmed shell size
             Rectangle newSize = shell.computeTrim(0, 0, newWidth, newHeight);
+
             // set the new size
             shell.setSize(newSize.width, newSize.height);
-            // set the location - attached to the bottom growing upwards
-            shell.setLocation(shellBounds.x, (shellBounds.y + shellBounds.height) - newSize.height);
+
+            if(!(this instanceof Alert))
+            {
+                // set the location - attached to the bottom growing upwards
+                shell.setLocation(shellBounds.x, 
+                    (shellBounds.y + shellBounds.height) - newSize.height);
+            }
+            else
+            {
+                // Temporary solution, it should be changed after qt integration
+                shell.setLocation(shellBounds.x, ESWTUIThreadRunner.
+                    getInstance().getDisplay().getBounds().height/2);
+            }
         }
     }
 
     Rectangle eswtLayoutShellContent()
     {
         Rectangle shellArea = shell.getClientArea();
+
         if(tickerLabel != null)
         {
             int tickerHeight = tickerLabel.getBounds().height;
@@ -699,6 +714,8 @@ public abstract class Displayable
         }
 
         final Ticker finalTicker = ticker;
+        final Displayable currentDisplayable = this;
+
         ESWTUIThreadRunner.syncExec(new Runnable()
         {
             public void run()
@@ -707,18 +724,31 @@ public abstract class Displayable
                 {
                     // Setting ticker:
                     tickerLabel.setText(finalTicker.getFormattedString());
-                    tickerLabel.pack();
-                    // Avoid ticker flashing by setting it out of the
-                    // screen first:
-                    tickerLabel.setBounds(Integer.MIN_VALUE, 0,
+
+                    // If it is popup textbox ticker should not be visible
+                    if (!currentDisplayable.isPopup())
+                    {
+
+                        // Setting ticker:
+                        tickerLabel.pack();
+                        // Avoid ticker flashing by setting it out of the
+                        // screen first:
+                        tickerLabel.setBounds(Integer.MIN_VALUE, 0,
                                           tickerLabel.getBounds().width,
                                           tickerLabel.getBounds().height);
+                    }
                 }
                 else
                 {
                     // Removing ticker:
                     tickerLabel.setText("");
-                    tickerLabel.setBounds(Integer.MIN_VALUE, 0, 0, 0);
+
+                    // If it is popup textbox ticker should not be visible
+                    if (!currentDisplayable.isPopup())
+                    {
+                        // Removing ticker:
+                        tickerLabel.setBounds(Integer.MIN_VALUE, 0, 0, 0);
+                    }
                 }
                 eswtUpdateSizes();
             }
@@ -727,10 +757,14 @@ public abstract class Displayable
         {
             if(isLcduiVisible)
             {
-                // Start to scroll the ticker. Ticker may be already running
-                // if it exists in some other displayable already, but
-                // calling this again wont do any harm:
-                ticker.start();
+                // If it is popup textbox ticker should not be visible
+                if (!isPopup())
+                {
+                    // Start to scroll the ticker. Ticker may be already running
+                    // if it exists in some other displayable already, but
+                    // calling this again wont do any harm:
+                    ticker.start();
+                }
             }
         }
     }
@@ -788,12 +822,23 @@ public abstract class Displayable
     {
         if(tickerLabel == null)
         {
+            final Displayable currentDisplayable = this;
             ESWTUIThreadRunner.syncExec(new Runnable()
             {
                 public void run()
                 {
-                    tickerLabel = new Label(shell,
-                                            SWT.SHADOW_NONE | SWT.HORIZONTAL | SWT.CENTER);
+                    // Alert's ticker should be added to top part of the screen
+                    Composite parent = shell;
+                    if (currentDisplayable instanceof Alert)
+                    {
+                        parent = shell.getParent();
+                        if(parent == null)
+                        {
+                            parent = shell;
+                        }
+                    }
+                    tickerLabel = new Label(parent,
+                        SWT.SHADOW_NONE | SWT.HORIZONTAL | SWT.CENTER);
                 }
             });
         }
@@ -852,6 +897,23 @@ public abstract class Displayable
             event.commandListener.commandAction(event.command, this);
             break;
         }
+    }
+
+    /* (non-Javadoc)
+     * Checks if instance of Displayable is popup component
+     */
+    protected boolean isPopup()
+    {
+        boolean isPopup = false;
+
+        if(this instanceof TextBox && 
+                    !JadAttributeUtil.isValue(
+                        JadAttributeUtil.ATTRIB_NOKIA_UI_ENHANCEMENT, 
+                        JadAttributeUtil.VALUE_FULLSCREEN_TEXTBOX))
+        {
+            isPopup = true;
+        }
+        return isPopup;
     }
 
     /**

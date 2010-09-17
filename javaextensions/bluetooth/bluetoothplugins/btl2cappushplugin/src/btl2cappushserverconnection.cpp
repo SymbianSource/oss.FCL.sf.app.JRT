@@ -37,9 +37,11 @@ namespace bluetooth
 OS_EXPORT L2CapPushServerConnection::L2CapPushServerConnection(
     const wstring aUri, const wstring aFilter):
         mAcceptMonitor(NULL),
+        mConnectionListener(0),
         mConnectionUri(aUri),
         mConnectionFilter(aFilter),
         mL2CAPServer(NULL),
+        mClientConnection(0),
         mPendingConnection(false),
         mListening(false),
         mCreatedByPush(false),

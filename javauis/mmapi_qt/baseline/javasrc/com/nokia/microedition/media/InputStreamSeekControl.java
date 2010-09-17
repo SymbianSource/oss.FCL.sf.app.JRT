@@ -22,6 +22,7 @@ package com.nokia.microedition.media;
 
 import java.io.IOException;
 import java.io.InputStream;
+import com.nokia.mj.impl.utils.Logger;
 
 /**
  * Class InputStreamSeekControl used to mark and seek the inputstream
@@ -64,12 +65,13 @@ public class InputStreamSeekControl implements SeekControl
      */
     public void seek(int aWhere) throws IOException
     {
-
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"MMA::InputStreamSeekControl - seek +");
 
         if (iInputStream.markSupported() == true)
         {
             iInputStream.reset();
         }
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"MMA::InputStreamSeekControl - seek -");
     }
 
     public void close()

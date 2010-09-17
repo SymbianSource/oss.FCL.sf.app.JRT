@@ -207,7 +207,7 @@ int ServiceRecord::restorePersistentRecordFs()
             persistentRecFd = open(fileName, O_RDONLY);
             delete[] fileName;
         }
-        catch (ExceptionBase ex)
+        catch (ExceptionBase &ex)
         {
             ELOG1(
                 EJavaBluetooth,
@@ -285,10 +285,10 @@ int ServiceRecord::restorePersistentRecordFs()
         {
             int len = 0;
             ret = read(persistentRecFd, &len, sizeof(len));
-            if (ret <= 0)
+            if (ret <= 0 || (len <= 0 || len >4))
                 break;
 
-            TUint8 buf[20] = { 0 };
+            TUint8 buf[4] = { 0 };
             ret = read(persistentRecFd, buf, len);
             if (ret <= 0)
                 break;
@@ -301,10 +301,10 @@ int ServiceRecord::restorePersistentRecordFs()
         {
             int len = 0;
             ret = read(persistentRecFd, &len, sizeof(len));
-            if (ret <= 0)
+            if (ret <= 0 || (len <= 0 || len >16))
                 break;
 
-            TUint8 buf[20] = { 0 };
+            TUint8 buf[16] = { 0 };
             ret = read(persistentRecFd, buf, len);
             if (ret <= 0)
                 break;
@@ -318,10 +318,10 @@ int ServiceRecord::restorePersistentRecordFs()
         {
             int len = 0;
             ret = read(persistentRecFd, &len, sizeof(len));
-            if (ret <= 0)
+            if (ret <= 0 || (len <= 0 || len >4))
                 break;
 
-            TUint8 buf[20] = { 0 };
+            TUint8 buf[4] = { 0 };
             ret = read(persistentRecFd, buf, len);
             if (ret <= 0)
                 break;
@@ -338,10 +338,10 @@ int ServiceRecord::restorePersistentRecordFs()
         {
             int len = 0;
             ret = read(persistentRecFd, &len, sizeof(len));
-            if (ret <= 0)
+            if (ret <= 0 || (len <= 0 || len >16))
                 break;
 
-            TUint8 buf[20] = { 0 };
+            TUint8 buf[16] = { 0 };
             ret = read(persistentRecFd, buf, len);
             if (ret <= 0)
                 break;
@@ -357,7 +357,7 @@ int ServiceRecord::restorePersistentRecordFs()
         {
             int len = 0;
             ret = read(persistentRecFd, &len, sizeof(len));
-            if (ret <= 0)
+            if (ret <= 0 || (len <= 0 || len >256))
                 break;
 
             TUint8 buf[256] = { 0 };
@@ -383,7 +383,7 @@ int ServiceRecord::restorePersistentRecordFs()
         {
             int len = 0;
             ret = read(persistentRecFd, &len, sizeof(len));
-            if (ret <= 0)
+            if (ret <= 0 || (len <= 0 || len >1024))
                 break;
 
             TUint8 buf[1024] = {0};
@@ -402,7 +402,7 @@ int ServiceRecord::restorePersistentRecordFs()
         {
             int len = 0;
             ret = read(persistentRecFd, &len, sizeof(len));
-            if (ret <= 0)
+            if (ret <= 0 || (len <= 0 || len >1024))
                 break;
 
             TUint8 buf[1024] = {0};
@@ -620,7 +620,7 @@ OS_EXPORT void ServiceRecord::initializeUpdateRecord(int aDeviceServiceClasses)
 
             delete[] fileName;
         }
-        catch (ExceptionBase ex)
+        catch (ExceptionBase &ex)
         {
             ELOG1(
                 EJavaBluetooth,
@@ -688,7 +688,7 @@ std::wstring ServiceRecord::getPersistentFileName()
             }
             delete[] dirName;
         }
-        catch (ExceptionBase ex)
+        catch (ExceptionBase &ex)
         {
             ELOG1(EJavaBluetooth,
                   "- ServiceRecord::getPersistentFileName exception Caught: %S",
@@ -1288,7 +1288,7 @@ OS_EXPORT void ServiceRecord::restoreJavaServiceRecordL(
             persistentRecFd = open(fileName, O_RDONLY);
             delete[] fileName;
         }
-        catch (ExceptionBase ex)
+        catch (ExceptionBase &ex)
         {
             ELOG1(EJavaBluetooth,
                   "- ServiceRecord::restoreJavaServiceRecord exception caught: %S",
@@ -1383,10 +1383,10 @@ OS_EXPORT void ServiceRecord::restoreJavaServiceRecordL(
         {
             int len = 0;
             ret = read(persistentRecFd, &len, sizeof(len));
-            if (ret <= 0)
+            if (ret <= 0 || (len <= 0 || len >4))
                 break;
 
-            TUint8 bytes[20] = {0};
+            TUint8 bytes[4] = {0};
             ret = read(persistentRecFd, bytes, len);
             if (ret <= 0)
                 break;
@@ -1402,10 +1402,10 @@ OS_EXPORT void ServiceRecord::restoreJavaServiceRecordL(
         {
             int len = 0;
             ret = read(persistentRecFd, &len, sizeof(len));
-            if (ret <= 0)
+            if (ret <= 0 || (len <= 0 || len > 16))
                 break;
 
-            TUint8 buf[20] = {0};
+            TUint8 buf[16] = {0};
             ret = read(persistentRecFd, buf, len);
             if (ret <= 0)
                 break;
@@ -1422,10 +1422,10 @@ OS_EXPORT void ServiceRecord::restoreJavaServiceRecordL(
         {
             int len = 0;
             ret = read(persistentRecFd, &len, sizeof(len));
-            if (ret <= 0)
+            if (ret <= 0 || (len <= 0 || len >4))
                 break;
 
-            TUint8 bytes[20] = {0};
+            TUint8 bytes[4] = {0};
             ret = read(persistentRecFd, bytes, len);
             if (ret <= 0)
                 break;
@@ -1441,10 +1441,10 @@ OS_EXPORT void ServiceRecord::restoreJavaServiceRecordL(
         {
             int len = 0;
             ret = read(persistentRecFd, &len, sizeof(len));
-            if (ret <= 0)
+            if (ret <= 0 || (len <= 0 || len >16))
                 break;
 
-            TUint8 buf[20] = {0};
+            TUint8 buf[16] = {0};
             ret = read(persistentRecFd, buf, len);
             if (ret <= 0)
                 break;
@@ -1459,7 +1459,7 @@ OS_EXPORT void ServiceRecord::restoreJavaServiceRecordL(
         {
             int len = 0;
             ret = read(persistentRecFd, &len, sizeof(len));
-            if (ret <= 0)
+            if (ret <= 0 || (len <= 0 || len >256))
                 break;
 
             TUint8 buf[256] = {0};
@@ -1481,7 +1481,7 @@ OS_EXPORT void ServiceRecord::restoreJavaServiceRecordL(
         {
             int len = 0;
             ret = read(persistentRecFd, &len, sizeof(len));
-            if (ret <= 0)
+            if (ret <= 0 || (len <= 0 || len >1024))
                 break;
 
             TUint8 buf[1024] = {0};
@@ -1502,7 +1502,7 @@ OS_EXPORT void ServiceRecord::restoreJavaServiceRecordL(
         {
             int len = 0;
             ret = read(persistentRecFd, &len, sizeof(len));
-            if (ret <= 0)
+            if (ret <= 0 || (len <= 0 || len >1024))
                 break;
 
             TUint8 buf[1024] = {0};

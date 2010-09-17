@@ -22,6 +22,8 @@ import javax.microedition.media.Control;
 import javax.microedition.media.protocol.DataSource;
 import javax.microedition.media.protocol.SourceStream;
 import java.io.IOException;
+import javax.microedition.io.Connection;
+import com.nokia.mj.impl.utils.Logger;
 
 /**
  * BufferDataSource is used to read header from DataSource's SourceStream.
@@ -158,6 +160,12 @@ public class BufferDataSource extends DataSource
     public DataSource getDataSource()
     {
         return iDataSource;
+    }
+
+    public Connection getConnection()
+    {
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"BufferDataSource getConnection +");
+        return iDataSource.getConnection();
     }
 
 }

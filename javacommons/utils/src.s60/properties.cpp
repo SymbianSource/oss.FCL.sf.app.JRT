@@ -103,7 +103,7 @@ jstring java::util::getLocaleImpl(JNIEnv* env)
     JELOG2(EUtils);
 
     // microedition.locale
-    ILOG1(EUtils, "User::Language: %d", User::Language()); 
+    ILOG1(EUtils, "User::Language: %d", User::Language());
     // KDialectMask enables support for operator specific language variants
     switch (User::Language() & KDialectMask) {
         case ELangAfrikaans:
@@ -368,9 +368,13 @@ HBufC* MicroEditionPlatformL()
     TBuf<KSysUtilVersionTextLength> swVersion;
     if (SysUtil::GetSWVersion(swVersion) == KErrNone && swVersion.Length()>0)
     {
-        // Assume syntax V xx.xx\ndd-mm-yy\nNHL-vvv\n(c)Vendor
+        // Assume syntax xx.xx\ndd-mm-yy\nNHL-vvv\n(c)Vendor
         TInt NLloc = swVersion.Locate('\n');
-        TPtrC verPtr = swVersion.Mid(2, NLloc-2); // skip "V " in the beginning
+        if (KErrNotFound == NLloc)
+        {
+            NLloc = swVersion.Length();  // no '\n' -> use whole string
+        }
+        TPtrC verPtr = swVersion.Left(NLloc);
 
         // Get platform minor and major version numbers
         HBufC* platformVersionValue = GetPlatformVersionL();

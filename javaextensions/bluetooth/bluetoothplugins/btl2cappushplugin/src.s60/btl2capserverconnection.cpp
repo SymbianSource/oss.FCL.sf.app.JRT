@@ -40,11 +40,16 @@ const TInt KSizeOfListenQueue = 7;
 OS_EXPORT L2CAPServerConnection::L2CAPServerConnection(
     java::bluetooth::BluetoothFunctionServer* server):
         mAcceptMonitor(NULL),
+        mAcceptStatus(0),
+        mAcceptedSocket(0),
+        mMasterRoleRequested(EFalse),
         mAsyncAccept(false),
         mAvoidFilter(false),
+        mPushEventListener(0),
         mBtUrlParams(NULL),
         mBtClientConn(NULL),
         mServer(server),
+        mListenSock(0),
         mIsConnected(EFalse),
         mServRec(NULL),
         mState(ENone)

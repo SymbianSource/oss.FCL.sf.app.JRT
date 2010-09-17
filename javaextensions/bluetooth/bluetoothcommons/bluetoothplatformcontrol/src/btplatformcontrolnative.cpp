@@ -51,7 +51,7 @@ Java_com_nokia_mj_impl_bluetooth_BTPlatformControl__1getBluetoothAddress
     {
         result = java::util::JniUtils::wstringToJstring(aJni, *devAddress);
     }
-    catch (ExceptionBase ex)
+    catch (ExceptionBase &ex)
     {
         result = NULL;
     }
@@ -82,20 +82,22 @@ Java_com_nokia_mj_impl_bluetooth_BTPlatformControl__1getBluetoothName
     }
 
     std::wstring *devName = control->getBluetoothName();
-    jstring result;
+
+    jstring result = NULL;
     try
     {
-        result = java::util::JniUtils::wstringToJstring(aJni, *devName);
+        if (NULL != devName)
+        {
+            result = java::util::JniUtils::wstringToJstring(aJni, *devName);
+        }
     }
-    catch (ExceptionBase ex)
+    catch (ExceptionBase &ex)
     {
         result = NULL;
     }
 
-
     delete devName;
     delete control;
-
     return result;
 }
 
@@ -224,7 +226,7 @@ Java_com_nokia_mj_impl_bluetooth_BTPlatformControl__1promptPowerOn
     {
         name = java::util::JniUtils::jstringToWstring(aJni, appName);
     }
-    catch (ExceptionBase ex)
+    catch (ExceptionBase &ex)
     {
         name=L"Unknown Application";
     }
@@ -270,7 +272,7 @@ Java_com_nokia_mj_impl_bluetooth_BTPlatformControl__1promptVisibilityChange
     {
         name = java::util::JniUtils::jstringToWstring(aJni, appName);
     }
-    catch (ExceptionBase ex)
+    catch (ExceptionBase &ex)
     {
         name=L"Unknown Application";
     }
@@ -327,7 +329,7 @@ Java_com_nokia_mj_impl_bluetooth_BTPlatformControl__1getProperty
         result =  java::util::JniUtils::wstringToJstring(aJni,
                   control->getSystemProperty(aPropertyId));
     }
-    catch (ExceptionBase ex)
+    catch (ExceptionBase &ex)
     {
         result = NULL;
     }

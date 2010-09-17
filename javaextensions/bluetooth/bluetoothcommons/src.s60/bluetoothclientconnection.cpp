@@ -36,15 +36,19 @@ using namespace java::bluetooth;
 
 OS_EXPORT BluetoothClientConnection::BluetoothClientConnection
 (BluetoothFunctionServer* server):
-        mServer(server),
+        mServer(server), mSocket(0),
         mShutdownNotifyMonitor(NULL),
         mReadNotifyMonitor(NULL),
+        mReadStatus(0),
         mBuffer(NULL, 0),
         mSendNotifyMonitor(NULL),
+        mRequestedRMtu(0), mRequestedTMtu(0),
+        mWriteStatus(0), mProtocol(0),
         mNegotiatedReceiveMtu(0),
         mNegotiatedTransmitMtu(0),
         mRemoteBTAddr(0),
         mConnectNotifyMonitor(NULL),
+        mConnectError(0),
         mMakeJavaCallbackOnRead(EFalse),
         mReadPending(EFalse),
         mBufferInitialized(EFalse)
@@ -58,11 +62,15 @@ OS_EXPORT BluetoothClientConnection::BluetoothClientConnection
         mSocket(aSocket),
         mShutdownNotifyMonitor(NULL),
         mReadNotifyMonitor(NULL),
+        mReadStatus(0),
         mBuffer(NULL, 0),
         mSendNotifyMonitor(NULL),
+        mRequestedRMtu(0), mRequestedTMtu(0),
+        mWriteStatus(0), mProtocol(0),
         mNegotiatedReceiveMtu(0),
         mNegotiatedTransmitMtu(0),
         mRemoteBTAddr(0),
+        mConnectError(0),
         mMakeJavaCallbackOnRead(EFalse),
         mReadPending(EFalse),
         mBufferInitialized(EFalse)

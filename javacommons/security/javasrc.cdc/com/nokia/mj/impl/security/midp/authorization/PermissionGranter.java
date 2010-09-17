@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -483,8 +483,8 @@ public final class PermissionGranter
                     || (net_access == true && read_user_data == true)
                     || (messaging == true && multimedia == true)
                     || (messaging == true && read_user_data == true)) ?
-                    new Id("settings_inst_query_perm_net", "N/A") :
-                    new Id("settings_inst_query_perm_sec", "N/A"));
+                    new Id("settings_inst_query_perm_net", "info_inst_query_perm_net") :
+                    new Id("settings_inst_query_perm_sec", "info_inst_query_perm_sec"));
 
                 iBlanketPermissionsDetails.put(msUidKey,
                                                UserSecuritySettingsImpl.getLocalizedString(

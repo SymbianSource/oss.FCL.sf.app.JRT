@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>nokiauiapiqt</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>org.eclipse.pde.PluginNature</nature>
+		<nature>org.eclipse.team.cvs.core.cvsnature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>javasrc_j2me</name>
+			<type>2</type>
+			<location>R:/sf/app/java/javauis/nokiauiapi_qt/javasrc_j2me</location>
+		</link>
+	</linkedResources>
+</projectDescription>

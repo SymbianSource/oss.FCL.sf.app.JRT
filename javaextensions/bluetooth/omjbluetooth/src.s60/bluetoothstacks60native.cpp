@@ -206,7 +206,7 @@ Java_com_nokia_mj_impl_bluetooth_BluetoothStackS60__1getRemoteDeviceFriendlyName
             ret = java::util::JniUtils::wstringToJstring(aJni, str);
         }
     }
-    catch (ExceptionBase ex)
+    catch (ExceptionBase &ex)
     {
         ELOG1(EJavaBluetooth,
               "- JNI::getRemoteDeviceFriendlyName Exception:%S", ex.what());
@@ -305,7 +305,7 @@ Java_com_nokia_mj_impl_bluetooth_BluetoothStackS60__1cancelServiceSearch
 
 JNIEXPORT jint JNICALL
 Java_com_nokia_mj_impl_bluetooth_BluetoothStackS60__1populateServiceRecordAttributeValues
-(JNIEnv *aEnv, jobject aPeer, jlong aRemoteDevice, jlong aHandle,
+(JNIEnv *aEnv, jobject /*aPeer*/, jlong aRemoteDevice, jlong aHandle,
  jintArray aAttrSet, jobject aServiceRecordImpl, jlong aDiscAgent)
 {
     JELOG2(EJavaBluetooth);
@@ -327,7 +327,7 @@ Java_com_nokia_mj_impl_bluetooth_BluetoothStackS60__1populateServiceRecordAttrib
         "   JNI::populateServiceRecordAttributeValues calling PopulateServiceRecord");
     int result = KErrNone;
     result = agent->PopulateServiceRecordAttrValue(
-                 aEnv, aPeer, aRemoteDevice, aHandle, attrIdsDes, serviceRecGlobalRef,
+                 aEnv, aRemoteDevice, aHandle, attrIdsDes, serviceRecGlobalRef,
                  serviceSearchMonitor);
 
     if (KErrNone != result)
@@ -707,7 +707,7 @@ Java_com_nokia_mj_impl_bluetooth_BluetoothStackS60__1l2ServerOpen
     {
         connectionUrl = JniUtils::jstringToWstring(aJni, aUrl);
     }
-    catch (ExceptionBase ex)
+    catch (ExceptionBase &ex)
     {
         ELOG1(EJavaBluetooth,
               "- JNI::l2ServerOpen Exception:%S", ex.what());
@@ -1077,7 +1077,7 @@ Java_com_nokia_mj_impl_bluetooth_BluetoothStackS60__1rfServerOpen
     {
         connectionUrl = JniUtils::jstringToWstring(aJni, aUrl);
     }
-    catch (ExceptionBase ex)
+    catch (ExceptionBase &ex)
     {
         ELOG1(EJavaBluetooth,
               "- JNI::rfServerOpen Exception:%S", ex.what());
@@ -1401,7 +1401,7 @@ Java_com_nokia_mj_impl_bluetooth_BluetoothStackS60__1initializeUpdateRecord
     {
         protocol = java::util::JniUtils::jstringToWstring(aJni, aProtocol);
     }
-    catch (ExceptionBase ex)
+    catch (ExceptionBase &ex)
     {
         ELOG1(EJavaBluetooth,
               "- JNI::initializeUpdateRecord Exception:%S", ex.what());
@@ -1450,7 +1450,7 @@ Java_com_nokia_mj_impl_bluetooth_BluetoothStackS60__1completesUpdateRecord
     {
         protocol = java::util::JniUtils::jstringToWstring(aJni, aProtocol);
     }
-    catch (ExceptionBase ex)
+    catch (ExceptionBase &ex)
     {
         ELOG1(EJavaBluetooth,
               "- JNI::completesUpdateRecord Exception:%S", ex.what());
@@ -1502,7 +1502,7 @@ Java_com_nokia_mj_impl_bluetooth_BluetoothStackS60__1sdpAddAttribute
     {
         protocol = java::util::JniUtils::jstringToWstring(aJni, aProtocol);
     }
-    catch (ExceptionBase ex)
+    catch (ExceptionBase &ex)
     {
         ELOG1(EJavaBluetooth,
               "- JNI::sdpAddAttribute Exception:%S", ex.what());
@@ -1655,7 +1655,7 @@ Java_com_nokia_mj_impl_bluetooth_BluetoothStackS60__1sdpAttributeListStart
     {
         protocol = java::util::JniUtils::jstringToWstring(aJni, aProtocol);
     }
-    catch (ExceptionBase ex)
+    catch (ExceptionBase &ex)
     {
         ELOG1(EJavaBluetooth,
               "- JNI::sdpAttributeListStart Exception:%S", ex.what());
@@ -1717,7 +1717,7 @@ Java_com_nokia_mj_impl_bluetooth_BluetoothStackS60__1sdpAttributeListEnd
     {
         protocol = java::util::JniUtils::jstringToWstring(aJni, aProtocol);
     }
-    catch (ExceptionBase ex)
+    catch (ExceptionBase &ex)
     {
         ELOG1(EJavaBluetooth,
               "- JNI::sdpAttributeListEnd Exception:%S", ex.what());

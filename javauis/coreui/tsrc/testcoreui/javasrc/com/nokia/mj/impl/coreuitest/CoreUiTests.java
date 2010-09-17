@@ -153,7 +153,6 @@ public class CoreUiTests extends TestCase implements UnitTestSuiteCreator
         }
         catch (Throwable t2)
         {
-            System.out.println("JOU2 "+ t2);
             t2.printStackTrace();
             assertTrue(t2.toString(), false);
         }

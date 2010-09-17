@@ -14,6 +14,7 @@
 @rem Description:
 @rem
 rem Script for running JavaCommonUtils unit tests from S60 eshell
+javaunittester -mainclass=com.nokia.mj.impl.utils.LoggerTests
 javaunittester -mainclass=com.nokia.mj.impl.utils.BufferedReaderTests
 javaunittester -mainclass=com.nokia.mj.impl.utils.concurrent.ConcurrentTests
 javaunittester -mainclass=com.nokia.mj.impl.rt.SystemPropertyTests

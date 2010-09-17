@@ -44,6 +44,11 @@
       <exec executable="${java.bin.root}/bin/javaunittester">
           <arg line="-mainclass=com.nokia.mj.impl.utils.DebugUtilsTests"/>
       </exec>
+
+      <echo>Running LoggerTests tests</echo>
+      <exec executable="${java.bin.root}/bin/javaunittester">
+          <arg line="-mainclass=com.nokia.mj.impl.utils.LoggerTests"/>
+      </exec>
   </target>
 
   <target name="main" depends="clean,run"/>

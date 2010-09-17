@@ -32,20 +32,20 @@ import com.nokia.mj.impl.utils.Logger;
  */
 public class ConnectorDataSource extends InputStreamDataSource
 {
-    // Connection object.
-    StreamConnection iConnection;
-
     /**
-     * Constructor.
-     * @param aLocator Locator to connect.
-     */
+    * Constructor.
+    * @param aLocator Locator to connect.
+    */
     public ConnectorDataSource(Locator aLocator)
     throws IOException, MediaException
     {
+
         super(aLocator.getLocatorString());
         open(); // open iConnection
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"ConnectorDataSource constructor after open()");
         iSourceStream = new InputStreamSourceStream(
             iConnection.openInputStream());
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"ConnectorDataSource constructor -");
     }
 
     /**
@@ -63,6 +63,7 @@ public class ConnectorDataSource extends InputStreamDataSource
 
             // Only StreamConnection is supported
             iConnection = (StreamConnection)connection;
+            Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"ConnectorDataSource open()");
         }
         catch (ConnectionNotFoundException cnfe)
         {
@@ -84,6 +85,7 @@ public class ConnectorDataSource extends InputStreamDataSource
             // or connection was not supported in checkConnection method.
             throw new MediaException(cce.getMessage());
         }
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"ConnectorDataSource open() -");
     }
 
     /**
@@ -100,6 +102,7 @@ public class ConnectorDataSource extends InputStreamDataSource
             try
             {
                 open();
+                Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"ConnectorDataSource connect() after open()");
                 iSourceStream.setStream(iConnection.openInputStream());
             }
             catch (MediaException me)
@@ -109,6 +112,7 @@ public class ConnectorDataSource extends InputStreamDataSource
                     "failed to connect to stream, " + me.getMessage());
             }
         }
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"ConnectorDataSource connect() -");
     }
 
     /**
@@ -157,6 +161,7 @@ public class ConnectorDataSource extends InputStreamDataSource
     {
         // This class does not do additional checks.
     }
+
 }
 // End of File
 

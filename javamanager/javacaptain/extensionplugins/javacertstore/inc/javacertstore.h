@@ -69,6 +69,7 @@ typedef struct cert_metadata_st
 {
     std::string full_path;
     std::string hash;
+    std::string pkey;
     int state;
     bool disposable;
     bool disablable;

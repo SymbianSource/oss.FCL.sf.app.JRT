@@ -111,8 +111,10 @@ public class Formatter
      */
     public Formatter arg(String string)
     {
-        // Try to replace with patterns %nU,%n, %U
-        if (replace("%" + nextIndex + "U", string) ||
+        // Try to replace with patterns %[N...N]n, %nU, %n, %U
+        String maxPattern = findMaxPattern();
+        if ((maxPattern != null && replace(maxPattern, string)) ||
+                replace("%" + nextIndex + "U", string) ||
                 replace("%" + nextIndex, string) ||
                 replace("%U", string))
         {
@@ -138,8 +140,10 @@ public class Formatter
     {
         String localisedNumber = _formatInteger(number);
 
-        // Try to replace with patterns %Ln, %nN, %n, %N
-        if (replace("%" + "L" + nextIndex, localisedNumber) ||
+        // Try to replace with patterns %[N...N]n, %Ln, %nN, %n, %N
+        String maxPattern = findMaxPattern();
+        if ((maxPattern != null && replace(maxPattern, localisedNumber)) ||
+                replace("%" + "L" + nextIndex, localisedNumber) ||
                 replace("%" + nextIndex + "N", localisedNumber) ||
                 replace("%" + nextIndex, localisedNumber) ||
                 replace("%N", localisedNumber))
@@ -167,7 +171,7 @@ public class Formatter
     {
         String chString = new String(new char[] { ch });
 
-        // Try to replace with patterns %nC,%n, %C
+        // Try to replace with patterns %nC, %n, %C
         if (replace("%" + nextIndex + "C", chString) ||
                 replace("%" + nextIndex, chString) ||
                 replace("%C", chString))
@@ -367,6 +371,28 @@ public class Formatter
             {
                 Logger.WLOG(Logger.EUtils, "Replace with max failed to invalid"
                             + " replacement amount");
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Finds next %[N...N]n pattern from the replaced field.
+     * Returns found pattern, or null if no pattern was found.
+     */
+    private String findMaxPattern()
+    {
+        String result = null;
+        String startPattern = "%[";
+        String endPattern = "]" + nextIndex;
+        int startIndex = replaced.indexOf(startPattern);
+        if (startIndex >= 0)
+        {
+            int endIndex = replaced.indexOf(endPattern, startIndex);
+            if (endIndex >= 0)
+            {
+                result = replaced.substring(
+                    startIndex, endIndex + endPattern.length());
             }
         }
         return result;

@@ -41,6 +41,7 @@ import org.eclipse.swt.internal.qt.WidgetConstant;
 import org.eclipse.swt.internal.qt.WidgetState;
 import org.eclipse.swt.internal.qt.graphics.NativeCommandBuffer;
 import org.eclipse.swt.internal.qt.graphics.GraphicsContext;
+import org.eclipse.swt.internal.qt.graphics.WindowSurface;
 
 /**
  * Control is the abstract superclass of all windowed user interface classes.
@@ -81,6 +82,7 @@ public abstract class Control extends Widget implements Drawable {
 
     private byte isPainting;
     boolean bufferFlush;
+    WindowSurface windowSurface;
 
 Control() {
 }
@@ -753,6 +755,14 @@ void enableWidget(boolean enabled) {
     OS.QWidget_setEnabled(topHandle, enabled);
 }
 
+/*
+ * Closes window surface session
+ */
+void endWindowSurfaceSession() {
+	checkWidget();
+	windowSurface.endPaint();
+}
+
 Control findBackgroundControl () {
     if (background != null || backgroundImage != null) return this;
     return (state & WidgetState.PARENT_BACKGROUND) != 0 ? parent.findBackgroundControl () : null;
@@ -819,13 +829,17 @@ void fixMousePropagation() {
     }
 }
 
-void flushBuffers() {
+void flushBuffers(Object target) {
     if (bufferedGcs != null) {
         for (int i = 0; i < bufferedGcs.size(); i++) {
             GraphicsContext igc = (GraphicsContext)bufferedGcs.elementAt(i);
             NativeCommandBuffer buf = (NativeCommandBuffer)gcBuffers.elementAt(i);
             igc.releaseTarget();
-            igc.bindTarget(this);
+            if(target instanceof WindowSurface) {
+            	igc.bindTarget((WindowSurface)target);
+            } else {
+            	igc.bindTarget(this);
+            }
             igc.render(buf);
             igc.releaseTarget();
             igc.bindTarget(buf, this);
@@ -2053,7 +2067,7 @@ private void qt_swt_event_widgetPainted_handler(int widgetHandle, int x,
     }
 
     // Render the buffers created outside the paint event, if any
-    flushBuffers();
+    flushBuffers(this);
 
     // If this is only a buffer flush event then stop here
     if(bufferFlush) {
@@ -3257,6 +3271,39 @@ public void setVisible(boolean visible) {
     if (fixFocus) fixFocus (control);
 }
 
+/*
+ * Starts external access to the window behind this control, 
+ * by opening surface session and flushing any pending GC originated
+ * rendering to the window.
+ * 
+ * @param clip The invalid area to be converted to window coordinates
+ * @return the area to be painted in window coordinates
+ */
+Rectangle startWindowSurfaceSession(Rectangle clip) {
+	checkWidget();
+	if (clip == null)
+        error(SWT.ERROR_NULL_ARGUMENT);
+
+	Shell s = getShell();
+    if(windowSurface == null) {
+        windowSurface = s.getWindowSurface();
+        if(windowSurface == null) {
+        	error(SWT.ERROR_NULL_ARGUMENT);
+        }
+    }
+    // this is supported only with children of Scrollable, 
+    // i.e. Canvas, Shell
+    if(this instanceof Scrollable) {
+        Rectangle caInWinCoords = toWindowSurface(((Scrollable)this).getClientArea());
+        windowSurface.beginPaint(caInWinCoords.x, caInWinCoords.y, caInWinCoords.width, caInWinCoords.height);
+        flushBuffers(windowSurface);
+        return toWindowSurface(clip);
+    } else {
+    	error(SWT.ERROR_NOT_IMPLEMENTED);
+    }
+    return null;
+}
+
 /**
  * Returns a point which is the result of converting the argument, which is
  * specified in display relative coordinates, to coordinates relative to the
@@ -3370,6 +3417,27 @@ public Point toDisplay(Point point) {
     if (point == null)
         error(SWT.ERROR_NULL_ARGUMENT);
     return toDisplay(point.x, point.y);
+}
+
+/*
+ * Converts given rectangle form the (this) Control coordinates 
+ * to window surface coordinates.
+ * 
+ * @param rect The rectangle to be converted, given in the coordinates of this Control 
+ */
+Rectangle toWindowSurface(Rectangle rect) {
+	// The window surface is the size of the client area of a shell.
+	Shell s = getShell();
+	Point wTopLeft = s.toControl(toDisplay(rect.x, rect.y));
+	Point wBottomRight = s.toControl(toDisplay(rect.x+rect.width, rect.y+rect.height));
+	
+    // trim for possible shell border
+    if ((getStyle() & SWT.BORDER) != 0){
+    	final int frameOffset = getBorderWidth();
+    	wTopLeft.x = wTopLeft.x + frameOffset; 
+        wTopLeft.y = wTopLeft.y + frameOffset; 
+    }
+    return new Rectangle(wTopLeft.x, wTopLeft.y, wBottomRight.x-wTopLeft.x, wBottomRight.y-wTopLeft.y);
 }
 
 /**

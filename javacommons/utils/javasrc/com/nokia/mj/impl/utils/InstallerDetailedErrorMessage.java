@@ -112,7 +112,7 @@ public final class InstallerDetailedErrorMessage extends ErrorMessageBase
             }
             else
             {
-                iRes = ResourceLoader.getInstance("javaapplicationinstaller", "txt_java_inst_info_");
+                iRes = ResourceLoader.getInstance(null, null, "javaapplicationinstallererrors", "txt_java_inst_info_");
             }
         }
         return iRes;

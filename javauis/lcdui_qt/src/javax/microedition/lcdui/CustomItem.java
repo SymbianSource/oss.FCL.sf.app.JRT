@@ -42,10 +42,9 @@ public abstract class CustomItem extends Item
     /**
      * If CustomItem is changed, reasons for Re-layouting.
      */
-	static final int UPDATE_REASON_REPAINT = UPDATE_ITEM_MAX << 1;
+    static final int UPDATE_REASON_REPAINT = UPDATE_ITEM_MAX << 1;
 
 
-    private boolean cleanupNeeded;
     private int contentWidth;
     private int contentHeight;
 
@@ -55,7 +54,6 @@ public abstract class CustomItem extends Item
     private int repaintX2;
     private int repaintY2;
     private Object repaintLock;
-    private Object cleanupLock;
     private Object resizeLock;
 
     // Flag for passing info between UI thread
@@ -95,20 +93,25 @@ public abstract class CustomItem extends Item
             }
         });
         repaintLock = new Object();
-        cleanupLock = new Object();
         resizeLock = new Object();
         setLabel(label);
     }
 
     /**
-     * Get the game action associated with the key code.
+     * Returns game action associated with key code.
      *
-     * @param keyCode key code
-     * @return game action bound to the key
+     * @param keyCode Key code to map to game action.
+     * @return game action corresponding to key, or 0 if none
+     * @throws IllegalArgumentException if keyCode is not a valid key code
      */
-    public int getGameAction(int keyCode)
+    public int getGameAction(int aKeyCode)
     {
-        return KeyTable.getGameAction(keyCode);
+        if (aKeyCode == 0)
+        {
+            throw new IllegalArgumentException(
+                MsgRepository.CANVAS_EXCEPTION_INVALID_KEY_CODE);
+        }
+        return KeyTable.getGameAction(aKeyCode);
     }
 
     /**
@@ -309,10 +312,6 @@ public abstract class CustomItem extends Item
             LCDUIEvent event = eventDispatcher.newEvent(LCDUIEvent.CUSTOMITEM_SIZECHANGED, layouter.formLayouter.getForm());
             event.item = this;
             eventDispatcher.postEvent(event);
-            synchronized(cleanupLock)
-            {
-                cleanupNeeded = true;
-            }
             repaint();
         }
     }
@@ -568,23 +567,10 @@ public abstract class CustomItem extends Item
         }
 
         // Clean the background if dirty, buffer the operations.
-        synchronized(cleanupLock)
+        if(layouter.noBackground && event.type == LCDUIEvent.CUSTOMITEM_PAINT_NATIVE_REQUEST)
         {
-            if(cleanupNeeded && layouter.noBackground)
-            {
-                // Must be made sure that size doesn't change between reading
-                // the width and the height.
-                int contentWidth, contentHeight;
-                synchronized(resizeLock)
-                {
-                    contentWidth = this.contentWidth;
-                    contentHeight = this.contentHeight;
-                }
-
-                customItemGraphics.setClip(0, 0, contentWidth, contentHeight);
-                customItemGraphics.cleanBackground(new Rectangle(0, 0, contentWidth, contentHeight));
-                cleanupNeeded = false;
-            }
+            customItemGraphics.setClip(event.x, event.y, event.width, event.height);
+            customItemGraphics.cleanBackground(new Rectangle(event.x, event.y, event.width, event.height));
         }
 
         // Clip must define the invalid area

@@ -48,9 +48,13 @@ class SeekThread extends Thread
      */
     public void run()
     {
+        Logger.ELOG(Logger.EJavaMMAPI,
+                    "MMA::seekThread run +");
         try
         {
             iSeekControl.seek(0);
+            Logger.ELOG(Logger.EJavaMMAPI,
+                        "MMA::seekThread run after iSeekControl.seek");
         }
         catch (Exception e)
         {
@@ -63,7 +67,11 @@ class SeekThread extends Thread
         // notify that seek is ready
         synchronized (iWaitObject)
         {
+            Logger.ELOG(Logger.EJavaMMAPI,
+                        "MMA::seekThread run before iWaitObject.notify()");
             iWaitObject.notify();
+            Logger.ELOG(Logger.EJavaMMAPI,
+                        "MMA::seekThread run -");
         }
     }
 }

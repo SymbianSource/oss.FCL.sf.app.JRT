@@ -105,11 +105,9 @@ data=DATAZ_\private\102033E6\backup_registration.xml                        \pri
 /////////////////////////
 
 // CoreUi
-/*
 file=ABI_DIR\BUILD_DIR\javacoreui.dll                                       SHARED_LIB_DIR\javacoreui.dll
 data=JAVA_VM_RES_BLD\javacoreui.odc                                         JAVA_VM_RES_IMG\javacoreui.odc
-SCALABLE_IMAGE(APP_BITMAP_DIR,APP_BITMAP_DIR,javastartscreen)
-*/
+
 // eSWT
 file=ABI_DIR\BUILD_DIR\eswtqt.dll                                             SHARED_LIB_DIR\eswtqt.dll
 data=JAVA_VM_RES_BLD\eswtqt.odc                                               JAVA_VM_RES_IMG\eswtqt.odc
@@ -144,6 +142,8 @@ data=JAVA_VM_RES_BLD\javam3g.odc                                            JAVA
 // Nokia UI API
 file=ABI_DIR\BUILD_DIR\javanokiaui.dll                                     SHARED_LIB_DIR\javanokiaui.dll
 data=JAVA_VM_RES_BLD\javanokiaui.odc                                       JAVA_VM_RES_IMG\javanokiaui.odc
+file=ABI_DIR\BUILD_DIR\javasoftindicatorplugin.dll                         SHARED_LIB_DIR\javasoftindicatorplugin.dll
+data=DATAZ_\resource\plugins\indicators\javasoftindicatorplugin.qtplugin   resource\plugins\indicators\javasoftindicatorplugin.qtplugin
 
 // Nokia Sound API
 file=ABI_DIR\BUILD_DIR\javanokiasound.dll                                   SHARED_LIB_DIR\javanokiasound.dll

@@ -91,9 +91,9 @@ class ScrolledTextComposite extends Composite
     {
         iTextScrolling = false;
         vBar.setVisible(false);
-        Point nextSize = iESWTTextLabel.computeSize(getClientArea().width,
+        Point nextSize = iESWTTextLabel.computeSize(getParent().getClientArea().width,
                          SWT.DEFAULT);
-        if(nextSize.y > getClientArea().height)
+        if(nextSize.y > getParent().getClientArea().height)
         {
             iTextScrolling = true;
             vBar.setVisible(true);
@@ -122,7 +122,7 @@ class ScrolledTextComposite extends Composite
         iESWTTextLabel.setSize(calculateTextSize());
 
         Rectangle contentRect = iESWTTextLabel.getBounds();
-        Rectangle hostRect = getClientArea();
+        Rectangle hostRect = getParent().getClientArea();
         vBar.setMaximum(contentRect.height);
         vBar.setThumb(Math.min(contentRect.height, hostRect.height));
         int vPage = contentRect.height - hostRect.height;
@@ -173,6 +173,11 @@ class ScrolledTextComposite extends Composite
             resizing = true;
             layout();
             resizing = false;
+            if((Display.getDisplay().getCurrent() instanceof Alert) &&
+                 (isTextScrolling() == true))
+            {
+                Display.getDisplay().getCurrent().setCommandsVisibility(true);
+            }
         }
     }
 

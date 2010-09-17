@@ -20,6 +20,7 @@ package javax.microedition.media.protocol;
 
 import javax.microedition.media.Controllable;
 import java.io.IOException;
+import javax.microedition.io.Connection;
 
 abstract public class DataSource implements Controllable
 {
@@ -41,6 +42,8 @@ abstract public class DataSource implements Controllable
     public abstract void stop() throws IOException;
 
     public abstract SourceStream[] getStreams();
+
+    public abstract Connection getConnection();
 
     public String getLocator()
     {

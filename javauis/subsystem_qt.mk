@@ -14,10 +14,10 @@
 # Description: Makefile for Qt based components and subsystems
 #
 
-SUBSYSTEMS   += eswt_qt/build
-COMPONENTS   += lcdui_qt/build runtimeui_qt/build nokiauiapi_qt/build mmapi_qt/build amms_qt/build m3g_qt/build
+SUBSYSTEMS   += eswt_qt/build nokiauiapi_qt/build
+COMPONENTS   += coreui_qt/build lcdui_qt/build runtimeui_qt/build mmapi_qt/build amms_qt/build m3g_qt/build
 
-SYMBIAN_ONLY += mmapi_qt/build amms_qt/build m3g_qt/build
+SYMBIAN_ONLY += coreui_qt/build mmapi_qt/build amms_qt/build m3g_qt/build
 
 # Build order dependency
-lcdui_qt/build runtimeui_qt/build nokiauiapi_qt/build mmapi_qt/build amms_qt/build m3g_qt/build: eswt_qt/build
+coreui_qt/build lcdui_qt/build runtimeui_qt/build nokiauiapi_qt/build mmapi_qt/build amms_qt/build m3g_qt/build: eswt_qt/build

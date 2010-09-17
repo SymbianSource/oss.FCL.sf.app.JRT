@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -72,11 +72,27 @@ public class JsrPluginNotifierTest extends TestCase implements InstallerMain
             }
         }));
 
+        suite.addTest(new JsrPluginNotifierTest("testNotifyPluginInstallException", new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((JsrPluginNotifierTest)tc).testNotifyPluginInstallException();
+            }
+        }));
+
         suite.addTest(new JsrPluginNotifierTest("testNotifyPluginsUninstall", new TestMethod()
         {
             public void run(TestCase tc)
             {
                 ((JsrPluginNotifierTest)tc).testNotifyPluginsUninstall();
+            }
+        }));
+
+        suite.addTest(new JsrPluginNotifierTest("testNotifyPluginUninstallException", new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((JsrPluginNotifierTest)tc).testNotifyPluginUninstallException();
             }
         }));
 
@@ -104,11 +120,27 @@ public class JsrPluginNotifierTest extends TestCase implements InstallerMain
             }
         }));
 
+        suite.addTest(new JsrPluginNotifierTest("testRollbackInstallNotificationException", new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((JsrPluginNotifierTest)tc).testRollbackInstallNotificationException();
+            }
+        }));
+
         suite.addTest(new JsrPluginNotifierTest("testRollbackUninstallNotification", new TestMethod()
         {
             public void run(TestCase tc)
             {
                 ((JsrPluginNotifierTest)tc).testRollbackUninstallNotification();
+            }
+        }));
+
+        suite.addTest(new JsrPluginNotifierTest("testRollbackUninstallNotificationException", new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((JsrPluginNotifierTest)tc).testRollbackUninstallNotificationException();
             }
         }));
 
@@ -222,6 +254,39 @@ public class JsrPluginNotifierTest extends TestCase implements InstallerMain
         assertTrue("TestPlugin2 correct method was not called", plugin2.equals("install"));
     }
 
+    public void testNotifyPluginInstallException()
+    {
+        JsrPluginNotifier notif = new JsrPluginNotifier(iIntegrityService);
+
+        assertTrue("Number of plugin class names was not 5, it is " +
+                   String.valueOf(notif.iClassNames.size()), (notif.iClassNames.size() == 5));
+        assertTrue("Number of initialized plugins was not 2, it is " +
+                   String.valueOf(notif.iJsrPlugins.size()), (notif.iJsrPlugins.size() == 2));
+
+        // Initialize necessary values in ball for notification call
+        Uid uid = Uid.createUid("[A0032000]");
+        iInstallerExtensionInfo.iUid = uid;
+        iInstallerExtensionInfo.iAttributes = new Hashtable();
+        Attribute att = new Attribute("MIDlet-1", "3DSpaceShooter, /icon.png, Space3D");
+        iInstallerExtensionInfo.iAttributes.put("MIDlet-1", att);
+        att = new Attribute("JSR-Plugin-Test-Exception", "true");
+        iInstallerExtensionInfo.iAttributes.put("JSR-Plugin-Test-Exception", att);
+        att = new Attribute("MIDlet-Jar-Size", "240229");
+        iInstallerExtensionInfo.iAttributes.put("MIDlet-Jar-Size", att);
+
+        try
+        {
+            notif.notifyInstallation(iInstallerExtensionInfo);
+            // Test plugin TestPlugin2 throws exception if JAD/JAR attribute
+            // JSR-Plugin-Test-Exception exists.
+            assertTrue("Test plugin did not throw exception like should have.", false);
+        }
+        catch (InstallerException e)
+        {
+            // OK, installation is cancelled ok
+        }
+    }
+
     public void testNoPluginsToNotify()
     {
         JsrPluginNotifier notif = new JsrPluginNotifier(iIntegrityService);
@@ -282,6 +347,34 @@ public class JsrPluginNotifierTest extends TestCase implements InstallerMain
         assertTrue("TestPlugin2 correct method was not called", plugin2.equals("uninstall"));
     }
 
+    public void testNotifyPluginUninstallException()
+    {
+        JsrPluginNotifier notif = new JsrPluginNotifier(iIntegrityService);
+
+        // Initialize necessary values in ball for notification call
+        Uid uid = Uid.createUid("[A0032003]");
+        iInstallerExtensionInfo.iUid = uid;
+        iInstallerExtensionInfo.iAttributes = new Hashtable();
+        Attribute att = new Attribute("MIDlet-1", "3DSpaceShooter, /icon.png, Space3D");
+        iInstallerExtensionInfo.iAttributes.put("MIDlet-1", att);
+        att = new Attribute("JSR-Plugin-Test-Exception", "true");
+        iInstallerExtensionInfo.iAttributes.put("JSR-Plugin-Test-Exception", att);
+        att = new Attribute("MIDlet-Jar-Size", "240229");
+        iInstallerExtensionInfo.iAttributes.put("MIDlet-Jar-Size", att);
+
+        try
+        {
+            notif.notifyUninstallation(iInstallerExtensionInfo);
+            // Test plugin TestPlugin2 throws exception if JAD/JAR attribute
+            // JSR-Plugin-Test-Exception exists.
+            assertTrue("Test plugin did not throw exception like it should have.", false);
+        }
+        catch (InstallerException e)
+        {
+            // OK, uninstallation is cancelled ok
+        }
+    }
+
     public void testPluginCancelsUninstallation()
     {
         JsrPluginNotifier notif = new JsrPluginNotifier(iIntegrityService);
@@ -332,6 +425,30 @@ public class JsrPluginNotifierTest extends TestCase implements InstallerMain
         assertTrue("TestPlugin2 correct method was not called", plugin2.equals("rollbackInstall"));
     }
 
+    public void testRollbackInstallNotificationException()
+    {
+        JsrPluginNotifier notif = new JsrPluginNotifier(iIntegrityService);
+
+        // Initialize necessary values in ball for notification call
+        Uid uid = Uid.createUid("[A0032001]");
+        iInstallerExtensionInfo.iUid = uid;
+        iInstallerExtensionInfo.iAttributes = new Hashtable();
+        Attribute att = new Attribute("MIDlet-1", "3DSpaceShooter, /icon.png, Space3D");
+        iInstallerExtensionInfo.iAttributes.put("MIDlet-1", att);
+        att = new Attribute("Nokia-MIDlet-On-Screen-Keypad", "navigationkeys");
+        iInstallerExtensionInfo.iAttributes.put("Nokia-MIDlet-On-Screen-Keypad", att);
+        att = new Attribute("JSR-Plugin-Test-Exception", "true");
+        iInstallerExtensionInfo.iAttributes.put("JSR-Plugin-Test-Exception", att);
+        att = new Attribute("MIDlet-Jar-Size", "240229");
+        iInstallerExtensionInfo.iAttributes.put("MIDlet-Jar-Size", att);
+
+        notif.notifyRollbackInstall(iInstallerExtensionInfo);
+
+        String plugin2 = System.getProperty("TestPlugin2");
+        assertTrue("TestPlugin2 was not called", plugin2 != null);
+        assertTrue("TestPlugin2 correct method was not called", plugin2.equals("rollbackInstall"));
+    }
+
     public void testRollbackUninstallNotification()
     {
         JsrPluginNotifier notif = new JsrPluginNotifier(iIntegrityService);
@@ -354,5 +471,27 @@ public class JsrPluginNotifierTest extends TestCase implements InstallerMain
         assertTrue("TestPlugin2 correct method was not called. Method was " + plugin2, plugin2.equals("rollbackUninstall"));
     }
 
+    public void testRollbackUninstallNotificationException()
+    {
+        JsrPluginNotifier notif = new JsrPluginNotifier(iIntegrityService);
 
+        // Initialize necessary values in ball for notification call
+        Uid uid = Uid.createUid("[A0032002]");
+        iInstallerExtensionInfo.iUid = uid;
+        iInstallerExtensionInfo.iAttributes = new Hashtable();
+        Attribute att = new Attribute("MIDlet-1", "3DSpaceShooter, /icon.png, Space3D");
+        iInstallerExtensionInfo.iAttributes.put("MIDlet-1", att);
+        att = new Attribute("Nokia-MIDlet-On-Screen-Keypad", "navigationkeys");
+        iInstallerExtensionInfo.iAttributes.put("Nokia-MIDlet-On-Screen-Keypad", att);
+        att = new Attribute("JSR-Plugin-Test-Exception", "true");
+        iInstallerExtensionInfo.iAttributes.put("JSR-Plugin-Test-Exception", att);
+        att = new Attribute("MIDlet-Jar-Size", "240229");
+        iInstallerExtensionInfo.iAttributes.put("MIDlet-Jar-Size", att);
+
+        notif.notifyRollbackUninstall(iInstallerExtensionInfo);
+
+        String plugin2 = System.getProperty("TestPlugin2");
+        assertTrue("TestPlugin2 was not called", plugin2 != null);
+        assertTrue("TestPlugin2 correct method was not called. Method was " + plugin2, plugin2.equals("rollbackUninstall"));
+    }
 }

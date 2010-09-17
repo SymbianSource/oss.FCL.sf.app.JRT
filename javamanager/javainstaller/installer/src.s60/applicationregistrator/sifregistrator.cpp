@@ -583,8 +583,8 @@ void RegisterApplicationL(
         CCaptionAndIconInfo *tmpCaptionAndIconInfo =
             CCaptionAndIconInfo::NewLC(
                 /*aCaption=*/ *tmpCaption,
-                /*aIconFileName=*/ KNullDesC,
-                /*aNumOfAppIcons=*/ 0);
+                /*aIconFileName=*/ (NULL != aIconFilename? *iconFilename: KNullDesC()),
+                /*aNumOfAppIcons=*/ numberOfAppIcons);
         CLocalizableAppInfo *tmpLocAppInfo =
             CLocalizableAppInfo::NewLC(
                 /*aShortCaption=*/ KNullDesC,
@@ -701,12 +701,16 @@ void SetLocalizedComponentPropertyL(
         HBufC *value = CreateHBufCFromJavaStringLC(aEnv, aValue);
         if (KUnspecifiedLocale == aLanguage)
         {
+            __UHEAP_MARK;
             aScr->SetComponentPropertyL(aComponentId, *name, *value);
+            __UHEAP_MARKEND;
         }
         else
         {
+            __UHEAP_MARK;
             aScr->SetComponentPropertyL(
                 aComponentId, *name, *value, (TLanguage)aLanguage);
+            __UHEAP_MARKEND;
         }
         CleanupStack::PopAndDestroy(value);
         CleanupStack::PopAndDestroy(name);

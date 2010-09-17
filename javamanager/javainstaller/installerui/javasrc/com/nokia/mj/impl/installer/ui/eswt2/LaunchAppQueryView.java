@@ -64,7 +64,7 @@ public class LaunchAppQueryView extends ConfirmationViewBase
         addHeader(InstallerUiTexts.get(InstallerUiTexts.INSTALLATION_COMPLETE),
                   iInstallerUi.getInstallInfo(), null);
         // Add content to the application info Composite.
-        addAppInfo(iInstallerUi.getInstallInfo(), true);
+        addAppInfo(iInstallerUi.getInstallInfo(), true, false);
     }
 
     /**

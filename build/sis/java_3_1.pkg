@@ -314,12 +314,10 @@
 "\epoc32\release\armv5\urel\z\resource\java\security\policies\all.ser"-"c:\resource\java\security\policies\all.ser"
 
 
-; NOTE: Avkon versions are commented. Please replace with QT versions when porting is ready.
 ; UI binaries
 ; Dlls containing java byte code and their odc files
-;"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javacoreui.odc"-"c:\resource\java\jvm\lib\jrt\javacoreui.odc"
-;"\epoc32\release\armv5\urel\javacoreui.dll"-"c:\sys\bin\javacoreui.dll"
-;"\epoc32\data\z\resource\apps\javastartscreen.mif"-"c:\resource\apps\javastartscreen.mif"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javacoreui.odc"-"c:\resource\java\jvm\lib\jrt\javacoreui.odc"
+"\epoc32\release\armv5\urel\javacoreui.dll"-"c:\sys\bin\javacoreui.dll"
 
 "\epoc32\release\armv5\urel\javaamms.dll"-"c:\sys\bin\javaamms.dll"
 "\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javaamms.odc"-"c:\resource\java\jvm\lib\jrt\javaamms.odc"
@@ -352,3 +350,6 @@
 
 "\epoc32\release\armv5\urel\javaapplicationsettingsview.dll"-"c:\sys\bin\javaapplicationsettingsview.dll"
 "\epoc32\data\z\resource\qt\plugins\appsettings\javaapplicationsettingsview.qtplugin"-"c:\resource\qt\plugins\appsettings\javaapplicationsettingsview.qtplugin"
+
+"\epoc32\release\armv5\urel\javasoftindicatorplugin.dll"-"c:\sys\bin\javasoftindicatorplugin.dll"
+"\epoc32\data\z\resource\plugins\indicators\javasoftindicatorplugin.qtplugin"-"c:\resource\plugins\indicators\javasoftindicatorplugin.qtplugin"

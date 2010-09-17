@@ -1152,11 +1152,14 @@ public class InstallerUiEswt extends InstallerUi
         {
             long startTime = System.currentTimeMillis();
             
+            int maxWidth = DisplayExtension.getBestImageWidth(DisplayExtension.LIST_ELEMENT);
+            int maxHeight = DisplayExtension.getBestImageHeight(DisplayExtension.LIST_ELEMENT);
+            
+            aDisplay.setData("org.eclipse.swt.internal.image.loadSize", new Point(maxWidth, maxHeight));
             Image image = new Image(aDisplay, aInputStream);
+            
             if (aScaleImage)
             {
-                int maxWidth = DisplayExtension.getBestImageWidth(DisplayExtension.LIST_ELEMENT);
-                int maxHeight = DisplayExtension.getBestImageHeight(DisplayExtension.LIST_ELEMENT);
                 Rectangle rect = image.getBounds();
                 if (maxWidth != rect.width || maxHeight != rect.height)
                 {

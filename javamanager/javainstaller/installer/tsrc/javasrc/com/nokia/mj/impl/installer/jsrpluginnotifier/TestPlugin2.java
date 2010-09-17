@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -47,6 +47,14 @@ public class TestPlugin2 implements InstallerExtension
             return false;
         }
 
+        // If the MIDlet to be installed has JAD/JAR attribute
+        // "JSR-Plugin-Test-Exception" with any value, throw Exception
+        if ((aInstallerExtensionInfo.iAttributes != null) &&
+                (aInstallerExtensionInfo.iAttributes.get("JSR-Plugin-Test-Exception") != null))
+        {
+            throw new RuntimeException("TestPlugin2.install Exception");
+        }
+
         return true;
     }
 
@@ -64,12 +72,20 @@ public class TestPlugin2 implements InstallerExtension
         // tell that this plugin has been called
         System.setProperty("TestPlugin2", "uninstall");
 
-        // If the MIDlet to be installed has JAD/JAR attribute
+        // If the MIDlet to be uninstalled has JAD/JAR attribute
         // "JSR-Plugin-Test-Cancel" with any value, cancel install
         if ((aInstallerExtensionInfo.iAttributes != null) &&
                 (aInstallerExtensionInfo.iAttributes.get("JSR-Plugin-Test-Cancel") != null))
         {
             return false;
+        }
+
+        // If the MIDlet to be uninstalled has JAD/JAR attribute
+        // "JSR-Plugin-Test-Exception" with any value, throw Exception
+        if ((aInstallerExtensionInfo.iAttributes != null) &&
+                (aInstallerExtensionInfo.iAttributes.get("JSR-Plugin-Test-Exception") != null))
+        {
+            throw new RuntimeException("TestPlugin2.uninstall Exception");
         }
 
         return true;
@@ -88,6 +104,14 @@ public class TestPlugin2 implements InstallerExtension
 
         // tell that this plugin has been called
         System.setProperty("TestPlugin2", "rollbackInstall");
+
+        // If the MIDlet to be installed has JAD/JAR attribute
+        // "JSR-Plugin-Test-Exception" with any value, throw Exception
+        if ((aInstallerExtensionInfo.iAttributes != null) &&
+                (aInstallerExtensionInfo.iAttributes.get("JSR-Plugin-Test-Exception") != null))
+        {
+            throw new RuntimeException("TestPlugin2.rollbackInstall Exception");
+        }
     }
 
     /**
@@ -102,5 +126,13 @@ public class TestPlugin2 implements InstallerExtension
 
         // tell that this plugin has been called
         System.setProperty("TestPlugin2", "rollbackUninstall");
+
+        // If the MIDlet to be uninstalled has JAD/JAR attribute
+        // "JSR-Plugin-Test-Exception" with any value, throw Exception
+        if ((aInstallerExtensionInfo.iAttributes != null) &&
+                (aInstallerExtensionInfo.iAttributes.get("JSR-Plugin-Test-Exception") != null))
+        {
+            throw new RuntimeException("TestPlugin2.rollbackUninstall Exception");
+        }
     }
 }

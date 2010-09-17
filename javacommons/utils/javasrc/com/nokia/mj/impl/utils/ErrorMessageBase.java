@@ -121,7 +121,14 @@ abstract public class ErrorMessageBase
         ResourceLoader rl = (ResourceLoader)iResourceLoaderTable.get(key);
         if (rl == null)
         {
-            rl = ResourceLoader.getInstance(textFilename, textPrefix);
+            if (getLocaleIdQt() == null)
+            {
+                rl = ResourceLoader.getInstance(textFilename, textPrefix);
+            }
+            else
+            {
+                rl = ResourceLoader.getInstance(null, null, textFilename, textPrefix);
+            }
             iResourceLoaderTable.put(key, rl);
         }
         return rl;
@@ -134,9 +141,7 @@ abstract public class ErrorMessageBase
      */
     protected static String getLocaleIdQt()
     {
-        // Change this after Qt localisation files are taken into use.
-        //return ResourceLoader.getLocaleIdQt();
-        return null;
+        return ResourceLoader.getLocaleIdQt();
     }
 
     /*** ----------------------------- PACKAGE ---------------------------- */

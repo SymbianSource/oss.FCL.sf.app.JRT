@@ -162,7 +162,7 @@ public class InstallConfirmationView extends ConfirmationViewBase
 
         // After other widgets have been added, add content to
         // application info Composite.
-        addAppInfo(iInstallInfo, true);
+        addAppInfo(iInstallInfo, true, true);
     }
 
     /**
@@ -241,10 +241,6 @@ public class InstallConfirmationView extends ConfirmationViewBase
         case InstallInfo.DRIVE_TYPE_UNKNOWN:
             switch (prefix)
             {
-            case 0:
-                textId = InstallerUiTexts.DRIVE_TYPE_UNKNOWN;
-                textParams = new String[] { driveLetter };
-                break;
             case 1:
                 textId = InstallerUiTexts.DRIVE_TYPE_UNKNOWN_KB;
                 break;
@@ -259,10 +255,6 @@ public class InstallConfirmationView extends ConfirmationViewBase
         case InstallInfo.DRIVE_TYPE_PHONE_MEMORY:
             switch (prefix)
             {
-            case 0:
-                textId = InstallerUiTexts.DRIVE_TYPE_PHONE_MEMORY;
-                textParams = new String[] { driveLetter };
-                break;
             case 1:
                 textId = InstallerUiTexts.DRIVE_TYPE_PHONE_MEMORY_KB;
                 break;
@@ -277,10 +269,6 @@ public class InstallConfirmationView extends ConfirmationViewBase
         case InstallInfo.DRIVE_TYPE_MEMORY_CARD:
             switch (prefix)
             {
-            case 0:
-                textId = InstallerUiTexts.DRIVE_TYPE_MEMORY_CARD;
-                textParams = new String[] { driveLetter };
-                break;
             case 1:
                 textId = InstallerUiTexts.DRIVE_TYPE_MEMORY_CARD_KB;
                 break;
@@ -295,10 +283,6 @@ public class InstallConfirmationView extends ConfirmationViewBase
         case InstallInfo.DRIVE_TYPE_INTERNAL_MASS_STORAGE:
             switch (prefix)
             {
-            case 0:
-                textId = InstallerUiTexts.DRIVE_TYPE_INTERNAL_MASS_STORAGE;
-                textParams = new String[] { driveLetter };
-                break;
             case 1:
                 textId = InstallerUiTexts.DRIVE_TYPE_INTERNAL_MASS_STORAGE_KB;
                 break;

@@ -50,7 +50,7 @@ const wchar_t ON_SCREEN_KEYPAD_VALUE_NO[] = L"0";
 const wchar_t ON_SCREEN_KEYPAD_VALUE_GAMEACTIONS[] = L"1";
 const wchar_t ON_SCREEN_KEYPAD_VALUE_NAVIGATION[] = L"2";
 
-JavaApplicationSettingsViewPrivate::JavaApplicationSettingsViewPrivate(const QString& aJavaAppUid):
+JavaApplicationSettingsViewPrivate::JavaApplicationSettingsViewPrivate(const QString& aJavaAppUid, const QString& aJavaAppName):
         mMainForm(0), mModel(0), mGeneralSettingsGroup(0), mSecuritySettingsGroup(0), mNetConnSettingsUi(0), mAsyncToSyncCallEventLoop(0), mSecWarningAccepted(false), mDefaultConnId(0)
 {
     // init common values
@@ -64,7 +64,7 @@ JavaApplicationSettingsViewPrivate::JavaApplicationSettingsViewPrivate(const QSt
         return;
     }
     ELOG1(EJavaSettings, "Initializing settings for suite %S", mSuiteUid.c_str());
-    
+
     // init access point settings ui
     mNetConnSettingsUi = new CmApplSettingsUi(this);
     mAsyncToSyncCallEventLoop = new QEventLoop();
@@ -74,7 +74,14 @@ JavaApplicationSettingsViewPrivate::JavaApplicationSettingsViewPrivate(const QSt
 
     // init form
     mMainForm = new HbDataForm();
-    mMainForm->setHeading(QString::fromStdWString(readFromStorage(PACKAGE_NAME, L"", L"", APPLICATION_PACKAGE_TABLE)));
+    if (aJavaAppName.isEmpty())
+    {
+        mMainForm->setHeading(QString::fromStdWString(readFromStorage(PACKAGE_NAME, L"", L"", APPLICATION_PACKAGE_TABLE)));
+    }
+    else
+    {
+        mMainForm->setHeading(aJavaAppName);
+    }
     mModel = new HbDataFormModel();
 
     // init settings

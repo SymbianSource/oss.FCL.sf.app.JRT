@@ -30,9 +30,6 @@ import java.util.*;
  *   Label subjectLabel = createLabel(
  *       res.format("subject").arg(certificate.getSubject()).toString(),
  *       horizontalSpan, labelStyle);
- *
- *   Label noteLabel = createLabel(
- *       res.string("note"), horizontalSpan, labelStyle);
  * </pre>
  */
 public class ResourceLoader
@@ -144,7 +141,7 @@ public class ResourceLoader
      * @param resourceName name of the resource
      * @param aPrefix prefix added before each id when retrieving
      */
-    public ResourceLoader(String resourceName, String aPrefix)
+    ResourceLoader(String resourceName, String aPrefix)
     {
         locType = AVKON;
         prefix = aPrefix;
@@ -166,54 +163,13 @@ public class ResourceLoader
     /**
      * Get a string formatter of a given resource id.
      *
-     * @param avkonId Avkon resource id.
-     * @param qtId Qt resource id.
-     * @return formatter instance
-     * @see Formatter
-     */
-    public Formatter format(String avkonId, String qtId)
-    {
-        if (locType == AVKON)
-        {
-            return new Formatter(string(avkonId), locType);
-        }
-        else
-        {
-            return new Formatter(string(qtId), locType);
-        }
-    }
-
-    /**
-     * Formats localised text with specified parameters from an array.
-     *
-     * @param avkonId Avkon resource id.
-     * @param qtId Qt resource id.
-     * @param textParameters parameters to be filled into the text.
-     * @return localised text formatted with the provided parameters.
-     * @see Formatter
-     */
-    public String format(String avkonId, String qtId, Object[] textParameters)
-    {
-        if (locType == AVKON)
-        {
-            return new Formatter(string(avkonId), locType).format(textParameters);
-        }
-        else
-        {
-            return new Formatter(string(qtId), locType).format(textParameters);
-        }
-    }
-
-    /**
-     * Get a string formatter of a given resource id.
-     *
      * @param id resource id
      * @return formatter instance
      * @see Formatter
      */
     public Formatter format(Id id)
     {
-        return new Formatter(id.getString(locType), locType);
+        return new Formatter(string(id.getString(locType)), locType);
     }
 
     /**
@@ -242,44 +198,6 @@ public class ResourceLoader
         return new Formatter(string(id.getString(locType)), locType).format(textParameters);
     }
 
-
-    /**
-     * Get a plain string resource with a given resource id.
-     *
-     * @param id resource id, either with prefix or without
-     * @return resource string, or the id if does not exist
-     */
-    public String string(String id)
-    {
-        String str = (String)resourceMap.get(id);
-        if (str == null)
-        {
-            // Try with prefix
-            str = (String)resourceMap.get(prefix + id);
-            if (str == null)
-            {
-                // Not found even with prefix. Use the id itself
-                if (!id.startsWith(prefix))
-                {
-                    str = prefix + id;
-                }
-                else
-                {
-                    str = id;
-                }
-
-                Logger.WLOG(Logger.EUtils, "Cannot find resource: " + id);
-            }
-
-            // Put back to hash with original key for quick retrieval
-            resourceMap.put(id, str);
-        }
-
-        str = decode(str);
-        str = replaceCharacterCodes(str);
-
-        return str;
-    }
 
     /**
      * Gets the locale ID currently being used on the phone. This can be used
@@ -317,6 +235,44 @@ public class ResourceLoader
 
 
     /*** ----------------------------- PRIVATE ---------------------------- */
+
+    /**
+     * Get a plain string resource with a given resource id.
+     *
+     * @param id resource id, either with prefix or without
+     * @return resource string, or the id if does not exist
+     */
+    private String string(String id)
+    {
+        String str = (String)resourceMap.get(id);
+        if (str == null)
+        {
+            // Try with prefix
+            str = (String)resourceMap.get(prefix + id);
+            if (str == null)
+            {
+                // Not found even with prefix. Use the id itself
+                if (!id.startsWith(prefix))
+                {
+                    str = prefix + id;
+                }
+                else
+                {
+                    str = id;
+                }
+
+                Logger.WLOG(Logger.EUtils, "Cannot find resource: " + id);
+            }
+
+            // Put back to hash with original key for quick retrieval
+            resourceMap.put(id, str);
+        }
+
+        str = decode(str);
+        str = replaceCharacterCodes(str);
+
+        return str;
+    }
 
     /**
      * Loads the resources from .loc type file.

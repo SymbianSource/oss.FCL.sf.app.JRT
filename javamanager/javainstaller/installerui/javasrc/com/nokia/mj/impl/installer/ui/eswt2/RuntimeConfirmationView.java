@@ -128,7 +128,7 @@ public class RuntimeConfirmationView extends ConfirmationViewBase
 
         // After other widgets have been added, add content to
         // application info Composite.
-        addAppInfo(iInstallerUi.getInstallInfo(), false);
+        addAppInfo(iInstallerUi.getInstallInfo(), false, false);
     }
 
     /**

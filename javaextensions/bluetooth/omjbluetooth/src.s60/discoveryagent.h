@@ -84,7 +84,7 @@ public:
 
     int getStatusOfCompletion();
 
-    int PopulateServiceRecordAttrValue(JNIEnv* aJni, jobject& aPeer,
+    int PopulateServiceRecordAttrValue(JNIEnv* aJni,
                                        TInt64 aRemoteAddress, long aHandle, TPtrC16 aAttrIdsDes,
                                        jobject aServiceRecordImpl, java::util::Monitor* aMonitor);
 
@@ -120,7 +120,7 @@ private:
 
     void StartedServiceSearch(JNIEnv* aJni, jobject& aPeer);
 
-    void populateServiceRecordAttrValueFs(TInt64 aRemoteAddress, long aHandle,
+    void populateServiceRecordAttrValueFsL(TInt64 aRemoteAddress, long aHandle,
                                           TPtrC16 aAttrIdsDes, jobject aServiceRecordImpl);
 
 private:

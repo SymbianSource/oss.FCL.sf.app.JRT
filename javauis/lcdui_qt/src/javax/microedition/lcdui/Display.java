@@ -290,6 +290,15 @@ public class Display
             }
             else
             {
+                if(displayable.isPopup())
+                {
+                    TextBox textbox = (TextBox) displayable;
+                    if(currentDisplayable == null)
+                    {
+                        // if PopupTextBox is first Displayable
+                        textbox.setFirstDisplayable(true);
+                    }
+                }
                 doSetCurrent(displayable);
             }
         }

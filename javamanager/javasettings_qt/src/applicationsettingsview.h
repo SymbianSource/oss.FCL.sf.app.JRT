@@ -36,12 +36,12 @@ public:
 
 public slots:
     /*
-     * Initializas the view with application specific info
+     * Initializes the view with application specific info
      *
      * @param aAppUid Identifier for the application
-     *
+     * @param aAppName Name for the application
      */
-    void initialize(const QString& aAppUid);
+    void initialize(const QString& aAppUid, const QString& aAppName = QString());
 
 };
 

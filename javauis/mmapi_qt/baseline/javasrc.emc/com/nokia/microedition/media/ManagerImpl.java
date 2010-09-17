@@ -515,6 +515,7 @@ public class ManagerImpl implements PlugIn
             throw new IllegalArgumentException("DataSource is null.");
         }
         aSource.connect(); // Ensure that external source is connected.
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"ManagerImpl createInternalPlayer after connect ");
         if (aSource.getStreams() == null ||
                 aSource.getStreams().length == 0)
         {
@@ -536,10 +537,12 @@ public class ManagerImpl implements PlugIn
         InternalPlayer player = null;
         Enumeration plugins = iPlugIns.elements();
         // Loop through all plugins, stop if player was created
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"ManagerImpl - createinternalplayer - plugins has"+iPlugIns.size());
         while (plugins.hasMoreElements() &&
                 (player == null))
         {
             PlugIn tmp = (PlugIn)plugins.nextElement();
+
             player = tmp.createPlayer(bdc);
         }
 

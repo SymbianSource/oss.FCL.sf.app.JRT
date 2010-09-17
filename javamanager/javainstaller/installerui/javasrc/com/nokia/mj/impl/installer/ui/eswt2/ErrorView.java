@@ -42,7 +42,7 @@ public class ErrorView extends ConfirmationViewBase
     {
         super(aInstallerUi, aParent, 8);
         setTitle(InstallerUiTexts.get(InstallerUiTexts.INSTALL_FAILED));
-        setCommands(InstallerUiTexts.get(InstallerUiTexts.SHOW),
+        setCommands(InstallerUiTexts.get(InstallerUiTexts.DETAILS),
                     InstallerUiTexts.get(InstallerUiTexts.CLOSE));
     }
 
@@ -94,7 +94,7 @@ public class ErrorView extends ConfirmationViewBase
         {
             // After other widgets have been added, add content to
             // application info Composite.
-            addAppInfo(iInstallerUi.getInstallInfo(), true);
+            addAppInfo(iInstallerUi.getInstallInfo(), true, false);
         }
     }
 

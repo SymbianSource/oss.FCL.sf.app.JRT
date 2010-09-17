@@ -66,8 +66,7 @@ void ServiceApp::quit()
 // the name of the name of the service and then the name of the interface
 // (from service_conf.xml)
 UriService::UriService(ServiceApp* parent)
-: XQServiceProvider(QLatin1String("javaappscheme.com.nokia.symbian.IUriView"),parent),
-    mServiceApp(parent)
+: XQServiceProvider(QLatin1String("javaappscheme.com.nokia.symbian.IUriView"),parent)
 {
     LOG(EJavaQtServiceApp, EInfo, "UriService::UriService called");
     publishAll();

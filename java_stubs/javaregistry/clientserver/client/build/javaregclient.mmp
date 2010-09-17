@@ -41,6 +41,7 @@ SOURCE          writeablejavaregistryapplicationentry.cpp
 SOURCE          writeablejavaregistry.cpp 
 SOURCE          javaregistrybackupsupport.cpp
 SOURCE          javaregconverter.cpp
+SOURCE          javaattribute.cpp
 
 SOURCEPATH      ../../common/src
 SOURCE          javaregproperty.cpp

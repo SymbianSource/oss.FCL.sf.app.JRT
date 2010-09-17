@@ -43,6 +43,7 @@ import com.nokia.microedition.media.InputStreamDataSource;
 import com.nokia.microedition.media.InputStreamSourceStream;
 import com.nokia.microedition.media.PlayerBase;
 import com.nokia.microedition.media.PlayerListenerImpl;
+import com.nokia.mj.impl.utils.Logger;
 
 public class AnimationPlayer extends PlayerBase implements ESWTinitializeListener
 {
@@ -118,6 +119,7 @@ public class AnimationPlayer extends PlayerBase implements ESWTinitializeListene
      */
     public AnimationPlayer(DataSource ds) throws MediaException
     {
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"AnimationPlayer(DataSource ds) +");
         iPlayerListenerImpl= new PlayerListenerImpl(this);
         //TODO check if we can do it in better way
         // this is temporary solution
@@ -150,6 +152,7 @@ public class AnimationPlayer extends PlayerBase implements ESWTinitializeListene
             iBackgroundPixel= imageLoader.backgroundPixel;
         }
         populateControl();
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"AnimationPlayer(DataSource ds) -");
 
     }
 

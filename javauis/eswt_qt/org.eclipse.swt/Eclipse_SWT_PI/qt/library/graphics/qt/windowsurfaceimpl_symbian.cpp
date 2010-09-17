@@ -318,8 +318,7 @@ bool WindowSurfaceImpl::isLocalSurfaceValid()
         return false;
     }
     
-    if((mMainSurface.localSurfaceInUse) && 
-       (mMainSurface.localSurface->width() == mMainSurface.widget->width()) && 
+    if((mMainSurface.localSurface->width() == mMainSurface.widget->width()) && 
        (mMainSurface.localSurface->height() == mMainSurface.widget->height()))
     {
         return true;
@@ -362,7 +361,8 @@ void WindowSurfaceImpl::updateSurfaceData()
         }
         else 
         {
-            // We have valid local surface so just return
+            // We have valid local surface so make sure its active and return
+            mMainSurface.localSurfaceInUse = true;
             return;
         }
     }
@@ -386,15 +386,19 @@ void WindowSurfaceImpl::updateSurfaceData()
     
     // We got window surface so extract information
     QPaintDevice* device = surface->paintDevice();
+    QPaintEngine* engine = NULL;
+    
+    // If the device is active it means that some painter is attached to the widget,
+    // if not then we attach our own painter to do the job
     if(device->paintingActive())
     {
-        throw GfxException(EGfxErrorIllegalState, "Internal error: Device active when refreshing data");  
+        engine = device->paintEngine();
     }
-    
-    // Attach painter to device in oder to see which type 
-    // of device it is working on
-    mPainter.begin(device);
-    QPaintEngine* engine = mPainter.paintEngine();
+    else
+    {
+        mPainter.begin(device);
+        engine = mPainter.paintEngine();
+    }
     
     // determine the surface type based on the engine used
     // as Qt does not provide exact info of the surface type
@@ -420,8 +424,11 @@ void WindowSurfaceImpl::updateSurfaceData()
             throw GfxException(EGfxErrorIllegalArgument, "Unsupported widget window surface type");
     }
     
-    // release painter
-    mPainter.end();
+    // release painter if its active
+    if(mPainter.isActive())
+    {
+        mPainter.end();
+    }
     mMainSurface.qSurface = surface;
     mMainSurface.device = device;
     mMainSurface.localSurfaceInUse = false;

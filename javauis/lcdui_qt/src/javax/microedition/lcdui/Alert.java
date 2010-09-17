@@ -253,6 +253,12 @@ public class Alert extends Screen
      */
     void eswtHandleShowCurrentEvent()
     {
+        // If it alert is first displayable, default 
+        // displayable should be shown behind alert
+        if(topShell.isVisible() == false && nextDisplayable == null)
+        {
+            topShell.setVisible(true);
+        }
         super.eswtHandleShowCurrentEvent();
         topShell.addListener(SWT.Resize, resizeListener);
 

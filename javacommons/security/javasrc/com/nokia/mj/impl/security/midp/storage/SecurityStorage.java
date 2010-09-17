@@ -740,9 +740,12 @@ public final class SecurityStorage
         if (data.getRootHashValue() != null
                 && data.getRootHashValue().length() > 0)
         {
+            int rootHashLength = (data.getRootHashValue().length() > 8
+                ? 8 : data.getRootHashValue().length());
             entry.addAttribute(new StorageAttribute(
                                    StorageNames.CERT_HASH,
-                                   data.getRootHashValue()));
+                                   data.getRootHashValue().substring(0, 
+                                   rootHashLength)));
         }
         String validCerts = encodeValidatedChainIndexes(
                                 data.getValidatedChainIndexes());

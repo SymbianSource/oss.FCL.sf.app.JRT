@@ -13,8 +13,10 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.ercp.swt.mobile.Command;
 import org.eclipse.ercp.swt.mobile.MobileDevice;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.qt.CommandArranger;
 import org.eclipse.swt.internal.qt.SymbianWindowVisibilityListener;
 import org.eclipse.swt.internal.qt.graphics.WindowSurface;
@@ -204,6 +206,9 @@ public static boolean sendKeyEvent(Widget w, int type, int key, int modifier, in
 /*
  * From the class Control
  */
+public static void endWindowSurfaceSession(Control c) {
+	c.endWindowSurfaceSession();
+}
 public static int extraStyle(Control c) {
     return c.extraStyle;
 }
@@ -250,6 +255,13 @@ public static boolean setTabGroupFocus(Control c) {
 public static void setTraversalFlags(Control c, int type, int key, int modifier, int character) {
     c.setTraversalFlags_pp(type, key, modifier, character);
 }
+public static Rectangle startWindowSurfaceSession(Control c, Rectangle clip) {
+	return c.startWindowSurfaceSession(clip);
+}
+public static Rectangle toWindowSurface(Control c, Rectangle rect) {
+	return c.toWindowSurface(rect);
+}
+
 /*
  * From the class Scrollable
  */

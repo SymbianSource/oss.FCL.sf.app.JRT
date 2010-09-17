@@ -170,7 +170,7 @@ public abstract class Item
     private ItemControlStateChangeListener controlListener;
 
     private Command defaultCommand;
-	private WeakReference wParent;
+    private Screen iParent = null;
 
     private int layout;
     private int lockedPrefWidth = -1;
@@ -188,14 +188,14 @@ public abstract class Item
      */
     void setParent(Screen parent)
     {
-    	if(parent != null)
-    	{
-    		wParent = new WeakReference(parent);
-    	}
-		else
-		{
-			clearParent();
-		}
+        if(parent != null)
+        {
+            iParent = parent;
+        }
+        else
+        {
+            clearParent();
+        }
     }
 
     /**
@@ -205,14 +205,14 @@ public abstract class Item
      */
     Screen getParent()
     {
-    	if(wParent != null)
-    	{
-    		return (Screen)wParent.get();
-    	}
-		else
-		{
-			return null;
-		}
+        if(iParent != null)
+        {
+            return iParent;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     /**
@@ -221,11 +221,10 @@ public abstract class Item
      */
     void clearParent()
     {
-    	if(wParent != null)
-    	{
-    		wParent.clear();
-			wParent = null;
-    	}
+        if(iParent != null)
+        {
+            iParent = null;
+        }
     }
 
     /**
@@ -241,10 +240,10 @@ public abstract class Item
             throw new IllegalStateException(
                 MsgRepository.ITEM_EXCEPTION_OWNED_BY_ALERT);
         }
-    	if((newLabel == null) && (label == null))
-		{
-			return;
-		}
+        if((newLabel == null) && (label == null))
+        {
+            return;
+        }
         label = newLabel;
         updateParent(UPDATE_LABEL | UPDATE_SIZE_CHANGED);
     }
@@ -570,7 +569,7 @@ public abstract class Item
                 MsgRepository.ITEM_EXCEPTION_NOT_OWNED_BY_FORM);
         }
         // Notify item state listener
-        ((Form) getParent()).notifyItemStateChanged(this);
+        ((Form) iParent).notifyItemStateChanged(this);
     }
 
     /**
@@ -630,7 +629,7 @@ public abstract class Item
      */
     boolean isContainedInAlert()
     {
-        return ((wParent != null) && (getParent() instanceof Alert));
+        return ((iParent != null) && (iParent instanceof Alert));
     }
 
     /**
@@ -638,7 +637,7 @@ public abstract class Item
      */
     boolean isContainedInForm()
     {
-        return ((wParent != null) && (getParent() instanceof Form));
+        return ((iParent != null) && (iParent instanceof Form));
     }
 
     /**
@@ -672,7 +671,7 @@ public abstract class Item
         }
         if(isContainedInForm())
         {
-        	((Form) getParent()).updateItemState(this, updateReason, param);
+        	((Form) iParent).updateItemState(this, updateReason, param);
         }
     }
 

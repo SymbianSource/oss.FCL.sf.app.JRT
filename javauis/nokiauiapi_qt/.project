@@ -6,12 +6,15 @@
 	</projects>
 	<buildSpec>
 		<buildCommand>
-			<name>org.eclipse.jdt.core.javabuilder</name>
+			<name>com.nokia.carbide.cdt.builder.carbideCPPBuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
 	</buildSpec>
 	<natures>
-		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>org.eclipse.cdt.core.cnature</nature>
+		<nature>org.eclipse.cdt.core.ccnature</nature>
+		<nature>com.nokia.carbide.cdt.builder.carbideCPPBuilderNature</nature>
+		<nature>com.nokia.carbide.cdt.builder.carbideSBSv2BuilderNature</nature>
 	</natures>
 </projectDescription>

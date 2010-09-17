@@ -48,7 +48,7 @@ public class CertificateDetailsView extends ConfirmationViewBase
         iCerts = aCerts;
         iCertIndex = aCertIndex;
         setTitle(aTitle);
-        setCommands(null, InstallerUiTexts.get(InstallerUiTexts.OK));
+        setCommands(null, InstallerUiTexts.get(InstallerUiTexts.CLOSE));
     }
 
     /**

@@ -114,6 +114,9 @@ void checkNoBackground() {
         if(handle != 0) {
             OS.QWidget_setAttribute(handle, OS.QT_WA_NOSYSTEMBACKGROUND, true);
         }
+        if(topHandle != 0) {
+            OS.QWidget_setAttribute(topHandle, OS.QT_WA_NOSYSTEMBACKGROUND, true);
+        }
     }
 }
 
@@ -193,6 +196,8 @@ void createHandle_pp (int index) {
     // Composite by itself must not by default accept focus by clicking.
     int policy = OS.QWidget_focusPolicy(topHandle) & ~OS.QT_FOCUSPOLICY_CLICKFOCUS;
     OS.QWidget_setFocusPolicy(topHandle, policy);
+    policy = OS.QWidget_focusPolicy(handle) & ~OS.QT_FOCUSPOLICY_CLICKFOCUS;
+    OS.QWidget_setFocusPolicy(handle, policy);
     
     // Stand-alone Composites, Shells, Canvases set the CANVAS flag
     state |= (WidgetState.HANDLE | WidgetState.CANVAS);

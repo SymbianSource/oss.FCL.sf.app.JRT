@@ -66,12 +66,12 @@ public class ProgressView extends ViewBase
     /** Constructor */
     protected ProgressView(InstallerUiEswt aInstallerUi, Composite aParent, String aMsg)
     {
-        this(aInstallerUi, aParent, aMsg, false);
+        this(aInstallerUi, aParent, aMsg, false, true);
     }
 
     /** Constructor */
     protected ProgressView(InstallerUiEswt aInstallerUi, Composite aParent, String aMsg,
-                           boolean aIndeterminate)
+                           boolean aIndeterminate, boolean aHideCommand)
     {
         super(aInstallerUi, aParent, 8);
         iMsg = aMsg;
@@ -112,11 +112,11 @@ public class ProgressView extends ViewBase
         // application info Composite.
         if (iInstallerUi != null)
         {
-            addAppInfo(iInstallerUi.getInstallInfo(), false);
+            addAppInfo(iInstallerUi.getInstallInfo(), false, false);
         }
 
         // By default add cancel command to all progress bars.
-        addCancelCommand();
+        addCancelCommand(aHideCommand);
 
         iInstallerUi.loadCss();
     }
@@ -159,9 +159,11 @@ public class ProgressView extends ViewBase
     }
 
     /**
-     * Adds a cancel command for this progress view.
+     * Adds Cancel command for this progress view.
+     *
+     * @param aHideCommand if true, also Hide command is added.
      */
-    protected void addCancelCommand()
+    protected void addCancelCommand(final boolean aHideCommand)
     {
         if (iCancelCommand != null || isDisposed())
         {
@@ -173,32 +175,43 @@ public class ProgressView extends ViewBase
         {
             public void run()
             {
+                GridData gridData = null;
                 // Set horizontalSpan to 2 for one button,
                 // and to 1 for two buttons.
-                int horizontalSpan = 1;
-                GridData gridData = null;
-                iHideCommand = new Button(getCommandComposite(), SWT.PUSH);
-                setCssId(iHideCommand, "softKeyButton");
-                gridData = new GridData(GridData.FILL_HORIZONTAL);
-                gridData.horizontalSpan = horizontalSpan;
-                iHideCommand.setLayoutData(gridData);
-                iHideCommand.setText(InstallerUiTexts.get(InstallerUiTexts.HIDE));
-                iHideCommand.addSelectionListener(new SelectionListener()
+                int horizontalSpan = 2;
+                if (aHideCommand)
                 {
-                    public void widgetDefaultSelected(SelectionEvent aEvent)
+                    horizontalSpan = 1;
+                    iHideCommand = new Button(getCommandComposite(), SWT.PUSH);
+                    setCssId(iHideCommand, "softKeyButton");
+                    gridData = new GridData(GridData.FILL_HORIZONTAL);
+                    gridData.horizontalSpan = horizontalSpan;
+                    iHideCommand.setLayoutData(gridData);
+                    iHideCommand.setText(
+                        InstallerUiTexts.get(InstallerUiTexts.HIDE));
+                    iHideCommand.addSelectionListener(new SelectionListener()
                     {
-                        widgetSelected(aEvent);
-                    }
-                    public void widgetSelected(SelectionEvent aEvent)
-                    {
-                        confirmHide();
-                    }
-                });
-                addSoftKeyListenerFor(iHideCommand);
+                        public void widgetDefaultSelected(SelectionEvent aEvent)
+                        {
+                            widgetSelected(aEvent);
+                        }
+                        public void widgetSelected(SelectionEvent aEvent)
+                        {
+                            confirmHide();
+                        }
+                    });
+                    addSoftKeyListenerFor(iHideCommand);
+                }
 
                 iCancelCommand = new Button(getCommandComposite(), SWT.PUSH);
-                setCssId(iCancelCommand, "softKeyButton");
-                //setCssId(iCancelCommand, "softKeyButtonWide");
+                if (aHideCommand)
+                {
+                    setCssId(iCancelCommand, "softKeyButton");
+                }
+                else
+                {
+                    setCssId(iCancelCommand, "softKeyButtonWide");
+                }
                 gridData = new GridData(GridData.FILL_HORIZONTAL);
                 gridData.horizontalSpan = horizontalSpan;
                 iCancelCommand.setLayoutData(gridData);

@@ -43,7 +43,7 @@ public:
     virtual ~JavaApplicationSettingsView();
 
 public slots:
-    void initialize(const QString&);
+    void initialize(const QString&, const QString& = QString());
 
 signals:
     void aboutToClose();

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="javasrc_j2me/" kind="src" path=""/>
+	<classpathentry kind="src" path="javasrc_j2me"/>
+	<classpathentry kind="var" path="CLDC_JAR" sourcepath="/eswt_source"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

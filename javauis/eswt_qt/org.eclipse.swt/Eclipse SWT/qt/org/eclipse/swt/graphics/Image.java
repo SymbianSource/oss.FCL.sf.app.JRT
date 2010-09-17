@@ -123,6 +123,7 @@ public final class Image implements Drawable {
      * @param device Device
      */
     Image(Device device) {
+        if (device == null) device = Internal_PackageSupport.getDisplayInstance();
         if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
         this.device = device;
     }

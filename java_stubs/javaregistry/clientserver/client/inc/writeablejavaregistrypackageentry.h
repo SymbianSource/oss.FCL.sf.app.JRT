@@ -364,6 +364,30 @@ public:
      */
     IMPORT_C virtual void SerializeAttributesL();
 
+    /**
+     * CWriteableJavaRegistryPackageEntry::UsedUserDiskSpace gets the
+     * amount of disk space taken by the installed application.
+     *
+     * @since S60 v5.1
+     * @return Returns the size of used disk space in bytes.
+     */
+    IMPORT_C TInt64 UsedUserDiskSpace() const;
+
+    /**
+     * Tells if the application package is pre-installed.
+     *
+     * If a pre-installed application package is upgraded,
+     * it remains marked as pre-installed.
+     *
+     * If a pre-installed application package is uninstalled
+     * and later installed again, it is no more marked as
+     * pre-installed.
+     *
+     * @since S60 v5.1
+     * @return ETrue if the application suite is pre-installed,
+     *         EFalse otherwise.
+     */
+    IMPORT_C TBool IsPreinstalled() const;
 
 
 protected:

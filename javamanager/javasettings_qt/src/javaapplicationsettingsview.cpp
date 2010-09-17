@@ -24,9 +24,9 @@ JavaApplicationSettingsView::JavaApplicationSettingsView() :
 {
 }
 
-void JavaApplicationSettingsView::initialize(const QString& aApplication)
+void JavaApplicationSettingsView::initialize(const QString& aApplication, const QString& aApplicationName)
 {
-    d_ptr = new JavaApplicationSettingsViewPrivate(aApplication);
+    d_ptr = new JavaApplicationSettingsViewPrivate(aApplication, aApplicationName);
     d_ptr->init(this);
 }
 

@@ -644,7 +644,8 @@ public final class NativeError
         }
         }
     }
-    public static void handleCreateCalendarError(int aNativeErrorCode, String aCalName)
+    public static void handleCreateCalendarError(int aNativeErrorCode, String aCalName) 
+    throws PIMException
     {
 
 
@@ -669,7 +670,7 @@ public final class NativeError
         }
         case OsErrorMessage.KERR_ALREADY_EXISTS:
         {
-            throw new RuntimeException(ErrorString.CALENDAR_ALREADY_EXISTS);
+             throw new PIMException(ErrorString.CALENDAR_ALREADY_EXISTS, PIMException.GENERAL_ERROR);
         }
         default:
         {

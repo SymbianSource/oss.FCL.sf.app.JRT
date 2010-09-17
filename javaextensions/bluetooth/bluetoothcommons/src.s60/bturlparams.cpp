@@ -270,7 +270,7 @@ void BtUrlParams::setUrlParamsValue(std::wstring aParam, std::wstring aVal)
                  aParam.c_str(), aVal.c_str());
             mReceiveMtu = JavaCommonUtils::wstringToInt(aVal);
         }
-        catch (ExceptionBase ex)
+        catch (ExceptionBase &ex)
         {
             ELOG1(EJavaBluetooth,
                   "- ServiceRecord::setUrlParamsValue URL_PARAM_RECEIVE_MTU exception Caught: %S",
@@ -286,7 +286,7 @@ void BtUrlParams::setUrlParamsValue(std::wstring aParam, std::wstring aVal)
                  aParam.c_str(), aVal.c_str());
             mTransmitMtu = JavaCommonUtils::wstringToInt(aVal);
         }
-        catch (ExceptionBase ex)
+        catch (ExceptionBase &ex)
         {
             ELOG1(EJavaBluetooth,
                   "- ServiceRecord::setUrlParamsValue URL_PARAM_TRANSMIT_MTU exception Caught: %S",
@@ -404,7 +404,7 @@ void BtUrlParams::fillBlackList(std::wstring aBlackList)
             mBlockedSenders.push_back(blackPattern);
             index = aBlackList.find(SEMICOLON);
         }
-        catch (ExceptionBase ex)
+        catch (ExceptionBase &ex)
         {
             // Nothing to handle here.
         }
@@ -422,7 +422,7 @@ void BtUrlParams::fillBlackList(std::wstring aBlackList)
                                       aBlackList.c_str());
             mBlockedSenders.push_back(blackPattern);
         }
-        catch (ExceptionBase ex)
+        catch (ExceptionBase &ex)
         {
             // Nothing to handle here.
         }
@@ -471,7 +471,7 @@ bool BtUrlParams::matchWS(HBufC& aDevAddr, std::wstring aPattern)
     {
         pattern = S60CommonUtils::wstringToDes(aPattern.c_str());
     }
-    catch (ExceptionBase ex)
+    catch (ExceptionBase &ex)
     {
         return true;
     }

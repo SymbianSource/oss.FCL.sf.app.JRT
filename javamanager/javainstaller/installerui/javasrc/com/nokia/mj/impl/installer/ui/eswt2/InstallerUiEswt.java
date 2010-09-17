@@ -74,6 +74,7 @@ public class InstallerUiEswt extends InstallerUi
     private Shell iParent = null;
     private Shell iDialog = null;
     private ProgressView iProgressView = null;
+    private ProgressView iPreparingInstallationView = null;
     private ProgressView iDlProgressView = null;
     private ProgressView iOcspProgressView = null;
     private InstallConfirmationView iInstallConfirmationView = null;
@@ -110,7 +111,7 @@ public class InstallerUiEswt extends InstallerUi
     /** Hashtable for storing the loaded icons. */
     private static Hashtable iImageTable = null;
     /** Best size for application icon. */
-    private static Point iBestIconSize = null;
+    private static Point iBestImageSize = null;
 
     /** Default shell bounds. */
     private Rectangle iDefaultShellBounds = null;
@@ -173,7 +174,8 @@ public class InstallerUiEswt extends InstallerUi
             iDefaultShellClientBounds = iDialog.getClientArea();
             iBoldFont = getBoldFont();
             StartUpTrace.doTrace("InstallerUiEswt shell created");
-            iProgressView = new ProgressView(this, iDialog, getTitle());
+            iProgressView = new ProgressView(this, iDialog, getTitle(), false, true);
+            //createPreparingInstallationView();
 
             iParent.addControlListener(new CListener(this));
             log("InstallerUiEswt CListener added");
@@ -188,11 +190,11 @@ public class InstallerUiEswt extends InstallerUi
                 }
             });
 
-            // Initialize best icon size.
-            //iBestIconSize = new Point(
-            //    display.getBestImageWidth(DisplayExtension.ALERT),
-            //    display.getBestImageHeight(DisplayExtension.ALERT));
-            //log("Best icon size: " + iBestIconSize);
+            // Initialize best image size.
+            iBestImageSize = new Point(
+                DisplayExtension.getBestImageWidth(DisplayExtension.LIST_ELEMENT),
+                DisplayExtension.getBestImageHeight(DisplayExtension.LIST_ELEMENT));
+            log("Best image size: " + iBestImageSize);
 
             synchronized (iInitWaitObject)
             {
@@ -256,6 +258,12 @@ public class InstallerUiEswt extends InstallerUi
     public void cancelConfirmations()
     {
         super.cancelConfirmations();
+        if (iPreparingInstallationView != null &&
+            !iPreparingInstallationView.isDisposed())
+        {
+            iPreparingInstallationView.dispose();
+            iPreparingInstallationView = null;
+        }
         if (iCertificateDetailsView != null)
         {
             iCertificateDetailsView.confirmCancel();
@@ -315,6 +323,14 @@ public class InstallerUiEswt extends InstallerUi
             // If UI is not ready by the time confirmation is requested,
             // throw an exception.
             throw new RuntimeException("JavaInstallerUi not ready");
+        }
+
+        if (iPreparingInstallationView != null &&
+            !iPreparingInstallationView.isDisposed())
+        {
+            iPreparingInstallationView.setVisible(false);
+            iPreparingInstallationView.dispose();
+            iPreparingInstallationView = null;
         }
 
         boolean result = true;
@@ -493,7 +509,7 @@ public class InstallerUiEswt extends InstallerUi
                     public void run()
                     {
                         iProgressView = new ProgressView(
-                            self, iDialog, getTitle());
+                            self, iDialog, getTitle(), false, true);
                     }
                 });
                 iProgressView.setVisible(true);
@@ -608,10 +624,9 @@ public class InstallerUiEswt extends InstallerUi
                     iDlProgressView = new ProgressView(
                         self, iDialog,
                         InstallerUiTexts.get(InstallerUiTexts.DOWNLOADING),
-                        indeterminate);
+                        indeterminate, true);
                 }
             });
-            iDlProgressView.addCancelCommand();
         }
 
         synchronized (iProgressSyncObject)
@@ -688,10 +703,9 @@ public class InstallerUiEswt extends InstallerUi
                         iOcspProgressView = new ProgressView(
                             self, iDialog,
                             InstallerUiTexts.get(InstallerUiTexts.OCSP_CHECK_PROGRESS),
-                            true);
+                            true, true);
                     }
                 });
-                iOcspProgressView.addCancelCommand();
             }
             if (iOcspProgressView != null)
             {
@@ -1208,24 +1222,25 @@ public class InstallerUiEswt extends InstallerUi
         try
         {
             long startTime = System.currentTimeMillis();
+            aDisplay.setData("org.eclipse.swt.internal.image.loadSize",
+                             iBestImageSize);
             Image image = new Image(aDisplay, aInputStream);
-            ImageData imageData = image.getImageData();
             if (aScaleImage)
             {
-                Point bestSize = getBestImageSize(
-                    imageData.width, imageData.height);
-                if (bestSize.x != imageData.width ||
-                        bestSize.y != imageData.height)
+                ImageData imageData = image.getImageData();
+                if (iBestImageSize.x != imageData.width ||
+                        iBestImageSize.y != imageData.height)
                 {
                     Point oldSize =
                         new Point(imageData.width, imageData.height);
-                    imageData = imageData.scaledTo(bestSize.x, bestSize.y);
+                    imageData = imageData.scaledTo(iBestImageSize.x, iBestImageSize.y);
                     log("Image " + aImageName + " scaled from " +
                         oldSize.x + "x" + oldSize.y + " to " +
-                        bestSize.x + "x" + bestSize.y);
+                        iBestImageSize.x + "x" + iBestImageSize.y);
+                    image = new Image(aDisplay, imageData);
                 }
             }
-            result = new Image(aDisplay, imageData);
+            result = image;
             long endTime = System.currentTimeMillis();
             log("Loaded image " + aImageName + " (load time " +
                 (endTime - startTime) + " ms)");
@@ -1235,30 +1250,6 @@ public class InstallerUiEswt extends InstallerUi
         {
             log("Can not load image " + aImageName + ": " + t);
             //logError("Exception while loading image " + aImageName, t);
-        }
-        return result;
-    }
-
-    /**
-     * Determines the best image size for the image of given size.
-     */
-    private static Point getBestImageSize(int aWidth, int aHeight)
-    {
-        final int MAX_WIDTH = (iBestIconSize == null? 50: iBestIconSize.x);
-        final int MAX_HEIGHT = (iBestIconSize == null? 50: iBestIconSize.y);
-        Point result = new Point(aWidth, aHeight);
-        if (result.x > MAX_WIDTH || result.y > MAX_HEIGHT)
-        {
-            if (result.x >= MAX_WIDTH)
-            {
-                result.x = MAX_WIDTH;
-                result.y = MAX_WIDTH * aHeight / aWidth;
-            }
-            if (result.y >= MAX_HEIGHT)
-            {
-                result.x = MAX_HEIGHT * aWidth / aHeight;
-                result.y = MAX_HEIGHT;
-            }
         }
         return result;
     }
@@ -1329,6 +1320,26 @@ public class InstallerUiEswt extends InstallerUi
         public void controlResized(ControlEvent aEvent)
         {
             iInstallerUi.screenOrientationChanged();
+        }
+    }
+
+    /**
+     * Creates preparing installation view.
+     */
+    private void createPreparingInstallationView()
+    {
+        if (iPreparingInstallationView == null)
+        {
+            final InstallerUiEswt self = this;
+            iParent.getDisplay().syncExec(new Runnable()
+            {
+                public void run()
+                {
+                    iPreparingInstallationView = new ProgressView(
+                        self, iDialog, "Preparing installation", true, false);
+                    iPreparingInstallationView.setVisible(true);
+                }
+            });
         }
     }
 

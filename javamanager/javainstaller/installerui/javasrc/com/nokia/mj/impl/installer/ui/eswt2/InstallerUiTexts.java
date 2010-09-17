@@ -32,13 +32,13 @@ public class InstallerUiTexts
     // Define constants for localised text ids.
     public static final String OK = "button_ok";
     public static final String CANCEL = "button_cancel";
-    public static final String BACK = "button_back_ok";
     public static final String HIDE = "button_hide";
     public static final String SHOW = "button_show";
+    public static final String DETAILS = "button_details";
     public static final String CLOSE = "button_close";
     public static final String INSTALL_QUERY = "title_install";
     public static final String UPDATE_QUERY = "title_update_query";
-    public static final String OCSP_CHECK_PROGRESS = "ocsp_check_progress";
+    public static final String OCSP_CHECK_PROGRESS = "title_ocsp_check_progress";
     public static final String INSTALLING = "title_installing";
     public static final String INSTALL_FAILED = "title_inst_failed";
     public static final String INSTALLATION_COMPLETE = "title_installation_complete";
@@ -48,6 +48,7 @@ public class InstallerUiTexts
     public static final String USERNAME = "dialog_username";
     public static final String PASSWORD = "dialog_password";
     public static final String SUITE_NAME_VERSION = "info_app_suite_name_version";
+    public static final String SUITE_NAME_VERSION_UPDATE = "info_update_query";
     public static final String SUITE_VENDOR = "info_vendor";
     public static final String APP_NAME = "info_app_name";
     public static final String SIZE_KB = "info_size_kb";
@@ -70,19 +71,15 @@ public class InstallerUiTexts
     public static final String SERIAL_NUMBER = "setlabel_serial_number";
     public static final String FINGERPRINT = "setlabel_fingerprint";
     // Texts for installation drive selection.
-    public static final String DRIVE_TYPE_UNKNOWN = "list_unknown";
     public static final String DRIVE_TYPE_UNKNOWN_KB = "list_unknown_kb";
     public static final String DRIVE_TYPE_UNKNOWN_MB = "list_unknown_mb";
     public static final String DRIVE_TYPE_UNKNOWN_GB = "list_unknown_gb";
-    public static final String DRIVE_TYPE_PHONE_MEMORY = "list_phone_mem";
     public static final String DRIVE_TYPE_PHONE_MEMORY_KB = "list_phone_mem_kb";
     public static final String DRIVE_TYPE_PHONE_MEMORY_MB = "list_phone_mem_mb";
     public static final String DRIVE_TYPE_PHONE_MEMORY_GB = "list_phone_mem_gb";
-    public static final String DRIVE_TYPE_MEMORY_CARD = "list_mem_card";
     public static final String DRIVE_TYPE_MEMORY_CARD_KB = "list_mem_card_kb";
     public static final String DRIVE_TYPE_MEMORY_CARD_MB = "list_mem_card_mb";
     public static final String DRIVE_TYPE_MEMORY_CARD_GB = "list_mem_card_gb";
-    public static final String DRIVE_TYPE_INTERNAL_MASS_STORAGE = "list_mass_mem";
     public static final String DRIVE_TYPE_INTERNAL_MASS_STORAGE_KB = "list_mass_mem_kb";
     public static final String DRIVE_TYPE_INTERNAL_MASS_STORAGE_MB = "list_mass_mem_mb";
     public static final String DRIVE_TYPE_INTERNAL_MASS_STORAGE_GB = "list_mass_mem_gb";

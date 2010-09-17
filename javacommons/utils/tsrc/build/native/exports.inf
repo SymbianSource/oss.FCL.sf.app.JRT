@@ -17,7 +17,7 @@
 
 PRJ_EXPORTS
 
-#include "../../../../inc/build_defines.hrh"
+#include "../../../inc/build_defines.hrh"
 #ifdef RD_JAVA_SYMBIAN_TARGET
 ../../tst.bat        /epoc32/winscw/c/tst.bat
 #endif // RD_JAVA_SYMBIAN_TARGET

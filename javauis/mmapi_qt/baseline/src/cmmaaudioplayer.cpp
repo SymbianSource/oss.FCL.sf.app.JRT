@@ -221,6 +221,7 @@ void CMMAAudioPlayer::PrefetchL()
         iSourceStreams[ 0 ]->ReadAllL();
     }
     // CMMASourceStream will notify with ReadCompleted
+    LOG(EJavaMMAPI, EInfo, "CMMAAudioPlayer::PrefetchL -");
 }
 
 const TDesC& CMMAAudioPlayer::Type()

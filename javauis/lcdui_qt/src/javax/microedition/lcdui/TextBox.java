@@ -36,6 +36,8 @@ public class TextBox extends Screen
     private TextWrapper textWrapper;
 
     private int numLines;
+    private Shell topShell;
+    private boolean firstDisplayable = false;
 
     /**
      * Constructor.
@@ -59,24 +61,13 @@ public class TextBox extends Screen
      */
     Shell eswtConstructShell(int style)
     {
-        Shell topShell = super.eswtConstructShell(style);
-        // TextBox with null title and ANY constraint, should be Full-Screen
-        if(getTitle() == null && TextWrapper.getTypeConstraint(
-                    textWrapper.getConstraints()) == TextField.ANY)
+        topShell = super.eswtConstructShell(style);
+        Shell currentShell = topShell;
+        if(super.isPopup())
         {
-            return topShell;
+            currentShell = new Shell(topShell, style | SWT.DIALOG_TRIM | SWT.RESIZE);
         }
-        else
-        {
-            if(JadAttributeUtil.isValue(JadAttributeUtil.ATTRIB_NOKIA_UI_ENHANCEMENT, JadAttributeUtil.VALUE_FULLSCREEN_TEXTBOX))
-            {
-                return topShell;
-            }
-            else
-            {
-                return new Shell(topShell, style | SWT.DIALOG_TRIM | SWT.RESIZE);
-            }
-        }
+        return currentShell;
     }
 
     /* (non-Javadoc)
@@ -94,6 +85,13 @@ public class TextBox extends Screen
      */
     void eswtHandleShowCurrentEvent()
     {
+        // If it is popuptextbox and there is no active displayable 
+        // behind textbox default displayable should be shown
+        if(super.isPopup() && topShell != null && 
+            topShell.isVisible() == false && firstDisplayable == true)
+        {
+            topShell.setVisible(true);
+        }
         super.eswtHandleShowCurrentEvent();
         textWrapper.setModifyListener(modListener);
         eswtSetPreferredContentSize(-1, textWrapper
@@ -116,6 +114,13 @@ public class TextBox extends Screen
     {
         super.eswtHandleResizeEvent(width, height);
         textWrapper.setBounds(getContentComp().getClientArea());
+    }
+
+    /* (non-Javadoc)
+     */
+    void setFirstDisplayable(boolean first)
+    {
+        firstDisplayable = first;
     }
 
     /**

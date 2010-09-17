@@ -1,0 +1,44 @@
+<!--
+#
+# Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of the License "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description: 
+#
+-->
+
+<project name="javanokiaui" default="deploy" basedir=".">
+
+    <description>
+        Builds Nokiauiapi
+    </description>
+
+    <import file="../../../../build/utilities.xml"/>
+
+    <!-- Needed by the utilities.xml. See the description form the utilities.xml
+         file -->
+
+    <property name="java.src.paths" value="../../javasrc:../../javasrc_j2me"/>
+
+    <property name="javah.classnames" value="com.nokia.mid.ui.internal.OS"/>
+
+    <target name="create.public.api.jar">
+         <omj.public.apis includes="com/nokia/mid/ui/TactileFeedback.class, 
+                                    com/nokia/mid/ui/DeviceControl.class,
+                                    com/nokia/mid/ui/SoftNotificationException.class, 
+                                    com/nokia/mid/ui/SoftNotification.class, 
+                                    com/nokia/mid/ui/SoftNotificationListener.class"/>
+    
+    </target>
+
+
+</project>

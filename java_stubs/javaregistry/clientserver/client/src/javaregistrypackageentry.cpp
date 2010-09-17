@@ -119,3 +119,11 @@ EXPORT_C TInt64 CJavaRegistryPackageEntry::UsedUserDiskSpace() const
 {
     return 0;
 }
+
+// ---------------------------------------------------------------------------
+// CJavaRegistryPackageEntry::IsPreinstalled
+// ---------------------------------------------------------------------------
+EXPORT_C TBool CJavaRegistryPackageEntry::IsPreinstalled() const
+{
+    return EFalse;
+}

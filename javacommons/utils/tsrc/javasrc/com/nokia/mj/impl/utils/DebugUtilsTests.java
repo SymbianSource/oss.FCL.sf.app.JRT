@@ -70,25 +70,19 @@ public class DebugUtilsTests extends TestCase implements UnitTestSuiteCreator
     {
         try
         {
-            try
-            {
-                DebugUtils.getStackTrace(null);
-                assertTrue("No exception.", false);
-            }
-            catch (NullPointerException ne)
-            {
-            }
+            String res = DebugUtils.getStackTrace(null);
+            assertTrue("Not null: " + res, res == null);
 
             Exception e1 = new Exception("Test 42");
-            String res = DebugUtils.getStackTrace(e1);
+            res = DebugUtils.getStackTrace(e1);
             boolean ok = res.indexOf("at com.nokia.mj.impl.utils.DebugUtilsTests.testStackTrace") >= 0;
             assertTrue("Exception didn't contain: " + res, ok);
 
         }
         catch (Throwable t)
         {
-            assertTrue(t.toString(), false);
             t.printStackTrace();
+            assertTrue(t.toString(), false);
         }
     }
 }

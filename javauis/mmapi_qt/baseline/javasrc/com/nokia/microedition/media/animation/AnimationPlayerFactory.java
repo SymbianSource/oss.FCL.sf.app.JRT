@@ -20,6 +20,8 @@
 package com.nokia.microedition.media.animation;
 
 import java.io.IOException;
+import javax.microedition.io.Connection;
+import javax.microedition.io.HttpConnection;
 
 import javax.microedition.media.MediaException;
 import javax.microedition.media.protocol.DataSource;
@@ -46,6 +48,7 @@ public class AnimationPlayerFactory implements PlugIn
     private static final String ANIMATION_HTTP_PROTOCOL = "http";
     private static final String ANIMATION_HTTPS_PROTOCOL = "https";
     private static final String ANIMATION_FILE_PROTOCOL = "file";
+    private static final String CONTENT_TYPE_HEADER = "Content-Type";
 
     /**
      * From PlugIn
@@ -71,15 +74,26 @@ public class AnimationPlayerFactory implements PlugIn
         } //Since it was not possible to identify the player from content type, identify it from it's header
         else
         {
-            // We need only 6 bytes to identify whether it's GIF image data or not.
-            // But the problem here is that if we will read even a single byte from stream
-            // that stream won't be useful for loading the image data through ImageLoader class
-            // So better solution is to let the ImageLoader.load(InputStream ) get called
-            // if it successfully load the image, then it means that stream is intended for this player only
-            // otherwise it will throw the SWTException, catch it and return properly
+            // This case is for locator for "http://" protocol
+            // get the httpconnection object, and get the content-type header
+            // if the content-type header matches to "image/gif" then invoke animation player.
             try
             {
-                player = new AnimationPlayer(aDataSource);
+                Connection con = aDataSource.getConnection();
+                HttpConnection httpcon = (HttpConnection) con;
+
+                if (con != null)
+                {
+                    String type = httpcon.getHeaderField(CONTENT_TYPE_HEADER);
+                    if (type != null)
+                    {
+                        if (type.equalsIgnoreCase(ANIMATION_CONTENT_TYPE))
+                        {
+                            Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"AnimationPlayerplayerfactory::createPlayer() content type is mage/gif");
+                            player = new AnimationPlayer(aDataSource);
+                        }
+                    }
+                }
             }
             catch (SWTException e)
             {

@@ -65,8 +65,8 @@ const TInt KShift8 = 8;
 
 EXPORT_C bool ConnectionManager::isIapDefault(TUint32 aMatchIapId, TUint32 aDestId, bool aDefault)
 {
-	  LOG(ESOCKET,EInfo,"+ConnectionManager::isIapDefault");
-	  bool retVal = false;
+    LOG(ESOCKET,EInfo,"+ConnectionManager::isIapDefault");
+    bool retVal = false;
     TRAPD(err,retVal = checkIapDefaultL(aMatchIapId,aDestId,aDefault));
     if(err!=KErrNone)
     {
@@ -78,7 +78,7 @@ EXPORT_C bool ConnectionManager::isIapDefault(TUint32 aMatchIapId, TUint32 aDest
 
 bool ConnectionManager::checkIapDefaultL(TUint32 aMatchIapId, TUint32 aDestId, bool aDefault)
 {
-	
+
     LOG(ESOCKET,EInfo,"+ConnectionManager::checkIapDefaultL");
     TUint32 id = aDestId;
     TUint32 tmpapId;
@@ -118,9 +118,9 @@ bool ConnectionManager::checkIapDefaultL(TUint32 aMatchIapId, TUint32 aDestId, b
             return true;
         }
     }
-    return false;	
-	
-	
+    return false;
+
+
 }
 
 // ---------------------------------------------------------------------------
@@ -304,7 +304,7 @@ EXPORT_C unsigned int ConnectionManager::getDestinationNetworkIdL(Uid aAppSuiteU
     {
         JavaStorageApplicationEntry_t::const_iterator findIterator = entries.find(attribute);
 
-        if (findIterator != entries.end())
+        if (findIterator != entries.end() && findIterator->entryValue().length()>0 )
         {
             JavaStorageEntry sourceEntry = (*findIterator);
             temp.append(sourceEntry.entryValue().c_str());

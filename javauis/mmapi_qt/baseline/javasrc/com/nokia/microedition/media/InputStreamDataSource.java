@@ -22,18 +22,30 @@ import javax.microedition.media.Control;
 import javax.microedition.media.protocol.DataSource;
 import javax.microedition.media.protocol.SourceStream;
 import java.io.IOException;
+import javax.microedition.io.StreamConnection;
+import com.nokia.mj.impl.utils.Logger;
+import javax.microedition.io.Connection;
+
 
 /**
  * DataSource which has InputStreamSourceStream.
  */
 public class InputStreamDataSource extends DataSource
 {
+    // Connection object.
+    protected StreamConnection iConnection;
+
     // DataSource's stream
     protected InputStreamSourceStream iSourceStream;
+
+
 
     // string that describes the content-type of the media that the source
     // is providing.
     protected String iContentType;
+
+
+
 
     /**
      * Constructor.
@@ -157,6 +169,19 @@ public class InputStreamDataSource extends DataSource
     {
         return iSourceStream.getControl("SeekControl");
     }
+
+    /**
+    * public method to connection object in derived classes.
+    * @returns aConnection object
+    */
+    public Connection getConnection()
+    {
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"InputStreamDataSource getConnection +");
+        return iConnection;
+    }
+
+
+
 
 }
 // End of File

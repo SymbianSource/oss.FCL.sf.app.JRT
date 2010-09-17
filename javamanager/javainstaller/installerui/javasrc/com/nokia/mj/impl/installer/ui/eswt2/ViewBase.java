@@ -538,7 +538,7 @@ abstract public class ViewBase
     /**
      * Adds application information to the header.
      */
-    protected void addAppInfo(InstallInfo aInstallInfo, boolean aFull)
+    protected void addAppInfo(InstallInfo aInstallInfo, boolean aFullInfo, boolean aUpdateInfo)
     {
         if (aInstallInfo == null)
         {
@@ -547,12 +547,26 @@ abstract public class ViewBase
         }
 
         // Add suite name and version.
-        createAppInfoLabel(
-            InstallerUiTexts.get(
-                InstallerUiTexts.SUITE_NAME_VERSION,
-                new String[] { aInstallInfo.getName(),
-                               aInstallInfo.getVersion() }));
-        if (aFull)
+        if (aUpdateInfo && aInstallInfo != null &&
+            aInstallInfo.getOldVersion() != null)
+        {
+            createAppInfoLabel(
+                InstallerUiTexts.get(
+                    InstallerUiTexts.SUITE_NAME_VERSION_UPDATE,
+                    new String[] { aInstallInfo.getName(),
+                                   aInstallInfo.getOldVersion(),
+                                   aInstallInfo.getVersion()}));
+        }
+        else
+        {
+            createAppInfoLabel(
+                InstallerUiTexts.get(
+                    InstallerUiTexts.SUITE_NAME_VERSION,
+                    new String[] { aInstallInfo.getName(),
+                                   aInstallInfo.getVersion() }));
+        }
+
+        if (aFullInfo)
         {
             // Add vendor.
             createAppInfoLabel(
@@ -587,7 +601,7 @@ abstract public class ViewBase
                         new Object[] { new Integer((int)(1 + size/1024)) }));
             }
         }
-        if (aFull)
+        if (aFullInfo)
         {
             // Add application names.
             ApplicationInfo[] apps = aInstallInfo.getApplications();

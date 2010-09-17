@@ -21,9 +21,6 @@
 #include <../../../../inc/project_defines.hrh>
 #include <../../../../inc/java_stdcpp_support_for_exe.hrh>
 
-epocheapsize 0x00001000 0x02000000
-epocstacksize 16384
-
 target          SystemAMS.exe
 TARGETTYPE EXE
 

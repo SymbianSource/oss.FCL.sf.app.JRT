@@ -16,8 +16,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.internal.qt.GCData;
 import org.eclipse.swt.internal.qt.OS;
 import org.eclipse.swt.internal.qt.graphics.GraphicsContext;
+import org.eclipse.swt.internal.qt.graphics.WindowSurface;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Internal_PackageSupport;
 
 /**
  * Class <code>GC</code> is where all of the drawing capabilities that are
@@ -1035,6 +1037,16 @@ public void drawText(String string, int x, int y, int flags) {
                     translatedFlags, isTransparent);
 }
 
+/*
+ * Ends external rendering session.
+ */
+void endExternalRendering() {
+	if (drawable instanceof Control) {
+		Internal_PackageSupport.endWindowSurfaceSession((Control)drawable);
+	}
+}
+
+
 /**
  * Compares the argument to the receiver, and returns true if they represent the
  * <em>same</em> object using a class specific comparison.
@@ -1657,6 +1669,21 @@ public boolean getXORMode() {
     return (data.xorMode == GCData.XOR_MODE_ON);
 }
 
+/*
+ * Getter for the window surface which is target of this 
+ * GC instance.
+ * @return related WindowSurface instance if the target is widget, 
+ *         otherwise null, if e.g. the target is instance of Image.
+ */
+WindowSurface getWindowSurface() {
+	if (drawable instanceof Control) {
+		return Internal_PackageSupport.getWindowsurface(((Control)drawable).getShell());
+	} else {
+		return null;
+	}
+}
+
+
 /**
  * Returns an integer hash code for the receiver. Any two objects that return
  * <code>true</code> when passed to <code>equals</code> must return the same
@@ -2053,6 +2080,24 @@ public void setXORMode(boolean xor) {
  */
 public Point stringExtent(String string) {
     return textExtent(string, 0);
+}
+
+/*
+ * Starts external rendering session.
+ * The sessions must be opened before starting to render to the target outside GC.
+ * This is needed in order to open the rendering session to Qt window surface.
+ * Once rendering has completed the session must be closed with 
+ * endExternalRendering() -call, which closes the window surface session.
+ * 
+ * If the target of this GC is not Control, this call has no effect.
+ * 
+ * @return the clip area of the GC in window coordinates
+ */
+Rectangle startExternalRendering() {
+	if (drawable instanceof Control) {
+		return Internal_PackageSupport.startWindowSurfaceSession((Control)drawable, getClipping());
+	}
+	return null;
 }
 
 /**

@@ -236,12 +236,37 @@ public class SourceStreamReader extends Thread
             {
                 // start new seak thread, thread will notify iWaitObject
                 // when completed
-                (new SeekThread(iWaitObject,
-                                (SeekControl)control)).start();
+                // seek thread will open a new connection in case of http,
+                // and notify here so that read thread is started
+
+                try
+                {
+                    synchronized (iWaitObject)
+                    {
+                        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"SourceStreamReader::  read() before creating seekthread thread id =  "+Thread.currentThread().getName());
+                        (new SeekThread(iWaitObject,
+                                        (SeekControl)control)).start();
+                        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"SourceStreamReader::read() - after seekthread before wait");
+
+                        iWaitObject.wait();
+                        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"SourceStreamReader::read() - after seekthread after wait");
+                    }
+                }
+                catch (InterruptedException ex)
+                {
+                    Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"SourceStreamReader::read() - InterruptedException exception");
+                }
+
+                t1 = new Thread(this);
+                t1.start();
+
+
+
             }
             else
             {
                 // stream is not seekable, so informing native object
+                Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"SourceStreamReader::  read() before  _write ");
                 _write(iHandle, iEventSourceHandle, new byte[ 0 ], 0,
                        ERR_EOF, iPlayerHandle);
             }

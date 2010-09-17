@@ -138,7 +138,7 @@ class JavaApplicationSettingsViewPrivate: public QObject
     Q_OBJECT
 
 public:
-    JavaApplicationSettingsViewPrivate(const QString& aJavaAppUid);
+    JavaApplicationSettingsViewPrivate(const QString& aJavaAppUid, const QString& aJavaAppName = QString());
     virtual ~JavaApplicationSettingsViewPrivate();
     void init(JavaApplicationSettingsView* aPublicView);
 

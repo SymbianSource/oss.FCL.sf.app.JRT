@@ -422,6 +422,20 @@ public void addShellListener (ShellListener listener) {
     addListener (SWT.Deactivate, typedListener);
 }
 
+void checkNoBackground() {
+    if((style & SWT.NO_BACKGROUND) != 0) {
+        if(handle != 0) {
+            OS.QWidget_setAttribute(handle, OS.QT_WA_NOSYSTEMBACKGROUND, true);
+        }
+        if(scrollAreaHandle != 0) {
+            OS.QWidget_setAttribute(scrollAreaHandle, OS.QT_WA_NOSYSTEMBACKGROUND, true);
+        }
+        if(topHandle != 0) {
+            OS.QWidget_setAttribute(topHandle, OS.QT_WA_NOSYSTEMBACKGROUND, true);
+        }
+    }
+}
+
 /**
  * Requests that the window manager close the receiver in
  * the same way it would be closed when the user clicks on
@@ -593,6 +607,13 @@ void createHandle_pp (int index) {
     // Shell must not by default accept focus by clicking. 
     int policy = OS.QWidget_focusPolicy(topHandle) & ~OS.QT_FOCUSPOLICY_CLICKFOCUS;
     OS.QWidget_setFocusPolicy(topHandle, policy);
+    policy = OS.QWidget_focusPolicy(scrollAreaHandle) & ~OS.QT_FOCUSPOLICY_CLICKFOCUS;
+    OS.QWidget_setFocusPolicy(scrollAreaHandle, policy);
+    policy = OS.QWidget_focusPolicy(handle) & ~OS.QT_FOCUSPOLICY_CLICKFOCUS;
+    OS.QWidget_setFocusPolicy(handle, policy);
+    
+    // The Shell should not become active when Shell.setVisible(true) is called.
+    OS.QWidget_setAttribute(topHandle, OS.QT_WA_SHOWWITHOUTACTIVATING, true);
 
     // Stand-alone Composites, Shells, Canvases set the CANVAS flag
     state |= WidgetState.HANDLE | WidgetState.CANVAS;

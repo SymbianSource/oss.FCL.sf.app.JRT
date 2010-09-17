@@ -234,7 +234,9 @@ public class PlayerImpl extends PlayerBase
                     try
                     {
                         // wait until actionCompleted( int aError ) is called
+                        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl.java : doPrefetch ibefore iLockObject");
                         iLockObject.wait();
+                        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"PlayerImpl.java : doPrefetch after iLockObject");
                     }
                     catch (InterruptedException ie)
                     {

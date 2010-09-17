@@ -59,13 +59,22 @@ public final class DebugUtils
 
     public static String getStackTrace(Throwable t)
     {
-        if (t == null)
+        String res = null;
+        if (t != null)
         {
-            throw new NullPointerException("Null when getting stack trace");
+            try 
+            {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                _getStackTrace(t, new PrintStream(baos));
+                res = baos.toString();
+            }
+            catch (Throwable t2)
+            {
+                System.err.println("Failure in getting stack trace.");
+                t2.printStackTrace();
+            }
         }
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        _getStackTrace(t, new PrintStream(baos));
-        return baos.toString();
+        return res;
     }
 
     private static native void _getStackTrace(Throwable t, PrintStream printStream);

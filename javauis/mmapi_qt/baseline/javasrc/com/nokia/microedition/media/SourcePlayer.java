@@ -80,6 +80,7 @@ public class SourcePlayer extends PlayerImpl
         try
         {
             iDataSource.connect();
+            Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"Sourceplayer doprefetch() after connect ");
         }
         catch (IOException ioe)
         {
@@ -87,6 +88,7 @@ public class SourcePlayer extends PlayerImpl
         }
 
         super.doPrefetch();
+        Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,"Sourceplayer doprefetch() after connect -");
     }
 
     /**

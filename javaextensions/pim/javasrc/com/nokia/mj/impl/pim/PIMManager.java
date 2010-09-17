@@ -217,15 +217,15 @@ public final class PIMManager extends PIM
             {
                 if (operation == null)
                 {
-                    if (calendarName != null)
+                    if (!calendarName.trim().equals(""))
                     {
                         //This is the case of opening an existing calendar
                         return doOpenPIMList(aPimListType, aMode, listName, "C:" + calendarName);
                     }
                     else
                     {
-                        //This is the case with IllegalArgumentException
-                        throw new IllegalArgumentException("Calendar Name is NULL");
+                        //This is the case with PIMException
+                        throw new PIMException("Can not" + operation + "Default Calendar", PIMException.GENERAL_ERROR);                        
                     }
                 }
                 else if (operation.equals("create"))
@@ -241,6 +241,8 @@ public final class PIMManager extends PIM
                     deleteCalendar(calendarName);
                     int listHandle = 0;
                     PIMListImpl pimList = new EventListImpl(listHandle, aMode);
+                    // Close the dummy list
+                    pimList.close();
                     return pimList;
                 }
                 else
@@ -415,7 +417,7 @@ public final class PIMManager extends PIM
     }
 
 
-    private synchronized void createCalendar(String aCalName)
+    private synchronized void createCalendar(String aCalName) throws PIMException
     {
 
         String displayName = aCalName;

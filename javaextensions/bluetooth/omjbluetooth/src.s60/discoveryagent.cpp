@@ -178,7 +178,7 @@ int DiscoveryAgent::doDeviceDiscoveryCallback(JNIEnv* aJni, jobject& aPeer,
                 devAddr = java::util::JniUtils::wstringToJstring(aJni,
                           *(aDiscoveredDevice.mDeviceAddr));
             }
-            catch (ExceptionBase ex)
+            catch (ExceptionBase &ex)
             {
                 // Nothing to handle
             }
@@ -196,7 +196,7 @@ int DiscoveryAgent::doDeviceDiscoveryCallback(JNIEnv* aJni, jobject& aPeer,
                 devName = java::util::JniUtils::wstringToJstring(aJni,
                           *(aDiscoveredDevice.mDeviceName));
             }
-            catch (ExceptionBase ex)
+            catch (ExceptionBase &ex)
             {
                 // Nothing to handle
             }
@@ -372,7 +372,7 @@ int DiscoveryAgent::getStatusOfCompletion()
 }
 
 int DiscoveryAgent::PopulateServiceRecordAttrValue(JNIEnv* aJni,
-        jobject& aPeer, TInt64 aRemoteAddress, long aHandle,
+        TInt64 aRemoteAddress, long aHandle,
         TPtrC16 aAttrIdsDes, jobject aServiceRecordImpl,
         java::util::Monitor* aMonitor)
 {
@@ -380,19 +380,17 @@ int DiscoveryAgent::PopulateServiceRecordAttrValue(JNIEnv* aJni,
 
     mServiceSearchMonitor = aMonitor;
 
-    jclass peerClass = (*aJni).GetObjectClass(aPeer);
-
     LOG(EJavaBluetooth, EInfo,
         "  DiscoveryAgent::PopulateServiceRecord: Starting populating service records ");
     TRAPD(err, CallMethodL(this,
-                           &java::bluetooth::DiscoveryAgent::populateServiceRecordAttrValueFs,
+                           &java::bluetooth::DiscoveryAgent::populateServiceRecordAttrValueFsL,
                            aRemoteAddress, aHandle, aAttrIdsDes, aServiceRecordImpl,
                            mFunctionServer));
 
     return err;
 }
 
-void DiscoveryAgent::populateServiceRecordAttrValueFs(TInt64 aRemoteAddress,
+void DiscoveryAgent::populateServiceRecordAttrValueFsL(TInt64 aRemoteAddress,
         long aHandle, TPtrC16 aAttrIdsDes, jobject aServiceRecordImpl)
 {
     mServiceSearcher = BluetoothServiceSearcher::New(this, mFunctionServer);

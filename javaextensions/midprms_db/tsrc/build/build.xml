@@ -85,7 +85,7 @@
     <echo message = "junit source: ${junitdir}/${junitjarfilename}"/>
     <echo message = "junit target: ${vm.extension.directory}/${junitjarfilename}"/>
     <copy file="${junitdir}/${junitjarfilename}" tofile="${vm.extension.directory}/${junitjarfilename}"/>
-    <copy file="${junitdir}/${junit.omj.jar.filename}" tofile="${vm.extension.direcory}/${junit.omj.jar.filename}"/>
+    <copy file="${junitdir}/${junit.omj.jar.filename}" tofile="${vm.extension.directory}/${junit.omj.jar.filename}"/>
     <copy file="${jarfilename}" tofile="${vm.extension.directory}/${jarfilename}"/>
     <copy file="${jarfilename2}" tofile="${vm.extension.directory}/${jarfilename2}"/>
     <copy file="${jarfilename3}" tofile="${vm.extension.directory}/${jarfilename3}"/>    

@@ -13,6 +13,8 @@ package org.eclipse.swt.graphics;
 
 import java.io.InputStream;
 
+import org.eclipse.swt.internal.qt.graphics.WindowSurface;
+
 /**
  * <p>
  * <b>IMPORTANT:</b> This class is <em>not</em> part of the SWT public API. It
@@ -78,6 +80,22 @@ public static Color newColor(Device device, int handle) {
 
 public static Font newFont(Device device, int handle) {
     return Font.qt_new(device, handle);
+}
+
+/* 
+ * From class GC
+ */
+
+public static Rectangle startExternalRendering(GC gc) {
+	return gc.startExternalRendering();
+}
+
+public static void endExternalRendering(GC gc) {
+	gc.endExternalRendering();
+}
+
+public static WindowSurface getWindowSurface(GC gc) {
+	return gc.getWindowSurface();
 }
 
 }

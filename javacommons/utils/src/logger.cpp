@@ -426,88 +426,75 @@ int Logger::GetFileDescriptor(int index)
 
 #endif //J_LOG_USE_RLOGGER_ENABLED
 
-
-/**
- * Class:     com_nokia_mj_impl_utils_Logger
- * Method:    _logging
- * Signature: (IILjava/lang/String;)V
- *
- * Native static Logger._logging() method write log message to file and
- * accepting three input parameters:
- * component id, severity level id of emiting information and tracing information
- */
-
-JNIEXPORT void JNICALL Java_com_nokia_mj_impl_utils_Logger__1logging
-(JNIEnv *aEnv, jclass, jint aComponent, jint aLevel, jstring aLogString)
-{
-    const char* log = aEnv->GetStringUTFChars(aLogString, 0);
-
-    if (aLevel == com_nokia_mj_impl_utils_Logger_EError)
-    {
-        ELOG1((TComponents)aComponent, "%s", log);
-    }
-    else if (aLevel == com_nokia_mj_impl_utils_Logger_EWarning)
-    {
-        WLOG1((TComponents)aComponent, "%s", log);
-    }
-    else if (aLevel == com_nokia_mj_impl_utils_Logger_EInfoPrd)
-    {
-        PLOG1((TComponents)aComponent, "%s", log);
-    }
-    else
-    {
-        LOG1((TComponents)aComponent, EInfo, "%s", log);
-    }
-
-    aEnv->ReleaseStringUTFChars(aLogString, log);
-}
-
-
 /*
  * Class:     com_nokia_mj_impl_utils_Logger
- * Method:    _loggingException
- * Signature: (IILjava/lang/String;Ljava/lang/Throwable;Ljava/io/ByteArrayOutputStream;Ljava/io/PrintStream;)V
+ * Method:    _logging
+ * Signature: (IILjava/lang/String;java/lang/String;)V
  *
- * Method prints stack trace and Throwable info to log file
+ * Method for logging the log string. If the optional stack trace is provided
+ * that will be logged as well.
  */
-JNIEXPORT void JNICALL Java_com_nokia_mj_impl_utils_Logger__1loggingException
+JNIEXPORT void JNICALL Java_com_nokia_mj_impl_utils_Logger__1logging
 (JNIEnv *aEnv, jclass /*aClassH*/, jint aComponent, jint aLevel, jstring aLogString,
- jthrowable aThrowable, jobject aByteStream, jobject aPrintStream)
+ jstring aStackTrace)
 {
-    /* get logging string */
+    // It is excpected that Java peer checks that aLogString is not null.
+
+    // Get logging string.
     const char* log = aEnv->GetStringUTFChars(aLogString, 0);
 
-    /*
-     * call Throwable.printStackTrace(java.io.PrintStream)
-     * this method is not part of CLDC spec, but it's supported by VM vendors
-     */
-    jclass class_Throwable = aEnv->GetObjectClass(aThrowable);
-    jmethodID methodId = aEnv->GetMethodID(class_Throwable, "printStackTrace", "(Ljava/io/PrintStream;)V");
-    aEnv->CallVoidMethod(aThrowable, methodId, aPrintStream);
+    if (log)
+    {
+        const char* stack; // Content of optional stack trace. Default is empty
+        const char* delim; // Delimiter between log and stack trace. Default is empty
+        const char* stacktrace = 0;
+        if (aStackTrace)
+        {
+            // By default this write error string if GetStringUTFChars fails.
+            stack = "Stack trace not available";
+            delim = ": ";
 
-    /* call ByteArrayOutputStream.toString() */
-    jclass class_ByteArrayOutputStream = aEnv->GetObjectClass(aByteStream);
-    methodId = aEnv->GetMethodID(class_ByteArrayOutputStream, "toString", "()Ljava/lang/String;");
-    jstring stacktrace_jstr = (jstring) aEnv->CallObjectMethod(aByteStream, methodId);
-    const char *stacktrace = aEnv->GetStringUTFChars(stacktrace_jstr, 0);
+            // Get stack trace string.
+            stacktrace = aEnv->GetStringUTFChars(aStackTrace, 0);
+        }
+        else
+        {
+            // aStackTrace was null which means that there is no stack trace
+            // available.
+            stack = "";
+            delim = "";
+        }
 
-    if (aLevel == com_nokia_mj_impl_utils_Logger_EError)
-    {
-        ELOG2((TComponents)aComponent, "%s: %s", log, stacktrace);
-    }
-    else if (aLevel == com_nokia_mj_impl_utils_Logger_EWarning)
-    {
-        WLOG2((TComponents)aComponent, "%s: %s", log, stacktrace);
-    }
-    else if (aLevel == com_nokia_mj_impl_utils_Logger_EInfoPrd)
-    {
-        PLOG2((TComponents)aComponent, "%s: %s", log, stacktrace);
-    }
-    else
-    {
-        LOG2((TComponents)aComponent, EInfo, "%s: %s", log, stacktrace);
-    }
+        // If it succeeded overwrite the default one.
+        if (stacktrace)
+        {
+            stack = stacktrace;
+        }
 
-    aEnv->ReleaseStringUTFChars(aLogString, log);
-    aEnv->ReleaseStringUTFChars(stacktrace_jstr, stacktrace);
+        if (aLevel == com_nokia_mj_impl_utils_Logger_EError)
+        {
+            ELOG3((TComponents)aComponent, "%s%s%s", log, delim, stack);
+        }
+        else if (aLevel == com_nokia_mj_impl_utils_Logger_EWarning)
+        {
+            WLOG3((TComponents)aComponent, "%s%s%s", log, delim, stack);
+        }
+        else if (aLevel == com_nokia_mj_impl_utils_Logger_EInfoPrd)
+        {
+            PLOG3((TComponents)aComponent, "%s%s%s", log, delim, stack);
+        }
+        else
+        {
+            LOG3((TComponents)aComponent, EInfo, "%s%s%s", log, delim, stack);
+        }
+
+        // Free the stack trace string if it was available
+        if (stacktrace)
+        {
+            aEnv->ReleaseStringUTFChars(aStackTrace, stacktrace);
+        }
+
+        // Free the log string.
+        aEnv->ReleaseStringUTFChars(aLogString, log);
+    }
 }

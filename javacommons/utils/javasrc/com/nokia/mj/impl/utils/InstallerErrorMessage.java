@@ -81,19 +81,19 @@ public final class InstallerErrorMessage extends ErrorMessageBase
         }
         else
         {
-            messageTable.put(new Integer(INST_NO_MEM), "info_there_is_not_enough_space_currently");
-            messageTable.put(new Integer(INST_NO_NET), "info_network_is_unavailable_currently");
-            messageTable.put(new Integer(INST_CORRUPT_PKG), "info_installation_package_is_invalid");
-            messageTable.put(new Integer(INST_COMPAT_ERR), "info_application_is_not_compatible_with");
-            messageTable.put(new Integer(INST_AUTHORIZATION_ERR), "info_there_is_a_security_issue_with_this");
-            messageTable.put(new Integer(INST_AUTHENTICATION_ERR), "info_there_is_a_security_issue_with_this");
-            messageTable.put(new Integer(INST_PUSH_REG_ERR), "info_an_unexpected_error_occurred");
-            messageTable.put(new Integer(INST_UNEXPECTED_ERR), "info_an_unexpected_error_occurred");
-            messageTable.put(new Integer(INST_CANCEL), "info_application_not_installed");
-            messageTable.put(new Integer(UNINST_NOT_ALLOWED), "info_application_cannot_be_deleted");
+            messageTable.put(new Integer(INST_NO_MEM), "error_info_there_is_not_enough_space_currently");
+            messageTable.put(new Integer(INST_NO_NET), "error_info_network_is_unavailable_currently");
+            messageTable.put(new Integer(INST_CORRUPT_PKG), "error_info_installation_package_is_invalid");
+            messageTable.put(new Integer(INST_COMPAT_ERR), "error_info_application_is_not_compatible_with");
+            messageTable.put(new Integer(INST_AUTHORIZATION_ERR), "error_info_there_is_a_security_issue_with_this");
+            messageTable.put(new Integer(INST_AUTHENTICATION_ERR), "error_info_there_is_a_security_issue_with_this");
+            messageTable.put(new Integer(INST_PUSH_REG_ERR), "error_info_an_unexpected_error_occurred");
+            messageTable.put(new Integer(INST_UNEXPECTED_ERR), "error_info_an_unexpected_error_occurred");
+            messageTable.put(new Integer(INST_CANCEL), "error_info_application_not_installed");
+            messageTable.put(new Integer(UNINST_NOT_ALLOWED), "error_info_application_cannot_be_deleted");
             messageTable.put(new Integer(UNINST_UNEXPECTED_ERR), "installer_info_uninstallation_failed");
-            messageTable.put(new Integer(UNINST_CANCEL), "info_application_not_deleted");
-            messageTable.put(new Integer(OTHER_UNEXPECTED_ERR), "info_an_unexpected_error_occurred");
+            messageTable.put(new Integer(UNINST_CANCEL), "error_info_application_not_deleted");
+            messageTable.put(new Integer(OTHER_UNEXPECTED_ERR), "error_info_an_unexpected_error_occurred");
         }
         iMessageTable = messageTable;
         return iMessageTable;
@@ -114,7 +114,7 @@ public final class InstallerErrorMessage extends ErrorMessageBase
             }
             else
             {
-                iRes = ResourceLoader.getInstance("common_errors", "txt_error_");
+                iRes = ResourceLoader.getInstance(null, null, "common_errors", "txt_");
             }
         }
         return iRes;

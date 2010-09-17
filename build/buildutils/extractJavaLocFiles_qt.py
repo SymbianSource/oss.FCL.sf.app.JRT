@@ -11,7 +11,7 @@
 #
 # Contributors:
 #
-# Description: 
+# Description:
 #
 #!/usr/bin/python
 #
@@ -42,7 +42,9 @@ JAVA_LOC_FILES = [
     'javausermessages',
     'javaapplicationsettings',
     # loc files for qt
+    'common_errors',
     'javaapplicationinstaller',
+    'javaapplicationinstallererrors',
     'javaapplicationsecuritymessages',
     'javaruntimeapplicationsettings',
     'javaruntimecertificatemanagement'
@@ -106,11 +108,14 @@ def readTs(filename):
 
         # Sanity check - we have no good plurality support for qt-localisation
         if translation.find("numerusform") != None:
-            raise Exception("Conversion error at %s / %s: numerus form (qt plurality) is not supported" % (filename, id))
+            print "WARNING at %s / %s: numerus form (qt plurality) is not supported" % (filename, id)
 
+        numerusforms = translation.findall("numerusform")
         lengthvariant = translation.find("lengthvariant")
         if lengthvariant != None:
             text = lengthvariant.text
+        elif len(numerusforms) > 0:
+            text = numerusforms[0].text
         else:
             text = translation.text
 
@@ -118,10 +123,13 @@ def readTs(filename):
         if text == None:
             text = message.find("source").text
 
-        # Sanity check - no newlines in text allowed
-        if "\n" in text:
-            raise Exception("Conversion error in %s / %s: newline found" % (filename, id))
-        
+        # Escape characters
+        text = text.replace("\\", "\\\\")
+        text = text.replace("\n", "\\n")
+        text = text.replace("\t", "\\t")
+        text = text.replace("\"", "\\\"")
+        text = text.replace("'", "\\'")
+
         messages.append((id, text))
 
     return messages

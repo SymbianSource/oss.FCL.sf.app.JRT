@@ -301,3 +301,20 @@ SerializeAttributesL()
 {
 
 }
+
+// ---------------------------------------------------------------------------
+// CWriteableJavaRegistryPackageEntry::UsedUserDiskSpace
+// ---------------------------------------------------------------------------
+EXPORT_C TInt64 CWriteableJavaRegistryPackageEntry::UsedUserDiskSpace() const
+{
+    return 0;
+}
+
+// ---------------------------------------------------------------------------
+// CWriteableJavaRegistryPackageEntry::IsPreinstalled
+// ---------------------------------------------------------------------------
+EXPORT_C TBool CWriteableJavaRegistryPackageEntry::IsPreinstalled() const
+{
+    return EFalse;
+}
+

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -196,20 +196,14 @@ final class StorageAccessor
                             // into an int.
                             midletN = Integer.parseInt(nameStr.substring(7));
                         }
-                        catch (NumberFormatException ne) 
+                        catch (NumberFormatException ne)
                         {
                         }
                     }
                 }
 
                 // Set the localized name of the MIDlet.
-                String localizedName = midletInfo.getAttribute("Nokia-MIDlet-Localized-" + midletN);
-                if (localizedName == null)
-                {
-                    localizedName = midletInfo.getName();
-                }
-
-                midletInfo.setLocalizedName(localizedName);
+                setLocalizedName(midletInfo, midletN);
             }
         }
         finally
@@ -222,5 +216,52 @@ final class StorageAccessor
                 mSession = null;
             }
         }
+    }
+
+    /**
+     * Sets localized name for the midlet basing on current
+     * microedition.locale system property value and midlet's
+     * JAD/Manifest attributes.
+     *
+     * @param midletInfo midlet info.
+     * @param midletIndex index of the midlet in the suite.
+     */
+    private static void setLocalizedName(MidletInfo midletInfo, int midletIndex)
+    {
+        // Values for locales are of form
+        // <language_code>[-<country_code>[-<variant>]]
+        // for example 'es-MX' or 'en-US-Iron'.
+        String currentLocale = System.getProperty("microedition.locale");
+        String localizedName = null;
+        if (currentLocale != null)
+        {
+            int idxMinus = -1;
+            do
+            {
+                localizedName = midletInfo.getAttribute(
+                    "Nokia-MIDlet-" + midletIndex + "-" + currentLocale);
+                if (localizedName != null)
+                {
+                    // Localized name found.
+                    break;
+                }
+                // Localized name not found, now strip the most specific part,
+                // for example <-variant>, from the locale and do this again
+                // until there are no more parts or MIDlet name has been
+                // localized.
+                idxMinus = currentLocale.lastIndexOf('-');
+                if (idxMinus != -1)
+                {
+                    currentLocale = currentLocale.substring(0, idxMinus);
+                }
+            }
+            while (localizedName == null && idxMinus != -1);
+        }
+
+        if (localizedName == null)
+        {
+            localizedName = midletInfo.getName();
+        }
+        midletInfo.setLocalizedName(localizedName);
     }
 }
