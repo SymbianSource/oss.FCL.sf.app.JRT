@@ -20,6 +20,12 @@ omj {
   # Load project defines (if not already loaded). Fail if can not loaded.
   !include(../inc/build_defines.pri):error(Could not load build_defines.pri)
 
+  # Sanity check - otherwise components may fail e.g. with ODC file "what" target
+  PRO_FILE_BASE = $$basename(_PRO_FILE_)
+  !contains(PRO_FILE_BASE,$${TARGET}.pro) {
+     error(Target name $${TARGET} does not match file name of $${_PRO_FILE_})
+  }
+
   # Allow JAVATARGET to be used for defining the Java project name (java artifacts)
   isEmpty(JAVATARGET): JAVATARGET = $${TARGET}
 
@@ -154,7 +160,7 @@ omj {
   TRY_DIR=$${_PRO_FILE_PWD_}
   for(a, 1..10): {
      TRY_DIR = $$join(TRY_DIR,,,/..)
-     exists($${TRY_DIR}/build/Makefile.comp) DEPTH=$${a}
+     exists($${TRY_DIR}/build/omj.pri) DEPTH=$${a}
   }
 
   # Make include paths

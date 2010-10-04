@@ -340,7 +340,7 @@ public final class GraphicsContext {
      */
     public void bindTarget(org.eclipse.swt.widgets.Control target) {
         if(target == null) {
-        	throw new NullPointerException("target is null");
+            throw new NullPointerException("target is null");
         }
         if(target.isDisposed())
             throw new IllegalArgumentException("Target already disposed");
@@ -361,7 +361,7 @@ public final class GraphicsContext {
      */
     public void bindTarget(org.eclipse.swt.widgets.Display target) {
         if(target == null) {
-        	throw new NullPointerException("target is null");
+            throw new NullPointerException("target is null");
         }
         if(target.isDisposed())
             throw new IllegalArgumentException("Target already disposed");
@@ -383,7 +383,7 @@ public final class GraphicsContext {
      */
     public void bindTarget(org.eclipse.swt.internal.qt.graphics.Image target) {
         if(target == null) {
-        	throw new NullPointerException("target is null");
+            throw new NullPointerException("target is null");
         }
         if(target.isDisposed())
             throw new IllegalArgumentException("Target already disposed");
@@ -406,10 +406,10 @@ public final class GraphicsContext {
      */
     public void bindTarget(org.eclipse.swt.internal.qt.graphics.NativeCommandBuffer target, org.eclipse.swt.widgets.Control flushTarget) {
         if(target == null) {
-        	throw new NullPointerException("target is null");
+            throw new NullPointerException("target is null");
         }
         if(flushTarget == null) {
-        	throw new NullPointerException("flushTarget is null");
+            throw new NullPointerException("flushTarget is null");
         }
         if(target.isDisposed())
             throw new IllegalArgumentException("Target already disposed");
@@ -444,7 +444,7 @@ public final class GraphicsContext {
      */
     public void bindTarget(org.eclipse.swt.internal.qt.graphics.NativeCommandBuffer target) {
         if(target == null) {
-        	throw new NullPointerException("Target is null");
+            throw new NullPointerException("Target is null");
         }
         if(target.isDisposed()) {
             throw new IllegalArgumentException("target already disposed");
@@ -464,12 +464,12 @@ public final class GraphicsContext {
      */
     public void bindTarget(org.eclipse.swt.internal.qt.graphics.WindowSurface target) {
         if(target == null) {
-        	throw new NullPointerException("target is null");
+            throw new NullPointerException("target is null");
         }
-    	if(target.isDisposed()) {
+        if(target.isDisposed()) {
             throw new IllegalArgumentException("target already disposed");
         }
-    	bindTarget(target, TARGET_WINDOWSURFACE, target.handle, 0); 
+        bindTarget(target, TARGET_WINDOWSURFACE, target.handle, 0); 
     }
     
     /**
@@ -560,6 +560,10 @@ public final class GraphicsContext {
         }
         // if buffer does not contain data do nothing
         if(buffer.containsData()) {
+            // Notify the image that it will get modified. This affects any existing shallow copies of it. 
+            if(targetData.type == GraphicsContext.TARGET_IMAGE) {
+                ((Image)targetData.target).pixelDataModified();
+            }
             processBuffer(buffer);
         }
     }
@@ -1149,11 +1153,11 @@ public final class GraphicsContext {
      * @throws NullPointerException if surface is null
      */
     public void drawWindowSurface(WindowSurface surface, int x, int y, int width, int height) {
-    	if(surface == null) 
-    	{
-    	    throw new NullPointerException("surface is null");
-    	}
-    	OS.graphicsContext_drawWindowSurface(handle, surface.handle, x, y, width, height);
+        if(surface == null) 
+        {
+            throw new NullPointerException("surface is null");
+        }
+        OS.graphicsContext_drawWindowSurface(handle, surface.handle, x, y, width, height);
     }
     
     
@@ -2094,19 +2098,21 @@ public final class GraphicsContext {
                         }
                         case JavaCommandBuffer.OP_DRAWIMAGE1:
                         {
-                            Image img = (Image)images.elementAt(imageCount++);
+                            Image img = (Image)images.elementAt(imageCount);
+                            images.setElementAt(null, imageCount++);
                             OS.graphicsContext_drawImage(handle, 
                                                          img.handle, 
                                                          intParams[i++], 
                                                          intParams[i++]);
                             // As we made a shallow copy of the image in buffer
                             // its safe to delete that here
-                            img.dispose(); 
+                            img.freeCommandBufferCopy();
                             break;
                         }
                         case JavaCommandBuffer.OP_DRAWIMAGE2:
                         {
-                            Image img = (Image)images.elementAt(imageCount++);  
+                            Image img = (Image)images.elementAt(imageCount);
+                            images.setElementAt(null, imageCount++);
                             OS.graphicsContext_drawImage(handle, 
                                                          img.handle, 
                                                          intParams[i++], 
@@ -2120,7 +2126,7 @@ public final class GraphicsContext {
                                                          intParams[i++]);
                             // As we made a shallow copy of the image in buffer
                             // its safe to delete that here
-                            img.dispose(); 
+                            img.freeCommandBufferCopy();
                             break;
                         }
                         case JavaCommandBuffer.OP_DRAWFOCUS:
@@ -2227,7 +2233,7 @@ public final class GraphicsContext {
                         }
                         case JavaCommandBuffer.OP_DRAWROUNDRECT:
                         {
-                            OS.graphicsContext_fillRoundRect(handle, 
+                            OS.graphicsContext_drawRoundRect(handle, 
                                                              intParams[i++], 
                                                              intParams[i++], 
                                                              intParams[i++], 

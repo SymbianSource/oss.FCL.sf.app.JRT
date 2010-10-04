@@ -15,4 +15,4 @@
 @rem
 
 call ant clean
-call abld clean winscw udeb
+call sbs -c winscw_udeb reallyclean

@@ -179,6 +179,19 @@ void NativeFileIOHandler::stopWriting()
     closeStream();
 }
 
+void NativeFileIOHandler::flush()
+{
+    JELOG2(EJavaFile);
+    int ret = fsync(mFileDescriptor);
+    if (ret < 0)
+    {
+        ELOG1(EJavaFile, "NativeFileIOHandler::flush() error %d", ret);
+        int error = errno;
+        throw error;
+    }
+
+}
+
 void NativeFileIOHandler::closeStream()
 {
     JELOG2(EJavaFile);

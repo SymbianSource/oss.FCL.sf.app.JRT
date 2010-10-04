@@ -64,7 +64,10 @@ class FileOutputStream extends OutputStream
 
     public synchronized void flush() throws IOException
     {
-        // Data written to native side immediately. Nothing to flush.
+        if (iDataSink != null)
+        {
+            iDataSink.flush();
+        }
     }
 
     public void close() throws IOException

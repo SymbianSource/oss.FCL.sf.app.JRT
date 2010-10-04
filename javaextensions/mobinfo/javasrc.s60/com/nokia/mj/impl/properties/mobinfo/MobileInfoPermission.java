@@ -31,6 +31,8 @@ public class MobileInfoPermission extends PermissionBase
     private static final String COUNTRYCODE_TARGET_NAME = "mobinfo.countrycode";
     private static final String NETWORKID_TARGET_NAME = "mobinfo.networkid";
     private static final String PUBLIC_INFO_TARGET_NAME = "mobinfo.publicinfo";
+    private static final String ONS_TARGET_NAME = "mobinfo.ons";
+    private static final String SPN_TARGET_NAME = "mobinfo.spn";
 
     private String iTarget = null;
     private String iAction = null;
@@ -44,7 +46,9 @@ public class MobileInfoPermission extends PermissionBase
                 || CELLID_TARGET_NAME.equals(aUri)
                 || PUBLIC_INFO_TARGET_NAME.equals(aUri)
                 || COUNTRYCODE_TARGET_NAME.equals(aUri)
-                || NETWORKID_TARGET_NAME.equals(aUri))
+                || NETWORKID_TARGET_NAME.equals(aUri)
+                || SPN_TARGET_NAME.equals(aUri)
+                || ONS_TARGET_NAME.equals(aUri))
         {
             // aUri contains a known target name -> save it as such
             iTarget = aUri;
@@ -74,6 +78,14 @@ public class MobileInfoPermission extends PermissionBase
             {
                 iTarget = NETWORKID_TARGET_NAME;
             }
+            else if (MobileInfoProperties.SERVICE_PROVIDER_NAME.equals(aUri))
+            {
+                iTarget = SPN_TARGET_NAME;
+            }
+            else if (MobileInfoProperties.OPERATOR_NAME.equals(aUri))
+            {
+                iTarget = ONS_TARGET_NAME;
+            }
             else
             {
                 iTarget = PUBLIC_INFO_TARGET_NAME;
@@ -90,14 +102,22 @@ public class MobileInfoPermission extends PermissionBase
      */
     public String getSecurityPromptQuestion(int aInteractionMode)
     {
-        if (CELLID_TARGET_NAME.equals(iTarget) 
-            || COUNTRYCODE_TARGET_NAME.equals(iTarget) 
+        if (CELLID_TARGET_NAME.equals(iTarget)
+            || COUNTRYCODE_TARGET_NAME.equals(iTarget)
             || NETWORKID_TARGET_NAME.equals(iTarget))
         {
             return SecurityPromptMessage.getInstance().getText(
                 SecurityPromptMessage.QUESTION_ID_READING_LOCATION_DATA,
                 null);
         }
+        if (SPN_TARGET_NAME.equals(iTarget)
+            || ONS_TARGET_NAME.equals(iTarget))
+        {
+            return SecurityPromptMessage.getInstance().getText(
+                SecurityPromptMessage.QUESTION_ID_READING_USER_DATA,
+                null);
+        }
+
         return null;
     }
 
@@ -122,6 +142,14 @@ public class MobileInfoPermission extends PermissionBase
         else if (NETWORKID_TARGET_NAME.equals(iTarget))
         {
             return "com.nokia.mid.Mobinfo.networkid";
+        }
+        else if (SPN_TARGET_NAME.equals(iTarget))
+        {
+            return "com.nokia.mid.Mobinfo.SPN";
+        }
+        else if (ONS_TARGET_NAME.equals(iTarget))
+        {
+            return "com.nokia.mid.Mobinfo.ONS";
         }
         return null;
     }

@@ -170,8 +170,9 @@ endif
 clean_qmake:
 	-$(call RMFILES,abld.bat bld.inf* Makefile* $(BASENAME).mmp $(BASENAME)_*.mmp $(BASENAME)_*.pkg $(BASENAME)_reg.rss eabi_stl4/*)
 
-# Use Carbide CodeScanner to list high-level issues
+# Use Carbide CodeScanner to list high-level issues, and checkjava.py for Java issues
 codescanner:
+	python $(JAVA_SRC_ROOT)/build/buildutils/checkjava.py --exclude tsrc ..
 ifneq ($(call PATHSEARCH,codescanner.exe),)
 	$(call CODESCANNER,..)
 endif
@@ -181,27 +182,27 @@ ifdef USESBS
 
 export: 
 	$(PHASEINFO)
-	$(SBS) -c $(PLATFORM)_$(CFG) EXPORT
+	$(SBS) -c $(SBSCONFIG) EXPORT
 
 build_native:
 	$(PHASEINFO)
-	$(SBS) -c $(PLATFORM)_$(CFG)
+	$(SBS) -c $(SBSCONFIG)
 
 fastbuild: java
 	$(PHASEINFO)
-	$(SBS) -c $(PLATFORM)_$(CFG)
+	$(SBS) -c $(SBSCONFIG)
 
 build_clean_native:
 	$(PHASEINFO)
-	-$(SBS) -c $(PLATFORM)_$(CFG) clean
+	-$(SBS) -c $(SBSCONFIG) clean
 
 really_clean_native:
 	$(PHASEINFO)
-	-$(SBS) -c $(PLATFORM)_$(CFG) reallyclean
+	-$(SBS) -c $(SBSCONFIG) reallyclean
 
 cleanexport:
 	$(PHASEINFO)
-	-$(SBS) -c $(PLATFORM)_$(CFG) CLEANEXPORT
+	-$(SBS) -c $(SBSCONFIG) CLEANEXPORT
 
 
 # Symbian ABLD MAKEFILE --------------------

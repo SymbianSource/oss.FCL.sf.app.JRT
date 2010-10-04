@@ -24,7 +24,7 @@ public class RMSBenchmark implements Benchmark
     private static final int[] fullTest = {10, 100, 1000, 10000, 100000};
     private int[] testSet;
 
-    private int NUMBER_OF_TESTS = 9;
+    private int NUMBER_OF_TESTS = 12;
     private int NUMBER_OF_SCORES;// = NUMBER_OF_TESTS * testSet.length;
 
     RMSBenchmark(boolean aRunFullTests)
@@ -64,7 +64,10 @@ public class RMSBenchmark implements Benchmark
             myScores[i*NUMBER_OF_TESTS + 5].append(storage.openStore());
             myScores[i*NUMBER_OF_TESTS + 6].append(storage.closeStore());
             myScores[i*NUMBER_OF_TESTS + 7].append(storage.deleteRecord());
-            myScores[i*NUMBER_OF_TESTS + 8].append(""); // spacer
+            myScores[i*NUMBER_OF_TESTS + 8].append(storage.openMultipleStores());
+            myScores[i*NUMBER_OF_TESTS + 9].append(storage.closeMultipleStores());
+            myScores[i*NUMBER_OF_TESTS + 10].append(storage.openCloseMultipleStores());
+            myScores[i*NUMBER_OF_TESTS + 11].append(""); // spacer
             storage.clean();
             System.out.println("loop done: "+i);
         }

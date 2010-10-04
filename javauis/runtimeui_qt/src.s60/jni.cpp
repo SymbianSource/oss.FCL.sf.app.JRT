@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description:
+* Description: RuntimeUI JNI interface.
 *
 */
 
@@ -26,11 +26,8 @@
 using namespace java::runtimeui;
 
 JNIEXPORT jboolean JNICALL Java_com_nokia_mj_impl_rt_ui_qt_RuntimeUiQt__1confirm
-(JNIEnv * aEnv, jobject, jstring aAppName, jobject aConfirmData, jboolean /*aIdentified*/)
+(JNIEnv * aEnv, jobject, jstring aAppName, jobject aConfirmData, jboolean aIdentified)
 {
-    // Identified parameter is not used. It was earlier used to add icon to query header
-    // and that is currently not supported.
-
     CActiveScheduler* newScheduler = 0;
 
     if (CActiveScheduler::Current() == 0)
@@ -49,10 +46,32 @@ JNIEXPORT jboolean JNICALL Java_com_nokia_mj_impl_rt_ui_qt_RuntimeUiQt__1confirm
                             aConfirmData, getQuestionMethod);
     JStringUtils question(*aEnv, jQuestion);
 
-    int answer = -1;
+    std::vector<HBufC*> answerOptions;
+    jmethodID getAnswerOptionsMethod = aEnv->GetMethodID(
+                                           confirmDataClass,"getAnswerOptions", "()[Ljava/lang/String;");
+    jobjectArray jAnswerOptions = (jobjectArray)aEnv->CallObjectMethod(
+                                      aConfirmData, getAnswerOptionsMethod);
+    if (jAnswerOptions != NULL)
+    {
+        int len = aEnv->GetArrayLength(jAnswerOptions);
+        answerOptions.reserve(len);
+
+        for (int i=0; i<len; i++)
+        {
+            jstring jAnswerOption = (jstring)aEnv->GetObjectArrayElement(
+                                        jAnswerOptions, i);
+            JStringUtils answerOption(*aEnv, jAnswerOption);
+            answerOptions.push_back(answerOption.Alloc()); // If alloc fails NULL is added.
+        }
+    }
+
+    // Answer suggestion is not supported because of touch UIs.
+    ConfirmData confirmData(question, answerOptions, -1);
+
+    int answer = ConfirmData::NO_ANSWER;
     bool result = false;
 
-    TRAPD(err, answer = RuntimeUiQt::confirmL(appName, question));
+    TRAPD(err, answer = RuntimeUiQt::confirmL(appName, question, confirmData, aIdentified));
 
     if (KErrNone != err)
     {
@@ -66,12 +85,20 @@ JNIEXPORT jboolean JNICALL Java_com_nokia_mj_impl_rt_ui_qt_RuntimeUiQt__1confirm
         result = true;
     }
 
+    for (int i=0; i<answerOptions.size(); i++)
+    {
+        delete answerOptions.at(i);
+    }
+
+    // cleanup the vector
+    answerOptions.clear();
     delete newScheduler;
+
     return result;
 }
 
 JNIEXPORT void JNICALL Java_com_nokia_mj_impl_rt_ui_qt_RuntimeUiQt__1error
-(JNIEnv * aEnv, jobject, jstring aAppName, jstring aShortMsg, jstring aDetailedMsg)
+(JNIEnv * aEnv, jobject, jstring aAppName, jstring aShortMsg, jstring aDetailedMsg, jstring aDetailsButton, jstring aOkButton)
 {
     CActiveScheduler* newScheduler = 0;
 
@@ -86,9 +113,11 @@ JNIEXPORT void JNICALL Java_com_nokia_mj_impl_rt_ui_qt_RuntimeUiQt__1error
     JStringUtils appName(*aEnv, aAppName);
     JStringUtils shortMsg(*aEnv, aShortMsg);
     JStringUtils detailedMsg(*aEnv, aDetailedMsg);
+    JStringUtils detailsButton(*aEnv, aDetailsButton);
+    JStringUtils okButton(*aEnv, aOkButton);
 
     // delegate the UI implementation to handle the error operation
-    TRAPD(err, RuntimeUiQt::errorL(appName, shortMsg, detailedMsg));
+    TRAPD(err, RuntimeUiQt::errorL(appName, shortMsg, detailedMsg, detailsButton, okButton));
 
     if (KErrNone != err)
     {

@@ -18,8 +18,10 @@ package javax.microedition.lcdui;
 
 import org.eclipse.swt.graphics.Internal_GfxPackageSupport;
 import org.eclipse.swt.internal.qt.graphics.GraphicsContext;
+import org.eclipse.swt.internal.qt.graphics.WindowSurface;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.graphics.Rectangle;
 import com.nokia.mid.ui.DirectGraphics;
 import com.nokia.mj.impl.nokialcdui.LCDUIInvoker;
 import com.nokia.mj.impl.nokialcdui.ItemControlStateChangeListener;
@@ -152,7 +154,7 @@ final class LCDUIInvokerImpl extends LCDUIInvoker
         return ((Canvas) canvas).getGameBufferGraphics();
     }
 
-    protected org.eclipse.swt.internal.qt.graphics.WindowSurface doGetWindowSurface( Graphics g )
+    protected WindowSurface doGetWindowSurface( Graphics g )
     {
         if( g != null )
         {
@@ -188,19 +190,16 @@ final class LCDUIInvokerImpl extends LCDUIInvoker
     	((Graphics)graphics).sync();
     } 
     
-    protected void doStartExternalRendering(Graphics g)
+    protected Rectangle doStartExternalRendering(Graphics g)
     {
-        // Flush any pending 2D graphics.
-        g.sync();
-        g.getGraphicsBuffer().startFrame( g.getClipX(),
-                                          g.getClipY(),
-                                          g.getClipWidth(),
-                                          g.getClipHeight() );
+        // Flush any pending 2D graphics and open surface session
+        g.startExternalRendering();
+        return g.getClipInWindowCoordinates();
     }
     
     protected void doEndExternalRendering(Graphics g)
     {
-        g.getGraphicsBuffer().endFrame();
+        g.endExternalRendering();
     }
     
     protected String doGetDynamicProperty(String key)

@@ -1001,24 +1001,60 @@ public class Graphics
      * @param h - height of the rectangle to be rendered.
      * @param alpha - true if alpha values should be rendered, false otherwise.
      */
-    public void drawRGB(int[] rgb,
-                        int offset,
-                        int scanlength,
-                        int x,
-                        int y,
-                        int w,
-                        int h,
-                        boolean alpha)
+    public void drawRGB(int[] aRgbData,
+                        int aOffset,
+                        int aScanLength,
+                        int aX,
+                        int aY,
+                        int aWidth,
+                        int aHeight,
+                        boolean aProcessAlpha)
     {
 
-        if(rgb == null)
+        if(aRgbData == null)
         {
             throw new NullPointerException(
                 MsgRepository.IMAGE_EXCEPTION_DATA_IS_NULL);
         }
+
+        // setting of help variables
+        int len = aRgbData.length;
+        int width = aWidth >= 0 ? aWidth : -aWidth;
+        int height = aHeight >= 0 ? aHeight : -aHeight;
+
+        int scanLength;
+
+        long end64 = (long)len - 1;
+        long offset64;
+        long scanLength64;
+
+        if(aScanLength >= 0)
+        {
+            // If aScanLength is positive, we can use RGB data forward.
+            scanLength = aScanLength;
+            offset64   = (long)aOffset;
+        }
+        else
+        {
+            // If aScanlength is negative, we have to use RGB data backward.
+            scanLength = -aScanLength;
+            offset64 = (long)aOffset - (long)scanLength * ((long)height - 1);
+        }
+
+        scanLength64 = (long)scanLength;
+        long min64 = offset64;
+        long max64 = offset64 + scanLength64 * ((long)height - 1) + (long)width - 1;
+
+        // Check for incorrect data.
+        if ((min64 < 0) || (max64 > end64))
+        {
+            throw new ArrayIndexOutOfBoundsException();
+        }
+
         synchronized(graphicsBuffer)
         {
-            graphicsBuffer.drawRGB(rgb, offset, scanlength, x, y, w, h, alpha, this);
+            graphicsBuffer.drawRGB(aRgbData, aOffset, aScanLength, aX, aY, aWidth,
+                aHeight, aProcessAlpha, this);
         }
     }
 
@@ -1074,9 +1110,17 @@ public class Graphics
         }
         synchronized(graphicsBuffer)
         {
+            /*
+             * Silently ignore - even if the source point is out of bounds.
+             */
+            if (w <= 0 || h <= 0)
+            {
+                return;
+            }
+
             Image image = (Image)graphicsBuffer.getHost();
-            if(!javax.microedition.lcdui.Image.validateRegion(image
-                    .getWidth(), image.getHeight(), xFrom, yFrom, w, h))
+            if(!javax.microedition.lcdui.Image.validateRegion(image.getWidth(), 
+                image.getHeight(), xFrom, yFrom, w, h))
             {
                 throw new IllegalArgumentException(
                     MsgRepository.IMAGE_EXCEPTION_INVALID_REGION);
@@ -1204,30 +1248,6 @@ public class Graphics
             }
         }
     }
-
-    /**
-     * Performs synchronization on the graphics buffer, i.e.
-     * the buffered draw commands are rasterized to the surface.
-     */
-    void sync()
-    {
-        synchronized(graphicsBuffer) 
-        {
-            if(syncStrategy == SYNC_LEAVE_SURFACE_SESSION_OPEN)
-            {
-                // This instance is used only with paint callbacks, thus  
-                // sync is called with the indication that surface paint  
-                // session can be left open as it will be closed when the 
-                // callback returns.
-                graphicsBuffer.sync(false);
-            }
-            else 
-            {
-                graphicsBuffer.sync(true);
-            } 
-        }
-    }
-    
     
     /**
      * Return DirectGraphics associated with this instance.
@@ -1267,6 +1287,78 @@ public class Graphics
         return INVALID_STROKE_STYLE;
     }
 
+    /*
+     * External renderer support.
+     * Closes surface session opened by startExternalRendering -call.
+     */
+    void endExternalRendering()
+    {
+        synchronized(graphicsBuffer) 
+        {
+        	ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
+                    graphicsBuffer.endFrame();
+                }
+            });
+        }	
+    }
+    
+    /*
+     * External renderer support.
+     * Flushes any pending draw commands to the surface and
+     * leaves the surface session open for external renderer.
+     */
+    void startExternalRendering()
+    {
+        synchronized(graphicsBuffer) 
+        {
+        	ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
+                    graphicsBuffer.sync(false);
+                }
+            });
+        }	
+    }
+    
+    /*
+     * Flushes any pending draw commands to surface.
+     */
+    void sync()
+    {
+        synchronized(graphicsBuffer) 
+        {
+        	ESWTUIThreadRunner.safeSyncExec(new Runnable()
+            {
+                public void run()
+                {
+                	if(syncStrategy == SYNC_LEAVE_SURFACE_SESSION_OPEN)
+                	{
+                        graphicsBuffer.sync(false);
+                	}
+                	else 
+                	{
+                		graphicsBuffer.sync(true);
+                	}
+                }
+            });
+        }	
+    }
+    
+    Rectangle getClipInWindowCoordinates() 
+    {
+    	synchronized(graphicsBuffer) 
+        {
+    		return graphicsBuffer.toWindowCoordinates(currentClip[0] + translateX, 
+    		                                          currentClip[1] + translateY, 
+    		                                          currentClip[2], 
+    		                                          currentClip[3]);
+        }
+    }
+    
     //
     // Nokia UI API support
     //

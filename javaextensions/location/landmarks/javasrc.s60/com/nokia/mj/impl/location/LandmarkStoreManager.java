@@ -192,7 +192,7 @@ public class LandmarkStoreManager
      * @return NativeError.KErrNone if no error occured. Otherwise one of the
      *         system-wide error codes
      */
-    public int deleteStore(Locator aLocator)
+    synchronized public int deleteStore(Locator aLocator)
     {
         if (aLocator == null)
         {
@@ -213,7 +213,7 @@ public class LandmarkStoreManager
      * Removes a native side landmark store peer object from this class
      * @param aStoreHandle A handle to the store which is to be removed
      */
-    public void removeStore(String aStoreUri, int aStoreHandle)
+    synchronized public void removeStore(String aStoreUri, int aStoreHandle)
     {
         // Unregister the landmark store if there is an open store. This
         // quarantees that the closed store will not be provided to any

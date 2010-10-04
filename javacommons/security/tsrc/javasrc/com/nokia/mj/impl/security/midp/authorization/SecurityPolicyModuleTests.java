@@ -90,9 +90,18 @@ public class SecurityPolicyModuleTests extends TestCase implements InstallerMain
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.cellid","read",PolicyBasedPermission.ASSIGNED_TYPE),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.countrycode","read",PolicyBasedPermission.ASSIGNED_TYPE),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.networkid","read",PolicyBasedPermission.ASSIGNED_TYPE),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.spn","read",PolicyBasedPermission.ASSIGNED_TYPE),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.ons","read",PolicyBasedPermission.ASSIGNED_TYPE),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.midlet.AutoStartPermission"),null,null,PolicyBasedPermission.ASSIGNED_TYPE),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.midlet.CmdLineArgsPermission"),null,null,PolicyBasedPermission.ALLOWED_TYPE),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.contactless.ndef.NDEFTagConnection.write"),"ndef://*","write",PolicyBasedPermission.ALLOWED_TYPE),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.contactless.DiscoveryManager"),"DiscoveryManager","get_instance",PolicyBasedPermission.ALLOWED_TYPE),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.io.Connector.ndef"),"ndef://*","open",PolicyBasedPermission.ALLOWED_TYPE),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.io.Connector.rf"),"rf://*","open",PolicyBasedPermission.ALLOWED_TYPE),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.io.Connector.sc"),"sc://*","open",PolicyBasedPermission.ALLOWED_TYPE),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.io.Connector.vtag"),"vtag://*","open",PolicyBasedPermission.ALLOWED_TYPE),
     };
+
     static final SecurityPolicyPermission[] OPERATOR_PERMS =
     {
         new SecurityPolicyPermission(getPermissionName("javax.microedition.io.HttpProtocolPermission"),"http://*", null, PolicyBasedPermission.ALLOWED_TYPE),
@@ -146,8 +155,16 @@ public class SecurityPolicyModuleTests extends TestCase implements InstallerMain
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.cellid","read",PolicyBasedPermission.ASSIGNED_TYPE),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.countrycode","read",PolicyBasedPermission.ASSIGNED_TYPE),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.networkid","read",PolicyBasedPermission.ASSIGNED_TYPE),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.spn","read",PolicyBasedPermission.ASSIGNED_TYPE),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.ons","read",PolicyBasedPermission.ASSIGNED_TYPE),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.midlet.AutoStartPermission"),null,null,PolicyBasedPermission.ASSIGNED_TYPE),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.midlet.CmdLineArgsPermission"),null,null,PolicyBasedPermission.ALLOWED_TYPE),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.contactless.ndef.NDEFTagConnection.write"),"ndef://*","write",PolicyBasedPermission.ALLOWED_TYPE),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.contactless.DiscoveryManager"),"DiscoveryManager","get_instance",PolicyBasedPermission.ALLOWED_TYPE),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.io.Connector.ndef"),"ndef://*","open",PolicyBasedPermission.ALLOWED_TYPE),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.io.Connector.rf"),"rf://*","open",PolicyBasedPermission.ALLOWED_TYPE),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.io.Connector.sc"),"sc://*","open",PolicyBasedPermission.ALLOWED_TYPE),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.io.Connector.vtag"),"vtag://*","open",PolicyBasedPermission.ALLOWED_TYPE),
     };
     static final SecurityPolicyPermission[] IDENTIFIED_THIRD_PARTY_PERMS =
     {
@@ -279,9 +296,24 @@ public class SecurityPolicyModuleTests extends TestCase implements InstallerMain
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.networkid","read",PolicyBasedPermission.USER_ASSIGNED_TYPE,
                                      new SecurityPolicyPermissionSettings("Location",UserSecuritySettings.SESSION_INTERACTION_MODE,
                                                                           new int[]{UserSecuritySettings.BLANKET_INTERACTION_MODE,UserSecuritySettings.ONESHOT_INTERACTION_MODE,UserSecuritySettings.NO_INTERACTION_MODE,UserSecuritySettings.SESSION_INTERACTION_MODE})),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.spn","read",PolicyBasedPermission.USER_ASSIGNED_TYPE,
+                                     new SecurityPolicyPermissionSettings("Read User Data Access",UserSecuritySettings.SESSION_INTERACTION_MODE,
+                                                                          new int[]{UserSecuritySettings.BLANKET_INTERACTION_MODE,UserSecuritySettings.ONESHOT_INTERACTION_MODE,UserSecuritySettings.NO_INTERACTION_MODE,UserSecuritySettings.SESSION_INTERACTION_MODE})),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.ons","read",PolicyBasedPermission.USER_ASSIGNED_TYPE,
+                                     new SecurityPolicyPermissionSettings("Read User Data Access",UserSecuritySettings.SESSION_INTERACTION_MODE,
+                                                                          new int[]{UserSecuritySettings.BLANKET_INTERACTION_MODE,UserSecuritySettings.ONESHOT_INTERACTION_MODE,UserSecuritySettings.NO_INTERACTION_MODE,UserSecuritySettings.SESSION_INTERACTION_MODE})),
         new SecurityPolicyPermission(getPermissionName("javax.microedition.midlet.CmdLineArgsPermission"),null, null,
                                      new SecurityPolicyPermissionSettings("Url start",UserSecuritySettings.SESSION_INTERACTION_MODE,
                                                                           new int[]{UserSecuritySettings.ONESHOT_INTERACTION_MODE,UserSecuritySettings.NO_INTERACTION_MODE,UserSecuritySettings.SESSION_INTERACTION_MODE})),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.contactless.ndef.NDEFTagConnection.write"),"ndef://*","write",
+                                     new SecurityPolicyPermissionSettings("NFC Write Access",UserSecuritySettings.SESSION_INTERACTION_MODE,
+                                                                          new int[]{UserSecuritySettings.BLANKET_INTERACTION_MODE,UserSecuritySettings.ONESHOT_INTERACTION_MODE,UserSecuritySettings.NO_INTERACTION_MODE,UserSecuritySettings.SESSION_INTERACTION_MODE})),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.contactless.DiscoveryManager"),"DiscoveryManager","get_instance",PolicyBasedPermission.ALLOWED_TYPE),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.io.Connector.ndef"),"ndef://*","open",PolicyBasedPermission.ALLOWED_TYPE),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.io.Connector.rf"),"rf://*","open",PolicyBasedPermission.ALLOWED_TYPE),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.io.Connector.sc"),"sc://*","open",PolicyBasedPermission.ALLOWED_TYPE),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.io.Connector.vtag"),"vtag://*","open",PolicyBasedPermission.ALLOWED_TYPE),
+    
     };
     static final SecurityPolicyPermission[] UNIDENTIFIED_THIRD_PARTY_PERMS =
     {
@@ -407,6 +439,20 @@ public class SecurityPolicyModuleTests extends TestCase implements InstallerMain
         new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.networkid","read",PolicyBasedPermission.USER_ASSIGNED_TYPE,
                                      new SecurityPolicyPermissionSettings("Location",UserSecuritySettings.ONESHOT_INTERACTION_MODE,
                                                                           new int[]{UserSecuritySettings.ONESHOT_INTERACTION_MODE,UserSecuritySettings.NO_INTERACTION_MODE,UserSecuritySettings.SESSION_INTERACTION_MODE})),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.spn","read",PolicyBasedPermission.USER_ASSIGNED_TYPE,
+                                     new SecurityPolicyPermissionSettings("Read User Data Access",UserSecuritySettings.ONESHOT_INTERACTION_MODE,
+                                                                          new int[]{UserSecuritySettings.ONESHOT_INTERACTION_MODE,UserSecuritySettings.NO_INTERACTION_MODE,UserSecuritySettings.SESSION_INTERACTION_MODE})),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.PropertyPermission"),"mobinfo.ons","read",PolicyBasedPermission.USER_ASSIGNED_TYPE,
+                                     new SecurityPolicyPermissionSettings("Read User Data Access",UserSecuritySettings.ONESHOT_INTERACTION_MODE,
+                                                                          new int[]{UserSecuritySettings.ONESHOT_INTERACTION_MODE,UserSecuritySettings.NO_INTERACTION_MODE,UserSecuritySettings.SESSION_INTERACTION_MODE})),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.contactless.ndef.NDEFTagConnection.write"),"ndef://*","write",
+                                     new SecurityPolicyPermissionSettings("NFC Write Access",UserSecuritySettings.ONESHOT_INTERACTION_MODE,
+                                                                          new int[]{UserSecuritySettings.ONESHOT_INTERACTION_MODE,UserSecuritySettings.NO_INTERACTION_MODE,UserSecuritySettings.SESSION_INTERACTION_MODE})),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.contactless.DiscoveryManager"),"DiscoveryManager","get_instance",PolicyBasedPermission.ALLOWED_TYPE),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.io.Connector.ndef"),"ndef://*","open",PolicyBasedPermission.ALLOWED_TYPE),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.io.Connector.rf"),"rf://*","open",PolicyBasedPermission.ALLOWED_TYPE),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.io.Connector.sc"),"sc://*","open",PolicyBasedPermission.ALLOWED_TYPE),
+        new SecurityPolicyPermission(getPermissionName("javax.microedition.io.Connector.vtag"),"vtag://*","open",PolicyBasedPermission.ALLOWED_TYPE),
     };
 
     // Begin j2meunit test framework setup

@@ -109,6 +109,14 @@ public class ScreenTextBoxTests extends Form implements CommandListener
     //maximum size which is specified while creating TextBox
     private final int MAX_SIZE = 100;
 
+    //Commands for the item specific options menu.
+    private Command cmdScreen1 = new Command("1 item cmd", Command.SCREEN, 1);
+    private Command cmdScreen2 = new Command("1 ok cmd", Command.SCREEN, 1);
+    private Command cmdScreen3 = new Command("1 item 1 ok cmd", Command.SCREEN, 1);
+    private Command cmdScreen4 = new Command("0 item 0 ok cmd", Command.SCREEN, 1);
+    private Command cmdItemC = new Command("Item command", Command.ITEM, 1);
+    private Command cmdOkC = new Command("Ok command", Command.OK, 1);
+
     /**
      *
      * @param parent The parent MIDlet of this class
@@ -331,6 +339,12 @@ public class ScreenTextBoxTests extends Form implements CommandListener
                 addUneditableTextBoxTest2("EMAILADDR|PWD|UNDEDITABLE", TextField.EMAILADDR|TextField.PASSWORD|TextField.UNEDITABLE);
             else if (element.equals(listElements[27]))
                 addNumericUneditableTextBoxTest2("PNO|PWD|UNDEDITABLE", TextField.PHONENUMBER|TextField.PASSWORD|TextField.UNEDITABLE);
+
+            tb2.addCommand(cmdScreen1);
+            tb2.addCommand(cmdScreen2);
+            tb2.addCommand(cmdScreen3);
+            tb2.addCommand(cmdScreen4);
+            tb2.setCommandListener(this);
         }
         else if (c == cmdTest3)
             addFormTest3();
@@ -349,6 +363,38 @@ public class ScreenTextBoxTests extends Form implements CommandListener
         {
             tb3.setTitle(titleT.getString());
             Display.getDisplay(parent).setCurrent(tb3);
+        }
+        else if (c == cmdScreen1)
+        {
+            tb2.removeCommand(cmdOkC);
+            tb2.addCommand(cmdItemC);
+            tb2.setTitle("TextBox");
+        }
+        else if (c == cmdScreen2)
+        {
+            tb2.removeCommand(cmdItemC);
+            tb2.addCommand(cmdOkC);
+            tb2.setTitle("TextBox");
+        }
+        else if (c == cmdScreen3)
+        {
+            tb2.addCommand(cmdItemC);
+            tb2.addCommand(cmdOkC);
+            tb2.setTitle("TextBox");
+        }
+        else if (c == cmdScreen4)
+        {
+            tb2.removeCommand(cmdItemC);
+            tb2.removeCommand(cmdOkC);
+            tb2.setTitle("TextBox");
+        }
+        else if (c == cmdItemC)
+        {
+            tb2.setTitle("Item command executed.");
+        }
+        else if (c == cmdOkC)
+        {
+            tb2.setTitle("Ok command executed.");
         }
         else if (c == cmdExit)
         {

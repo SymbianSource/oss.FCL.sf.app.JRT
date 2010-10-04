@@ -23,11 +23,11 @@ public class BenchmarkRunner implements Runnable
 
     public static final String TESTNAMES = "RMS,,,,\n";
     public static final String TESTS =
-        "10 byte record create,10 byte enumerated read,10 byte random read,create enums,10 byte record set,open,close,10 byte record delete" +
-        ",,100 byte record create,100 byte enumerated read,100 byte random read,create enums,100 byte record set,open,close,100 byte record delete" +
-        ",,1000 byte record create,1000 byte enumerated read,1000 byte random read,create enums,1000 byte record set,open,close,1000 byte record delete" +
-        ",,10000 byte record create,10000 byte enumerated read,10000 byte random read,create enums,10000 byte record set,open,close,10000 byte record delete" +
-        ",,100000 byte record create,100000 byte enumerated read,100000 byte random read,create enums,100000 byte record set,open,close,100000 byte record delete\n";
+        "10 byte record create,10 byte enumerated read,10 byte random read,create enums,10 byte record set,open,close,10 byte record delete,open multiple,close multiple,open-close" +
+        ",,100 byte record create,100 byte enumerated read,100 byte random read,create enums,100 byte record set,open,close,100 byte record delete,open multiple,close multiple,open-close" +
+        ",,1000 byte record create,1000 byte enumerated read,1000 byte random read,create enums,1000 byte record set,open,close,1000 byte record delete,open multiple,close multiple,open-close" +
+        ",,10000 byte record create,10000 byte enumerated read,10000 byte random read,create enums,10000 byte record set,open,close,10000 byte record delete,open multiple,close multiple,open-close" +
+        ",,100000 byte record create,100000 byte enumerated read,100000 byte random read,create enums,100000 byte record set,open,close,100000 byte record delete,open multiple,close multiple,open-close\n";
 
     public static StringBuffer SCORES;
 

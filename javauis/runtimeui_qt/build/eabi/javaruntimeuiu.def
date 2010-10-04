@@ -1,5 +1,5 @@
 EXPORTS
 	_Z10jni_lookupPKc @ 1 NONAME
-	_ZN4java9runtimeui11RuntimeUiQt6errorLERK7TDesC16S4_S4_ @ 2 NONAME
-	_ZN4java9runtimeui11RuntimeUiQt8confirmLERK7TDesC16S4_ @ 3 NONAME
+	_ZN4java9runtimeui11RuntimeUiQt6errorLERK7TDesC16S4_S4_S4_S4_ @ 2 NONAME
+	_ZN4java9runtimeui11RuntimeUiQt8confirmLERK7TDesC16S4_RKNS0_11ConfirmDataEb @ 3 NONAME
 

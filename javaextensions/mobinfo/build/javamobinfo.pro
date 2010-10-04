@@ -20,7 +20,8 @@ CONFIG += omj java stl
 CONFIG -= qt
 
 symbian {
-    LIBS += -leuser -letel -letelmm -lesock -lconnmon -lcommdb -lcommsdat -lcmmanager -ljavaconnectionmanager  
+    LIBS += -leuser -letel -letelmm -lesock -lconnmon -lcommdb -lcommsdat 
+    LIBS += -lcmmanager -ljavaconnectionmanager -lcentralrepository -letel3rdparty
 }
 
 include(../../../build/omj.pri)

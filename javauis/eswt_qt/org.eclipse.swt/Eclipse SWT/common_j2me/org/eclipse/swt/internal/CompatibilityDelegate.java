@@ -18,6 +18,5 @@ public interface CompatibilityDelegate {
     public boolean canOpenFile(String path) throws SecurityException;
     public InputStream getInputStreamFromFile(String path) throws IOException;
     public String convertPathToSpecific(String path);
-    public String convertPathFromSpecific(String path);
     public OutputStream getOutStreamFromFile(String path) throws IOException;
 }

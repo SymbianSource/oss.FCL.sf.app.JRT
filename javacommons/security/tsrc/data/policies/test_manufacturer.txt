@@ -31,11 +31,19 @@ grant allowed {
     permission javax.microedition.io.Connector.rtsp "*";
     permission javax.microedition.PropertyPermission "mobinfo.imsi" "read";
     permission javax.microedition.midlet.CmdLineArgsPermission;
+    permission javax.microedition.contactless.ndef.NDEFTagConnection.write "ndef://*" "write";
+    permission javax.microedition.contactless.DiscoveryManager "DiscoveryManager" "get_instance";
+    permission javax.microedition.io.Connector.ndef "ndef://*" "open";
+    permission javax.microedition.io.Connector.rf "rf://*" "open";
+    permission javax.microedition.io.Connector.sc "sc://*" "open";
+    permission javax.microedition.io.Connector.vtag "vtag://*" "open";
 }
 grant assigned {
     permission javax.microedition.PropertyPermission "mobinfo.msisdn" "read";
     permission javax.microedition.PropertyPermission "mobinfo.cellid" "read";
     permission javax.microedition.PropertyPermission "mobinfo.countrycode" "read";
     permission javax.microedition.PropertyPermission "mobinfo.networkid" "read";
+    permission javax.microedition.PropertyPermission "mobinfo.spn" "read";
+    permission javax.microedition.PropertyPermission "mobinfo.ons" "read";
     permission javax.microedition.midlet.AutoStartPermission;
 }

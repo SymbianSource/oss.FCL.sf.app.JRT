@@ -1624,6 +1624,9 @@ public void internal_dispose_GC(GCData data) {
 public int internal_new_GC (GCData data) {
     checkDevice ();
 
+    // GC creation on Display is not currently supported
+    SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
+    
     setScreenPaintingAttributes(true);
 
     data.internalGc = new GraphicsContext();

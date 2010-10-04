@@ -59,3 +59,8 @@ grant user "Url start" blanket,session,oneshot,no {
 grant assigned {
     permission javax.microedition.midlet.AutoStartPermission;
 }
+
+grant assigned "Read User Data Access" {
+    permission javax.microedition.PropertyPermission "mobinfo.spn" "read";
+    permission javax.microedition.PropertyPermission "mobinfo.ons" "read";
+}

@@ -374,6 +374,7 @@ throw(JavaStorageException)
         executeStandalone(ALARM_REGISTRATIONS);
         executeStandalone(RUNTIME_SETTINGS);
         executeStandalone(PREINSTALL);
+        executeStandalone(JAVA_SOFTNOTE);
     }
     else if (JAVA_OTA_DATABASE_NAME == aDbName)
     {

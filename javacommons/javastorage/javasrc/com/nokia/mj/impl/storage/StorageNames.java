@@ -81,6 +81,11 @@ public interface StorageNames
      * Preinstall related data.
      */
     public static final String PREINSTALL_TABLE = "PREINSTALL";
+    
+    /**
+     * SoftNote related data.
+     */
+    public static final String JAVA_SOFTNOTE_TABLE = "JAVA_SOFTNOTE";
 
     /**
      * Java platform storage name. All Java platform related attributes and
@@ -323,4 +328,29 @@ public interface StorageNames
      * Application suite intall state.
      */
     public static final String INSTALL_STATE = "INSTALL_STATE";
+    
+    /**
+     * MIDlet ID of the softnote.
+     */
+    public static final String SOFTNOTE_MIDLET_ID = "SOFTNOTE_MIDLET_ID";
+
+    /** 
+     * Softnote ID.
+     */
+    public static final String SOFTNOTE_ID = "SOFTNOTE_ID";
+
+    /**
+     * Softnote Primary Text.
+     */
+    public static final String SOFTNOTE_PRIMARY_TEXT = "SOFTNOTE_PRIMARY_TEXT";
+
+    /**
+     * Softnote Secondary Text.
+     */
+    public static final String SOFTNOTE_SECONDARY_TEXT = "SOFTNOTE_SECONDARY_TEXT";
+
+    /**
+     * Softnote Image Path.
+     */
+    public static final String SOFTNOTE_IMAGE_PATH = "SOFTNOTE_IMAGE_PATH";
 }

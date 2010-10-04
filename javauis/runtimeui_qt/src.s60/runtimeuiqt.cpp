@@ -24,7 +24,8 @@
 
 using namespace java::runtimeui;
 
-OS_EXPORT void RuntimeUiQt::errorL(const TDesC& /*aAppName*/, const TDesC& aShortMsg, const TDesC& aDetailedMsg)
+OS_EXPORT void RuntimeUiQt::errorL(const TDesC& /*aAppName*/, const TDesC& aShortMsg,
+    const TDesC& aDetailedMsg, const TDesC& aDetailsButton, const TDesC& aOkButton)
 {
     CHbDeviceMessageBoxSymbian* messageBox
     = CHbDeviceMessageBoxSymbian::NewL(CHbDeviceMessageBoxSymbian::EWarning);
@@ -33,16 +34,11 @@ OS_EXPORT void RuntimeUiQt::errorL(const TDesC& /*aAppName*/, const TDesC& aShor
     messageBox->SetTextL(aShortMsg);
     messageBox->SetTimeout(HbPopup::NoTimeout);
 
-    // Read localised versions instead of hard coded values.
-    _LIT(KOkButtonText, "OK");
-
     if (aDetailedMsg.Size() > 0)
     {
-        _LIT(KDetailsButtonText, "Details");
-
-        messageBox->SetButtonTextL(CHbDeviceMessageBoxSymbian::EAcceptButton, KOkButtonText);
+        messageBox->SetButtonTextL(CHbDeviceMessageBoxSymbian::EAcceptButton, aOkButton);
         messageBox->SetButton(CHbDeviceMessageBoxSymbian::EAcceptButton, ETrue);
-        messageBox->SetButtonTextL(CHbDeviceMessageBoxSymbian::ERejectButton, KDetailsButtonText);
+        messageBox->SetButtonTextL(CHbDeviceMessageBoxSymbian::ERejectButton, aDetailsButton);
         messageBox->SetButton(CHbDeviceMessageBoxSymbian::ERejectButton, ETrue);
 
         if (messageBox->ExecL() == CHbDeviceMessageBoxSymbian::ERejectButton)
@@ -54,7 +50,7 @@ OS_EXPORT void RuntimeUiQt::errorL(const TDesC& /*aAppName*/, const TDesC& aShor
     }
     else
     {
-        messageBox->SetButtonTextL(CHbDeviceMessageBoxSymbian::EAcceptButton, KOkButtonText);
+        messageBox->SetButtonTextL(CHbDeviceMessageBoxSymbian::EAcceptButton, aOkButton);
         messageBox->SetButton(CHbDeviceMessageBoxSymbian::EAcceptButton, ETrue);
         (void)messageBox->ExecL();
     }
@@ -62,33 +58,38 @@ OS_EXPORT void RuntimeUiQt::errorL(const TDesC& /*aAppName*/, const TDesC& aShor
     CleanupStack::PopAndDestroy(messageBox);
 }
 
-OS_EXPORT int RuntimeUiQt::confirmL(const TDesC& /*aAppName*/, const TDesC& aQuestion)
+OS_EXPORT int RuntimeUiQt::confirmL(const TDesC& /*aAppName*/, const TDesC& aQuestion,
+    const ConfirmData& aConfirmData, bool /*aIdentified*/)
 {
     CHbDeviceMessageBoxSymbian* messageBox
-    = CHbDeviceMessageBoxSymbian::NewL(CHbDeviceMessageBoxSymbian::EWarning);
+        = CHbDeviceMessageBoxSymbian::NewL(CHbDeviceMessageBoxSymbian::EWarning);
     CleanupStack::PushL(messageBox);
 
     messageBox->SetTextL(aQuestion);
     messageBox->SetTimeout(HbPopup::NoTimeout);
 
-    // Read localised versions instead of hard coded values.
-    _LIT(KAllowButtonText, "Allow");
-    _LIT(KDenyButtonText, "Deny");
+    // Deny by default.
+    int result = 1;
 
-    messageBox->SetButtonTextL(CHbDeviceMessageBoxSymbian::EAcceptButton, KAllowButtonText);
-    messageBox->SetButton(CHbDeviceMessageBoxSymbian::EAcceptButton, ETrue);
-    messageBox->SetButtonTextL(CHbDeviceMessageBoxSymbian::ERejectButton, KDenyButtonText);
-    messageBox->SetButton(CHbDeviceMessageBoxSymbian::ERejectButton, ETrue);
-
-    // by default the answer is Allow
-    int result = 0;
-    if (messageBox->ExecL() == CHbDeviceMessageBoxSymbian::ERejectButton)
+    // ConfirmData must always have two entries. If not confirmation is denied.
+    if (aConfirmData.iAnswerOptions.size() >= 2)
     {
-        // change the answer to Deny
-        result = 1;
-    }
+        // Button 1 localized text.
+        messageBox->SetButtonTextL(CHbDeviceMessageBoxSymbian::EAcceptButton, (aConfirmData.iAnswerOptions.at(0))->Des());
+        messageBox->SetButton(CHbDeviceMessageBoxSymbian::EAcceptButton, ETrue);
 
-    messageBox->Close();
+        // Button 2 localized text.
+        messageBox->SetButtonTextL(CHbDeviceMessageBoxSymbian::ERejectButton, (aConfirmData.iAnswerOptions.at(1))->Des());
+        messageBox->SetButton(CHbDeviceMessageBoxSymbian::ERejectButton, ETrue);
+
+        if (messageBox->ExecL() == CHbDeviceMessageBoxSymbian::EAcceptButton)
+        {
+            // AcceptButton selected.
+            result = 0;
+        }
+
+        messageBox->Close();
+    }
     CleanupStack::PopAndDestroy(messageBox);
     return result;
 }

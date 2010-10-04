@@ -335,9 +335,15 @@ abstract class Buffer
             return;
         }
         
-        // if there's nothing to flush return
+        // if there's nothing to flush, just leave the surface session open
+        //  if so requested and return. Surface session needs to be left open
+        // if the call came from external renderer like m3g or m2g
         if(!commandBuffer.containsDrawnPrimitives())
         {
+        	if(!closeSurfaceSession)
+        	{
+        		startFrame(hostBounds.x, hostBounds.y , hostBounds.width , hostBounds.height);
+        	}
             return;
         }
         

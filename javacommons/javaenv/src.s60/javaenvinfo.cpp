@@ -26,7 +26,7 @@
 namespace Java
 {
 
-TInt ParseVersionL(TLex& aVersionText,TBool aLastVersionNumber);
+TInt ParseVersionL(TLex& aVersionText, TBool aLastVersionNumber, TUint aVersionNumMaxValue);
 
 // User-agent header substring
 _LIT(KUserAgentJavaString, "Configuration/CLDC-1.1 Profile/MIDP-2.1");
@@ -40,12 +40,10 @@ _LIT(KMicroeditionJavaVersionFile, "\\resource\\versions\\java.txt");
 // Length of temporary buffer for string manipulation
 const TUint KBufferSize = 32;
 
-// The min and max values for each version number
-// const TUint KMajorVersionMinValue = 1;
+// The max values for each field of version number (from TVersion)
 const TUint KMajorVersionMaxValue = 127;
-// const TUint KMinorVersionMaxValue = 9;
-// const TUint KBuildVersionMinValue = 1;
-// const TUint KBuildVersionMaxValue = 32767;
+const TUint KMinorVersionMaxValue = 99;
+const TUint KBuildVersionMaxValue = 32767;
 
 
 // ======== MEMBER FUNCTIONS ========
@@ -161,9 +159,9 @@ TVersion JavaEnvInfo::GetJavaVersionL()
     // parse the version numbers (major, minor, build) from the string
     // leave if  error occurs in string or in its format (e.g.: missing dot char, wrong value)
     TLex versionText(buffer16->Des());
-    TUint32 majorVersion = ParseVersionL(versionText,EFalse);
-    TUint32 minorVersion = ParseVersionL(versionText,EFalse);
-    TUint32 buildVersion = ParseVersionL(versionText,ETrue);
+    TUint32 majorVersion = ParseVersionL(versionText,EFalse, KMajorVersionMaxValue);
+    TUint32 minorVersion = ParseVersionL(versionText,EFalse, KMinorVersionMaxValue);
+    TUint32 buildVersion = ParseVersionL(versionText,ETrue, KBuildVersionMaxValue);
 
     TVersion version(majorVersion, minorVersion, buildVersion);
 
@@ -178,7 +176,7 @@ TVersion JavaEnvInfo::GetJavaVersionL()
 //
 //
 //
-TInt ParseVersionL(TLex& aVersionText,TBool aLastVersionNumber)
+TInt ParseVersionL(TLex& aVersionText, TBool aLastVersionNumber, TUint aVersionNumMaxValue)
 {
     JELOG2(EUtils);
 
@@ -192,9 +190,9 @@ TInt ParseVersionL(TLex& aVersionText,TBool aLastVersionNumber)
     TUint32 version(0);
     if (partialVersionText.BoundedVal(version,
                                       EDecimal,
-                                      Java::KMajorVersionMaxValue) != KErrNone)
+                                      aVersionNumMaxValue) != KErrNone)
     {
-        LOG(EUtils,EInfo, " GetJavaVersionL: format of value is corrupted (major version)");
+        LOG(EUtils,EInfo, " GetJavaVersionL: format of value is corrupted");
         User::Leave(KErrCorrupt);
     }
     // check format
@@ -207,7 +205,7 @@ TInt ParseVersionL(TLex& aVersionText,TBool aLastVersionNumber)
         }
         else
         {
-            LOG(EUtils,EInfo, " GetJavaVersionL: format of value is corrupted");
+            LOG(EUtils,EInfo, " GetJavaVersionL: format of value is corrupted2");
             User::Leave(KErrCorrupt);
         }
     }

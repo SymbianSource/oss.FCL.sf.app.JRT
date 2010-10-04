@@ -138,7 +138,7 @@ public class AccessControllerTests extends TestCase implements InstallerMain
         storage.removeGrantedPermissions(appUID);
         ac = AccessControllerFactoryImpl.getAccessController(appUID, appName);
         // check null values
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         try
         {
             ac.checkPermission((Permission)null);
@@ -150,7 +150,7 @@ public class AccessControllerTests extends TestCase implements InstallerMain
         }
         assertWithTrace(ac.checkPermission((String)null) == 0);
         // check permission which is not granted
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         try
         {
             ac.checkPermission(new CommProtocolPermission("comm://"));
@@ -170,7 +170,7 @@ public class AccessControllerTests extends TestCase implements InstallerMain
             assertWithTrace(true);
         }
         // check allowed permission which is granted
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         grantedPermissions = new Vector();
         grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                                           "javax.microedition.io.CommProtocolPermission",
@@ -191,7 +191,7 @@ public class AccessControllerTests extends TestCase implements InstallerMain
         }
         storage.removeGrantedPermissions(appUID);
         // check permission not allowed
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         grantedPermissions = new Vector();
         grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                                           "com.nokia.mj.impl.security.midp.authorization.CommProtocolPermissionImpl",
@@ -217,7 +217,7 @@ public class AccessControllerTests extends TestCase implements InstallerMain
         }
         storage.removeGrantedPermissions(appUID);
         // check user permission with NO as interaction mode -> security exception thrown
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         grantedPermissions = new Vector();
         grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                                           "com.nokia.mj.impl.security.midp.authorization.HttpProtocolPermissionImpl",
@@ -254,7 +254,7 @@ public class AccessControllerTests extends TestCase implements InstallerMain
         // check the named permissions: unknown permission
         assertWithTrace(ac.checkPermission("unknownPermission") == 0);
         // check the named permissions: allowed permission
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         grantedPermissions = new Vector();
         grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                                           "com.nokia.mj.impl.gcf.protocol.socket.SocketPermissionImpl",
@@ -265,7 +265,7 @@ public class AccessControllerTests extends TestCase implements InstallerMain
         storage.writeGrantedPermissions(appUID, null, grantedPermissions);
         assertWithTrace(ac.checkPermission("javax.microedition.io.Connector.socket") == 1);
         // check the named permissions: user permission with NO interaction mode
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         grantedPermissions = new Vector();
         grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                                           "com.nokia.mj.impl.gcf.protocol.http.HttpPermissionImpl",
@@ -282,7 +282,7 @@ public class AccessControllerTests extends TestCase implements InstallerMain
         storage.writeGrantedPermissions(appUID, null, grantedPermissions);
         assertWithTrace(ac.checkPermission("javax.microedition.io.Connector.http") == 0);
         // check the named permissions: user permission with ONESHOT interaction mode
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         grantedPermissions = new Vector();
         grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                                           "com.nokia.mj.impl.gcf.protocol.http.HttpPermissionImpl",
@@ -299,7 +299,7 @@ public class AccessControllerTests extends TestCase implements InstallerMain
         storage.writeGrantedPermissions(appUID, null, grantedPermissions);
         assertWithTrace(ac.checkPermission("javax.microedition.io.Connector.http") == -1);
         // check the named permissions: user permission with BLANKET interaction mode (blanket prompt not shown yet)
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         grantedPermissions = new Vector();
         grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                                           "com.nokia.mj.impl.gcf.protocol.http.HttpPermissionImpl",
@@ -316,7 +316,7 @@ public class AccessControllerTests extends TestCase implements InstallerMain
         storage.writeGrantedPermissions(appUID, null, grantedPermissions);
         assertWithTrace(ac.checkPermission("javax.microedition.io.Connector.http") == -1);
         // check the named permissions: user permission with BLANKET interaction mode (blanket prompt shown already)
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         grantedPermissions = new Vector();
         grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                                           "com.nokia.mj.impl.gcf.protocol.http.HttpPermissionImpl",
@@ -334,7 +334,7 @@ public class AccessControllerTests extends TestCase implements InstallerMain
         storage.writeUserSecuritySettingsPromptFlag(appUID, "Net Access", true);
         assertWithTrace(ac.checkPermission("javax.microedition.io.Connector.http") == 1);
         // check the named permissions: user permission with SESSION interaction mode (session prompt not shown already)
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         grantedPermissions = new Vector();
         grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                                           "com.nokia.mj.impl.gcf.protocol.http.HttpPermissionImpl",
@@ -352,7 +352,7 @@ public class AccessControllerTests extends TestCase implements InstallerMain
         storage.writeUserSecuritySettingsPromptFlag(appUID, "Net Access", true);
         assertWithTrace(ac.checkPermission("javax.microedition.io.Connector.http") == -1);
         // check the named permissions: denied permission
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         grantedPermissions = new Vector();
         grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                                           "com.nokia.mj.impl.gcf.protocol.datagram.DatagramPermissionImpl",

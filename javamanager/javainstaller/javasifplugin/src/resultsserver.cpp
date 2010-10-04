@@ -65,13 +65,6 @@ int ResultsServer::start()
             "ResultsServer::start mResults.AddIntL ErrCode err %d", err);
     }
 
-    TRAP(err, mResults.AddIntL(KSifOutParam_ExtendedErrCode, 0));
-    if (KErrNone != err)
-    {
-        ELOG1(EJavaInstaller,
-            "ResultsServer::start mResults.AddIntL ExtendedErrCode err %d", err);
-    }
-
     // TODO: return also localized error message (KSifOutParam_ErrMessage and
     // perhaps also KSifOutParam_ErrMessageDetails) from usif
     // common localization file after the localized strings are available

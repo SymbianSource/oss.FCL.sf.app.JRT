@@ -123,7 +123,7 @@ endif
 # Symbian ----------------------------------
 ifeq ($(BUILDENV),symbian)
 
-ifeq ($(COMPONENT_NAME),jrt)
+ifdef COMPONENT_ROOT
 # When building from top level, the native compilation does also export, java and finalactions
 all: configure qmake native
 clean: clean_native clean_generated
@@ -135,7 +135,7 @@ endif
 # On top level symbian build, the java building happens always during native
 # phase, through bld.inf -file, so no direct Java building is done (unless it 
 # building _is_ made from the bld.inf).
-ifeq ($(COMPONENT_NAME),jrt)
+ifdef COMPONENT_ROOT
 ifndef BLD_INF_JAVA
 NOJAVA=1
 endif
@@ -162,7 +162,12 @@ qmakefix:
 	$(call RMFILES,bld.inf* Makefile*)
 	$(MAKE) -f subsystem.mk TARGET_PHASE=qmakefix subtargets
 	$(call CATCOMMAND,$(JAVA_SRC_ROOT)/build/templates/bld.inf) > bld.inf \
-	$(foreach d, $(REALTARGETS), && echo #include "$d/bld.inf" >> bld.inf )
+	$(foreach d, $(filter-out $(SKIP_IN_SF),$(REALTARGETS)), && echo #include "$d/bld.inf" >> bld.inf )
+ifdef SKIP_IN_SF
+	echo #ifndef RD_JAVA_SF_BUILD >> bld.inf \
+	$(foreach d, $(filter $(SKIP_IN_SF),$(REALTARGETS)), && echo #include "$d/bld.inf" >> bld.inf )
+	echo #endif >> bld.inf
+endif
 
 build_all: configure qmake
 ifdef USESBS
@@ -188,8 +193,9 @@ clean_generated:
 bld.inf:
 	$(MAKE) -f subsystem.mk makestubs qmake
 
-# Use Carbide CodeScanner to list high-level issues
+# Use Carbide CodeScanner to list high-level issues, and checkjava.py for Java issues
 codescanner:
+	-python $(JAVA_SRC_ROOT)/build/buildutils/checkjava.py --exclude tsrc .
 ifneq ($(call PATHSEARCH,codescanner.exe),)
 	$(call CODESCANNER,.)
 endif
@@ -199,28 +205,28 @@ ifdef USESBS
 
 export:
 	$(PHASEINFO)
-	$(SBS) -c $(PLATFORM)_$(CFG) EXPORT
+	$(SBS) -c $(SBSCONFIG) EXPORT
 
 cleanexport:
 	$(PHASEINFO)
-	$(SBS) -c $(PLATFORM)_$(CFG) CLEANEXPORT
+	$(SBS) -c $(SBSCONFIG) CLEANEXPORT
 
 # BUILD combines commands EXPORT MAKEFILE BITMAP RESOURCE LIBRARY TARGET FINAL
 native:
 	$(PHASEINFO)
-	$(SBS) -c $(PLATFORM)_$(CFG)
+	$(SBS) -c $(SBSCONFIG)
 
 fastbuild: export java
-	$(SBS) -c $(PLATFORM)_$(CFG)
+	$(SBS) -c $(SBSCONFIG)
 
 clean_native:
 	$(PHASEINFO)
-	$(SBS) -c $(PLATFORM)_$(CFG) clean
+	$(SBS) -c $(SBSCONFIG) clean
 
 reallyclean: reallyclean_native clean_java clean_generated
 reallyclean_native: bld.inf
 	$(PHASEINFO)
-	$(SBS) -c $(PLATFORM)_$(CFG) reallyclean
+	$(SBS) -c $(SBSCONFIG) reallyclean
 
 
 # Symbian ABLD MAKEFILE --------------------

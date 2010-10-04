@@ -60,25 +60,25 @@ ifdef USESBS
 # BUILD combines commands EXPORT MAKEFILE BITMAP RESOURCE LIBRARY TARGET FINAL
 native:
 	$(PHASEINFO)
-	$(SBS) -c $(PLATFORM)_$(CFG)
+	$(SBS) -c $(SBSCONFIG)
 
 clean_java:
 
 clean_native:
 	$(PHASEINFO)
-	$(SBS) -c $(PLATFORM)_$(CFG) clean
+	$(SBS) -c $(SBSCONFIG) clean
 
 reallyclean:
 	$(PHASEINFO)
-	$(SBS) -c $(PLATFORM)_$(CFG) reallyclean
+	$(SBS) -c $(SBSCONFIG) reallyclean
 
 export: 
 	$(PHASEINFO)
-	$(SBS) -c $(PLATFORM)_$(CFG) EXPORT
+	$(SBS) -c $(SBSCONFIG) EXPORT
 
 cleanexport:
 	$(PHASEINFO)
-	-$(SBS) -c $(PLATFORM)_$(CFG) CLEANEXPORT
+	-$(SBS) -c $(SBSCONFIG) CLEANEXPORT
 
 
 # Symbian ABLD MAKEFILE --------------------

@@ -27,7 +27,8 @@
        file -->
   <property name="javah.classnames" 
             value="com.nokia.mj.impl.mms.MMSConnectionImpl,
-                   com.nokia.mj.impl.mms.MmsPropertyRetriever"/>
+                   com.nokia.mj.impl.mms.MmsPropertyRetriever,
+                   com.nokia.mj.impl.mms.MMSInstallerPlugin"/>
 
 
   <target name="system.properties">

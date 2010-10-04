@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -61,7 +61,6 @@ ServerConnection* ServerConnectionBase::getServerConnection(
 OS_EXPORT CbsServerConnection::~CbsServerConnection()
 {
     JELOG2(EWMA);
-    removeDir(mMessageStoreDirName);
 }
 
 void CbsServerConnection::initializeL()
@@ -192,7 +191,8 @@ OS_EXPORT void CbsServerConnection::open(ConnectionListener* aListener)
         const java::runtime::ApplicationInfo& appInf =
             java::runtime::ApplicationInfo::getInstance();
         const std::wstring& root = appInf.getRootPath();
-        error = createMessageStore(root + CBS_STORE_PATH);
+        // At this point mIsAppLaunched will be true if it not push connection.
+        error = createMessageStore(root + CBS_STORE_PATH, mIsAppLaunched);
         if (error != KErrNone)
         {
             ELOG1(EWMA,"CBS : create message store failed : %d",error);
@@ -214,12 +214,6 @@ OS_EXPORT void CbsServerConnection::open(ConnectionListener* aListener)
         }
 
         mOpenMonitor->wait();
-        // If there are any messages already available in the message store
-        // notify the listener
-        if (mMessagesOnStore > 0)
-        {
-            mListener->msgArrived();
-        }
         mIsListening = true;
     }
 }
@@ -319,7 +313,7 @@ OS_EXPORT int CbsServerConnection::retrieveMessage(TJavaMessageParametersBuf& aC
         readStream.close();
         return KErrGeneral;
     }
-    catch (ExceptionBase ex)
+    catch (ExceptionBase &ex)
     {
         delete[] messagePath;
         return KErrGeneral;
@@ -697,7 +691,7 @@ void CbsServerConnection::saveCbsMessageL(TSmsDataCodingScheme::TSmsAlphabet
         writeStream.close();
         User::Leave(KErrGeneral);
     }
-    catch (ExceptionBase ex)
+    catch (ExceptionBase &ex)
     {
         User::Leave(KErrGeneral);
     }

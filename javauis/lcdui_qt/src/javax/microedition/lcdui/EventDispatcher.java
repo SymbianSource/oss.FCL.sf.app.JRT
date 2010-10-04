@@ -32,8 +32,10 @@ final class EventDispatcher
     private static EventQueue eventQueue;
     private static Thread dispatcherThread;
     private static boolean terminated;
+    private static boolean terminateCalled;
     private static Object wakeLock;
     private static Object callbackLock;
+    private static Object terminationLock;
     private static boolean pendingWake;
     private static Runnable terminatedNotification;
     private final static String logName = "LCDUI event dispatcher: ";
@@ -177,18 +179,22 @@ final class EventDispatcher
             }
             finally
             {
-                if(noException)
+                synchronized(terminationLock)
                 {
-                    Logger.info(logName + "Dispatcher thread exiting normally");
-                }
-                else
-                {
-                    Logger.error(logName + "Dispatcher thread exiting abnormally");
-                }
-                if(terminatedNotification != null)
-                {
-                    terminatedNotification.run();
-                    terminatedNotification = null;
+                    terminated = true;
+                    if(noException)
+                    {
+                        Logger.info(logName + "Dispatcher thread exiting normally");
+                    }
+                    else
+                    {
+                        Logger.error(logName + "Dispatcher thread exiting abnormally");
+                    }
+                    if(terminatedNotification != null)
+                    {
+                        terminatedNotification.run();
+                        terminatedNotification = null;
+                    }
                 }
             }
         }
@@ -198,6 +204,7 @@ final class EventDispatcher
     {
         wakeLock = new Object();
         callbackLock = new Object();
+        terminationLock = new Object();
         eventQueue = new EventQueue();
         dispatcherThread = new Thread(new EventLoop(), this.toString());
         dispatcherThread.start();
@@ -264,11 +271,32 @@ final class EventDispatcher
      */
     synchronized void terminate(Runnable runnable)
     {
-        synchronized(wakeLock)
+        synchronized(terminationLock)
         {
-            wake();
-            terminatedNotification = runnable;
-            terminated = true;
+            // Only the first call does something
+            if(!terminateCalled)
+            {
+                terminateCalled = true;
+                if(terminated)
+                {
+                    // Already terminated. Dispatcher thread is not available
+                    // anymore for the asynchronous notification callback. Do
+                    // the callback in the current thread.
+                    if(runnable != null)
+                    {
+                        runnable.run();
+                    }
+                } 
+                else
+                {
+                    synchronized(wakeLock)
+                    {
+                        wake();
+                        terminatedNotification = runnable;
+                        terminated = true;
+                    }
+                }
+            }
         }
     }
 

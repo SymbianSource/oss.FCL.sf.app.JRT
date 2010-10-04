@@ -51,5 +51,8 @@
 
 #define NETWORKSTATUS           com_nokia_mj_impl_properties_mobinfo_MobileInfoProperties_NETWORKSTATUS_V
 
+#define SERVICE_PROVIDER_NAME   com_nokia_mj_impl_properties_mobinfo_MobileInfoProperties_SERVICE_PROVIDER_NAME_V
+
+#define OPERATOR_NAME           com_nokia_mj_impl_properties_mobinfo_MobileInfoProperties_OPERATOR_NAME_V
 
 #endif // MOBINFOCONSTANTS_H

@@ -11,6 +11,7 @@
 package org.eclipse.swt.internal.qt.graphics;
 
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.Point;
 
 final class OS {    
     // Graphics Context
@@ -78,10 +79,11 @@ final class OS {
     static final native void graphicsContext_restoreSettings(int handle);
 
     // Image
-    static final native int image_create(int width, int Height, int fillColor); 
+    static final native int image_create(int width, int height, int fillColor); 
     static final native int image_create(int imageHandle, int x, int y, int width, int height);
     static final native int image_create(ImageData imageData);
     static final native int image_create(int[] argbData, int width, int height, boolean hasAlpha);
+    static final native int image_create(int pixmapHandle);
     static final native int image_getFormat(int handle);
     static final native int image_getHeight(int handle);
     static final native int image_getWidth(int handle);
@@ -103,6 +105,7 @@ final class OS {
     static final native void imageLoader_dispose(int handle);
     static final native int imageLoader_load(int handle, String fileName);
     static final native void imageLoader_setLoadSize(int handle, int width, int height);
+    static final native Point imageLoader_getImageSize(byte[] data);
     
     // FontUtils
     static final native int  fontUtils_getAscent(int fontHandle);
@@ -125,4 +128,5 @@ final class OS {
     static final native int windowsurface_getType(int handle);
     static final native void windowsurface_dispose(int handle);
     static final native void windowsurface_refresh(int handle);
+    static final native void windowsurface_handleSymbianWindowVisibilityChange(int handle, boolean visible);
 }

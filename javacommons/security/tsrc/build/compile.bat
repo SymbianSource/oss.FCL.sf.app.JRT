@@ -16,5 +16,4 @@
 
 call ../data/ocspresponder/startResponder.bat ../data/ocspresponder/index.txt ../data/ocspresponder/CA.pem ../data/ocspresponder/CA.key
 call ant
-call bldmake bldfiles
-call abld build winscw udeb
+call sbs -c winscw_udeb

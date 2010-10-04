@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008 - 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -77,6 +77,10 @@ public class MobileInfoProperties implements SystemPropertyProvider
 
     private static final String NETWORKSTATUS = "com.nokia.mid.networkstatus";
 
+    static final String SERVICE_PROVIDER_NAME = "com.nokia.mid.spn";
+
+    static final String OPERATOR_NAME = "com.nokia.mid.ons";
+
     private static final int APP_DEFAULT_APN_NOT_SPECIFIED = -1;
 
     // Constants associated with the strings
@@ -110,26 +114,32 @@ public class MobileInfoProperties implements SystemPropertyProvider
 
     private static final int NETWORKSTATUS_V = 15;
 
+    private static final int SERVICE_PROVIDER_NAME_V = 16;
+
+    private static final int OPERATOR_NAME_V = 17;
+
     private static Hashtable iPropertyKeys;
 
     static
     {
         iPropertyKeys = new Hashtable();
-        iPropertyKeys.put(NETWORK_ACCESS,       new Integer(NETWORK_ACCESS_V));
-        iPropertyKeys.put(BATTERY_LEVEL,        new Integer(BATTERY_LEVEL_V));
-        iPropertyKeys.put(COUNTRY_CODE,         new Integer(COUNTRY_CODE_V));
-        iPropertyKeys.put(IMEI,                 new Integer(IMEI_V));
-        iPropertyKeys.put(IMSI,                 new Integer(IMSI_V));
-        iPropertyKeys.put(NETWORK_AVAILABILITY, new Integer(NETWORK_AVAILABILITY_V));
-        iPropertyKeys.put(NETWORK_ID,           new Integer(NETWORK_ID_V));
-        iPropertyKeys.put(NETWORK_SIGNAL,       new Integer(NETWORK_SIGNAL_V));
+        iPropertyKeys.put(NETWORK_ACCESS,         new Integer(NETWORK_ACCESS_V));
+        iPropertyKeys.put(BATTERY_LEVEL,          new Integer(BATTERY_LEVEL_V));
+        iPropertyKeys.put(COUNTRY_CODE,           new Integer(COUNTRY_CODE_V));
+        iPropertyKeys.put(IMEI,                   new Integer(IMEI_V));
+        iPropertyKeys.put(IMSI,                   new Integer(IMSI_V));
+        iPropertyKeys.put(NETWORK_AVAILABILITY,   new Integer(NETWORK_AVAILABILITY_V));
+        iPropertyKeys.put(NETWORK_ID,             new Integer(NETWORK_ID_V));
+        iPropertyKeys.put(NETWORK_SIGNAL,         new Integer(NETWORK_SIGNAL_V));
         iPropertyKeys.put(EMAIL_RECIEVE_SETTINGS, new Integer(EMAIL_RECIEVE_SETTINGS_V));
-        iPropertyKeys.put(EMAIL_SEND_SETTINGS,  new Integer(EMAIL_SEND_SETTINGS_V));
-        iPropertyKeys.put(CELLID,               new Integer(CELLID_V));
-        iPropertyKeys.put(MSISDN,               new Integer(MSISDN_V));
-        iPropertyKeys.put(DATEFORMAT,           new Integer(DATEFORMAT_V));
-        iPropertyKeys.put(TIMEFORMAT,           new Integer(TIMEFORMAT_V));
-        iPropertyKeys.put(NETWORKSTATUS,        new Integer(NETWORKSTATUS_V));
+        iPropertyKeys.put(EMAIL_SEND_SETTINGS,    new Integer(EMAIL_SEND_SETTINGS_V));
+        iPropertyKeys.put(CELLID,                 new Integer(CELLID_V));
+        iPropertyKeys.put(MSISDN,                 new Integer(MSISDN_V));
+        iPropertyKeys.put(DATEFORMAT,             new Integer(DATEFORMAT_V));
+        iPropertyKeys.put(TIMEFORMAT,             new Integer(TIMEFORMAT_V));
+        iPropertyKeys.put(NETWORKSTATUS,          new Integer(NETWORKSTATUS_V));
+        iPropertyKeys.put(SERVICE_PROVIDER_NAME,  new Integer(SERVICE_PROVIDER_NAME_V));
+        iPropertyKeys.put(OPERATOR_NAME,          new Integer(OPERATOR_NAME_V));
     }
 
     public String getProperty(String aKey)

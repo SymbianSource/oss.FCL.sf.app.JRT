@@ -1173,14 +1173,6 @@ TBool CJavaSifPlugin::ExitIfJavaInstallerRunning(
                         "ErrCode err %d", err);
                 }
 
-                TRAP(err, aResults.AddIntL(KSifOutParam_ExtendedErrCode, 0));
-                if (KErrNone != err)
-                {
-                    ELOG1(EJavaInstaller,
-                        "CJavaSifPlugin::ExitIfJavaInstallerRunning aResults.AddIntL "
-                        "ExtendedErrCode err %d", err);
-                }
-
                 // TODO: return also localized error message from usif
                 // common localization file after the localized strings are available
 

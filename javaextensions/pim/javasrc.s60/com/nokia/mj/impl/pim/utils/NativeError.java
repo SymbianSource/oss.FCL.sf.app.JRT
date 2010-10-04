@@ -647,8 +647,6 @@ public final class NativeError
     public static void handleCreateCalendarError(int aNativeErrorCode, String aCalName) 
     throws PIMException
     {
-
-
         if (aNativeErrorCode == OsErrorMessage.SUCCESS)
         {
             return; // OK
@@ -670,7 +668,7 @@ public final class NativeError
         }
         case OsErrorMessage.KERR_ALREADY_EXISTS:
         {
-             throw new PIMException(ErrorString.CALENDAR_ALREADY_EXISTS, PIMException.GENERAL_ERROR);
+             throw new PIMException(ErrorString.CALENDAR_ALREADY_EXISTS, aNativeErrorCode);
         }
         default:
         {
@@ -679,7 +677,7 @@ public final class NativeError
         }
     }
 
-    public static void handleDeleteCalendarError(int aNativeErrorCode, String aCalName)
+    public static void handleDeleteCalendarError(int aNativeErrorCode, String aCalName) throws PIMException
     {
 
 
@@ -692,8 +690,7 @@ public final class NativeError
         {
         case OsErrorMessage.KERR_ACCESS_DENIED:
         {
-            throw new IllegalArgumentException(
-                "Deletion of calendar failed: phone default calendar cannot be deleted");
+            throw new PIMException("The default calendar cannot be deleted",  aNativeErrorCode);
         }
         case OsErrorMessage.KERR_ARGUMENT:
         {

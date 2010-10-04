@@ -18,6 +18,8 @@ include $(JAVA_SRC_ROOT)/build/Makefile.defs
 
 COMPONENTS = \
         nokiauiapiqt \
-        softindicatorplugin
+        softindicatorplugin \
+        softnoteplugin 
+        
 
 include ${JAVA_SRC_ROOT}/build/Makefile.subsystem

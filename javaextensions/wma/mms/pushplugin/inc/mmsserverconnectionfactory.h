@@ -61,7 +61,11 @@ public:
      * @return MmsServerConnectionFactory
      */
     OS_IMPORT static MmsServerConnectionFactory& getFactory();
-
+    void deletePushConnection(const std::wstring& aUri);
+    ServerConnection& createPushServerConn(const std::wstring& aUri,
+            const std::wstring& aFilter,
+            ConnectionListener* aListener,
+            PendingConnectionListener* aPendingConnListener);
 };
 
 #endif // MMSSERVERCONNECTIONFACTORY_H

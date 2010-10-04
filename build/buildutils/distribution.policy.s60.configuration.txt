@@ -14,13 +14,14 @@
 
 /.svn                              : IGNORE
 /swt/internal                      : 7
+/swt/animation/internal            : 7
 /swt/expanded/internal             : 7
 /swt/mobile/internal               : 7
-/nokiauiapi_qt/src/com/nokia/mid/ui/internal    : 7
+/nokiauiapi_qt/javasrc/com/nokia/mid/ui/internal    : 7
 /internal                          : 1
 /releng                            : 1
 ROOT/tools                         : 1
-ROOT/jrt_info			   : 1
+ROOT/jrt_info                      : 1
 ROOT/javacommons/jvms/j9/s60       : 810
 /midprms                           : 102
 /webservices/javasrc               : 102
@@ -30,3 +31,4 @@ ROOT/javacommons/jvms/j9/s60       : 810
 /broadcast_stub/javasrc            : 1
 DEFAULT_POLICY                     : 7
 ROOT_POLICY                        : 7
+ROOT/javaextensions/ccapi          : 0

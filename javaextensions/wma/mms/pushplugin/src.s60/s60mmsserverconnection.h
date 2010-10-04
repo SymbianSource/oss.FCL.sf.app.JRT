@@ -92,6 +92,8 @@ public:
      * @return
      */
     OS_IMPORT void setOpen();
+    void setUnregister();
+    void clearUnregister();
 private:
     //Constructor
     S60MmsServerConnection();
@@ -189,6 +191,7 @@ protected:
     bool mIsAppLaunched;
     //listener to be notified for incoming messages
     ConnectionListener* mListener;
+    bool mUnregister;
     // handle to monitor object
     java::util::Monitor* mOpenMonitor;
     // reference to application adapter

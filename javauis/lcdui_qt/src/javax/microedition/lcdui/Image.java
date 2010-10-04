@@ -393,40 +393,41 @@ public class Image
      *             image or if w or h is zero or less or if transform is not one
      *             defined in Sprite-class.
      */
-    public static Image createImage(Image srcImage,
-                                    int x,
-                                    int y,
-                                    int w,
-                                    int h,
-                                    int transform)
+    public static Image createImage(Image aImage,
+                                    int aX,
+                                    int aY,
+                                    int aWidth,
+                                    int aHeight,
+                                    int aTransform)
     {
-        if(srcImage == null)
+        if(aImage == null)
         {
             throw new NullPointerException(
                 MsgRepository.IMAGE_EXCEPTION_IS_NULL);
         }
-        if(w <= 0 || h <= 0)
+        if(aWidth <= 0 || aHeight <= 0)
         {
             throw new IllegalArgumentException(
                 MsgRepository.IMAGE_EXCEPTION_INVALID_DIMENSIONS);
         }
-        if(!validateTransform(transform))
+        if(!validateTransform(aTransform))
         {
             throw new IllegalArgumentException(
                 MsgRepository.IMAGE_EXCEPTION_INVALID_TRANSFORM);
         }
-        if(!validateRegion(srcImage.getWidth(), srcImage.getHeight(), x, y, w, h))
+
+        if(!validateRegion(aImage.getWidth(), aImage.getHeight(), aX, aY, aWidth, aHeight))
         {
             throw new IllegalArgumentException(
                 MsgRepository.IMAGE_EXCEPTION_INVALID_REGION);
         }
 
-        final Image fImage = srcImage;
-        final int fx = x;
-        final int fy = y;
-        final int fw = w;
-        final int fh = h;
-        final int fTransform = transform;
+        final Image fImage = aImage;
+        final int fx = aX;
+        final int fy = aY;
+        final int fw = aWidth;
+        final int fh = aHeight;
+        final int fTransform = aTransform;
         ESWTUIThreadRunner.safeSyncExec(new Runnable()
         {
             public void run()
@@ -463,12 +464,39 @@ public class Image
      * Validates that a specified region is fully located within the image
      * bounds. Method is package-private, used by Graphics.drawRegion as well.
      */
-    static boolean validateRegion(int srcWidth, int srcHeight, int x, int y,
-                                  int w, int h)
+    static boolean validateRegion(int aSrcWidth,
+                                  int aSrcHeight,
+                                  int aX,
+                                  int aY,
+                                  int aWidth,
+                                  int aHeight)
     {
-        return x >= 0 && y >= 0 && w <= srcWidth && h <= srcHeight;
-    }
+        boolean result = true;
 
+        final int width  = aSrcWidth;
+        final int height = aSrcHeight;
+        
+        final int sx1  = aX;            // left column
+        final int sx2  = aX + aWidth;   // right column
+
+        final int sy1  = aY;            // top row 
+        final int sy2  = aY + aHeight;  // bottom row (exclusive)
+
+        //
+        // Check source x range lies within source image
+        //
+        final boolean xRangeError = (sx1 < 0) || (sx1 >= width) || (sx2 < 0) || 
+            (sx2 > width);
+        final boolean yRangeError = (sy1 < 0) || (sy1 >= height) || (sy2 < 0) || 
+            (sy2 > height);
+
+        if (xRangeError || yRangeError)
+        {
+            result = false;
+        }
+        return result;
+    }
+        
     /**
      * Validates if transform has a valid value. Method is package-private, used
      * by Graphics.drawRegion as well.

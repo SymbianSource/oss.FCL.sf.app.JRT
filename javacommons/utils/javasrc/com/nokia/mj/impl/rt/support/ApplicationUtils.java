@@ -45,11 +45,12 @@ import java.security.AccessControlException;
  * package com.nokia.mj.impl.mypackage;
  *
  * import com.nokia.mj.impl.rt.support.ApplicationUtils;
- *      public void myClass()
+ * import com.nokia.mj.impl.rt.support.ShutdownListener;
+ *      public MyClass
  *      {
  *          public void myMethod()
  *          {
- *              // Get the insatnce of ApplicationUtils.
+ *              // Get the instance of ApplicationUtils.
  *              ApplicationUtils appUtils = ApplicationUtils.getInstance();
  *
  *              // Get the name of the application.
@@ -236,7 +237,11 @@ public abstract class ApplicationUtils
      * calls are made in a loop in one thread, so if some listener blocks the
      * call the rest of the listeners don't get the notification.
      * <p>
-     * There can be more than one listener.
+     * There can be more than one listener, but it is recommended that there
+     * is only one listener per component.
+     * <p>
+     * The implementation stores a strong reference to object which prevents
+     * garbage collection of the listener unless the listener is removed.
      *
      * @param listener the new listener.
      */
@@ -249,6 +254,25 @@ public abstract class ApplicationUtils
         mListeners.addElement(listener);
     }
 
+    /**
+     * Removes the registered shutdown listener.
+     *
+     * @param listener the listener to be removed. If the listener is not
+     *                 found nothing happens. If the key is null, a 
+     * @throws NullPointerException if the listener is null.
+     */
+    public void removeShutdownListener(ShutdownListener listener)
+    {
+        if (listener == null)
+        {
+            throw new 
+              NullPointerException("Listener was null when trying to remove");
+        }
+        if (mListeners != null)
+        {
+            mListeners.removeElement(listener);
+        }
+    }
 
     /**
      * Waits (if needed) until the application to be started is known.

@@ -17,10 +17,9 @@
 package com.nokia.mj.impl.nokialcdui;
 
 import javax.microedition.lcdui.*;
-
 import org.eclipse.swt.internal.qt.graphics.GraphicsContext;
-
 import com.nokia.mid.ui.DirectGraphics;
+import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * Abstract class providing the interface to internal LCDUI resources.
@@ -95,8 +94,12 @@ public abstract class LCDUIInvoker
 
     /**
      * Returns the WindowSurface where g will be drawing.
+     * 
+     * startExternalRendering ensures that the WindowSurface instance is created, thus
+     * it must be called before WindowSurface is queried with this method.
+     * 
      * @param g The graphics object
-     * @return WindowSurface where g will be drawing.
+     * @return WindowSurface where g will be drawing or null if the instance hasn't been initialized
      */
     public static org.eclipse.swt.internal.qt.graphics.WindowSurface getWindowSurface(Graphics g)
     {
@@ -213,9 +216,9 @@ public abstract class LCDUIInvoker
 
     /**
      * Synchronizes any pending buffered draw commands to the target of the 
-     * graphics object.
+     * graphics object. Does not open surface session for external renderer's like m2g or m3g.
      *
-     * Must be called from UI-thread.
+     * Must not be called from UI-thread!
      *
      * @param graphics The object to synchronize
      */
@@ -229,20 +232,21 @@ public abstract class LCDUIInvoker
      * could be, for example,  M3G renderer. The opened rendering session must be
      * ended by calling the endExternalRendering().
      *
-     * This function must be called from UI-thread only.
+     * This method must not be called from UI-thread!
      *
      * @param g Graphics where the rendering session starts.
+	 * @return The clip of the given graphics instance converted to window surface coordinates
      */
-    public static void startExternalRendering(Graphics g)
+    public static Rectangle startExternalRendering(Graphics g)
     {
-        invokerInstance.doStartExternalRendering(g);
+        return invokerInstance.doStartExternalRendering(g);
     }
     
     /**
      * Ends the external rendering session on given Graphics that was started
      * by calling startExternalRendering().
      *
-     * This function must be called from UI-thread only.
+     * This method must not be called from UI-thread!
      *
      * @param g The Graphics instance.
      */
@@ -319,7 +323,7 @@ public abstract class LCDUIInvoker
 
     protected abstract void doSync(Object graphics);
     
-    protected abstract void doStartExternalRendering(Graphics g);
+    protected abstract Rectangle doStartExternalRendering(Graphics g);
     
     protected abstract void doEndExternalRendering(Graphics g);
     

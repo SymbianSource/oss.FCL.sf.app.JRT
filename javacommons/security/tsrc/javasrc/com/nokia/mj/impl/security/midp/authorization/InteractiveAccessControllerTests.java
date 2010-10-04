@@ -109,11 +109,11 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
     {
         TestSuite suite = new TestSuite(this.getClass().getName());
 
-        suite.addTest(new InteractiveAccessControllerTests("testAVKONSecurityPrompts", new TestMethod()
+        suite.addTest(new InteractiveAccessControllerTests("testSecurityPrompts", new TestMethod()
         {
             public void run(TestCase tc)
             {
-                ((InteractiveAccessControllerTests)tc).testAVKONSecurityPrompts();
+                ((InteractiveAccessControllerTests)tc).testSecurityPrompts();
             }
         }));
 
@@ -146,13 +146,20 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
     {
     }
 
-    private void testAVKONSecurityPrompts()
+    private void testSecurityPrompts()
     {
         System.setProperty("com.nokia.mj.impl.rt.ui", "com.nokia.mj.impl.rt.ui.avkon.RuntimeUiAvkon");
-        testSecurityPrompts();
+        try
+        {
+            Class.forName("com.nokia.mj.impl.rt.ui.qt.RuntimeUiQt");
+            System.setProperty("com.nokia.mj.impl.rt.ui", "com.nokia.mj.impl.rt.ui.qt.RuntimeUiQt");
+        }catch(Throwable t)
+        {
+        }
+        runTests();
     }
 
-    private void testSecurityPrompts()
+    private void runTests()
     {
         // init the new mapping & policies
         //initMappingTable();
@@ -182,7 +189,7 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
         session.write(StorageNames.MIDP_PACKAGE_TABLE, entry);
         // prompts for composite actions
         GeneralSecuritySettings.setSecurityWarningsMode(session, appUID, GeneralSecuritySettings.USER_SECURITY_MODE);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         grantedPermissions = new Vector();
         grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                                           "com.nokia.mj.impl.security.midp.authorization.PermissionWithCompositeActionsImpl",
@@ -230,7 +237,7 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
         assertTrue(true);
         // for NORMAL security mode, in case of identical prompts, only show one (even though they are part of different function groups)
         GeneralSecuritySettings.setSecurityWarningsMode(session, appUID, GeneralSecuritySettings.DEFAULT_SECURITY_MODE);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         grantedPermissions = new Vector();
         grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                                           "com.nokia.mj.impl.security.midp.authorization.CommProtocolPermissionImpl",
@@ -262,7 +269,7 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
         GeneralSecuritySettings.setSecurityWarningsMode(session, appUID, GeneralSecuritySettings.USER_SECURITY_MODE);
         AccessControllerFactoryImpl.destroyAccessController(appUID);
         ac = AccessControllerFactoryImpl.getAccessController(appUID, appName);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         grantedPermissions = new Vector();
         grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                                           "com.nokia.mj.impl.security.midp.authorization.CommProtocolPermissionImpl",
@@ -294,7 +301,7 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
         GeneralSecuritySettings.setSecurityWarningsMode(session, appUID, GeneralSecuritySettings.USER_SECURITY_MODE);
         AccessControllerFactoryImpl.destroyAccessController(appUID);
         ac = AccessControllerFactoryImpl.getAccessController(appUID, appName);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         grantedPermissions = new Vector();
         grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                                           "com.nokia.mj.impl.security.midp.authorization.CommProtocolPermissionImpl",
@@ -335,7 +342,7 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
         GeneralSecuritySettings.setSecurityWarningsMode(session, appUID, GeneralSecuritySettings.DEFAULT_SECURITY_MODE);
         AccessControllerFactoryImpl.destroyAccessController(appUID);
         ac = AccessControllerFactoryImpl.getAccessController(appUID, appName);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         grantedPermissions = new Vector();
         grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                                           "com.nokia.mj.impl.security.midp.authorization.HttpProtocolPermissionImpl",
@@ -361,7 +368,7 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
         GeneralSecuritySettings.setSecurityWarningsMode(session, appUID, GeneralSecuritySettings.USER_SECURITY_MODE);
         AccessControllerFactoryImpl.destroyAccessController(appUID);
         ac = AccessControllerFactoryImpl.getAccessController(appUID, appName);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         grantedPermissions = new Vector();
         grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                                           "com.nokia.mj.impl.security.midp.authorization.HttpProtocolPermissionImpl",
@@ -403,7 +410,7 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
         GeneralSecuritySettings.setSecurityWarningsMode(session, appUID, GeneralSecuritySettings.DEFAULT_SECURITY_MODE);
         AccessControllerFactoryImpl.destroyAccessController(appUID);
         ac = AccessControllerFactoryImpl.getAccessController(appUID, appName);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         grantedPermissions = new Vector();
         grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                                           "com.nokia.mj.impl.security.midp.authorization.HttpProtocolPermissionImpl",
@@ -443,7 +450,7 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
         GeneralSecuritySettings.setSecurityWarningsMode(session, appUID, GeneralSecuritySettings.USER_SECURITY_MODE);
         AccessControllerFactoryImpl.destroyAccessController(appUID);
         ac = AccessControllerFactoryImpl.getAccessController(appUID, appName);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         grantedPermissions = new Vector();
         grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                                           "com.nokia.mj.impl.security.midp.authorization.HttpProtocolPermissionImpl",
@@ -482,7 +489,7 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
         GeneralSecuritySettings.setSecurityWarningsMode(session, appUID, GeneralSecuritySettings.DEFAULT_SECURITY_MODE);
         AccessControllerFactoryImpl.destroyAccessController(appUID);
         ac = AccessControllerFactoryImpl.getAccessController(appUID, appName);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         grantedPermissions = new Vector();
         grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                                           "com.nokia.mj.impl.security.midp.authorization.FileProtocolPermissionImpl",
@@ -530,7 +537,7 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
         GeneralSecuritySettings.setSecurityWarningsMode(session, appUID, GeneralSecuritySettings.USER_SECURITY_MODE);
         AccessControllerFactoryImpl.destroyAccessController(appUID);
         ac = AccessControllerFactoryImpl.getAccessController(appUID, appName);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         grantedPermissions = new Vector();
         grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                                           "com.nokia.mj.impl.security.midp.authorization.FileProtocolPermissionImpl",
@@ -579,7 +586,7 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
         GeneralSecuritySettings.setSecurityWarningsMode(session, appUID, GeneralSecuritySettings.DEFAULT_SECURITY_MODE);
         AccessControllerFactoryImpl.destroyAccessController(appUID);
         ac = AccessControllerFactoryImpl.getAccessController(appUID, appName);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         grantedPermissions = new Vector();
         grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                                           "com.nokia.mj.impl.security.midp.authorization.FileProtocolPermissionImpl",
@@ -612,7 +619,7 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
         GeneralSecuritySettings.setSecurityWarningsMode(session, appUID, GeneralSecuritySettings.DEFAULT_SECURITY_MODE);
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICWDCCAcECBEhQwOgwDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX1RoaXJkX1BhcnR5X1RydXN0ZWQwHhcNMDgwNjEyMDYyMzM2WhcNMTgwNjEwMDYyMzM2WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfVGhpcmRfUGFydHlfVHJ1c3RlZDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEArAesh03rswICRUjexWMoIH9ZZqUtlx+tfhZhuzuYhiL6cLdhxNlU8yuIdw4f17XP3yxVIB8rz1EEagCMd0Y5ZleNFZ992ReLcf9VH13RxaZ88PRxBLLROm1jcwTknYSS6AxGMup77DMwwFSN8XPnOHWt4aLGUrecMeUyI2c5UbsCAwEAATANBgkqhkiG9w0BAQQFAAOBgQAylJ+3aSq6a7AAL7UM8V8JhGZlLneErF7A/BJGDi7Vmr5gmlGyf6RCJJIg4qCp+J3Tv3eCRNNuphQaSRdFpaulwCmtfCzSZNtvZg0VhMOVsZqTwQgmP6NzKoIbqqzlgm5U+yUJw8FmX17vgdeSEdJ/oL/WT4AKrWFJYl8MdQ9ZnQ=="));
@@ -647,7 +654,7 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
                                          StorageNames.VALUE,
                                          "MIICWDCCAcECBEhQwOgwDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX1RoaXJkX1BhcnR5X1RydXN0ZWQwHhcNMDgwNjEyMDYyMzM2WhcNMTgwNjEwMDYyMzM2WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfVGhpcmRfUGFydHlfVHJ1c3RlZDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEArAesh03rswICRUjexWMoIH9ZZqUtlx+tfhZhuzuYhiL6cLdhxNlU8yuIdw4f17XP3yxVIB8rz1EEagCMd0Y5ZleNFZ992ReLcf9VH13RxaZ88PRxBLLROm1jcwTknYSS6AxGMup77DMwwFSN8XPnOHWt4aLGUrecMeUyI2c5UbsCAwEAATANBgkqhkiG9w0BAQQFAAOBgQAylJ+3aSq6a7AAL7UM8V8JhGZlLneErF7A/BJGDi7Vmr5gmlGyf6RCJJIg4qCp+J3Tv3eCRNNuphQaSRdFpaulwCmtfCzSZNtvZg0VhMOVsZqTwQgmP6NzKoIbqqzlgm5U+yUJw8FmX17vgdeSEdJ/oL/WT4AKrWFJYl8MdQ9ZnQ=="));
         session.write(StorageNames.APPLICATION_PACKAGE_ATTRIBUTES_TABLE, appPackageEntry);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICWDCCAcECBEhQwOgwDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX1RoaXJkX1BhcnR5X1RydXN0ZWQwHhcNMDgwNjEyMDYyMzM2WhcNMTgwNjEwMDYyMzM2WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfVGhpcmRfUGFydHlfVHJ1c3RlZDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEArAesh03rswICRUjexWMoIH9ZZqUtlx+tfhZhuzuYhiL6cLdhxNlU8yuIdw4f17XP3yxVIB8rz1EEagCMd0Y5ZleNFZ992ReLcf9VH13RxaZ88PRxBLLROm1jcwTknYSS6AxGMup77DMwwFSN8XPnOHWt4aLGUrecMeUyI2c5UbsCAwEAATANBgkqhkiG9w0BAQQFAAOBgQAylJ+3aSq6a7AAL7UM8V8JhGZlLneErF7A/BJGDi7Vmr5gmlGyf6RCJJIg4qCp+J3Tv3eCRNNuphQaSRdFpaulwCmtfCzSZNtvZg0VhMOVsZqTwQgmP6NzKoIbqqzlgm5U+yUJw8FmX17vgdeSEdJ/oL/WT4AKrWFJYl8MdQ9ZnQ=="));
@@ -669,7 +676,7 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
         ac.checkPermission(new HttpProtocolPermissionImpl("http://", "\n(IF YOU SEE THIS PROMPT THE TEST FAILED)"));
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         assertTrue(blanketPromptShown);
         // Add check user permission with prompt shown in blanket interaction mode -> no user prompts
         // legacy signed MIDlet, some permissions requested -> checkPermission for the granted perms succeeds and checkPermission for not granted perms fails
@@ -677,7 +684,7 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
         ac = AccessControllerFactoryImpl.getAccessController(appUID, appName);
         storage.removeAuthenticationStorageData(appUID);
         storage.removeGrantedPermissions(appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICWDCCAcECBEhQwA0wDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX0RldmljZV9NYW51ZmFjdHVyZXIwHhcNMDgwNjEyMDYxOTU3WhcNMTgwNjEwMDYxOTU3WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfRGV2aWNlX01hbnVmYWN0dXJlcjCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEApi3ipIPj8O33/rZre1euh7Itd9d6ZVf2mvQ/tLpHEsFJe5XLOsVViMvFskhhKUzmDsRbP4J03L6827/vEDIi/1i8kJGLaoFqJYaLGFWI2Zmxlj6aJV8cfZyOjmQPWJn1IDEe1ZAWbvMSp8xibWRsCLNEGKIkxQvAr/QDK/6iS+kCAwEAATANBgkqhkiG9w0BAQQFAAOBgQCDXt6klAs6yKvdTab3D2wkdoi3Lu4YFsMgLexJOu5HhAUJ/9VYO+Q2+mjd95MRsTa5rWQ2Jjvhn57Z3z/KBOwfHbymmNtMk6Gl14H0vQRoHa31jh3mTuAy5KotDVthaDp30aOizk473NU68wY1WdP4gFk5ZhrpNea9q3st13BxIQ=="));
@@ -721,7 +728,7 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
         ac = AccessControllerFactoryImpl.getAccessController(appUID, appName);
         storage.removeAuthenticationStorageData(appUID);
         storage.removeGrantedPermissions(appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         securityAttributes = new SecurityAttributes();
@@ -759,7 +766,7 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
                 GeneralSecuritySettings.setSecurityWarningsMode(session, appUID, GeneralSecuritySettings.DEFAULT_SECURITY_MODE);
                 AccessControllerFactoryImpl.destroyAccessController(appUID);
                 ac = AccessControllerFactoryImpl.getAccessController(appUID, appName);
-                PermissionResolver.testClearCache();
+                PermissionResolver.cleanup();
                 grantedPermissions = new Vector();
                 grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                     "something",
@@ -802,7 +809,7 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
         GeneralSecuritySettings.setSecurityWarningsMode(session, appUID, GeneralSecuritySettings.DEFAULT_SECURITY_MODE);
         AccessControllerFactoryImpl.destroyAccessController(appUID);
         ac = AccessControllerFactoryImpl.getAccessController(appUID, appName);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         grantedPermissions = new Vector();
         grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                                           "com.nokia.mj.impl.security.midp.authorization.CommProtocolPermissionImpl",
@@ -830,7 +837,7 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
         GeneralSecuritySettings.setSecurityWarningsMode(session, appUID, GeneralSecuritySettings.DEFAULT_SECURITY_MODE);
         AccessControllerFactoryImpl.destroyAccessController(appUID);
         ac = AccessControllerFactoryImpl.getAccessController(appUID, appName);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         grantedPermissions = new Vector();
         grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                                           "com.nokia.mj.impl.security.midp.authorization.FileProtocolPermissionImpl",
@@ -864,7 +871,7 @@ public class InteractiveAccessControllerTests extends TestCase implements Instal
                 ui.error("myMIDlet", exc);
                 ui.destroy();
                 ac = AccessControllerFactoryImpl.getAccessController(appUID, appName);
-                PermissionResolver.testClearCache();
+                PermissionResolver.cleanup();
                 grantedPermissions = new Vector();
                 grantedPermissions.addElement(new PolicyBasedPermissionImpl(
                     "com.nokia.mj.impl.security.midp.authorization.FileProtocolPermissionImpl",

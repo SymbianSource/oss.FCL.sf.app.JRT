@@ -11,8 +11,19 @@
 
 #include <apgtask.h>
 #include <apgcli.h>
+#include <memory>
+#include <javastorageentry.h>
+#include <javastorage.h>
+#include <javastoragenames.h>
+#include <JavaCommonUtils.h>
+#include <logger.h>
+#include <QFile.h>
 
-#include "javasoftindicator.h" 
+#include "javasoftindicator.h"
+
+using namespace std;
+using namespace java::storage;
+using namespace java::util;
 
 // ----------------------------------------------------------------------------
 // JavaSoftIndicator::JavaSoftIndicator
@@ -41,16 +52,27 @@ bool JavaSoftIndicator::handleInteraction(InteractionType type)
     bool handled = false;
     if (type == InteractionActivated)
         {
+        // get midlet to foreground or lauch if it is not open
         TRAP_IGNORE(StartJavaMidletL());
         QVariantMap variantMap;
         if (iParameter.isValid() && iParameter.canConvert(QVariant::List))
             {
             variantMap.insert("MidletId",iParameter.toList()[0].toUInt());
-            variantMap.insert("NotificationId",iParameter.toList()[1]);
+            variantMap.insert("NotificationId",iParameter.toList()[1].toInt());
             }
+        // send user activated signal to indicator observer
         emit userActivated(variantMap);
         handled = true;
+        // remove softnote from database
+        RemoveSoftNoteFromStorage();
+        // remove indicator from status menu
         emit deactivate();
+        // remove image from public directoy
+        QFile imgFile(iParameter.toList()[4].toString());
+        if(imgFile.exists())
+            {
+            imgFile.remove();
+            }
         }
     return handled;
     }
@@ -125,7 +147,13 @@ bool JavaSoftIndicator::handleClientRequest(RequestType type,
             break;
         case RequestDeactivate:
             {
+            RemoveSoftNoteFromStorage();
             emit deactivate();
+            QFile imgFile(iParameter.toList()[4].toString());
+            if(imgFile.exists())
+                {
+                imgFile.remove();
+                }
             }
             break;
         default:
@@ -143,12 +171,12 @@ void JavaSoftIndicator::StartJavaMidletL() const
         {
         if (iParameter.toList()[0].isValid())
             {
-            TUint KJavaMidletUid = iParameter.toList()[0].toUInt();
+            TUint javaMidletUid = iParameter.toList()[0].toUInt();
 
             RWsSession ws;
             User::LeaveIfError(ws.Connect() == KErrNone);
             TApaTaskList tasklist(ws);
-            TApaTask task = tasklist.FindApp(TUid::Uid(KJavaMidletUid));
+            TApaTask task = tasklist.FindApp(TUid::Uid(javaMidletUid));
             if (task.Exists())
                 {
                 task.BringToForeground();
@@ -161,10 +189,44 @@ void JavaSoftIndicator::StartJavaMidletL() const
                 User::LeaveIfError(appArcSession.Connect());
                 TThreadId threadId;
                 appArcSession.StartDocument(_L(""),
-                TUid::Uid(KJavaMidletUid), threadId);
+                TUid::Uid(javaMidletUid), threadId);
                 appArcSession.Close();
                 }
             }
+        }
+    }
+
+// ----------------------------------------------------------
+// JavaSoftIndicator::RemoveSoftNoteFromStorage()
+// ----------------------------------------------------------
+void JavaSoftIndicator::RemoveSoftNoteFromStorage()
+    {
+    std::auto_ptr<JavaStorage> js(JavaStorage::createInstance());
+    try
+        {
+        js->open(JAVA_DATABASE_NAME);
+
+        JavaStorageApplicationEntry_t entries;
+        JavaStorageEntry attribute;
+
+        std::wstring midletId = JavaCommonUtils::intToWstring(
+                iParameter.toList()[0].toUInt());
+        attribute.setEntry(SOFTNOTE_MIDLET_ID, midletId,
+                JavaStorageEntry::STRING);
+        entries.insert(attribute);
+
+        std::wstring notificationId = JavaCommonUtils::intToWstring(
+                iParameter.toList()[1].toInt());
+        attribute.setEntry(SOFTNOTE_ID, notificationId, JavaStorageEntry::INT);
+        entries.insert(attribute);
+
+        js->remove(JAVA_SOFTNOTE_TABLE, entries);
+        js->close();
+        entries.clear();
+        }
+    catch (JavaStorageException& ex)
+        {
+        LOG1(EJavaStorage, EInfo," JavaSoftNote Exception %s", ex.toString());
         }
     }
 

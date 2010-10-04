@@ -211,7 +211,6 @@ public class ConfirmInstallation extends ExeStep
 
         // Now that user has answered to confirmation dialog, take into
         // use user selections: driveId and retainData.
-        int oldInstallationDrive = ball.iInstallationDrive;
         ball.iInstallationDrive = installInfo.getDriveId();
         if (ball.iUpgradeData == null)
         {
@@ -221,23 +220,6 @@ public class ConfirmInstallation extends ExeStep
         Log.log("UserConfirmation: " + ball.iUserConfirmation);
         Log.log("InstallationDrive: " + ball.iInstallationDrive);
         Log.log("UpgradeData: " + ball.iUpgradeData);
-        if (oldInstallationDrive != ball.iInstallationDrive)
-        {
-            try
-            {
-                // Save user selection.
-                SysUtil.setRepositoryStringValue(
-                    SysUtil.REPO_ID_JAVA_INST_VARIATION,
-                    SysUtil.REPO_KEY_JAVA_INST_DEF_INST_DRIVE,
-                    FileUtils.getDriveName(ball.iInstallationDrive));
-                Log.log("Updated user chosen drive to repository: " +
-                        ball.iInstallationDrive);
-            }
-            catch (Throwable t)
-            {
-                Log.log("Updating user chosen drive to repository failed", t);
-            }
-        }
 
         // Log all suite info.
         //ball.log(ball.iSuite.toString());

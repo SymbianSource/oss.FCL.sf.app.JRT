@@ -29,14 +29,16 @@
 
     <property name="java.src.paths" value="../../javasrc:../../javasrc_j2me"/>
 
-    <property name="javah.classnames" value="com.nokia.mid.ui.internal.OS"/>
+    <property name="javah.classnames" value="com.nokia.mj.impl.nokiauiapi.OS"/>
 
     <target name="create.public.api.jar">
          <omj.public.apis includes="com/nokia/mid/ui/TactileFeedback.class, 
                                     com/nokia/mid/ui/DeviceControl.class,
                                     com/nokia/mid/ui/SoftNotificationException.class, 
                                     com/nokia/mid/ui/SoftNotification.class, 
-                                    com/nokia/mid/ui/SoftNotificationListener.class"/>
+                                    com/nokia/mid/ui/SoftNotificationListener.class,
+                                    com/nokia/mid/ui/GlobalIndicators.class,
+                                    com/nokia/mid/ui/GlobalIndicatorsException.class"/>
     
     </target>
 

@@ -95,6 +95,11 @@ public:
      */
     virtual long available();
 
+    /**
+     * Flush the contents to the permanent storage.
+     */
+    virtual void flush();
+
 protected:
     virtual void handleReopenCase();
 

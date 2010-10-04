@@ -90,6 +90,40 @@ OS_EXPORT MmsServerConnectionFactory::~MmsServerConnectionFactory()
     JELOG2(EWMA);
 }
 
+ServerConnection&
+MmsServerConnectionFactory::createPushServerConn(const std::wstring& aUri,
+        const std::wstring& aFilter,
+        ConnectionListener* aListener,
+        PendingConnectionListener* aPendingConnListener)
+{
+    JELOG2(EWMA);
+    ScopedLock lockObj(mMutex);
+
+    SrvConnContainerIter_t iter = mServerConnections.find(aUri);
+    if (iter != mServerConnections.end())
+    {
+        if ((SrvConnContainerData::NORMAL == iter->second.connType()))
+        {
+            LOG(EWMA,EInfo,"Clearing Unregister flag");
+            MmsServerConnection* serverConn = 0;
+            serverConn = reinterpret_cast<MmsServerConnection*>(iter->second.getConn());
+            serverConn->clearUnregister();
+        }
+    }
+    return ServerConnectionFactoryBase::createPushServerConn(aUri,aFilter,
+                                           aListener,aPendingConnListener);
+}
+
+void MmsServerConnectionFactory::deletePushConnection(const std::wstring& aUri)
+{
+    JELOG2(EWMA);
+    LOG1(EWMA,EInfo,"MmsServerConnection on ID %S", aUri.c_str());
+    MmsServerConnection* serverConn = 0;
+    serverConn = reinterpret_cast<MmsServerConnection*>(getPushConnection(aUri));
+    if (0 != serverConn)
+       serverConn->setUnregister();
+    ServerConnectionFactoryBase::deletePushConnection(aUri);
+}
 /**
  *
  */

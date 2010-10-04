@@ -162,7 +162,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
     {
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         StorageEntry appPackageEntry = new StorageEntry();
         appPackageEntry.addAttribute(new StorageAttribute(
                                          StorageAttribute.ID,
@@ -185,7 +185,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         // Legacy signed MIDlet, no permissions requested -> any checkPermission must fail
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICWDCCAcECBEhQwA0wDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX0RldmljZV9NYW51ZmFjdHVyZXIwHhcNMDgwNjEyMDYxOTU3WhcNMTgwNjEwMDYxOTU3WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfRGV2aWNlX01hbnVmYWN0dXJlcjCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEApi3ipIPj8O33/rZre1euh7Itd9d6ZVf2mvQ/tLpHEsFJe5XLOsVViMvFskhhKUzmDsRbP4J03L6827/vEDIi/1i8kJGLaoFqJYaLGFWI2Zmxlj6aJV8cfZyOjmQPWJn1IDEe1ZAWbvMSp8xibWRsCLNEGKIkxQvAr/QDK/6iS+kCAwEAATANBgkqhkiG9w0BAQQFAAOBgQCDXt6klAs6yKvdTab3D2wkdoi3Lu4YFsMgLexJOu5HhAUJ/9VYO+Q2+mjd95MRsTa5rWQ2Jjvhn57Z3z/KBOwfHbymmNtMk6Gl14H0vQRoHa31jh3mTuAy5KotDVthaDp30aOizk473NU68wY1WdP4gFk5ZhrpNea9q3st13BxIQ=="));
@@ -229,7 +229,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         // legacy signed MIDlet, some permissions requested -> checkPermission for not granted perms fails
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICWDCCAcECBEhQwA0wDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX0RldmljZV9NYW51ZmFjdHVyZXIwHhcNMDgwNjEyMDYxOTU3WhcNMTgwNjEwMDYxOTU3WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfRGV2aWNlX01hbnVmYWN0dXJlcjCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEApi3ipIPj8O33/rZre1euh7Itd9d6ZVf2mvQ/tLpHEsFJe5XLOsVViMvFskhhKUzmDsRbP4J03L6827/vEDIi/1i8kJGLaoFqJYaLGFWI2Zmxlj6aJV8cfZyOjmQPWJn1IDEe1ZAWbvMSp8xibWRsCLNEGKIkxQvAr/QDK/6iS+kCAwEAATANBgkqhkiG9w0BAQQFAAOBgQCDXt6klAs6yKvdTab3D2wkdoi3Lu4YFsMgLexJOu5HhAUJ/9VYO+Q2+mjd95MRsTa5rWQ2Jjvhn57Z3z/KBOwfHbymmNtMk6Gl14H0vQRoHa31jh3mTuAy5KotDVthaDp30aOizk473NU68wY1WdP4gFk5ZhrpNea9q3st13BxIQ=="));
@@ -315,7 +315,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         // 2 legacy unsigned MIDlets, install from JAD -> checkPermission succeeds
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         securityAttributes = new SecurityAttributes();
@@ -336,7 +336,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         // legacy unsigned MIDlet, install from JAR -> checkPermission suceeds (with showing the prompts except for assigned perms)
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         securityAttributes = new SecurityAttributes();
@@ -354,7 +354,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         // update from trusted to untrusted fails
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICWDCCAcECBEhQwA0wDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX0RldmljZV9NYW51ZmFjdHVyZXIwHhcNMDgwNjEyMDYxOTU3WhcNMTgwNjEwMDYxOTU3WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfRGV2aWNlX01hbnVmYWN0dXJlcjCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEApi3ipIPj8O33/rZre1euh7Itd9d6ZVf2mvQ/tLpHEsFJe5XLOsVViMvFskhhKUzmDsRbP4J03L6827/vEDIi/1i8kJGLaoFqJYaLGFWI2Zmxlj6aJV8cfZyOjmQPWJn1IDEe1ZAWbvMSp8xibWRsCLNEGKIkxQvAr/QDK/6iS+kCAwEAATANBgkqhkiG9w0BAQQFAAOBgQCDXt6klAs6yKvdTab3D2wkdoi3Lu4YFsMgLexJOu5HhAUJ/9VYO+Q2+mjd95MRsTa5rWQ2Jjvhn57Z3z/KBOwfHbymmNtMk6Gl14H0vQRoHa31jh3mTuAy5KotDVthaDp30aOizk473NU68wY1WdP4gFk5ZhrpNea9q3st13BxIQ=="));
@@ -372,7 +372,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         authenticationModule.addSecurityData(session, appUID, null);
         storage.removeAuthenticationStorageData(appUID2);
         permissionGranter.removeSecurityData(session,appUID2);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         securityAttributes = new SecurityAttributes();
@@ -391,7 +391,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         // update from untrusted to trusted fails for MIDP3 MIDlets
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP3));
         securityAttributes = new SecurityAttributes();
@@ -408,7 +408,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         permissionGranter.addSecurityData(session, appUID, null);
         storage.removeAuthenticationStorageData(appUID2);
         permissionGranter.removeSecurityData(session,appUID2);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP3));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICWDCCAcECBEhQwA0wDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX0RldmljZV9NYW51ZmFjdHVyZXIwHhcNMDgwNjEyMDYxOTU3WhcNMTgwNjEwMDYxOTU3WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfRGV2aWNlX01hbnVmYWN0dXJlcjCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEApi3ipIPj8O33/rZre1euh7Itd9d6ZVf2mvQ/tLpHEsFJe5XLOsVViMvFskhhKUzmDsRbP4J03L6827/vEDIi/1i8kJGLaoFqJYaLGFWI2Zmxlj6aJV8cfZyOjmQPWJn1IDEe1ZAWbvMSp8xibWRsCLNEGKIkxQvAr/QDK/6iS+kCAwEAATANBgkqhkiG9w0BAQQFAAOBgQCDXt6klAs6yKvdTab3D2wkdoi3Lu4YFsMgLexJOu5HhAUJ/9VYO+Q2+mjd95MRsTa5rWQ2Jjvhn57Z3z/KBOwfHbymmNtMk6Gl14H0vQRoHa31jh3mTuAy5KotDVthaDp30aOizk473NU68wY1WdP4gFk5ZhrpNea9q3st13BxIQ=="));
@@ -431,7 +431,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         // update from untrusted to trusted succeeds for MIDP2 MIDlets
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         securityAttributes = new SecurityAttributes();
@@ -448,7 +448,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         permissionGranter.addSecurityData(session, appUID, null);
         storage.removeAuthenticationStorageData(appUID2);
         permissionGranter.removeSecurityData(session,appUID2);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICWDCCAcECBEhQwA0wDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX0RldmljZV9NYW51ZmFjdHVyZXIwHhcNMDgwNjEyMDYxOTU3WhcNMTgwNjEwMDYxOTU3WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfRGV2aWNlX01hbnVmYWN0dXJlcjCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEApi3ipIPj8O33/rZre1euh7Itd9d6ZVf2mvQ/tLpHEsFJe5XLOsVViMvFskhhKUzmDsRbP4J03L6827/vEDIi/1i8kJGLaoFqJYaLGFWI2Zmxlj6aJV8cfZyOjmQPWJn1IDEe1ZAWbvMSp8xibWRsCLNEGKIkxQvAr/QDK/6iS+kCAwEAATANBgkqhkiG9w0BAQQFAAOBgQCDXt6klAs6yKvdTab3D2wkdoi3Lu4YFsMgLexJOu5HhAUJ/9VYO+Q2+mjd95MRsTa5rWQ2Jjvhn57Z3z/KBOwfHbymmNtMk6Gl14H0vQRoHa31jh3mTuAy5KotDVthaDp30aOizk473NU68wY1WdP4gFk5ZhrpNea9q3st13BxIQ=="));
@@ -461,7 +461,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         // update from untrusted to untrusted succeeds
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         securityAttributes = new SecurityAttributes();
@@ -478,7 +478,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         permissionGranter.addSecurityData(session, appUID, null);
         storage.removeAuthenticationStorageData(appUID2);
         permissionGranter.removeSecurityData(session,appUID2);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         appPackageEntry = new StorageEntry();
         appPackageEntry.addAttribute(new StorageAttribute(
                                          StorageAttribute.ID,
@@ -502,7 +502,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         // update from manufacturer to operator succeeds for legacy suites
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICWDCCAcECBEhQwA0wDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX0RldmljZV9NYW51ZmFjdHVyZXIwHhcNMDgwNjEyMDYxOTU3WhcNMTgwNjEwMDYxOTU3WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfRGV2aWNlX01hbnVmYWN0dXJlcjCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEApi3ipIPj8O33/rZre1euh7Itd9d6ZVf2mvQ/tLpHEsFJe5XLOsVViMvFskhhKUzmDsRbP4J03L6827/vEDIi/1i8kJGLaoFqJYaLGFWI2Zmxlj6aJV8cfZyOjmQPWJn1IDEe1ZAWbvMSp8xibWRsCLNEGKIkxQvAr/QDK/6iS+kCAwEAATANBgkqhkiG9w0BAQQFAAOBgQCDXt6klAs6yKvdTab3D2wkdoi3Lu4YFsMgLexJOu5HhAUJ/9VYO+Q2+mjd95MRsTa5rWQ2Jjvhn57Z3z/KBOwfHbymmNtMk6Gl14H0vQRoHa31jh3mTuAy5KotDVthaDp30aOizk473NU68wY1WdP4gFk5ZhrpNea9q3st13BxIQ=="));
@@ -520,7 +520,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         authenticationModule.addSecurityData(session, appUID, null);
         storage.removeAuthenticationStorageData(appUID2);
         permissionGranter.removeSecurityData(session,appUID2);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICUDCCAbkCBEhQwIgwDQYJKoZIhvcNAQEEBQAwbzELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExGzAZBgNVBAMMEkpQX09wZXJhdG9yX0RvbWFpbjAeFw0wODA2MTIwNjIyMDBaFw0xODA2MTAwNjIyMDBaMG8xCzAJBgNVBAYTAmZpMRIwEAYDVQQIEwlQaXJrYW5tYWExEDAOBgNVBAcTB1RhbXBlcmUxDjAMBgNVBAoTBU5va2lhMQ0wCwYDVQQLEwRKYXZhMRswGQYDVQQDDBJKUF9PcGVyYXRvcl9Eb21haW4wgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAOrj7mg2cR2J0QKpdpOgEwSLoXnYed/fMS9JCYkcLuG0yfsZCYBMkfp+kiGhLi2RHrx2urKMBNDjlSbIlVxO8k/6wo48FSFiplRJoXRhi3hdGqA4SlommIRfPdpwInc6pC033BR9qEQZ6ZD/Mfxt9nIlwPT3jsjoh5s0QHUf+C3TAgMBAAEwDQYJKoZIhvcNAQEEBQADgYEAEHBGtEXorJ2meJm/lNwCw1NksPrFlCmlxnemBc5Whd+tv4e82A2ZoLQ0HiZVIhk6aV/2RyZkYRD/yhaJHmWadHXqxgScD9v0o1kVWzxTtUwE8YRaQw3X+FgYs3P+eiaI47JYswv+LnsCa+Z0IqbGHB8bdN6cspqiQxAZcc/ugRY="));
@@ -533,7 +533,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         // update from identified third party to identified third party but with different organization for signing certificate succeeds for legacy MIDlets
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICyjCCAjOgAwIBAgIJAJ3QIjIE4oVvMA0GCSqGSIb3DQEBBQUAMHMxCzAJBgNVBAYTAmZpMRIwEAYDVQQIEwlQaXJrYW5tYWExEDAOBgNVBAcTB1RhbXBlcmUxDjAMBgNVBAoTBU5va2lhMQ0wCwYDVQQLEwRKYXZhMR8wHQYDVQQDDBZKUF9UaGlyZF9QYXJ0eV9UcnVzdGVkMB4XDTEwMDIwNTExMDYxNVoXDTE1MDIwNDExMDYxNVowVzELMAkGA1UEBhMCRkkxEDAOBgNVBAcTB1RhbXBlcmUxFzAVBgNVBAMTDk15IENvbW1vbiBOYW1lMR0wGwYDVQQKExRNeSBPcmdhbml6YXRpb24gTmFtZTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAM92j3+xb30PW1+/yHtSys24JPKJ0FxJp2K2vCtLnFh7HZnFQLnwNKKBZinU67qOTW4bdYdKxFt8FfYbX6Yx0Em9A8UYuyPGyzY8zmji5THyWu4bqjnAsNjwCwCAR+qgIp6bvQ9NYy+24GlLWnMagCwfIQXAhElQVzw35E/sIMTTVBMS1+syYAmgBn+wjR+OogYNPn8OGueIr+hwrMcCgWbcMPrByGBVJ8dU6/+zn4CXxg12O1u3RDoMmGjq+2iVUrfPks3ucUJ7A/9n+OwfpAwMMHCzpelvSSmrvM50GSiE/WnWYv2CUndjhOcShy9mu0wsz6I/On6tdUoXI9r05jUCAwEAATANBgkqhkiG9w0BAQUFAAOBgQAx+t+Z+tAqGVZGxyXJ956OqqHKkCMvCC79S/BYFPCayfIfEwB8BbrQlNpZrTdpuAnJ0kQAqI/FHJ/hfyzU9llLwMA1Jr2CjeY828ehR0nprQ/C3GJwDW2HWGKTmTarRFf1a1ehiP0fQN4Wvemv+2ntjBNMFmXV+3S4usooDcWMiQ=="));
@@ -566,7 +566,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         session.write(StorageNames.APPLICATION_PACKAGE_ATTRIBUTES_TABLE, appPackageEntry);
         storage.removeAuthenticationStorageData(appUID2);
         permissionGranter.removeSecurityData(session,appUID2);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIIC0DCCAjmgAwIBAgIJAI9pBHmi/8HTMA0GCSqGSIb3DQEBBQUAMHMxCzAJBgNVBAYTAmZpMRIwEAYDVQQIEwlQaXJrYW5tYWExEDAOBgNVBAcTB1RhbXBlcmUxDjAMBgNVBAoTBU5va2lhMQ0wCwYDVQQLEwRKYXZhMR8wHQYDVQQDDBZKUF9UaGlyZF9QYXJ0eV9UcnVzdGVkMB4XDTEwMDIwNTExMTcxM1oXDTE1MDIwNDExMTcxM1owXTELMAkGA1UEBhMCRkkxEDAOBgNVBAcTB1RhbXBlcmUxFzAVBgNVBAMTDk15IENvbW1vbiBOYW1lMSMwIQYDVQQKExpNeSBPdGhlciBPcmdhbml6YXRpb24gTmFtZTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOxmRgiapQXW0j52cXwnGCMEk6Wsr/2iF6Ao0qlesxrFvPJB4eUgZ5/wNknwjyw0baTJgg/lYG4kT3wce7g8HU1CwnVxpmVNtQe0kuF8uP55LoqH24b4azy+WTnWXSfh0XGO2Z3yVWTmljzEvppLL95k7krqfn0UlwdWYCHZHVBSWILcRoIFu7uSaeJswhte4wnnhPh5+xEWnPZhCVbY6TI4kNhV7vje7Ugg6/LSSiHZ5NZYOhb/0M8noI5x5WWhMgJBw8UAGb0F1x9AqF4oZiTK9Qp01lDL37e4kV04TJg1QpvP5cMJNQWZWv9JW/OZbC+P9R6brIwX7lOXiPfZ8KUCAwEAATANBgkqhkiG9w0BAQUFAAOBgQA5pPk5+bkvQzldNfmedKLPdnInn4294t8QwAXfxvLI7+g7UqLO08c+iWI/IJdta2oE7tSUPqvVRuz37wnLCnWsOfmV3NliQsM7KcvrVXIN5onkyLUAQluake7HXq5Pu1U6y/3ggWxWalfnK1lKCKCfRGOt2qax13kWAKPSVJYHHg=="));
@@ -588,7 +588,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         // update from identified third party to identified third party but with different organization for signing certificate fails for MIDP3 MIDlets
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP3));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICyjCCAjOgAwIBAgIJAJ3QIjIE4oVvMA0GCSqGSIb3DQEBBQUAMHMxCzAJBgNVBAYTAmZpMRIwEAYDVQQIEwlQaXJrYW5tYWExEDAOBgNVBAcTB1RhbXBlcmUxDjAMBgNVBAoTBU5va2lhMQ0wCwYDVQQLEwRKYXZhMR8wHQYDVQQDDBZKUF9UaGlyZF9QYXJ0eV9UcnVzdGVkMB4XDTEwMDIwNTExMDYxNVoXDTE1MDIwNDExMDYxNVowVzELMAkGA1UEBhMCRkkxEDAOBgNVBAcTB1RhbXBlcmUxFzAVBgNVBAMTDk15IENvbW1vbiBOYW1lMR0wGwYDVQQKExRNeSBPcmdhbml6YXRpb24gTmFtZTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAM92j3+xb30PW1+/yHtSys24JPKJ0FxJp2K2vCtLnFh7HZnFQLnwNKKBZinU67qOTW4bdYdKxFt8FfYbX6Yx0Em9A8UYuyPGyzY8zmji5THyWu4bqjnAsNjwCwCAR+qgIp6bvQ9NYy+24GlLWnMagCwfIQXAhElQVzw35E/sIMTTVBMS1+syYAmgBn+wjR+OogYNPn8OGueIr+hwrMcCgWbcMPrByGBVJ8dU6/+zn4CXxg12O1u3RDoMmGjq+2iVUrfPks3ucUJ7A/9n+OwfpAwMMHCzpelvSSmrvM50GSiE/WnWYv2CUndjhOcShy9mu0wsz6I/On6tdUoXI9r05jUCAwEAATANBgkqhkiG9w0BAQUFAAOBgQAx+t+Z+tAqGVZGxyXJ956OqqHKkCMvCC79S/BYFPCayfIfEwB8BbrQlNpZrTdpuAnJ0kQAqI/FHJ/hfyzU9llLwMA1Jr2CjeY828ehR0nprQ/C3GJwDW2HWGKTmTarRFf1a1ehiP0fQN4Wvemv+2ntjBNMFmXV+3S4usooDcWMiQ=="));
@@ -615,7 +615,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         session.write(StorageNames.APPLICATION_PACKAGE_ATTRIBUTES_TABLE, appPackageEntry);
         storage.removeAuthenticationStorageData(appUID2);
         permissionGranter.removeSecurityData(session,appUID2);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP3));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIIC0DCCAjmgAwIBAgIJAI9pBHmi/8HTMA0GCSqGSIb3DQEBBQUAMHMxCzAJBgNVBAYTAmZpMRIwEAYDVQQIEwlQaXJrYW5tYWExEDAOBgNVBAcTB1RhbXBlcmUxDjAMBgNVBAoTBU5va2lhMQ0wCwYDVQQLEwRKYXZhMR8wHQYDVQQDDBZKUF9UaGlyZF9QYXJ0eV9UcnVzdGVkMB4XDTEwMDIwNTExMTcxM1oXDTE1MDIwNDExMTcxM1owXTELMAkGA1UEBhMCRkkxEDAOBgNVBAcTB1RhbXBlcmUxFzAVBgNVBAMTDk15IENvbW1vbiBOYW1lMSMwIQYDVQQKExpNeSBPdGhlciBPcmdhbml6YXRpb24gTmFtZTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOxmRgiapQXW0j52cXwnGCMEk6Wsr/2iF6Ao0qlesxrFvPJB4eUgZ5/wNknwjyw0baTJgg/lYG4kT3wce7g8HU1CwnVxpmVNtQe0kuF8uP55LoqH24b4azy+WTnWXSfh0XGO2Z3yVWTmljzEvppLL95k7krqfn0UlwdWYCHZHVBSWILcRoIFu7uSaeJswhte4wnnhPh5+xEWnPZhCVbY6TI4kNhV7vje7Ugg6/LSSiHZ5NZYOhb/0M8noI5x5WWhMgJBw8UAGb0F1x9AqF4oZiTK9Qp01lDL37e4kV04TJg1QpvP5cMJNQWZWv9JW/OZbC+P9R6brIwX7lOXiPfZ8KUCAwEAATANBgkqhkiG9w0BAQUFAAOBgQA5pPk5+bkvQzldNfmedKLPdnInn4294t8QwAXfxvLI7+g7UqLO08c+iWI/IJdta2oE7tSUPqvVRuz37wnLCnWsOfmV3NliQsM7KcvrVXIN5onkyLUAQluake7HXq5Pu1U6y/3ggWxWalfnK1lKCKCfRGOt2qax13kWAKPSVJYHHg=="));
@@ -636,7 +636,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         // update from identified third party to identified third party with same signer succeeds
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICWDCCAcECBEhQwOgwDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX1RoaXJkX1BhcnR5X1RydXN0ZWQwHhcNMDgwNjEyMDYyMzM2WhcNMTgwNjEwMDYyMzM2WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfVGhpcmRfUGFydHlfVHJ1c3RlZDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEArAesh03rswICRUjexWMoIH9ZZqUtlx+tfhZhuzuYhiL6cLdhxNlU8yuIdw4f17XP3yxVIB8rz1EEagCMd0Y5ZleNFZ992ReLcf9VH13RxaZ88PRxBLLROm1jcwTknYSS6AxGMup77DMwwFSN8XPnOHWt4aLGUrecMeUyI2c5UbsCAwEAATANBgkqhkiG9w0BAQQFAAOBgQAylJ+3aSq6a7AAL7UM8V8JhGZlLneErF7A/BJGDi7Vmr5gmlGyf6RCJJIg4qCp+J3Tv3eCRNNuphQaSRdFpaulwCmtfCzSZNtvZg0VhMOVsZqTwQgmP6NzKoIbqqzlgm5U+yUJw8FmX17vgdeSEdJ/oL/WT4AKrWFJYl8MdQ9ZnQ=="));
@@ -669,7 +669,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         session.write(StorageNames.APPLICATION_PACKAGE_ATTRIBUTES_TABLE, appPackageEntry);
         storage.removeAuthenticationStorageData(appUID2);
         permissionGranter.removeSecurityData(session,appUID2);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICWDCCAcECBEhQwOgwDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX1RoaXJkX1BhcnR5X1RydXN0ZWQwHhcNMDgwNjEyMDYyMzM2WhcNMTgwNjEwMDYyMzM2WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfVGhpcmRfUGFydHlfVHJ1c3RlZDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEArAesh03rswICRUjexWMoIH9ZZqUtlx+tfhZhuzuYhiL6cLdhxNlU8yuIdw4f17XP3yxVIB8rz1EEagCMd0Y5ZleNFZ992ReLcf9VH13RxaZ88PRxBLLROm1jcwTknYSS6AxGMup77DMwwFSN8XPnOHWt4aLGUrecMeUyI2c5UbsCAwEAATANBgkqhkiG9w0BAQQFAAOBgQAylJ+3aSq6a7AAL7UM8V8JhGZlLneErF7A/BJGDi7Vmr5gmlGyf6RCJJIg4qCp+J3Tv3eCRNNuphQaSRdFpaulwCmtfCzSZNtvZg0VhMOVsZqTwQgmP6NzKoIbqqzlgm5U+yUJw8FmX17vgdeSEdJ/oL/WT4AKrWFJYl8MdQ9ZnQ=="));
@@ -691,7 +691,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         // update from identified third party to identified third party succeeds (V1 requests P1 (Net), P2 (Messaging), P3 (Messaging), V2 requests P2 (Messaging), P4 (UserData), P5 (Net)) -> check that P1 is removed, P2 is retained (with old settings), P3 is removed, P4 and P5 are added with brand new settings
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICWDCCAcECBEhQwOgwDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX1RoaXJkX1BhcnR5X1RydXN0ZWQwHhcNMDgwNjEyMDYyMzM2WhcNMTgwNjEwMDYyMzM2WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfVGhpcmRfUGFydHlfVHJ1c3RlZDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEArAesh03rswICRUjexWMoIH9ZZqUtlx+tfhZhuzuYhiL6cLdhxNlU8yuIdw4f17XP3yxVIB8rz1EEagCMd0Y5ZleNFZ992ReLcf9VH13RxaZ88PRxBLLROm1jcwTknYSS6AxGMup77DMwwFSN8XPnOHWt4aLGUrecMeUyI2c5UbsCAwEAATANBgkqhkiG9w0BAQQFAAOBgQAylJ+3aSq6a7AAL7UM8V8JhGZlLneErF7A/BJGDi7Vmr5gmlGyf6RCJJIg4qCp+J3Tv3eCRNNuphQaSRdFpaulwCmtfCzSZNtvZg0VhMOVsZqTwQgmP6NzKoIbqqzlgm5U+yUJw8FmX17vgdeSEdJ/oL/WT4AKrWFJYl8MdQ9ZnQ=="));
@@ -724,7 +724,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         session.write(StorageNames.APPLICATION_PACKAGE_ATTRIBUTES_TABLE, appPackageEntry);
         // change the settings of Messaging
         storage.writeUserSecuritySettings(appUID, "Messaging", UserSecuritySettings.BLANKET_INTERACTION_MODE);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICWDCCAcECBEhQwOgwDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX1RoaXJkX1BhcnR5X1RydXN0ZWQwHhcNMDgwNjEyMDYyMzM2WhcNMTgwNjEwMDYyMzM2WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfVGhpcmRfUGFydHlfVHJ1c3RlZDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEArAesh03rswICRUjexWMoIH9ZZqUtlx+tfhZhuzuYhiL6cLdhxNlU8yuIdw4f17XP3yxVIB8rz1EEagCMd0Y5ZleNFZ992ReLcf9VH13RxaZ88PRxBLLROm1jcwTknYSS6AxGMup77DMwwFSN8XPnOHWt4aLGUrecMeUyI2c5UbsCAwEAATANBgkqhkiG9w0BAQQFAAOBgQAylJ+3aSq6a7AAL7UM8V8JhGZlLneErF7A/BJGDi7Vmr5gmlGyf6RCJJIg4qCp+J3Tv3eCRNNuphQaSRdFpaulwCmtfCzSZNtvZg0VhMOVsZqTwQgmP6NzKoIbqqzlgm5U+yUJw8FmX17vgdeSEdJ/oL/WT4AKrWFJYl8MdQ9ZnQ=="));
@@ -795,12 +795,26 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
                                                                                                                          UserSecuritySettings.NO_INTERACTION_MODE,
                                                                                                                          UserSecuritySettings.ONESHOT_INTERACTION_MODE,
                                                                                                                          UserSecuritySettings.SESSION_INTERACTION_MODE})),
+                                                    new PolicyBasedPermissionImpl(p4.getName(), "mobinfo.spn", "read",
+                                                                                  new UserSecuritySettingsImpl("Read User Data Access",
+                                                                                                               UserSecuritySettings.SESSION_INTERACTION_MODE,
+                                                                                                               new int[]{UserSecuritySettings.BLANKET_INTERACTION_MODE,
+                                                                                                                         UserSecuritySettings.NO_INTERACTION_MODE,
+                                                                                                                         UserSecuritySettings.ONESHOT_INTERACTION_MODE,
+                                                                                                                         UserSecuritySettings.SESSION_INTERACTION_MODE})),
+                                                    new PolicyBasedPermissionImpl(p4.getName(), "mobinfo.ons", "read",
+                                                                                  new UserSecuritySettingsImpl("Read User Data Access",
+                                                                                                               UserSecuritySettings.SESSION_INTERACTION_MODE,
+                                                                                                               new int[]{UserSecuritySettings.BLANKET_INTERACTION_MODE,
+                                                                                                                         UserSecuritySettings.NO_INTERACTION_MODE,
+                                                                                                                         UserSecuritySettings.ONESHOT_INTERACTION_MODE,
+                                                                                                                         UserSecuritySettings.SESSION_INTERACTION_MODE})),
                                                     new PolicyBasedPermissionImpl("com.nokia.ext2.internal.Ext2Perm", "ext2.target4", "ext2.action4", null),
                                                 }));
         // getBlanketPermissions: while installing V1 the permissions are not put to blanket, while installing V2 there are some blanket permissions returned
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICWDCCAcECBEhQwOgwDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX1RoaXJkX1BhcnR5X1RydXN0ZWQwHhcNMDgwNjEyMDYyMzM2WhcNMTgwNjEwMDYyMzM2WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfVGhpcmRfUGFydHlfVHJ1c3RlZDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEArAesh03rswICRUjexWMoIH9ZZqUtlx+tfhZhuzuYhiL6cLdhxNlU8yuIdw4f17XP3yxVIB8rz1EEagCMd0Y5ZleNFZ992ReLcf9VH13RxaZ88PRxBLLROm1jcwTknYSS6AxGMup77DMwwFSN8XPnOHWt4aLGUrecMeUyI2c5UbsCAwEAATANBgkqhkiG9w0BAQQFAAOBgQAylJ+3aSq6a7AAL7UM8V8JhGZlLneErF7A/BJGDi7Vmr5gmlGyf6RCJJIg4qCp+J3Tv3eCRNNuphQaSRdFpaulwCmtfCzSZNtvZg0VhMOVsZqTwQgmP6NzKoIbqqzlgm5U+yUJw8FmX17vgdeSEdJ/oL/WT4AKrWFJYl8MdQ9ZnQ=="));
@@ -836,7 +850,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
                                          "MIICWDCCAcECBEhQwOgwDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX1RoaXJkX1BhcnR5X1RydXN0ZWQwHhcNMDgwNjEyMDYyMzM2WhcNMTgwNjEwMDYyMzM2WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfVGhpcmRfUGFydHlfVHJ1c3RlZDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEArAesh03rswICRUjexWMoIH9ZZqUtlx+tfhZhuzuYhiL6cLdhxNlU8yuIdw4f17XP3yxVIB8rz1EEagCMd0Y5ZleNFZ992ReLcf9VH13RxaZ88PRxBLLROm1jcwTknYSS6AxGMup77DMwwFSN8XPnOHWt4aLGUrecMeUyI2c5UbsCAwEAATANBgkqhkiG9w0BAQQFAAOBgQAylJ+3aSq6a7AAL7UM8V8JhGZlLneErF7A/BJGDi7Vmr5gmlGyf6RCJJIg4qCp+J3Tv3eCRNNuphQaSRdFpaulwCmtfCzSZNtvZg0VhMOVsZqTwQgmP6NzKoIbqqzlgm5U+yUJw8FmX17vgdeSEdJ/oL/WT4AKrWFJYl8MdQ9ZnQ=="));
         session.write(StorageNames.APPLICATION_PACKAGE_ATTRIBUTES_TABLE, appPackageEntry);
         permissionGranter.cleanup();
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICWDCCAcECBEhQwOgwDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX1RoaXJkX1BhcnR5X1RydXN0ZWQwHhcNMDgwNjEyMDYyMzM2WhcNMTgwNjEwMDYyMzM2WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfVGhpcmRfUGFydHlfVHJ1c3RlZDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEArAesh03rswICRUjexWMoIH9ZZqUtlx+tfhZhuzuYhiL6cLdhxNlU8yuIdw4f17XP3yxVIB8rz1EEagCMd0Y5ZleNFZ992ReLcf9VH13RxaZ88PRxBLLROm1jcwTknYSS6AxGMup77DMwwFSN8XPnOHWt4aLGUrecMeUyI2c5UbsCAwEAATANBgkqhkiG9w0BAQQFAAOBgQAylJ+3aSq6a7AAL7UM8V8JhGZlLneErF7A/BJGDi7Vmr5gmlGyf6RCJJIg4qCp+J3Tv3eCRNNuphQaSRdFpaulwCmtfCzSZNtvZg0VhMOVsZqTwQgmP6NzKoIbqqzlgm5U+yUJw8FmX17vgdeSEdJ/oL/WT4AKrWFJYl8MdQ9ZnQ=="));
@@ -863,7 +877,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         // getBlanketPermissions: while installing V1 the permissions are put to blanket, while installing V2  -> only the permissions which ould be put to Blanket are returned
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICWDCCAcECBEhQwOgwDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX1RoaXJkX1BhcnR5X1RydXN0ZWQwHhcNMDgwNjEyMDYyMzM2WhcNMTgwNjEwMDYyMzM2WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfVGhpcmRfUGFydHlfVHJ1c3RlZDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEArAesh03rswICRUjexWMoIH9ZZqUtlx+tfhZhuzuYhiL6cLdhxNlU8yuIdw4f17XP3yxVIB8rz1EEagCMd0Y5ZleNFZ992ReLcf9VH13RxaZ88PRxBLLROm1jcwTknYSS6AxGMup77DMwwFSN8XPnOHWt4aLGUrecMeUyI2c5UbsCAwEAATANBgkqhkiG9w0BAQQFAAOBgQAylJ+3aSq6a7AAL7UM8V8JhGZlLneErF7A/BJGDi7Vmr5gmlGyf6RCJJIg4qCp+J3Tv3eCRNNuphQaSRdFpaulwCmtfCzSZNtvZg0VhMOVsZqTwQgmP6NzKoIbqqzlgm5U+yUJw8FmX17vgdeSEdJ/oL/WT4AKrWFJYl8MdQ9ZnQ=="));
@@ -1113,7 +1127,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         boolean success2 = false;
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         authenticationModule.cleanup();
         StorageEntry appPackageEntry = new StorageEntry();
         appPackageEntry.addAttribute(new StorageAttribute(
@@ -1169,7 +1183,7 @@ public class OMJSecurityTests extends TestCase implements InstallerMain
         domainCategory = authenticationModule.getProtectionDomainCategory(session, appUID);
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         assertWithTrace(domainCategory.equals(domain2.getCategory()));
     }
 

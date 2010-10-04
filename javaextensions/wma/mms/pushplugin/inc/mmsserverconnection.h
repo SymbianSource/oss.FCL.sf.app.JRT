@@ -44,6 +44,10 @@ public:
     }
 
     virtual void setOpen() = 0;
+    
+    virtual void setUnregister() =0;
+    
+    virtual void clearUnregister() =0;
 };
 
 }//end of namespace wma

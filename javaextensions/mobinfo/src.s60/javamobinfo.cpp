@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008 - 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -23,6 +23,9 @@
 #include <cdblen.h>
 #include <commdb.h>
 #include <rconnmon.h>
+
+#include <CoreApplicationUIsSDKCRKeys.h>
+#include <etel3rdparty.h>
 
 #include <cmmanager.h>
 #include <cmconnectionmethoddef.h>
@@ -71,8 +74,11 @@ _LIT(KNetworkStatusUnknown, "unknown"); // Unknown operator
 
 _LIT(KMSISDNSeparator, " "); // separator MSISDN numbers
 
+_LIT(KNameNotAvailable, "");
+
 const TInt KMaxPropertySize = 50;
 const TInt KJVMProcessUid = KJavaMidp;
+
 
 // ---------------------------------------------------------------------------
 //    forward declarations
@@ -516,7 +522,7 @@ HBufC* GetNetworkPropertyL(RMobilePhone& aMobilePhone, const TInt aProperty)
         }
         LOG(ESOCKET, EInfo, "MOBINFO  returning property NetworkStatus");
     }
-    else // NETWORK_AVAILABILITY
+    else if (aProperty == NETWORK_AVAILABILITY)
     {
         // Check NetworkAvailability related Caps
         TUint32 indCaps;
@@ -554,6 +560,74 @@ HBufC* GetNetworkPropertyL(RMobilePhone& aMobilePhone, const TInt aProperty)
             }
         }
     }
+    else if (aProperty == OPERATOR_NAME)
+    {
+        // Get Service Provider Name
+        LOG(ESOCKET, EInfo, "MOBINFO  Getting Operator Name");
+
+        TUint32 networkCaps;
+        User::LeaveIfError(aMobilePhone.GetNetworkCaps(networkCaps));
+
+        // If the device is in 'offline' mode, the current network
+        // cannot be queried. Try to check the mode from cenrep.
+        TBool networkConnAllowed (ETrue);
+        CRepository* repository = CRepository::NewL(KCRUidCoreApplicationUIs);
+        // Ignore the return value
+        (void)repository->Get(KCoreAppUIsNetworkConnectionAllowed, networkConnAllowed);
+        delete repository;
+
+        if ((networkCaps & RMobilePhone::KCapsGetCurrentNetwork) && networkConnAllowed)
+        {
+            RMobilePhone::TMobilePhoneNetworkInfoV2 currInfo;
+            RMobilePhone::TMobilePhoneNetworkInfoV2Pckg currInfoPckg(currInfo);
+            RMobilePhone::TMobilePhoneLocationAreaV1 area;
+
+            TRequestStatus status;
+            aMobilePhone.GetCurrentNetwork(status, currInfoPckg, area);
+            User::WaitForRequest(status);
+            User::LeaveIfError(status.Int());
+
+            if (currInfo.iLongName.Length() > 0)
+            {
+                telephonyProperty = HBufC::NewL(currInfo.iLongName.Length() + 1);
+                telephonyProperty->Des().Append(currInfo.iLongName);
+            }
+            else if (currInfo.iDisplayTag.Length() > 0)
+            {
+                currInfo.iLongName = currInfo.iDisplayTag.Left( currInfo.iLongName.MaxLength() );
+                telephonyProperty = HBufC::NewL(currInfo.iLongName.Length() + 1);
+                telephonyProperty->Des().Append(currInfo.iLongName);
+            }
+        }
+    }
+    else if (aProperty == SERVICE_PROVIDER_NAME)
+    {
+        // Get Service Provider Name
+        LOG(ESOCKET, EInfo, "MOBINFO  Getting Service Provider Name");
+
+        RMobilePhone::TMobilePhoneServiceProviderNameV2 serviceProviderName;
+        RMobilePhone::TMobilePhoneServiceProviderNameV2Pckg
+            serviceProviderNamePckg( serviceProviderName );
+
+        TRequestStatus status;
+
+        aMobilePhone.GetServiceProviderName(status, serviceProviderNamePckg);
+        User::WaitForRequest(status);
+
+        // Operator name, service provider
+        if (serviceProviderName.iSPName.Length() > 0)
+        {
+            telephonyProperty = HBufC::NewL(serviceProviderName.iSPName.Length() + 1);
+            telephonyProperty->Des().Append(serviceProviderName.iSPName);
+        }
+        else
+        {
+            // API call failed or empty service provider name
+            telephonyProperty = HBufC::NewL(KNameNotAvailable().Length() + 1);
+            telephonyProperty->Des().Append(KNameNotAvailable);
+        }
+    }
+
 
     LOG(ESOCKET, EInfo, "MOBINFO  - GetNetworkPropertyL()");
     return telephonyProperty;
@@ -776,6 +850,8 @@ HBufC* GetTelephonyPropertyL(const TInt aProperty)
     case COUNTRY_CODE:
     case CELLID:
     case NETWORKSTATUS:
+    case SERVICE_PROVIDER_NAME:
+    case OPERATOR_NAME:
         telephonyProperty = GetNetworkPropertyL(mobilePhone, aProperty);
         break;
     }

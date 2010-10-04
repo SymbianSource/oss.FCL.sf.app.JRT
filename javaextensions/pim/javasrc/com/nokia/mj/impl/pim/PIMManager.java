@@ -430,7 +430,7 @@ public final class PIMManager extends PIM
         NativeError.handleCreateCalendarError(error, aCalName);
     }
 
-    private synchronized void deleteCalendar(String aCalName)
+    private synchronized void deleteCalendar(String aCalName) throws PIMException
     {
         // security check
         ApplicationUtils appUtils = ApplicationUtils.getInstance();
@@ -464,11 +464,15 @@ public final class PIMManager extends PIM
                 break;
             }
         }
-        int error = _deleteCalendar(iManagerHandle, fileName);
-        NativeError.handleDeleteCalendarError(error, aCalName);
         if (isCalPresent)
         {
+            int error = _deleteCalendar(iManagerHandle, fileName);
+            NativeError.handleDeleteCalendarError(error, aCalName);        	
             iCalInfo.removeElementAt(index);
+        }
+        else
+        {
+        	throw new PIMException("Can't delete specified calendar as calendar does not exist ", PIMException.LIST_NOT_ACCESSIBLE);
         }
     }
 

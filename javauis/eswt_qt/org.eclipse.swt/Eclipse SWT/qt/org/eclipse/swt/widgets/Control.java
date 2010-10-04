@@ -877,7 +877,6 @@ boolean forceFocus(int focusReason) {
     if (isFocusControl())
         return true;
     shell.setSavedFocus(null);
-    shell.bringToTop(false);
 
     // Wait for requests sent in bringToTop to complete. This doesn't guarantee
     // that focus has moved after this.

@@ -38,7 +38,8 @@ namespace wma
 OS_EXPORT S60MmsServerConnection::S60MmsServerConnection(const wstring& aUri,
         const wstring& aFilter)
         :CActive(EPriorityStandard), mUri(aUri), mFilter(aFilter),
-        mActiveConnection(false), mIsAppLaunched(false),mListener(0)
+        mActiveConnection(false), mIsAppLaunched(false),mListener(0),
+		mUnregister(0)
 
 {
     JELOG2(EWMA);
@@ -67,6 +68,18 @@ OS_EXPORT void S60MmsServerConnection::setOpen()
     mIsAppLaunched = true;
     MmsServerConnectionFactory::getFactory().setPendingMsgFlag(
         mUri, false);
+}
+
+void S60MmsServerConnection::setUnregister()
+{
+    LOG(EWMA, EInfo,"S60MmsServerConnection::setUnregister");
+    mUnregister = true;
+}
+
+void S60MmsServerConnection::clearUnregister()
+{
+    LOG(EWMA, EInfo, "S60MmsServerConnection::clearUnregister");
+    mUnregister = false;
 }
 
 OS_EXPORT void S60MmsServerConnection::open(ConnectionListener* aListener)
@@ -112,7 +125,11 @@ void S60MmsServerConnection::InitializeL()
     mSession = CMsvSession::OpenSyncL(*this);
     mApplicationId = S60CommonUtils::wstringToDes(mAppId.c_str());
     TMsvId folderId;
-    mMmsApplicationAdapter->RegisterL(*mApplicationId, folderId);
+    TBool isRegistered = mMmsApplicationAdapter->RegisteredL(*mApplicationId);
+    if (!isRegistered)
+    { 
+       mMmsApplicationAdapter->RegisterL(*mApplicationId, folderId);
+    }
     TMsvId tmsvId = mMmsApplicationAdapter->FolderIdL(*mApplicationId);
     if (tmsvId != KErrNone)
     {
@@ -320,15 +337,20 @@ void S60MmsServerConnection::RunL()
     }
     case ENotifyingClose:
     {
-        mClientEntry->RemoveObserver(*this);
-        if (mMmsApplicationAdapter)
-        {
-            mMmsApplicationAdapter->UnregisterL(*mApplicationId);
-            delete mMmsApplicationAdapter;
-            mMmsApplicationAdapter = NULL;
-        }
         if (mClientEntry)
         {
+           mClientEntry->RemoveObserver(*this);
+           if (mMmsApplicationAdapter)
+           {
+              if (mUnregister)
+              {
+                  LOG(EWMA, EInfo, "Unregistering");
+                  mMmsApplicationAdapter->UnregisterL(*mApplicationId);
+              }
+              delete mMmsApplicationAdapter;
+              mMmsApplicationAdapter = NULL;
+           }
+        
             delete mClientEntry;
             mClientEntry = NULL;
         }

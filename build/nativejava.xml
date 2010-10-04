@@ -23,5 +23,7 @@
 
     <interface name="java.nativejava" extends="Symbian.UserFLM" flm="nativejava.flm">
       <param name='BLDINF_PATH' default='$(TO_BLDINF)' />
+      <param name='NAME' />
+      <param name='DEPENDS' default=''/>
     </interface>
 </build>

@@ -12,6 +12,8 @@ package org.eclipse.swt.internal.qt.graphics;
 
 
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Internal_PackageSupport;
 
 public final class Image {
 
@@ -128,6 +130,17 @@ public final class Image {
     // GraphicsContext bound to this image
     private GraphicsContext boundingGc = null;
 
+    // Image manages copies of itself for command buffering of drawImage and drawRegion. 
+    private Image commandBufferCopy;
+    private int commandBufferCopyRefs;
+    private boolean commandBufferCopyDirty;
+
+    // A copy-constructed Image remembers what it's a copy of
+    private Image whatAmIACopyOf;
+
+    private Image() {
+    }
+    
     /**
      * Constructs new image with given native image handle.
      *
@@ -135,7 +148,7 @@ public final class Image {
      * @throws OutOfMemoryError if imgHandlde is invalid
      */
     Image(int imgHandle) {
-    	Utils.validateUiThread();
+        Utils.validateUiThread();
         // validate handle
         if(imgHandle == 0) {
             throw new OutOfMemoryError();
@@ -218,10 +231,7 @@ public final class Image {
         if (sourceImage == null) {
             throw new NullPointerException("img is null");
         }
-        // Construct image in native side and store the handle
-        handle = OS.image_create(sourceImage.handle, x, y, width, height); // may throw outOfMemoryError
-        // set dimensions
-        updateSize();
+        createCopy(sourceImage, x, y, width, height);
     }
 
     /**
@@ -269,7 +279,7 @@ public final class Image {
      * releaseTarget() of binding gc is called automatically.
      */
     public void dispose() {
-    	Utils.validateUiThread();
+        Utils.validateUiThread();
         if (handle != 0 || !disposed) {
             // If this instance is being disposed while
             // gc is still bound, release binding before disposing.
@@ -284,6 +294,8 @@ public final class Image {
             // Delete window surface from cache in case
             // it is created for this instance
             SurfaceCache.getInstance().deleteSurface(this);
+
+            whatAmIACopyOf = null;
 
             // dispose native peer
             OS.image_dispose(handle);
@@ -308,10 +320,10 @@ public final class Image {
      * @return image format
      */
     public int getFormat() {
-    	checkState();
-    	if (pixelFormat == FORMAT_IMG_NONE) {
-    		pixelFormat = OS.image_getFormat(handle);
-    	}
+        checkState();
+        if (pixelFormat == FORMAT_IMG_NONE) {
+            pixelFormat = OS.image_getFormat(handle);
+        }
         return pixelFormat;
     }
     /**
@@ -593,7 +605,7 @@ public final class Image {
      */
     public int getHandle()
     {
-    	checkState();
+        checkState();
         return handle;
     }
 
@@ -603,7 +615,7 @@ public final class Image {
      */
     synchronized public int getNativePixmapHandle()
     {
-    	checkState();
+        checkState();
         if(pixmapHandle == 0)
         {
             // In the current implementation this will return
@@ -621,7 +633,7 @@ public final class Image {
      * @return New object
      */
     public ImageData getImageData() {
-    	checkState();
+        checkState();
         return OS.image_getImageData(handle);
     }
 
@@ -629,7 +641,7 @@ public final class Image {
      * Private helper to check the state of the current instance.
      */
     private void checkState() {
-    	Utils.validateUiThread();
+        Utils.validateUiThread();
         if(disposed) {
             throw new IllegalStateException("Image already disposed");
         }
@@ -656,5 +668,113 @@ public final class Image {
         }
         int imageHandle = OS.image_create(imageData);
         return new Image(imageHandle);
+    }
+    
+    /**
+     * Constructs new image with given native QPixmap handle.
+     * @param pixmapHandle Handle of native QPixmap.
+     * @return Instance of loaded image.
+     */
+    public static Image createImageFromPixmap(int pixmapHandle) {
+        // input validation
+        if(pixmapHandle <= 0) {
+            throw new IllegalArgumentException("Invalid pixmap handle");
+        }
+        // Construct an ge in native side and store the handle
+        int handle = OS.image_create(pixmapHandle);
+        return new Image(handle);
+    }
+
+    /**
+     * Obtains a shallow copy of this Image to be placed in the command buffer.
+     * The returned copy must be marked as free by calling freeCommandBufferCopy
+     * when it's no longer needed.
+     * 
+     * @return The copy
+     */
+    Image getCommandBufferCopy() {
+        if(commandBufferCopyDirty) {
+            return copyInUIThread();
+        }
+        if(commandBufferCopy == null) {
+            commandBufferCopyDirty = false;
+            commandBufferCopy = copyInUIThread();
+            commandBufferCopyRefs = 0;
+        }
+        commandBufferCopyRefs++;
+        return commandBufferCopy;
+    }
+
+    /**
+     * Marks a copy returned from getCommandBufferCopy as free.
+     * 
+     * @param image
+     *            The image returned from getShallowCopy.
+     */
+    void freeCommandBufferCopy() {
+        if(disposed) {
+            throw new RuntimeException("Image referenced by command buffer has been disposed");
+        }
+        if(whatAmIACopyOf == null) {
+            throw new RuntimeException("Image not a copy");
+        }
+        whatAmIACopyOf.freeCommandBufferCopyOfMe(this);
+    }
+    
+    /**
+     * Tells to the Image that it has been modified and any copies returned from
+     * getShallowCopy() have thus become deep copies.
+     */
+    void pixelDataModified() {
+        if(commandBufferCopy != null) {
+            commandBufferCopyDirty = true;
+        }
+    }
+    
+    /*
+     * Copy-construction
+     */
+    private void createCopy(Image sourceImage, int x, int y, int width, int height) {
+        // Construct image in native side and store the handle
+        handle = OS.image_create(sourceImage.handle, x, y, width, height); // may throw outOfMemoryError
+        // set dimensions
+        updateSize();
+        whatAmIACopyOf = sourceImage;
+    }
+
+    /*
+     * Called on the Image when a copy it has returned from getCommandBufferCopy
+     * is being freed by a call to freeCommandBufferCopy. The Image may be
+     * disposed at this point while the copy is not.
+     */
+    private void freeCommandBufferCopyOfMe(Image copy) {
+        if(copy != commandBufferCopy) {
+            throw new RuntimeException("Copy doesn't exist, freed multiple times?");
+        } else {
+            commandBufferCopyRefs--;
+            if(commandBufferCopyRefs <= 0) {
+                commandBufferCopy.dispose();
+                commandBufferCopy = null;
+            }
+        }
+    }
+    
+    /*
+     * Creates a shallow copy of the Image in the UI thread. 
+     */
+    private Image copyInUIThread() {
+        Display d = Internal_PackageSupport.getDisplayInstance();
+        final Image copy = new Image();
+        if(d != null) {
+            d.syncExec(new Runnable() {
+                public void run() {
+                    copy.createCopy(Image.this, 0, 0, 0, 0);
+                }
+            });
+        }
+        if(copy.handle == 0) {
+            return null;
+        }
+        return copy;
     }
 }

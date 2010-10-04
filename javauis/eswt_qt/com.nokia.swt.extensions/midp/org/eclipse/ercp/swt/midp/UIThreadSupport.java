@@ -11,7 +11,7 @@
 package org.eclipse.ercp.swt.midp;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.internal.qt.UIThreadManager;
+import org.eclipse.swt.internal.qt.UIThreadHandOverManager;
 
 /**
  * <p>
@@ -71,16 +71,16 @@ private static boolean started;
  * @see MIDlet#startApp
  */
 public static void startInUIThread(Runnable runnable) {
-	if(runnable == null) {
-		SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	}
+    if(runnable == null) {
+        SWT.error(SWT.ERROR_NULL_ARGUMENT);
+    }
     synchronized(UIThreadSupport.class) {
         if(started) {
             SWT.error(SWT.ERROR_FAILED_EXEC);
         }
         started = true;
     }
-    if(!UIThreadManager.startInUIThread(runnable)) {
+    if(!UIThreadHandOverManager.startInUIThread(runnable)) {
         SWT.error(SWT.ERROR_NO_HANDLES);
     }
 }

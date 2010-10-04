@@ -68,7 +68,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_sms_SMSConnectionImpl__1createConn
         JniUtils::throwNewException(aJni, "java/lang/OutOfMemoryError" ,
                                     "Out of memory");
     }
-    catch (ExceptionBase ex)
+    catch (ExceptionBase &ex)
     {
         ELOG(EWMA,"WMA : Caught an ExceptionBase exception");
         JniUtils::throwNewException(aJni, "java/io/IOException" ,
@@ -136,7 +136,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_sms_SMSConnectionImpl__1smsTextDat
         numberOfSegments = msgConn->numberOfDataSegments(aType,len,hostPort,
                            hostaddress,messageData);
     }
-    catch (ExceptionBase ex)
+    catch (ExceptionBase &ex)
     {
         JniUtils::throwNewException(aJni, "java/lang/RuntimeException" ,
                                     "Calculating number of segments failed");
@@ -187,7 +187,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_sms_SMSConnectionImpl__1smsBinaryD
         numberOfSegments = msgConn->numberOfDataSegments(aType,length,hostPort,
                            hostaddress,(const char*)nativeString);
     }
-    catch (ExceptionBase ex)
+    catch (ExceptionBase &ex)
     {
         JniUtils::throwNewException(aJni, "java/lang/RuntimeException" ,
                                     "Calculating number of segments failed");

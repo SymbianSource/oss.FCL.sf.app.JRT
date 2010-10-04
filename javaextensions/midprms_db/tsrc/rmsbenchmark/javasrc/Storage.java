@@ -25,6 +25,8 @@ public class Storage
     private int LENGTH;
 
     private RecordStore recordStore;
+    private String[] STORE_NAMES;
+
 
     public Storage(int aLength)
     {
@@ -32,6 +34,7 @@ public class Storage
         try
         {
             recordStore = RecordStore.openRecordStore(STORAGE_NAME, true);
+            createMultiStores();
         }
         catch (RecordStoreException _ex)
         {
@@ -40,12 +43,33 @@ public class Storage
         Utils.initRandom();
     }
 
+    private void createMultiStores() throws RecordStoreException
+    {
+        STORE_NAMES = new String[REPEAT];
+        // create stores
+        for(int i = 0; i < STORE_NAMES.length; i++)
+        {
+            STORE_NAMES[i] = "multistore" + i;
+            RecordStore r = RecordStore.openRecordStore(STORE_NAMES[i], true);
+            r.closeRecordStore();
+        }
+    }
+
+    private void deleteMultiStores() throws RecordStoreException
+    {
+        for(int i = 0; i < STORE_NAMES.length; i++)
+        {
+            RecordStore.deleteRecordStore(STORE_NAMES[i]);
+        }
+    }
+
     public void clean()
     {
         try
         {
             recordStore.closeRecordStore();
             RecordStore.deleteRecordStore(STORAGE_NAME);
+            deleteMultiStores();
         }
         catch (RecordStoreException _ex)
         {
@@ -322,6 +346,87 @@ public class Storage
                 System.out.println("RecordStoreException: " + _ex.toString());
             }
             recordStore = RecordStore.openRecordStore(STORAGE_NAME, true);
+        }
+        catch (RecordStoreException _ex)
+        {
+            System.out.println("RecordStoreException: " + _ex.toString());
+        }
+        return score;
+    }
+
+    public String openMultipleStores()
+    {
+        String score = "";
+        try
+        {
+            RecordStore[] stores = new RecordStore[STORE_NAMES.length];
+            // open stores
+            Utils.startTiming();
+            for (int i = 0; i < STORE_NAMES.length; i++)
+            {
+                stores[i] = RecordStore.openRecordStore(STORE_NAMES[i], false);
+            }
+            Utils.stopTiming();
+            score = Utils.getTime(Utils.getDiff());
+
+            // close stores
+            for (int i = 0; i < STORE_NAMES.length; i++)
+            {
+                stores[i].closeRecordStore();
+            }
+
+        }
+        catch (RecordStoreException _ex)
+        {
+            System.out.println("RecordStoreException: " + _ex.toString());
+        }
+        return score;
+    }
+
+    public String closeMultipleStores()
+    {
+        String score = "";
+        try
+        {
+            RecordStore[] stores = new RecordStore[STORE_NAMES.length];
+            // open stores
+            for (int i = 0; i < STORE_NAMES.length; i++)
+            {
+                stores[i] = RecordStore.openRecordStore(STORE_NAMES[i], false);
+            }
+
+            // close stores
+            Utils.startTiming();
+            for (int i = 0; i < STORE_NAMES.length; i++)
+            {
+                stores[i].closeRecordStore();
+            }
+            Utils.stopTiming();
+            score = Utils.getTime(Utils.getDiff());
+
+        }
+        catch (RecordStoreException _ex)
+        {
+            System.out.println("RecordStoreException: " + _ex.toString());
+        }
+        return score;
+    }
+
+    public String openCloseMultipleStores()
+    {
+        String score = "";
+        try
+        {
+            // open /close one store at a time
+            Utils.startTiming();
+            for (int i = 0; i < STORE_NAMES.length; i++)
+            {
+                RecordStore r = RecordStore.openRecordStore(STORE_NAMES[i], false);
+                r.closeRecordStore();
+            }
+            Utils.stopTiming();
+            score = Utils.getTime(Utils.getDiff());
+
         }
         catch (RecordStoreException _ex)
         {

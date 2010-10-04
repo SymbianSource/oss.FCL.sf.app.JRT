@@ -121,7 +121,7 @@ public class SecurityExtensionsTests extends TestCase implements InstallerMain
     {
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
     }
 
     protected void test()
@@ -144,7 +144,7 @@ public class SecurityExtensionsTests extends TestCase implements InstallerMain
         // policies (unsigned suite, check that ext1 perms are granted and the base permissions were not altered)
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         securityAttributes = new SecurityAttributes();
@@ -173,7 +173,7 @@ public class SecurityExtensionsTests extends TestCase implements InstallerMain
         {
             storage.removeAuthenticationStorageData(appUID);
             permissionGranter.removeSecurityData(session,appUID);
-            PermissionResolver.testClearCache();
+            PermissionResolver.cleanup();
             allAttributes.clear();
             allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
             allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICWDCCAcECBEhQwA0wDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX0RldmljZV9NYW51ZmFjdHVyZXIwHhcNMDgwNjEyMDYxOTU3WhcNMTgwNjEwMDYxOTU3WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfRGV2aWNlX01hbnVmYWN0dXJlcjCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEApi3ipIPj8O33/rZre1euh7Itd9d6ZVf2mvQ/tLpHEsFJe5XLOsVViMvFskhhKUzmDsRbP4J03L6827/vEDIi/1i8kJGLaoFqJYaLGFWI2Zmxlj6aJV8cfZyOjmQPWJn1IDEe1ZAWbvMSp8xibWRsCLNEGKIkxQvAr/QDK/6iS+kCAwEAATANBgkqhkiG9w0BAQQFAAOBgQCDXt6klAs6yKvdTab3D2wkdoi3Lu4YFsMgLexJOu5HhAUJ/9VYO+Q2+mjd95MRsTa5rWQ2Jjvhn57Z3z/KBOwfHbymmNtMk6Gl14H0vQRoHa31jh3mTuAy5KotDVthaDp30aOizk473NU68wY1WdP4gFk5ZhrpNea9q3st13BxIQ=="));
@@ -198,7 +198,7 @@ public class SecurityExtensionsTests extends TestCase implements InstallerMain
         {
             storage.removeAuthenticationStorageData(appUID);
             permissionGranter.removeSecurityData(session,appUID);
-            PermissionResolver.testClearCache();
+            PermissionResolver.cleanup();
             allAttributes.clear();
             allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
             allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICWDCCAcECBEhQwA0wDQYJKoZIhvcNAQEEBQAwczELMAkGA1UEBhMCZmkxEjAQBgNVBAgTCVBpcmthbm1hYTEQMA4GA1UEBxMHVGFtcGVyZTEOMAwGA1UEChMFTm9raWExDTALBgNVBAsTBEphdmExHzAdBgNVBAMMFkpQX0RldmljZV9NYW51ZmFjdHVyZXIwHhcNMDgwNjEyMDYxOTU3WhcNMTgwNjEwMDYxOTU3WjBzMQswCQYDVQQGEwJmaTESMBAGA1UECBMJUGlya2FubWFhMRAwDgYDVQQHEwdUYW1wZXJlMQ4wDAYDVQQKEwVOb2tpYTENMAsGA1UECxMESmF2YTEfMB0GA1UEAwwWSlBfRGV2aWNlX01hbnVmYWN0dXJlcjCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEApi3ipIPj8O33/rZre1euh7Itd9d6ZVf2mvQ/tLpHEsFJe5XLOsVViMvFskhhKUzmDsRbP4J03L6827/vEDIi/1i8kJGLaoFqJYaLGFWI2Zmxlj6aJV8cfZyOjmQPWJn1IDEe1ZAWbvMSp8xibWRsCLNEGKIkxQvAr/QDK/6iS+kCAwEAATANBgkqhkiG9w0BAQQFAAOBgQCDXt6klAs6yKvdTab3D2wkdoi3Lu4YFsMgLexJOu5HhAUJ/9VYO+Q2+mjd95MRsTa5rWQ2Jjvhn57Z3z/KBOwfHbymmNtMk6Gl14H0vQRoHa31jh3mTuAy5KotDVthaDp30aOizk473NU68wY1WdP4gFk5ZhrpNea9q3st13BxIQ=="));
@@ -223,7 +223,7 @@ public class SecurityExtensionsTests extends TestCase implements InstallerMain
         {
             storage.removeAuthenticationStorageData(appUID);
             permissionGranter.removeSecurityData(session,appUID);
-            PermissionResolver.testClearCache();
+            PermissionResolver.cleanup();
             allAttributes.clear();
             allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
             allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICyjCCAjOgAwIBAgIJANglmaqnbnYRMA0GCSqGSIb3DQEBBQUAMHMxCzAJBgNVBAYTAmZpMRIwEAYDVQQIEwlQaXJrYW5tYWExEDAOBgNVBAcTB1RhbXBlcmUxDjAMBgNVBAoTBU5va2lhMQ0wCwYDVQQLEwRKYXZhMR8wHQYDVQQDDBZKUF9UaGlyZF9QYXJ0eV9UcnVzdGVkMB4XDTEwMDIwNTEzMTMzN1oXDTE1MDIwNDEzMTMzN1owVzELMAkGA1UEBhMCRkkxEDAOBgNVBAcTB1RhbXBlcmUxFzAVBgNVBAMTDk15IENvbW1vbiBOYW1lMR0wGwYDVQQKExRNeSBPcmdhbml6YXRpb24gTmFtZTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMkJNh9P28KvJCgoJ3rwlpl0mVSpEVrl9UikxvBCqccQCJNuvcVKy8N06l8CGvwNVDhFb3eLyg5aUA8BsdcsTNfCxkItrbdyj7rNvvrPRztt42gFY1ZBSJKzkAMzXe1+d8SsjzwUxwA0xqhmA8PGVEhCruLtgAL3OPy3Y382SGmaQgiSBlYl/lkS8o8w6yNHXUUs/NC+1fQ7FRpb9VBueDT4neOhZopNZH+9VFH1vGT4oZPIn+fJY+Ue69WwDXXnHSNrrr5pDx+H882Fh7Z1Lswq3FVPzQCN69QqUpzGwaGF4NaMGywJYHnD6t3DHtGZwHnVZoCJx/L/P58JOWmNqz0CAwEAATANBgkqhkiG9w0BAQUFAAOBgQBgbsN4vL4Vh/NVmAACVqcIKrbYp6SiRA72a9P4cusyShq+ogkTweas9DMyX/DkEtbnjSEkRPnvcKydsux7fARBg+fzk/AJ6Q8vH9RMSxwbwygoqieHID68ahGnx0/E1KUuw78Og2zQScvoE7xn9jCiWoTzA5qfOKZJ445wonS0dw=="));
@@ -246,7 +246,7 @@ public class SecurityExtensionsTests extends TestCase implements InstallerMain
         // policies (trusted third party suite which requests ext2 public perms
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session,appUID);
-        PermissionResolver.testClearCache();
+        PermissionResolver.cleanup();
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(AuthenticationAttribute.MAIN_ATTRIBUTE_PREFIX + "1-1", new Attribute("",        "MIICyjCCAjOgAwIBAgIJANglmaqnbnYRMA0GCSqGSIb3DQEBBQUAMHMxCzAJBgNVBAYTAmZpMRIwEAYDVQQIEwlQaXJrYW5tYWExEDAOBgNVBAcTB1RhbXBlcmUxDjAMBgNVBAoTBU5va2lhMQ0wCwYDVQQLEwRKYXZhMR8wHQYDVQQDDBZKUF9UaGlyZF9QYXJ0eV9UcnVzdGVkMB4XDTEwMDIwNTEzMTMzN1oXDTE1MDIwNDEzMTMzN1owVzELMAkGA1UEBhMCRkkxEDAOBgNVBAcTB1RhbXBlcmUxFzAVBgNVBAMTDk15IENvbW1vbiBOYW1lMR0wGwYDVQQKExRNeSBPcmdhbml6YXRpb24gTmFtZTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMkJNh9P28KvJCgoJ3rwlpl0mVSpEVrl9UikxvBCqccQCJNuvcVKy8N06l8CGvwNVDhFb3eLyg5aUA8BsdcsTNfCxkItrbdyj7rNvvrPRztt42gFY1ZBSJKzkAMzXe1+d8SsjzwUxwA0xqhmA8PGVEhCruLtgAL3OPy3Y382SGmaQgiSBlYl/lkS8o8w6yNHXUUs/NC+1fQ7FRpb9VBueDT4neOhZopNZH+9VFH1vGT4oZPIn+fJY+Ue69WwDXXnHSNrrr5pDx+H882Fh7Z1Lswq3FVPzQCN69QqUpzGwaGF4NaMGywJYHnD6t3DHtGZwHnVZoCJx/L/P58JOWmNqz0CAwEAATANBgkqhkiG9w0BAQUFAAOBgQBgbsN4vL4Vh/NVmAACVqcIKrbYp6SiRA72a9P4cusyShq+ogkTweas9DMyX/DkEtbnjSEkRPnvcKydsux7fARBg+fzk/AJ6Q8vH9RMSxwbwygoqieHID68ahGnx0/E1KUuw78Og2zQScvoE7xn9jCiWoTzA5qfOKZJ445wonS0dw=="));

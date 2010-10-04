@@ -16,13 +16,13 @@
 	<!-- Classpath -->
 	<path id="openlcdui.classpath">
 		<pathelement location="\epoc32\RELEASE\WINSCW\udeb\java_impl_cldc.jar" />
-		<pathelement location="..\..\..\inc\classes.cldc.zip" />
+		<pathelement location="\epoc32\include\platform\app\classes.cldc.zip" />
 		<pathelement location="\epoc32\RELEASE\WINSCW\udeb\Z\resource\java\jvm\lib\common\s60uitestutils.jar" />
 	</path>
 	
 	<path id="openlcdui.armv5.classpath">
 		<pathelement location="${epoc.root}\epoc32\RELEASE\ARMV5\urel\java_impl_cldc.jar" />
-		<pathelement location="..\..\..\inc\classes.cldc.zip" />
+		<pathelement location="${epoc.root}\epoc32\include\platform\app\classes.cldc.zip" />
 		<pathelement location="${epoc.root}\epoc32\RELEASE\ARMV5\urel\Z\resource\java\jvm\lib\common\s60uitestutils.jar" />
 	</path>
 

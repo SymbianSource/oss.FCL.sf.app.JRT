@@ -16,7 +16,7 @@
 */
 
 package com.nokia.mid.ui;
-
+import com.nokia.mj.impl.nokiauiapi.SoftNotificationImpl;
 
 /**
  * <p>The <code>SoftNotification</code> is a class to manage soft

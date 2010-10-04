@@ -169,6 +169,7 @@ public class InstallerUiEswt extends InstallerUi
             display.setAppName(""); // Remove display title.
             iCssEngine = new BaseCSSEngine(display);
             iParent = new Shell(display);
+            iParent.open(); // remove this line after Qt can display child Shells even when parent Shell is not open
             iDialog = new Shell(iParent, SHELL_STYLE);
             iDefaultShellBounds = iDialog.internal_getDefaultBounds();
             iDefaultShellClientBounds = iDialog.getClientArea();

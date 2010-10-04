@@ -42,7 +42,7 @@ const TInt KFromFieldIndex = 3;
 const TInt KToFieldIndex = 4;
 const TInt KBccFieldIndex = 5;
 const TInt KCcFieldIndex = 6;
-const TInt KBufFlatGranularity = 10;
+const TInt KBufFlatGranularity = 20;
 
 // ============================ MEMBER FUNCTIONS ===============================
 

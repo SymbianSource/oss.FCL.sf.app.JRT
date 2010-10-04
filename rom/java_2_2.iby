@@ -349,6 +349,17 @@ data=JAVA_VM_RES_BLD\javaiapinfo.odc                                        JAVA
 file=ABI_DIR\BUILD_DIR\javacentrep.dll                                      SHARED_LIB_DIR\javacentrep.dll
 data=JAVA_VM_RES_BLD\javacentrep.odc                                        JAVA_VM_RES_IMG\javacentrep.odc
 
+#ifdef FF_NEAR_FIELD_COMMUNICATION
+
+//Contactless Communications API JSR 257
+file=ABI_DIR\BUILD_DIR\javandefscplugin.dll                                 SHARED_LIB_DIR\javandefscplugin.dll
+file=ABI_DIR\BUILD_DIR\javaccapi.dll                                      	SHARED_LIB_DIR\javaccapi.dll
+file=ABI_DIR\BUILD_DIR\javaccapiext.dll                                     SHARED_LIB_DIR\javaccapiext.dll
+data=JAVA_VM_RES_BLD\javaccapi.odc                                        	JAVA_VM_RES_IMG\javaccapi.odc
+data=JAVA_VM_RES_BLD\javaccapiext.odc                                       JAVA_VM_RES_IMG\javaccapiext.odc
+
+#endif //FF_NEAR_FIELD_COMMUNICATION
+
 ///////////////////
 // Miscellaneous //
 ///////////////////

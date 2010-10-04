@@ -343,27 +343,28 @@ final class CanvasKeypad implements MouseListener, MouseMoveListener
         cssEngine.applyCSS(gameA, "QPushButton" + "{" + "background-color:white;"
             + "border-style: outset;" + "border-width: 1px; " + "border-color: black;"
             + "border-radius: 2px;" + "font: bold 14px;" + "min-height: 2em;" + "min-width: 5.1em;"
-            + "image: url(" + RESOURCE_PATH + "qtg_mono_game_a.svg);" + "}"
-            + "QPushButton:pressed { image: url(" + RESOURCE_PATH + "qtg_mono_game_a.svg);"
-            + " border-style: inset;" + "}");
+            + "}"
+            + "QPushButton:pressed { border-style: inset;" + "}");
         cssEngine.applyCSS(gameB, "QPushButton" + "{" + "background-color:white;"
             + "border-style: outset;" + "border-width: 1px; " + "border-color: black;"
             + "border-radius: 2px;" + "font: bold 14px;" + "min-height: 2em;" + "min-width: 5.1em;"
-            + "image: url(" + RESOURCE_PATH + "qtg_mono_game_b.svg);" + "}"
-            + "QPushButton:pressed { image: url(" + RESOURCE_PATH + "qtg_mono_game_b.svg);"
-            + " border-style: inset;" + "}");
+            + "}"
+            + "QPushButton:pressed { border-style: inset;" + "}");
         cssEngine.applyCSS(gameC, "QPushButton" + "{" + "background-color:white;"
             + "border-style: outset;" + "border-width: 1px; " + "border-color: black;"
             + "border-radius: 2px;" + "font: bold 14px;" + "min-height: 2em;" + "min-width: 5.1em;"
-            + "image: url(" + RESOURCE_PATH + "qtg_mono_game_c.svg);" + "}"
-            + "QPushButton:pressed { image: url(" + RESOURCE_PATH + "qtg_mono_game_c.svg);"
-            + " border-style: inset;" + "}");
+            + "}"
+            + "QPushButton:pressed { border-style: inset;" + "}");
         cssEngine.applyCSS(gameD, "QPushButton" + "{" + "background-color:white;"
             + "border-style: outset;" + "border-width: 1px; " + "border-color: black;"
             + "border-radius: 2px;" + "font: bold 14px;" + "min-height: 2em;" + "min-width: 5.1em;"
-            + "image: url(" + RESOURCE_PATH + "qtg_mono_game_d.svg);" + "}"
-            + "QPushButton:pressed { image: url(" + RESOURCE_PATH + "qtg_mono_game_d.svg);"
-            + " border-style: inset;" + "}");
+            + "}"
+            + "QPushButton:pressed { border-style: inset;" + "}");
+            
+        gameA.setText("A");
+		    gameB.setText("B");
+		    gameC.setText("C");
+		    gameD.setText("D");
 
         // layout the game Keys
         FormData gameAFormData = new FormData();
@@ -441,18 +442,17 @@ final class CanvasKeypad implements MouseListener, MouseMoveListener
                 cssEngine.applyCSS(skright, "QPushButton" + "{" + "background-color:white;"
                     + "border-style: outset;" + "border-width: 1px; "
                     + "border-bottom-left-radius: 22px;" + "border-color: black;"
-                    + "font: bold 14px;" + "min-width: 3em;" + "min-height: 2em;" + "image: url("
-                    + RESOURCE_PATH + "qtg_mono_rsk_horizontal.svg);" + "}"
-                    + "QPushButton:pressed { image: url(" + RESOURCE_PATH
-                    + "qtg_mono_rsk_horizontal.svg);" + " border-style: inset;" + "}");
+                    + "font: bold 14px;" + "min-width: 3em;" + "min-height: 2em;" + "}"
+                    + "QPushButton:pressed { border-style: inset;" + "}");
 
                 cssEngine.applyCSS(skleft, "QPushButton" + "{" + "background-color:white;"
                     + "border-style: outset;" + "border-width: 1px; "
                     + "border-bottom-right-radius: 22px;" + "border-color: black;"
-                    + "font: bold 14px;" + "min-width: 3em;" + "min-height: 2em;" + "image: url("
-                    + RESOURCE_PATH + "qtg_mono_lsk_horizontal.svg);" + "}"
-                    + "QPushButton:pressed { image: url(" + RESOURCE_PATH
-                    + "qtg_mono_lsk_horizontal.svg);" + " border-style: inset;" + "}");
+                    + "font: bold 14px;" + "min-width: 3em;" + "min-height: 2em;" + "}"
+                    + "QPushButton:pressed { border-style: inset;" + "}");
+                    
+                skleft.setText("LSK");
+                skright.setText("RSK");
 
                 FormData sklFormData = new FormData();
                 sklFormData.top = new FormAttachment(0, 0);

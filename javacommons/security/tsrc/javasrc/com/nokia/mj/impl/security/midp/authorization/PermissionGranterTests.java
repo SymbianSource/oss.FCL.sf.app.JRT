@@ -1125,12 +1125,14 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
 
     private static MIDPPermission[] getDefaultPermissions()
     {
-        MIDPPermission[] defaultPerms = new MIDPPermission[5];
+        MIDPPermission[] defaultPerms = new MIDPPermission[7];
         defaultPerms[0] = new MIDPPermission("java.util.PropertyPermission", "microedition.*", "read");
         defaultPerms[1] = new MIDPPermission("javax.microedition.PropertyPermission", "mobinfo.publicinfo", "read");
         defaultPerms[2] = new MIDPPermission("javax.microedition.PropertyPermission", "mobinfo.cellid", "read");
         defaultPerms[3] = new MIDPPermission("javax.microedition.PropertyPermission", "mobinfo.countrycode", "read");
         defaultPerms[4] = new MIDPPermission("javax.microedition.PropertyPermission", "mobinfo.networkid", "read");
+        defaultPerms[5] = new MIDPPermission("javax.microedition.PropertyPermission", "mobinfo.spn", "read");
+        defaultPerms[6] = new MIDPPermission("javax.microedition.PropertyPermission", "mobinfo.ons", "read");
         return defaultPerms;
     }
 

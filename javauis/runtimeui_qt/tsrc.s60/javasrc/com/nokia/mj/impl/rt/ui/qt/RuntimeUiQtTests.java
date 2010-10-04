@@ -106,16 +106,24 @@ public class RuntimeUiQtTests extends TestCase implements InstallerMain
         boolean answerAvailable = false;
 
         // Test confirm
-        ConfirmData confirmData = new ConfirmData("Confirm dialog. Select Allow", new String[] {"answerOpt1", "answerOpt2", "answerOption3"}, 1);
-        answerAvailable = runtimeUi.confirm("MyFavouriteAplication", confirmData);
-        assertTrue(answerAvailable && confirmData.getAnswer() == 1);
-
-        confirmData = new ConfirmData("Confirm dialog. Select Deny", new String[] {"answerOpt1", "answerOpt2", "answerOption3"}, 1);
+        ConfirmData confirmData = new ConfirmData("Confirm dialog. Select Allow", new String[] {"ALLOW", "de_ny", "answerOption3"}, 1);
         answerAvailable = runtimeUi.confirm("MyFavouriteAplication", confirmData);
         assertTrue(answerAvailable && confirmData.getAnswer() == 0);
 
+        confirmData = new ConfirmData("Confirm dialog. Select Deny", new String[] {"SALLI", "deny", "answerOption3"}, 1);
+        answerAvailable = runtimeUi.confirm("MyFavouriteAplication", confirmData);
+        assertTrue(answerAvailable && confirmData.getAnswer() == 1);
+
         confirmData = new ConfirmData("Null Answer options", null /*Not Supported*/, 1);
         answerAvailable = runtimeUi.confirm("Null answer options", confirmData);
+        assertTrue(answerAvailable);
+
+        confirmData = new ConfirmData("Empty string", new String[] {"", "y"}, 1);
+        answerAvailable = runtimeUi.confirm("MyFavouriteAplication", confirmData);
+        assertTrue(answerAvailable);
+
+        confirmData = new ConfirmData("Long button text", new String[] {"loonglooongloongButoonTextloongloonglonng", "DENY"}, 1);
+        answerAvailable = runtimeUi.confirm("MyFavouriteAplication", confirmData);
         assertTrue(answerAvailable);
 
         ConfirmData nullConf = null;

@@ -16,6 +16,7 @@
 */
 #include <string.h>
 #include "securityutils.h"
+#include <openssl/bn.h>
 #include "telutils.h"
 #include "fileutils.h"
 #include "com_nokia_mj_impl_security_utils_TelUtils.h"
@@ -307,20 +308,10 @@ void SecurityUtils::getCertDetails(X509 cert, CERT_DETAILS* details, bool parse_
     details->notAfter[14] = '\0';
     ASN1_TIME_free(gTimeAfter);
     // serial number
-    ASN1_INTEGER* serial_number = X509_get_serialNumber(&cert);
-    details->serial_number = new char[10];
-    unsigned char * int_serial_number = new unsigned char[20];
-    unsigned char * tmp_serial_number = int_serial_number;
-    int len = i2c_ASN1_INTEGER(serial_number, &tmp_serial_number);
-    if (len > 0)
-    {
-        // format it as hex
-        sprintf(details->serial_number,"%08lX",int_serial_number);
-        details->serial_number[8] = '\0';
-    }
-    delete[] int_serial_number;
-    int_serial_number = NULL;
-    tmp_serial_number = NULL;
+    BIGNUM *bn = BN_new();
+    ASN1_INTEGER_to_BN(X509_get_serialNumber(&cert), bn);
+    details->serial_number = BN_bn2hex(bn);
+    BN_free(bn);
     // fingerprint
     const EVP_MD * SHA1=EVP_sha1();
     unsigned int n;

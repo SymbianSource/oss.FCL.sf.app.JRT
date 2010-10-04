@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -64,9 +64,7 @@ ServerConnection* ServerConnectionBase::getServerConnection(
 OS_EXPORT SmsServerConnection::~SmsServerConnection()
 {
     JELOG2(EWMA);
-    // As per internal spec the message store should be removed only when
-    // Application is uninstalled / UnRegistered from push
-    removeDir(mMessageStoreDirName);
+
     delete mMessage;
     delete mFilterDes;
     delete mOpenMonitor;
@@ -148,7 +146,9 @@ OS_EXPORT void SmsServerConnection::open(ConnectionListener* aListener)
                     java::runtime::ApplicationInfo::getInstance();
                 const std::wstring& root = appInf.getRootPath();
                 LOG1(EWMA, EInfo,"SMS Store path %S",root.c_str());
-                error = createMessageStore(root + SMS_STORE_PATH);
+                // At this point mIsAppLaunched will be true if it not
+                // push connection.
+                error = createMessageStore(root + SMS_STORE_PATH , mIsAppLaunched);
                 mState = EReceivingMessageForNotify;
                 if (KErrNone == error)
                 {
@@ -165,10 +165,6 @@ OS_EXPORT void SmsServerConnection::open(ConnectionListener* aListener)
                                 __FUNCTION__,__LINE__);
         }
         mOpenMonitor->wait();
-        if (mMessagesOnStore > 0)
-        {
-            mListener->msgArrived();
-        }
         mIsListening = true;
     }
 }
@@ -374,7 +370,7 @@ OS_EXPORT int SmsServerConnection::retrieveMessage(
         readStream.close();
         return KErrGeneral;
     }
-    catch (ExceptionBase ex)
+    catch (ExceptionBase &ex)
     {
         delete[] messagePath;
         return KErrGeneral;
@@ -455,7 +451,7 @@ void SmsServerConnection::readMessageFromStackL()
             writeStream.close();
             User::Leave(KErrGeneral);
         }
-        catch (ExceptionBase ex)
+        catch (ExceptionBase &ex)
         {
             User::Leave(KErrGeneral);
         }

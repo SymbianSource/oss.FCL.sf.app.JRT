@@ -197,6 +197,8 @@ public class AllTests extends TestSuite implements InstallerMain
         addTest(com.nokia.openlcdui.mt.textfield.TextFieldTest.suite());
         addTest(com.nokia.openlcdui.mt.ticker.TickerTest.suite());
         addTest(com.nokia.openlcdui.mt.devicecontrol.DeviceControlTest.suite());
+        // enable the test after qt fixes are in
+        //addTest(com.nokia.openlcdui.mt.softnotification.SoftNotificationTest.suite());
         if(enableUIRobotTests)
         {
             addTest(com.nokia.openlcdui.mt_uirobot.alert.AlertUITest.suite());

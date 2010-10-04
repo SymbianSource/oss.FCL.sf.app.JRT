@@ -16,9 +16,7 @@
 
 TEMPLATE=lib
 TARGET=javanokiaui
-CONFIG += omj java
-
-QT += core
+CONFIG += omj java stl
 
 symbian {
     
@@ -26,8 +24,8 @@ symbian {
    
     INCLUDEPATH += ../../inc ../../../../inc
 
-    HEADERS += ../../inc/CSoftNotification.h ../../inc/autorelease.h
-    SOURCES += ../../src/os.cpp ../../src/CSoftNotification.cpp
+    HEADERS += ../../inc/CSoftNotification.h ../../inc/autorelease.h ../../inc/CGlobalindicators.h
+    SOURCES += ../../src/os.cpp ../../src/CSoftNotification.cpp ../../src/CGlobalIndicators.cpp
    
     LIBS += -lcone
     LIBS += -ltouchfeedback
@@ -35,7 +33,10 @@ symbian {
     LIBS += -lbafl
     LIBS += -lws32
     LIBS += -lapparc
-    LIBS += -lapgrfx  
+    LIBS += -lapgrfx
+    LIBS += -ljavastorage
+    LIBS += -llibstdcpp
+    LIBS += -ljavautils
 }
 
 include(../../../../build/omj.pri)

@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Widget;
  * <p><b>NOTE:</b> This class is intended for internal use only.</p>
  */
 public final class BaseCSSEngine {
+	private static final String FILE_SCHEME = "file:///";
 	private Display parent;
 
 	/**
@@ -63,7 +64,7 @@ public final class BaseCSSEngine {
 	public void applyCSS( String style ){
 		checkEngine();
 		if( style == null ) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-		if( style.startsWith("file:///") ) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+		if( style.startsWith(FILE_SCHEME) ) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		OS.QApplication_setStyleSheet(style);
 	}
 
@@ -90,7 +91,7 @@ public final class BaseCSSEngine {
 		if( style == null ) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		if( widget == null ) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		if( widget.isDisposed() ) SWT.error( SWT.ERROR_WIDGET_DISPOSED);
-		if( style.startsWith("file:///") ) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+		if( style.startsWith(FILE_SCHEME) ) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		OS.QWidget_setStyleSheet(Internal_PackageSupport.handle(widget), style);
 	}
 	/**
@@ -111,7 +112,7 @@ public final class BaseCSSEngine {
 	public void loadCSS( String filename ){
 		checkEngine();
 		if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		OS.QApplication_setStyleSheet("file:///"+filename);
+		OS.QApplication_setStyleSheet(FILE_SCHEME+filename);
 	}
 
 	/**
@@ -134,7 +135,7 @@ public final class BaseCSSEngine {
 		if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		if( widget == null ) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		if( widget.isDisposed() ) SWT.error( SWT.ERROR_WIDGET_DISPOSED);
-		OS.QWidget_setStyleSheet(Internal_PackageSupport.handle(widget), "file:///"+filename);
+		OS.QWidget_setStyleSheet(Internal_PackageSupport.handle(widget), FILE_SCHEME+filename);
 	}
 
 	/**

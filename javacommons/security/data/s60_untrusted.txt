@@ -22,7 +22,7 @@ grant user "Read User Data Access" oneshot,session,no {
     permission javax.microedition.io.FileProtocolPermission "*" "read";
     permission javax.microedition.pim.ContactList "pim://*" "read_contacts";
     permission javax.microedition.pim.EventList "pim://*" "read_events";
-    permission javax.microedition.pim.ToDoList "pim://*" "read_todos";
+    permission javax.microedition.pim.ToDoList "pim://*" "read_todos";    
 }
 
 grant user "Write User Data Access" oneshot,session,no {
@@ -74,4 +74,9 @@ grant assigned "Location" {
     permission javax.microedition.PropertyPermission "mobinfo.cellid" "read";
     permission javax.microedition.PropertyPermission "mobinfo.countrycode" "read";
     permission javax.microedition.PropertyPermission "mobinfo.networkid" "read";
+}
+
+grant assigned "Read User Data Access" {
+    permission javax.microedition.PropertyPermission "mobinfo.spn" "read";
+    permission javax.microedition.PropertyPermission "mobinfo.ons" "read";
 }

@@ -26,7 +26,8 @@
 #include "s60commonutils.h"
 #include "cmmsmessageattachment.h"
 #include "cmmsplatformservices60impl.h"
-
+#include "mmsserverconnection.h"
+#include "mmsserverconnectionfactory.h"
 //constants
 const TInt KMaxAppIDLength = 34;
 
@@ -1269,10 +1270,19 @@ void CMMSPlatformServiceS60Impl::Close()
             delete mReceivedMsgArray;
             mReceivedMsgArray = NULL;
         }
-        // Unregistering from MMS Engine.
-        LOG(EWMA, EInfo , "CMMSPlatformServiceS60Impl::Close() Unregistering"
-            "from MMS Engine");
-        mMmsApplicationAdapter->UnregisterL(*mServerApplicationId);
+        ServerConnectionFactory* serverConnectionFactory = 0;
+        ServerConnection* serverConn = 0;
+        serverConnectionFactory = &MmsServerConnectionFactory::getFactory();
+        std::wstring Uri(L"mms://:");
+        Uri += std::wstring((wchar_t*)mServerApplicationId->Ptr(),mServerApplicationId->Length());
+        serverConn = serverConnectionFactory->getPushConnection(Uri);
+        if (0 == serverConn)
+        {
+           // Unregistering from MMS Engine.
+           LOG(EWMA, EInfo , "CMMSPlatformServiceS60Impl::Close() Unregistering"
+               "from MMS Engine");
+           mMmsApplicationAdapter->UnregisterL(*mServerApplicationId);
+        }
         if (mServerApplicationId)
         {
             delete mServerApplicationId;

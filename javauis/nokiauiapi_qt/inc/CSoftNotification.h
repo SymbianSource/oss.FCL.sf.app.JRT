@@ -15,9 +15,10 @@
 #include <e32base.h>
 #include <jni.h>
 #include <HbIndicatorsymbian.h>
+#include <HbDeviceNotificationDialogsymbian.h>
 
 NONSHARABLE_CLASS(CSoftNotification) : public CBase,
-        MHbIndicatorSymbianObserver
+        MHbIndicatorSymbianObserver, MHbDeviceNotificationDialogObserver
     {
 public:
   
@@ -39,6 +40,21 @@ public:
      */
     void IndicatorUserActivated(const TDesC &aType,
             CHbSymbianVariantMap &aData);
+    
+    /**
+     * Notification dialog is touched by the user.
+     *
+     * @param aDialog Notification dialog
+     */
+    void NotificationDialogActivated(const CHbDeviceNotificationDialogSymbian* aDialog);
+    
+    /**
+     * Notification dialog is closed.
+     *
+     * @param aDialog Notification dialog
+     * @param aCompletionCode Notification dialog completion code
+     */
+    void NotificationDialogClosed(const CHbDeviceNotificationDialogSymbian* aDialog, TInt aCompletionCode);
 
 public:
     // New functions
@@ -106,14 +122,20 @@ private:
     /**
      * Set assigned member data to custom notification parameters
      *
-     * @param aParam custom soft notification params to fill
+     * @return aParam custom soft notification params to fill
      */
     CHbSymbianVariant* NotificationParamsL();
+    
+    /**
+     * Storing softnotification to database
+     */
+    void AddorUpdateSoftNotificationToStorage();
 
 private:
     // Data
 
     CHbIndicatorSymbian* iIndicator;
+    CHbDeviceNotificationDialogSymbian* iNotificationDialog; 
     TUid iMidletId;
     TInt iNotificationId;
     HBufC* iPrimaryText;
@@ -122,6 +144,7 @@ private:
     jobject iPeer;
     jmethodID iMethodId;
     JNIEnv* iJniEnv;
+    bool iIsNoteExist;
     };
 
 #endif // CSOFTNOTIFICATION_H

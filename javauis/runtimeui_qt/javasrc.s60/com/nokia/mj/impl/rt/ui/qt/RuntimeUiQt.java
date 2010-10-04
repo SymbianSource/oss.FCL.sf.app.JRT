@@ -23,12 +23,23 @@ import com.nokia.mj.impl.utils.Logger;
 import com.nokia.mj.impl.utils.exception.ExceptionBase;
 import com.nokia.mj.impl.rt.support.Jvm;
 
+import com.nokia.mj.impl.utils.Id;
+import com.nokia.mj.impl.utils.ResourceLoader;
+
 /**
  * Runtime UI QT implementation.
  *
  */
 public class RuntimeUiQt extends RuntimeUi
 {
+    private static final Id ALLOW_BUTTON = new Id(null, "prompt_allow");
+    private static final Id DENY_BUTTON = new Id(null, "prompt_deny");
+    private static final Id DETAILS_BUTTON = new Id(null, "error_details");
+    private static final Id OK_BUTTON = new Id(null, "prompt_ok");
+    private static final String QT_LOC_FILE = "javaapplicationsecuritymessages";
+    private static final String QT_PREFIX = "txt_java_secur_button_";
+
+    private static ResourceLoader iRes = null;
 
     static
     {
@@ -56,16 +67,31 @@ public class RuntimeUiQt extends RuntimeUi
      */
     public boolean confirm(String aAppName, ConfirmData aConfirmData)
     {
-        if (aConfirmData != null)
-        {
-            return _confirm(aAppName, aConfirmData, isIdentified());
-        }
-        else
+
+        if (aConfirmData == null)
         {
             Logger.LOG(Logger.EJavaRuntime,
                        Logger.EError, "RuntimeUi: ConfirmData null");
+            return false;
         }
-        return true;
+
+        // If no localized button text provided load default ones.
+        if (aConfirmData.getAnswerOptions() == null)
+        {
+            if (iRes == null)
+            {
+                iRes = ResourceLoader.getInstance(null, null, QT_LOC_FILE, QT_PREFIX);
+            }
+
+            String allowButton = iRes.format(ALLOW_BUTTON, null);
+            String denyButton = iRes.format(DENY_BUTTON, null);
+
+            aConfirmData = new ConfirmData(aConfirmData.getQuestion(),
+                                           new String[] {allowButton, denyButton},
+                                           aConfirmData.getAnswerSuggestion());
+        }
+
+        return _confirm(aAppName, aConfirmData, isIdentified());
     }
 
     /**
@@ -80,15 +106,22 @@ public class RuntimeUiQt extends RuntimeUi
     {
         if (aException != null)
         {
-            _error(aAppName, aException.getShortMessage(), aException.getDetailedMessage());
-        }
-        else
-        {
-            Logger.LOG(Logger.EJavaRuntime,
-                       Logger.EError, "RuntimeUi: Error null");
+            if (iRes == null)
+            {
+                iRes = ResourceLoader.getInstance(null, null, QT_LOC_FILE, QT_PREFIX);
+            }
+
+            String detailsButton = iRes.format(DETAILS_BUTTON, null);
+            String okButton = iRes.format(OK_BUTTON, null);
+
+            _error(aAppName,
+                   aException.getShortMessage(),
+                   aException.getDetailedMessage(),
+                   detailsButton,
+                   okButton);
         }
     }
 
     private native boolean _confirm(String aAppName, ConfirmData aConfirmData, boolean aIdentifiedApp);
-    private native void _error(String aAppName, String aShortMessage, String aDetailedMessage);
+    private native void _error(String aAppName, String aShortMessage, String aDetailedMessage, String aDetailsButton, String aOkButton);
 }

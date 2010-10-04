@@ -15,15 +15,16 @@
 #              The file destinations are relative to EPOCROOT
 #
 
-# Find Java build dir by going up from $(TO_BLDINF). 
+# Find Java build dir of component $(NAME) from $(TO_BLDINF). 
 # (TO_BLDINF refers to the directory having initial bld.inf, i.e.
-#  - jrt/group (9.2 S60)
-#  - jrt/group/sf (9.2 SF)
-#  - jrt (10.1 SF/S60) 
-#  therefore the jrt-directory is found from finding first directory having
-#  subsystem.mk, going up to max. three directory levels)
+#  - combined build root, which contains directory $(NAME)
+#  - $(NAME)/group (9.2 S60)
+#  - $(NAME)/group/sf (9.2 SF)
+#  - $(NAME) (10.1 SF/S60) 
+#  therefore the $(NAME)-directory is found from finding first directory having
+#  subsystem.mk, going first down to $(NAME) and then up to max. three directory levels)
 
-JAVABUILDDIR:= $(dir $(firstword $(wildcard $(TO_BLDINF)/subsystem.mk $(TO_BLDINF)/../subsystem.mk $(TO_BLDINF)/../../subsystem.mk)))
+JAVABUILDDIR:= $(dir $(firstword $(wildcard $(TO_BLDINF)/$(NAME)/subsystem.mk $(TO_BLDINF)/subsystem.mk $(TO_BLDINF)/../subsystem.mk $(TO_BLDINF)/../../subsystem.mk)))
 
 # General Java makefile command
 JAVACMD:= make -C $(JAVABUILDDIR) -f subsystem.mk EPOCROOT=$(EPOCROOT)/ \
@@ -35,7 +36,7 @@ JAVABUILDCMD:= make -C $(JAVABUILDDIR) -f subsystem.mk EPOCROOT=$(EPOCROOT)/ \
 
 # Marker file to prevent multiple Java compilations of the
 # same platform/cfg, when building e.g. device variants.
-NATIVEJAVAMARKER := $(EPOCBLD)/nativejavamarker_$(PLATFORM)_$(CFG).done
+NATIVEJAVAMARKER := $(EPOCBLD)/nativejavamarker_$(NAME)_$(PLATFORM)_$(CFG).done
 
 # Java build artifact file source and target
 JAVABUILD_ARTIFACT_SRC := $(EPOCROOT)/epoc32/release/armv5/urel
@@ -44,14 +45,29 @@ JAVABUILD_ARTIFACT_DST := $(EPOCROOT)/epoc32/release/$(PLATFORM)/$(CFG)
 define compilenativejava
 
 # This is the general Java compilation, done once for the component
-ifeq ($(GUARD_nativejavatarget),)
-GUARD_nativejavatarget:=1
-.PHONY:: nativejavatarget
-nativejavatarget:
+ifeq ($(GUARD_nativejavatarget_$(NAME)),)
+GUARD_nativejavatarget_$(NAME):=1
+.PHONY:: nativejavatarget_$(NAME)
+nativejavatarget_$(NAME):
 	$(call startrule,compilenativejava,,javasources) \
 	$(JAVABUILDCMD) \
 	$(call endrule,compilenativejava)
+
+# If component depends on some other Java compilation, do the dependant
+# first (if on same build sequence)
+ifneq ($(DEPENDS),)
+.PHONY:: nativejavatarget_$(DEPENDS)
+nativejavatarget_$(NAME): nativejavatarget_$(DEPENDS)
+nativejavatarget_$(DEPENDS): ignored_dependency
+endif
 endif 
+
+# Phony ignored dependency, just so that we have something to use when needed
+ifeq ($(GUARD_ignored_dependency),)
+GUARD_ignored_dependency:=1
+.PHONY:: ignored_dependency
+ignored_dependency:
+endif
 
 # Actual resource target, one for each platform/cfg variant
 ifeq ($(GUARD_$(call sanitise,$(NATIVEJAVAMARKER))),)
@@ -60,7 +76,7 @@ GUARD_$(call sanitise,$(NATIVEJAVAMARKER)):=1
 RESOURCE:: $(NATIVEJAVAMARKER)
 
 # Copy the build artifacts to target
-$(NATIVEJAVAMARKER): nativejavatarget
+$(NATIVEJAVAMARKER): nativejavatarget_$(NAME)
 ifeq ($(filter armv5_urel ARMV5_urel ARMV5_UREL,$(PLATFORM)_$(CFG)),)
 	$(call makepath,$(JAVABUILD_ARTIFACT_DST)/z/resource/java/jvm/lib/jrt)
 	$(call makepath,$(JAVABUILD_ARTIFACT_DST)/z/resource/java/security)
@@ -85,5 +101,3 @@ RELEASABLES:= $(shell $(JAVACMD) -s javareleasables)
 $(eval $(call whatmacro,$(RELEASABLES),WHATRESOURCES))
 
 $(eval $(call GenerateStandardCleanTarget,$(NATIVEJAVAMARKER)))
-
-

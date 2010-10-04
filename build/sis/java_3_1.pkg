@@ -85,9 +85,6 @@
 "\epoc32\release\armv5\urel\javagcf.dll"-"c:\sys\bin\javagcf.dll"
 "\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javagcf.odc"-"c:\resource\java\jvm\lib\jrt\javagcf.odc"
 
-"\epoc32\release\armv5\urel\javaglobalindicators.dll"-"c:\sys\bin\javaglobalindicators.dll"
-"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javaglobalindicators.odc"-"c:\resource\java\jvm\lib\jrt\javaglobalindicators.odc"
-
 "\epoc32\release\armv5\urel\javafile.dll"-"c:\sys\bin\javafile.dll"
 "\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javafile.odc"-"c:\resource\java\jvm\lib\jrt\javafile.odc"
 
@@ -209,6 +206,7 @@
 "\epoc32\release\armv5\urel\javacaptain_ext_btdeviceclassmanager.dll"   -"c:\sys\bin\javacaptain_ext_btdeviceclassmanager.dll"
 "\epoc32\release\armv5\urel\javacaptain_ext_autostarter.dll"            -"c:\sys\bin\javacaptain_ext_autostarter.dll"
 "\epoc32\release\armv5\urel\javacaptain_ext_settingslistener.dll"       -"c:\sys\bin\javacaptain_ext_settingslistener.dll"
+"\epoc32\release\armv5\urel\javacaptain_ext_javasoftnoteplugin.dll"     -"c:\sys\bin\javacaptain_ext_javasoftnoteplugin.dll"
 ; PLUGIN_ID_JAVA_CERT_STORE_EXTENSION_C = 7
 "\epoc32\release\armv5\urel\javacaptain_ext_ondemand_7.dll"             -"c:\sys\bin\javacaptain_ext_ondemand_7.dll"
 #ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
@@ -330,8 +328,8 @@
 ;"\epoc32\release\armv5\urel\javam2g.dll"-"c:\sys\bin\javam2g.dll"
 ;"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javam2g.odc"-"c:\resource\java\jvm\lib\jrt\javam2g.odc"
 
-;"\epoc32\release\armv5\urel\javam3g.dll"-"c:\sys\bin\javam3g.dll"
-;"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javam3g.odc"-"c:\resource\java\jvm\lib\jrt\javam3g.odc"
+"\epoc32\release\armv5\urel\javam3g.dll"-"c:\sys\bin\javam3g.dll"
+"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javam3g.odc"-"c:\resource\java\jvm\lib\jrt\javam3g.odc"
 
 "\epoc32\release\armv5\urel\javanokiasound.dll"-"c:\sys\bin\javanokiasound.dll"
 "\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javanokiasound.odc"-"c:\resource\java\jvm\lib\jrt\javanokiasound.odc"

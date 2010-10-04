@@ -49,6 +49,7 @@ protected:
 private:
 
     void StartJavaMidletL() const;
+    void RemoveSoftNoteFromStorage();
 
 private:
 

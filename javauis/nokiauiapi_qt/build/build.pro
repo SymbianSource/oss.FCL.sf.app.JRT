@@ -16,4 +16,5 @@
 TEMPLATE = subdirs
 SUBDIRS += nokiauiapiqt/javanokiaui.pro 
 SUBDIRS += softindicatorplugin/javasoftindicatorplugin.pro 
+SUBDIRS += softnoteplugin/javacaptain_ext_javasoftnoteplugin.pro 
 BLD_INF_RULES.prj_extensions += "prj_extensions" 

@@ -81,6 +81,11 @@ const char OTA_STATUS_TABLE[] = "OTA_STATUS";
 const char PREINSTALL_TABLE[] = "PREINSTALL";
 
 /**
+ * SoftNote related data.
+ */
+const char JAVA_SOFTNOTE_TABLE[] = "JAVA_SOFTNOTE";
+
+/**
  * Java platform storage name. All Java platform related attributes and
  * settings are stored to this database.
  */
@@ -320,6 +325,31 @@ const wchar_t RETRY_COUNT[] = L"RETRY_COUNT";
  * Application suite intall state.
  */
 const wchar_t INSTALL_STATE[] = L"INSTALL_STATE";
+
+/**
+ * MIDlet ID of the softnote.
+ */
+const wchar_t SOFTNOTE_MIDLET_ID[] = L"SOFTNOTE_MIDLET_ID";
+
+/**
+ * Softnote ID.
+ */
+const wchar_t SOFTNOTE_ID[] = L"SOFTNOTE_ID";
+
+/**
+ * Softnote Primary Text.
+ */
+const wchar_t SOFTNOTE_PRIMARY_TEXT[] = L"SOFTNOTE_PRIMARY_TEXT";
+
+/**
+ * Softnote Secondary Text.
+ */
+const wchar_t SOFTNOTE_SECONDARY_TEXT[] = L"SOFTNOTE_SECONDARY_TEXT";
+
+/**
+ * Softnote Image Path.
+ */
+const wchar_t SOFTNOTE_IMAGE_PATH[] = L"SOFTNOTE_IMAGE_PATH";
 
 }    // java
 }    // storage

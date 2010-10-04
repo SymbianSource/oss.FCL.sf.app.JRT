@@ -46,7 +46,7 @@
     <isset property="env.EPOCROOT"/>
   </condition>
 
-  <!--The cldc/cdc class file locations, within the sources -->
+  <!-- Internal cldc/cdc class file location, within the sources, if available -->
   <available file="${java.src.root}/inc/classes.cldc.zip" property="bootclasspath.cldc"
              value="${java.src.root}/inc/classes.cldc.zip" />
   <available file="${java.src.root}/inc/classes.cdc.zip" property="bootclasspath.cdc"
@@ -54,7 +54,15 @@
   <available file="${java.src.root}/inc/classes.fp.zip" property="bootclasspath.fp"
              value="${java.src.root}/inc/classes.fp.zip" />
 
-  <!--The cldc/cdc class file locations, external if not found in default places -->
+  <!-- New common cldc/cdc class file location, in the platform API directory -->
+  <available file="${epocroot}epoc32/include/platform/app/classes.cldc.zip" property="bootclasspath.cldc"
+             value="${epocroot}epoc32/include/platform/app/classes.cldc.zip" />
+  <available file="${epocroot}epoc32/include/platform/app/classes.cdc.zip" property="bootclasspath.cdc"
+             value="${epocroot}epoc32/include/platform/app/classes.cdc.zip" />
+  <available file="${epocroot}epoc32/include/platform/app/classes.fp.zip" property="bootclasspath.fp"
+             value="${epocroot}epoc32/include/platform/app/classes.fp.zip" />
+                          
+  <!-- Old SF cldc/cdc class file location -->
   <property name="bootclasspath.cldc" location="${epocroot}epoc32/jrt/classes.cldc.zip"/>
   <property name="bootclasspath.cdc"  location="${epocroot}epoc32/jrt/classes.cdc.zip"/>
   <property name="bootclasspath.fp"   location="${epocroot}epoc32/jrt/classes.fp.zip"/>

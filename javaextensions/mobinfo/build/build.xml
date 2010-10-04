@@ -47,6 +47,8 @@
         com.nokia.mid.dateformat=:mobinfo.MobileInfoProperties
         com.nokia.mid.timeformat=:mobinfo.MobileInfoProperties
         com.nokia.mid.networkstatus=:mobinfo.MobileInfoProperties
+        com.nokia.mid.spn=:mobinfo.MobileInfoProperties
+        com.nokia.mid.ons=:mobinfo.MobileInfoProperties
     </properties>
   </target>
 

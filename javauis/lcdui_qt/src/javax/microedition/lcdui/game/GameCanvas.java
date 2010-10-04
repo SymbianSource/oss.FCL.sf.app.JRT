@@ -105,12 +105,19 @@ public abstract class GameCanvas extends javax.microedition.lcdui.Canvas
     /**
      * By default this renders the frameBuffer at (0,0).
      *
-     * @param g Graphics object
+     * @param aGraphics Graphics object
+     * @throws NullPointerException if aGraphics is null
      */
-    public void paint(javax.microedition.lcdui.Graphics g)
+    public void paint(javax.microedition.lcdui.Graphics aGraphics)
     {
+        // Graphics can not be null
+        if (aGraphics == null)
+        {
+            throw new NullPointerException();
+        }
+
         // If the Graphics doesn't belong to the frame buffer
-        LCDUIInvoker.renderGraphics(this, g);
+        LCDUIInvoker.renderGraphics(this, aGraphics);
     }
 
     /**

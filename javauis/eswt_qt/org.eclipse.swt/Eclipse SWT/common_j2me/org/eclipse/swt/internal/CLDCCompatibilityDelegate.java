@@ -42,24 +42,34 @@ public class CLDCCompatibilityDelegate implements CompatibilityDelegate {
         return inputStream;
     }
 
-    public String convertPathToSpecific(String path) {
-        String jsr75Path = path;
-        if (!jsr75Path.startsWith("file:///")) {
-            // In JSR 75 the file separator is '/' and not '\'
-            jsr75Path = jsr75Path.replace('\\', '/');
-            jsr75Path = "file:///" + jsr75Path;
+    public String convertPathToSpecific(String path) {        
+        String res = path;
+        
+        // In JSR 75 the file separator is '/' and not '\'
+        res = res.replace('\\', '/');
+        
+        if (res.startsWith("file:///")) {
+            res = res.substring(8);
         }
         
-        return jsr75Path;
-    }
-
-    public String convertPathFromSpecific(String jsr75Path) {
-        String stdPath = jsr75Path;
-        if (jsr75Path.startsWith("file:///")) {
-            stdPath = stdPath.replace('/', '\\');
-            stdPath = stdPath.substring(8, stdPath.length()).replace('/', '\\');;
+        boolean hasDrive = false;
+        if (res.length() >= 2) {
+            char drive = res.charAt(0);
+            hasDrive = ((drive >= 'A' && drive <= 'Z') || (drive >= 'a' && drive <= 'z')) 
+                && (res.charAt(1) == ':');
         }
-        return stdPath;
+
+        if (!hasDrive) {
+            res = System.getProperty("fileconn.dir.private") + res; // may start now as file:///
+        }
+
+        if (!res.startsWith("file:///")) {
+            res = "file:///" + res;
+        }
+        
+        // The format now should be: file:///<drive>:/<path>
+        
+        return res;
     }
     
     public boolean canOpenFile(String path) throws SecurityException {

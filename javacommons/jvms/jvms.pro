@@ -16,5 +16,4 @@
 TEMPLATE = subdirs
 SUBDIRS += nativeportlayer/build/jvmnativeport.pro 
 SUBDIRS += j9utils/threaddump/build/javathreaddumper.pro 
-SUBDIRS += j9/j9.pro 
 BLD_INF_RULES.prj_extensions += "prj_extensions" 

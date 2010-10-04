@@ -16,7 +16,7 @@
 
 TEMPLATE=lib
 TARGET=javasoftindicatorplugin
-CONFIG += plugin 
+CONFIG += plugin stl
 QT += core
 symbian : plugin {
     
@@ -46,7 +46,9 @@ symbian : plugin {
         LIBS += -lws32
         LIBS += -lapparc
         LIBS += -lapgrfx
-        LIBS += -lefsrv
+        LIBS += -ljavastorage
+        LIBS += -llibstdcpp
+        LIBS += -ljavautils
                 
     
     include(../../../../build/symbian_uids.pri)

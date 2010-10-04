@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -21,10 +21,14 @@ package com.nokia.mj.impl.mms;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import javax.wireless.messaging.*;
+import java.lang.ref.WeakReference;
 
 import com.nokia.mj.impl.utils.Logger;
+import com.nokia.mj.impl.gcf.PushValidator;
+import com.nokia.mj.impl.rt.support.Finalizer;
 import com.nokia.mj.impl.mms.MmsPropertyRetriever;
 import com.nokia.mj.impl.rt.support.ShutdownListener;
+import com.nokia.mj.impl.rt.support.ApplicationInfo;
 import com.nokia.mj.impl.rt.support.ApplicationUtils;
 
 public final class MMSConnectionImpl implements MessageConnection
@@ -78,7 +82,10 @@ public final class MMSConnectionImpl implements MessageConnection
 
     // Application Id
     private String iAppID = null;
+    
+    private Finalizer iFinalizer;
 
+    private ShutdownListener iShutDownListener;
     // the listener used for messages receiving notifications
     private MessageListener iMessageListener;
 
@@ -90,6 +97,18 @@ public final class MMSConnectionImpl implements MessageConnection
         iUri = aUri;
         iState = INITIAL;
         iServerConnection = aServerConnection;
+        if (iServerConnection)
+        {
+            // Check if this url is push registered by other application 
+            // Get the insatnce of ApplicationInfo.
+            ApplicationInfo appInfo = ApplicationInfo.getInstance();
+            if (PushValidator.isRegisteredPushUriStartingWith(aUri, 
+                 appInfo.getSuiteUid(), PushValidator.RUNTIME_COMMS))
+            {
+                throw new IOException("Connection already exists");
+            }
+            iAppID = aUri.substring("mms://:".length());
+        }
         // create the native side peer
         iNativeHandle = _createPeer(iServerConnection, iUri);
         iReadLock = new Object();
@@ -98,30 +117,21 @@ public final class MMSConnectionImpl implements MessageConnection
         iMessageLock = new Object();
         iSendLock = new Object();
         // register for shutdown listening
-        setShutdownListener();
-        if (iServerConnection)
-        {
-            iAppID = aUri.substring("mms://:".length());
-        }
+        iShutDownListener = new MmsShutDownListener(this);
+        // register for finalization
+        iFinalizer = registerForFinalization();
         Logger.LOG(Logger.EWMA, Logger.EInfo,
                    "- MMSConnectionImpl::MMSConnectionImpl()");
     }
 
     /*
-    * This function registers this object for shutDown.
-    */
-    private void setShutdownListener()
+    * This function registers this object for Finalization.
+    */ 
+    public Finalizer registerForFinalization()
     {
-        Logger.LOG(Logger.EWMA, Logger.EInfo,
-                   "+ MMSConnectionImpl::setShutdownListener()");
-        // Get the insatnce of ApplicationUtils.
-        ApplicationUtils appUtils = ApplicationUtils.getInstance();
-
-        // Get the name of the application.
-        appUtils.addShutdownListener(new ShutdownListener()
+        return new Finalizer()
         {
-            //The method that gets called when Application is shutting down
-            public void shuttingDown()
+            public void finalizeImpl()
             {
                 try
                 {
@@ -133,9 +143,45 @@ public final class MMSConnectionImpl implements MessageConnection
                     Logger.LOG(Logger.EWMA, Logger.EInfo, e.toString());
                 }
             }
-        });
-        Logger.LOG(Logger.EWMA, Logger.EInfo,
-                   "- MMSConnectionImpl::setShutdownListener()");
+        };
+    }
+    
+    /*
+    * Registering for shutDown Listener.
+    */
+    private static class MmsShutDownListener implements ShutdownListener
+    {
+        private final WeakReference iImpl;
+
+        private MmsShutDownListener(MMSConnectionImpl impl)
+        {
+            // Get the instance of ApplicationUtils.
+            ApplicationUtils appUtils = ApplicationUtils.getInstance();
+            
+            // Add the listener.
+            appUtils.addShutdownListener(this);
+            
+            // Create weak reference to impl object.
+            iImpl = new WeakReference(impl);
+        }
+
+        public void shuttingDown()
+        {
+            // Get a strong reference to impl class if it is not yet GC'ed.
+            MMSConnectionImpl impl = (MMSConnectionImpl)iImpl.get();
+            if (impl != null)
+            {
+                try
+                {
+                    impl.close();
+                }
+                catch (IOException e)
+                {
+                    //Nothing to do, just ignore
+                    Logger.LOG(Logger.EWMA, Logger.EInfo, e.toString());
+                }
+            }
+        }
     }
 
     /**
@@ -197,6 +243,9 @@ public final class MMSConnectionImpl implements MessageConnection
                     iReadLock.notify();
                 }
                 _dispose(iNativeHandle);
+                // Remove the shutdown listener.
+                ApplicationUtils.getInstance().removeShutdownListener(
+                                                          iShutDownListener);
             }
         }
         Logger.LOG(Logger.EWMA, Logger.EInfo,

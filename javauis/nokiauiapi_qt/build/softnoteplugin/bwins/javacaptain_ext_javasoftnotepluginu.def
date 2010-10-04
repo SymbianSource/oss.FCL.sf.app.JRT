@@ -1,0 +1,5 @@
+EXPORTS
+	?findDllMethod@@YAP6APAXXZPBD@Z @ 1 NONAME ; void * (*)(void) findDllMethod(char const *)
+	??0javasoftnotehandler@@QAE@XZ @ 2 NONAME ; javasoftnotehandler::javasoftnotehandler(void)
+	??1javasoftnotehandler@@UAE@XZ @ 3 NONAME ; javasoftnotehandler::~javasoftnotehandler(void)
+

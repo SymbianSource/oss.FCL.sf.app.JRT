@@ -447,6 +447,15 @@ public final class PermissionResolver
         return resolvedPermissions;
     }
 
+    /**
+     * Cleans the cache
+     */
+    public static void cleanup()
+    {
+        policyPermissionInstances.clear();
+        grantedPermissionInstances.clear();
+    }
+    
     private static Vector resolvePermission(
         Uid msUID,
         Permission requestedPermission,

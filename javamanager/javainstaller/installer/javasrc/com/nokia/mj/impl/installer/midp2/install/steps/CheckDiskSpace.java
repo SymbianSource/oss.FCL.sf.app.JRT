@@ -132,7 +132,7 @@ public class CheckDiskSpace extends ExeStep
     /**
      * Chooses the default installation drive from given DriveInfo vector.
      * Default installation drive is the first INTERNAL_MASS_STORAGE,
-     * PHONE_MEMORY or MEMORY_CARD drive that has enough free space for
+     * MEMORY_CARD or PHONE_MEMORY drive that has enough free space for
      * the application.
      * @param aDrives DriveInfo objects.
      * @param aSizeInBytes application size.
@@ -170,10 +170,10 @@ public class CheckDiskSpace extends ExeStep
 
     /**
      * Sorts DriveInfos in given vector to drive priority order.
-     * Priority order for the drives is USER_CHOSEN, INTERNAL_MASS_STORAGE,
-     * PHONE_MEMORY, MEMORY_CARD. If there is more than one drive
-     * of the same type, the ones which have more free space have
-     * higher priority.
+     * Priority order for the drives is CONFIGURED_DEFAULT,
+     * INTERNAL_MASS_STORAGE, MEMORY_CARD, PHONE_MEMORY.
+     * If there is more than one drive of the same type,
+     * the ones which have more free space have higher priority.
      */
     private static void sortDrives(Vector aDrives)
     {
@@ -192,14 +192,14 @@ public class CheckDiskSpace extends ExeStep
                 }
             }
         }
-        // Move user chosen drive to be the first.
-        int userChosen = getUserChosenDrive();
-        if (userChosen != -1)
+        // Move the configured default installation drive to be the first.
+        int configuredDefault = getConfiguredDefaultDrive();
+        if (configuredDefault != -1)
         {
             for (int i = 0; i < aDrives.size(); i++)
             {
                 DriveInfo d = (DriveInfo)aDrives.elementAt(i);
-                if (d.getNumber() == userChosen)
+                if (d.getNumber() == configuredDefault)
                 {
                     aDrives.removeElementAt(i);
                     aDrives.insertElementAt(d, 0);
@@ -226,10 +226,10 @@ public class CheckDiskSpace extends ExeStep
     }
 
     /**
-     * Returns the installation drive the user has chosen last.
-     * If user selection is not available, returns -1.
+     * Returns the configured default installation drive.
+     * If it is not available, returns -1.
      */
-    private static int getUserChosenDrive()
+    private static int getConfiguredDefaultDrive()
     {
         int result = -1;
         try
@@ -244,9 +244,9 @@ public class CheckDiskSpace extends ExeStep
         }
         catch (Throwable t)
         {
-            Log.log("Getting user chosen drive from repository failed", t);
+            Log.log("Getting default installation drive from repository failed", t);
         }
-        Log.log("Last user chosen drive from repository: " + result);
+        Log.log("Default installation drive from repository: " + result);
         return result;
     }
 
@@ -276,16 +276,16 @@ public class CheckDiskSpace extends ExeStep
         }
         if (!result &&
                 type1 != DriveInfo.INTERNAL_MASS_STORAGE &&
-                type1 != DriveInfo.PHONE_MEMORY &&
-                type2 == DriveInfo.PHONE_MEMORY)
+                type1 != DriveInfo.MEMORY_CARD &&
+                type2 == DriveInfo.MEMORY_CARD)
         {
             result = true;
         }
         if (!result &&
                 type1 != DriveInfo.INTERNAL_MASS_STORAGE &&
-                type1 != DriveInfo.PHONE_MEMORY &&
                 type1 != DriveInfo.MEMORY_CARD &&
-                type2 == DriveInfo.MEMORY_CARD)
+                type1 != DriveInfo.PHONE_MEMORY &&
+                type2 == DriveInfo.PHONE_MEMORY)
         {
             result = true;
         }

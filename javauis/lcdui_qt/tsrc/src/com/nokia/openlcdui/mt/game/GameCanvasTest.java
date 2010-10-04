@@ -198,6 +198,23 @@ public class GameCanvasTest extends SWTTestCase
         };
         testPaint("paint with translation and clip",
                   canvas, image, imageGraphics, compare4);
+
+        // Test paint when graphics is null
+        MyGameCanvas gameCvs1 = new MyGameCanvas(false);
+        Graphics g = null;
+        String msg = "";
+
+        try
+        {
+            gameCvs1.paint(g);
+            msg = " NullPointerException wa not thrown when graphics was set to null";
+            msg = "FAILED \n" + msg;
+            fail(msg);
+        }
+        catch (NullPointerException ne)
+        {
+            //test pass
+        }
     }
 
     /**
@@ -327,4 +344,17 @@ public class GameCanvasTest extends SWTTestCase
         }
     }
 
+    class MyGameCanvas extends GameCanvas 
+    {
+
+        public MyGameCanvas(boolean s) 
+        {
+            super(s);
+        }
+
+        public Graphics getGraphics() 
+        {
+            return super.getGraphics();
+        }
+    }
 }

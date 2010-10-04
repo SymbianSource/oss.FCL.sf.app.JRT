@@ -31,7 +31,35 @@
     <property name="midlet.version" value="1.1"/>
     <property name="midlet.description" value=""/>
 
-    <!-- Get settings for a basic MIDlet. -->
-    <import file="../../properties-basic-midlet.xml"/>
+    <!-- Package Preverifed classes, resources and MANIFEST file -->
+    <target name="pack" depends="preverify">
+        <wtkjad jadfile="${bin}/${package.name}.jad"
+            jarfile="${bin}/${package.name}.jar"
+            update="true"
+            config="1.1"
+            profile="2.1"
+            manifest="${bin}/MANIFEST.MF"
+            name="${package.name}"
+            vendor="${company.name}">
+            <attribute name="MIDlet-Permissions" value="${midlet.permissions}"/>
+            <attribute name="MicroEdition-Profile" value="MIDP-2.1"/>
+            <attribute name="MicroEdition-Configuration" value="CLDC-1.1"/>
+            <attribute name="MIDlet-Version" value="${midlet.version}"/>
+            <attribute name="MIDlet-Description" value="${midlet.description}"/>
+            <attribute name="Nokia-UI-Enhancement" value="FullScreenTextBox"/>
+            <midlet name="${midlet1.name}" icon="${midlet1.icon.name}" class="${midlet1.package.name}" />
+        </wtkjad>
+
+        <wtkpackage
+            jarfile="${bin}/${package.name}.jar"
+            jadfile="${bin}/${package.name}.jad"
+            classpath="${project.class.path}"
+            basedir="${prever}"
+            autoversion="false">
+            <exclude_from_manifest name="Nokia-UI-Enhancement"/>
+            <fileset dir="${res}"
+                excludes="**/distribution.policy.s60" />
+        </wtkpackage>
+    </target>
 
 </project>

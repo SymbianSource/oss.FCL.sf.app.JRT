@@ -51,6 +51,7 @@
   <property name="jvmargsmodifier.default.dll" location="/epoc32/release/winscw/udeb/javajvmargsmodifier.dll"/>
   <property name="jvmargsmodifier.filebased.dll" location="/epoc32/release/winscw/udeb/javajvmargsmodifierfile.dll"/>
   <property name="external.policy.editor.tool.lib" location="../tmp/engine.jar"/>
+  <property name="trustrootslist.dir" location="/epoc32/winscw/c/resource/java/security/trustroots/"/>
   <property name="javac.source" value="1.3"/>
   <property name="javac.target" value="1.3"/>
 
@@ -67,6 +68,7 @@
       <copy todir="${certs.dest.dir}">
           <fileset dir="${certs.src.dir}"/>
       </copy>
+      <copy file="../data/midprootslist" todir="${trustrootslist.dir}" overwrite="true"/>
       <!--move file="${s60.networking.dir}/ip.tcpip.esk" todir="${test.tmp.dir}/networking"/>
       <move file="${s60.networking.dir2}/cccccc00.cre" todir="${test.tmp.dir}/networking"/>
       <unzip src="../data/wsock.zip" dest="/"/-->      
@@ -83,6 +85,7 @@
       <copy todir="${certs.state.dest.dir}">
           <fileset dir="${test.tmp.dir}/state"/>
       </copy>
+      <delete dir="${trustrootslist.dir}"/>
       <!--move file="${test.tmp.dir}/networking/ip.tcpip.esk" todir="${s60.networking.dir}"/>
       <move file="${test.tmp.dir}/networking/cccccc00.cre" todir="${s60.networking.dir2}"/>
       <delete file="/epoc32/release/winscw/udeb/wsock6.lib"/>

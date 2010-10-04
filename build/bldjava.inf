@@ -26,6 +26,7 @@ default
 
   PRJ_EXTENSIONS
   START EXTENSION java/nativejava
+  OPTION NAME jrt
   END
 #endif
 

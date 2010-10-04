@@ -18,7 +18,7 @@
 package com.nokia.mid.ui;
 
 import org.eclipse.swt.widgets.Internal_PackageSupport;
-import com.nokia.mid.ui.internal.OS;
+import com.nokia.mj.impl.nokiauiapi.OS;
 
 
 /**

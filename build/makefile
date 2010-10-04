@@ -94,7 +94,9 @@ cleanapijars:
 	$(ANT) -f $(JAVA_SRC_ROOT)/build/utilities.xml -q -Dtarget.platform=$(PLATFORM) -Dtarget.cfg=$(VARIANT) clean.api.jars
 
 # Release build for build automation (sbs case is optimized to build on one go)
-releasebuild: build_all
+releasebuild: build_all sis
+
+sis:
 ifeq ($(BUILDENV),symbian)
 	$(MAKE) -C $(JAVA_SRC_ROOT)/build/sis all deploy
 endif

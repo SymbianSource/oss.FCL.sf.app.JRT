@@ -17,4 +17,6 @@
 override JAVA_SRC_ROOT = $(CURDIR)
 export JAVA_SRC_ROOT
 
+COMPONENT_ROOT = 1
+
 include $(JAVA_SRC_ROOT)/build/makefile

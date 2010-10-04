@@ -110,6 +110,13 @@ else
   UI = QT
 endif
 
+ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS
+  RD_JAVA_PKG_SPLIT = 1
+endif
+ifeq ($(RD_JAVA_PKG_SPLIT),1)
+  PROJECT_DEFINES += RD_JAVA_PKG_SPLIT
+endif
+
 ifeq ($(UI),QT)
   RD_JAVA_UI_QT = 1
   PROJECT_DEFINES += RD_JAVA_UI_QT

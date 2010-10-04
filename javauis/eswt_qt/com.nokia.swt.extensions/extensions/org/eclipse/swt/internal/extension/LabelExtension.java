@@ -63,4 +63,8 @@ public final class LabelExtension extends Label {
         
         Internal_PackageSupport.setStandardIcon(this, standardIcon, iconWidth, iconHeight);
     }
+    
+    public void setThemeIcon(String iconName) {        
+        Internal_PackageSupport.setThemeIcon(this, iconName);
+    }
 }

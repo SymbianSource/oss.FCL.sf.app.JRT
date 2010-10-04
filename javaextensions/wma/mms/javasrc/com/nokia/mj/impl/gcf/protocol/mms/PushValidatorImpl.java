@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -18,6 +18,7 @@
 package com.nokia.mj.impl.gcf.protocol.mms;
 
 import java.lang.String;
+import java.io.IOException;
 import com.nokia.mj.impl.utils.Uid;
 import com.nokia.mj.impl.gcf.PushValidator;
 import com.nokia.mj.impl.mms.MMSPermissionImpl;
@@ -43,6 +44,7 @@ public class PushValidatorImpl extends PushValidator
      */
     public void validate(String aUri, String aFilter, Uid aSuiteUid,
                          String aMidletName, boolean aIsStaticRegistration)
+                         throws IOException
     {
         if (!(aUri.startsWith(MMS_PREFIX)))
         {
@@ -66,6 +68,29 @@ public class PushValidatorImpl extends PushValidator
         {
             throw new IllegalArgumentException("Invalid Filter");
 
+        }
+        Uid suiteUid = null;
+        String commsName = null;
+        if (aIsStaticRegistration)
+        {
+            suiteUid = aSuiteUid;
+            commsName = PushValidator.INSTALLER_COMMS;
+        }
+        else
+        {
+            commsName = PushValidator.RUNTIME_COMMS;
+        }
+        if (PushValidator.isRegisteredPushUriStartingWith(aUri, suiteUid,
+                commsName))
+        {
+            if (aIsStaticRegistration)
+            {
+                throw new IllegalArgumentException();
+            }
+            else
+            {
+                throw new IOException("connection already exists");
+            }
         }
         ApplicationUtils appUtils = ApplicationUtils.getInstance();
         MMSPermissionImpl permission = new MMSPermissionImpl("mms://*","open");

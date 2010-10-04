@@ -71,6 +71,7 @@ void ConfigExtensionPlugin::loadExtensionPlugins()
     // when the device boots
     mCore->loadExtensionPlugin("preinstallerstarter");
     mCore->loadExtensionPlugin("btdeviceclassmanager");
+    mCore->loadExtensionPlugin("javasoftnoteplugin");
 #ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
     mCore->loadExtensionPlugin("scrupdater");
 #endif // SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK

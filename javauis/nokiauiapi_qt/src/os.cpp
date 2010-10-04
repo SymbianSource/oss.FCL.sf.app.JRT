@@ -12,7 +12,7 @@
 #include <QWidget>
 #include <coecntrl.h>
 #include <touchfeedback.h>
-#include <com_nokia_mid_ui_internal_OS.h>
+#include <com_nokia_mj_impl_nokiauiapi_OS.h>
 #include "autorelease.h"
 #include "csoftnotification.h"
 
@@ -26,7 +26,7 @@ static CCoeControl* convertToSymbian(QWidget* window)
     return control;
     }
 
-JNIEXPORT void JNICALL Java_com_nokia_mid_ui_internal_OS_MTouchFeedback_1InstantFeedback(
+JNIEXPORT void JNICALL Java_com_nokia_mj_impl_nokiauiapi_OS_MTouchFeedback_1InstantFeedback(
         JNIEnv *, jclass, jint aStyle)
     {
     MTouchFeedback* feedback = MTouchFeedback::Instance();
@@ -36,7 +36,7 @@ JNIEXPORT void JNICALL Java_com_nokia_mid_ui_internal_OS_MTouchFeedback_1Instant
         }
     }
 
-JNIEXPORT jboolean JNICALL Java_com_nokia_mid_ui_internal_OS_MTouchFeedback_1TouchFeedbackSupported(
+JNIEXPORT jboolean JNICALL Java_com_nokia_mj_impl_nokiauiapi_OS_MTouchFeedback_1TouchFeedbackSupported(
         JNIEnv *, jclass)
     {
     jboolean enabled = JNI_FALSE;
@@ -48,7 +48,7 @@ JNIEXPORT jboolean JNICALL Java_com_nokia_mid_ui_internal_OS_MTouchFeedback_1Tou
     return enabled;
     }
 
-JNIEXPORT void JNICALL Java_com_nokia_mid_ui_internal_OS_MTouchFeedback_1SetFeedbackArea(
+JNIEXPORT void JNICALL Java_com_nokia_mj_impl_nokiauiapi_OS_MTouchFeedback_1SetFeedbackArea(
         JNIEnv *, jclass, jint aControl, jint aAreaIndex, jint aX, jint aY,
         jint aWidth, jint aHeight, jint aStyle)
     {
@@ -64,7 +64,7 @@ JNIEXPORT void JNICALL Java_com_nokia_mid_ui_internal_OS_MTouchFeedback_1SetFeed
         }
     }
 
-JNIEXPORT void JNICALL Java_com_nokia_mid_ui_internal_OS_MTouchFeedback_1RemoveFeedbackArea(
+JNIEXPORT void JNICALL Java_com_nokia_mj_impl_nokiauiapi_OS_MTouchFeedback_1RemoveFeedbackArea(
         JNIEnv *, jclass, jint aControl, jint aAreaIndex)
     {
     MTouchFeedback* feedback = MTouchFeedback::Instance();
@@ -76,7 +76,7 @@ JNIEXPORT void JNICALL Java_com_nokia_mid_ui_internal_OS_MTouchFeedback_1RemoveF
         }
     }
 
-JNIEXPORT void JNICALL Java_com_nokia_mid_ui_internal_OS_MTouchFeedback_1RemoveFeedbackForControl(
+JNIEXPORT void JNICALL Java_com_nokia_mj_impl_nokiauiapi_OS_MTouchFeedback_1RemoveFeedbackForControl(
         JNIEnv *, jclass, jint aControl)
     {
     MTouchFeedback* feedback = MTouchFeedback::Instance();
@@ -88,7 +88,7 @@ JNIEXPORT void JNICALL Java_com_nokia_mid_ui_internal_OS_MTouchFeedback_1RemoveF
         }
     }
 
-JNIEXPORT void JNICALL Java_com_nokia_mid_ui_internal_OS_MTouchFeedback_1MoveFeedbackAreaToFirstPriority(
+JNIEXPORT void JNICALL Java_com_nokia_mj_impl_nokiauiapi_OS_MTouchFeedback_1MoveFeedbackAreaToFirstPriority(
         JNIEnv *, jclass, jint aControl, jint aAreaIndex)
     {
     MTouchFeedback* feedback = MTouchFeedback::Instance();
@@ -101,7 +101,7 @@ JNIEXPORT void JNICALL Java_com_nokia_mid_ui_internal_OS_MTouchFeedback_1MoveFee
         }
     }
 
-JNIEXPORT jint JNICALL Java_com_nokia_mid_ui_internal_OS_createNativePeer(
+JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_nokiauiapi_OS_createNativePeer(
         JNIEnv* aJniEnv, jclass /*aClazz*/, jint aMidletId,
         jint aNotificationId, jobject aPeer)
     {
@@ -130,7 +130,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mid_ui_internal_OS_createNativePeer(
     }
 
 JNIEXPORT jint JNICALL
-Java_com_nokia_mid_ui_internal_OS_getId(JNIEnv* /*aJniEnv*/,
+Java_com_nokia_mj_impl_nokiauiapi_OS_getId(JNIEnv* /*aJniEnv*/,
         jclass /*aPeer*/, jint aSoftNotificationHandle)
     {
     CSoftNotification* softNotification =
@@ -169,7 +169,7 @@ HBufC* JavaStringToSymbianString(JNIEnv* aJniEnv, jstring aText)
     }
 
 JNIEXPORT jint JNICALL
-Java_com_nokia_mid_ui_internal_OS_setText(JNIEnv* aJniEnv, jclass /*aPeer*/,
+Java_com_nokia_mj_impl_nokiauiapi_OS_setText(JNIEnv* aJniEnv, jclass /*aPeer*/,
         jint aSoftNotificationHandle, jstring aPrimaryText, jstring aSecondaryText)
     {
     CSoftNotification* softNotification =
@@ -200,7 +200,7 @@ Java_com_nokia_mid_ui_internal_OS_setText(JNIEnv* aJniEnv, jclass /*aPeer*/,
     }
 
 JNIEXPORT jint JNICALL
-Java_com_nokia_mid_ui_internal_OS_removeSoftNotification(JNIEnv* /*aJniEnv*/,
+Java_com_nokia_mj_impl_nokiauiapi_OS_removeSoftNotification(JNIEnv* /*aJniEnv*/,
         jclass /*aPeer*/, jint aSoftNotificationHandle)
     {
     CSoftNotification* softNotification =
@@ -211,7 +211,7 @@ Java_com_nokia_mid_ui_internal_OS_removeSoftNotification(JNIEnv* /*aJniEnv*/,
     }
 
 JNIEXPORT jint JNICALL
-Java_com_nokia_mid_ui_internal_OS_showSoftNotification(JNIEnv* /*aJniEnv*/,
+Java_com_nokia_mj_impl_nokiauiapi_OS_showSoftNotification(JNIEnv* /*aJniEnv*/,
         jclass /*aPeer*/, jint aSoftNotificationHandle)
     {
     CSoftNotification* softNotification =
@@ -229,7 +229,7 @@ Java_com_nokia_mid_ui_internal_OS_showSoftNotification(JNIEnv* /*aJniEnv*/,
     }
 
 JNIEXPORT jint JNICALL
-Java_com_nokia_mid_ui_internal_OS_setImagePath(JNIEnv* aJniEnv,
+Java_com_nokia_mj_impl_nokiauiapi_OS_setImagePath(JNIEnv* aJniEnv,
         jclass /*aPeer*/, jint aSoftNotificationHandle, jstring aImagePath )
     {
     CSoftNotification* softNotification =
@@ -249,7 +249,7 @@ Java_com_nokia_mid_ui_internal_OS_setImagePath(JNIEnv* aJniEnv,
     }
 
 JNIEXPORT void JNICALL
-Java_com_nokia_mid_ui_internal_OS_destroy(JNIEnv* /*aJniEnv*/,
+Java_com_nokia_mj_impl_nokiauiapi_OS_destroy(JNIEnv* /*aJniEnv*/,
         jclass /*clazz*/, jint aSoftNotificationHandle)
     {
     if (aSoftNotificationHandle > KErrNone)

@@ -100,8 +100,8 @@ bool JavaDataAccessImpl::isDBInitialized(const string& aStorageName)
 
     if (JAVA_DATABASE_NAME == aStorageName)
     {
-        sqlStatement.append("NAME FROM ");
-        sqlStatement.append(PREINSTALL_TABLE);
+        sqlStatement.append("SOFTNOTE_MIDLET_ID FROM ");
+        sqlStatement.append(JAVA_SOFTNOTE_TABLE);
     }
     else if (JAVA_OTA_DATABASE_NAME == aStorageName)
     {
@@ -179,6 +179,10 @@ throw(JavaStorageException)
 
         sqlDes.reset(stringToDes(PREINSTALL));
         LOG(EJavaStorage, EInfo, "Creating PREINSTALL");
+        createTable(sqlDes->Des());
+        
+        sqlDes.reset(stringToDes(JAVA_SOFTNOTE));
+        LOG(EJavaStorage, EInfo, "Creating JAVA_SOFTNOTE");
         createTable(sqlDes->Des());
     }
     else if (JAVA_OTA_DATABASE_NAME == aStorageName

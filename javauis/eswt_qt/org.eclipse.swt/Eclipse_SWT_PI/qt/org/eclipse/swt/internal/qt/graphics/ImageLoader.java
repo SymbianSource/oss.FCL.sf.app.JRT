@@ -13,6 +13,7 @@ package org.eclipse.swt.internal.qt.graphics;
 import java.io.*;
 
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Device;
 
 /**
  * ImageLoader is class for image loading from various data formats.
@@ -227,6 +228,33 @@ final public class ImageLoader {
      */
     public void setLoadSize(int width, int height) {
     	OS.imageLoader_setLoadSize(handle, width, height);
+    }
+
+    /**
+     * Returns the bounds of an Image without creating an actual Image instance.
+     *
+     * @param is The InputStream from where to read the image data from
+     * @return Bounds of the image
+     */
+    public static Point getImageSize(InputStream is) throws IOException {
+
+        if (is == null) {
+            throw new NullPointerException("InputStream is null");
+        }
+
+        int bytesAvailable = is.available(); // may throw IOException
+
+        if (bytesAvailable == 0) {
+            throw new IllegalArgumentException("Empty file");
+        }
+
+        byte [] data = new byte[bytesAvailable];
+        
+        if (is.read(data, 0, data.length) != bytesAvailable) {
+            throw new IOException("Could not load data from InputStream");
+        }
+        
+        return OS.imageLoader_getImageSize(data);
     }
 
     /**

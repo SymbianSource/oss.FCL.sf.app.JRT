@@ -23,8 +23,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.qt.graphics.*;
-import org.eclipse.swt.internal.qt.GCData;
+import org.eclipse.swt.internal.extension.GraphicsUtil;
 import com.nokia.mj.impl.rt.support.ShutdownListener;
 import com.nokia.mj.impl.rt.support.ApplicationUtils;
 import com.nokia.mj.impl.nokialcdui.LCDUIInvoker;
@@ -150,7 +149,6 @@ public class Graphics3D
         {
             throw new IllegalStateException();
         }
-
         if (target == null)
         {
             throw new NullPointerException();
@@ -161,72 +159,59 @@ public class Graphics3D
 
         if (target instanceof org.eclipse.swt.graphics.GC)
         {
-            Rectangle clip = ((org.eclipse.swt.graphics.GC)target).getClipping();
-            final int clipW = clip.width;
-            final int clipH = clip.height;
-            final int clipX = clip.x;
-            final int clipY = clip.y;
-
-            if (clipW > Defs.MAX_VIEWPORT_WIDTH ||
-                    clipH > Defs.MAX_VIEWPORT_HEIGHT)
+            final GC finalGc = (GC)target;
+            Rectangle clip = finalGc.getClipping();
+            if (clip.width > Defs.MAX_VIEWPORT_WIDTH ||
+                    clip.height > Defs.MAX_VIEWPORT_HEIGHT)
             {
                 throw new IllegalArgumentException();
             }
 
-            final Object finalTarget = target;
             Platform.executeInUIThread(
                 new M3gRunnable()
             {
                 public void doRun()
                 {
-                    GCData gcData = ((org.eclipse.swt.graphics.GC)finalTarget).getGCData();
-                    iSurfaceHandle = gcData.internalGc.getWindowSurface().getHandle();
+                    Rectangle windowClip = GraphicsUtil.startExternalRendering(finalGc);
+                    iSurfaceHandle = GraphicsUtil.getWindowSurface(finalGc).getHandle();
                     iIsImageTarget = _bindGraphics(
                                          handle,
                                          iSurfaceHandle,
-                                         clipX, clipY,
-                                         clipW, clipH,
+                                         windowClip.x, windowClip.y,
+                                         windowClip.width, windowClip.height,
                                          finalDepth, finalFlags,
                                          iIsProperRenderer);
                 }
             });
-            currentTarget = target;
+            currentTarget = finalGc;
         }
-
         else if (target instanceof Graphics)
         {
-
-            Graphics g = (Graphics) target;
-            //Platform.sync(g);
-
-            if (g.getClipWidth() > Defs.MAX_VIEWPORT_WIDTH ||
-                    g.getClipHeight() > Defs.MAX_VIEWPORT_HEIGHT)
+            final Graphics finalG = (Graphics) target;
+            if (finalG.getClipWidth() > Defs.MAX_VIEWPORT_WIDTH ||
+                    finalG.getClipHeight() > Defs.MAX_VIEWPORT_HEIGHT)
             {
                 throw new IllegalArgumentException();
             }
 
-            offsetX = g.getTranslateX();
-            offsetY = g.getTranslateY();
-
-            final Graphics finalG = g;
+            final Rectangle windowClip = LCDUIInvoker.startExternalRendering(finalG);            
+            iSurfaceHandle = LCDUIInvoker.getWindowSurface(finalG).getHandle();
 
             Platform.executeInUIThread(
                 new M3gRunnable()
             {
                 public void doRun()
                 {
-                    LCDUIInvoker.startExternalRendering( finalG );
-                    iSurfaceHandle = LCDUIInvoker.getWindowSurface(finalG).getHandle();
                     iIsImageTarget = _bindGraphics(
                                          handle,
                                          iSurfaceHandle,
-                                         finalG.getClipX() + offsetX, finalG.getClipY() + offsetY,
-                                         finalG.getClipWidth(), finalG.getClipHeight(),
+                                         windowClip.x, windowClip.y,
+                                         windowClip.width, windowClip.height,
                                          finalDepth, finalFlags,
                                          iIsProperRenderer);
                 }
             });
-            currentTarget = g;
+            currentTarget = finalG;
         }
         else if (target instanceof Image2D)
         {
@@ -274,6 +259,7 @@ public class Graphics3D
                 {
                     _releaseGraphics(handle,
                                      iSurfaceHandle, iIsImageTarget, iIsProperRenderer);
+                    GraphicsUtil.endExternalRendering((GC)currentTarget);
                 }
             });
         }
@@ -286,23 +272,10 @@ public class Graphics3D
                     public void doRun()
                     {
                         _releaseGraphics(handle,
-                                         iSurfaceHandle, iIsImageTarget, iIsProperRenderer);
-                        LCDUIInvoker.endExternalRendering( finalG );
+                                         iSurfaceHandle, iIsImageTarget, iIsProperRenderer);                        
                     }
                 });
-            /*
-            Graphics g = (Graphics) currentTarget;
-
-            //ToolkitInvoker invoker = ToolkitInvoker.getToolkitInvoker();
-
-            Platform.getUIThread().syncExec(
-                    new Runnable() {
-                        public void run() {
-                                        _releaseGraphics( handle,
-                                        invoker.graphicsGetHandle(g), iIsImageTarget, iIsProperRenderer );
-                                }
-                        });
-                        */
+                LCDUIInvoker.endExternalRendering( finalG );
         }
         else if (currentTarget instanceof Image2D)
         {

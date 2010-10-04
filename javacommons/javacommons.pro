@@ -22,6 +22,6 @@ SUBDIRS += fileutils/build/javafileutils.pro
 SUBDIRS += security 
 SUBDIRS += gcfbase/build/javagcf.pro 
 SUBDIRS += connectionmanager/build/javaconnectionmanager.pro 
-SUBDIRS += javaenv/build/javaenv.pro 
+SUBDIRS += javaenv/build/javaenvinfo.pro 
 SUBDIRS += gcfprotocols 
 BLD_INF_RULES.prj_extensions += "prj_extensions" 
