@@ -50,9 +50,9 @@ public class InstallerUiFactory
             installerUi = (InstallerUi)clazz.newInstance();
             installerUi.init(aMode, aListener);
         }
-        catch (Throwable t)
+        catch (Exception ex)
         {
-            logError("Instantiating " + className + " failed", t);
+            logError("Instantiating " + className + " failed", ex);
         }
         return installerUi;
     }

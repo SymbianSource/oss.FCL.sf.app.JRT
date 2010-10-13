@@ -46,9 +46,6 @@
 // using AknsDrawUtils for drawing background
 #include <AknsDrawUtils.h>
 #include <applayout.cdl.h>
-
-// for MAknsControlContext::SupplyMopObject method
-#include <AknsFrameBackgroundControlContext.h>
 // LAF
 #include <aknlayoutscalable_avkon.cdl.h>
 
@@ -101,8 +98,7 @@ CMIDGaugeItem::CGaugeTimer* CMIDGaugeItem::CGaugeTimer::NewL(CMIDGaugeItem& aGau
 void CMIDGaugeItem::CGaugeTimer::RunL()
 {
     if (!iGauge.iGaugeFrameData)
-    {
-        //if the bitmaps haven't been created it means we are inside an alert,
+    {//if the bitmaps haven't been created it means we are inside an alert,
         //which is using its own bitmaps for the gauge animation.
         //Return without restarting the timer
         return;
@@ -1083,8 +1079,7 @@ void CMIDNonInteractiveGauge::SetMaxValueL(TInt aMaxValue)
 TSize CMIDNonInteractiveGauge::MinimumSize()
 {
     if (!iLabelControl || (iLabelControl->Text()->Length() == 0))
-    {
-        // item doesn't have label
+    { // item doesn't have label
         return TSize(FormClientAreaWidth(), iItemheightWithoutLabel);
     }
     else // item has label
@@ -1644,39 +1639,6 @@ TBool CMIDNonInteractiveGauge::BitmapAnimationUsed() const
            iBitmapAnimation->BitmapAnimData()->FrameArray().Count() > 0;
 }
 
-TTypeUid::Ptr CMIDNonInteractiveGauge::MopSupplyObject(TTypeUid aId)
-{
-    TTypeUid::Ptr ptr = TTypeUid::Null();
-
-    // When control context is requested we return new correct one.
-    // Default implementation otherwise.
-    if (aId.iUid == MAknsControlContext::ETypeId && iForm && IsFocused())
-    {
-        ptr =  MAknsControlContext::SupplyMopObject(aId, BackgroundControlContext());
-    }
-    else
-    {
-        ptr = CMIDControlItem::MopSupplyObject(aId);
-    }
-    return ptr;
-}
-
-CAknsFrameBackgroundControlContext* CMIDNonInteractiveGauge::BackgroundControlContext()
-{
-    // It tries create new instance of CAknsFrameBackgroundControlContext.
-    // When construction fails, the error is logged.
-    CAknsFrameBackgroundControlContext* context = NULL;
-    TRAPD(err, context = CAknsFrameBackgroundControlContext::NewL(
-                             KAknsIIDQsnFrInput,  Rect(),  Rect(), EFalse));
-    if (err != KErrNone)
-    {
-        DEBUG_INT("CMIDNonInteractiveGauge::BackgroundControlContext -\
- CAknsFrameBackgroundControlContext::NewL failed with error number %d", err);
-        context = NULL;
-    }
-    return context;
-}
-
 // ---------------------------------------------------------------------------
 //
 // ---------------------------------------------------------------------------
@@ -1783,8 +1745,7 @@ void CMIDInteractiveGauge::SetMaxValueL(TInt aValue)
 TSize CMIDInteractiveGauge::MinimumSize()
 {
     if (!iLabelControl || (iLabelControl->Text()->Length() == 0))
-    {
-        // item doesn't have label
+    { // item doesn't have label
         return TSize(FormClientAreaWidth(), iItemheightWithoutLabel);
     }
     else // item has label

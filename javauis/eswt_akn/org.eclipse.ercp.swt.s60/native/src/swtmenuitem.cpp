@@ -374,7 +374,7 @@ void CSwtMenuItem::GetImageBitmapsL(CFbsBitmap*& aBitmap, CFbsBitmap*& aMask,
         if (iImageSizes.Find(aSize) == KErrNotFound)
         {
             iImage->AddSubRef(aSize);
-            iImageSizes.AppendL(aSize);
+            iImageSizes.Append(aSize);
         }
         aBitmap = bmp;
         aMask = const_cast<CFbsBitmap*>(iImage->SubMaskBitmap(aSize, ETrue));

@@ -765,7 +765,7 @@ int CStorageBackupUtil::WriteDataToStorage()
             js->remove(RUNTIME_SETTINGS_TABLE, emptyEntry);
             js->remove(PREINSTALL_TABLE, emptyEntry);
 
-            ELOG(EBackup, "Data removed successfully from table");
+            ILOG(EBackup, "Data removed successfully from table");
         }
         catch (JavaStorageException jse)
         {

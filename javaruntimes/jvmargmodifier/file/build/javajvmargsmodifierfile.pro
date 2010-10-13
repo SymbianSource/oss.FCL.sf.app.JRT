@@ -21,4 +21,8 @@ CONFIG -= qt
 
 LIBS += -ljavafileutils
 
+symbian {
+LIBS += -laknnotify
+}
+
 include(../../../../build/omj.pri)

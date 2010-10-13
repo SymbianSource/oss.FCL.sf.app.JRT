@@ -1614,50 +1614,12 @@ CFbsBitmap& CSwtImage::GetSubBitmap(const TSize& aSize) const
         // NOTE! iScaledMasksInverted entries are valid only if
         // the main mask is monochrome. Otherwise they are NULL
         // and iScaledMasks entries should be used instead.
-        TInt err = KErrNone;
-        TInt appendCount = 0;
-        err = iScaledBitmapRefs.Append(0);
-        if (err == KErrNone)
-        {
-            ++appendCount;
-            err = iScaledBitmaps.Append(bmp);
-        }
-        if (err == KErrNone)
-        {
-            ++appendCount;
-            err = iScaledMasks.Append(mask);
-        }
-        if (err == KErrNone)
-        {
-            ++appendCount;
-            err = iScaledMasksInverted.Append(maski);
-        }
-
-        if (err)
-        {
-            if (appendCount > 0)
-            {
-                iScaledBitmapRefs.Remove(iScaledBitmapRefs.Count() - 1);
-            }
-            if (appendCount > 1)
-            {
-                iScaledBitmaps.Remove(iScaledBitmaps.Count() - 1);
-            }
-            if (appendCount > 2)
-            {
-                iScaledMasks.Remove(iScaledMasks.Count() - 1);
-            }
-
-            delete bmp;
-            bmp = NULL;
-            delete mask;
-            mask = NULL;
-            delete maski;
-            maski = NULL;
-        }
+        iScaledBitmapRefs.Append(0);
+        iScaledBitmaps.Append(bmp);
+        iScaledMasks.Append(mask);
+        iScaledMasksInverted.Append(maski);
     }
-
-    if (!bmp)
+    else
     {
         // In the case of no memory or whatever
         ASSERT(EFalse);

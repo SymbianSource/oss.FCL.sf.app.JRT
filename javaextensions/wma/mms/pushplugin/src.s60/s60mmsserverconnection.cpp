@@ -55,7 +55,7 @@ ServerConnection* MmsServerConnection::getServerConnection(const wstring& aUri,
     return mmsConn;
 }
 
-OS_EXPORT S60MmsServerConnection::~S60MmsServerConnection()
+S60MmsServerConnection::~S60MmsServerConnection()
 {
     JELOG2(EWMA);
     delete mOpenMonitor;
@@ -270,7 +270,7 @@ OS_EXPORT wstring S60MmsServerConnection::getFilter() const
     return mFilter;
 }
 
-OS_EXPORT void S60MmsServerConnection::close()
+void S60MmsServerConnection::close()
 {
     JELOG2(EWMA);
     // the close and RunL are synchronized to make it SMP safe.

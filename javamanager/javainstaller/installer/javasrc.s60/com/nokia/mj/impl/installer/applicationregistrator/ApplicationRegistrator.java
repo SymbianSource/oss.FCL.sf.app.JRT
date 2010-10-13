@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -18,7 +18,6 @@
 
 package com.nokia.mj.impl.installer.applicationregistrator;
 
-import com.nokia.mj.impl.installer.storagehandler.SuiteInfo;
 import com.nokia.mj.impl.installer.utils.InstallerException;
 import com.nokia.mj.impl.installer.utils.FileRoots;
 import com.nokia.mj.impl.installer.utils.FileUtils;
@@ -356,8 +355,6 @@ public final class ApplicationRegistrator
         String aJarFilename,
         StringBuffer aIconSuffix)
     {
-        Log.log("ApplicationRegistrator.convertIcon: " + aInputIconFilename +
-                " --> " + aOutputIconFilename + ", from jar " + aJarFilename);
         return _convertIcon(aInputIconFilename, aOutputIconFilename,
                             aJarFilename, aIconSuffix);
     }
@@ -440,50 +437,8 @@ public final class ApplicationRegistrator
         return;
     }
 
-    /**
-     * Adds an entry to platform installation log.
-     *
-     * @param aSuite application suite information
-     * @param aAction 0 - installation, 1 - uninstallation
-     */
-    public static void addInstallLogEntry(SuiteInfo aSuite, int aAction)
-    {
-        // In S60 the version number is restricted to limited range.
-        // If version number is outside of this range, use version
-        // number 0 instead.
-        int result = _addInstallLogEntry(
-            aAction, PlatformUid.getIntValue(aSuite.getUid()),
-            aSuite.getName(), aSuite.getVendor(),
-            getVersion(aSuite.getVersion().getMajor(), 0, 127),
-            getVersion(aSuite.getVersion().getMinor(), 0, 99),
-            getVersion(aSuite.getVersion().getMicro(), 0, 32767));
-        if (result < 0)
-        {
-            Log.logError("Adding installation log entry failed, err=" + result);
-        }
-        else
-        {
-            Log.log("Added installation log entry");
-        }
-    }
-
     /*** ----------------------------- PACKAGE ---------------------------- */
     /*** ----------------------------- PRIVATE ---------------------------- */
-
-    /**
-     * Checks that given version number is between specified minimum and
-     * maximum value range (inclusive) and if it is returns version number.
-     * If version number is out of given range, returns 0.
-     */
-    private static int getVersion(int aVersion, int aMin, int aMax)
-    {
-        if (aVersion >= aMin && aVersion <= aMax)
-        {
-            return aVersion;
-        }
-        return 0;
-    }
-
     /*** ----------------------------- NATIVE ----------------------------- */
 
     /**
@@ -624,20 +579,4 @@ public final class ApplicationRegistrator
      * @return true if Symbian 9.2 emulator environment
      */
     private static native boolean _runningIn92Emulator();
-
-    /**
-     * Adds an entry to platform installation log.
-     *
-     * @param aAction 0 - installation, 1 - uninstallation
-     * @param aUid application suite uid
-     * @param aName application suite name
-     * @param aVendor application suite vendor
-     * @param aMajorVersion application suite major version
-     * @param aMinorVersion application suite minor version
-     * @param aMicroVersion application suite micro version
-     * @return Symbian error code (negative number) if fails, otherwise 0
-     */
-    private static native int _addInstallLogEntry(
-        int aAction, int aUid, String aName, String aVendor,
-        int aMajorVersion, int aMinorVersion, int aMicroVersion);
 }

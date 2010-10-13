@@ -62,16 +62,7 @@ public class FileRoots
      */
     public static String getRegisteredIconDir(int aDrive)
     {
-        String result = getAppsRoot();
-        result = FileUtils.setDrive(result, aDrive);
-        String replace = "\\private\\";
-        int i = result.indexOf(replace);
-        if (i == -1)
-        {
-            return FileUtils.getDriveName(aDrive) + ":\\data\\java\\";
-        }
-        return result.substring(0, i) + "\\public\\" +
-            result.substring(i + replace.length());
+        return FileUtils.getDriveName(aDrive) + ":\\data\\java\\";
     }
 
     /**

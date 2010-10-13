@@ -166,9 +166,6 @@ public: // from MMIDChoiceGroupModelObserver
     virtual void HandleChoiceGroupModelEventL(
         CMIDChoiceGroupModel* aModel,
         TChoiceGroupModelEvent aEvent);
-#ifdef RD_JAVA_S60_RELEASE_9_2
-    virtual TBool IsControlOnFormHighlighted();
-#endif // RD_JAVA_S60_RELEASE_9_2
 
 public: // from MEikListBoxObserver
     virtual void HandleListBoxEventL(CEikListBox* aControl, TListBoxEvent aEventType);
@@ -236,9 +233,6 @@ public:
      */
     void SingleClickDisableHighlightL(TBool aDisable);
 
-    CMIDControlItem* ControlItem() const;
-    CMIDChoiceGroupListBox* InnerListBoxControl() const;
-    CMIDChoiceGroupModel* InnerListBoxModel() const;
 #endif // RD_JAVA_S60_RELEASE_9_2    
 
 #ifdef RD_TACTILE_FEEDBACK

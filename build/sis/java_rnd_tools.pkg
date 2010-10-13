@@ -31,6 +31,10 @@
 ;to be installed on Series 60 v5.0 platforms
 [0x1028315F], 0, 0, 0, {"Series60ProductID"}
 
+"\epoc32\release\armv5\urel\JavaCap.exe"-"c:\sys\bin\JavaCap.exe"
+"\epoc32\data\z\private\10003a3f\apps\JavaCap_reg.rsc"-"c:\private\10003a3f\import\apps\JavaCap_reg.rsc"
+"\epoc32\data\z\resource\apps\JavaCap.rsc"            -"c:\resource\apps\JavaCap.rsc"
+
 ;j9dmp23.dll is a J9 VM plugin that provides the thread dump utility.
 "\epoc32\release\armv5\urel\j9dmp23.dll"-"c:\sys\bin\j9dmp23.dll"
 ;javathreaddumper.dll provides the thread dump agent.
@@ -42,8 +46,3 @@
 
 ; javainstaller.exe is a command line tool for starting javainstaller for RnD purposes only
 "\epoc32\release\armv5\urel\javainstaller.exe"-"c:\sys\bin\javainst.exe"
-
-
-"\epoc32\release\armv5\urel\javacontrolpanel.dll"-"c:\sys\bin\javacontrolpanel.dll"
-"\epoc32\release\armv5\urel\javacontrolpanel.exe"-"c:\sys\bin\javacontrolpanel.exe"
-"\epoc32\data\z\private\10003a3f\apps\javacontrolpanel_reg.rsc" -"c:\private\10003a3f\import\apps\javacontrolpanel_reg.rsc"

@@ -1,5 +1,0 @@
-EXPORTS
-	_Z10jni_lookupPKc @ 1 NONAME
-	_Z13findDllMethodPKc @ 2 NONAME
-	_ZN4java2ui14CoreUiTestImpl14setTestHandlerEPNS0_17CoreUiTestHandlerE @ 3 NONAME
-

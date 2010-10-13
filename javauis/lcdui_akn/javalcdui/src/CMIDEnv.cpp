@@ -58,13 +58,7 @@ void CMIDEnv::ConstructL()
                                      LcduiMidletAttributeValues::KUIEnhCanvasBackground);
 #ifdef RD_JAVA_NGA_ENABLED
     InitHardwareStatusL();
-
-    iVideoOverlayEnabled = MidletAttributeContainsVal(
-                                    LcduiMidletAttributes::KAttribUIEnhancement,
-                                    LcduiMidletAttributeValues::KUIEnhVideoOverlay);
 #endif // RD_JAVA_NGA_ENABLED
-    
-    iMMAPILock.CreateLocal();
 }
 
 CMIDEnv::~CMIDEnv()
@@ -77,7 +71,6 @@ CMIDEnv::~CMIDEnv()
     delete iKeyTranslator;
     iObservers.Close();
     iCanvasData.iLock.Close();
-    iMMAPILock.Close();
 }
 
 void CMIDEnv::SetUtils(MMIDUtils* aUtils)
@@ -317,16 +310,6 @@ void CMIDEnv::HandleResourceChangeL(TInt aType)
     {
         iToolkit->Utils()->HandleResourceChangedL();
     }
-}
-
-TBool CMIDEnv::VideoOverlayEnabled() const
-{
-    return iVideoOverlayEnabled;
-}
-
-RCriticalSection& CMIDEnv::GetMMAPILock()
-{
-    return iMMAPILock;
 }
 
 #ifdef RD_JAVA_NGA_ENABLED

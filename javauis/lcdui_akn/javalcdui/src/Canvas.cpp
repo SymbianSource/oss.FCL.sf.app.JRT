@@ -39,7 +39,6 @@ struct TCanvasAttribs
     TSize iSize;
     TBool iFrameBuffer;
     TBool iHasBackground;
-    TBool iVideoOverlayEnabled;
 };
 
 LOCAL_C void CreateCanvasL(CMIDToolkit* aToolkit, TCanvasCreate* aCreate, TCanvasAttribs* aAttribs)
@@ -59,7 +58,7 @@ LOCAL_C void CreateCanvasL(CMIDToolkit* aToolkit, TCanvasCreate* aCreate, TCanva
 
     // Check from a MMIDEnv object if the canvas object has a background or not
     aAttribs->iHasBackground = aToolkit->Env()->CanvasHasBackground(*canvas);
-    aAttribs->iVideoOverlayEnabled = aToolkit->Env()->VideoOverlayEnabled();
+
 }
 
 JNIEXPORT jint JNICALL Java_javax_microedition_lcdui_Canvas__1create
@@ -78,12 +77,10 @@ JNIEXPORT jint JNICALL Java_javax_microedition_lcdui_Canvas__1create
     create.iDisplayable=aDisplayable;
     create.iRef= aJni->NewWeakGlobalRef(aCanvas);
     create.iIsGameCanvas = aIsGameCanvas;
-
     TCanvasAttribs attribs;
     attribs.iFrameBuffer=EFalse;
-    attribs.iHasBackground = EFalse;
-    attribs.iVideoOverlayEnabled = EFalse;
 
+    attribs.iHasBackground = EFalse;
     jint error;
     if (create.iRef)
     {
@@ -100,15 +97,14 @@ JNIEXPORT jint JNICALL Java_javax_microedition_lcdui_Canvas__1create
         aJni->DeleteWeakGlobalRef(create.iRef);
     }
 
-    ASSERT(aJni->GetArrayLength(aAttribsReturn) == 6);
-    jint attribsArray[6];
+    ASSERT(aJni->GetArrayLength(aAttribsReturn) == 5);
+    jint attribsArray[5];
     attribsArray[0] = static_cast< jint >(attribs.iHandle);
     attribsArray[1] = static_cast< jint >(attribs.iSize.iWidth);
     attribsArray[2] = static_cast< jint >(attribs.iSize.iHeight);
     attribsArray[3] = static_cast< jint >(attribs.iFrameBuffer);
     attribsArray[4] = static_cast< jint >(attribs.iHasBackground);
-    attribsArray[5] = static_cast< jint >(attribs.iVideoOverlayEnabled);
-    aJni->SetIntArrayRegion(aAttribsReturn, 0, 6, &attribsArray[0]);
+    aJni->SetIntArrayRegion(aAttribsReturn, 0, 5, &attribsArray[0]);
 
     LCDUI_DEBUG_INT2("Canvas_create(%x == %x)", handle, (TInt)MIDUnhandObject<MMIDCanvas>(handle));
     return error;

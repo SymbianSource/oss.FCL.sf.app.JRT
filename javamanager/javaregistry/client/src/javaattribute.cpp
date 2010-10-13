@@ -92,7 +92,7 @@ TBool CJavaAttribute::Trusted() const
 // ---------------------------------------------------------------------------
 // CJavaAttribute::~MJavaAttribute
 // ---------------------------------------------------------------------------
-EXPORT_C CJavaAttribute::~CJavaAttribute()
+CJavaAttribute::~CJavaAttribute()
 {
     delete iName;
     delete iValue;

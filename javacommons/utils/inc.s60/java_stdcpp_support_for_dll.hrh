@@ -49,6 +49,9 @@ MACRO  _WCHAR_T_DECLARED
 macro J9EPOC32
 #define J9EPOC32
 
+macro RD_JAVA_OMJ_FSERVER
+#define RD_JAVA_OMJ_FSERVER
+
 #include "build_defines.hrh"
 
 #ifdef RD_JAVA_STDCPPV5
@@ -58,11 +61,6 @@ macro J9EPOC32
 #else
   OS_LAYER_STDCPP_SYSTEMINCLUDE
   LIBRARY libstdcpp.lib
-#endif
-#ifndef RD_JAVA_NO_BIN_VERSION
-#ifdef RD_JAVA_BIN_VERSION_NONQT
-  VERSION RD_JAVA_BIN_VERSION_NONQT
-#endif
 #endif
 
 #endif // JAVA_STDCPP_SUPPORT_FOR_DLL_HRH

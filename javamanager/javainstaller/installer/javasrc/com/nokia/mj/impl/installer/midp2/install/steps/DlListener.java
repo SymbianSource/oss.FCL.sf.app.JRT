@@ -81,6 +81,8 @@ public class DlListener implements DownloadListener
         }
         if (iBall.iSifNotifier != null)
         {
+            Log.log("DlListener.set: update SifNotifier to " +
+                    aDlInfo.getCurrentSize() + " / " + aDlInfo.getTotalSize());
             try
             {
                 iBall.iSifNotifier.notifyProgress(

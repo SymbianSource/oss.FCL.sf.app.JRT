@@ -20,7 +20,6 @@ package com.nokia.mj.impl.installer.midp2.install.steps;
 
 import java.util.Hashtable;
 
-import com.nokia.mj.impl.installer.Installer;
 import com.nokia.mj.impl.installer.InstallationNotifier;
 import com.nokia.mj.impl.installer.applicationregistrator.ApplicationRegistrator;
 import com.nokia.mj.impl.installer.applicationregistrator.SifNotifier;
@@ -233,31 +232,6 @@ public final class InstallBall extends ExeBall
     }
 
     /**
-     * Called when InstallerUi is hidden or unhidden.
-     *
-     * @param aHidden true if UI was hidden, false if UI was unhidden.
-     */
-    public void uiIsHidden(boolean aHidden)
-    {
-        log("InstallBall.uiIsHidden " + aHidden);
-        if (iSifNotifier == null)
-        {
-            Log.logWarning("InstallBall.uiIsHidden(" + aHidden +
-                           ") called when SifNotifier does not exist");
-            return;
-        }
-        iSifNotifier.setInstallerUi(getInstallerUi());
-        if (aHidden)
-        {
-            iSifNotifier.activateIndicator();
-        }
-        else
-        {
-            iSifNotifier.deactivateIndicator();
-        }
-    }
-
-    /**
      * Called when user cancels the execution from the InstallerUi.
      * This method must return quickly.
      */
@@ -329,11 +303,10 @@ public final class InstallBall extends ExeBall
                     Log.logWarning("checkForCancel: Stopping downloader failed", t);
                 }
             }
-            throw new InstallerException(
-                Installer.ERR_CANCEL,
-                InstallerErrorMessage.INST_CANCEL, null,
-                InstallerDetailedErrorMessage.INST_CANCEL, null,
-                OtaStatusCode.USER_CANCELLED);
+            throw new InstallerException
+            (InstallerErrorMessage.INST_CANCEL, null,
+             InstallerDetailedErrorMessage.NO_MSG, null,
+             OtaStatusCode.USER_CANCELLED);
         }
     }
 

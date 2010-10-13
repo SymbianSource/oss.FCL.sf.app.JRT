@@ -1517,6 +1517,33 @@ extern "C"
 
         return reinterpret_cast<jint>(result);
     }
+    
+    JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_symbian_OS_Image_1NewFromSvgBuf(
+        JNIEnv* aJniEnv, jclass, jint aDevice, jbyteArray aBuffer, jint aWidth, jint aHeight)
+    {
+        MSwtImage* result  = NULL;
+        ASwtDisplayBase* display = DisplayFromDevice(aDevice);
+        HBufC8* buffer = ConvertByteArrayL(aJniEnv, aBuffer);
+        CleanupStack::PushL(buffer);
+        TSize size(aWidth, aHeight);
+        TRAPD(error, CallMethodL(result, display, &ASwtDisplayBase::NewImageFromSvgBufL, *buffer, size));
+        CleanupStack::PopAndDestroy(buffer);
+        ThrowIfError(error, aJniEnv);
+        return reinterpret_cast<jint>(result);
+    }
+    
+    JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_symbian_OS_Image_1NewFromSvgFile(
+        JNIEnv* aJniEnv, jclass, jint aDevice, jstring aFilename, jint aWidth, jint aHeight)
+    {
+        MSwtImage* result  = NULL;
+        ASwtDisplayBase* display = DisplayFromDevice(aDevice);
+        HBufC* filename = ConvertStringLC(aJniEnv, aFilename);
+        TSize size(aWidth, aHeight);
+        TRAPD(error, CallMethodL(result, display, &ASwtDisplayBase::NewImageFromSvgFileL, *filename, size));
+        CleanupStack::PopAndDestroy(filename);
+        ThrowIfError(error, aJniEnv);
+        return reinterpret_cast<jint>(result);
+    }
 
     JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_symbian_OS_Image_1Dispose(JNIEnv*, jclass, jint aDevice, jint aHandle)
     {
@@ -3295,41 +3322,6 @@ extern "C"
     }
 
     typedef void (MSwtImageDataLoader::*TBufferDecoder)(const TDesC8&);
-
-    static void ImageDataLoader_DecodeBufferL(JNIEnv* aJniEnv, MSwtImageDataLoader& aLoader, TBufferDecoder aDecodeMethodL, jbyteArray aBuffer)
-    {
-        HBufC8* buffer = ConvertByteArrayL(aJniEnv, aBuffer);
-        CleanupStack::PushL(buffer);
-
-        (aLoader.*aDecodeMethodL)(*buffer);
-
-        CleanupStack::PopAndDestroy(buffer);
-    }
-
-    static void ImageDataLoader_DecodeBufferThrow(JNIEnv* aJniEnv, jint aHandle, TBufferDecoder aDecodeMethodL, jbyteArray aBuffer)
-    {
-        MSwtImageDataLoader* loader = reinterpret_cast<MSwtImageDataLoader*>(aHandle);
-        TRAPD(error, ImageDataLoader_DecodeBufferL(aJniEnv, *loader, aDecodeMethodL, aBuffer));
-        ThrowIfError(error, aJniEnv);
-    }
-
-    JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_symbian_OS_ImageDataLoader_1StartImageDecoding(JNIEnv* aJniEnv, jclass, jint aHandle, jbyteArray aBuffer)
-    {
-        ImageDataLoader_DecodeBufferThrow(aJniEnv, aHandle, &MSwtImageDataLoader::DecodeImageFromBufferL, aBuffer);
-    }
-
-    JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_symbian_OS_ImageDataLoader_1AppendData(JNIEnv* aJniEnv, jclass, jint aHandle, jbyteArray aBuffer)
-    {
-        ImageDataLoader_DecodeBufferThrow(aJniEnv, aHandle, &MSwtImageDataLoader::AppendDataL, aBuffer);
-    }
-
-    JNIEXPORT jobjectArray JNICALL Java_org_eclipse_swt_internal_symbian_OS_ImageDataLoader_1GetImageData(JNIEnv *aJniEnv, jclass , jint aHandle)
-    {
-        CSwtImageDataArray* data = NULL;
-        MSwtImageDataLoader* imageDataLoader = reinterpret_cast<MSwtImageDataLoader*>(aHandle);
-        data = imageDataLoader->GetImageData();
-        return NewJavaImageDataArray(aJniEnv, data);
-    }
 
     JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_symbian_OS_ImageDataLoader_1Dispose(JNIEnv*, jclass, jint aHandle)
     {

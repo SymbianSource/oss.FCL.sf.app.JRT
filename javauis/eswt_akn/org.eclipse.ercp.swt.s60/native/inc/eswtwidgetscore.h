@@ -616,7 +616,7 @@ public:
     {
         return NULL;
     }
-
+    
     virtual const MSwtShell* ShellInterface() const
     {
         return NULL;
@@ -810,7 +810,7 @@ public:
     virtual TRect VisibleRect(TBool aVisibleBounds = EFalse) const = 0;
 
     /**
-     * Get the scrollable interface of control.
+     * Get the scrollable interface of control. 
      * If control is not scrollable method returns null
      */
     virtual MSwtScrollable* ScrollableInterface() const
@@ -840,11 +840,6 @@ public:
      * True if pressed by pointer.
      */
     virtual TInt Pressed() const = 0;
-
-    /**
-     * Get ready for traverse event
-     */
-    virtual void PrepareForTraverse() = 0;
 };
 
 

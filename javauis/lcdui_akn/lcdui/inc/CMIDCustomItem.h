@@ -228,8 +228,8 @@ public:
     void MdcItemContentRect(TRect& aContentRect, TRect& aScreenRect) const;
     void MdcHandlePointerEventL(TPointerEvent& aPointerEvent);
     void MdcFlushContainer(const TRect& aRect);
-    void MdcAddMMAPIContentBounds(const TRect& aRect);
-    void MdcRemoveMMAPIContentBounds(const TRect& aRect);
+    void MdcAddContentBounds(const TRect& aRect);
+    void MdcRemoveContentBounds(const TRect& aRect);
     void MdcGetDSAResources(MUiEventConsumer& aConsumer);
     void MdcGetUICallback(MUiEventConsumer& aConsumer, TInt aCallbackId);
     

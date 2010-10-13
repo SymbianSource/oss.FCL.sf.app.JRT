@@ -171,8 +171,8 @@ void CSwtShell::ConstructL()
         if (b < 0)
             b = 0;
 
-        bgColor.SetRed(b);
-        bgColor.SetGreen(b);
+        bgColor.SetRed(r);
+        bgColor.SetGreen(g);
         bgColor.SetBlue(b);
 
         OverrideColorL(EColorControlBackground, bgColor);

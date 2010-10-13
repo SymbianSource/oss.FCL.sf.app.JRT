@@ -59,7 +59,6 @@ def get_svn_change_ids(release, url, rev_1, rev_2):
     re_change_id = re.compile("(\w+\#\d+)\s*,?", re.I | re.M)
     re_change_id_keyword = re.compile(change_id_keyword + "[:=]?\s*(\w+\#\d+)",
                                       re.I | re.M)
-    re_change_id_keyword_only = re.compile(change_id_keyword, re.I | re.M)
     svn_change_ids = {}
     cmd = "svn log -r " + rev_2 + ":" + rev_1 + " " + url
     #print cmd
@@ -68,11 +67,6 @@ def get_svn_change_ids(release, url, rev_1, rev_2):
         if rev:
             current_rev = rev[0]
         change_ids = re_change_id_keyword.findall(line)
-        change_id_keywords = re_change_id_keyword_only.findall(line)
-        if len(change_id_keywords) > len(change_ids):
-            print "WARNING: Rev " + current_rev + \
-                " has more matching changeid keywords" + \
-                " than matching change ids."
         while change_ids:
             for change_id in change_ids:
                 if change_id in svn_change_ids:

@@ -20,7 +20,7 @@ CONFIG += omj stl
 CONFIG -= qt
 
 symbian {
-    LIBS += -lCommonEngine \
+    LIBS += -lcommonengine \
             -lcentralrepository \
             -lcenrepnotifhandler \
             -ljavacomms

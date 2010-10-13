@@ -24,16 +24,4 @@ EXPORTS
 	_ZTVN4java3wma19CbsServerConnectionE @ 23 NONAME ; #<VT>#
 	_ZTVN4java3wma20ServerConnectionBaseE @ 24 NONAME ; #<VT>#
 	_ZThn28_N4java3wma19CbsServerConnection4openEPNS_4push18ConnectionListenerE @ 25 NONAME ; #<thunk>#
-	_ZN4java3wma19CbsServerConnection15retrieveMessageER8TPckgBufI22TJavaMessageParametersE @ 26 NONAME
-	_ZN4java3wma19CbsServerConnection4openEPNS_4push18ConnectionListenerEb @ 27 NONAME
-	_ZN4java3wma19CbsServerConnection5closeEv @ 28 NONAME
-	_ZN4java3wma19CbsServerConnectionD0Ev @ 29 NONAME
-	_ZN4java3wma19CbsServerConnectionD1Ev @ 30 NONAME
-	_ZN4java3wma19CbsServerConnectionD2Ev @ 31 NONAME
-	_ZThn28_N4java3wma19CbsServerConnection15retrieveMessageER8TPckgBufI22TJavaMessageParametersE @ 32 NONAME
-	_ZThn28_N4java3wma19CbsServerConnection4openEPNS_4push18ConnectionListenerEb @ 33 NONAME
-	_ZThn28_N4java3wma19CbsServerConnection5closeEv @ 34 NONAME
-	_ZThn28_N4java3wma19CbsServerConnectionD0Ev @ 35 NONAME
-	_ZThn28_N4java3wma19CbsServerConnectionD1Ev @ 36 NONAME
-
 

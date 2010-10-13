@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -18,54 +18,38 @@
 
 package com.nokia.mj.impl.installer.jsrpluginnotifier;
 
-import com.nokia.mj.impl.storage.StorageSession;
 import com.nokia.mj.impl.utils.Logger;
 import com.nokia.mj.impl.utils.Uid;
 import java.util.Hashtable;
 
 /**
  * Information passed to JSR plugins when installing or uninstalling
- * Java applications.
+ * Java applications
  * @see JsrPluginNotifier
  */
 public final class InstallerExtensionInfo
 {
     /**
-     * MIDlet Suite Uid.
+     * MIDlet Suite Uid. Can be null.
      */
-    public Uid iUid = null;
+    public Uid iUid;
 
     /**
-     * Application Uids.
+     * true if upgrade installation
      */
-    public Uid[] iAppUids = null;
+    public boolean iUpgrade;
 
     /**
-     * Application suite root directory path.
+     * true if silent installation
      */
-    public String iRootPath = null;
+    public boolean iSilent;
 
     /**
-     * True if upgrade installation.
-     */
-    public boolean iUpgrade = false;
-
-    /**
-     * True if silent installation.
-     */
-    public boolean iSilent = false;
-
-    /**
-     * Combined jad/jar attributes.
+     * Combined jad./.jar attributes.
      * Key is attribute name, value is com.nokia.mj.impl.utils.Attribute object
      * Can be null.
      */
-    public Hashtable iAttributes = null;
-
-    /**
-     * JavaStorage session where installation/uninstallation changes are made.
-     */
-    public StorageSession iStorageSession = null;
+    public Hashtable iAttributes;
 
     /*** ----------------------------- PUBLIC ------------------------------ */
 

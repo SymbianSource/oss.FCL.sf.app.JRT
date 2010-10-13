@@ -19,8 +19,13 @@ TARGET=eswt
 CONFIG += omj java stl
 CONFIG -= qt
 
+INCLUDEPATH +=  /epoc32/include/domain/applications \
+                /epoc32/include/applications \
+                /epoc32/include/domain/middleware \
+                ../inc 
 SOURCES += ../src/cswtclient.cpp \
            ../src/methodcall.cpp \
+           ../src/mifconverter.cpp \
            ../src/org_eclipse_ercp_swt_expanded_internal_OS.cpp \
            ../src/org_eclipse_ercp_swt_mobile_internal_OS.cpp \
            ../src/org_eclipse_swt_internal_symbian_OS.cpp \
@@ -148,7 +153,7 @@ MMP_RULES += "END // RESOURCE"
 
 
 
-LIBS += -lAknIcon \
+LIBS += -laknicon \
         -laknhlist \
         -laknlayout \
         -laknpictograph \
@@ -163,11 +168,11 @@ LIBS += -lAknIcon \
         -lbitgdi \
         -lbitmaptransforms \
         -lbmpanim \
-        -lCdlEngine \
+        -lcdlengine \
         -lcentralrepository \
         -lcommdb \
         -lcommondialogs \
-        -lCommonEngine \
+        -lcommonengine \
         -lcommonui \
         -lcone \
         -lecom \

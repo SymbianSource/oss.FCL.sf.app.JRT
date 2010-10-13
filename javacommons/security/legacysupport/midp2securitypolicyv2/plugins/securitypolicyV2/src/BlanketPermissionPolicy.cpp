@@ -61,9 +61,9 @@ void CBlanketPermissionPolicy::ConstructL()
 
 }
 
-void CBlanketPermissionPolicy::AddL(const CBlanketPermissionPolicyElement *aElement)
+void CBlanketPermissionPolicy::Add(const CBlanketPermissionPolicyElement *aElement)
 {
-    iPolicyElements.AppendL(aElement);
+    iPolicyElements.Append(aElement);
 }
 
 

@@ -46,10 +46,9 @@ data=JAVA_CERT_BLD\test_operator.metadata            JAVA_CERT_IMG\test_operator
 data=JAVA_CERT_BLD\test_trustedthirdparty.der        JAVA_CERT_IMG\test_trustedthirdparty.der
 data=JAVA_CERT_BLD\test_trustedthirdparty.metadata   JAVA_CERT_IMG\test_trustedthirdparty.metadata
 
-// Java Control Panel test utility
-file=ABI_DIR\BUILD_DIR\javacontrolpanel.exe             PROGRAMS_DIR\javacontrolpanel.exe
-file=ABI_DIR\BUILD_DIR\javacontrolpanel.dll             SHARED_LIB_DIR\javacontrolpanel.dll
-data=JAVA_VM_ODC_BLD\javacontrolpanel.odc               JAVA_VM_ODC_IMG\javacontrolpanel.odc
-data=ZPRIVATE\10003a3f\apps\javacontrolpanel_reg.rsc    \private\10003a3f\import\apps\javacontrolpanel_reg.rsc
+// JavaCap App test utility
+file=ABI_DIR\BUILD_DIR\JavaCap.exe              PROGRAMS_DIR\JavaCap.exe
+data=ZPRIVATE\10003a3f\apps\JavaCap_reg.rsc     \private\10003a3f\import\apps\JavaCap_reg.rsc
+data=\epoc32\data\z\resource\apps\JavaCap.rsc   \resource\apps\JavaCap.rsc
 
 #endif

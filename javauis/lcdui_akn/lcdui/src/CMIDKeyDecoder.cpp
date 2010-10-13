@@ -191,8 +191,8 @@ CMIDKeyDecoder::~CMIDKeyDecoder()
 
 /** */
 CMIDKeyDecoder::CMIDKeyDecoder(MMIDEnv& aEnv)
-    : iEnv(aEnv)
-    ,iMediaKeysEnabled(EFalse)
+        : iEnv(aEnv)
+        ,iMediaKeysEnabled(EFalse)
 {
     DEBUG("< CMIDKeyDecoder::CMIDKeyDecoder");
     DEBUG("> CMIDKeyDecoder::CMIDKeyDecoder");
@@ -222,24 +222,18 @@ void CMIDKeyDecoder::ConstructL()
     TRAP(err, repository = CRepository::NewL(KCRUidMidpLcdui));
     // 2 bytes in scan code
     TBuf8<2> scanCodeBuffer;
-
-    if (err == KErrNone)
-    {
-        CleanupStack::PushL(repository);
-        err = repository->Get(KAdditionalSelectKeyMapping,scanCodeBuffer);
-        CleanupStack::PopAndDestroy(repository);
-    }
+    CleanupStack::PushL(repository);
+    err = repository->Get(KAdditionalSelectKeyMapping,scanCodeBuffer);
+    CleanupStack::PopAndDestroy(repository);
     if (err == KErrNone)
     {
         TUint8 scanCodeLeft = scanCodeBuffer[0];
         TUint8 scanCodeRight = scanCodeBuffer[1];
         TUint scanCode = (scanCodeLeft << 8) + scanCodeRight;
-        iAdditionalSelectkeyMapping = scanCode;
-    }
-    else
-    {
-        // Default value is set in error situations.
-        iAdditionalSelectkeyMapping = 0;
+        if (scanCode != 0)
+        {
+            iAdditionalSelectkeyMapping = scanCode;
+        }
     }
 
     CreateQwertyWatchL();
@@ -303,13 +297,11 @@ void CMIDKeyDecoder::InitSpecialKeysL()
     User::LeaveIfError(iSpecialKeys.Append(TMIDKey(EStdKeyDevice13,EKeyLeftDownArrow, R_MIDP_KEY_LEFT)));
     User::LeaveIfError(iSpecialKeys.Append(TMIDKey(EStdKeyDelete,EKeyDelete, R_MIDP_KEY_DELETE)));
     if (!iQwertyModeActive)
-    {
-        // ITU-T keys with different behaviour
+    { // ITU-T keys with different behaviour
         User::LeaveIfError(iSpecialKeys.Append(TMIDKey(EStdKeyBackspace, KMIDKeyClear, R_MIDP_KEY_CLEAR)));
     }
     else
-    {
-        // QWERTY  keys with different behaviour
+    { // QWERTY  keys with different behaviour
         User::LeaveIfError(iSpecialKeys.Append(TMIDKey(EStdKeyBackspace, EKeyBackspace, R_MIDP_KEY_BACKSPACE)));
     }
 
@@ -565,14 +557,12 @@ void CMIDKeyDecoder::LoadGameActionCodesL()
     iActionScanCodes = NULL;
 
     if (!QwertyInputAvailable())
-    {
-        // if no qwerty always use default ITU-T codes
+    { // if no qwerty always use default ITU-T codes
         DEBUG("  CMIDKeyDecoder::LoadGameActionCodesL - use default ITU-T scan codes");
         iActionScanCodes = (TInt*)&KDefaultActionScanCodes[0];
     }
     else
-    {
-        // if there is qwerty either use CR repository codes or default qwerty codes
+    { // if there is qwerty either use CR repository codes or default qwerty codes
         CRepository* repository = NULL;
         TRAPD(crExists, repository = CRepository::NewL(KCRUidMidpLcdui));
 
@@ -583,14 +573,12 @@ void CMIDKeyDecoder::LoadGameActionCodesL()
         }
 
         if (iUseCRScanCodes)
-        {
-            // use CR QWERTY codes
+        { // use CR QWERTY codes
             DEBUG("  CMIDKeyDecoder::LoadGameActionCodesL - use central repository scan codes");
             LoadCentralRepositoryCodesL(repository);
         }
         else
-        {
-            //  use default QWERTY codes
+        { //  use default QWERTY codes
             DEBUG("  CMIDKeyDecoder::LoadGameActionCodesL - add default qwerty scan codes");
             iActionScanCodes = (TInt*)&KDefaultQwertyActionScanCodes[0];
         }

@@ -33,7 +33,6 @@ namespace util
 const int BOOT_CLASSPATH_MIDP = 1;
 const int BOOT_CLASSPATH_INSTALLER = 2;
 const int BOOT_CLASSPATH_TCKRUNNER = 3;
-const int BOOT_CLASSPATH_JAVACONTROLPANEL = 4;
 
 class DriveId;
 

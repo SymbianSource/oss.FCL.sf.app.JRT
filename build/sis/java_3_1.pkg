@@ -50,15 +50,12 @@
 "\epoc32\release\armv5\urel\javabackup.exe"-"c:\sys\bin\javabackup.exe"
 "\epoc32\release\armv5\urel\javacaptain.exe"-"c:\sys\bin\javacaptain.exe"
 "\epoc32\release\armv5\urel\javalauncher.exe"-"c:\sys\bin\javalauncher.exe"
-"\epoc32\release\armv5\urel\javaappscheme.exe"-"c:\sys\bin\javaappscheme.exe"
-"\epoc32\release\armv5\urel\javaqtrequest.exe"-"c:\sys\bin\javaqtrequest.exe"
-"\epoc32\release\armv5\urel\javaupgradeapp.exe"-"c:\sys\bin\javaupgradeapp.exe"
 
 ;Odc file lists
 "\epoc32\data\z\resource\java\midpodclist"-"c:\resource\java\midpodclist"
 "\epoc32\data\z\resource\java\tckrunnerodclist"-"c:\resource\java\tckrunnerodclist"
 "\epoc32\data\z\resource\java\installerodclist"-"c:\resource\java\installerodclist"
-"\epoc32\data\z\resource\java\javacontrolpanelodclist"-"c:\resource\java\javacontrolpanelodclist"
+
 
 ; Dlls containing java byte code and their odc files
 "\epoc32\release\armv5\urel\javabluecove.dll"-"c:\sys\bin\javabluecove.dll"
@@ -161,13 +158,13 @@
 "\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javawmamms.odc"-"c:\resource\java\jvm\lib\jrt\javawmamms.odc"
 
 "\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\tckrunner.odc"-"c:\resource\java\jvm\lib\jrt\tckrunner.odc"
-"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javacontrolpanel.odc"-"c:\resource\java\jvm\lib\jrt\javacontrolpanel.odc"
 
-"\epoc32\release\armv5\urel\javacentrep.dll"-"c:\sys\bin\javacentrep.dll"
-"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javacentrep.odc"-"c:\resource\java\jvm\lib\jrt\javacentrep.odc"
+
 
 ; Misc dlls
 
+"\epoc32\release\armv5\urel\ifeui.dll"-"c:\sys\bin\ifeui.dll"
+"\epoc32\release\armv5\urel\javaappschemeplugin.dll"-"c:\sys\bin\javaappschemeplugin.dll"
 "\epoc32\release\armv5\urel\javabtl2capscplugin.dll"-"c:\sys\bin\javabtl2capscplugin.dll"
 "\epoc32\release\armv5\urel\javabtsppscplugin.dll"-"c:\sys\bin\javabtsppscplugin.dll"
 "\epoc32\release\armv5\urel\javabtgoepscplugin.dll"-"c:\sys\bin\javabtgoepscplugin.dll"
@@ -183,6 +180,7 @@
 "\epoc32\release\armv5\urel\javapushcontroller.dll"-"c:\sys\bin\javapushcontroller.dll"
 "\epoc32\release\armv5\urel\javaregistryclient.dll"-"c:\sys\bin\javaregistryclient.dll"
 "\epoc32\release\armv5\urel\javaruntimestarterutils.dll"-"c:\sys\bin\javaruntimestarterutils.dll"
+"\epoc32\release\armv5\urel\javasidchecker.dll"-"c:\sys\bin\javasidchecker.dll"
 "\epoc32\release\armv5\urel\javasizehelperclient.dll"-"c:\sys\bin\javasizehelperclient.dll"
 "\epoc32\release\armv5\urel\javasizehelperserver.dll"-"c:\sys\bin\javasizehelperserver.dll"
 "\epoc32\release\armv5\urel\javasocketscplugin.dll"-"c:\sys\bin\javasocketscplugin.dll"
@@ -192,9 +190,7 @@
 "\epoc32\release\armv5\urel\javadebugapi.dll"-"c:\sys\bin\javadebugapi.dll"
 #ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 "\epoc32\release\armv5\urel\javasifplugin.dll"-"c:\sys\bin\javasifplugin.dll"
-"\epoc32\release\armv5\urel\javainstallcopier.exe"-"c:\sys\bin\javainstallcopier.exe"
 #endif
-"\epoc32\release\armv5\urel\javastarter.dll"-"c:\sys\bin\javastarter.dll"
 
 ; to enable JVM argument modifier - comment 1st line below and uncomment 2nd line below
 "\epoc32\release\armv5\urel\javajvmargsmodifier.dll"-"c:\sys\bin\javajvmargsmodifier.dll"
@@ -207,7 +203,6 @@
 "\epoc32\release\armv5\urel\javacaptain_ext_pushregistryplugin.dll"     -"c:\sys\bin\javacaptain_ext_pushregistryplugin.dll"
 "\epoc32\release\armv5\urel\javacaptain_ext_storageserverplugin.dll"    -"c:\sys\bin\javacaptain_ext_storageserverplugin.dll"
 "\epoc32\release\armv5\urel\javacaptain_ext_btdeviceclassmanager.dll"   -"c:\sys\bin\javacaptain_ext_btdeviceclassmanager.dll"
-"\epoc32\release\armv5\urel\javacaptain_ext_autostarter.dll"            -"c:\sys\bin\javacaptain_ext_autostarter.dll"
 "\epoc32\release\armv5\urel\javacaptain_ext_settingslistener.dll"       -"c:\sys\bin\javacaptain_ext_settingslistener.dll"
 ; PLUGIN_ID_JAVA_CERT_STORE_EXTENSION_C = 7
 "\epoc32\release\armv5\urel\javacaptain_ext_ondemand_7.dll"             -"c:\sys\bin\javacaptain_ext_ondemand_7.dll"
@@ -219,19 +214,21 @@
 #endif
 
 ; resources
+"\epoc32\data\z\resource\plugins\ifeui.rsc"                   -"c:\resource\plugins\ifeui.rsc"
+"\epoc32\data\z\resource\plugins\javaappschemeplugin.rsc"     -"c:\resource\plugins\javaappschemeplugin.rsc"
 "\epoc32\winscw\c\private\102033E6\installer\inst_plugins.cfg"-"c:\private\102033E6\installer\inst_plugins.cfg"
 "\epoc32\data\Z\Resource\versions\java.txt"-"c:\resource\versions\java.txt"
 "\epoc32\data\z\resource\java\java_app_92.mif"-"c:\resource\java\java_app.mif"
 "\epoc32\data\z\private\10003a3f\apps\javainstaller_reg.rsc"-"c:\private\10003a3f\import\apps\javainstaller_reg.rsc"
 "\epoc32\data\z\resource\apps\javainstaller_loc.rsc"-"c:\resource\apps\javainstaller_loc.rsc"
 "\epoc32\data\z\resource\apps\javainstaller_icon.mif"-"c:\resource\apps\javainstaller_icon.mif"
-"\epoc32\data\z\resource\java\java_3_trusted.png"-"c:\resource\java\java_3_trusted.png"
-"\epoc32\data\z\resource\java\java_3_untrusted.png"-"c:\resource\java\java_3_untrusted.png"
-"\epoc32\data\z\resource\java\javaapplicationinstaller.css"-"c:\resource\java\javaapplicationinstaller.css"
-"\epoc32\data\z\resource\java\iad\javaunicertstoreplugin.rsc" -"c:\resource\plugins\javaunicertstoreplugin.rsc"
-"\epoc32\data\z\resource\java\iad\midp2backupplugin.rsc"-"c:\resource\plugins\midp2backupplugin.rsc"
+"\epoc32\data\z\resource\java\java_trusted.png"-"c:\resource\java\java_trusted.png"
+"\epoc32\data\z\resource\java\java_untrusted.png"-"c:\resource\java\java_untrusted.png"
+"\epoc32\data\z\resource\plugins\javasidchecker.rsc"   -"c:\resource\plugins\javasidchecker.rsc"
+"\epoc32\data\z\resource\plugins\javaunicertstoreplugin.rsc" -"c:\resource\plugins\javaunicertstoreplugin.rsc"
+"\epoc32\data\z\resource\plugins\midp2backupplugin.rsc"-"c:\resource\plugins\midp2backupplugin.rsc"
 #ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
-"\epoc32\data\z\resource\java\iad\javasifplugin.rsc"-"c:\resource\plugins\javasifplugin.rsc"
+"\epoc32\data\z\resource\plugins\javasifplugin.rsc"-"c:\resource\plugins\javasifplugin.rsc"
 #endif
 
 "\epoc32\data\z\resource\java\javausermessages.r01"-"c:\resource\java\javausermessages.r01"
@@ -321,13 +318,14 @@
 ;"\epoc32\release\armv5\urel\javacoreui.dll"-"c:\sys\bin\javacoreui.dll"
 ;"\epoc32\data\z\resource\apps\javastartscreen.mif"-"c:\resource\apps\javastartscreen.mif"
 
-"\epoc32\release\armv5\urel\javaamms.dll"-"c:\sys\bin\javaamms.dll"
-"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javaamms.odc"-"c:\resource\java\jvm\lib\jrt\javaamms.odc"
+;"\epoc32\release\armv5\urel\javaamms.dll"-"c:\sys\bin\javaamms.dll"
+;"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javaamms.odc"-"c:\resource\java\jvm\lib\jrt\javaamms.odc"
 
-"\epoc32\release\armv5\urel\javamobilemedia.dll"-"c:\sys\bin\javamobilemedia.dll"
-"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javamobilemedia.odc"-"c:\resource\java\jvm\lib\jrt\javamobilemedia.odc"
-"\epoc32\release\armv5\urel\z\system\sounds\digital\CamcorderJavaCapture.wav"-"c:\System\Sounds\Digital\CamcorderJavaCapture.wav"
-"\epoc32\release\armv5\urel\z\system\sounds\digital\CamcorderJavaStart.wav"-"c:\System\Sounds\Digital\CamcorderJavaStart.wav"
+;"\epoc32\release\armv5\urel\javalegacyutils.dll"-"c:\sys\bin\javalegacyutils.dll"
+;"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javalegacyutils.odc"-"c:\resource\java\jvm\lib\jrt\javalegacyutils.odc"
+
+;"\epoc32\release\armv5\urel\javamobilemedia.dll"-"c:\sys\bin\javamobilemedia.dll"
+;"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javamobilemedia.odc"-"c:\resource\java\jvm\lib\jrt\javamobilemedia.odc"
 
 ;"\epoc32\release\armv5\urel\javam2g.dll"-"c:\sys\bin\javam2g.dll"
 ;"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javam2g.odc"-"c:\resource\java\jvm\lib\jrt\javam2g.odc"
@@ -335,20 +333,16 @@
 ;"\epoc32\release\armv5\urel\javam3g.dll"-"c:\sys\bin\javam3g.dll"
 ;"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javam3g.odc"-"c:\resource\java\jvm\lib\jrt\javam3g.odc"
 
-"\epoc32\release\armv5\urel\javanokiasound.dll"-"c:\sys\bin\javanokiasound.dll"
-"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javanokiasound.odc"-"c:\resource\java\jvm\lib\jrt\javanokiasound.odc"
+;"\epoc32\release\armv5\urel\javanokiasound.dll"-"c:\sys\bin\javanokiasound.dll"
+;"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javanokiasound.odc"-"c:\resource\java\jvm\lib\jrt\javanokiasound.odc"
 
 ;"\epoc32\release\armv5\urel\javasoftnotification.dll"-"c:\sys\bin\javasoftnotification.dll"
 ;"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javasoftnotification.odc"-"c:\resource\java\jvm\lib\jrt\javasoftnotification.odc"
 
 "\epoc32\release\armv5\urel\eswtqt.dll"-"c:\sys\bin\eswtqt.dll"
-"\epoc32\release\armv5\urel\eswtqtwebkit.dll"-"c:\sys\bin\eswtqtwebkit.dll"
 "\epoc32\release\armv5\urel\openlcdui.dll"-"c:\sys\bin\openlcdui.dll"
 "\epoc32\release\armv5\urel\javanokiaui.dll"-"c:\sys\bin\javanokiaui.dll"
 "\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\eswtqt.odc"-"c:\resource\java\jvm\lib\jrt\eswtqt.odc"
-"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\eswtqtwebkit.odc"-"c:\resource\java\jvm\lib\jrt\eswtqtwebkit.odc"
 "\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\openlcdui.odc"-"c:\resource\java\jvm\lib\jrt\openlcdui.odc"
 "\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javanokiaui.odc"-"c:\resource\java\jvm\lib\jrt\javanokiaui.odc"
 
-"\epoc32\release\armv5\urel\javaapplicationsettingsview.dll"-"c:\sys\bin\javaapplicationsettingsview.dll"
-"\epoc32\data\z\resource\qt\plugins\appsettings\javaapplicationsettingsview.qtplugin"-"c:\resource\qt\plugins\appsettings\javaapplicationsettingsview.qtplugin"

@@ -19,7 +19,7 @@
 #include <string>
 #include <memory>
 
-#include <CppUTest/TestHarness.h>
+#include "TestHarness.h"
 
 #include "javaregistry.h"
 #include "javaregistryapplicationentry.h"

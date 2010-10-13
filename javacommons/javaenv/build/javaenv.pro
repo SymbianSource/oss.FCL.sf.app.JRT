@@ -23,7 +23,7 @@ symbian {
     TARGET.UID2 = 0x1000008d
     TARGET.UID3 = 0x2001B2A5
     SOURCES += ../src.s60/*.cpp
-    LIBS += -lplatformenv -lefsrv
+    LIBS += -lplatformEnv -lefsrv
 }
 
 include(../../../build/omj.pri)

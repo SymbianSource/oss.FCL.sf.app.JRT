@@ -126,7 +126,6 @@ public class ConfirmInstallation extends ExeStep
         installInfo.setDriveId(ball.iInstallationDrive);
         Vector drives = new Vector();
         SysUtil.getUserVisibleDrives(drives);
-        removeFullDrives(ball, drives);
         int[] driveIds = new int[drives.size()];
         int[] driveTypes = new int[drives.size()];
         long[] driveFreeSpaces = new long[drives.size()];
@@ -385,35 +384,5 @@ public class ConfirmInstallation extends ExeStep
             }
         }
         return size;
-    }
-
-    /**
-     * Removes drives which do not have enough free space for the
-     * application from the aDrives vector.
-     */
-    private void removeFullDrives(InstallBall aBall, Vector aDrives)
-    {
-        int requiredSize = CheckDiskSpace.getRequiredSize(aBall);
-        for (int i = 0; i < aDrives.size(); i++)
-        {
-            DriveInfo drive = (DriveInfo)aDrives.elementAt(i);
-            int driveId = drive.getNumber();
-            if (SysUtil.isDiskSpaceBelowCriticalLevel(requiredSize, driveId))
-            {
-                Log.logWarning("Drive " + FileUtils.getDriveName(driveId) +
-                               " (" + driveId + ") does not have enough " +
-                               " free space, required space " + requiredSize +
-                               " bytes");
-                aDrives.removeElementAt(i);
-                i--; // Decrease index because drive was removed from Vector.
-            }
-        }
-        if (aDrives.size() == 0)
-        {
-            // None of the available drives has enough space,
-            // throw an exception.
-            throw InstallerException.getOutOfDiskSpaceException(
-                requiredSize, null);
-        }
     }
 }

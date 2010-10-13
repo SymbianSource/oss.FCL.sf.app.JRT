@@ -46,8 +46,6 @@ public class InstallationNotifier implements ExeProgressListener
 
     // Maximum number of progress updates to SysUtil.setProperty().
     private static final int MAX_PROPERTY_PROGRESS_UPDATES = 5;
-    // Maximum number of progress updates to SIF.
-    private static final int MAX_SIF_PROGRESS_UPDATES = 8;
     // Maximum number of progress updates to UI.
     private static final int MAX_UI_PROGRESS_UPDATES = 20;
 
@@ -63,16 +61,11 @@ public class InstallationNotifier implements ExeProgressListener
     private int iMaxValue = 1;
     // Tells how often property progress should be updated.
     private int iPropertyProgressStep = 1;
-    // Tells how often SIF progress should be updated.
-    private int iSifProgressStep = 1;
     // Tells how often UI progress should be updated.
     private int iUiProgressStep = 1;
     // Point between 0 and iMaxValue where the last property
     // update has been made.
     private int iLastPropertyUpdate = 0;
-    // Point between 0 and iMaxValue where the last SIF update
-    // has been made.
-    private int iLastSifUpdate = 0;
     // Point between 0 and iMaxValue where the last UI update
     // has been made.
     private int iLastUiUpdate = 0;
@@ -132,6 +125,18 @@ public class InstallationNotifier implements ExeProgressListener
     public void ended()
     {
         Log.log("InstallationNotifier.ended");
+        if (iInstallerUi != null)
+        {
+            try
+            {
+                iInstallerUi.ended();
+            }
+            catch (Throwable t)
+            {
+                Log.logError(
+                    "InstallationNotifier: InstallerUi.ended threw exception", t);
+            }
+        }
         if (iSifNotifier != null)
         {
             // After this SifNotifier is no longer used, destroy it.
@@ -143,18 +148,6 @@ public class InstallationNotifier implements ExeProgressListener
             catch (Throwable t)
             {
                 Log.logError("InstallationNotifier: SifNotifier.destroy failed", t);
-            }
-        }
-        if (iInstallerUi != null)
-        {
-            try
-            {
-                iInstallerUi.ended();
-            }
-            catch (Throwable t)
-            {
-                Log.logError(
-                    "InstallationNotifier: InstallerUi.ended threw exception", t);
             }
         }
     }
@@ -210,11 +203,6 @@ public class InstallationNotifier implements ExeProgressListener
         {
             iPropertyProgressStep = 1;
         }
-        iSifProgressStep = iMaxValue / MAX_SIF_PROGRESS_UPDATES;
-        if (iSifProgressStep == 0)
-        {
-            iSifProgressStep = 1;
-        }
         iUiProgressStep = iMaxValue / MAX_UI_PROGRESS_UPDATES;
         if (iUiProgressStep == 0)
         {
@@ -253,44 +241,29 @@ public class InstallationNotifier implements ExeProgressListener
         Log.log("InstallationNotifier.set: progress " + currentPercentage);
         defineProperties();
 
-        if (isUpdateNeeded(aCurrentValue, iMaxValue,
-                           iLastPropertyUpdate, iPropertyProgressStep))
+        if (aCurrentValue == 0 ||
+                aCurrentValue == iMaxValue ||
+                aCurrentValue >= iLastPropertyUpdate + iPropertyProgressStep ||
+                aCurrentValue <= iLastPropertyUpdate - iPropertyProgressStep)
         {
             iLastPropertyUpdate = aCurrentValue;
             Log.log("InstallationNotifier.set: update property to " +
                     currentPercentage);
             // Update property values: progress.
-            SysUtil.setPropertyValue(
-                SysUtil.PROP_CATEGORY_SYSTEM,
-                SysUtil.PROP_KEY_JAVA_LATEST_INSTALLATION_PROGRESS,
-                currentPercentage);
+            SysUtil.setPropertyValue
+            (SysUtil.PROP_CATEGORY_SYSTEM,
+             SysUtil.PROP_KEY_JAVA_LATEST_INSTALLATION_PROGRESS,
+             currentPercentage);
         }
 
-        if (isUpdateNeeded(aCurrentValue, iMaxValue,
-                           iLastSifUpdate, iSifProgressStep))
+        if (aCurrentValue == 0 ||
+                aCurrentValue == iMaxValue ||
+                aCurrentValue >= iLastUiUpdate + iUiProgressStep ||
+                aCurrentValue <= iLastUiUpdate - iUiProgressStep)
         {
-            if (iSifNotifier != null)
-            {
-                iLastSifUpdate = aCurrentValue;
-                try
-                {
-                    iSifNotifier.notifyProgress(
-                        iSifNotifier.SUB_OP_NO, currentPercentage, 100);
-                }
-                catch (Throwable t)
-                {
-                    Log.logError(
-                        "InstallationNotifier: SifNotifier.notifyProgress threw exception", t);
-                }
-            }
-        }
-
-        if (isUpdateNeeded(aCurrentValue, iMaxValue,
-                           iLastUiUpdate, iUiProgressStep))
-        {
+            iLastUiUpdate = aCurrentValue;
             if (iInstallerUi != null)
             {
-                iLastUiUpdate = aCurrentValue;
                 Log.log("InstallationNotifier.set: update ui to " +
                         currentPercentage);
                 try
@@ -301,6 +274,21 @@ public class InstallationNotifier implements ExeProgressListener
                 {
                     Log.logError(
                         "InstallationNotifier: InstallerUi.updateProgress threw exception", t);
+                }
+            }
+            if (iSifNotifier != null)
+            {
+                Log.log("InstallationNotifier.set: update SifNotifier to " +
+                        currentPercentage);
+                try
+                {
+                    iSifNotifier.notifyProgress(
+                        iSifNotifier.SUB_OP_NO, currentPercentage, 100);
+                }
+                catch (Throwable t)
+                {
+                    Log.logError(
+                        "InstallationNotifier: SifNotifier.notifyProgress threw exception", t);
                 }
             }
         }
@@ -393,25 +381,5 @@ public class InstallationNotifier implements ExeProgressListener
             Log.logError(
                 "InstallationNotifier: Deleting property failed", ex);
         }
-    }
-
-    /**
-     * Returns true if progress update is needed, false otherwise.
-     *
-     * @param aCurrent current progress value
-     * @param aMax maximum progress value
-     * @param aPrevious previously updated progress value
-     * @param aStep step between progress updates
-     */
-    private static boolean isUpdateNeeded(
-        int aCurrent, int aMax, int aPrevious, int aStep)
-    {
-        if (aCurrent == 0 || aCurrent == aMax ||
-            aCurrent >= aPrevious + aStep ||
-            aCurrent <= aPrevious - aStep)
-        {
-            return true;
-        }
-        return false;
     }
 }

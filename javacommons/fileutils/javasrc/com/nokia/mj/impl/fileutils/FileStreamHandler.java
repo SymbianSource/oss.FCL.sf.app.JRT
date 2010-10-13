@@ -240,6 +240,11 @@ class FileStreamHandler
         _writeData(iNativeHandle, aBytes, aOffset, aLength);
     }
 
+    protected void flush()
+    {
+        _flush(iNativeHandle);
+    }
+    
     /**
      * Closes all output streams.
      *
@@ -331,6 +336,8 @@ class FileStreamHandler
 
     private native void _writeData(int aNativePeer, byte[] aBytes, int aOffset,
                                    int aLength);
+                                   
+    private native void _flush(int aNativePeer);                                   
 
     private native void _closeFileStream(int aHandle);
 

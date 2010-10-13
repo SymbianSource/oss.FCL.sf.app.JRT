@@ -88,8 +88,8 @@ class RecordIdCache implements RecordListener
     private void insertRecordId(int aRecordId)
     {
         int[] temp = new int[iRecordIds.length + 1];
-        temp[iRecordIds.length] = aRecordId;
-        System.arraycopy(iRecordIds, 0, temp, 0, iRecordIds.length);
+        temp[0] = aRecordId;
+        System.arraycopy(iRecordIds, 0, temp, 1, iRecordIds.length);
         iRecordIds = temp;
     }
 

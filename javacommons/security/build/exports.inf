@@ -27,12 +27,9 @@ PRJ_EXPORTS
 
 #include <platform_paths.hrh>
 
-// Configuration interface for javasecurity
 #ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS 
-// Public configuration interface is named as CI_javasecurity.confml
-// and it is located outside of jrt package. The name of private
-// configuration interface is javasecurity2.confml.
 ../conf/javasecurity2.confml        APP_LAYER_CONFML(javasecurity.confml)
+../conf/CI_javasecurity.confml      APP_LAYER_CONFML(CI_javasecurity.confml)
 #else
 ../conf/javasecurity.confml         APP_LAYER_CONFML(javasecurity.confml)
 #endif /* RD_JAVA_S60_RELEASE_10_1_ONWARDS */

@@ -95,6 +95,7 @@ typedef struct auth_credentials_st
     char * domain_category;
     char * jar_hash;
     char * root_hash;
+    char * root_id;
     int chain_index;
     int predefined_domain_category;
     CERT_DETAILS* signing_cert;
@@ -120,6 +121,7 @@ public:
     static void getAuthInfo(JNIEnv*, jobjectArray, int, AUTH_INFO *);
     static jobject getJNICertDetails(JNIEnv *, const CERT_DETAILS);
     static jobjectArray getJNIAuthCredentials(JNIEnv *, std::vector<AUTH_CREDENTIALS*>);
+    static void computePublicKeyHash(X509 *, char *);
 private:
     static bool checkIMEI(const X509_EXTENSION *, const char *);
     static char * computeDigest1(const char*);

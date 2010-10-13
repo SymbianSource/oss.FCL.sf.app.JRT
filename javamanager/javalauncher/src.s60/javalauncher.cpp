@@ -92,7 +92,7 @@ static TInt getOneApplicationFromPackage(
     JavaStorageApplicationList_t  foundEntries;
 
 
-    // Get MIDlet-n from APPLICATION_PACKAGE_ATTRIBUTES_TABLE based on
+    // Get MIDlet-n from APPLICATION_PACKAGE_ATTRIBUTES_TABLE based on 
     // PACKAGE_ID and NAME.
     attribute.setEntry(ID, aPackageId);
     findPattern.insert(attribute);
@@ -107,7 +107,7 @@ static TInt getOneApplicationFromPackage(
         return KErrNotFound;
     }
 
-    // Found the MIDlet-n argument. Now getting the MIDlet name and
+    // Found the MIDlet-n argument. Now getting the MIDlet name and 
     // main class. Name is the first argument and main class is the last
     // in the comma separated list.
     std::wstring value = foundEntries.front().begin()->entryValue();
@@ -549,10 +549,6 @@ TInt getCmdLineAndUidL(HBufC **aCmdLine, TInt *aUid, TBool *aBackGroundLaunch)
         err = getUidFromCommandLine(cmdLineBuf, uid);
         if (KErrNone != err)
         {
-            ELOG1WSTR(EJavaCaptain,
-                "JavaLauncher: process command line was %s",
-                 (wchar_t *)(cmdLineBuf.PtrZ()));
-
             CleanupStack::PopAndDestroy(pBufCmdLine);
             CleanupStack::PopAndDestroy(commandLine);
             return err;
@@ -676,8 +672,8 @@ TInt startJavaCaptain()
         LOG(EJavaCaptain, EInfo, "javalauncher: startJavaCaptain javacaptain.exe was started ok");
 #endif
 
-        // Wait 3 seconds so that Java Captain has time to start and get read to answer Comms
-        User::After(3000000); // codescanner::userafter
+        // Wait 3 seconds so that Java Captain has time to start
+        User::After(3000000);
     }
     else
     {
@@ -776,8 +772,6 @@ TInt handleLaunchL(void)
         ELOG1(EJavaCaptain,
               "javalauncher: OMJ app launch: Exception %s caught", e.what());
     }
-
-    delete pBufCmdLine;
 
     return err;
 }

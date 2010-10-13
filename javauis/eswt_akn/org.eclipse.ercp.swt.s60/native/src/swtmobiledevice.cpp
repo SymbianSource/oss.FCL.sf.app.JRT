@@ -11,7 +11,6 @@
 
 
 #include <hal.h>
-#include <e32svr.h>
 #include <aknsoundsystem.h>
 #include <aknappui.h>
 #include <aknenv.h>
@@ -49,7 +48,7 @@ TInt CSwtMobileDevice::HwScreenCount()
 // CSwtMobileDevice::GetHwInputs
 // ---------------------------------------------------------------------------
 //
-void CSwtMobileDevice::GetHwInputsL(
+void CSwtMobileDevice::GetHwInputs(
     RArray<CSwtMobileDevice::TSwtHwInput>& aInputs)
 {
     TInt mask;
@@ -69,9 +68,9 @@ void CSwtMobileDevice::GetHwInputsL(
             tempInput.iLocation = MSwtMobileDevice::ELocal;
         }
         tempInput.iType = MSwtInput::ESoftKeys;
-        aInputs.AppendL(tempInput);
+        aInputs.Append(tempInput);
         tempInput.iType = MSwtInput::EFullKeyboard;
-        aInputs.AppendL(tempInput);
+        aInputs.Append(tempInput);
     }
 
     if (mask & EKeyboard_Keypad)
@@ -85,9 +84,9 @@ void CSwtMobileDevice::GetHwInputsL(
             tempInput.iLocation = MSwtMobileDevice::ELocal;
         }
         tempInput.iType = MSwtInput::ESoftKeys;
-        aInputs.AppendL(tempInput);
+        aInputs.Append(tempInput);
         tempInput.iType = MSwtInput::EKeyPad;
-        aInputs.AppendL(tempInput);
+        aInputs.Append(tempInput);
     }
 }
 

@@ -22,7 +22,7 @@ CAPABILITY all -tcb -allfiles -drm
 #include <../../../../../inc/java_stdcpp_support_for_exe.hrh>
 #include <platform_paths.hrh>
 
-APP_LAYER_SYSTEMINCLUDE
+SYSTEMINCLUDE /epoc32/include 
 
 USERINCLUDE ../../../inc
 USERINCLUDE ../../../../../tools/cpputest/include/cpputest

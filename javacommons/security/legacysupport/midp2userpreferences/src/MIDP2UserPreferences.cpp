@@ -22,8 +22,8 @@
 #include "UserPreferencesIterator.h"
 #include "MIDletSuiteUserPreferences.h"
 #include "MIDletSuiteCustomAttributes.h"
-#include "MUserSecurityPreferencesTable.h"
-#include "j2me/midp2/security/MSecurityPolicyV2.h"
+#include <MUserSecurityPreferencesTable.h>
+#include <MSecurityPolicyV2.h>
 #include "SecurityPreferences.h"
 #include "javauid.h"
 

@@ -220,6 +220,7 @@ JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_http_HttpConnectionNative__1get
 
 jstring GetUserAgentL(JNIEnv *aJni, jboolean aMidpRuntime)
 {
+
     jstring header = NULL;
 
     if (aMidpRuntime == false)
@@ -290,6 +291,6 @@ jstring GetUserAgentL(JNIEnv *aJni, jboolean aMidpRuntime)
 
         CleanupStack::PopAndDestroy(repository);
     }
-    LOG(ESOCKET,EInfo,"GetUserAgentL() -");
+
     return header;
 }

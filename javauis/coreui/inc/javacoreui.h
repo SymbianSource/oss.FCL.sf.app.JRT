@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -20,11 +20,9 @@
 
 #include <memory>
 
-#include "libraryloaderexception.h"
 #include "dynamiclibloader.h"
 #include "javauid.h"
 #include "javacoreuiparams.h"
-#include "logger.h"
 
 namespace java // codescanner::namespace
 {
@@ -74,88 +72,93 @@ public:
     * @param[out] loader User must store this argument as long as it needs
     *                    to run any code in the shared library. No other
                          APIs of the loader is needed to use.
-    * @return true if the dll could be loaded and the start method was
-    *         succesfully called.
+    * @return A reference to instance implementing CoreUi in
     * success case.
     * @throws java::util::ExceptionBase or std::exception in error cases.
     */
-    static bool start(std::auto_ptr<java::util::DynamicLibLoader>& loader,
-                      const java::util::Uid& appUid,
-                      CoreUiParams* uiParams = 0);
+    static CoreUi&
+    getUiInstance(std::auto_ptr<java::util::DynamicLibLoader>& loader);
 
     /**
     * This inline method will close the core UI unless already closed and
     * clean resources.
     *
     * @param[in] loader A loeader that was used to load the dll.
-    * @return true if the dll could be loaded and the release method was
-    *         succesfully called.
     * @throws java::util::ExceptionBase or std::exception in error cases.
     */
-    static bool releaseUi(std::auto_ptr<java::util::DynamicLibLoader>& loader);
+    static void releaseUi(const std::auto_ptr<java::util::DynamicLibLoader>& loader);
 };
 
-} // end namespace ui
-} // end namespace java
+#if defined RD_JAVA_UI_QT
+// This is an empty CoreUi impl for Java 3.0
+class CoreUiStub : public CoreUi
+{
+public:
+    CoreUiStub() {}
+    virtual ~CoreUiStub() {}
+    virtual void init(const java::util::Uid& /*midletUid*/,
+                      CoreUiParams* /*uiParams*/) {}
+
+    virtual void start(const java::util::Uid& appUid,
+                       CoreUiParams* uiParams = 0) {}
+};
+#endif // RD_JAVA_UI_QT
+
+} //end namespace ui
+} //end namespace java
 
 
-const char* const COREUI_LIB_NAME = "javacoreui";
-// START OF INLINE METHODS
+//START OF INLINE METHODS
 inline java::ui::CoreUi::~CoreUi() {}
 
-inline bool java::ui::CoreUi::start(
-    std::auto_ptr<java::util::DynamicLibLoader>& loader,
-    const java::util::Uid& appUid,
-    CoreUiParams* uiParams)
+inline java::ui::CoreUi& java::ui::CoreUi::getUiInstance
+(std::auto_ptr<java::util::DynamicLibLoader>& loader)
 {
+#if defined RD_JAVA_UI_QT
+
+    // The stub impl leaks memory, but is ok, since this
+    // is not in use in MCL, but is for future development
+    // enabler.
+    CoreUiStub* stub = new CoreUiStub();
+    return *stub;
+
+#else // RD_JAVA_UI_QT
+
     if (loader.get() == 0)
     {
-        // Create an instance of DynamicLibLoader.
-        loader.reset(new java::util::DynamicLibLoader(COREUI_LIB_NAME));
+        //Create an instance of DynamicLibLoader.
+        loader.reset(new java::util::DynamicLibLoader("javacoreui"));
     }
 
-    try
-    {
-        // Load the javaui and locates method getUiInstance. If getFunction
-        // succeeds were are certain that createUiFunc points to valid method.
-        GetUiInstance getUiInstance =
-            reinterpret_cast<GetUiInstance>(loader->getFunction("getUiInstance",
-                                            true));
-        // Call the method which will create the UI.
-        getUiInstance().start(appUid, uiParams);
-        return true;
-    }
-    catch (java::util::LibraryLoaderException& ex)
-    {
-        loader.reset();
-        LOG1(EJavaUI, EInfo, "No coreUi available (start): %s", ex.toString().c_str());
-    }
-    return false;
+    //Load the javaui and locates method getUiInstance. If getFunction
+    //succeeds were are certain that createUiFunc points to valid method.
+    GetUiInstance getUiInstance =
+        reinterpret_cast<GetUiInstance>(loader->getFunction("getUiInstance",
+                                        true));
+
+    //Call the method which will create the UI.
+    return getUiInstance();
+
+#endif // RD_JAVA_UI_QT
 }
 
-inline bool java::ui::CoreUi::releaseUi(
-    std::auto_ptr<java::util::DynamicLibLoader>& loader)
+inline void java::ui::CoreUi::releaseUi(
+    const  std::auto_ptr<java::util::DynamicLibLoader>& loader)
 {
-    if (loader.get() == 0)
-    {
-        // Create an instance of DynamicLibLoader.
-        loader.reset(new java::util::DynamicLibLoader(COREUI_LIB_NAME));
-    }
-    try
-    {
-        ReleaseUi releaseUi =
-            reinterpret_cast<ReleaseUi>(loader->getFunction("releaseUi", true));
+#ifndef RD_JAVA_UI_QT
+    //Load the javaui and locates method getUiInstance. If getFunction
+    //succeeds were are certain that createUiFunc points to valid method.
+    ReleaseUi releaseUi =
+        reinterpret_cast<ReleaseUi>(loader->getFunction("releaseUi", true));
 
-        // Call the method which will release UI resources.
-        releaseUi();
-        return true;
-    }
-    catch (java::util::LibraryLoaderException& ex)
-    {
-        loader.reset();
-        LOG1(EJavaUI, EInfo, "No coreUi available (release): %s", ex.toString().c_str());
-    }
-    return false;
+    //Call the method which will release UI resources.
+    releaseUi();
+
+#else // RD_JAVA_UI_QT
+
+    return;
+
+#endif // RD_JAVA_UI_QT
 }
 
 #endif // JAVACOREUI_H

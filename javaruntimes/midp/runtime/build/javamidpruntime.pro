@@ -23,7 +23,7 @@ LIBS += -ljavacomms -ljavasecurity
         
 
 symbian {
-    INCLUDEPATH += /epoc32/include/ecom     # Due to schemehandler.inl in S60 5.0 2009w18 and SPB 10.1
+    INCLUDEPATH += /epoc32/include/ecom
     LIBS += -lecom -lflogger -lDrmRightsInfo -lcaf -lDrmHelper -lapgrfx -lapparc -ljavautils
 }
 

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -38,6 +38,7 @@ public class CheckJarPackages extends ExeStep
         // the installation drive. This is needed to determine
         // if tamper detection is needed.
         AuthenticationModule.getInstance().setMediaId(
+            ball.iStorageHandler.getSession(),
             ball.iSuite.getUid(), ball.iSuite.getMediaId());
 
         // Application package scanning must be skipped if instructed so
@@ -72,8 +73,7 @@ public class CheckJarPackages extends ExeStep
         // Application touch support detection is not needed
         // if Nokia-MIDlet-On-Screen-Keypad has been defined.
         boolean touchDetection = true;
-        if (ball.getAttributeValue("Nokia-MIDlet-On-Screen-Keypad") != null &&
-            ball.iSuite.getOnScreenKeypad() != SuiteInfo.OSK_UNDEFINED)
+        if (ball.getAttributeValue("Nokia-MIDlet-On-Screen-Keypad") != null)
         {
             touchDetection = false;
         }

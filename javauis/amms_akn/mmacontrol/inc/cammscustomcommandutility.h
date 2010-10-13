@@ -22,7 +22,7 @@
 //  INCLUDES
 #include <e32base.h>
 #include <CustomCommandUtility.h>
-#include <mmf/common/mmfcontroller.h>
+#include <mmfcontroller.h>
 
 // CLASS DECLARATION
 

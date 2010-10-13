@@ -19,7 +19,7 @@
 #ifndef JSBCDATAOWNER_H
 #define JSBCDATAOWNER_H
 
-#include <connect/abclient.h>
+#include <abclient.h>
 
 namespace java
 {

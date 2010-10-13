@@ -73,7 +73,7 @@ omj {
       include(symbian_uids.pri)
 
       DEFINES += __SYMBIAN32__
-      DEFINES += J9EPOC32
+      DEFINES += J9EPOC32 RD_JAVA_OMJ_FSERVER
 
       LIBS += -llibpthread
 
@@ -132,11 +132,7 @@ omj {
           MMP_RULES += " OS_LAYER_STDCPP_SYSTEMINCLUDE"
         }
       }
-
   }
-
-  # Set version if not defined
-  isEmpty(VERSION):!isEmpty(RD_JAVA_BIN_VERSION): VERSION = $${RD_JAVA_BIN_VERSION}
 
   # Define generated paths
   JXE_SOURCE_PATH    = $${JAVA_ARTIFACTS}

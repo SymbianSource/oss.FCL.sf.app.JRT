@@ -297,7 +297,7 @@ final class StorageSessionImpl implements StorageSession
      */
     private void ensureNonEmpty(Uid aUid) throws StorageException
     {
-        if (aUid == null || aUid.toString().equals(""))
+        if (aUid == null || aUid.equals(""))
         {
             Logger.ELOG(Logger.EJavaStorage, "Invalid argument");
             throw new StorageException("Invalid argument");

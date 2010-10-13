@@ -22,24 +22,7 @@
 #include "logger.h"
 #include "connectionmanager.h"
 
-#define localhost_len   20
 int GetlocalIPAdressL(char *localaddr, int aMidletIapId, int aApType);
-char* GetlocalHostNameL();
-
-char* SocketLocalHostInfo::getLocalHostName()
-{
-    char* localhostname =NULL;
-    TRAPD(err,localhostname = GetlocalHostNameL());
-    ILOG1(ESOCKET, "err %d ", err);
-    if (err != KErrNone)
-    {
-        localhostname = new char[localhost_len];
-        strcpy(localhostname,"localhost");
-        return localhostname;
-    }
-    else
-        return localhostname;
-}
 
 OS_EXPORT int SocketLocalHostInfo::getLocalAddress(int /* aSd */, char *aLocalAddr,
         int aMidletIapId, int aApType)
@@ -207,41 +190,3 @@ int GetlocalIPAdressL(char *localaddr, int aMidletIapId, int aType)
 
 
 }
-
-char* GetlocalHostNameL()
-{
-    TUint32 activeIapId = 0;
-
-    TConnectionInfoBuf connectionInfo;
-    TUint count = 0;
-    RSocketServ socketServ;
-    RSocket sock;
-    RConnection conn;
-
-    User::LeaveIfError(socketServ.Connect());
-    User::LeaveIfError(sock.Open(socketServ, KAfInet, KSockStream,
-                                 KProtocolInetTcp));
-    User::LeaveIfError(conn.Open(socketServ));
-    User::LeaveIfError(conn.EnumerateConnections(count));
-
-    char* localhost = new char[localhost_len];
-
-    if (count <= 0)
-    {
-        strcpy(localhost,"localhost");
-    }
-    else
-    {
-
-        User::LeaveIfError(conn.GetConnectionInfo(1, connectionInfo));
-        activeIapId = connectionInfo().iIapId;
-        getIPAddressL(activeIapId,localhost);
-    }
-
-    conn.Close();
-    sock.Close();
-    socketServ.Close();
-
-    return localhost;
-}
-

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -52,8 +52,6 @@ public class InstallerEngineTest extends TestCase implements InstallerMain
     {
         TestSuite suite = new TestSuite(this.getClass().getName());
 
-        String runIndex = System.getProperty("com.nokia.mj.impl.installer.test.param1");
-
         if (Platform.isLinux())
         {
             // In S60 this would be interactive test, so disable it there.
@@ -66,9 +64,6 @@ public class InstallerEngineTest extends TestCase implements InstallerMain
             }));
         }
 
-        if (runIndex == null || runIndex.equalsIgnoreCase("run1"))
-        {
-        // Run 1
         suite.addTest(new InstallerEngineTest("testMidletMessageOk", new TestMethod()
         {
             public void run(TestCase tc)
@@ -108,11 +103,7 @@ public class InstallerEngineTest extends TestCase implements InstallerMain
                 ((InstallerEngineTest)tc).test3AppsOk();
             }
         }));
-        }
 
-        if (runIndex == null || runIndex.equalsIgnoreCase("run2"))
-        {
-        // Run 2
         suite.addTest(new InstallerEngineTest("testDownloadJadOk", new TestMethod()
         {
             public void run(TestCase tc)
@@ -224,11 +215,7 @@ public class InstallerEngineTest extends TestCase implements InstallerMain
                 ((InstallerEngineTest)tc).testNoJavaBinRoot();
             }
         }));
-        }
 
-        if (runIndex == null || runIndex.equalsIgnoreCase("run3"))
-        {
-        // Run 3
         suite.addTest(new InstallerEngineTest("testBlockUninstall", new TestMethod()
         {
             public void run(TestCase tc)
@@ -252,11 +239,7 @@ public class InstallerEngineTest extends TestCase implements InstallerMain
                 ((InstallerEngineTest)tc).testApplicationInfo();
             }
         }));
-        }
 
-        if (runIndex == null || runIndex.equalsIgnoreCase("run4"))
-        {
-        // Run 4
         suite.addTest(new InstallerEngineTest("testInstallOptions", new TestMethod()
         {
             public void run(TestCase tc)
@@ -272,7 +255,6 @@ public class InstallerEngineTest extends TestCase implements InstallerMain
                 ((InstallerEngineTest)tc).testInstallAuthAndBig();
             }
         }));
-        }
 
         com.nokia.mj.impl.utils.OmjTestRunner.run(suite);
     }
@@ -325,15 +307,6 @@ public class InstallerEngineTest extends TestCase implements InstallerMain
     {
         assertTrue("IntegrityService root dir exists",
                    !FileUtils.exists(FileUtils.getIntegrityServiceRoot()));
-    }
-
-    /**
-     */
-    public String getTestServer()
-    {
-        String server = System.getProperty("com.nokia.mj.impl.installer.test.server");
-        assertNotNull("-server=<address>:<port> argument required.", server);
-        return server;
     }
 
     /**
@@ -437,12 +410,12 @@ public class InstallerEngineTest extends TestCase implements InstallerMain
         assertNoIsDir();
 
         // List.
-        //Log.logOut("InstallerEngineTest.doInstallUninstall: list -v");
-        //result = Installer.mainWithResult(new String[] { "list", "-v" });
-        //assertResult(result, Installer.ERR_NONE);
-        //Log.logOut("InstallerEngineTest.doInstallUninstall: list -otastatus");
-        //result = Installer.mainWithResult(new String[] { "list", "-otastatus" });
-        //assertResult(result, Installer.ERR_NONE);
+        Log.logOut("InstallerEngineTest.doInstallUninstall: list -v");
+        result = Installer.mainWithResult(new String[] { "list", "-v" });
+        assertResult(result, Installer.ERR_NONE);
+        Log.logOut("InstallerEngineTest.doInstallUninstall: list -otastatus");
+        result = Installer.mainWithResult(new String[] { "list", "-otastatus" });
+        assertResult(result, Installer.ERR_NONE);
 
         // Update with cancellation.
         Log.logOut("InstallerEngineTest.doInstallUninstall: update with cancellation " + aFilename);
@@ -597,38 +570,38 @@ public class InstallerEngineTest extends TestCase implements InstallerMain
     public void testDownloadJadOk()
     {
         Log.logOut("InstallerEngineTest.testDownloadJadOk begins");
-        SuiteInfo suite = new SuiteInfo("HelloWorld", "Nokia");
-        doInstallUninstall(suite, "http://" + getTestServer() + "/installertest/HelloWorld_ota.jad", true, iDefaultOptions);
+        SuiteInfo suite = new SuiteInfo("JBenchmark2", "Kishonti LP");
+        doInstallUninstall(suite, "http://195.134.231.83:7070/omjserver/resources/omj/T00000900_JBenchmark2_gcf.jsp", true, iDefaultOptions);
     }
 
     public void testDownloadJarOk()
     {
         Log.logOut("InstallerEngineTest.testDownloadJarOk begins");
-        SuiteInfo suite = new SuiteInfo("HelloWorld", "Nokia");
-        doInstallUninstall(suite, "http://" + getTestServer() + "/installertest/HelloWorld.jar", false, iDefaultOptions);
+        SuiteInfo suite = new SuiteInfo("JBenchmark2", "Kishonti LP");
+        doInstallUninstall(suite, "http://195.134.231.83:7070/omjserver/resources/omj/JBenchmark2.jar", false, iDefaultOptions);
     }
 
     public void testDownloadJadHttpRedirectOk()
     {
         Log.logOut("InstallerEngineTest.testDownloadJadHttpRedirectOk begins");
-        SuiteInfo suite = new SuiteInfo("HelloWorld_redirect", "Nokia");
-        doInstallUninstall(suite, "http://" + getTestServer() + "/installertest/redirect?name=HelloWorld_redirect.jad&count=5", true, iDefaultOptions);
+        SuiteInfo suite = new SuiteInfo("JBenchmark2", "Kishonti LP");
+        doInstallUninstall(suite, "http://195.134.231.83:7070/RedirectServlet/redirect?name=JBenchmark2.jad&count=5", true, iDefaultOptions);
     }
 
     public void testDownloadJarHttpRedirectOk()
     {
         Log.logOut("InstallerEngineTest.testDownloadJarHttpRedirectOk begins");
-        SuiteInfo suite = new SuiteInfo("HelloWorld_redirect", "Nokia");
-        doInstallUninstall(suite, "http://" + getTestServer() + "/installertest/redirect?name=HelloWorld_redirect.jar", false, iDefaultOptions);
+        SuiteInfo suite = new SuiteInfo("JBenchmark2", "Kishonti LP");
+        doInstallUninstall(suite, "http://195.134.231.83:7070/RedirectServlet/redirect?name=JBenchmark2.jar", false, iDefaultOptions);
     }
 
     public void testDownloadJadHttpAuthOk()
     {
         Log.logOut("InstallerEngineTest.testDownloadJadHttpAuthOk begins");
-        SuiteInfo suite = new SuiteInfo("HelloWorld_http_auth", "Nokia");
+        SuiteInfo suite = new SuiteInfo("DS_Snow_http_auth", "DS_Effects");
         iDefaultOptions.addElement("-username=guest");
         iDefaultOptions.addElement("-password=guest");
-        doInstallUninstall(suite, "http://" + getTestServer() + "/installertest/httpauth/HelloWorld_http_auth.jad", true, iDefaultOptions);
+        doInstallUninstall(suite, "http://195.134.231.83:7070/httpauth/DS_Snow_http_auth.jad", true, iDefaultOptions);
     }
 
     public void testDownloadJadHttpAuthNok()
@@ -638,7 +611,7 @@ public class InstallerEngineTest extends TestCase implements InstallerMain
         {
             "install",
             "-silent",
-            "-jad=http://" + getTestServer() + "/installertest/httpauth/HelloWorld_http_auth.jad",
+            "-jad=http://195.134.231.83:7070/httpauth/DS_Snow_http_auth.jad",
         };
         int result = Installer.mainWithResult(args);
         // Check result code.
@@ -649,7 +622,7 @@ public class InstallerEngineTest extends TestCase implements InstallerMain
                    iItu.isExceptionReason
                    (Installer.getExecuteException(),
                     InstallerErrorMessage.INST_CANCEL,
-                    InstallerDetailedErrorMessage.INST_CANCEL,
+                    InstallerDetailedErrorMessage.NO_MSG,
                     OtaStatusCode.USER_CANCELLED));
         assertTrue("installed app uid should not exist", Installer.iInstalledApps.length == 0);
     }
@@ -661,7 +634,7 @@ public class InstallerEngineTest extends TestCase implements InstallerMain
         {
             "install",
             "-silent",
-            "-jad=http://" + getTestServer() + "/installertest/redirect?name=HelloWorld_redirect.jad&count=6",
+            "-jad=http://195.134.231.83:7070/RedirectServlet/redirect?name=JBenchmark2.jad&count=6",
         };
         int result = Installer.mainWithResult(args);
         // Check result code.
@@ -704,7 +677,7 @@ public class InstallerEngineTest extends TestCase implements InstallerMain
         {
             "install",
             "-silent",
-            "-jad=http://" + getTestServer() + "/installertest/HelloWorld_8mb.jad",
+            "-jad=http://195.134.231.83:7070/omjserver/resources/omj/T00000900_JBenchmark2_8mb_gcf.jsp",
         };
         Log.log("InstallerEngineTest.testDownloadJadCancel: installation starts");
         int result = Installer.mainWithResult(args);
@@ -717,7 +690,7 @@ public class InstallerEngineTest extends TestCase implements InstallerMain
                    iItu.isExceptionReason
                    (Installer.getExecuteException(),
                     InstallerErrorMessage.INST_CANCEL,
-                    InstallerDetailedErrorMessage.INST_CANCEL,
+                    InstallerDetailedErrorMessage.NO_MSG,
                     OtaStatusCode.USER_CANCELLED));
         assertTrue("installed app uid should not exist", Installer.iInstalledApps.length == 0);
         Log.log("InstallerEngineTest.testDownloadJadCancel: end");
@@ -1012,7 +985,7 @@ public class InstallerEngineTest extends TestCase implements InstallerMain
         callInstallerOk(new String[] { "list", "-systemproperties" });
         callInstallerOk(new String[] { "launch", "-nouid" });
         callInstallerOk(new String[] { "launch", "-uid=invaliduid" });
-        callInstallerOk(new String[] { "uninstallall", "-silent" });
+        callInstallerOk(new String[] { "uninstallall" });
         callInstallerOk(new String[] { "unregister" });
         callInstallerOk(new String[] { "test", "-nomainclass" });
     }
@@ -1133,10 +1106,10 @@ public class InstallerEngineTest extends TestCase implements InstallerMain
     {
         Log.logOut("InstallerEngineTest.testInstallAuthAndBig begins");
         // Do first installation with doInstallUninstall helper
-        SuiteInfo suite = new SuiteInfo("HelloWorld_http_auth", "Nokia");
+        SuiteInfo suite = new SuiteInfo("DS_Snow_http_auth", "DS_Effects");
         iDefaultOptions.addElement("-username=guest");
         iDefaultOptions.addElement("-password=guest");
-        doInstallUninstall(suite, "http://" + getTestServer() + "/installertest/httpauth/HelloWorld_http_auth.jad", true, iDefaultOptions);
+        doInstallUninstall(suite, "http://195.134.231.83:7070/httpauth/DS_Snow_http_auth.jad", true, iDefaultOptions);
 
         // Then start installation which downloads a large file.
         Log.log("InstallerEngineTest.testInstallAuthAndBig begin to install big app");
@@ -1144,7 +1117,7 @@ public class InstallerEngineTest extends TestCase implements InstallerMain
         {
             "install",
             "-silent",
-            "-jad=http://" + getTestServer() + "/installertest/HelloWorld_8mb.jad",
+            "-jad=http://195.134.231.83:7070/omjserver/resources/omj/T00000900_JBenchmark2_8mb_gcf.jsp",
         };
         int result = Installer.mainWithResult(args);
         // Check result code.

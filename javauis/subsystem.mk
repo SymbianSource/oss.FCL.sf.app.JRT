@@ -23,14 +23,13 @@ include $(JAVA_SRC_ROOT)/build/Makefile.defs
 NONQTSUBSYSTEMS += \
 	coreui/build
 
-COMPONENTS += nokiasound/build
 
 #
 # Common legacy utilities
 #
+SUBSYSTEMS += javalegacyutils
 
-SYMBIAN_ONLY += nokiasound/build
-
+SYMBIAN_ONLY += javalegacyutils
 
 
 #

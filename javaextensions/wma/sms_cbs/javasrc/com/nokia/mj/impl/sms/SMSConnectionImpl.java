@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -28,7 +28,7 @@ import javax.wireless.messaging.MessageConnection;
 
 import com.nokia.mj.impl.utils.Logger;
 import com.nokia.mj.impl.smscbs.utils.WmaUrl;
-import com.nokia.mj.impl.rt.support.ShutdownListener;
+import com.nokia.mj.impl.rt.support.Finalizer;
 import com.nokia.mj.impl.rt.support.ApplicationUtils;
 /**
  * The SMSConnectionImpl used for sending and receiving Binary/Text Messages. It
@@ -96,6 +96,8 @@ public class SMSConnectionImpl implements MessageConnection
     private MessageListener iMessageListener;
 
     private WmaUrl iUri;
+    
+    private Finalizer iFinalizer;
 
     public SMSConnectionImpl(WmaUrl aMsgUri, boolean aServerMode)
     throws IOException
@@ -113,41 +115,34 @@ public class SMSConnectionImpl implements MessageConnection
         iCloseLock = new Object();
         iMessageLock = new Object();
         iSendLock = new Object();
-        //register for shutdown listening
-        setShutdownListener();
+        //register for Finalization
+        iFinalizer = registerForFinalization();
         Logger.LOG(Logger.EWMA, Logger.EInfo,
                    "- SMSConnectionImpl::SMSConnectionImpl");
     }
 
     /*
-     * This function registers this object for shutDown.
+     * This function registers for Finalization.
      */
-    private void setShutdownListener()
-    {
-        Logger.LOG(Logger.EWMA, Logger.EInfo,
-                   "+ SMSConnectionImpl::setShutdownListener");
-        // Get the insatnce of ApplicationUtils.
-        ApplicationUtils appUtils = ApplicationUtils.getInstance();
 
-        // Get the name of the application.
-        appUtils.addShutdownListener(new ShutdownListener()
+
+    public Finalizer registerForFinalization()
+    {
+        return new Finalizer()
         {
-            //The method that gets called when Application is shutting down
-            public void shuttingDown()
+            public void finalizeImpl()
             {
                 try
                 {
                     close();
                 }
-                catch (IOException ex)
+                catch (IOException e)
                 {
                     //Nothing to do, just ignore
-                    Logger.ELOG(Logger.EWMA, ex.toString(), ex);
+                    Logger.LOG(Logger.EWMA, Logger.EInfo, e.toString());
                 }
             }
-        });
-        Logger.LOG(Logger.EWMA, Logger.EInfo,
-                   "- SMSConnectionImpl::setShutdownListener");
+        };
     }
 
     /**

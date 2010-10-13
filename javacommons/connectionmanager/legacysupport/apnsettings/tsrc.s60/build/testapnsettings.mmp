@@ -22,9 +22,7 @@ CAPABILITY all -tcb -allfiles -drm
 #include <../../../../../../inc/java_stdcpp_support_for_exe.hrh>
 #include <platform_paths.hrh>
 
-USERINCLUDE /epoc32/include/cpputest    // Due to TestHarness.h
-
-USERINCLUDE ../../inc.s60
+USERINCLUDE /epoc32/include/cpputest
 USERINCLUDE ../../../../../../inc
 
 // Using main() as entry point

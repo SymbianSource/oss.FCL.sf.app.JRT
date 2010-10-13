@@ -16,11 +16,9 @@
 /swt/internal                      : 7
 /swt/expanded/internal             : 7
 /swt/mobile/internal               : 7
-/nokiauiapi_qt/src/com/nokia/mid/ui/internal    : 7
 /internal                          : 1
 /releng                            : 1
 ROOT/tools                         : 1
-ROOT/jrt_info			   : 1
 ROOT/javacommons/jvms/j9/s60       : 810
 /midprms                           : 102
 /webservices/javasrc               : 102

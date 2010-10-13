@@ -15,7 +15,7 @@
 #
 TEMPLATE = subdirs
 SUBDIRS += iapinfo/build/javaiapinfo.pro 
-SUBDIRS += mobinfo/build/javamobinfo.pro 
+SUBDIRS += mobinfo/build/mobinfo.pro 
 SUBDIRS += comm/build/javacomm.pro 
 SUBDIRS += globalindicators/build/javaglobalindicators.pro 
 SUBDIRS += webservices/build/javawebservices.pro 
@@ -23,7 +23,6 @@ SUBDIRS += satsa/build/javasatsa.pro
 SUBDIRS += location/build/javalocation.pro 
 SUBDIRS += sensor/build/javasensor.pro 
 SUBDIRS += broadcast_stub/build/javabroadcast.pro 
-SUBDIRS += centralrepository/build/javacentrep.pro 
 SUBDIRS += midppush 
 SUBDIRS += bluetooth 
 SUBDIRS += datagram 

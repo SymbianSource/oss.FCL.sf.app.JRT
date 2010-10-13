@@ -24,7 +24,8 @@ include(../../../inc/build_defines.pri)
 DEFINES += RD_JAVA_VOLUME_CONTROL
 DEFINES += RD_JAVA_OMA_DRM_V2
 
-INCLUDEPATH +=  ../animated_gif/inc \
+INCLUDEPATH +=  /epoc32/include/mmf/common \              
+                ../animated_gif/inc \
                 ../baseline/inc \
                 ../src_drmv2/inc \
                 ../directcontent/inc \
@@ -84,13 +85,13 @@ LIBS += -lAknIcon \
         -laknskinsrv \
         -lapgrfx \
         -lapmime \
-        -lbitmaptransforms \
+        -lBitmapTransforms \
         -lDRMHelper \
         -lDrmAudioPlayUtility \
-        -limageconversion \
+        -lImageConversion \
         -lIHL \
         -lMMFControllerFramework \
-        -lmediaclientaudio \
+        -lMediaClientAudio \
         -lMmfStandardCustomCommands \
         -lRemConCoreApi \
         -lRemConInterfaceBase \

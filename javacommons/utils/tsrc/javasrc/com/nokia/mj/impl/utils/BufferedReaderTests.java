@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -18,7 +18,7 @@
 
 package com.nokia.mj.impl.utils;
 
-import com.nokia.mj.impl.rt.test.UnitTestSuiteCreator;
+import com.nokia.mj.impl.installer.utils.InstallerMain;
 import com.nokia.mj.impl.utils.BufferedReader;
 
 import java.io.ByteArrayInputStream;
@@ -33,14 +33,14 @@ import j2meunit.framework.TestSuite;
 /**
  * BufferedReader unit tests.
  */
-public class BufferedReaderTests extends TestCase implements UnitTestSuiteCreator
+public class BufferedReaderTests extends TestCase implements InstallerMain
 {
 
     private static final String TEST_DATA = "one\ntwo\nthree";
     private static final int MAX_BUF_SIZE = 16;
 
     // Begin j2meunit test framework setup
-    public TestSuite createTestSuite(String[] args)
+    public void installerMain(String[] args)
     {
         TestSuite suite = new TestSuite(this.getClass().getName());
 
@@ -80,7 +80,7 @@ public class BufferedReaderTests extends TestCase implements UnitTestSuiteCreato
             }
         }));
 
-        return suite;
+        com.nokia.mj.impl.utils.OmjTestRunner.run(suite);
     }
 
     public BufferedReaderTests()

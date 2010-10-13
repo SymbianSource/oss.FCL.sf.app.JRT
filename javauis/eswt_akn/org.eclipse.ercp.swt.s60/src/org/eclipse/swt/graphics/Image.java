@@ -14,9 +14,11 @@ package org.eclipse.swt.graphics;
 
 
 import java.io.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.symbian.*;
 import org.eclipse.swt.internal.FileCompatibility;
+import org.eclipse.swt.widgets.Display;
 
 
 /**
@@ -248,7 +250,34 @@ public final class Image implements Drawable
     {
         if (device == null) device = Device.getDevice();
         if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-        init(device, new ImageData(stream));
+        
+        try
+        {
+            init(device, new ImageData(stream));
+        }
+        catch (SWTException ex)
+        {
+            if (ex.code == SWT.ERROR_UNSUPPORTED_FORMAT)
+            {
+                Point size = (Point)(Display.getCurrent().getData("org.eclipse.swt.internal.image.loadSize"));
+                if (size == null)
+                {
+                    size = new Point(88, 88);
+                }
+                try
+                {
+                    stream.reset();
+                }
+                catch (IOException e)
+                {
+                }
+                init(device, OS.Image_NewFromSvgBuf(device.handle, Image.readImageStream(stream), size.x, size.y));
+            }
+            else
+            {
+                throw ex;
+            }
+        }
     }
 
     /**
@@ -282,7 +311,26 @@ public final class Image implements Drawable
     {
         if (device == null) device = Device.getDevice();
         if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-        init(device, new ImageData(filename));
+        try
+        {
+            init(device, new ImageData(filename));
+        }
+        catch (SWTException ex)
+        {
+            if (ex.code == SWT.ERROR_UNSUPPORTED_FORMAT)
+            {
+                Point size = (Point)(Display.getCurrent().getData("org.eclipse.swt.internal.image.loadSize"));
+                if (size == null)
+                {
+                    size = new Point(88, 88);
+                }
+                init(device, OS.Image_NewFromSvgFile(device.handle, filename, size.x, size.y));                
+            }
+            else
+            {
+                throw ex;
+            }
+        }
     }
     
     /**
@@ -386,6 +434,27 @@ public final class Image implements Drawable
     public int hashCode()
     {
         return handle;
+    }
+    
+    void init(Device device, int handle)
+    {
+        if (device == null) device = Device.getDevice();
+        if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+        if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES, null, device.getLastError());
+        
+        this.device = device;
+        this.handle = handle;
+        this.type = SWT.BITMAP;
+        
+        try
+        {
+            if (device.tracking) device.new_Object(this);
+        }
+        catch (Error e)
+        {
+            OS.Image_Dispose(device.handle, handle);
+            throw e;
+        }
     }
 
     void init(Device device, int width, int height)
@@ -652,9 +721,6 @@ public final class Image implements Drawable
         return "Image {" + handle + "}";
     }
 
-
-
-
     /**
      * The following functions are not part of the eSWT public api
      * @param fileName
@@ -688,6 +754,7 @@ public final class Image implements Drawable
         }
         return SWT.IMAGE_UNDEFINED;
     }
+    
     static int imageFormat(byte[] streamBytes)
     {
         if (isPNGFormat(streamBytes)) return SWT.IMAGE_PNG;
@@ -695,6 +762,7 @@ public final class Image implements Drawable
         if (isJPEGFormat(streamBytes)) return SWT.IMAGE_JPEG;
         return SWT.IMAGE_UNDEFINED;
     }
+    
     static boolean isPNGFormat(byte[] streamBytes)
     {
         if (streamBytes.length < 8) return false;
@@ -708,14 +776,16 @@ public final class Image implements Drawable
         if ((streamBytes[7] & 0xFF) != 10) return false; //<LINEFEED>
         return true;
     }
+    
     static boolean isGIFFormat(byte[] streamBytes)
     {
         if (streamBytes.length < 3) return false;
         if (streamBytes[0] != 'G') return false;
-        if (streamBytes[1]  != 'I') return false;
-        if (streamBytes[2]  != 'F') return false;
+        if (streamBytes[1] != 'I') return false;
+        if (streamBytes[2] != 'F') return false;
         return true;
     }
+    
     static boolean isJPEGFormat(byte[] streamBytes)
     {
         if (streamBytes.length < 2) return false;
@@ -723,6 +793,7 @@ public final class Image implements Drawable
         if ((streamBytes[1] & 0xFF) != 0xD8) return false;
         return true;
     }
+    
     /**
      * Reads the specified stream and returns the contents as a byte
      * array.
@@ -791,28 +862,8 @@ public final class Image implements Drawable
      */
     public static Image internal_new(Device device, int handle)
     {
-        if (device == null) device = Device.getDevice();
-        if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-        if (handle == 0)
-        {
-            SWT.error(SWT.ERROR_NO_HANDLES, null, device.getLastError());
-        }
-        
         Image image = new Image();
-        image.device = device;
-        image.handle = handle;
-        image.type = SWT.BITMAP;
-
-        try
-        {
-            if (device.tracking) device.new_Object(image);
-        }
-        catch (Error e)
-        {
-            OS.Image_Dispose(device.handle, handle);
-            throw e;
-        }
-        
+        image.init(device, handle);
         return image;
     }
 }

@@ -86,11 +86,11 @@ public:
     virtual void MdcRemoveContent(MDirectContent* aContent) = 0;
 
     /**
-     * Adds MMAPI content bound to this container.
+     * Adds content bound to this container. Container will not allow painting in this region
      *
      * @param aRect Content bounds
      */
-    virtual void MdcAddMMAPIContentBounds(const TRect& aRect) = 0;
+    virtual void MdcAddContentBounds(const TRect& aRect) = 0;
 
     /**
      * Removes one content bound from this container.
@@ -98,7 +98,7 @@ public:
      *
      * @param aRect Content bound to be removed.
      */
-    virtual void MdcRemoveMMAPIContentBounds(const TRect& aRect) = 0;
+    virtual void MdcRemoveContentBounds(const TRect& aRect) = 0;
 
     /**
      * Get a rect of a window (with respect to screen) on which content can be displayed.

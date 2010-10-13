@@ -165,13 +165,10 @@ public:
     void InitializeCbasL();
     void SetCba(CEikButtonGroupContainer* aCba);
     TBool ShowOkOptionsMenuL();
-    TBool ShowScreenOrHelpOptionsMenuL();
     TInt NumCommandsForOkOptionsMenu() const;
-    TInt NumCommandsForScreenOrHelpOptionsMenu() const;
     TInt GetHighestPriorityScreenOrHelpCommand() const;
     void SetItemCommandList(CMIDCommandList* aList, CMIDCommand* aMSKCommand);
     void SetMSKCommand(CMIDCommand* aMSKCommand);
-
     /**
      * Stores select command to Displayable
      * @param aSelectCommand a command used in MSK and in menu
@@ -267,6 +264,12 @@ public:
     void RemoveDirectContentArea(const TRect& aRect);
 
     /**
+    Checks if there were some direct content area added
+    @return ETrue if there no DC Area has been added
+    */
+    TBool NoDirectContentAreaDefined();
+
+    /**
      * Sets popup style TextBox boolean value. Called by CMIDTextBoxDialogControl when
      * TextBox presentation is pop-up.
      *
@@ -339,19 +342,6 @@ public:
      */
     void ReleaseOrientation();
 
-#ifdef RD_JAVA_NGA_ENABLED    
-    /**
-     * Gets the direct content areas that
-     * have been added to this displayable.
-     */
-    void GetDirectContentsRegion(RRegion& region) const;
-
-    /**
-     * Returns the number of direct content areas currently added to this displayable.
-     */
-    TInt DirectContentsCount() const;
-#endif
-
 private:
     // Construction and destruction
     CMIDDisplayable(MMIDEnv& aEnv,CMIDUIManager& aUIManager);
@@ -372,7 +362,7 @@ private:
     void HandleStandardCommandL(const TCommandEntry& aCmdEntry);
     void HandleItemCommandL(const TCommandEntry& aCmdEntry);
     TInt GetInternalCommandIdFor(CMIDCommand* aCommand) const;
-    void GetOkOptionsMenuCommandsL(RPointerArray<CMIDCommand>& aCommands) const;
+    void GetOkOptionsMenuCommands(RPointerArray<CMIDCommand>& aCommands) const;
     void ResetSoftKeysAndCommands(const RArray<CMIDCommandList*>& aLists);
 
     // Visual layouting and updating
@@ -488,7 +478,7 @@ private:
      * If content control is CMIDCanvas, returns pointer to it, NULL otherwise.
      * @since S60 9.2
      */
-    CMIDCanvas* GetContentCanvas() const;
+    CMIDCanvas* GetContentCanvas();
 
 private:
     CMIDAppUi* iAppUi;

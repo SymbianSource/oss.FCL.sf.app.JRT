@@ -21,10 +21,6 @@
 
 //  RESOURCE DEFINITIONS
 
-#ifndef ECOM_VERSION_NO
-#define ECOM_VERSION_NO 1
-#endif
-
 RESOURCE REGISTRY_INFO theInfo
     {
     resource_format_version = RESOURCE_FORMAT_VERSION_2;
@@ -46,7 +42,7 @@ RESOURCE REGISTRY_INFO theInfo
                     {
                     // KJavaLocalAppHandlerEcomImplUid
                     implementation_uid = 0x20028767;
-                    version_no   = ECOM_VERSION_NO;
+                    version_no   = 1;
                     display_name = "URL handler for javaapp scheme";
                     default_data = "javaapp";
                     opaque_data  = "";

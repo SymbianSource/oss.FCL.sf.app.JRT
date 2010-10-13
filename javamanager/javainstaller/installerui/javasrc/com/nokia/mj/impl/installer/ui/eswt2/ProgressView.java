@@ -80,13 +80,12 @@ public class ProgressView extends ViewBase
         if (iInstallerUi != null && iInstallerUi.getInstallInfo() != null)
         {
             // Add header.
-            addHeader(aMsg, iInstallerUi.getInstallInfo(), null);
+            addHeader(aMsg, iInstallerUi.getInstallInfo(), null, false);
         }
         else
         {
             setTitle(iMsg);
             iLabel = createLabel(iMsg, SWT.WRAP);
-            setCssId(iLabel, "heading");
         }
 
         iIndeterminate = aIndeterminate;
@@ -103,7 +102,6 @@ public class ProgressView extends ViewBase
             iProgressBar.setMaximum(100);
             iProgressBar.setSelection(iValue);
         }
-        setCssId(iProgressBar, "progressBar");
         GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
         gridData.horizontalSpan = getColumns();
         iProgressBar.setLayoutData(gridData);
@@ -117,8 +115,6 @@ public class ProgressView extends ViewBase
 
         // By default add cancel command to all progress bars.
         addCancelCommand();
-
-        iInstallerUi.loadCss();
     }
 
     /** Update text for this progress bar. */
@@ -173,17 +169,13 @@ public class ProgressView extends ViewBase
         {
             public void run()
             {
-                // Set horizontalSpan to 2 for one button,
-                // and to 1 for two buttons.
-                int horizontalSpan = 1;
-                GridData gridData = null;
                 iHideCommand = new Button(getCommandComposite(), SWT.PUSH);
-                setCssId(iHideCommand, "softKeyButton");
-                gridData = new GridData(GridData.FILL_HORIZONTAL);
-                gridData.horizontalSpan = horizontalSpan;
+                GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+                gridData.horizontalSpan = 1;
                 iHideCommand.setLayoutData(gridData);
                 iHideCommand.setText(InstallerUiTexts.get(InstallerUiTexts.HIDE));
-                iHideCommand.addSelectionListener(new SelectionListener()
+                iHideCommand.addSelectionListener
+                (new SelectionListener()
                 {
                     public void widgetDefaultSelected(SelectionEvent aEvent)
                     {
@@ -197,14 +189,13 @@ public class ProgressView extends ViewBase
                 addSoftKeyListenerFor(iHideCommand);
 
                 iCancelCommand = new Button(getCommandComposite(), SWT.PUSH);
-                setCssId(iCancelCommand, "softKeyButton");
-                //setCssId(iCancelCommand, "softKeyButtonWide");
                 gridData = new GridData(GridData.FILL_HORIZONTAL);
-                gridData.horizontalSpan = horizontalSpan;
+                gridData.horizontalSpan = 1;
                 iCancelCommand.setLayoutData(gridData);
                 iCancelCommand.setText(
                     InstallerUiTexts.get(InstallerUiTexts.CANCEL));
-                iCancelCommand.addSelectionListener(new SelectionListener()
+                iCancelCommand.addSelectionListener
+                (new SelectionListener()
                 {
                     public void widgetDefaultSelected(SelectionEvent aEvent)
                     {
@@ -243,11 +234,8 @@ public class ProgressView extends ViewBase
             public void run()
             {
                 getShell().setDefaultButton(null);
-                if (iHideCommand != null)
-                {
-                    iHideCommand.dispose();
-                    iHideCommand = null;
-                }
+                iHideCommand.dispose();
+                iHideCommand = null;
                 iCancelCommand.dispose();
                 iCancelCommand = null;
             }

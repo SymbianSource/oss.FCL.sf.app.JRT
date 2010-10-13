@@ -156,9 +156,10 @@ void CPositioner::RunL()
     case KErrAccessDenied: // Fallthrough
     case KErrUnknown: // Used in MLFW
         // Position request was canceled
-    case KErrCancel: // Fallthrough 
-        // Partial update feature is not supported. So Java tries to obtain
-        // location fixes until time specified in Java-side expires
+    case KErrCancel: // Fallthrough
+        // Bad implementation but due to partial fixes this cannot be fixed
+        // at the moment. Correct when partial fixes are supported. Java tries
+        // to obtain location fixes until time specified in Java-side expires
         // Delay response so that repeated calls to getLocation do not steal
         // all CPU time
     default:

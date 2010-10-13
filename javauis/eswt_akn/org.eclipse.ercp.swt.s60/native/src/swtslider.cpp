@@ -349,8 +349,8 @@ void CSwtSlider::UpdateSliderImageL()
         // Update the image size before the rotation of the image.
         iImageSize.SetSize(iImageSize.iHeight, iImageSize.iWidth);
 
-        iImagesRotator->AddImageL(iSliderImage);
-        iImagesRotator->AddImageL(iSliderImageMask);
+        iImagesRotator->AddImage(iSliderImage);
+        iImagesRotator->AddImage(iSliderImageMask);
 
         iImagesRotator->Start(this);
     }

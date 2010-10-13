@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -34,11 +34,17 @@ public class NotifyJsrPlugins extends ExeStep
     {
         UninstallBall ball = (UninstallBall)aBall;
 
-        // If any Jsr plugins, notify plugins.
+        // If any Jsr plugins, notify plugins
         if (ball.iJsrPluginNotifier.anyJsrPlugins())
         {
-            ball.iJsrPluginNotifier.notifyUninstallation(
-                createInstallerExtensionInfo(ball));
+            // Create info object to be passed to plugins
+            InstallerExtensionInfo info = new InstallerExtensionInfo();
+            info.iUid = ball.iSuite.getUid();
+            info.iUpgrade = false;
+            info.iSilent = ball.isSilent();
+            info.iAttributes = ball.iSuite.getAttributes();
+
+            ball.iJsrPluginNotifier.notifyUninstallation(info);
         }
     }
 
@@ -46,31 +52,27 @@ public class NotifyJsrPlugins extends ExeStep
     {
         UninstallBall ball = (UninstallBall)aBall;
 
-        // Notify possible plugins that uninstallation has been cancelled.
+        // Notify possible plugins that uninstallation can been cancelled
         if (ball.iJsrPluginNotifier.anyJsrPlugins())
         {
-            ball.iJsrPluginNotifier.notifyRollbackUninstall(
-                createInstallerExtensionInfo(ball));
-        }
-    }
+            // Create info object to be passed to plugins
+            InstallerExtensionInfo info = new InstallerExtensionInfo();
+            // Beware, it is possible that aBall has not been fully
+            // initialized
+            if (null == ball.iSuite)
+            {
+                info.iUid = null;
+                info.iAttributes = null;
+            }
+            else
+            {
+                info.iUid = ball.iSuite.getUid();
+                info.iAttributes = ball.iSuite.getAttributes();
+            }
+            info.iUpgrade = false;
+            info.iSilent = ball.isSilent();
 
-    private InstallerExtensionInfo createInstallerExtensionInfo(UninstallBall aBall)
-    {
-        InstallerExtensionInfo info = new InstallerExtensionInfo();
-        // Beware, it is possible that aBall has not been fully initialized.
-        if (aBall.iSuite != null)
-        {
-            info.iUid = aBall.iSuite.getUid();
-            info.iAppUids = aBall.iSuite.getApplicationUids();
-            info.iAttributes = aBall.iSuite.getAttributes();
-            info.iRootPath = aBall.iSuite.getRootDir();
+            ball.iJsrPluginNotifier.notifyRollbackUninstall(info);
         }
-        info.iUpgrade = false;
-        info.iSilent = aBall.isSilent();
-        if (aBall.iStorageHandler != null)
-        {
-            info.iStorageSession = aBall.iStorageHandler.getSession();
-        }
-        return info;
     }
 }

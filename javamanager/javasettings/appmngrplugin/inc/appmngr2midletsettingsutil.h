@@ -60,7 +60,7 @@ const int MULTIMEDIA_RECORDING_SETTINGS_DISPLAY_INDEX = 9;
 const int READ_USER_DATA_ACCESS_SETTINGS_DISPLAY_INDEX = 10;
 const int WRITE_USER_DATA_ACCESS_SETTINGS_DISPLAY_INDEX = 11;
 const int LOCATION_SETTINGS_DISPLAY_INDEX = 12;
-const int LANDMARK_SETTINGS_DISPLAY_INDEX = 13;
+const int LANDMARK_SETTINGS_DISPLAY_INDEX = 12;
 const int AUTHENTICATION_SETTINGS_DISPLAY_INDEX = 14;
 const int SMART_CARD_COMMUNICATION_SETTINGS_DISPLAY_INDEX = 15;
 const int BROADCAST_SETTINGS_DISPLAY_INDEX = 16;
@@ -210,7 +210,6 @@ public:
 
 private:
     static const std::wstring getLocalizedSettingsName(std::wstring aSettingsName);
-    static HBufC* getLocalizedSettingsNameLC(std::wstring aSettingsName);
     static const std::wstring getLocalizedSettingsInteractionMode(int aInteractionMode);
     static const std::wstring getLocalizedOnScreenKeypadValue(std::wstring aOnScreenKeypadValue);
     static const std::wstring getLocalizedSecurityWarningsModeValue(std::wstring aSecurityWarningsModeValue);

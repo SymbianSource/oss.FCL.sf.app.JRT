@@ -60,19 +60,6 @@ public: // Methods derived from MMMADisplay
     TBool IsFullScreen();
     virtual void SetForeground(TBool aIsForeground, TBool UseEventServer);
     virtual void FixUIOrientation(TBool aFix);
-    /**
-     * Allow player to free the clipping rect for
-     * UI usage. required in case of RTSP live streaming player
-     * stop and then start, to avoid the black screen in that time gap
-     */
-    virtual void RemoveClippingRegionPublic();
-    
-    /**
-     * Allow player to get the clipping rect from
-     * UI usage. required in case of RTSP live streaming player
-     * start after stop, to avoid the black screen while its playing video
-     */
-    virtual void SetClippingRegionPublic();
 
     /**
      * Gets notification that there is container to draw assigned

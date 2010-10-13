@@ -20,7 +20,7 @@
 
 #include "lcdui.hrh"
 #include <lcdui.rsg>
-#include <eikcoctl.rsg>
+#include <EIKCOCTL.rsg>
 
 #include <j2me/jdebug.h>
 

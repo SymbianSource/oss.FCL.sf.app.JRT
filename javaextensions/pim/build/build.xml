@@ -39,7 +39,6 @@
   
   <target name="system.properties">
     <properties>
-    	com.nokia.mid.calendars=:pim.DynamicPropertyHandler
       microedition.pim.version=1.0
     </properties>
   </target>

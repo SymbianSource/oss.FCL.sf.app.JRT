@@ -211,7 +211,7 @@ native:
 	$(SBS) -c $(PLATFORM)_$(CFG)
 
 fastbuild: export java
-	$(SBS) -c $(PLATFORM)_$(CFG)
+	$(SBS) -c $(PLATFORM)_$(CFG) TARGET
 
 clean_native:
 	$(PHASEINFO)

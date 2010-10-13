@@ -225,6 +225,8 @@ public class OS
     public static final native int Image_New(int deviceHandle, int width, int height);
     public static final native int Image_NewFromData(int deviceHandle, ImageData data);
     public static final native int Image_NewFromTheme(int deviceHandle, int id);
+    public static final native int Image_NewFromSvgBuf(int deviceHandle, byte[] svgBuf, int width, int height);
+    public static final native int Image_NewFromSvgFile(int deviceHandle, String svgFile, int width, int height);
     public static final native void Image_Dispose(int deviceHandle, int handle);
     public static final native Rectangle Image_GetBounds(int handle);
     public static final native ImageData Image_GetData(int handle);
@@ -479,14 +481,11 @@ public class OS
      * Class ImageDecoder
      */
     public static final native int ImageDataLoader_New();
-    public static final native ImageData[] ImageDataLoader_DecodeImage(int handle,String fileName);
-    public static final native ImageData[] ImageDataLoader_DecodeWholeImageFromBuffer(int handle,byte[] buffer);
-    public static final native void ImageDataLoader_EncodeImage(int handle,ImageData imageData, int format, String fileName);
-    public static final native void ImageDataLoader_EncodeImageToStream(int handle,ImageData imageData,int  format, OutputStream stream);
+    public static final native ImageData[] ImageDataLoader_DecodeImage(int handle, String fileName);
+    public static final native ImageData[] ImageDataLoader_DecodeWholeImageFromBuffer(int handle, byte[] buffer);
+    public static final native void ImageDataLoader_EncodeImage(int handle, ImageData imageData, int format, String fileName);
+    public static final native void ImageDataLoader_EncodeImageToStream(int handle, ImageData imageData, int format, OutputStream stream);
     public static final native void ImageDataLoader_Dispose(int handle);
-    public static final native void ImageDataLoader_StartImageDecoding(int handle, byte[] buffer);
-    public static final native void ImageDataLoader_AppendData(int handle, byte[] buffer);
-    public static final native ImageData[] ImageDataLoader_GetImageData(int handle);
     public static final native int ImageDataLoader_GetLogicalScreenHeight(int handle);
     public static final native int ImageDataLoader_GetLogicalScreenWidth(int handle);
 

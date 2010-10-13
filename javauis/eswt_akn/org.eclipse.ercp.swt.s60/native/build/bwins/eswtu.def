@@ -93,5 +93,4 @@ EXPORTS
 	?RegisterWithParentL@ASwtControlBase@@IAEXXZ @ 92 NONAME ; void ASwtControlBase::RegisterWithParentL(void)
 	?DrawBorder@ASwtControlBase@@MBEXABVTRect@@@Z @ 93 NONAME ; void ASwtControlBase::DrawBorder(class TRect const &) const
 	?ComputeTabListL@ASwtControlBase@@UAEXAAV?$RPointerArray@VMSwtControl@@@@@Z @ 94 NONAME ; void ASwtControlBase::ComputeTabListL(class RPointerArray<class MSwtControl> &)
-	?PrepareForTraverse@ASwtControlBase@@UAEXXZ @ 95 NONAME ; void ASwtControlBase::PrepareForTraverse(void)
 

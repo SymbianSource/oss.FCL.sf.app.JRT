@@ -573,15 +573,6 @@ void CMMAVideoPlayer::SourceSizeChanged()
     NotifyWithStringEvent(CMMAPlayerEvent::ESizeChanged, KVideoControlName);
 }
 
-void CMMAVideoPlayer::FreeClipRectForUI()
-{
-    iDisplay->RemoveClippingRegionPublic();
-}
-
-void CMMAVideoPlayer::GetClipRectFromUI()
-{
-    iDisplay->SetClippingRegionPublic();
-}
 void CMMAVideoPlayer::ConnectedL(CAccMonitorInfo* aAccessoryInfo)
 {
     TAccMonCapability deviceType = aAccessoryInfo->AccDeviceType() ;

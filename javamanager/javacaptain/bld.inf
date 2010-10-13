@@ -23,5 +23,4 @@ default
 #include "extensionplugins/javacertstore/build/bld.inf"    
 #include "extensionplugins/storageserver/build/bld.inf"    
 #include "extensionplugins/settingslistener/build/bld.inf"    
-#include "extensionplugins/preinstallerstarter/build/bld.inf"    
-#include "extensionplugins/autostarter/build/bld.inf"  
+#include "extensionplugins/preinstallerstarter/build/bld.inf"  

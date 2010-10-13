@@ -30,6 +30,73 @@ public class InstallerUiTexts
     /*** ----------------------------- PUBLIC ------------------------------ */
 
     // Define constants for localised text ids.
+    public static final String OK = "Ok";
+    public static final String CANCEL = "Cancel";
+    public static final String BACK = "Ok";
+    public static final String HIDE = "Hide";
+    public static final String SHOW = "Show";
+    public static final String CLOSE = "Close";
+    public static final String INSTALL_QUERY = "Install?";
+    public static final String UPDATE_QUERY = "Update?";
+    public static final String OCSP_CHECK_PROGRESS = "Checking certificate validity";
+    public static final String INSTALLING = "Installing";
+    public static final String INSTALL_FAILED = "Installation failed";
+    public static final String INSTALLATION_COMPLETE = "Installed";
+    public static final String DOWNLOADING = "Downloading";
+    public static final String CONNECT_TO = "Connect to";
+    public static final String DOWNLOAD_APPLICATION = "To download %U you need to authenticate yourself";
+    public static final String USERNAME = "Username:";
+    public static final String PASSWORD = "Password:";
+    public static final String SUITE_NAME = "%U (%U)";
+    public static final String SUITE_VENDOR = "%U";
+    public static final String SUITE_VERSION = "%U";
+    public static final String APP_NAME = "%U";
+    public static final String SIZE_KB = "%U kB";
+    public static final String SIZE_MB = "%U MB";
+    public static final String RETAIN_USER_DATA = "Retain application data";
+    // Certificate info texts.
+    public static final String NOT_CERTIFIED_TITLE = "Application is not certified.";
+    public static final String NOT_CERTIFIED_INFO = "Application %U is from an unknown source.";
+    public static final String CERTIFICATE_TITLE = "Application is certified.";
+    public static final String DOMAIN = "Domain: %U";
+    public static final String DOMAIN_MANU = "Manufacturer";
+    public static final String DOMAIN_OPER = "Operator";
+    public static final String DOMAIN_ITP = "Trusted 3rd party";
+    public static final String DOMAIN_UTP = "Untrusted 3rd party";
+    public static final String ISSUER = "Issuer: %U";
+    public static final String SUBJECT = "Subject: %U";
+    public static final String ORGANIZATION = "Organization: %U";
+    public static final String VALID_FROM = "Valid from: %U";
+    public static final String VALID_UNTIL = "Valid until: %U";
+    public static final String SERIAL_NUMBER = "Serial number: %U";
+    public static final String FINGERPRINT = "Fingerprint: %U";
+    // Texts for installation drive selection.
+    public static final String DRIVE_TYPE_UNKNOWN = "%U: Unknown";
+    public static final String DRIVE_TYPE_UNKNOWN_KB = "%U: Unknown (%N kB)";
+    public static final String DRIVE_TYPE_UNKNOWN_MB = "%U: Unknown (%N MB)";
+    public static final String DRIVE_TYPE_UNKNOWN_GB = "%U: Unknown (%N GB)";
+    public static final String DRIVE_TYPE_PHONE_MEMORY = "%U: Phone memory";
+    public static final String DRIVE_TYPE_PHONE_MEMORY_KB = "%U: Phone memory (%N kB)";
+    public static final String DRIVE_TYPE_PHONE_MEMORY_MB = "%U: Phone memory (%N MB)";
+    public static final String DRIVE_TYPE_PHONE_MEMORY_GB = "%U: Phone memory (%N GB)";
+    public static final String DRIVE_TYPE_MEMORY_CARD = "%U: Memory card";
+    public static final String DRIVE_TYPE_MEMORY_CARD_KB = "%U: Memory card (%N kB)";
+    public static final String DRIVE_TYPE_MEMORY_CARD_MB = "%U: Memory card (%N MB)";
+    public static final String DRIVE_TYPE_MEMORY_CARD_GB = "%U: Memory card (%N GB)";
+    public static final String DRIVE_TYPE_INTERNAL_MASS_STORAGE = "%U: Internal Mass Storage";
+    public static final String DRIVE_TYPE_INTERNAL_MASS_STORAGE_KB = "%U: Internal Mass Storage (%N kB)";
+    public static final String DRIVE_TYPE_INTERNAL_MASS_STORAGE_MB = "%U: Internal Mass Storage (%N MB)";
+    public static final String DRIVE_TYPE_INTERNAL_MASS_STORAGE_GB = "%U: Internal Mass Storage (%N GB)";
+    // Texts for permission confirmation view.
+    public static final String PERM_QUERY = "Application %U asks permissions to access protected device functionality.";
+    public static final String PERM_VIEW_DETAILS = "Details";
+    public static final String PERM_ALLOW_ALWAYS = "Allow always";
+    public static final String PERM_ASK_ME_LATER = "Ask me later";
+    public static final String PERM_CANCEL = "Cancel installing";
+    public static final String PERM_VIEW_DETAILS_TITLE = "Application asks permissions for:";
+
+    /*
+    // Define constants for localised text ids.
     public static final String OK = "button_ok";
     public static final String CANCEL = "button_cancel";
     public static final String BACK = "button_back_ok";
@@ -47,8 +114,9 @@ public class InstallerUiTexts
     public static final String DOWNLOAD_APPLICATION = "info_auth_yourself";
     public static final String USERNAME = "dialog_username";
     public static final String PASSWORD = "dialog_password";
-    public static final String SUITE_NAME_VERSION = "info_app_suite_name_version";
+    public static final String SUITE_NAME = "info_app_suite_name";
     public static final String SUITE_VENDOR = "info_vendor";
+    public static final String SUITE_VERSION = "info_version";
     public static final String APP_NAME = "info_app_name";
     public static final String SIZE_KB = "info_size_kb";
     public static final String SIZE_MB = "info_size_mb";
@@ -93,6 +161,7 @@ public class InstallerUiTexts
     public static final String PERM_ASK_ME_LATER = "button_perm_ask_me_later";
     public static final String PERM_CANCEL = "button_perm_cancel_installing";
     public static final String PERM_VIEW_DETAILS_TITLE = "title_perm_view_details";
+    */
 
     /**
      * Method for retrieving a text string with given id and no parameters.
@@ -114,12 +183,12 @@ public class InstallerUiTexts
      */
     public static String get(String aTextId, Object[] aTextParameters)
     {
-        if (iRes == null)
-        {
-            iRes = ResourceLoader.getInstance(
-                null, null, "javaapplicationinstaller", "txt_java_inst_");
-        }
-        return iRes.format(aTextId, aTextParameters);
+        return new com.nokia.mj.impl.utils.Formatter(aTextId).format(aTextParameters);
+        //if (iRes == null)
+        //{
+        //    iRes = ResourceLoader.getInstance("javaapplicationinstaller", "txt_java_inst_");
+        //}
+        //return iRes.format(aTextId, aTextParameters);
     }
 
     /*** ---------------------------- PROTECTED --------------------------- */

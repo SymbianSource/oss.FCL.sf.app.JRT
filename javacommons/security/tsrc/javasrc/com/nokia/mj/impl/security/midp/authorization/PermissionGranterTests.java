@@ -57,7 +57,6 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
 {
 
     private static String TEST_DATA_DIR;
-    int assertTrace = 0;
 
     static
     {
@@ -77,12 +76,6 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         {
             TEST_DATA_DIR = "C:\\java\\securitytestdata\\";
         }
-    }
-
-    private void assertWithTrace(boolean aCondition)
-    {
-        assertTrue("" + assertTrace, aCondition);
-        assertTrace++;
     }
 
     // general-purpose constants
@@ -233,12 +226,12 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         MIDPPermission[] jadPermissions;
         MIDPPermission[] jarPermissions;
         MIDPPermission[] allPermissions;
-        assertWithTrace(permissionGranter != null);
+        assertTrue(permissionGranter != null);
         // test the null values
         permissionGranter.removeSecurityData(session, appUID);
-        permissionGranter.grantJarPermissions(null, null, (PermissionAttribute[])null, null);
+        permissionGranter.grantJarPermissions(null, null, null, (PermissionAttribute[])null);
         grantedPermissions = storage.readGrantedPermissions(appUID);
-        assertWithTrace(grantedPermissions == null);
+        assertTrue(grantedPermissions == null);
         // populate the storage
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session, appUID);
@@ -266,10 +259,9 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         allAttributes.put(PermissionAttribute.OPTIONAL_LEGACY_ATTRIBUTE_NAME, new Attribute("",MIDP2_DATAGRAM_PERMISSION + COMMA + "                  " + MIDP2_COMM_PERMISSION));
         allAttributes.put(PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("",MIDP2_SOCKET_PERMISSION + COMMA + MIDP2_HTTP_PERMISSION));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
-        permissionGranter.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         grantedPermissions = storage.readGrantedPermissions(appUID);
-        assertWithTrace(checkGrantedPermissions(grantedPermissions, getPolicyPermissions("Manufacturer", new String[]
+        assertTrue(checkGrantedPermissions(grantedPermissions, getPolicyPermissions("Manufacturer", new String[]
                                            {
                                                INTERNAL_DATAGRAM_PERMISSION, INTERNAL_COMM_PERMISSION, INTERNAL_SOCKET_PERMISSION,INTERNAL_HTTP_PERMISSION,"javax.microedition.PropertyPermission","javax.microedition.midlet.AutoStartPermission"
                                            }),
@@ -295,10 +287,9 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         allAttributes.put(PermissionAttribute.OPTIONAL_LEGACY_ATTRIBUTE_NAME, new Attribute("",MIDP2_DATAGRAM_PERMISSION + COMMA + "                  " + MIDP2_COMM_PERMISSION));
         allAttributes.put(PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("",MIDP2_SOCKET_PERMISSION + COMMA + MIDP2_HTTP_PERMISSION));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
-        permissionGranter.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         grantedPermissions = storage.readGrantedPermissions(appUID);
-        assertWithTrace(checkGrantedPermissions(grantedPermissions, getPolicyPermissions("IdentifiedThirdParty",
+        assertTrue(checkGrantedPermissions(grantedPermissions, getPolicyPermissions("IdentifiedThirdParty",
                                            new String[] {INTERNAL_DATAGRAM_PERMISSION, INTERNAL_COMM_PERMISSION, INTERNAL_SOCKET_PERMISSION,INTERNAL_HTTP_PERMISSION}),
                                            getAssignedPermissions("IdentifiedThirdParty")));
         // 1.2 One of the requested mandatory permission is not available in the domain -> fail
@@ -323,13 +314,12 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
             allAttributes.put(PermissionAttribute.OPTIONAL_ATTRIBUTE_PREFIX + "1", new Attribute("",MIDP3_DATAGRAM_PERMISSION));
             allAttributes.put(PermissionAttribute.MANDATORY_ATTRIBUTE_PREFIX + "1", new Attribute("",MIDP3_RUNTIME_PERMISSION + " name"));
             securityAttributes.addManifestAttributes(allAttributes);
-            permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
-            permissionGranter.addSecurityData(session, appUID, null);
-            assertWithTrace(false);
+            permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+            assertTrue(INVALID_PERMISSION_VALUE_MSG, false);
         }
         catch (InvalidAttributeException e)
         {
-            assertWithTrace(
+            assertTrue(INVALID_PERMISSION_VALUE_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
                        e.getOtaStatusCode() == OtaStatusCode.APPLICATION_AUTHORIZATION_FAILURE
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_UNSUPPORTED,
@@ -353,10 +343,9 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP3));
         allAttributes.put(PermissionAttribute.OPTIONAL_ATTRIBUTE_PREFIX + "1", new Attribute("",MIDP3_RUNTIME_PERMISSION + " name"));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
-        permissionGranter.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         grantedPermissions = storage.readGrantedPermissions(appUID);
-        assertWithTrace(checkGrantedPermissions(grantedPermissions, getAssignedPermissions("IdentifiedThirdParty"), true));
+        assertTrue(checkGrantedPermissions(grantedPermissions, getAssignedPermissions("IdentifiedThirdParty"), true));
         // 2. Legacy, signed : permissions NOT requested in JAD & permissions requested in JAR -> grant the requested permissions filled in with right
         // targets/actions from the policy plus the assigned ones
         storage.removeAuthenticationStorageData(appUID);
@@ -376,10 +365,9 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("",MIDP2_SOCKET_PERMISSION + COMMA + MIDP2_HTTP_PERMISSION));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
-        permissionGranter.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         grantedPermissions = storage.readGrantedPermissions(appUID);
-        assertWithTrace(checkGrantedPermissions(grantedPermissions, getPolicyPermissions("Operator", new String[]
+        assertTrue(checkGrantedPermissions(grantedPermissions, getPolicyPermissions("Operator", new String[]
                                            {
                                                INTERNAL_SOCKET_PERMISSION, INTERNAL_HTTP_PERMISSION,"javax.microedition.PropertyPermission","javax.microedition.midlet.AutoStartPermission"
                                            }),
@@ -401,10 +389,9 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP3));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
-        permissionGranter.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         grantedPermissions = storage.readGrantedPermissions(appUID);
-        assertWithTrace(grantedPermissions != null && checkGrantedPermissions(grantedPermissions, getAssignedPermissions("IdentifiedThirdParty"), true));
+        assertTrue(grantedPermissions != null && checkGrantedPermissions(grantedPermissions, getAssignedPermissions("IdentifiedThirdParty"), true));
         // same for a domain which has one assigned permissions -> only the assigned + default permissions are granted
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session, appUID);
@@ -422,10 +409,9 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP3));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
-        permissionGranter.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         grantedPermissions = storage.readGrantedPermissions(appUID);
-        assertWithTrace(checkGrantedPermissions(grantedPermissions, getPolicyPermissions("Operator", new String[] {"javax.microedition.PropertyPermission","javax.microedition.midlet.AutoStartPermission"}),
+        assertTrue(checkGrantedPermissions(grantedPermissions, getPolicyPermissions("Operator", new String[] {"javax.microedition.PropertyPermission","javax.microedition.midlet.AutoStartPermission"}),
                                            getDefaultPermissions()));
         // 4. Legacy, unsigned : permissions requested in JAD & permissions requested in JAR -> ignore requested permissions and
         //    grant all the permissions available in the policy for untrusted MIDlets
@@ -448,10 +434,9 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         allAttributes.put(PermissionAttribute.OPTIONAL_LEGACY_ATTRIBUTE_NAME, new Attribute("","MyOwnOptionalPermission"));
         allAttributes.put(PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","MyOwnMandatoryPermission"));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
-        permissionGranter.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         grantedPermissions = storage.readGrantedPermissions(appUID);
-        assertWithTrace(checkGrantedPermissions(grantedPermissions, getPolicyPermissions("UnidentifiedThirdParty")));
+        assertTrue(checkGrantedPermissions(grantedPermissions, getPolicyPermissions("UnidentifiedThirdParty")));
         // 5. Legacy, unsigned : permissions requested in JAD & permissions NOT requested in JAR -> ignore requested permissions and,
         //    grant all the permissions available in the policy for untrusted MIDlets
         storage.removeAuthenticationStorageData(appUID);
@@ -470,10 +455,9 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
-        permissionGranter.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         grantedPermissions = storage.readGrantedPermissions(appUID);
-        assertWithTrace(checkGrantedPermissions(grantedPermissions, getPolicyPermissions("UnidentifiedThirdParty")));
+        assertTrue(checkGrantedPermissions(grantedPermissions, getPolicyPermissions("UnidentifiedThirdParty")));
         // 6. Legacy, unsigned : permissions NOT requested in JAD & permissions requested in JAR -> ignore requested permissions and
         //    grant all the permissions available in the policy for untrusted MIDlets
         storage.removeAuthenticationStorageData(appUID);
@@ -492,10 +476,9 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         allAttributes.put(PermissionAttribute.OPTIONAL_LEGACY_ATTRIBUTE_NAME, new Attribute("","MyOwnOptionalPermission"));
         allAttributes.put(PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("","MyOwnMandatoryPermission"));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
-        permissionGranter.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         grantedPermissions = storage.readGrantedPermissions(appUID);
-        assertWithTrace(checkGrantedPermissions(grantedPermissions, getPolicyPermissions("UnidentifiedThirdParty")));
+        assertTrue(checkGrantedPermissions(grantedPermissions, getPolicyPermissions("UnidentifiedThirdParty")));
         // 7. Legacy, unsigned : permissions NOT requested in JAD & permissions NOT requested in JAR -> grant all the permissions available in the policy for untrusted MIDlets
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session, appUID);
@@ -511,10 +494,9 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
-        permissionGranter.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         grantedPermissions = storage.readGrantedPermissions(appUID);
-        assertWithTrace(checkGrantedPermissions(grantedPermissions, getPolicyPermissions("UnidentifiedThirdParty")));
+        assertTrue(checkGrantedPermissions(grantedPermissions, getPolicyPermissions("UnidentifiedThirdParty")));
         // 8. MIDP3 unsigned, unknown mandatory permission in JAD file -> failure
         permissionGranter.removeSecurityData(session, appUID);
         try
@@ -527,11 +509,11 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
             authCredentials = new AuthenticationCredentials[1];
             authCredentials[0] = new AuthenticationCredentials("UnidentifiedThirdParty", "UIDP");
             permissionGranter.grantJadPermissions(appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
-            assertWithTrace(false);
+            assertTrue(UNKNOWN_PERMISSION_MSG, false);
         }
         catch (InvalidAttributeException e)
         {
-            assertWithTrace(
+            assertTrue(UNKNOWN_PERMISSION_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
                        e.getOtaStatusCode() == OtaStatusCode.APPLICATION_AUTHORIZATION_FAILURE
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_UNSUPPORTED,
@@ -546,13 +528,12 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
             allAttributes.put(PermissionAttribute.MANDATORY_ATTRIBUTE_PREFIX + "1",new Attribute("","MyMandatoryClass MyMandatoryTarget MyMandatoryAction1,MyMandatoryAction2,MyMandatoryAction3"));
             securityAttributes = new SecurityAttributes();
             securityAttributes.addManifestAttributes(allAttributes);
-            permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
-        permissionGranter.addSecurityData(session, appUID, null);
-            assertWithTrace(false);
+            permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+            assertTrue(UNKNOWN_PERMISSION_MSG, false);
         }
         catch (InvalidAttributeException e)
         {
-            assertWithTrace(
+            assertTrue(UNKNOWN_PERMISSION_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
                        e.getOtaStatusCode() == OtaStatusCode.APPLICATION_AUTHORIZATION_FAILURE
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_UNSUPPORTED,
@@ -574,10 +555,9 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP3));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
-        permissionGranter.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         grantedPermissions = storage.readGrantedPermissions(appUID);
-        assertWithTrace(grantedPermissions != null && checkGrantedPermissions(grantedPermissions, getAssignedPermissions("UnidentifiedThirdParty"), true));
+        assertTrue(grantedPermissions != null && checkGrantedPermissions(grantedPermissions, getAssignedPermissions("UnidentifiedThirdParty"), true));
         // 9.1. MIDP3 unsigned, P1, unknown optional P2 requested in JAD -> unknown permission is ignored, grant only P1 plus the assigned permissions
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session, appUID);
@@ -595,10 +575,9 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP3));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
-        permissionGranter.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         grantedPermissions = storage.readGrantedPermissions(appUID);
-        assertWithTrace(grantedPermissions != null && checkGrantedPermissions(grantedPermissions,
+        assertTrue(grantedPermissions != null && checkGrantedPermissions(grantedPermissions,
                    new MIDPPermission[] {new MIDPPermission(INTERNAL_SOCKET_PERMISSION,"socket://")},getAssignedPermissions("UnidentifiedThirdParty")));
         // 10. MIDP3 unsigned MIDlet, unknown mandatory permission in JAR file -> failure
         permissionGranter.removeSecurityData(session, appUID);
@@ -609,13 +588,12 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
             allAttributes.put(PermissionAttribute.MANDATORY_ATTRIBUTE_PREFIX + "1",new Attribute("","MyMandatoryClass MyMandatoryTarget MyMandatoryAction1,MyMandatoryAction2,MyMandatoryAction3"));
             securityAttributes = new SecurityAttributes();
             securityAttributes.addManifestAttributes(allAttributes);
-            permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
-        permissionGranter.addSecurityData(session, appUID, null);
-            assertWithTrace(false);
+            permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+            assertTrue(UNKNOWN_PERMISSION_MSG, false);
         }
         catch (InvalidAttributeException e)
         {
-            assertWithTrace(
+            assertTrue(UNKNOWN_PERMISSION_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
                        e.getOtaStatusCode() == OtaStatusCode.APPLICATION_AUTHORIZATION_FAILURE
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_UNSUPPORTED,
@@ -633,13 +611,12 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
             allAttributes.put(AuthenticationAttribute.SECOND_ATTRIBUTE_PREFIX + "1", new Attribute("","signature"));
             securityAttributes = new SecurityAttributes();
             securityAttributes.addManifestAttributes(allAttributes);
-            permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
-        permissionGranter.addSecurityData(session, appUID, null);
-            assertWithTrace(false);
+            permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+            assertTrue(UNKNOWN_PERMISSION_MSG, false);
         }
         catch (InvalidAttributeException e)
         {
-            assertWithTrace(
+            assertTrue(UNKNOWN_PERMISSION_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
                        e.getOtaStatusCode() == OtaStatusCode.APPLICATION_AUTHORIZATION_FAILURE
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_UNSUPPORTED,
@@ -658,13 +635,12 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
             securityAttributes.addDescriptorAttributes(allAttributes);
             allAttributes.put(PermissionAttribute.MANDATORY_ATTRIBUTE_PREFIX + "1",new Attribute("","MyMandatoryClass MyMandatoryTarget MyMandatoryAction1,MyMandatoryAction2,MyMandatoryAction3"));
             securityAttributes.addManifestAttributes(allAttributes);
-            permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
-        permissionGranter.addSecurityData(session, appUID, null);
-            assertWithTrace(false);
+            permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+            assertTrue(UNKNOWN_PERMISSION_MSG, false);
         }
         catch (InvalidAttributeException e)
         {
-            assertWithTrace(
+            assertTrue(UNKNOWN_PERMISSION_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
                        e.getOtaStatusCode() == OtaStatusCode.APPLICATION_AUTHORIZATION_FAILURE
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_UNSUPPORTED,
@@ -683,13 +659,12 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
             securityAttributes.addDescriptorAttributes(allAttributes);
             allAttributes.put(PermissionAttribute.MANDATORY_ATTRIBUTE_PREFIX + "1",new Attribute("","MyMandatoryClass MyMandatoryTarget MyMandatoryAction1,MyMandatoryAction2,MyMandatoryAction3"));
             securityAttributes.addManifestAttributes(allAttributes);
-            permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
-        permissionGranter.addSecurityData(session, appUID, null);
-            assertWithTrace(false);
+            permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
+            assertTrue(UNKNOWN_PERMISSION_MSG, false);
         }
         catch (InvalidAttributeException e)
         {
-            assertWithTrace(
+            assertTrue(UNKNOWN_PERMISSION_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
                        e.getOtaStatusCode() == OtaStatusCode.APPLICATION_AUTHORIZATION_FAILURE
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_UNSUPPORTED,
@@ -716,10 +691,9 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP3));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
-        permissionGranter.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         grantedPermissions = storage.readGrantedPermissions(appUID);
-        assertWithTrace(grantedPermissions != null && checkGrantedPermissions(grantedPermissions,
+        assertTrue(grantedPermissions != null && checkGrantedPermissions(grantedPermissions,
                    new MIDPPermission[]
                    {
                        new MIDPPermission(INTERNAL_SOCKET_PERMISSION,"socket://50"),
@@ -751,11 +725,11 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
             authCredentials = new AuthenticationCredentials[1];
             authCredentials[0] = new AuthenticationCredentials("UnidentifiedThirdParty", "UIDP");
             permissionGranter.grantJadPermissions(appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
-            assertWithTrace(false);
+            assertTrue(INVALID_PERMISSION_VALUE_MSG, false);
         }
         catch (InvalidAttributeException e)
         {
-            assertWithTrace(
+            assertTrue(INVALID_PERMISSION_VALUE_MSG + e.getOtaStatusCode() + " " + e.getShortMessage() + "," + e.getDetailedMessage(),
                        e.getOtaStatusCode() == OtaStatusCode.APPLICATION_AUTHORIZATION_FAILURE
                        && e.getShortMessage().equals(errorMessage.get(InstallerErrorMessage.INST_CORRUPT_PKG, null))
                        && e.getDetailedMessage().equals(detailedErrorMessage.get(InstallerDetailedErrorMessage.ATTR_UNSUPPORTED,
@@ -791,10 +765,9 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         allAttributes.put(PermissionAttribute.MANDATORY_ATTRIBUTE_PREFIX + "5",new Attribute("",MIDP3_DATAGRAM_PERMISSION + " datagram://12345"));
         allAttributes.put(PermissionAttribute.MANDATORY_ATTRIBUTE_PREFIX + "6",new Attribute("",MIDP3_COMM_PERMISSION + " comm:123"));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
-        permissionGranter.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         grantedPermissions = storage.readGrantedPermissions(appUID);
-        assertWithTrace(grantedPermissions != null && checkGrantedPermissions(grantedPermissions,
+        assertTrue(grantedPermissions != null && checkGrantedPermissions(grantedPermissions,
                    new MIDPPermission[]
                    {
                        new MIDPPermission(INTERNAL_SOCKET_PERMISSION,"socket://50"),
@@ -837,10 +810,9 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         allAttributes.put(PermissionAttribute.MANDATORY_ATTRIBUTE_PREFIX + "5",new Attribute("",MIDP3_DATAGRAM_PERMISSION + " datagram://12345"));
         allAttributes.put(PermissionAttribute.MANDATORY_ATTRIBUTE_PREFIX + "6",new Attribute("",MIDP3_COMM_PERMISSION + " comm:123"));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
-        permissionGranter.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         grantedPermissions = storage.readGrantedPermissions(appUID);
-        assertWithTrace(grantedPermissions != null && checkGrantedPermissions(grantedPermissions,
+        assertTrue(grantedPermissions != null && checkGrantedPermissions(grantedPermissions,
                    new MIDPPermission[]
                    {
                        new MIDPPermission(INTERNAL_SOCKET_PERMISSION,"socket://50"),
@@ -855,12 +827,12 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session, appUID);
         blanketPermissions = permissionGranter.getBlanketPermissions(null);
-        assertWithTrace(blanketPermissions == null);
+        assertTrue(blanketPermissions == null);
         // 20. getBlanketPermissions - unknown appUID
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session, appUID);
         blanketPermissions = permissionGranter.getBlanketPermissions(appUID);
-        assertWithTrace(blanketPermissions == null);
+        assertTrue(blanketPermissions == null);
         // 21. getBlanketPermissions - unsigned suite
         storage.removeAuthenticationStorageData(appUID);
         permissionGranter.removeSecurityData(session, appUID);
@@ -876,10 +848,9 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
+        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         blanketPermissions = permissionGranter.getBlanketPermissions(appUID);
-        permissionGranter.addSecurityData(session, appUID, null);
-        assertWithTrace(blanketPermissions == null);
+        assertTrue(blanketPermissions == null);
         // 22. getBlanketPermissions - one of the requested permissions does not allow Blanket
         permissionGranter.removeSecurityData(session, appUID);
         storage.removeAuthenticationStorageData(appUID);
@@ -901,10 +872,9 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         allAttributes.put(PermissionAttribute.OPTIONAL_LEGACY_ATTRIBUTE_NAME, new Attribute("",MIDP2_DATAGRAM_PERMISSION + COMMA + "                  " + MIDP2_SMS_SEND_PERMISSION));
         allAttributes.put(PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("",MIDP2_SOCKET_PERMISSION + COMMA + MIDP2_HTTP_PERMISSION));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
+        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         blanketPermissions = permissionGranter.getBlanketPermissions(appUID);
-        permissionGranter.addSecurityData(session, appUID, null);
-        assertWithTrace(blanketPermissions == null);
+        assertTrue(blanketPermissions == null);
         // 23. getBlanketPermissions - request one permissions which is already in Blanket
         permissionGranter.removeSecurityData(session, appUID);
         storage.removeAuthenticationStorageData(appUID);
@@ -925,10 +895,9 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(PermissionAttribute.OPTIONAL_LEGACY_ATTRIBUTE_NAME, new Attribute("",MIDP2_HTTP_PERMISSION));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
+        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         blanketPermissions = permissionGranter.getBlanketPermissions(appUID);
-        permissionGranter.addSecurityData(session, appUID, null);
-        assertWithTrace(blanketPermissions == null);
+        assertTrue(blanketPermissions == null);
         // 24. getBlanketPermissions - request Auto Invocation and Net Access -> mutually exclusive permissions
         permissionGranter.removeSecurityData(session, appUID);
         storage.removeAuthenticationStorageData(appUID);
@@ -949,10 +918,9 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(PermissionAttribute.OPTIONAL_LEGACY_ATTRIBUTE_NAME, new Attribute("",MIDP2_PUSH_REGISTRY_PERMISSION + COMMA + MIDP2_HTTP_PERMISSION));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
+        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         blanketPermissions = permissionGranter.getBlanketPermissions(appUID);
-        permissionGranter.addSecurityData(session, appUID, null);
-        assertWithTrace(blanketPermissions == null);
+        assertTrue(blanketPermissions == null);
         // 25. getBlanketPermissions - manufacturer signed MIDlet
         permissionGranter.removeSecurityData(session, appUID);
         storage.removeAuthenticationStorageData(appUID);
@@ -973,10 +941,9 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("",MIDP2_HTTP_PERMISSION + COMMA + MIDP2_SMS_SEND_PERMISSION + COMMA + MIDP2_MMS_OPEN_PERMISSION + COMMA + MIDP2_COMM_PERMISSION));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
+        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         blanketPermissions = permissionGranter.getBlanketPermissions(appUID);
-        permissionGranter.addSecurityData(session, appUID, null);
-        assertWithTrace(blanketPermissions == null);
+        assertTrue(blanketPermissions == null);
         // 26. getBlanketPermissions - request Messaging, Net Access and Local connectivity. Since Messaging and Net Access have the current interaction mode set to Blanket, only Local connectivity is returned
         permissionGranter.removeSecurityData(session, appUID);
         storage.removeAuthenticationStorageData(appUID);
@@ -997,10 +964,9 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP2));
         allAttributes.put(PermissionAttribute.MANDATORY_LEGACY_ATTRIBUTE_NAME, new Attribute("",MIDP2_HTTP_PERMISSION + COMMA + MIDP2_SMS_SEND_PERMISSION + COMMA + MIDP2_MMS_OPEN_PERMISSION + COMMA + MIDP2_COMM_PERMISSION));
         securityAttributes.addManifestAttributes(allAttributes);
-        permissionGranter.grantJarPermissions( appUID, null, securityAttributes.getPermissionAttributes(), authCredentials);
+        permissionGranter.grantJarPermissions(session, appUID, null, securityAttributes.getPermissionAttributes());
         blanketPermissions = permissionGranter.getBlanketPermissions(appUID);
-        permissionGranter.addSecurityData(session, appUID, null);
-        assertWithTrace(blanketPermissions != null && blanketPermissions.length == 1 && blanketPermissions[0].equals(UserSecuritySettingsImpl.getLocalizedName(UserSecuritySettings.LOCAL_CONNECTIVITY_SETTINGS)));
+        assertTrue(blanketPermissions != null && blanketPermissions.length == 1 && blanketPermissions[0].equals(UserSecuritySettingsImpl.getLocalizedName(UserSecuritySettings.LOCAL_CONNECTIVITY_SETTINGS)));
         permissionGranter.setPermissionsToBlanket(session, appUID);
         grantedPermissions = storage.readGrantedPermissions(appUID);
         for (int i=0; i<grantedPermissions.size(); i++)
@@ -1011,22 +977,20 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
                 permission.getUserSecuritySettings();
             if (settings != null && settings.getName() == UserSecuritySettings.LOCAL_CONNECTIVITY_SETTINGS)
             {
-                assertWithTrace(settings.getCurrentInteractionMode() == UserSecuritySettings.BLANKET_INTERACTION_MODE);
+                assertTrue(settings.getCurrentInteractionMode() == UserSecuritySettings.BLANKET_INTERACTION_MODE);
             }
         }
         // grantAllPermissions - null values
         permissionGranter.removeSecurityData(session, appUID);
         storage.removeAuthenticationStorageData(appUID);
-        permissionGranter.grantJarPermissions(null, null, (ProtectionDomain)null);
-        permissionGranter.addSecurityData(session, null, null);
+        permissionGranter.grantJarPermissions(session, null, null, (ProtectionDomain)null);
         permissionGranter.removeSecurityData(session, appUID);
         storage.removeAuthenticationStorageData(appUID);
-        permissionGranter.grantJarPermissions(appUID, null, (ProtectionDomain)null);
-        permissionGranter.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions(session, appUID, null, (ProtectionDomain)null);
         grantedPermissions = storage.readGrantedPermissions(appUID);
         permissionGranter.removeSecurityData(session, appUID);
         storage.removeAuthenticationStorageData(appUID);
-        assertWithTrace(grantedPermissions == null);
+        assertTrue(grantedPermissions == null);
         // grantAllPermissions - operator domain
         grantAllPermissions(ProtectionDomain.getOperatorDomain());
         // grantAllPermissions - manufacturer domain
@@ -1044,12 +1008,11 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
     {
         permissionGranter.removeSecurityData(session, appUID);
         storage.removeAuthenticationStorageData(appUID);
-        permissionGranter.grantJarPermissions(appUID, null, domain);
-        permissionGranter.addSecurityData(session, appUID, null);
+        permissionGranter.grantJarPermissions(session, appUID, null, domain);
         grantedPermissions = storage.readGrantedPermissions(appUID);
         permissionGranter.removeSecurityData(session, appUID);
         storage.removeAuthenticationStorageData(appUID);
-        assertWithTrace(checkGrantedPermissions(grantedPermissions, getPolicyPermissions(domain.getName())));
+        assertTrue(checkGrantedPermissions(grantedPermissions, getPolicyPermissions(domain.getName())));
     }
 
     private static MIDPPermission[] getPolicyPermissions(String policyName, String[] permissionNameFilter, String permissionTypeFilter)
@@ -1078,7 +1041,7 @@ public class PermissionGranterTests extends TestCase implements InstallerMain
                     && findString(policyPerms[i].getName(), permissionNameFilter) != -1)
                     || permissionNameFilter == null) && (permissionTypeFilter == null
                                                          || (permissionTypeFilter.equals("assigned")
-                                                             && (policyPerms[i].getType() == PolicyBasedPermission.ASSIGNED_TYPE
+                                                             && (policyPerms[i].getType() == PolicyBasedPermission.ASSIGNED_TYPE 
                                                              || policyPerms[i].getType() == PolicyBasedPermission.USER_ASSIGNED_TYPE))))
             {
                 vPermissions.addElement(new MIDPPermission(policyPerms[i].getName(), policyPerms[i].getTarget(), policyPerms[i].getActionList()));

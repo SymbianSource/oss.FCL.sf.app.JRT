@@ -14,7 +14,7 @@
 * Description: 
 *
 */
-#include <ecom/RegistryInfoV2.rh>
+#include <RegistryInfoV2.rh>
 #include <ct/InterfaceUID.hrh>
 
 // True

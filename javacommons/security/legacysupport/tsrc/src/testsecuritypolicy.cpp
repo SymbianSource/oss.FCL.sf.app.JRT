@@ -20,7 +20,7 @@
 
 #include "TestHarness.h"
 
-#include "j2me/midp2/security/msecuritypolicyv2.h"
+#include <msecuritypolicyv2.h>
 
 using namespace MIDP;
 

@@ -33,8 +33,7 @@ namespace captain
 
 class CoreInterface;
 
-OS_NONSHARABLE_CLASS(PreinstallerStarter) :  public CActive,
-        public EventConsumerInterface,
+OS_NONSHARABLE_CLASS(PreinstallerStarter) :  public EventConsumerInterface,
         public ExtensionPluginInterface
 {
 public:
@@ -52,19 +51,11 @@ public:
     // ExtensionPluginInterface methods
     virtual EventConsumerInterface* getEventConsumer();
 
-protected:
-    // CActive
-    virtual void RunL();
-    virtual void DoCancel();
-
 private:
     void startPreinstaller(TBool aIadBoot);
-#ifndef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
     void registerMidletApplicationTypeHandler();
-#endif
 
     CoreInterface* mCore;
-    RProcess*      mPreinstaller;
 };
 
 } // namespace captain

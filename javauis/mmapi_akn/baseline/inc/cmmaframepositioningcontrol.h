@@ -20,8 +20,8 @@
 #define CMMAFRAMEPOSITIONINGCONTROL_H
 
 // EXTERNAL INCLUDES
-#include "mmf/common/mmfcontroller.h"
-#include "mmf/common/mmfstandardcustomcommands.h"
+#include "mmfcontroller.h"
+#include "mmfstandardcustomcommands.h"
 
 //  INTERNAL INCLUDES
 #include "cmmacontrol.h" // base class

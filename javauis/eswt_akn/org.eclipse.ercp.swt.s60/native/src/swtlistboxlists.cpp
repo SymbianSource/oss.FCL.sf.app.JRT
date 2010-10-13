@@ -340,7 +340,7 @@ void CSwtListBoxLists::SetListObserver(TInt aListType, CEikTextListBox* aList,
 // CSwtListBoxLists::Cells
 // ---------------------------------------------------------------------------
 //
-void CSwtListBoxLists::CellsL(
+void CSwtListBoxLists::Cells(
     TInt aListType,
     RArray<TInt>& aCellArray)
 {
@@ -348,7 +348,7 @@ void CSwtListBoxLists::CellsL(
     for (TInt i = 0; (KSwtLbCells[aListType][i] != ECellInvalid)
             && (i < KMaxCellCount); i++)
     {
-        aCellArray.AppendL(KSwtLbCells[aListType][i]);
+        aCellArray.Append(KSwtLbCells[aListType][i]);
     }
 }
 

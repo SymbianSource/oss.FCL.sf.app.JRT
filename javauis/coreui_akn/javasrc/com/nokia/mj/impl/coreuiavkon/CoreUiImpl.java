@@ -132,16 +132,10 @@ public class CoreUiImpl extends CoreUi
         return _isForeground();
     }
 
-    protected void hideApplicationImpl(boolean hide)
-    {
-        _hideApplication(hide);
-    }
-
     private native boolean _connect();
     private native boolean _createUi(String appUid, int orientation,
                                      int selectedScreenMode, String rootpath,
                                      boolean backGroundStart);
     private native void _toForeground();
     private native boolean _isForeground();
-    private native void _hideApplication(boolean hide);
 }

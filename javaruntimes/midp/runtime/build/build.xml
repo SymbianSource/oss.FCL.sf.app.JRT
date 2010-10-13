@@ -33,6 +33,7 @@
 
   <target name="system.properties">
       <properties>
+          microedition.hostname=localhost
           microedition.jtwi.version=1.0
           microedition.msa.version=1.1-SUBSET
           microedition.profiles=MIDP-2.1

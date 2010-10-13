@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of the License "Eclipse Public License v1.0"
@@ -65,19 +65,18 @@ public:
 
     CommsEndpoint* getComms()
     {
-        return &mComms;
+        return &iComms;
     }
 
 private:
     void clearData();
     void setComponentInfoL();
-    void resetDefaultErrorValues();
-    void setCommonErrorInfo();
 
 private:
-    CommsServerEndpoint  mComms;
-    COpaqueNamedParams  &mResults;
-    CComponentInfo      &mInfo;
+    int iRunning;   // 1 if running, 0 if not running
+    CommsServerEndpoint  iComms;
+    COpaqueNamedParams  &iResults;
+    CComponentInfo      &iInfo;
 
     std::map<std::wstring, int> iIntPairs;
     std::map<std::wstring, std::wstring> iStringPairs;

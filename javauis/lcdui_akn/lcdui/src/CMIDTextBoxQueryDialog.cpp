@@ -20,7 +20,7 @@
 
 #include "lcdui.hrh"
 #include <lcdui.rsg>
-#include <eikcoctl.rsg>
+#include <EIKCOCTL.rsg>
 
 #include "CMIDEdwinUtils.h"
 
@@ -688,8 +688,7 @@ TKeyResponse CMIDTextBoxQueryDialog::OfferKeyEventL(const TKeyEvent& aKeyEvent,T
         {
             SetCursorPositionL(cursorPos + 1);
         }
-        else if (cursorPos == (iMaxSize - 1) && cursorPos == textLength &&
-                 (scanCode == EStdKeyFullStop || scanCode == EStdKeyMinus))
+        else if (cursorPos == (iMaxSize - 1) && cursorPos == textLength && scanCode==EStdKeyFullStop)
         {
             SetCursorPositionL(iMaxSize);
         }
@@ -768,16 +767,13 @@ TKeyResponse CMIDTextBoxQueryDialog::OfferKeyEventL(const TKeyEvent& aKeyEvent,T
     // If there is no focus textbox should not consume keys
     if (isFocused)
     {
-        // Error tone playing case2:
-        // Play error tone if TextBox/TextField is read-only or maximum length has been reached.
-        // Here is handling of full keyboard keys(NOT 0...9) and all virtual keyboard keys
-        // (camera and menu key not included).
-        // (Note: Virtual keyboard sends only EEventKey type events, not up or down events)
-        // (Note: Error tone is played when there is no text to be replaced i.e. no text has been painted)
-        if (!iEdwinUtils->IsNavigationKey(aKeyEvent) && !iEdwinUtils->IsHotKeyL(aKeyEvent, iCoeEnv) && aKeyEvent.iCode != EKeyYes &&
-                (!iKeyEventsPending || (scanCode < KKeyQwerty0  || scanCode > KKeyQwerty9)) &&
-                (aKeyEvent.iCode != EKeyApplication0 && scanCode != EStdKeyApplication0 &&
-                 aKeyEvent.iCode != EKeyApplication19 && scanCode != EStdKeyApplication19))
+        //Error tone playing case2:
+        //Play error tone if TextBox/TextField is read-only or maximum length has been reached.
+        //Here is handling of full keyboard keys(NOT 0...9) and all virtual keyboard keys.
+        //(Note: Virtual keyboard sends only EEventKey type events, not up or down events)
+        //(Note: Error tone is played when there is no text to be replaced i.e. no text has been painted)
+        if (!iEdwinUtils->IsNavigationKey(aKeyEvent) && !iEdwinUtils->IsHotKeyL(aKeyEvent, iCoeEnv) && !aKeyEvent.iCode == EKeyYes &&
+                (!iKeyEventsPending || (scanCode < KKeyQwerty0  || scanCode > KKeyQwerty9)))
         {
             if (iEditor->IsReadOnly() || (Size() >= iMaxSize && aKeyEvent.iCode != EKeyBackspace))
             {
@@ -838,21 +834,15 @@ TKeyResponse CMIDTextBoxQueryDialog::OfferKeyEventL(const TKeyEvent& aKeyEvent,T
                     if (res && TChar(aKeyEvent.iCode) == TChar('-') &&
                             Size() < iMaxSize)
                     {
-                        TInt textLength = Size();
                         res->InsertL(GetCaretPosition(), KMinusChar);
                         // notify editor about the text changes
                         iEditor->HandleTextChangedL();
-                        TInt cursorPos = GetCaretPosition();
 
                         if (Size() < iMaxSize)
                         {
                             SetCursorPositionL(GetCaretPosition() + 1);
                         }
-                        else if (cursorPos == (iMaxSize - 1) && cursorPos == textLength)
 
-                        {
-                            SetCursorPositionL(iMaxSize);
-                        }
                         //Prevent changes that would result in an illegal string
                         HandleTextUpdateL(MEikEdwinObserver::EEventTextUpdate);
                     }
@@ -1078,9 +1068,6 @@ void CMIDTextBoxQueryDialog::ShowL(TBool aShow)
         }
         else
         {
-            // avoid po-pup dialog box blinking
-            MakeVisible(EFalse);
-
             ExitSleepingDialog();
 #ifdef RD_SCALABLE_UI_V2
             SetPointerCapture(EFalse);
@@ -1294,8 +1281,8 @@ void CMIDTextBoxQueryDialog::SetEditorL()
 
     iThisMultitapKey = 0;   // reset key counter
     iLastMultitapKey = 0;
-    
-    if(iEditor->ScrollBarFrame())
+
+    if (iEditor->ScrollBarFrame())
     {
         iEditor->ScrollBarFrame()->SetScrollBarVisibilityL(CEikScrollBarFrame::EOff, CEikScrollBarFrame::EOff);
     }

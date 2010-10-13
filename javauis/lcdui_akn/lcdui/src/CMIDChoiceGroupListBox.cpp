@@ -20,8 +20,6 @@
 // API for iChoiceControl
 #include "CMIDChoiceGroupControl.h"
 #include "CMIDChoiceGroupModel.h"
-// API for control item
-#include "CMIDControlItem.h"
 
 #include <e32def.h>
 // using for CColumnListBoxData related to colors
@@ -102,7 +100,6 @@ void CMIDChoiceGroupListBox::ConstructL(
 #endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
 #endif //RD_TACTILE_FEEDBACK
 
-    SetTextColors();
 }
 
 // Overridden, because CEikListBox returns EKeyWasConsumed when
@@ -344,47 +341,31 @@ void CMIDChoiceGroupListBox::SetTextColors()
         MAknsSkinInstance* skin = AknsUtils::SkinInstance();
         TRgb color;
 
-        // Chose correct colors for elements
-        TInt logicalColor = KNonHighlightedItemTextColor; // non-highlighted
-
-#ifdef RD_JAVA_S60_RELEASE_9_2
-        if (iChoiceControl
-                && iChoiceControl->ChoiceType() != MMIDChoiceGroup::EPopup
-                && iChoiceControl->ControlItem()
-                && iChoiceControl->ControlItem()->IsHighlighted())
-        {
-            logicalColor = KHighlightedItemTextColor; // highlighted
-        }
-#endif // RD_JAVA_S60_RELEASE_9_2
-
+        // icon color, checkbox, radio button
         TInt error = AknsUtils::GetCachedColor(skin,
                                                color,
-                                               KAknsIIDQsnTextColors,
-                                               logicalColor);
+                                               KAknsIIDQsnIconColors,
+                                               EAknsCIQsnIconColorsCG14);
+
         if (!error)
         {
             colors.iText = color;
         }
 
+        // icon color, setting list highlight   checkbox, radio button
         error = AknsUtils::GetCachedColor(skin,
                                           color,
-                                          KAknsIIDQsnTextColors,
-                                          logicalColor);
+                                          KAknsIIDQsnIconColors,
+                                          EAknsCIQsnIconColorsCG14);
+
         if (!error)
         {
             colors.iHighlightedText = color;
         }
     }
 
-    if (View() && View()->ItemDrawer())
-    {
-#ifdef RD_JAVA_S60_RELEASE_9_2
-        View()->ItemDrawer()->SetFlags(
-            CListItemDrawer::EUseOverrideSkinTextColor);
-#endif // RD_JAVA_S60_RELEASE_9_2
-        View()->ItemDrawer()->SetTextColor(colors.iText);
-        View()->ItemDrawer()->SetHighlightedTextColor(colors.iHighlightedText);
-    }
+    View()->ItemDrawer()->SetTextColor(colors.iText);
+    View()->ItemDrawer()->SetHighlightedTextColor(colors.iHighlightedText);
 }
 
 
@@ -599,15 +580,5 @@ void CMIDChoiceGroupListBox::SingleClickDisableHighlightL(TBool aDisable)
 void CMIDChoiceGroupListBox::SetHighlight(TBool aVisible)
 {
     iHighlight = aVisible;
-}
-
-TBool CMIDChoiceGroupListBox::GetHighlight()
-{
-    return iHighlight;
-}
-
-void CMIDChoiceGroupListBox::UpdateColors()
-{
-    SetTextColors();
 }
 #endif // RD_JAVA_S60_RELEASE_9_2

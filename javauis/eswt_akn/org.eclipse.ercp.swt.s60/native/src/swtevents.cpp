@@ -311,7 +311,6 @@ void CSwtTraverseEvent::TraverseCallbackL()
         if (newFocus)
         {
             shell.Display().UiUtils().SetNaviKeyInput(ETrue);
-            newFocus->PrepareForTraverse();
             newFocus->CoeControl().SetFocus(ETrue, ENoDrawNow);
         }
     }

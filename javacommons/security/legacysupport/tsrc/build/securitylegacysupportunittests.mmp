@@ -22,6 +22,11 @@ CAPABILITY all -tcb -allfiles -drm
 #include <../../../../../inc/java_stdcpp_support_for_exe.hrh>
 #include <platform_paths.hrh>
 
+SYSTEMINCLUDE /epoc32/include 
+SYSTEMINCLUDE ../../../../../inc/j2me/midp2/security
+SYSTEMINCLUDE ../../../../../inc/j2me/midp2/data
+SYSTEMINCLUDE ../../../../../inc/j2me/midp2/runtime
+
 USERINCLUDE ../../../../../tools/cpputest/include/cpputest
 USERINCLUDE ../../../../../tools/cpputest/include/platforms/symbian
 USERINCLUDE ../../../../../inc

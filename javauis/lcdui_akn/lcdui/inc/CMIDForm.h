@@ -393,9 +393,9 @@ public:
     static TBool IsStringItemButton(CMIDControlItem& aControlItem);
     static TBool IsCustomItem(CMIDControlItem& aControlItem);
     static TBool IsGaugeItem(CMIDControlItem& aControlItem);
+    static TBool IsInteractiveGaugeItem(CMIDControlItem& aControlItem);
     static TBool IsTextFieldItem(CMIDControlItem& aControlItem);
     static TBool IsChoiceGroup(CMIDControlItem& aControlItem);
-    static TBool IsPopupChoiceGroup(CMIDControlItem& aControlItem);
     static TBool IsDateField(CMIDControlItem& aControlItem);
     static TBool IsLabelContainerItem(CMIDControlItem& aControlItem);
     static TBool IsSpacerUsedForFormatting(CMIDControlItem& aControlItem);
@@ -404,8 +404,6 @@ public:
 #ifdef RD_JAVA_S60_RELEASE_9_2
 public:
     void PostPendingUpEventL();
-    TInt FormRowIndex(CMIDFormRow* aRow);
-    CMIDFormRow* FormRow(TInt aIndex);
 #endif // RD_JAVA_S60_RELEASE_9_2
 
 private:
@@ -596,6 +594,8 @@ private: //data
     // Storing index to last pointed control
     // before Form layout is performed
     TInt iLastPointedControl;
+
+    TInt iLastGaugeValue;
 };
 
 inline void CMIDForm::Dispose()

@@ -10,28 +10,23 @@ EXPORTS
 	_ZN26SmsServerConnectionFactoryD2Ev @ 9 NONAME
 	_ZN4java3wma19SmsServerConnection15retrieveMessageER8TPckgBufI22TJavaMessageParametersE @ 10 NONAME
 	_ZN4java3wma19SmsServerConnection4openEPNS_4push18ConnectionListenerE @ 11 NONAME
-	_ZN4java3wma19SmsServerConnection4openEPNS_4push18ConnectionListenerEb @ 12 NONAME
-	_ZN4java3wma19SmsServerConnection5closeEv @ 13 NONAME
-	_ZN4java3wma19SmsServerConnectionC1ERKSbIwSt11char_traitsIwESaIwEES7_ @ 14 NONAME
-	_ZN4java3wma19SmsServerConnectionC2ERKSbIwSt11char_traitsIwESaIwEES7_ @ 15 NONAME
-	_ZN4java3wma19SmsServerConnectionD0Ev @ 16 NONAME
-	_ZN4java3wma19SmsServerConnectionD1Ev @ 17 NONAME
-	_ZN4java3wma19SmsServerConnectionD2Ev @ 18 NONAME
-	_ZN4java3wma20ServerConnectionBase9setFilterERKSbIwSt11char_traitsIwESaIwEE @ 19 NONAME
-	_ZNK4java3wma20ServerConnectionBase18getMessagesOnStoreEv @ 20 NONAME
-	_ZNK4java3wma20ServerConnectionBase6getUriEv @ 21 NONAME
-	_ZNK4java3wma20ServerConnectionBase9getFilterEv @ 22 NONAME
-	_ZTI26SmsServerConnectionFactory @ 23 NONAME
-	_ZTIN4java3wma19SmsServerConnectionE @ 24 NONAME
-	_ZTIN4java3wma20ServerConnectionBaseE @ 25 NONAME
-	_ZTV26SmsServerConnectionFactory @ 26 NONAME
-	_ZTVN4java3wma19SmsServerConnectionE @ 27 NONAME
-	_ZTVN4java3wma20ServerConnectionBaseE @ 28 NONAME
-	_ZThn28_N4java3wma19SmsServerConnection15retrieveMessageER8TPckgBufI22TJavaMessageParametersE @ 29 NONAME
-	_ZThn28_N4java3wma19SmsServerConnection4openEPNS_4push18ConnectionListenerE @ 30 NONAME
-	_ZThn28_N4java3wma19SmsServerConnection4openEPNS_4push18ConnectionListenerEb @ 31 NONAME
-	_ZThn28_N4java3wma19SmsServerConnection5closeEv @ 32 NONAME
-	_ZThn28_N4java3wma19SmsServerConnectionD0Ev @ 33 NONAME
-	_ZThn28_N4java3wma19SmsServerConnectionD1Ev @ 34 NONAME
-
+	_ZN4java3wma19SmsServerConnectionC1ERKSbIwSt11char_traitsIwESaIwEES7_ @ 12 NONAME
+	_ZN4java3wma19SmsServerConnectionC2ERKSbIwSt11char_traitsIwESaIwEES7_ @ 13 NONAME
+	_ZN4java3wma19SmsServerConnectionD0Ev @ 14 NONAME
+	_ZN4java3wma19SmsServerConnectionD1Ev @ 15 NONAME
+	_ZN4java3wma19SmsServerConnectionD2Ev @ 16 NONAME
+	_ZN4java3wma20ServerConnectionBase9setFilterERKSbIwSt11char_traitsIwESaIwEE @ 17 NONAME
+	_ZNK4java3wma20ServerConnectionBase18getMessagesOnStoreEv @ 18 NONAME
+	_ZNK4java3wma20ServerConnectionBase6getUriEv @ 19 NONAME
+	_ZNK4java3wma20ServerConnectionBase9getFilterEv @ 20 NONAME
+	_ZTI26SmsServerConnectionFactory @ 21 NONAME ; #<TI>#
+	_ZTIN4java3wma19SmsServerConnectionE @ 22 NONAME ; #<TI>#
+	_ZTIN4java3wma20ServerConnectionBaseE @ 23 NONAME ; #<TI>#
+	_ZTV26SmsServerConnectionFactory @ 24 NONAME ; #<VT>#
+	_ZTVN4java3wma19SmsServerConnectionE @ 25 NONAME ; #<VT>#
+	_ZTVN4java3wma20ServerConnectionBaseE @ 26 NONAME ; #<VT>#
+	_ZThn28_N4java3wma19SmsServerConnection15retrieveMessageER8TPckgBufI22TJavaMessageParametersE @ 27 NONAME ; #<thunk>#
+	_ZThn28_N4java3wma19SmsServerConnection4openEPNS_4push18ConnectionListenerE @ 28 NONAME ; #<thunk>#
+	_ZThn28_N4java3wma19SmsServerConnectionD0Ev @ 29 NONAME ; #<thunk>#
+	_ZThn28_N4java3wma19SmsServerConnectionD1Ev @ 30 NONAME ; #<thunk>#
 

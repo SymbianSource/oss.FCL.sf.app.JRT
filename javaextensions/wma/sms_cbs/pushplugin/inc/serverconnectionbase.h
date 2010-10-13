@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -109,7 +109,7 @@ protected:
      * @param path:the message store path
      * @returns SUCCESS or FAILURE
      */
-    int createMessageStore(std::wstring aPath);
+    int createMessageStore(std::wstring aPath, bool aDeleteStore);
 
     /**
      * Removes the directory specified.

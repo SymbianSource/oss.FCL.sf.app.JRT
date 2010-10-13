@@ -125,7 +125,6 @@ _LIT(KUIEnhMediaKeys,          "musickeyssupported");
 _LIT(KUIEnhCanvasBackground,   "canvashasbackground");
 _LIT(KUIEnhPopUpTextBox,       "popuptextbox");
 _LIT(KUIEnhFullScreenTextBox,  "fullscreentextbox");
-_LIT(KUIEnhVideoOverlay,       "videooverlaysupported");
 _LIT(KTrueValue,               "true");
 _LIT(KPauseValue,              "pause");
 _LIT(KRunValue,                "run");
@@ -135,7 +134,12 @@ _LIT(KPositionBottom,          "bottom");
 _LIT(KPositionRight,           "right");
 }
 
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+const TInt KHighlightedItemTextColor    = EAknsCIQsnTextColorsCG6;
+#else
 const TInt KHighlightedItemTextColor    = EAknsCIQsnTextColorsCG8;
+#endif // RD_JAVA_S60_RELEASE_9_2
 const TInt KNonHighlightedItemTextColor = EAknsCIQsnTextColorsCG6;
 
 
@@ -725,13 +729,6 @@ public:
          */
         EDrwOpcBitBltRect = 1
 #endif // RD_JAVA_NGA_ENABLED
-
-        /**
-         * Indicates start of drawing commands for canvas paint.
-         * Used only video overlay case.
-         * @since S60 9.2
-         */
-        ,EDrwOpcPaintStarted = 3
     };
 public:
     /**
@@ -841,16 +838,6 @@ public:
      * @since S60 9.2
      */
     virtual void MidletExiting() = 0;
-    
-    /**
-     * Returns ETrue if video overlay is currently used in Canvas.
-     * ETrue is returned when:
-     *      - overlay is enabled by the jad attribute
-     *      - Canvas is not GameCanvas
-     *      - Canvas has MMAPI content areas
-     * @since S60 9.2
-     */
-    virtual TBool IsVideoOverlayActive() = 0;
 #endif // RD_JAVA_NGA_ENABLED
 
     virtual TBool ReadyToBlit() const = 0;
@@ -2501,13 +2488,6 @@ public:
      */
     virtual TBool CanvasHasBackground(const MMIDCanvas& aCanvas) const = 0;
 
-    /**
-     * Checks if video overlays are enabled (by the jad attribute).
-     * @return ETrue if overlays are enabled.
-     * @since S60 9.2
-     */
-    virtual TBool VideoOverlayEnabled() const = 0;
-
 #ifdef RD_JAVA_NGA_ENABLED
 
     /**
@@ -2587,41 +2567,6 @@ public:
      * @since Java 2.1
      */
     virtual const MMIDDisplayable* LastFullscreenDisplayable() const = 0;
-    
-    /**
-     * Returns reference to RCriticalSection that should be used in all
-     * MMAPI related synchronization in LCDUI.
-     *
-     * @return referende to RCriticalSection
-     * @since Java 2.1
-     */
-    virtual RCriticalSection& GetMMAPILock() = 0;
-    
-    /**
-     * Autolocker class for RCriticalSection.
-     */
-    class TCriticalSectionAutoLock
-    {
-    public:
-       /**
-        * Ctor
-        * @param aLock Syncronization primitive that is locked during construction
-        */
-        TCriticalSectionAutoLock(RCriticalSection& aLock) : iLock(aLock)
-       {
-           iLock.Wait();
-       }
-
-       /**
-        * Dtor. Signals the synchronization primitive
-        */
-       ~TCriticalSectionAutoLock()
-       {
-           iLock.Signal();
-       }
-    private:
-       RCriticalSection& iLock;
-    };
 };
 
 /**

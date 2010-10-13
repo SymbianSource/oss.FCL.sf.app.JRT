@@ -38,14 +38,12 @@ public final class Main
     {
         // Do the start up trace.
         StartUpTrace.doTrace("Midp runtime ready");
-        if (Log.mOn) 
-        {
-            Log.logI("Starting MIDP runtime");
- 	          Log.logI("java.version: " +
-                     System.getProperty("java.version"));
-            Log.logI("java.fullversion: " +
-                     System.getProperty("java.fullversion"));
-        }
+        if (Log.mOn) Log.logI("Starting MIDP runtime");
+
+        System.out.println("java.version: " +
+                           System.getProperty("java.version"));
+        System.out.println("java.fullversion: " +
+                           System.getProperty("java.fullversion"));
         boolean ok = true;
 
         try

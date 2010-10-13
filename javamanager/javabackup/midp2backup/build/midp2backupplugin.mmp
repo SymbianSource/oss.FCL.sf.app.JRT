@@ -46,20 +46,19 @@ SOURCE                  javastoragebackuputil.cpp
 SOURCE                  javaversionbackuputil.cpp
 SOURCE                  mediaidupdater.cpp
 
+
 USERINCLUDE             ../src.s60
 USERINCLUDE             ../../inc.s60
 USERINCLUDE             ../../../../inc
 
-START RESOURCE          ../data/10282474.rss
+SYSTEMINCLUDE           /epoc32/include/connect
+
+start resource          ../data/10282474.rss
 TARGET                  midp2backupplugin.rsc
-END
-START RESOURCE          ../data/10282474_iad.rss
-TARGET                  midp2backupplugin.rsc
-TARGETPATH              resource/java/iad
-END
+end
 
 LIBRARY                 ecom.lib
-LIBRARY                 estor.lib 
+LIBRARY                 estor.lib
 LIBRARY                 efsrv.lib
 LIBRARY                 javastorage.lib
 LIBRARY                 sysutil.lib

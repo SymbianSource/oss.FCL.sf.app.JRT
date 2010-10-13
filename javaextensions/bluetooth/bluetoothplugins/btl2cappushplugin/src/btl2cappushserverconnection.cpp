@@ -37,9 +37,11 @@ namespace bluetooth
 OS_EXPORT L2CapPushServerConnection::L2CapPushServerConnection(
     const wstring aUri, const wstring aFilter):
         mAcceptMonitor(NULL),
+        mConnectionListener(0),
         mConnectionUri(aUri),
         mConnectionFilter(aFilter),
         mL2CAPServer(NULL),
+        mClientConnection(0),
         mPendingConnection(false),
         mListening(false),
         mCreatedByPush(false),
@@ -199,9 +201,9 @@ void L2CapPushServerConnection::handleConnectionRequest(
     BluetoothNameLookup * nameLookup = NULL;
 
     long long remoteDevAddr = aClientConnection->getRemoteAddress();
-    ELOG1(EJavaBluetooth,
-      "+ L2CapPushServerConnection::handleConnectionRequest DeviceAddress:%llx",
-         remoteDevAddr);
+    LOG1(EJavaBluetooth, EInfo,
+     "L2CapPushServerConnection::handleConnectionRequest: remoteDevAddr: %llx",
+                                                                remoteDevAddr); 
     TRAPD(lookupErr,
     {
         nameLookup = BluetoothNameLookup::NewL();

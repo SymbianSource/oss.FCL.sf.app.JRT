@@ -24,7 +24,6 @@
 #include <w32std.h>
 
 #include "com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator.h"
-#include "com_nokia_mj_impl_utils_InstallerErrorMessage.h"
 #include "javacommonutils.h"
 #include "javasymbianoslayer.h" // for CleanupResetAndDestroyPushL
 #include "logger.h"
@@ -32,39 +31,53 @@
 // SCR usage is enabled if this macro has been defined.
 #ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 
+#include <qservicemanager.h>
+#include <qurl.h>
 #include <usif/scr/scr.h>
 #include <usif/scr/screntries.h>
+#ifdef RD_JAVA_USIF_APP_REG
 #include <usif/scr/appreginfo.h>
-#include <usif/usiferror.h>
-#include <xqappmgr.h>
+#endif // RD_JAVA_USIF_APP_REG
 
 // Helper macro for logging a TDesC.
 #define LOG_TDESC_L(compIdParam, logLevelParam, msgParam, tdescParam) \
-    {                                                                 \
-        std::wstring ws((wchar_t*)tdescParam.Ptr(), tdescParam.Length()); \
-        LOG1(compIdParam, logLevelParam, msgParam, ws.c_str());       \
+    {                                                               \
+        HBufC8* tdescBuf = HBufC8::NewLC(tdescParam.Length() + 1);  \
+        TPtr8 tdescPtr(tdescBuf->Des());                            \
+        tdescPtr.Append(tdescParam);                                \
+        LOG1(compIdParam, logLevelParam, msgParam, tdescPtr.PtrZ());\
+        CleanupStack::PopAndDestroy(tdescBuf);                      \
     }
 
 // NAMESPACE DECLARATION
+QTM_USE_NAMESPACE
 using namespace java;
 using namespace Usif;
 
 IMPORT_C HBufC* CreateHBufCFromJavaStringLC(JNIEnv* aEnv, jstring aString);
 
+// Java MIME types.
+_LIT(KMimeTypeAppDescriptor, "text/vnd.sun.j2me.app-descriptor");
+_LIT(KMimeTypeJava, "application/java");
+_LIT(KMimeTypeJavaArchive, "application/java-archive");
+_LIT(KMimeTypeXJavaArchive, "application/x-java-archive");
+
 // Properties registered to SCR.
+_LIT(KMIDletName, "MIDlet-Name");
 _LIT(KUid, "Uid");
 _LIT(KMediaId, "Media-Id");
 _LIT(KMIDletInfoURL, "MIDlet-Info-URL");
 _LIT(KMIDletDescription, "MIDlet-Description");
 _LIT(KDownloadURL, "Download-URL");
-_LIT(KUpdateURL, "Update-URL");
 _LIT(KSettingsPlugin, "SettingsName");
 _LIT(KSettingsPluginValue, "javaapplicationsettingsview");
 
+#ifdef RD_JAVA_USIF_APP_REG
 // Symbian file path separator.
 _LIT(KPathSeperator, "\\");
 // Postfix for the fake application name generated for AppArc.
 _LIT(KAppPostfix, ".fakeapp");
+#endif // RD_JAVA_USIF_APP_REG
 
 /**
  * Internal helper method for checking if specified application
@@ -174,6 +187,7 @@ RSoftwareComponentRegistry *CreateScrL()
  * See JNI method __1notifyAppChange.
  * This method makes calls that may leave (the actual registering).
  */
+#ifdef RD_JAVA_USIF_NOTIFY_APP_ARC
 void NotifyAppChangeL(JNIEnv *aEnv, jintArray aAppUids, jint aAppChange)
 {
     RApaLsSession apaSession;
@@ -206,6 +220,11 @@ void NotifyAppChangeL(JNIEnv *aEnv, jintArray aAppUids, jint aAppChange)
     CleanupStack::PopAndDestroy(&apaSession);
     LOG(EJavaInstaller, EInfo, "NotifyAppChangeL completed");
 }
+#else
+void NotifyAppChangeL(JNIEnv *, jintArray, jint)
+{
+}
+#endif // RD_JAVA_USIF_NOTIFY_APP_ARC
 
 /*
  * Class:     com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator
@@ -216,6 +235,12 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
 (JNIEnv *aEnv, jclass, jintArray aAppUids, jint aAppChange)
 {
     TRAPD(err, NotifyAppChangeL(aEnv, aAppUids, aAppChange));
+    if (KErrNone != err)
+    {
+        ELOG1(EJavaInstaller,
+              "notifyAppChange: notifying AppArc failed, error %d",
+              err);
+    }
     return err;
 }
 
@@ -229,47 +254,86 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
 {
     TInt err = KErrNone;
 
-    CActiveScheduler* newScheduler = 0;
-    if (0 == CActiveScheduler::Current())
+    QServiceManager serviceManager;
+    QObject* activityManager =
+        serviceManager.loadInterface("com.nokia.qt.activities.ActivityManager");
+    if (!activityManager)
     {
-        // Create ActiveScheduler as it does not yet exist.
-        newScheduler = new CActiveScheduler;
-        CActiveScheduler::Install(newScheduler);
+        err = serviceManager.error();
+        ELOG1(EJavaInstaller,
+              "launchAppView: loading ActivityManager failed, error %d", err);
+        return KErrCouldNotConnect;
+    }
+    // URL for launching AppLib.
+    QUrl url(QString("appto://20022F35?activityname=AppLibRecentView"));
+    QMetaObject::invokeMethod(activityManager, "launchActivity",
+                              Q_ARG(QString, url.toString()));
+    err = serviceManager.error();
+    delete activityManager;
+    if (QServiceManager::NoError != err)
+    {
+        ELOG1(EJavaInstaller,
+              "launchAppView: launching AppLib activity failed, error %d",
+              err);
+        return KErrCouldNotConnect;
     }
 
-    QUrl openRecentView("appto://20022F35?activityname=AppLibRecentView");
-    XQApplicationManager applicationManager;
-    XQAiwRequest *request = applicationManager.create(openRecentView);
-    if (request)
-    {
-        LOG(EJavaInstaller, EInfo, "launchAppView: launching AppLib");
-        bool result = request->send();
-        if (!result)
-        {
-            int error = request->lastError();
-            ELOG1(EJavaInstaller,
-                  "launchAppView: launching AppLib failed, error %d", error);
-            err = KErrGeneral;
-        }
-        else
-        {
-            LOG(EJavaInstaller, EInfo, "launchAppView: launching AppLib succeeded");
-        }
-        delete request;
-    }
+    // Start AppLib and bring it to foreground.
+    const TUid KAppLibUid = { 0x20022F35 };
+    TRAP(err, StartAppL(KAppLibUid));
+    return err;
+}
 
-    if (newScheduler)
+/**
+ * See JNI method __1registerJavaSoftwareType.
+ * This method makes calls that may leave (the actual registering).
+ */
+void RegisterJavaSoftwareTypeL(RSoftwareComponentRegistry *aScr, TBool aRegister = ETrue)
+{
+    RPointerArray<HBufC> javaMimeTypes;
+    CleanupResetAndDestroyPushL(javaMimeTypes);
+    javaMimeTypes.AppendL(KMimeTypeAppDescriptor().AllocL());
+    javaMimeTypes.AppendL(KMimeTypeJava().AllocL());
+    javaMimeTypes.AppendL(KMimeTypeJavaArchive().AllocL());
+    javaMimeTypes.AppendL(KMimeTypeXJavaArchive().AllocL());
+    if (aRegister)
     {
-        delete newScheduler;
-        newScheduler = 0;
+        TUid javaSifPluginUid = TUid::Uid(0x2002bc70);
+        _LIT_SECURE_ID(KJavaInstallerSid, 0x102033E6);
+        aScr->AddSoftwareTypeL(
+            Usif::KSoftwareTypeJava, javaSifPluginUid,
+            KJavaInstallerSid, KJavaInstallerSid, javaMimeTypes);
     }
+    else
+    {
+        aScr->DeleteSoftwareTypeL(Usif::KSoftwareTypeJava, javaMimeTypes);
+    }
+    CleanupStack::PopAndDestroy(&javaMimeTypes);
+}
 
-    if (KErrNone == err)
+/*
+ * Class:     com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator
+ * Method:    _registerJavaSoftwareType
+ * Signature: (Z)I
+ */
+JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1registerJavaSoftwareType
+(JNIEnv *, jclass, jboolean aRegister)
+{
+    RSoftwareComponentRegistry *pScr = NULL;
+    TRAPD(err, pScr = CreateScrL());
+    if (KErrNone != err)
     {
-        // Start AppLib and bring it to foreground.
-        const TUid KAppLibUid = { 0x20022F35 };
-        TRAP(err, StartAppL(KAppLibUid));
+        return err;
     }
+    TRAP(err, RegisterJavaSoftwareTypeL(pScr, aRegister));
+    if (KErrNone != err)
+    {
+        ELOG1(EJavaInstaller,
+              "registerJavaSoftwareType: registration failed, error %d",
+              err);
+    }
+    pScr->Close();
+    delete pScr;
     return err;
 }
 
@@ -344,6 +408,12 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
     TRAPD(err, pScr->RollbackTransactionL());
     pScr->Close();
     delete pScr;
+    if (KErrNone != err)
+    {
+        ELOG1(EJavaInstaller,
+              "rollbackSession: Rolling back transaction failed, error %d",
+              err);
+    }
     return err;
 }
 
@@ -373,9 +443,9 @@ void SetComponentPropertyL(
         HBufC *valueBuf = CreateHBufCFromJavaStringLC(aEnv, aValue);
         aScr->SetComponentPropertyL(aComponentId, aName, *valueBuf);
         //LOG_TDESC_L(EJavaInstaller, EInfo,
-        //            "SetComponentPropertyL: name %S", aName);
+        //            "SetComponentPropertyL: name %s", aName);
         //LOG_TDESC_L(EJavaInstaller, EInfo,
-        //            "SetComponentPropertyL: value %S", valueBuf->Des());
+        //            "SetComponentPropertyL: value %s", valueBuf->Des());
         CleanupStack::PopAndDestroy(valueBuf);
     }
 }
@@ -386,14 +456,23 @@ void SetComponentPropertyL(
  */
 TComponentId RegisterComponentL(
     JNIEnv *aEnv, RSoftwareComponentRegistry *aScr, jint aUid,
-    jstring aSuiteName, jstring aVendor, jstring aVersion, jstring aGlobalId,
+    jstring aSuiteName, jstring aVendor, jstring aVersion,
+    jstring aName, jstring aGlobalId,
     jobjectArray aComponentFiles, TInt64 aComponentSize,
     TBool aIsRemovable, TBool aIsDrmProtected,
     TBool aIsOriginVerified, TBool aIsUpdate, jint aMediaId,
-    jstring aMidletInfoUrl, jstring aMidletDescription,
-    jstring aDownloadUrl, jstring aUpdateUrl)
+    jstring aMidletInfoUrl, jstring aMidletDescription, jstring aDownloadUrl)
 {
-    HBufC *name = CreateHBufCFromJavaStringLC(aEnv, aSuiteName);
+    HBufC *name = NULL;
+    if (NULL == aName)
+    {
+        // If name is not specified, use suite name.
+        name = CreateHBufCFromJavaStringLC(aEnv, aSuiteName);
+    }
+    else
+    {
+        name = CreateHBufCFromJavaStringLC(aEnv, aName);
+    }
     HBufC *vendor = CreateHBufCFromJavaStringLC(aEnv, aVendor);
     HBufC *version = CreateHBufCFromJavaStringLC(aEnv, aVersion);
     HBufC *globalId = CreateHBufCFromJavaStringLC(aEnv, aGlobalId);
@@ -420,10 +499,14 @@ TComponentId RegisterComponentL(
     aScr->SetComponentPropertyL(componentId, KSettingsPlugin(), KSettingsPluginValue());
     //LOG(EJavaInstaller, EInfo, "RegisterComponentL: Settings plugin property set");
 
+    if (NULL != aName)
+    {
+        // If name is specified, store suite name as property.
+        SetComponentPropertyL(aEnv, aScr, componentId, KMIDletName(), aSuiteName);
+    }
     SetComponentPropertyL(aEnv, aScr, componentId, KMIDletInfoURL(), aMidletInfoUrl);
     SetComponentPropertyL(aEnv, aScr, componentId, KMIDletDescription(), aMidletDescription);
     SetComponentPropertyL(aEnv, aScr, componentId, KDownloadURL(), aDownloadUrl);
-    SetComponentPropertyL(aEnv, aScr, componentId, KUpdateURL(), aUpdateUrl);
 
     CleanupStack::PopAndDestroy(globalId);
     CleanupStack::PopAndDestroy(version);
@@ -449,23 +532,22 @@ TComponentId RegisterComponentL(
  */
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1registerComponent
 (JNIEnv *aEnv, jclass, jint aSessionHandle, jint aUid, jstring aSuiteName,
- jstring aVendor, jstring aVersion, jstring aGlobalId,
+ jstring aVendor, jstring aVersion, jstring aName, jstring aGlobalId,
  jobjectArray aComponentFiles, jlong aComponentSize, jboolean aIsRemovable,
  jboolean aIsDrmProtected, jboolean aIsOriginVerified, jboolean aIsUpdate,
  jint aMediaId, jstring aMidletInfoUrl, jstring aMidletDescription,
- jstring aDownloadUrl, jstring aUpdateUrl, jobject aComponentId)
+ jstring aDownloadUrl, jobject aComponentId)
 {
-    __UHEAP_MARK;
+    //__UHEAP_MARK;
     RSoftwareComponentRegistry *pScr =
         reinterpret_cast<RSoftwareComponentRegistry*>(aSessionHandle<<2);
     TComponentId componentId = -1;
     TRAPD(err, componentId = RegisterComponentL(
-                                 aEnv, pScr, aUid, aSuiteName, aVendor, aVersion, aGlobalId,
+                                 aEnv, pScr, aUid, aSuiteName, aVendor, aVersion, aName, aGlobalId,
                                  aComponentFiles, aComponentSize, aIsRemovable,
                                  aIsDrmProtected, aIsOriginVerified, aIsUpdate, aMediaId,
-                                 aMidletInfoUrl, aMidletDescription,
-                                 aDownloadUrl, aUpdateUrl));
-    __UHEAP_MARKEND;
+                                 aMidletInfoUrl, aMidletDescription, aDownloadUrl));
+    //__UHEAP_MARKEND;
     if (KErrNone == err)
     {
         jclass clazz = aEnv->GetObjectClass(aComponentId);
@@ -483,16 +565,18 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1unregisterComponent
 (JNIEnv *, jclass, jint aSessionHandle, jint aComponentId)
 {
-    __UHEAP_MARK;
+    //__UHEAP_MARK;
     RSoftwareComponentRegistry *pScr =
         reinterpret_cast<RSoftwareComponentRegistry*>(aSessionHandle<<2);
     TInt err = KErrNone;
+#ifdef RD_JAVA_USIF_APP_REG
     TRAP(err, pScr->DeleteApplicationEntriesL(aComponentId));
+#endif // RD_JAVA_USIF_APP_REG
     if (KErrNone == err)
     {
         TRAP(err, pScr->DeleteComponentL(aComponentId));
     }
-    __UHEAP_MARKEND;
+    //__UHEAP_MARKEND;
     return err;
 }
 
@@ -500,6 +584,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
  * See JNI method __1registerApplication.
  * This method makes calls that may leave.
  */
+#ifdef RD_JAVA_USIF_APP_REG
 void RegisterApplicationL(
     JNIEnv *aEnv, RSoftwareComponentRegistry *aScr,
     jint aComponentId, jint aAppUid,
@@ -567,36 +652,47 @@ void RegisterApplicationL(
     RPointerArray<HBufC> captionsArray;
     CleanupResetAndDestroyPushL(captionsArray);
     TInt langCount = aEnv->GetArrayLength(aLanguages);
-    jint* languages = aEnv->GetIntArrayElements(aLanguages, NULL);
-    for (TInt i = 0; i < langCount; i++)
+    TInt captionCount = aEnv->GetArrayLength(aAppNames);
+    if (langCount == captionCount)
     {
-        TLanguage tmpLanguage = (TLanguage)languages[i];
-        HBufC *tmpCaption =
-            CreateHBufCFromJavaStringLC(
-                aEnv, (jstring)aEnv->GetObjectArrayElement(aAppNames, i));
-        captionsArray.AppendL(tmpCaption);
-        CleanupStack::Pop(tmpCaption);
-        //LOG1(EJavaInstaller, EInfo,
-        //     "RegisterApplicationL: language %d", tmpLanguage);
-        //LOG_TDESC_L(EJavaInstaller, EInfo,
-        //            "RegisterApplicationL: caption %S", tmpCaption->Des());
-        CCaptionAndIconInfo *tmpCaptionAndIconInfo =
-            CCaptionAndIconInfo::NewLC(
-                /*aCaption=*/ *tmpCaption,
-                /*aIconFileName=*/ KNullDesC,
-                /*aNumOfAppIcons=*/ 0);
-        CLocalizableAppInfo *tmpLocAppInfo =
-            CLocalizableAppInfo::NewLC(
-                /*aShortCaption=*/ KNullDesC,
-                /*aApplicationLanguage=*/ tmpLanguage,
-                /*aGroupName=*/ KNullDesC,
-                /*aCaptionAndIconInfo=*/ tmpCaptionAndIconInfo,
-                /*aViewDataList=*/ viewDataList);
-        localizableAppInfoList.AppendL(tmpLocAppInfo);
-        CleanupStack::Pop(tmpLocAppInfo);
-        CleanupStack::Pop(tmpCaptionAndIconInfo);
+        jint* languages = aEnv->GetIntArrayElements(aLanguages, NULL);
+        for (TInt i = 0; i < langCount; i++)
+        {
+            TLanguage tmpLanguage = (TLanguage)languages[i];
+            HBufC *tmpCaption =
+                CreateHBufCFromJavaStringLC(
+                    aEnv, (jstring)aEnv->GetObjectArrayElement(aAppNames, i));
+            captionsArray.AppendL(tmpCaption);
+            CleanupStack::Pop(tmpCaption);
+            //LOG1(EJavaInstaller, EInfo,
+            //     "RegisterApplicationL: language %d", tmpLanguage);
+            //LOG_TDESC_L(EJavaInstaller, EInfo,
+            //            "RegisterApplicationL: caption %s", tmpCaption->Des());
+            CCaptionAndIconInfo *tmpCaptionAndIconInfo =
+                CCaptionAndIconInfo::NewLC(
+                    /*aCaption=*/ *tmpCaption,
+                    /*aIconFileName=*/ KNullDesC,
+                    /*aNumOfAppIcons=*/ 0);
+            CLocalizableAppInfo *tmpLocAppInfo =
+                CLocalizableAppInfo::NewLC(
+                    /*aShortCaption=*/ KNullDesC,
+                    /*aApplicationLanguage=*/ tmpLanguage,
+                    /*aGroupName=*/ KNullDesC,
+                    /*aCaptionAndIconInfo=*/ tmpCaptionAndIconInfo,
+                    /*aViewDataList=*/ viewDataList);
+            localizableAppInfoList.AppendL(tmpLocAppInfo);
+            CleanupStack::Pop(tmpLocAppInfo);
+            CleanupStack::Pop(tmpCaptionAndIconInfo);
+        }
+        aEnv->ReleaseIntArrayElements(aLanguages, languages, 0);
     }
-    aEnv->ReleaseIntArrayElements(aLanguages, languages, 0);
+    else
+    {
+        WLOG2(EJavaInstaller,
+              "RegisterApplicationL: localisation not made because language " \
+              "count does not match to caption count (%d != %d)",
+              langCount, captionCount);
+    }
 
     // Create application registration data objects.
     TApplicationCharacteristics appCharacteristics;
@@ -632,6 +728,13 @@ void RegisterApplicationL(
     CleanupStack::PopAndDestroy(caption);
     __UHEAP_MARKEND;
 }
+#else
+void RegisterApplicationL(
+    JNIEnv *, RSoftwareComponentRegistry *, jint, jint, jstring,
+    jstring, jstring, jstring, jint, jintArray, jobjectArray)
+{
+}
+#endif // RD_JAVA_USIF_APP_REG
 
 /*
  * Class:     com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator
@@ -661,13 +764,19 @@ void RegisterLocalizedComponentNameL(
     JNIEnv *aEnv, RSoftwareComponentRegistry *aScr, jint aComponentId,
     jstring aName, jstring aVendor, jint aLanguage)
 {
-    HBufC *name = CreateHBufCFromJavaStringLC(aEnv, aName);
-    aScr->SetComponentNameL(aComponentId, *name, (TLanguage)aLanguage);
-    CleanupStack::PopAndDestroy(name);
+    if (NULL != aName)
+    {
+        HBufC *name = CreateHBufCFromJavaStringLC(aEnv, aName);
+        aScr->SetComponentNameL(aComponentId, *name, (TLanguage)aLanguage);
+        CleanupStack::PopAndDestroy(name);
+    }
 
-    HBufC *vendor = CreateHBufCFromJavaStringLC(aEnv, aVendor);
-    aScr->SetVendorNameL(aComponentId, *vendor, (TLanguage)aLanguage);
-    CleanupStack::PopAndDestroy(vendor);
+    if (NULL != aVendor)
+    {
+        HBufC *vendor = CreateHBufCFromJavaStringLC(aEnv, aVendor);
+        aScr->SetVendorNameL(aComponentId, *vendor, (TLanguage)aLanguage);
+        CleanupStack::PopAndDestroy(vendor);
+    }
 }
 
 /*
@@ -772,6 +881,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
  * Method:    _getComponentIdForApp
  * Signature: (IILcom/nokia/mj/impl/installer/applicationregistrator/ComponentId;)I
  */
+#ifdef RD_JAVA_USIF_APP_REG
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1getComponentIdForApp
 (JNIEnv *aEnv, jclass, jint aSessionHandle, jint aAppUid, jobject aComponentId)
 {
@@ -791,6 +901,13 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
     }
     return err;
 }
+#else
+JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1getComponentIdForApp
+(JNIEnv *, jclass, jint, jint, jobject)
+{
+    return KErrNone;
+}
+#endif // RD_JAVA_USIF_APP_REG
 
 /**
  * See JNI method __1getuid.
@@ -803,8 +920,20 @@ TInt GetUidL(jint aCid)
     CleanupClosePushL(*pScr);
     TInt uid = 0;
     CPropertyEntry *property = pScr->GetComponentPropertyL(aCid, KUid());
-    uid = ((CIntPropertyEntry*)property)->IntValue();
-    delete property;
+    if (NULL != property)
+    {
+        if (property->PropertyType() == CPropertyEntry::EIntProperty)
+        {
+            uid = ((CIntPropertyEntry*)property)->IntValue();
+        }
+        else
+        {
+            ELOG2(EJavaInstaller,
+                  "GetUidL: Incorrect property type %d for cid %d",
+                  property->PropertyType(), aCid);
+        }
+        delete property;
+    }
     // Close and delete the temporary RSoftwareComponentRegistry.
     CleanupStack::PopAndDestroy(pScr);
     delete pScr; // For some reason PopAndDestroy does not delete this.
@@ -841,16 +970,23 @@ void LogComponentL(JNIEnv *aEnv, RSoftwareComponentRegistry *aScr, jstring aGlob
     HBufC *globalId = CreateHBufCFromJavaStringLC(aEnv, aGlobalId);
     CComponentEntry *componentEntry =
         aScr->GetComponentL(*globalId, Usif::KSoftwareTypeJava, aLanguage);
+    if (NULL == componentEntry)
+    {
+        //LOG_TDESC_L(EJavaInstaller, EInfo,
+        //            "Component not found for GlobalId %s", globalId->Des());
+        CleanupStack::PopAndDestroy(globalId);
+        return;
+    }
     CleanupStack::PopAndDestroy(globalId);
 
     // Log component entry.
     TComponentId componentId = componentEntry->ComponentId();
-    LOG_TDESC_L(EJavaInstaller, EInfo, "GlobalId: %S", componentEntry->GlobalId());
+    LOG_TDESC_L(EJavaInstaller, EInfo, "GlobalId: %s", componentEntry->GlobalId());
     LOG1(EJavaInstaller, EInfo, "ComponentId: %d", componentId);
-    LOG_TDESC_L(EJavaInstaller, EInfo, "SoftwareType: %S", componentEntry->SoftwareType());
-    LOG_TDESC_L(EJavaInstaller, EInfo, "Name: %S", componentEntry->Name());
-    LOG_TDESC_L(EJavaInstaller, EInfo, "Vendor: %S", componentEntry->Vendor());
-    LOG_TDESC_L(EJavaInstaller, EInfo, "Version: %S", componentEntry->Version());
+    LOG_TDESC_L(EJavaInstaller, EInfo, "SoftwareType: %s", componentEntry->SoftwareType());
+    LOG_TDESC_L(EJavaInstaller, EInfo, "Name: %s", componentEntry->Name());
+    LOG_TDESC_L(EJavaInstaller, EInfo, "Vendor: %s", componentEntry->Vendor());
+    LOG_TDESC_L(EJavaInstaller, EInfo, "Version: %s", componentEntry->Version());
     LOG1(EJavaInstaller, EInfo, "ComponentSize: %d", componentEntry->ComponentSize());
     LOG1(EJavaInstaller, EInfo, "ScomoState: %d", componentEntry->ScomoState());
     LOG1(EJavaInstaller, EInfo, "IsDrmProtected: %d", componentEntry->IsDrmProtected());
@@ -878,37 +1014,42 @@ void LogComponentL(JNIEnv *aEnv, RSoftwareComponentRegistry *aScr, jstring aGlob
         switch (propertyEntry->PropertyType())
         {
         case CPropertyEntry::EBinaryProperty:
-            LOG_TDESC_L(EJavaInstaller, EInfo, "BinaryProperty: %S",
+            LOG_TDESC_L(EJavaInstaller, EInfo, "BinaryProperty: %s",
                         propertyEntry->PropertyName());
             break;
         case CPropertyEntry::EIntProperty:
-            LOG_TDESC_L(EJavaInstaller, EInfo, "IntProperty: %S",
+            LOG_TDESC_L(EJavaInstaller, EInfo, "IntProperty: %s",
                         propertyEntry->PropertyName());
             LOG2(EJavaInstaller, EInfo, "  = 0x%x (%d)",
                  ((CIntPropertyEntry*)propertyEntry)->IntValue(),
                  ((CIntPropertyEntry*)propertyEntry)->IntValue());
             break;
         case CPropertyEntry::ELocalizedProperty:
-            LOG_TDESC_L(EJavaInstaller, EInfo, "LocalizedProperty: %S",
+            LOG_TDESC_L(EJavaInstaller, EInfo, "LocalizedProperty: %s",
                         propertyEntry->PropertyName());
-            LOG_TDESC_L(EJavaInstaller, EInfo, " = %S",
+            LOG_TDESC_L(EJavaInstaller, EInfo, " = %s",
                         ((CLocalizablePropertyEntry*)propertyEntry)->StrValue());
             break;
         }
     }
     CleanupStack::PopAndDestroy(&properties);
 
+#ifdef RD_JAVA_USIF_APP_REG
     // Log uids of applications associated to component.
     RArray<TUid> appUids;
     CleanupClosePushL(appUids);
     aScr->GetAppUidsForComponentL(componentId, appUids);
-    LOG1(EJavaInstaller, EInfo, "Number of AppUids found: %d", appUids.Count());
+    if (appUids.Count() == 0)
+    {
+        LOG(EJavaInstaller, EInfo, "No component appUids found from SCR");
+    }
     for (TInt i = 0; i < appUids.Count(); i++)
     {
         LOG2(EJavaInstaller, EInfo, "AppUid [%x] (%d)",
              appUids[i].iUid, appUids[i].iUid);
     }
     CleanupStack::PopAndDestroy(&appUids);
+#endif // RD_JAVA_USIF_APP_REG
 }
 
 /**
@@ -944,11 +1085,11 @@ void LogComponentL(JNIEnv *aEnv, RSoftwareComponentRegistry *aScr, jstring aGlob
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1logComponent
 (JNIEnv *aEnv, jclass, jint aSessionHandle, jstring aGlobalId)
 {
-    //__UHEAP_MARK;
+    __UHEAP_MARK;
     RSoftwareComponentRegistry *pScr =
         reinterpret_cast<RSoftwareComponentRegistry*>(aSessionHandle<<2);
     TRAPD(err, LogComponentL(aEnv, pScr, aGlobalId));
-    //__UHEAP_MARKEND;
+    __UHEAP_MARKEND;
     return err;
 }
 
@@ -960,51 +1101,11 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1getUsifMode
 (JNIEnv *, jclass)
 {
+#ifdef RD_JAVA_USIF_APP_REG
     return 1;
-}
-
-/*
- * Class:     com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator
- * Method:    _getErrorCategory
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1getErrorCategory
-(JNIEnv *, jclass, jint aErrorId)
-{
-    int errorCategory = Usif::EUnexpectedError;
-    switch (aErrorId)
-    {
-    case com_nokia_mj_impl_utils_InstallerErrorMessage_INST_NO_MEM:
-        errorCategory = Usif::ELowDiskSpace;
-        break;
-    case com_nokia_mj_impl_utils_InstallerErrorMessage_INST_NO_NET:
-        errorCategory = Usif::ENetworkUnavailable;
-        break;
-    case com_nokia_mj_impl_utils_InstallerErrorMessage_INST_CORRUPT_PKG:
-        errorCategory = Usif::ECorruptedPackage;
-        break;
-    case com_nokia_mj_impl_utils_InstallerErrorMessage_INST_COMPAT_ERR:
-        errorCategory = Usif::EApplicationNotCompatible;
-        break;
-    case com_nokia_mj_impl_utils_InstallerErrorMessage_INST_AUTHORIZATION_ERR:
-    case com_nokia_mj_impl_utils_InstallerErrorMessage_INST_AUTHENTICATION_ERR:
-        errorCategory = Usif::ESecurityError;
-        break;
-    case com_nokia_mj_impl_utils_InstallerErrorMessage_INST_PUSH_REG_ERR:
-    case com_nokia_mj_impl_utils_InstallerErrorMessage_INST_UNEXPECTED_ERR:
-    case com_nokia_mj_impl_utils_InstallerErrorMessage_UNINST_UNEXPECTED_ERR:
-    case com_nokia_mj_impl_utils_InstallerErrorMessage_OTHER_UNEXPECTED_ERR:
-        errorCategory = Usif::EUnexpectedError;
-        break;
-    case com_nokia_mj_impl_utils_InstallerErrorMessage_INST_CANCEL:
-    case com_nokia_mj_impl_utils_InstallerErrorMessage_UNINST_CANCEL:
-        errorCategory = Usif::EUserCancelled;
-        break;
-    case com_nokia_mj_impl_utils_InstallerErrorMessage_UNINST_NOT_ALLOWED:
-        errorCategory = Usif::EUninstallationBlocked;
-        break;
-    }
-    return errorCategory;
+#else
+    return 0;
+#endif // RD_JAVA_USIF_APP_REG
 }
 
 #else // SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
@@ -1027,6 +1128,17 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
  */
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1launchAppView
 (JNIEnv *, jclass)
+{
+    return KErrNone;
+}
+
+/*
+ * Class:     com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator
+ * Method:    _registerJavaSoftwareType
+ * Signature: (Z)I
+ */
+JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1registerJavaSoftwareType
+(JNIEnv *, jclass, jboolean)
 {
     return KErrNone;
 }
@@ -1080,9 +1192,9 @@ JNIEXPORT void JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
  * Signature: (ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;JZZZZLcom/nokia/mj/impl/installer/applicationregistrator/ComponentId;)I
  */
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1registerComponent
-(JNIEnv *, jclass, jint, jint, jstring, jstring, jstring, jstring,
- jobjectArray, jlong, jboolean, jboolean, jboolean, jboolean, jint,
- jstring, jstring, jstring, jstring, jobject)
+(JNIEnv *, jclass, jint, jint, jstring, jstring, jstring, jstring, jstring,
+ jobjectArray, jlong, jboolean, jboolean, jboolean, jboolean, jint, jstring,
+ jstring, jstring, jobject)
 {
     return KErrNone;
 }
@@ -1182,17 +1294,6 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
  */
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1getUsifMode
 (JNIEnv *, jclass)
-{
-    return 0;
-}
-
-/*
- * Class:     com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator
- * Method:    _getErrorCategory
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1getErrorCategory
-(JNIEnv *, jclass, jint)
 {
     return 0;
 }

@@ -36,12 +36,13 @@ define JAVA_POLICY_IMG     RESOURCE_FILES_DIR\java\security\policies
 // stub sis
 data=ZSYSTEM\install\java.sis    System\Install\java.sis
 
+#ifdef RD_JAVA_APPLICATION_SETTINGS_QT
 // Application settings
-file=ABI_DIR\BUILD_DIR\javaapplicationsettingsview.dll                              SHARED_LIB_DIR\javaapplicationsettingsview.dll
-data=DATAZ_\resource\qt\plugins\appsettings\javaapplicationsettingsview.qtplugin 		resource\qt\plugins\appsettings\javaapplicationsettingsview.qtplugin
+//file=ABI_DIR\BUILD_DIR\javaapplicationsettingsview.dll             SHARED_LIB_DIR\javaapplicationsettingsview.dll
+//data=DATAZ_\resource\qt\plugins\appsettings\javaapplicationsettingsview.qtplugin 													resource\qt\plugins\appsettings\javaapplicationsettingsview.qtplugin
+#endif
 
 // Captain
-file=ABI_DIR\BUILD_DIR\javacaptain_ext_autostarter.dll             	        SHARED_LIB_DIR\javacaptain_ext_autostarter.dll
 file=ABI_DIR\BUILD_DIR\javacaptain_ext_btdeviceclassmanager.dll             SHARED_LIB_DIR\javacaptain_ext_btdeviceclassmanager.dll
 file=ABI_DIR\BUILD_DIR\javacaptain_ext_config.dll                           SHARED_LIB_DIR\javacaptain_ext_config.dll
 file=ABI_DIR\BUILD_DIR\javacaptain_ext_ondemand_2.dll                       SHARED_LIB_DIR\javacaptain_ext_ondemand_2.dll
@@ -61,6 +62,8 @@ file=ABI_DIR\BUILD_DIR\javasizehelperclient.dll                             SHAR
 file=ABI_DIR\BUILD_DIR\javasizehelperserver.dll                             SHARED_LIB_DIR\javasizehelperserver.dll
 
 // Installer
+ECOM_PLUGIN(ifeui.dll,ifeui.rsc)
+data=ZRESOURCE\plugins\ifeui.rsc                                            ECOM_RESOURCE_DIR\ifeui.rsc
 data=ZPRIVATE\10003a3f\apps\javainstaller_reg.rsc                           \private\10003a3f\import\apps\javainstaller_reg.rsc
 data=ZRESOURCE\apps\javainstaller_loc.rsc                                   APP_RESOURCE_DIR\javainstaller_loc.rsc
 data=ZRESOURCE\apps\javainstaller_icon.mif                                  APP_BITMAP_DIR\javainstaller_icon.mif
@@ -71,21 +74,23 @@ data=JAVA_VM_RES_BLD\javainstaller.odc                                      JAVA
 file=ABI_DIR\BUILD_DIR\javainstallerstarter.dll                             PROGRAMS_DIR\javainstallerstarter.dll
 file=ABI_DIR\BUILD_DIR\javapreinstaller.dll                                 PROGRAMS_DIR\javapreinstaller.dll
 data=ZRESOURCE\java\java_app_92.mif                                         JAVA_RES_IMG\java_app.mif
-data=ZRESOURCE\java\java_3_trusted.png                                      JAVA_RES_IMG\java_3_trusted.png
-data=ZRESOURCE\java\java_3_untrusted.png                                    JAVA_RES_IMG\java_3_untrusted.png
-data=ZRESOURCE\java\javaapplicationinstaller.css                            JAVA_RES_IMG\javaapplicationinstaller.css
+data=ZRESOURCE\java\java_trusted.png                                        JAVA_RES_IMG\java_trusted.png
+data=ZRESOURCE\java\java_untrusted.png                                      JAVA_RES_IMG\java_untrusted.png
 data=DATAZ_\private\102033E6\installer\inst_plugins.cfg                     \private\102033E6\installer\inst_plugins.cfg
 
 // Launchers
 file=ABI_DIR\BUILD_DIR\javalauncher.exe                                     PROGRAMS_DIR\javalauncher.exe
-file=ABI_DIR\BUILD_DIR\javaappscheme.exe                                    PROGRAMS_DIR\javaappscheme.exe
-file=ABI_DIR\BUILD_DIR\javaqtrequest.exe                                    PROGRAMS_DIR\javaqtrequest.exe
+ECOM_PLUGIN(javaappschemeplugin.dll,javaappschemeplugin.rsc)
+data=ZRESOURCE\plugins\javaappschemeplugin.rsc                              ECOM_RESOURCE_DIR\javaappschemeplugin.rsc
+
+// SID Checker
+ECOM_PLUGIN(javasidchecker.dll,javasidchecker.rsc)
+data=ZRESOURCE\plugins\javasidchecker.rsc                                   ECOM_RESOURCE_DIR\javasidchecker.rsc
 
 #ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 // Usif installer plugin
 ECOM_PLUGIN(javasifplugin.dll,javasifplugin.rsc)
 data=ZRESOURCE\plugins\javasifplugin.rsc                                    ECOM_RESOURCE_DIR\javasifplugin.rsc
-file=ABI_DIR\BUILD_DIR\javainstallcopier.exe                                PROGRAMS_DIR\javainstallcopier.exe
 #endif
 
 // Recognizers
@@ -113,13 +118,22 @@ SCALABLE_IMAGE(APP_BITMAP_DIR,APP_BITMAP_DIR,javastartscreen)
 // eSWT
 file=ABI_DIR\BUILD_DIR\eswtqt.dll                                             SHARED_LIB_DIR\eswtqt.dll
 data=JAVA_VM_RES_BLD\eswtqt.odc                                               JAVA_VM_RES_IMG\eswtqt.odc
-file=ABI_DIR\BUILD_DIR\eswtqtwebkit.dll                                       SHARED_LIB_DIR\eswtqtwebkit.dll
-data=JAVA_VM_RES_BLD\eswtqtwebkit.odc                                         JAVA_VM_RES_IMG\eswtqtwebkit.odc
 
 // LCDUI
 file=ABI_DIR\BUILD_DIR\openlcdui.dll                                        SHARED_LIB_DIR\openlcdui.dll
 data=JAVA_VM_RES_BLD\openlcdui.odc                                          JAVA_VM_RES_IMG\openlcdui.odc
-
+// AMMS API
+/*
+file=ABI_DIR\BUILD_DIR\javaamms.dll                                         SHARED_LIB_DIR\javaamms.dll
+data=JAVA_VM_RES_BLD\javaamms.odc                                           JAVA_VM_RES_IMG\javaamms.odc
+*/
+// Mobile Media API
+/*
+file=ABI_DIR\BUILD_DIR\javamobilemedia.dll                                  SHARED_LIB_DIR\javamobilemedia.dll
+data=JAVA_VM_RES_BLD\javamobilemedia.odc                                    JAVA_VM_RES_IMG\javamobilemedia.odc
+data=ABI_DIR\BUILD_DIR\z\system\sounds\digital\CamcorderJavaCapture.wav     \System\Sounds\Digital\CamcorderJavaCapture.wav
+data=ABI_DIR\BUILD_DIR\z\system\sounds\digital\CamcorderJavaStart.wav       \System\Sounds\Digital\CamcorderJavaStart.wav
+*/
 // MobInfo API
 file=ABI_DIR\BUILD_DIR\javamobinfo.dll                                      SHARED_LIB_DIR\javamobinfo.dll
 data=JAVA_VM_RES_BLD\javamobinfo.odc                                        JAVA_VM_RES_IMG\javamobinfo.odc
@@ -133,25 +147,30 @@ data=JAVA_VM_RES_BLD\javaglobalindicators.odc                               JAVA
 data=JAVA_VM_RES_BLD\javasoftnotification.odc                               JAVA_VM_RES_IMG\javasoftnotification.odc
 */
 
-// M2G API
+// 2G API
 /*file=ABI_DIR\BUILD_DIR\javam2g.dll                                          SHARED_LIB_DIR\javam2g.dll
 data=JAVA_VM_RES_BLD\javam2g.odc                                            JAVA_VM_RES_IMG\javam2g.odc
 */
-// M3G API
-file=ABI_DIR\BUILD_DIR\javam3g.dll                                          SHARED_LIB_DIR\javam3g.dll
+// 3G API
+/*file=ABI_DIR\BUILD_DIR\javam3g.dll                                          SHARED_LIB_DIR\javam3g.dll
 data=JAVA_VM_RES_BLD\javam3g.odc                                            JAVA_VM_RES_IMG\javam3g.odc
-
+*/
 // Nokia UI API
 file=ABI_DIR\BUILD_DIR\javanokiaui.dll                                     SHARED_LIB_DIR\javanokiaui.dll
 data=JAVA_VM_RES_BLD\javanokiaui.odc                                       JAVA_VM_RES_IMG\javanokiaui.odc
 
 // Nokia Sound API
-file=ABI_DIR\BUILD_DIR\javanokiasound.dll                                   SHARED_LIB_DIR\javanokiasound.dll
+/*file=ABI_DIR\BUILD_DIR\javanokiasound.dll                                   SHARED_LIB_DIR\javanokiasound.dll
 data=JAVA_VM_RES_BLD\javanokiasound.odc                                     JAVA_VM_RES_IMG\javanokiasound.odc
+*/
 
 // Remote Connection Observer
 /*file=ABI_DIR\BUILD_DIR\javaremconobserver.dll                               SHARED_LIB_DIR\javaremconobserver.dll
 */
+
+// Legacy utilities
+file=ABI_DIR\BUILD_DIR\javalegacyutils.dll                                  SHARED_LIB_DIR\javalegacyutils.dll
+data=JAVA_VM_RES_BLD\javalegacyutils.odc                                    JAVA_VM_RES_IMG\javalegacyutils.odc
 
 
 /////////////////////////////
@@ -162,7 +181,6 @@ data=JAVA_VM_RES_BLD\javanokiasound.odc                                     JAVA
 file=ABI_DIR\BUILD_DIR\javaruntimeui.dll                                    SHARED_LIB_DIR\javaruntimeui.dll
 data=JAVA_VM_RES_BLD\javaruntimeui.odc                                      JAVA_VM_RES_IMG\javaruntimeui.odc
 file=ABI_DIR\BUILD_DIR\javaruntimestarterutils.dll                          SHARED_LIB_DIR\javaruntimestarterutils.dll
-file=ABI_DIR\BUILD_DIR\javastarter.dll                                      SHARED_LIB_DIR\javastarter.dll
 
 // MIDP runtime
 file=ABI_DIR\BUILD_DIR\javamidp.exe                                         PROGRAMS_DIR\javamidp.exe
@@ -327,19 +345,6 @@ data=JAVA_VM_RES_BLD\javafile.odc                                           JAVA
 file=ABI_DIR\BUILD_DIR\javaiapinfo.dll                                      SHARED_LIB_DIR\javaiapinfo.dll
 data=JAVA_VM_RES_BLD\javaiapinfo.odc                                        JAVA_VM_RES_IMG\javaiapinfo.odc
 
-// MMAPI
-file=ABI_DIR\BUILD_DIR\javamobilemedia.dll                                      SHARED_LIB_DIR\javamobilemedia.dll
-data=JAVA_VM_RES_BLD\javamobilemedia.odc                                        JAVA_VM_RES_IMG\javamobilemedia.odc
-data=ABI_DIR\BUILD_DIR\z\system\sounds\digital\CamcorderJavaCapture.wav     \System\Sounds\Digital\CamcorderJavaCapture.wav
-data=ABI_DIR\BUILD_DIR\z\system\sounds\digital\CamcorderJavaStart.wav       \System\Sounds\Digital\CamcorderJavaStart.wav
-
-// AMMS
-file=ABI_DIR\BUILD_DIR\javaamms.dll                                      SHARED_LIB_DIR\javaamms.dll
-data=JAVA_VM_RES_BLD\javaamms.odc                                        JAVA_VM_RES_IMG\javaamms.odc
-
-// CentralRepository API
-file=ABI_DIR\BUILD_DIR\javacentrep.dll                                      SHARED_LIB_DIR\javacentrep.dll
-data=JAVA_VM_RES_BLD\javacentrep.odc                                        JAVA_VM_RES_IMG\javacentrep.odc
 
 ///////////////////
 // Miscellaneous //
@@ -352,12 +357,8 @@ data=JAVA_VM_RES_BLD\resources.jar                                          JAVA
 data=ZRESOURCE\java\midpOdcList                                             JAVA_RES_IMG\midpodclist
 data=ZRESOURCE\java\installerOdcList                                        JAVA_RES_IMG\installerodclist
 data=ZRESOURCE\java\tckRunnerOdcList                                        JAVA_RES_IMG\tckrunnerodclist
-data=ZRESOURCE\java\javacontrolpanelodclist                                 JAVA_RES_IMG\javacontrolpanelodclist
 
 // trust roots list
 data=ZRESOURCE\java\security\trustroots\midprootslist                       JAVA_RES_IMG\security\trustroots\midprootslist
-
-// Utility for Services team
-file=ABI_DIR\BUILD_DIR\javaupgradeapp.exe                                   PROGRAMS_DIR\javaupgradeapp.exe
 
 #endif

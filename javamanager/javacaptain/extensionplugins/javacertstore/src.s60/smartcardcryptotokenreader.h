@@ -61,7 +61,7 @@ private:
     SmartCardCryptoTokenReader();
     void ConstructL();
     bool Initialize();
-    bool ListTokenTypesL();
+    bool ListTokenTypes();
     bool OpenTokenType();
     bool OpenToken();
     bool GetTokenInterface();

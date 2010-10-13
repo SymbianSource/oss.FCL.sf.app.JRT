@@ -49,8 +49,6 @@ symbian {
                ../src.s60/jadjarmatcher/jadjarmatcherscanfrominbox.cpp \
                ../src.s60/utils/filewriter.cpp \
                ../src.s60/utils/fileroots.cpp \
-               ../src.s60/utils/propertylistener.cpp \
-               ../src.s60/utils/propertyprovider.cpp \
                ../src.s60/utils/sysutil.cpp
 
     LIBS += -lapgrfx -lbafl -lcentralrepository -lcharconv -lefsrv -lestor \
@@ -63,17 +61,17 @@ symbian {
     }
 
     contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_10_1_ONWARDS) {
-        CONFIG += hb
-        LIBS += -lsifnotification -lxqservice
+        LIBS += -lQtServiceFramework
+    }
+
+    contains(PROJECT_DEFINES,RD_JAVA_USIF_NOTIFY_PROGRESS) {
+        LIBS += -lsifnotification
     }
 
     MMP_RULES += \
     "$${LITERAL_HASH}include <bldvariant.hrh>" \
     "$${LITERAL_HASH}ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK" \
     "LIBRARY scrclient.lib" \
-    "$${LITERAL_HASH}else" \
-    "LIBRARY ecom.lib" \
-    "LIBRARY SWInstTaskManager.lib" \
     "$${LITERAL_HASH}endif"
 } else {
     CONFIG += omj java javaonly stl

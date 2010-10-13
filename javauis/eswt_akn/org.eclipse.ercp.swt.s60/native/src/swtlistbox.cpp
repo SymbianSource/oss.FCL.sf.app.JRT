@@ -878,28 +878,6 @@ TInt CSwtListBox::FocusBackgroundPolicy() const
 }
 
 // ---------------------------------------------------------------------------
-// CSwtListBox::PrepareForTraverse
-// From MSwtControl
-// ---------------------------------------------------------------------------
-//
-void CSwtListBox::PrepareForTraverse()
-{
-    ASSERT(iList);
-    ASSERT(iList->View());
-
-#ifdef RD_JAVA_S60_RELEASE_9_2
-    // AvKon enables highlight only when key event is recieved.
-    // When traversing, no key event is sent to AvKon, so we
-    // have to enable highlight by ourselves.
-    CListItemDrawer* itemDrawer = iList->View()->ItemDrawer();
-    if (itemDrawer)
-    {
-        itemDrawer->ClearFlags(CListItemDrawer::ESingleClickDisabledHighlight);
-    }
-#endif //RD_JAVA_S60_RELEASE_9_2
-}
-
-// ---------------------------------------------------------------------------
 // CSwtListBox::Scrollable
 // From MSwtListBox
 // ---------------------------------------------------------------------------
@@ -971,7 +949,7 @@ void CSwtListBox::SetLayoutStyleL(TInt aLayoutStyle)
     iPrevSelItems = new(ELeave) CArrayFixFlat<TInt>(KInitSelArrLength);
 
     // Get item cells
-    CSwtListBoxLists::CellsL(iProps.iListType, iCells);
+    CSwtListBoxLists::Cells(iProps.iListType, iCells);
 
     // This is needed for the case where the theme has animated highlights.
     iList->SetFocus(ETrue, ENoDrawNow);

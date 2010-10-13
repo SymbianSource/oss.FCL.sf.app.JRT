@@ -196,7 +196,8 @@ void JavaCertStore::queryCerts(java::comms::CommsMessage& aMessage)
                 || (queryDisabled && iCertsMetadata[i]->state == STATE_DISABLED)
                 || (queryDeleted && iCertsMetadata[i]->state == STATE_DELETED))
                 && (hash.compare("") == 0
-                    || iCertsMetadata[i]->hash.compare(hash) == 0))
+                    || iCertsMetadata[i]->hash.compare(hash) == 0 
+                    || iCertsMetadata[i]->pkey.find(hash) == 0))
         {
             // what we return back depends on what was queried
             switch (query)
@@ -211,7 +212,14 @@ void JavaCertStore::queryCerts(java::comms::CommsMessage& aMessage)
                 if (replyWithContent(replyMsg, *iCertsMetadata[i]))
                 {
                     // add also the ID and the state
-                    replyMsg << iCertsMetadata[i]->hash;
+                    if (iCertsMetadata[i]->pkey.size() > 0)
+                    {
+                        replyMsg << iCertsMetadata[i]->pkey;
+                    }
+                    else
+                    {
+                        replyMsg << iCertsMetadata[i]->hash;
+                    }
                     replyMsg << encodeState(iCertsMetadata[i]->disposable,
                                             iCertsMetadata[i]->disablable,
                                             iCertsMetadata[i]->state);
@@ -366,6 +374,7 @@ bool JavaCertStore::readMetadataFromFiles(const std::string& aCertsLocation, con
             const int READ_HASH = 4;
             const int READ_REMOVABLE = 5;
             const int READ_DISABLABLE = 6;
+            const int READ_PKEY = 7;
 
             // domain_name_info
             int domain_name_index = 0;
@@ -382,6 +391,10 @@ bool JavaCertStore::readMetadataFromFiles(const std::string& aCertsLocation, con
             // removable&disablable
             bool removable = false;
             bool disablable = false;
+
+            // pkey info
+            int pkey_index = 0;
+            char pkey[50];
 
             // start&end separators for the metadata's keys
             bool key_ss = true;
@@ -415,6 +428,10 @@ bool JavaCertStore::readMetadataFromFiles(const std::string& aCertsLocation, con
                         break;
                     case 'd':
                         op = READ_DISABLABLE;
+                        key_ss = false;
+                        break;
+                    case 'p':
+                        op = READ_PKEY;
                         key_ss = false;
                         break;
                     }
@@ -462,6 +479,11 @@ bool JavaCertStore::readMetadataFromFiles(const std::string& aCertsLocation, con
                                 disablable = true;
                             }
                             break;
+                        case READ_PKEY:
+                            pkey[pkey_index] = (char)retval;
+                            pkey_index++;
+                            pkey[pkey_index] = '\0';
+                            break;
                         }
                     }
                 }
@@ -470,6 +492,11 @@ bool JavaCertStore::readMetadataFromFiles(const std::string& aCertsLocation, con
                     && domain_category_index > 0
                     && hash_index > 0)
             {
+                if (pkey_index > 0)
+                {
+                    metadata->pkey = string(pkey, pkey_index);
+                    transform(metadata->pkey.begin(), metadata->pkey.end(), metadata->pkey.begin(), (int(*)(int)) tolower);
+                }
                 metadata->prot_domain_name = string(domain_name, domain_name_index);
                 metadata->prot_domain_category = string(domain_category, domain_category_index);
                 metadata->hash = string(hash, hash_index);
@@ -552,7 +579,8 @@ void JavaCertStore::manageCert(const std::string& cert_id, int state)
     // go through the certidicates and find the right one
     for (int i=0; i<no_certs; i++)
     {
-        if (cert_id.compare(iCertsMetadata[i]->hash) == 0)
+        if (cert_id.compare(iCertsMetadata[i]->hash) == 0 || 
+            iCertsMetadata[i]->pkey.find(cert_id) == 0)
         {
             switch (state)
             {
@@ -784,7 +812,8 @@ void JavaCertStore::addCertMetadataToCache(CERT_METADATA* metadata, bool overwri
     bool found = false;
     for (int i=0; i<no_certs; i++)
     {
-        if (iCertsMetadata[i]->hash.compare(metadata->hash) == 0)
+        if (iCertsMetadata[i]->hash.compare(metadata->hash) == 0 
+            && iCertsMetadata[i]->pkey.find(metadata->pkey) == 0)
         {
             if (overwrite)
             {

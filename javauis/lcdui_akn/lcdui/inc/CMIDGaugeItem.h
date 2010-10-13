@@ -38,7 +38,6 @@
 class CEikProgressInfo;
 class CAknSlider;
 class CAknBitmapAnimation;
-class CAknsFrameBackgroundControlContext;
 
 /** This interface is implemented by the alert dialog (CMIDAlertDialog). The current
     design is such that the alert dialog uses its own animations (loaded from resource)
@@ -118,6 +117,8 @@ public:
     * @note Animation of non-interactive gauges is started/stopped.
     */
     virtual void HandleForegroundL(TBool aForeground);
+
+    virtual inline TBool IsInteractive();
 
 protected:
     /**
@@ -296,7 +297,7 @@ public:
 
     void SetGaugeListenerFromAlert(MMIDGaugeToAlertListner* aGaugeToAlertListner);
 
-    TTypeUid::Ptr MopSupplyObject(TTypeUid aId);
+    virtual inline TBool IsInteractive();
 
 private:
     /**
@@ -361,16 +362,6 @@ private:
      */
     TBool BitmapAnimationUsed() const;
 
-    /**
-     * Gets new correct instance of control context or null.
-     *
-     * @return New instance of CAknsFrameBackgroundControlContext.
-     *         Instance maybe a null.
-     *
-     * @since  S60 v5.0
-     */
-    CAknsFrameBackgroundControlContext* BackgroundControlContext();
-
 private:
     CEikProgressInfo* iProgressInfo;
     MMIDGaugeToAlertListner* iGaugeToAlertListner;
@@ -430,6 +421,8 @@ public:
     //
     void ResolutionChange(TInt aType);
 
+    virtual inline TBool IsInteractive();
+
 private:
 
     /**
@@ -454,6 +447,21 @@ private:
     TBool iPhysicsScrollingTriggered;
 };
 
+
+TBool inline CMIDGaugeItem::IsInteractive()
+{
+    return EFalse;
+}
+
+TBool inline CMIDNonInteractiveGauge::IsInteractive()
+{
+    return EFalse;
+}
+
+TBool inline CMIDInteractiveGauge::IsInteractive()
+{
+    return ETrue;
+}
 
 #endif // CMIDGAUGEITEM_H
 

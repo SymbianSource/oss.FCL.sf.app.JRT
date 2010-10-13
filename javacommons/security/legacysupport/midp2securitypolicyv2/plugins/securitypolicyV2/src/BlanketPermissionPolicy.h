@@ -49,7 +49,7 @@ public:
     static CBlanketPermissionPolicy* NewL();
 
 
-    void AddL(const CBlanketPermissionPolicyElement *);
+    void Add(const CBlanketPermissionPolicyElement *);
 
     // MBlanketPermissionPolicy
     virtual TInt GetPolicyElementCount() const ;

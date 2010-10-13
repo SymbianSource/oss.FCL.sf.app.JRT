@@ -363,17 +363,9 @@ void CWriteableJavaRegistry::AddUids(
 
                 if (KErrNotFound == err)
                 {
-                    // reset the error flag
-                    err = KErrNone;
                     if (IsPresent((*iter)))
                     {
-                        err = aUids.Append(uid);
-                    }
-                    if (err)
-                    {
-                        ELOG1(EJavaStorage, "Failed to add Uid to container. "
-                              "( error code = %d )", err);
-
+                        aUids.Append(uid);
                     }
                 }
             }
@@ -422,7 +414,7 @@ TBool CWriteableJavaRegistry::IsPresent(
             }
         }
     }
-    catch (ExceptionBase& ee)
+    catch (ExceptionBase)
     {
         ELOG1WSTR(EJavaStorage, "MediaId conversion failed: '%s'", value);
     }

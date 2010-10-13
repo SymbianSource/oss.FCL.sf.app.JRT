@@ -163,8 +163,6 @@ public:
 #ifdef RD_JAVA_S60_RELEASE_9_2
     void EnableFocusHighlight(TBool aEnable);
 #endif //RD_JAVA_S60_RELEASE_9_2
-    void PrepareForTraverse();
-
 protected:
     void DoPaint(const TRect& aRect) const;
 

@@ -26,7 +26,6 @@
 #ifdef RD_JAVA_S60_RELEASE_5_0
 #include <middleware/Oma2Agent.h>
 #else
-#include <caf/cafplatform.h>
 #include <mw/Oma2Agent.h>
 #endif // RD_JAVA_S60_RELEASE_5_0
 

@@ -88,7 +88,7 @@ void CMMAVideoUrlPlayer::CMMAVideoUrlPlayerClipStreamDelegate::HandleEvent(const
     {
         // going to prefetch state, after Play
         // KMMFEventCategoryVideoLoadingComplete event will be received
-        DEBUG("MMA:CMMAVideoUrlPlayer: Clip stream: HandleEvent KMMFEventCategoryVideoPrepareComplete");
+    DEBUG("MMA:CMMAVideoUrlPlayer: Clip stream: HandleEvent KMMFEventCategoryVideoPrepareComplete");
         if (err == KErrNone)
         {
             //iPlayer.PrepareDisplay();

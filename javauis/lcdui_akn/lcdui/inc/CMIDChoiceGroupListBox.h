@@ -83,9 +83,6 @@ public:  // from CCoeControl
      */
     void SingleClickDisableHighlightL(TBool aDisable);
     void SetHighlight(TBool aVisible);
-    TBool GetHighlight();
-
-    void UpdateColors();
 
 #endif // RD_JAVA_S60_RELEASE_9_2
 

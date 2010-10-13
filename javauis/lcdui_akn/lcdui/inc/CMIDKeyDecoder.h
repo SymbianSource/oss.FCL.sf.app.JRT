@@ -20,7 +20,6 @@
 #define CMIDKEYDECODER_H
 
 #include <e32base.h>
-#include <e32svr.h>
 #include <lcdui.h>
 
 // CMIDQwertyWatch* iQwertyWatch

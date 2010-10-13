@@ -423,8 +423,17 @@ jobjectArray SecurityUtils::getJNIAuthCredentials(JNIEnv * env, vector<AUTH_CRED
             all_auth_credentials[i]->signing_cert = NULL;
             jstring j_jar_hash_value =
                 env->NewStringUTF(all_auth_credentials[i]->jar_hash);
-            jstring j_root_hash_value =
-                env->NewStringUTF(all_auth_credentials[i]->root_hash);
+            jstring j_root_hash_value;
+            if (all_auth_credentials[i]->root_id != NULL)
+            {
+                j_root_hash_value =
+                    env->NewStringUTF(all_auth_credentials[i]->root_id);
+            }
+            else
+            {
+                j_root_hash_value =
+                    env->NewStringUTF(all_auth_credentials[i]->root_hash);
+            }
             jstring j_protection_domain_name = NULL;
             if (all_auth_credentials[i]->domain_name != NULL)
             {
@@ -455,6 +464,11 @@ jobjectArray SecurityUtils::getJNIAuthCredentials(JNIEnv * env, vector<AUTH_CRED
             all_auth_credentials[i]->jar_hash = NULL;
             delete[] all_auth_credentials[i]->root_hash;
             all_auth_credentials[i]->root_hash = NULL;
+            if (all_auth_credentials[i]->root_id != NULL)
+            {
+                delete[] all_auth_credentials[i]->root_id;
+                all_auth_credentials[i]->root_id = NULL;
+            }
             delete all_auth_credentials[i];
             all_auth_credentials[i] = NULL;
             env->SetObjectArrayElement(result, i, auth_credentials);
@@ -462,6 +476,22 @@ jobjectArray SecurityUtils::getJNIAuthCredentials(JNIEnv * env, vector<AUTH_CRED
     }
     all_auth_credentials.clear();
     return result;
+}
+
+void SecurityUtils::computePublicKeyHash(X509 * x, char * pkey_hash)
+{
+    unsigned char tmp[SHA_1_DIGEST_LEN];
+    EVP_Digest(x->cert_info->key->public_key->data,
+        x->cert_info->key->public_key->length, tmp, NULL, EVP_sha1(), NULL);
+    char * tmp_pkey_hash = NULL;
+    tmp_pkey_hash = pkey_hash;
+    for (int i=0; i<SHA_1_DIGEST_LEN; i++)
+    {
+        sprintf(tmp_pkey_hash, "%02X", tmp[i]);
+        tmp_pkey_hash = tmp_pkey_hash + 2;
+    }
+    pkey_hash[2*SHA_1_DIGEST_LEN] = '\0';
+    tmp_pkey_hash = NULL;
 }
 
 void SecurityUtils::getAuthInfo(JNIEnv* env, jobjectArray authInfos, int authInfoIndex, AUTH_INFO * authInfo)

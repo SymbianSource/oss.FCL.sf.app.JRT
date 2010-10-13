@@ -127,7 +127,11 @@ inline jboolean ConvertBoolean(TBool aBool)
  */
 inline HBufC* ConvertStringLC(JNIEnv* aJniEnv, const jstring aString)
 {
+#ifdef _UNICODE
     return ConvertString16LC(aJniEnv, aString);
+#else
+    // code needs to be written
+#endif
 }
 
 

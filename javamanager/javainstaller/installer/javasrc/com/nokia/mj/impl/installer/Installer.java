@@ -99,11 +99,6 @@ public class Installer
      */
     static final int RET_NO_SYSTEM_EXIT = 100;
 
-    /** Id for installer cancel Comms message. */
-    private static final int INSTALLER_CANCEL_MESSAGE_ID = 603;
-    /** Id for installer cancel Comms response message. */
-    private static final int INSTALLER_CANCEL_RESPONSE_MESSAGE_ID = 604;
-
     // ThreadDumper instance.
     private static ThreadDumper iThreadDumper = null;
 
@@ -328,7 +323,7 @@ public class Installer
         }
 
         StartUpTrace.doTrace("Installer.mainWithResult " + aArgs[0] + " begins");
-        StringBuffer buf = new StringBuffer("Java install process started with command:");
+        StringBuffer buf = new StringBuffer("Java install process started with command: ");
         for (int i = 0; i < aArgs.length; i++)
         {
             buf.append(" ").append(aArgs[i]);
@@ -341,7 +336,7 @@ public class Installer
 
         if (iThreadDumper != null)
         {
-            iThreadDumper.startTimer(5*60*1000); // 5 mins
+            iThreadDumper.startTimer(10*60*1000); // 10 mins
         }
 
         try
@@ -543,9 +538,9 @@ public class Installer
         table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
                   GetFromStorage());
         table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
-                  SelectUids()); // Select suite uid and application uids.
-        table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
                   StartProgressNotifications());
+        table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
+                  SelectUids()); // Select suite uid and application uids.
         table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
                   AuthenticateJad()); // This must be the first security
         // related step.
@@ -589,8 +584,6 @@ public class Installer
         table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
                   ConfirmPermissions()); // Show UI confirmation dialog.
         table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
-                  AddSecurityData());
-        table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
                   HandleCustomAttributes());
         table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
                   CheckJarPackages());
@@ -607,13 +600,12 @@ public class Installer
                   RegisterApplicationToSif());
         table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
                   CopyAppFiles());
-        if (Platform.isS60())
+        if (Platform.isS60())   // PrepareSplashScreen uses eSWT which is
         {
-            // PrepareSplashScreen uses eSWT which is not available in Linux.
-            // Create splash screen images after app dir exists,
-            // that is after CopyAppFiles step.
+            // not available in Linux.
             table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
-                      PrepareSplashScreen());
+                      PrepareSplashScreen()); // Create splash screen images
+            // after app dir exists (after CopyAppFiles step).
         }
         table.add(new com.nokia.mj.impl.installer.midp2.install.steps.
                   NotifyJsrPlugins());
@@ -1243,8 +1235,6 @@ public class Installer
             "  -commsresult=endpoint         In the end of operation, send\n"+
             "                                InstallerResultMessage to specified comms\n"+
             "                                endpoint.\n"+
-            "  -base64=base64options         Comma separated list of base64 encoded\n"+
-            "                                options.\n"+
             "\n"+
             "Either -jad or -jar must be specified, other options are optional.\n";
 
@@ -1274,13 +1264,10 @@ public class Installer
             "  -captainmsgs=yes|no           If set to no, JavaInstaller will not send\n"+
             "                                any messages to JavaCaptain during\n"+
             "                                uninstallation. Default is yes.\n"+
-            "  -resetpreinstall              Reset preinstall state.\n"+
             "  -skipotastatus                Skip OTA status handling.\n"+
             "  -commsresult=endpoint         In the end of operation, send\n"+
             "                                InstallerResultMessage to specified comms\n"+
             "                                endpoint.\n"+
-            "  -base64=base64options         Comma separated list of base64 encoded\n"+
-            "                                options.\n"+
             "\n"+
             "The -uid option must be specified, other options are optional.\n";
 
@@ -1479,7 +1466,7 @@ public class Installer
                 if (aMessage.hasPermission(CommsPermission.INSTALL_APPLICATION))
                 {
                     int msgId = aMessage.getMessageId();
-                    if (msgId == INSTALLER_CANCEL_MESSAGE_ID)
+                    if (msgId == 603)
                     {
                         Installer.cancel();
                         result = ERR_NONE;
@@ -1492,7 +1479,7 @@ public class Installer
                 }
                 CommsMessage response = new CommsMessage();
                 response.replyTo(aMessage);
-                response.setMessageId(INSTALLER_CANCEL_RESPONSE_MESSAGE_ID);
+                response.setMessageId(604);
                 response.write(result);
                 iInstallerServer.send(response);
                 Log.log("InstallerListener sent " + response);

@@ -57,18 +57,10 @@ public class RuntimeConfirmationView extends ConfirmationViewBase
         String[] answerOptions = iConfirmData.getAnswerOptions();
         switch (answerOptions.length)
         {
-        //case 1: setCommands(answerOptions[0], null); break;
-        case 1:
-            setCommands(InstallerUiTexts.get(InstallerUiTexts.OK), null);
-            break;
-        //case 2: setCommands(answerOptions[0], answerOptions[1]); break;
-        case 2:
-            setCommands(InstallerUiTexts.get(InstallerUiTexts.OK),
-                        InstallerUiTexts.get(InstallerUiTexts.CANCEL));
-            break;
+        case 1: setCommands(answerOptions[0], null); break;
+        case 2: setCommands(answerOptions[0], answerOptions[1]); break;
         default: setCommands(null, null); break;
         }
-
     }
 
     /**
@@ -76,12 +68,26 @@ public class RuntimeConfirmationView extends ConfirmationViewBase
      */
     protected void createView()
     {
-        // Add header.
-        addHeader(null, iInstallerUi.getInstallInfo(), null);
+        // Add title.
+        if (iInstallerUi.getInstallInfo() != null)
+        {
+            Label titleLabel = createLabel(iAppName, getColumns() - 1, SWT.WRAP);
+            titleLabel.setFont(iInstallerUi.getBoldFont());
+            // Add security icon.
+            iCertificates = iInstallerUi.getInstallInfo().getCertificates();
+            createSecurityButton();
+        }
+        else
+        {
+            Label titleLabel = createLabel(iAppName, getColumns(), SWT.WRAP);
+            titleLabel.setFont(iInstallerUi.getBoldFont());
+        }
 
         GridData gridData = null;
         int horizontalSpan = getColumns();
         int labelStyle = SWT.WRAP;
+
+        // Begin widgets creation.
 
         // Add question label.
         Label errorLabel = createLabel(
@@ -126,9 +132,7 @@ public class RuntimeConfirmationView extends ConfirmationViewBase
             iAnswerButtons[iConfirmData.getAnswerSuggestion()].setFocus();
         }
 
-        // After other widgets have been added, add content to
-        // application info Composite.
-        addAppInfo(iInstallerUi.getInstallInfo(), false);
+        // End of widgets creation.
     }
 
     /**

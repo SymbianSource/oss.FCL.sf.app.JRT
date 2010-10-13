@@ -10,7 +10,7 @@
  *******************************************************************************/
 
 
-#include <eikcoctl.rsg>
+#include <EIKCOCTL.rsg>
 #include <AknUtils.h>
 #include <eikedwin.h>
 #include <AknNumEdwin.h>

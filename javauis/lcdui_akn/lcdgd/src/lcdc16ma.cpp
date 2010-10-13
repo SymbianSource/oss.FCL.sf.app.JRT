@@ -16,7 +16,7 @@
 */
 
 #include <graphicsaccelerator.h>
-#include <ecom/implementationproxy.h>
+#include <implementationproxy.h>
 
 #include "lcdgdrvif.h"
 #include "lcdtransform.h"

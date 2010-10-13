@@ -44,21 +44,21 @@ symbian {
     
     
     LIBS += -lbafl \
-            -lbitmaptransforms \
+            -lBitmapTransforms \
             -lcaleninterimutils2 \
             -lcalinterimapi \
             -lcntmodel \
             -lefsrv \
             -lestor \
             -lfbscli \
-            -limageconversion \
+            -lImageConversion \
             -ltzclient \
             -lvcal \
             -lversit \
             -lvcard \
             -lefsrv \
-            -lCommonEngine \
-            -lplatformenv
+            -lcommonengine \
+            -lPlatformEnv
             
             
 # Resource files

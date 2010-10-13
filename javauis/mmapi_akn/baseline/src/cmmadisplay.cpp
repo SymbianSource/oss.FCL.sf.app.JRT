@@ -37,7 +37,7 @@ CMMADisplay::~CMMADisplay()
                                              iClipRect.iTl.iX,iClipRect.iTl.iY);
             DEBUG_INT2("CMMADisplay::~CMMADisplay(): Removing clip rect iBr = %d X %d",
                                              iClipRect.iBr.iX,iClipRect.iBr.iY);
-            iDirectContainer->MdcRemoveMMAPIContentBounds(iClipRect);
+            iDirectContainer->MdcRemoveContentBounds(iClipRect);
         }
 
         // Remove this object from MDirectContainer
@@ -162,7 +162,7 @@ void CMMADisplay::SetClippingRegion()
     if (!iClipRect.IsEmpty())
     {
         DEBUG("CMMADisplay::SetClippingRegion: Removing old rect");
-        iDirectContainer->MdcRemoveMMAPIContentBounds(iClipRect);
+        iDirectContainer->MdcRemoveContentBounds(iClipRect);
         iClipRect.SetRect(0, 0, 0, 0);
         refreshScreen = ETrue;
     }
@@ -178,7 +178,7 @@ void CMMADisplay::SetClippingRegion()
             DEBUG_INT2("CMMADisplay::SetClippingRegion: Adding new rect iBr = %d X %d",
                                           iClipRect.iBr.iX,iClipRect.iBr.iY);
             // Add new clipping rect
-            iDirectContainer->MdcAddMMAPIContentBounds(iClipRect);
+            iDirectContainer->MdcAddContentBounds(iClipRect);
             refreshScreen = ETrue;
         }
     }
@@ -204,7 +204,7 @@ void CMMADisplay::RemoveClippingRegion()
     if (!iClipRect.IsEmpty())
     {
         DEBUG("CMMADisplay::RemoveClippingRegion: Removing old rect");
-        iDirectContainer->MdcRemoveMMAPIContentBounds(iClipRect);
+        iDirectContainer->MdcRemoveContentBounds(iClipRect);
         iClipRect.SetRect(0, 0, 0, 0);
         // refresh screen
         iDirectContainer->MdcFlushContainer(iWindow->WindowRect());
@@ -238,7 +238,6 @@ void CMMADisplay::AddClippingRegion()
     if (iVisible)
     {
         iClipRect = iWindow->DrawRect();
-
         if (!iClipRect.IsEmpty())
         {
             DEBUG_INT2("CMMADisplay::AddClippingRegion: Adding new rect iTL = %d X %d",
@@ -246,7 +245,7 @@ void CMMADisplay::AddClippingRegion()
             DEBUG_INT2("CMMADisplay::AddClippingRegion: Adding new rect iBr = %d X %d",
                                           iClipRect.iBr.iX,iClipRect.iBr.iY);
             // Add new clipping rect
-            iDirectContainer->MdcAddMMAPIContentBounds(iClipRect);
+            iDirectContainer->MdcAddContentBounds(iClipRect);
             // refresh screen
             iDirectContainer->MdcFlushContainer(
                 iWindow->WindowRect());
@@ -513,17 +512,6 @@ void CMMADisplay::FixUIOrientation(TBool aFix)
     {
         iDirectContainer->MdcFixUIOrientation(aFix);
     }
-}
-
-
-void CMMADisplay::RemoveClippingRegionPublic()
-{
-    RemoveClippingRegion();
-}
-
-void CMMADisplay::SetClippingRegionPublic()
-{
-    SetClippingRegion();
 }
 
 //  END OF FILE

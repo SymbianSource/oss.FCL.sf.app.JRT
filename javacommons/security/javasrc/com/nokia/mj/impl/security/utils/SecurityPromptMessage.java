@@ -17,7 +17,6 @@
 
 package com.nokia.mj.impl.security.utils;
 
-import com.nokia.mj.impl.utils.Id;
 import com.nokia.mj.impl.utils.LocalizedTextProvider;
 import com.nokia.mj.impl.utils.ResourceLoader;
 
@@ -29,74 +28,68 @@ public class SecurityPromptMessage extends LocalizedTextProvider
     private static ResourceLoader iRes = null;
 
     // identifiers for the security prompt questions
-    public static final Id QUESTION_ID_NETWORK_USAGE = new Id("network_usage", "N/A");
-    public static final Id QUESTION_ID_SMS_OPENING_CONN = new Id("sms_opening_conn", "N/A");
-    public static final Id QUESTION_ID_MMS_OPENING_CONN = new Id("mms_opening_conn", "N/A");
-    public static final Id QUESTION_ID_CBS_OPENING_CONN = new Id("cbs_opening_conn", "N/A");
-    public static final Id QUESTION_ID_SMS_RECEIVING = new Id("sms_receiving", "N/A");
-    public static final Id QUESTION_ID_MMS_RECEIVING = new Id("mms_receiving", "N/A");
-    public static final Id QUESTION_ID_CBS_RECEIVING = new Id("cbs_receiving", "N/A");
-    public static final Id QUESTION_ID_SMS_SENDING = new Id("sms_sending", "N/A");
-    public static final Id QUESTION_ID_SMS_SINGLE_SENDING = new Id("sms_single_sending", "N/A");
-    public static final Id QUESTION_ID_MMS_SENDING = new Id("mms_sending", "N/A");
-    public static final Id QUESTION_ID_MMS_SINGLE_SENDING = new Id("mms_single_sending", "N/A");
-    public static final Id QUESTION_ID_MMS_SINGLE_SENDING_MULTIPLE_DESTINATIONS = new Id("mms_single_sending_multiple_destinations", "N/A");
-    public static final Id QUESTION_ID_SEND_RECEIVE_MESSAGES = new Id("receive_send_messages", "N/A");
-    public static final Id QUESTION_ID_LOCAL_CONNECTIVITY = new Id("local_connectivity", "N/A");
-    public static final Id QUESTION_ID_AUDIO_VIDEO_RECORDING = new Id("audio_video_recording", "N/A");
-    public static final Id QUESTION_ID_READING_USER_DATA = new Id("reading_user_data", "N/A");
-    public static final Id QUESTION_ID_WRITING_USER_DATA = new Id("writing_user_data", "N/A");
-    public static final Id QUESTION_ID_READING_FILE = new Id("reading_file", "N/A");
-    public static final Id QUESTION_ID_MANAGE_USER_DATA = new Id("manage_user_data", "N/A");
-    public static final Id QUESTION_ID_MODIFYING_FILE = new Id("modifying_file", "N/A");
-    public static final Id QUESTION_ID_READING_LOCATION_DATA = new Id("reading_location_data", "N/A");
-    public static final Id QUESTION_ID_READING_LANDMARK_DATA = new Id("reading_landmark_data", "N/A");
-    public static final Id QUESTION_ID_READING_SMARTCARD = new Id("reading_smartcard", "N/A");
-    public static final Id QUESTION_ID_AUTH_SERVICES_USAGE = new Id("auth_services_usage", "N/A");
-    public static final Id QUESTION_ID_BLUETOOTH_USAGE = new Id("bluetooth_usage", "N/A");
-    public static final Id QUESTION_ID_READING_CONTACTS = new Id("reading_contacts", "N/A");
-    public static final Id QUESTION_ID_MODIFYING_CONTACTS = new Id("modifying_contacts", "N/A");
-    public static final Id QUESTION_ID_READING_EVENTS = new Id("reading_events", "N/A");
-    public static final Id QUESTION_ID_MODIFYING_EVENTS = new Id("modifying_events", "N/A");
-    public static final Id QUESTION_ID_READING_TODOS = new Id("reading_todos", "N/A");
-    public static final Id QUESTION_ID_MODIFYING_TODOS = new Id("modifying_todos", "N/A");
-    public static final Id QUESTION_ID_DELETING_ITEM = new Id("deleting_item", "N/A");
-    public static final Id QUESTION_ID_UPDATING_ITEM = new Id("updating_item", "N/A");
-    public static final Id QUESTION_ID_DELETING_CATEGORY = new Id("deleting_category", "N/A");
-    public static final Id QUESTION_ID_UPDATING_CATEGORY = new Id("updating_category", "N/A");
-    public static final Id QUESTION_ID_DELETING_UNNAMED_ITEM = new Id("deleting_unnamed_item", "N/A");
-    public static final Id QUESTION_ID_UPDATING_UNNAMED_ITEM = new Id("updating_unnamed_item", "N/A");
-    public static final Id QUESTION_ID_ADDING_CALENDAR = new Id("adding_calendar", "N/A");
-    public static final Id QUESTION_ID_DELETING_CALENDAR = new Id("deleting_calendar", "N/A");
-    public static final Id QUESTION_ID_LISTING_CALENDARS = new Id("listing_calendars", "N/A");
-    public static final Id QUESTION_ID_ORIENTATION_DATA_USAGE = new Id("orientation_data_usage", "N/A");
-    public static final Id QUESTION_ID_POSITIONING_DATA_USAGE = new Id("positioning_data_usage", "N/A");
-    public static final Id QUESTION_ID_LANDMARK_DATA_USAGE = new Id("landmark_data_usage", "N/A");
-    public static final Id QUESTION_ID_PROXIMITY_LISTENER_REGISTRATION = new Id("proximity_listener_registration", "N/A");
-    public static final Id QUESTION_ID_MOBITV_DATA_USAGE = new Id("tv_broadcast_user_data_access", "N/A");
-    public static final Id QUESTION_ID_NETWORK_USAGE_VIA_PLAT_REQ = new Id("network_usage_via_plat_req", "N/A");
-    public static final Id QUESTION_ID_APP_LAUNCH_VIA_PLAT_REQ = new Id("app_launch_via_plat_req", "N/A");
-    public static final Id QUESTION_ID_PUSH_STATIC_REGISTRATION = new Id("push_registration_static", "N/A");
-    public static final Id QUESTION_ID_PUSH_DYNAMIC_REGISTRATION = new Id("push_registration_dynamic", "N/A");
-    public static final Id QUESTION_ID_AUTO_INVOCATION = new Id("auto_invocation", "N/A");
-    public static final Id QUESTION_ID_NDEF_TAG_WRITE = new Id("nfc_ndef_tag_write", "N/A");
-    public static final Id QUESTION_ID_APP_AUTO_LAUNCH = new Id("url_start", "N/A");
+    public static final String QUESTION_ID_NETWORK_USAGE = "network_usage";
+    public static final String QUESTION_ID_SMS_OPENING_CONN = "sms_opening_conn";
+    public static final String QUESTION_ID_MMS_OPENING_CONN = "mms_opening_conn";
+    public static final String QUESTION_ID_CBS_OPENING_CONN = "cbs_opening_conn";
+    public static final String QUESTION_ID_SMS_RECEIVING = "sms_receiving";
+    public static final String QUESTION_ID_MMS_RECEIVING = "mms_receiving";
+    public static final String QUESTION_ID_CBS_RECEIVING = "cbs_receiving";
+    public static final String QUESTION_ID_SMS_SENDING = "sms_sending";
+    public static final String QUESTION_ID_SMS_SINGLE_SENDING = "sms_single_sending";
+    public static final String QUESTION_ID_MMS_SENDING = "mms_sending";
+    public static final String QUESTION_ID_MMS_SINGLE_SENDING = "mms_single_sending";
+    public static final String QUESTION_ID_MMS_SINGLE_SENDING_MULTIPLE_DESTINATIONS = "mms_single_sending_multiple_destinations";
+    public static final String QUESTION_ID_SEND_RECEIVE_MESSAGES = "receive_send_messages";
+    public static final String QUESTION_ID_LOCAL_CONNECTIVITY = "local_connectivity";
+    public static final String QUESTION_ID_AUDIO_VIDEO_RECORDING = "audio_video_recording";
+    public static final String QUESTION_ID_READING_USER_DATA = "reading_user_data";
+    public static final String QUESTION_ID_WRITING_USER_DATA = "writing_user_data";
+    public static final String QUESTION_ID_READING_FILE = "reading_file";
+    public static final String QUESTION_ID_MANAGE_USER_DATA = "manage_user_data";
+    public static final String QUESTION_ID_MODIFYING_FILE = "modifying_file";
+    public static final String QUESTION_ID_READING_LOCATION_DATA = "reading_location_data";
+    public static final String QUESTION_ID_READING_LANDMARK_DATA = "reading_landmark_data";
+    public static final String QUESTION_ID_READING_SMARTCARD = "reading_smartcard";
+    public static final String QUESTION_ID_AUTH_SERVICES_USAGE = "auth_services_usage";
+    public static final String QUESTION_ID_BLUETOOTH_USAGE = "bluetooth_usage";
+    public static final String QUESTION_ID_READING_CONTACTS = "reading_contacts";
+    public static final String QUESTION_ID_MODIFYING_CONTACTS = "modifying_contacts";
+    public static final String QUESTION_ID_READING_EVENTS = "reading_events";
+    public static final String QUESTION_ID_MODIFYING_EVENTS = "modifying_events";
+    public static final String QUESTION_ID_READING_TODOS = "reading_todos";
+    public static final String QUESTION_ID_MODIFYING_TODOS = "modifying_todos";
+    public static final String QUESTION_ID_DELETING_ITEM = "deleting_item";
+    public static final String QUESTION_ID_UPDATING_ITEM = "updating_item";
+    public static final String QUESTION_ID_DELETING_CATEGORY = "deleting_category";
+    public static final String QUESTION_ID_UPDATING_CATEGORY = "updating_category";
+    public static final String QUESTION_ID_DELETING_UNNAMED_ITEM = "deleting_unnamed_item";
+    public static final String QUESTION_ID_UPDATING_UNNAMED_ITEM = "updating_unnamed_item";
+    public static final String QUESTION_ID_ADDING_CALENDAR = "adding_calendar";
+    public static final String QUESTION_ID_DELETING_CALENDAR = "deleting_calendar";
+    public static final String QUESTION_ID_LISTING_CALENDARS = "listing_calendars";
+    public static final String QUESTION_ID_ORIENTATION_DATA_USAGE = "orientation_data_usage";
+    public static final String QUESTION_ID_POSITIONING_DATA_USAGE = "positioning_data_usage";
+    public static final String QUESTION_ID_LANDMARK_DATA_USAGE = "landmark_data_usage";
+    public static final String QUESTION_ID_PROXIMITY_LISTENER_REGISTRATION = "proximity_listener_registration";
+    public static final String QUESTION_ID_MOBITV_DATA_USAGE = "tv_broadcast_user_data_access";
+    public static final String QUESTION_ID_NETWORK_USAGE_VIA_PLAT_REQ = "network_usage_via_plat_req";
+    public static final String QUESTION_ID_APP_LAUNCH_VIA_PLAT_REQ = "app_launch_via_plat_req";
+    public static final String QUESTION_ID_PUSH_STATIC_REGISTRATION = "push_registration_static";
+    public static final String QUESTION_ID_PUSH_DYNAMIC_REGISTRATION = "push_registration_dynamic";
+    public static final String QUESTION_ID_AUTO_INVOCATION = "auto_invocation";
+    public static final String QUESTION_ID_NDEF_TAG_WRITE = "nfc_ndef_tag_write";
+    public static final String QUESTION_ID_APP_AUTO_LAUNCH = "url_start";
 
     // identifiers for the security prompt answer options
-    public static final Id ANSWER_ID_ALLOW = new Id("prompt_allow", "N/A");
-    public static final Id ANSWER_ID_DENY = new Id("prompt_deny", "N/A");
-    public static final Id ANSWER_ID_YES = new Id("prompt_yes", "N/A");
-    public static final Id ANSWER_ID_NO = new Id("prompt_no", "N/A");
+    public static final String ANSWER_ID_ALLOW = "prompt_allow";
+    public static final String ANSWER_ID_DENY = "prompt_deny";
+    public static final String ANSWER_ID_YES = "prompt_yes";
+    public static final String ANSWER_ID_NO = "prompt_no";
 
     // general purpose identifiers
-    public static final Id SECURITY_WARNING_ID = new Id("general_warning", "N/A");
-    public static final Id OCSP_WARNING_ID = new Id("ocsp_warning", "N/A");
-
-    // Localised resources
-    private static final String AVKON_LOC_FILE = "javausermessages";
-    private static final String AVKON_PREFIX = "qtn_java_secur_";
-    private static final String QT_LOC_FILE = "N/A";
-    private static final String QT_PREFIX = "";
+    public static final String SECURITY_WARNING_ID = "general_warning";
+    public static final String OCSP_WARNING_ID = "ocsp_warning";
 
     /**
      * Creates an instance of the SecurityPromptMessage
@@ -128,13 +121,12 @@ public class SecurityPromptMessage extends LocalizedTextProvider
      * @return            the localized text associated with the provided
      *                    identifier and parameters
      */
-    public String getText(Id aTextId, Object[] aTextParams)
+    public String getText(String aTextId, Object[] aTextParams)
     {
         if (iRes == null)
         {
-            iRes = ResourceLoader.getInstance(AVKON_LOC_FILE, AVKON_PREFIX, QT_LOC_FILE, QT_PREFIX);
+            iRes = ResourceLoader.getInstance("javausermessages", "qtn_java_secur_");
         }
-
         return iRes.format(aTextId, aTextParams);
     }
 }

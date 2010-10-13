@@ -15,6 +15,6 @@
 #
 TEMPLATE = subdirs
 SUBDIRS += ipclib/clientserver/build/ipc.pro 
-SUBDIRS += build/javacomms.pro 
+SUBDIRS += build/comms.pro 
 BLD_INF_RULES.prj_extensions += "$${LITERAL_HASH}include \"ipclib/build/bld.inf\""  
 BLD_INF_RULES.prj_extensions += "prj_extensions" 

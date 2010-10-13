@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -34,11 +34,17 @@ public class NotifyJsrPlugins extends ExeStep
     {
         InstallBall ball = (InstallBall)aBall;
 
-        // If any Jsr plugins, notify plugins.
+        // If any Jsr plugins, notify plugins
         if (ball.iJsrPluginNotifier.anyJsrPlugins())
         {
-            ball.iJsrPluginNotifier.notifyInstallation(
-                createInstallerExtensionInfo(ball));
+            // Create info object to be passed to plugins
+            InstallerExtensionInfo info = new InstallerExtensionInfo();
+            info.iUid = ball.iSuite.getUid();
+            info.iUpgrade = (ball.iOldSuite != null);
+            info.iSilent = ball.isSilent();
+            info.iAttributes = ball.iCombinedAttributes;
+
+            ball.iJsrPluginNotifier.notifyInstallation(info);
         }
     }
 
@@ -46,31 +52,26 @@ public class NotifyJsrPlugins extends ExeStep
     {
         InstallBall ball = (InstallBall)aBall;
 
-        // Notify possible plugins that installation has been cancelled.
+        // Notify possible plugins that installation can been cancelled
         if (ball.iJsrPluginNotifier.anyJsrPlugins())
         {
-            ball.iJsrPluginNotifier.notifyRollbackInstall(
-                createInstallerExtensionInfo(ball));
-        }
-    }
+            // Create info object to be passed to plugins
+            InstallerExtensionInfo info = new InstallerExtensionInfo();
+            // Beware, it is possible that aBall has not been fully
+            // initialized
+            if (null == ball.iSuite)
+            {
+                info.iUid = null;
+            }
+            else
+            {
+                info.iUid = ball.iSuite.getUid();
+            }
+            info.iUpgrade = (ball.iOldSuite != null);
+            info.iSilent = ball.isSilent();
+            info.iAttributes = ball.iCombinedAttributes;
 
-    private InstallerExtensionInfo createInstallerExtensionInfo(InstallBall aBall)
-    {
-        InstallerExtensionInfo info = new InstallerExtensionInfo();
-        // Beware, it is possible that aBall has not been fully initialized.
-        if (aBall.iSuite != null)
-        {
-            info.iUid = aBall.iSuite.getUid();
-            info.iAppUids = aBall.iSuite.getApplicationUids();
-            info.iRootPath = aBall.iSuite.getRootDir();
+            ball.iJsrPluginNotifier.notifyRollbackInstall(info);
         }
-        info.iUpgrade = (aBall.iOldSuite != null);
-        info.iSilent = aBall.isSilent();
-        info.iAttributes = aBall.iCombinedAttributes;
-        if (aBall.iStorageHandler != null)
-        {
-            info.iStorageSession = aBall.iStorageHandler.getSession();
-        }
-        return info;
     }
 }

@@ -14,7 +14,6 @@
 # Description: Generated file - do not edit manually
 #
 TEMPLATE = subdirs
-SUBDIRS += nokiasound/build/javanokiasound.pro 
 SUBDIRS += javalegacyutils 
 SUBDIRS += remconobserver_akn/build/javaremconobserver.pro 
 SUBDIRS += eswt_akn/org.eclipse.ercp.swt.s60/native/build/eswt.pro 
@@ -25,6 +24,7 @@ SUBDIRS += coreui_akn/build/javacoreui.pro
 SUBDIRS += eswt_akn/eswtdirectcontent/build/eswtdirectcontent.pro 
 SUBDIRS += m2g_akn/build/javam2g.pro 
 SUBDIRS += m3g_akn/build/javam3g.pro 
+SUBDIRS += nokiasound_akn/build/javanokiasound.pro 
 SUBDIRS += runtimeui_akn/build/javaruntimeui.pro 
 SUBDIRS += softnotification_akn/build/javasoftnotification.pro 
 BLD_INF_RULES.prj_extensions += "$${LITERAL_HASH}include \"coreui/build/bld.inf\""  

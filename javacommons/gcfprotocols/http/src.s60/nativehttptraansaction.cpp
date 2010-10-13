@@ -135,7 +135,7 @@ void NativeHttpTransaction::SubmitL(JNIEnv* aJni, jobject* /*aPeer*/,const jobje
                     narrowBuffer = HBufC8::NewLC(length);
                     TPtr8 narrowPtr = narrowBuffer->Des();
                     narrowPtr.Copy(rawHeader);
-                    rawHeaderArray.AppendL(narrowBuffer);
+                    rawHeaderArray.Append(narrowBuffer);
                     CleanupStack::Pop(narrowBuffer);
                 }
                 aJni->DeleteLocalRef(jniString);

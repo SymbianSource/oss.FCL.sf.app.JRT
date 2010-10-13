@@ -118,12 +118,12 @@ public:
      *         ApplicationInfo::OPERATOR_DOMAIN
      *         ApplicationInfo::UNIDENTIFIED_THIRD_PARTY_DOMAIN
      */
-    const std::wstring GetSecurityDomainCategoryL();
+    const std::wstring GetSecurityDomainCategory();
 
     /**
      * Gets security domain name
      */
-    const std::wstring GetSecurityDomainNameL();
+    const std::wstring GetSecurityDomainName();
 
     /**
      * Gets security warnings mode value

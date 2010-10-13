@@ -157,9 +157,9 @@ FileContent JavaIniFileUtils::readFileContent(bool create)
         }
         rewind(iniFile);
         data = new char[len+1];
+        data[len] = 0;
         if (data != 0)
         {
-            data[len] = 0;
             fread(data, sizeof(char), len, iniFile);
         }
         fclose(iniFile);

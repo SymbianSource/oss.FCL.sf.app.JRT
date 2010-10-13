@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -23,13 +23,10 @@ import com.nokia.mj.impl.installer.exetable.ExeStep;
 import com.nokia.mj.impl.installer.storagehandler.ApplicationInfo;
 import com.nokia.mj.impl.installer.storagehandler.SuiteInfo;
 import com.nokia.mj.impl.installer.utils.Log;
-import com.nokia.mj.impl.installer.utils.AutoStartPermission;
 import com.nokia.mj.impl.utils.InstallerDetailedErrorMessage;
 import com.nokia.mj.impl.utils.InstallerErrorMessage;
 import com.nokia.mj.impl.utils.OtaStatusCode;
 import com.nokia.mj.impl.utils.exception.InvalidAttributeException;
-import com.nokia.mj.impl.security.midp.authorization.AccessControllerFactoryImpl;
-import com.nokia.mj.impl.security.midp.authorization.AccessControllerImpl;
 
 import java.util.Vector;
 
@@ -56,7 +53,7 @@ public class HandleCustomAttributes extends ExeStep
     {
         if (aBall.iApplicationRegistrator.isOnDeviceKeypadNeeded())
         {
-            // Default value when on-screen-keypad is needed.
+            // default value when on-screen-keypad is needed
             aBall.iSuite.setOnScreenKeypad(SuiteInfo.OSK_GAMEACTIONS);
 
             String attrName = "Nokia-MIDlet-On-Screen-Keypad";
@@ -77,16 +74,13 @@ public class HandleCustomAttributes extends ExeStep
                 }
                 else
                 {
-                    // Ignore on-screen-keypad attribute with invalid value.
-                    aBall.iSuite.setOnScreenKeypad(SuiteInfo.OSK_UNDEFINED);
-                    Log.logWarning("Ignoring invalid " + attrName +
-                                   " value " + attrValue);
+                    Log.logWarning("Invalid " + attrName + " value " + attrValue);
                 }
             }
         }
         else
         {
-            // If the device does not need on-screen-keypad, the value is not set at all.
+            // If the device does not need on-screen-keypad, the value is not set at all
             aBall.iSuite.setOnScreenKeypad(SuiteInfo.OSK_UNDEFINED);
         }
 
@@ -102,62 +96,20 @@ public class HandleCustomAttributes extends ExeStep
         }
         for (int i = 1; true; i++)
         {
-            if (apps.size() < i)
-            {
-                break;
-            }
-
             String attrName = "Nokia-MIDlet-Auto-Start-" + i;
             String attrValue = aBall.getAttributeValue(attrName);
-
-            if (attrValue == null)
-            {
-                // Allow also this form of the name to be compatible with
-                // an existing implementation
-                attrName = "Nokia-MIDlet-auto-start-" + i;
-                attrValue = aBall.getAttributeValue(attrName);
-
-                if ((attrValue == null) && (i == 1))
-                {
-                    // Allow even this S40 format
-                    attrName = "Nokia-MIDlet-auto-start";
-                    attrValue = aBall.getAttributeValue(attrName);
-                }
-            }
-
             if (attrValue != null)
             {
-                if (!aBall.attributeExistsInJar(attrName))
+                if (apps.size() < i)
                 {
-                    // The attribute is only in .jad, ignore it.
-                    Log.logWarning("Attribute " + attrName +
-                        " ignored because it is not in Manifest");
-                    continue;
-                }
-
-                // Check if MIDlet has permission for Auto-start
-                AccessControllerImpl accessControllerImpl =
-                    AccessControllerFactoryImpl.
-                    getAccessController(aBall.iStorageHandler.getSession(),
-                                        aBall.iSuite.getUid(),
-                                        aBall.iSuite.getName());
-                AutoStartPermission autoStartPermission = new AutoStartPermission();
-                if (!accessControllerImpl.isPermissionAllowed(
-                    autoStartPermission.toString()))
-                {
-                    Log.logWarning("Attribute " + attrName +
-                        " ignored due to insufficient permissions");
                     break;
                 }
-
-                if (attrValue.equalsIgnoreCase("false") ||
-                    attrValue.equalsIgnoreCase("no"))
+                if (attrValue.equalsIgnoreCase("false"))
                 {
                     ((ApplicationInfo)apps.elementAt(i-1)).
                     setAutoStart(ApplicationInfo.AUTOSTART_FALSE);
                 }
-                else if (attrValue.equalsIgnoreCase("true") ||
-                        attrValue.equalsIgnoreCase("yes"))
+                else if (attrValue.equalsIgnoreCase("true"))
                 {
                     ((ApplicationInfo)apps.elementAt(i-1)).
                     setAutoStart(ApplicationInfo.AUTOSTART_TRUE);
@@ -178,6 +130,10 @@ public class HandleCustomAttributes extends ExeStep
                       OtaStatusCode.INVALID_DESCRIPTOR:
                       OtaStatusCode.INVALID_JAR));
                 }
+            }
+            else
+            {
+                break;
             }
         }
     }

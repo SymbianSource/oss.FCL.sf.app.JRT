@@ -61,8 +61,7 @@ public abstract class Canvas extends Displayable
     private static final int ATTRIB_HEIGHT_INDEX              = 2;
     private static final int ATTRIB_NATIVE_FRAME_BUFFER_INDEX = 3;
     private static final int ATTRIB_BACKGROUND_INDEX          = 4;
-    private static final int ATTRIB_VIDEO_OVERLAY_INDEX       = 5;
-    private static final int ATTRIB_COUNT                     = 6;
+    private static final int ATTRIB_COUNT                     = 5;
 
     /**
     * Static constants for media key keycodes
@@ -95,9 +94,7 @@ public abstract class Canvas extends Displayable
      * attribute is "CanvasHasBackground". The attribute may be placed in the JAD or the manifest.
      */
     private boolean iHasBackgroundImage;
-    private boolean iVideoOverlayEnabled;
     private boolean iIsGameCanvas;
-    private Object iPaintLock;
 
     protected Canvas()
     {
@@ -135,9 +132,6 @@ public abstract class Canvas extends Displayable
             iHasBackgroundImage =
                 (canvasAttribs[ATTRIB_BACKGROUND_INDEX] != 0);
 
-            iVideoOverlayEnabled = 
-                (canvasAttribs[ATTRIB_VIDEO_OVERLAY_INDEX] != 0);
-
             // If is Toolkit activated, we can add Displayable to Vector
             // Displayables are removed from Vector when SizeChangedEvent arrives see Displayable.sizeChangedEvent()
             if (iToolkit.activated)
@@ -146,7 +140,6 @@ public abstract class Canvas extends Displayable
             }
 
             iM3GContent = false;
-            iPaintLock = new Object();
         }
     }
 
@@ -404,68 +397,58 @@ public abstract class Canvas extends Displayable
         int     w;
         int     h;
 
-        synchronized (iPaintLock)
+        synchronized (iCallbackLock)
         {
-            synchronized (iCallbackLock)
+            final int width;
+            final int height;
+
+            //
+            // Synchronize to protect the update region from concurrent
+            // repaint()'s. Note that this is *not* sufficient to ensure
+            // that no other callbacks are called by the event thread
+            // whilst the current thread is in the repaint routine, for
+            // that we use the callbacklock below.
+            //
+            synchronized (iToolkit)
             {
-                final int width;
-                final int height;
+                width  = iWidth;
+                height = iHeight;
 
-                //
-                // Synchronize to protect the update region from concurrent
-                // repaint()'s. Note that this is *not* sufficient to ensure
-                // that no other callbacks are called by the event thread
-                // whilst the current thread is in the repaint routine, for
-                // that we use the callbacklock below.
-                //
-                synchronized (iToolkit)
+                x = iRepaintX1;
+                y = iRepaintY1;
+                w = iRepaintX2-iRepaintX1;
+                h = iRepaintY2-iRepaintY1;
+
+                iRepaintX1 = 0;
+                iRepaintY1 = 0;
+                iRepaintX2 = 0;
+                iRepaintY2 = 0;
+
+                if (!((w>0) && (h>0) && (IsShown() || forced)))
                 {
-                    width  = iWidth;
-                    height = iHeight;
-
-                    x = iRepaintX1;
-                    y = iRepaintY1;
-                    w = iRepaintX2-iRepaintX1;
-                    h = iRepaintY2-iRepaintY1;
-
-                    iRepaintX1 = 0;
-                    iRepaintY1 = 0;
-                    iRepaintX2 = 0;
-                    iRepaintY2 = 0;
-
-                    if (!((w>0) && (h>0) && (IsShown() || forced)))
-                    {
-                        return;
-                    }
-
-                    graphics = GetPaintGraphics();
+                    return;
                 }
 
-                graphics.reset(width, height);
-                graphics.setClip(x, y, w, h);
-
-                // On a non-full-screen (normal) mode Canvas the background
-                // image must be initially shown, if the value of the iHasBackgroundImage
-                // is true.
-                if (!iFullScreen && iHasBackgroundImage && !iIsGameCanvas)
-                {
-                    drawBackground(true);
-                }
-
-                if (iVideoOverlayEnabled)
-                {
-                    // Send op code to native canvas about the start of paint,
-                    // to enable overlays. This is done after 
-                    // drawBackground() so that framebuffer can be cleared
-                    // correctly on native side.
-                    iToolkit.canvasPaintStarted(getContentHandle());
-                }
-
-                paint(graphics);
+                graphics = GetPaintGraphics();
             }
 
+            graphics.reset(width, height);
+            graphics.setClip(x, y, w, h);
+
+            // On a non-full-screen (normal) mode Canvas the background
+            // image must be initially shown, if the value of the iHasBackgroundImage
+            // is true.
+            if (!iFullScreen && iHasBackgroundImage && !iIsGameCanvas)
+            {
+                drawBackground(true);
+            }
+            paint(graphics);
             flush(x, y, w, h);
         }
+
+
+
+
     }
 
     void flush(int aX, int aY, int aWidth, int aHeight)

@@ -14,8 +14,9 @@
 * Description: 
 *
 */
-
+// #include <oem/bldvariant.hrh>
 #include <data_caging_paths.hrh>
+//#include <domain/osextensions/platform_paths.hrh>
 #include <platform_paths.hrh>
 
 #include <../../../../../../inc/java_stdcpp_support_for_exe.hrh>

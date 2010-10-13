@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -33,8 +33,6 @@ import j2meunit.framework.TestSuite;
  */
 public class SysUtilTest extends TestCase implements InstallerMain
 {
-    private int iPropertyValue = 0; // Used in testPropertyListener test case.
-
     // Begin j2meunit test framework setup
 
     public void installerMain(String[] args)
@@ -169,49 +167,6 @@ public class SysUtilTest extends TestCase implements InstallerMain
             }
         }));
 
-        if (Platform.isS60())
-        {
-        suite.addTest(new SysUtilTest("testPropertyListener", new TestMethod()
-        {
-            public void run(TestCase tc)
-            {
-                ((SysUtilTest)tc).testPropertyListener();
-            }
-        }));
-
-        suite.addTest(new SysUtilTest("testGetProcessState", new TestMethod()
-        {
-            public void run(TestCase tc)
-            {
-                ((SysUtilTest)tc).testGetProcessState();
-            }
-        }));
-
-        suite.addTest(new SysUtilTest("testDriveGetters", new TestMethod()
-        {
-            public void run(TestCase tc)
-            {
-                ((SysUtilTest)tc).testDriveGetters();
-            }
-        }));
-
-        suite.addTest(new SysUtilTest("testGetScreenSize", new TestMethod()
-        {
-            public void run(TestCase tc)
-            {
-                ((SysUtilTest)tc).testGetScreenSize();
-            }
-        }));
-
-        suite.addTest(new SysUtilTest("testIsoToLang", new TestMethod()
-        {
-            public void run(TestCase tc)
-            {
-                ((SysUtilTest)tc).testIsoToLang();
-            }
-        }));
-        }
-
         com.nokia.mj.impl.utils.OmjTestRunner.run(suite);
     }
 
@@ -243,11 +198,11 @@ public class SysUtilTest extends TestCase implements InstallerMain
     {
         try
         {
-            // Test PS keys defined in hwrmpowerstatesdkpskey.h
-            Uid uid = PlatformUid.createUid("0x10205041");  // KPSUidHWRMPowerState
-            int key = 0x00000003; // KHWRMChargingStatus
+            // Test PS keys defined in ScreensaverInternalPSKeys.h
+            Uid uid = PlatformUid.createUid("0x101F8771");  // KPSUidScreenSaver
+            int key = 0x00000001; // KScreenSaverPreviewMode
             int value = SysUtil.getPropertyValue(uid, key);
-            assertTrue("KHWRMChargingStatus(!=0): " + value, value == 0);
+            assertTrue("KScreenSaverPreviewMode(!=0): " + value, value == 0);
         }
         catch (InstallerException ie)
         {
@@ -260,8 +215,8 @@ public class SysUtilTest extends TestCase implements InstallerMain
     {
         try
         {
-            // Test PS keys defined in hwrmpowerstatesdkpskey.h
-            Uid uid = PlatformUid.createUid("0x10205041");  // KPSUidHWRMPowerState
+            // Test PS keys defined in ScreensaverInternalPSKeys.h
+            Uid uid = PlatformUid.createUid("0x101F8771");  // KPSUidScreenSaver
             int key = 0x00000010; // Undefined key
             int value = SysUtil.getPropertyValue(uid, key);
             assertTrue("Getting undefined property value did not fail", false);
@@ -276,12 +231,13 @@ public class SysUtilTest extends TestCase implements InstallerMain
     {
         try
         {
-            Uid uid = SysUtil.PROP_CATEGORY_SYSTEM;
-            long key = SysUtil.PROP_KEY_JAVA_LATEST_INSTALLATION_PROGRESS;
+            // Test PS keys defined in ScreensaverInternalPSKeys.h
+            Uid uid = PlatformUid.createUid("0x101F8771");  // KPSUidScreenSaver
+            int key = 0x00000001; // KScreenSaverPreviewMode
+            // Set screensaver preview mode on (stays on for 10 secs).
             SysUtil.setPropertyValue(uid, key, 1);
             int value = SysUtil.getPropertyValue(uid, key);
-            assertTrue("PROP_KEY_JAVA_LATEST_INSTALLATION_PROGRESS(!=1): " +
-                       value, value == 1);
+            assertTrue("KScreenSaverPreviewMode(!=1): " + value, value == 1);
         }
         catch (InstallerException ie)
         {
@@ -294,8 +250,9 @@ public class SysUtilTest extends TestCase implements InstallerMain
     {
         try
         {
-            Uid uid = SysUtil.PROP_CATEGORY_SYSTEM;
-            int key = 0x00000100; // Undefined key
+            // Test PS keys defined in ScreensaverInternalPSKeys.h
+            Uid uid = PlatformUid.createUid("0x101F8771");  // KPSUidScreenSaver
+            int key = 0x00000010; // Undefined key
             SysUtil.setPropertyValue(uid, key, 1);
             assertTrue("Setting undefined property value did not fail", false);
         }
@@ -382,12 +339,11 @@ public class SysUtilTest extends TestCase implements InstallerMain
     {
         try
         {
-            // Test CenRep keys defined in Java security.
-            Uid uid = PlatformUid.createUid("0x2001B289"); // KJavaSecurity
-            long key = 0x00000004; // KJavaSecurity/KWarningsMode
+            // Test CenRep keys defined in ScreensaverInternalCRKeys.h
+            Uid uid = PlatformUid.createUid("0x101F8770"); // KCRUidScreenSaver
+            long key = 0x00000004; // KScreenSaverInvertedColors
             int value = SysUtil.getRepositoryValue(uid, key);
-            assertTrue("KJavaSecurity/KWarningsMode(!=2): " + value,
-                       value == 2);
+            assertTrue("KScreenSaverInvertedColors(!=0): " + value, value == 0);
         }
         catch (InstallerException ie)
         {
@@ -419,8 +375,8 @@ public class SysUtilTest extends TestCase implements InstallerMain
             Uid uid = SysUtil.REPO_ID_JAVA_INST_VARIATION;
             long key = SysUtil.REPO_KEY_JAVA_INST_SHELL_FOLDER_VALUE;
             String value = SysUtil.getRepositoryStringValue(uid, key);
-            assertTrue("Unexpected value: " + value, "Games,Applications".equals(value));
-            //assertTrue("Unexpected value: " + value, "".equals(value));
+            //assertTrue("Unexpected value: " + value, "Games,Applications".equals(value));
+            assertTrue("Unexpected value: " + value, "".equals(value));
         }
         catch (InstallerException ie)
         {
@@ -616,127 +572,5 @@ public class SysUtilTest extends TestCase implements InstallerMain
         {
             // OK, expected exception.
         }
-    }
-
-    public void testPropertyListener()
-    {
-        final int category = 0x101f75b6;
-        final int key = 0x20019546;
-        final int value = 15;
-        final Object synchObject = this;
-        PropertyListener listener = new PropertyListener()
-        {
-            public void valueChanged(int aCategory, int aKey, int aValue)
-            {
-                try
-                {
-                    if (aValue == 0)
-                    {
-                        // Ignore the first event which is sent when
-                        // subscription is made.
-                        return;
-                    }
-                    synchronized (synchObject)
-                    {
-                        iPropertyValue = aValue;
-                        Log.log("PropertyListener.valueChanged: " + aValue +
-                                " (" + aCategory + ", " + aKey + ")");
-                        if (aCategory != category)
-                        {
-                            Log.logError("PropertyListener.valueChanged: " +
-                                         "invalid category " + aCategory);
-                        }
-                        if (aKey != key)
-                        {
-                            Log.logError("PropertyListener.valueChanged: " +
-                                         "invalid key " + aKey);
-                        }
-                        synchObject.notify();
-                    }
-                }
-                catch (Throwable t)
-                {
-                    Log.logError("PropertyListener.valueChanged exception", t);
-                }
-            }
-        };
-        try
-        {
-            iPropertyValue = 0;
-            SysUtil.setPropertyValue(
-                PlatformUid.createUid(category), key, iPropertyValue);
-            PropertyProvider provider = new PropertyProvider();
-            provider.subscribe(category, key, listener);
-            SysUtil.setPropertyValue(
-                PlatformUid.createUid(category), key, value);
-            try
-            {
-                synchronized (synchObject)
-                {
-                    if (iPropertyValue == 0)
-                    {
-                        synchObject.wait(2000);
-                    }
-                }
-            }
-            catch (InterruptedException ie)
-            {
-            }
-            provider.unsubscribe();
-            assertTrue("Unexpected property value after test: " +
-                       iPropertyValue, iPropertyValue == value);
-        }
-        catch (Throwable t)
-        {
-            Log.logError("testPropertyListener exception", t);
-            assertTrue("Unexpected exception " + t, false);
-        }
-    }
-
-    public void testGetProcessState()
-    {
-        int state = SysUtil.getProcessState(PlatformUid.createUid("[102033e6]"));
-        assertTrue("installer process state is " + state +
-                   ", not " + SysUtil.PROC_STATE_ALIVE,
-                   SysUtil.PROC_STATE_ALIVE == state);
-        state = SysUtil.getProcessState(PlatformUid.createUid("[e0001001]"));
-        assertTrue("nonexisting process state is " + state + ", not 0",
-                   0 == state);
-    }
-
-    public void testDriveGetters()
-    {
-        int defMem = SysUtil.getDefaultPhoneMemory();
-        int defMassStorage = SysUtil.getDefaultMassStorage();
-        Log.log("testDriveGetter: defaultPhoneMemory = " + defMem);
-        Log.log("testDriveGetter: defaultMassStorage = " + defMassStorage);
-    }
-
-    public void testGetScreenSize()
-    {
-        int screenWidth = SysUtil.getScreenWidth();
-        int screenHeight = SysUtil.getScreenHeight();
-        Log.log("testGetScreenSize: screenWidth = " + screenWidth);
-        Log.log("testGetScreenSize: screenHeight = " + screenHeight);
-        assertTrue("screenWidth <= 0", screenWidth > 0);
-        assertTrue("screenHeight <= 0", screenHeight > 0);
-    }
-
-    public void testIsoToLang()
-    {
-        testIsoToLang("unknown", -1); // unknown locale is indicated with -1
-        testIsoToLang("fi", 9); // ELangFinnish, Finnish
-        testIsoToLang("fi_FI", 9); // ELangFinnish, Finnish
-        testIsoToLang("sv", 6); // ELangSwedish, Swedish
-        testIsoToLang("sv_FI", 85); // ELangFinlandSwedish, Finland Swedish
-        testIsoToLang("en", 1); // ELangEnglish, UK English
-        testIsoToLang("en_US", 10); // ELangAmerican, American
-        testIsoToLang("en_AU", 20); // ELangAustralian, Australian English
-    }
-
-    private void testIsoToLang(String aLocale, int aLang)
-    {
-        assertTrue("SysUtil.isoToLang " + aLocale + " != " + aLang,
-                   SysUtil.isoToLang(aLocale) == aLang);
     }
 }

@@ -14,33 +14,20 @@
 # Description: 
 #
 
-include(../../../../inc/build_defines.pri)
-
 TEMPLATE=lib
 TARGET=javabluetoothcommons
 CONFIG += omj java stl
+CONFIG -= qt
 
-contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_5_0) {
-    CONFIG -= qt
-}
-contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_9_2) {
-    CONFIG -= qt
-}
-contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_10_1_ONWARDS) {
-    CONFIG += hb
-}
-
-
-symbian {	
+symbian {
     SOURCES += ../src/*.cpp 
     SOURCES += ../src.s60/*.cpp
     SOURCES += ../bluetoothplatformcontrol/src/*.cpp 
-    SOURCES += ../bluetoothplatformcontrol/src.s60/*.cpp   
+    SOURCES += ../bluetoothplatformcontrol/src.s60/*.cpp
 }
 
 LIBS +=  -lsdpdatabase -lbtengsettings -lbluetooth -lbtmanclient \
          -lbtdevice -ljavacomms -ljavafileutils -lesock
 
+
 include(../../../../build/omj.pri)
-
-

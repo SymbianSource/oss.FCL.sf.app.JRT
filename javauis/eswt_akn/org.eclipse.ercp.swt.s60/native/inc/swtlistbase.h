@@ -290,7 +290,6 @@ public:
     void EnableFocusHighlight(TBool aEnable);
 #endif //RD_JAVA_S60_RELEASE_9_2
     TInt FocusBackgroundPolicy() const;
-    void PrepareForTraverse();
 
 // From ASwtScrollableBase
 protected:

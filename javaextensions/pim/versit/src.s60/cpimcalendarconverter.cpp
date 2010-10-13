@@ -30,7 +30,7 @@
 #include "cpimeventpropertyconverter.h"
 #include "fs_methodcall.h"
 #include "logger.h"
-#include "cleanupresetanddestroy.h"
+#include "javasymbianoslayer.h"
 
 // EXTERNAL INCLUDES
 #include <vcal.h>
@@ -165,6 +165,8 @@ void CPIMCalendarConverter::StreamToItemL(RReadStream& aStream, // RReadStream t
         RPointerArray<CPIMItem>& aItemArray, Versit::TVersitCharSet aCharset)
 {
     JELOG2(EPim);
+
+
     CParserVCal* parser = CParserVCal::NewL();
     CleanupStack::PushL(parser);
     parser->SetDefaultCharSet(aCharset);
@@ -199,6 +201,8 @@ void CPIMCalendarConverter::StreamToItemL(RReadStream& aStream, // RReadStream t
         }
     }
     CleanupStack::PopAndDestroy(3, parser); // parser, eventArray, todoArray
+
+
 }
 
 // -----------------------------------------------------------------------------
@@ -238,7 +242,7 @@ void CPIMCalendarConverter::ParserToEventL(CParserVCalEntity& aParser,
         RPointerArray<CPIMItem>& aItemArray)
 {
     JELOG2(EPim);
-    CleanupClosePushL(aItemArray);
+   
     CPIMEventItem* item = CPIMEventItem::NewLC(iEventValidator);
     TPIMDate alarm(TInt64(0));
     // We don't take the ownership of the propertyArray, so the properties
@@ -265,6 +269,7 @@ void CPIMCalendarConverter::ParserToEventL(CParserVCalEntity& aParser,
             item->addInt(EPIMEventAlarm, KPIMAttrNone, interval.Int());
         }
     }
+	CleanupClosePushL(aItemArray);
     User::LeaveIfError(aItemArray.Append(item));
     CleanupStack::Pop(item); // item
     CleanupStack::Pop(&aItemArray);
@@ -279,7 +284,7 @@ void CPIMCalendarConverter::ParserToToDoL(CParserVCalEntity& aParser,
         RPointerArray<CPIMItem>& aItemArray)
 {
     JELOG2(EPim);
-    CleanupClosePushL(aItemArray);
+    
     CPIMToDoItem* item = CPIMToDoItem::NewLC(iToDoValidator);
     TPIMDate alarm(TInt64(0));
     // We don't take the ownership of the propertyArray, so the properties
@@ -314,6 +319,7 @@ void CPIMCalendarConverter::ParserToToDoL(CParserVCalEntity& aParser,
     {
         item->AddBooleanL(EPIMToDoCompleted, KPIMAttrNone, ETrue);
     }
+    CleanupClosePushL(aItemArray);
     User::LeaveIfError(aItemArray.Append(item));
     CleanupStack::Pop(item); // item
     CleanupStack::Pop(&aItemArray);

@@ -379,7 +379,7 @@ CWriteableJavaRegistryEntry::AttributesL() const
                 regAttr = CJavaAttribute::NewL(
                               nameBuf->Des(), valueBuf->Des(), trusted);
 
-                iAttributes.AppendL(regAttr);
+                iAttributes.Append(regAttr);
 
                 nameBuf.reset(0);
                 valueBuf.reset(0);

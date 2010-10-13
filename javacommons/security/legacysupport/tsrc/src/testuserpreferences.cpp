@@ -25,11 +25,11 @@
 #include "javauid.h"
 #include "javasymbianoslayer.h"
 
-#include "j2me/midp2/data/muserpreferences.h"
-#include "j2me/midp2/data/mmidletsuiteuserpreferencesiterator.h"
-#include "j2me/midp2/data/mmidletsuiteuserpreferences.h"
-#include "j2me/midp2/data/mmidletsuitecustomattributes.h"
-#include "j2me/midp2/security/msecuritypolicyv2.h"
+#include <muserpreferences.h>
+#include <mmidletsuiteuserpreferencesiterator.h>
+#include <mmidletsuiteuserpreferences.h>
+#include <mmidletsuitecustomattributes.h>
+#include <msecuritypolicyv2.h>
 
 using namespace MIDP;
 using namespace java::storage;

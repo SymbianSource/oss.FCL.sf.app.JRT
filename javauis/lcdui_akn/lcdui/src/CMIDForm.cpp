@@ -159,7 +159,7 @@ void CMIDForm::SetItemL(MMIDItem& aItem,TInt aIndex)
 /**
  * Inserts a new Item.
  */
-void CMIDForm::InsertItemL(MMIDItem& aItem, TInt aIndex)
+void CMIDForm::InsertItemL(MMIDItem& aItem,TInt aIndex)
 {
     DEBUG("CMIDForm::InsertItemL");
 
@@ -225,6 +225,7 @@ void CMIDForm::DeleteItemL(TInt aIndex)
     if (&ci == iPointedControl)
     {
         iPointedControl = NULL;
+        iLastPointedControl = KErrNotFound;
     }
 
     iItems.Remove(aIndex);
@@ -256,6 +257,8 @@ void CMIDForm::DeleteAllItemsL()
     iIndexPointedControl = -1;
 
     iPointedControl = NULL;
+    iLastPointedControl = KErrNotFound;
+
     RequestLayoutL();
 }
 
@@ -338,25 +341,6 @@ TKeyResponse CMIDForm::OfferKeyEventL(const TKeyEvent& aKeyEvent,TEventCode aTyp
         CMIDControlItem& controlItem = ControlItem(iFocused);
         TRect controlRect = GetControlRect(iFocused);
         TBool visible = RectPartiallyVisible(controlRect);
-
-#ifdef RD_JAVA_S60_RELEASE_9_2
-        TInt numItemCommands = controlItem.CommandList()->Count();
-
-        // If focused form item does not have any commands,
-        // and select key was pressed try to show screen\help option menu.
-        // ChoiceGroup and DateField handles this case separately.
-        // Gauge enter key is also handled here,
-        // so it would behave the same way as selection key.
-        if (numItemCommands == 0 && aType == EEventKey &&
-                controlItem.Type() != MMIDComponent::EChoiceGroup &&
-                controlItem.Type() != MMIDComponent::EDateField &&
-                (aKeyEvent.iScanCode == EStdKeyDevice3 ||
-                 (aKeyEvent.iScanCode == EStdKeyEnter &&
-                  controlItem.Type() == MMIDComponent::EGauge)))
-        {
-            iDisplayable.ShowScreenOrHelpOptionsMenuL();
-        }
-#endif // RD_JAVA_S60_RELEASE_9_2
 
         // arrow key events are not sent to the hidden focused item
         if ((visible || !isArrowKey) &&
@@ -639,6 +623,7 @@ void CMIDForm::HandlePointerEventL(const TPointerEvent& aPointerEvent)
         iFocusChangingWithPen = EFalse;
         iScrollOnPointerDown = EFalse;
         iIndexPointedControl = -1;
+        iLastPointedControl = KErrNotFound;
 
         break;
     }
@@ -2004,13 +1989,6 @@ void CMIDForm::SetFocusedItem(TInt aFocusIdx, TDirection aDirection /*= ENone*/,
         control.PostFocusTransferEvent(EFalse, aDirection);
         // setting highlight must be called before setting focus
         control.SetHighlight(EFalse);
-#ifdef RD_JAVA_S60_RELEASE_9_2
-        if (IsChoiceGroup(control))
-        {
-            CMIDChoiceGroupItem& cg = static_cast< CMIDChoiceGroupItem& >(control);
-            cg.SetHighlight(EFalse);
-        }
-#endif // RD_JAVA_S60_RELEASE_9_2
         control.SetFocus(EFalse);
         UpdateItemCommands(NULL, NULL);
     }
@@ -2039,16 +2017,11 @@ void CMIDForm::SetFocusedItem(TInt aFocusIdx, TDirection aDirection /*= ENone*/,
     if (iFocused != KErrNotFound)
     { // actions for the item gaining focus
         CMIDControlItem& control = ControlItem(iFocused);
+
         SetHighlightBackgroundRects();
+
         control.PostFocusTransferEvent(ETrue, aDirection);
         control.SetHighlight(ETrue);
-#ifdef RD_JAVA_S60_RELEASE_9_2
-        if (IsChoiceGroup(control))
-        {
-            CMIDChoiceGroupItem& cg = static_cast< CMIDChoiceGroupItem& >(control);
-            cg.SetHighlight(ETrue);
-        }
-#endif // RD_JAVA_S60_RELEASE_9_2
         control.SetFocus(ETrue);
         // msk: deliver also the possible MSK command to displayable
         UpdateItemCommands(control.CommandList(), control.GetMSKCommand());
@@ -2346,7 +2319,11 @@ void CMIDForm::ConstructL()
 
     // Background for highlighted item, frame rects are set later
     iHighlightedBackgroundCc = CAknsFrameBackgroundControlContext::NewL(
+#ifdef RD_JAVA_S60_RELEASE_9_2
+                                   KAknsIIDQsnFrPopupPreview,
+#else
                                    KAknsIIDQsnFrInput,
+#endif // RD_JAVA_S60_RELEASE_9_2
                                    TRect(), TRect(), ETrue);
 
     iDisplayable.SetComponentL(*this);
@@ -3184,28 +3161,9 @@ void CMIDForm::InsertContainerItemsL(CMIDStringItem& aStringItem,
 {
     TInt numLines = aTextControl.NumLines();
     for (TInt j = 0; j < numLines; j++)
-    {
-        CEikLabel* label = aTextControl.LabelAtIdx(j);
-
-        if (label)
-        {
-            CGraphicsContext::TTextAlign align = aTextControl.LabelAtIdx(j)->iAlignment.TextAlign();
-
-            // If aLabel aligment is incorrect relayout aLabel
-            if ((align != CGraphicsContext::ERight &&
-                    iInitialAlignment == MMIDItem::ERight) ||
-                    (align != CGraphicsContext::ELeft &&
-                     iInitialAlignment == MMIDItem::ELeft) ||
-                    (align != CGraphicsContext::ECenter &&
-                     iInitialAlignment == MMIDItem::ECenter))
-            {
-                aTextControl.LayoutItemLabel();
-            }
-
-            // insert every line as a CMIDLabelContainerItem
-            CreateAndAddLabelContainerItemL(
-                aStringItem, *(label), aIsStringItemContent);
-        }
+    { // insert every line as a CMIDLabelContainerItem
+        CreateAndAddLabelContainerItemL(
+            aStringItem, *(aTextControl.LabelAtIdx(j)), aIsStringItemContent);
 
         if (j != (numLines-1))
         { // insert a row break except for the last line
@@ -3396,6 +3354,7 @@ void CMIDForm::AssignItemsToRowsL()
     if (iLastPointedControl != KErrNotFound)
     {
         iPointedControl = &ControlItem(iLastPointedControl);
+        iLastPointedControl = KErrNotFound;
     }
 }
 
@@ -3582,6 +3541,19 @@ TBool CMIDForm::IsGaugeItem(CMIDControlItem& aControlItem)
     return (aControlItem.iMMidItem->Type() == MMIDComponent::EGauge);
 }
 
+TBool CMIDForm::IsInteractiveGaugeItem(CMIDControlItem& aControlItem)
+{
+    if (IsGaugeItem(aControlItem))
+    {
+        CMIDGaugeItem* gauge = static_cast<CMIDGaugeItem*>(&aControlItem);
+        if (gauge)
+        {
+            return gauge->IsInteractive();
+        }
+    }
+    return EFalse;
+}
+
 TBool CMIDForm::IsTextFieldItem(CMIDControlItem& aControlItem)
 {
     if (!aControlItem.iMMidItem)
@@ -3598,22 +3570,6 @@ TBool CMIDForm::IsChoiceGroup(CMIDControlItem& aControlItem)
         return EFalse;
     }
     return (aControlItem.iMMidItem->Type() == MMIDComponent::EChoiceGroup);
-}
-
-TBool CMIDForm::IsPopupChoiceGroup(CMIDControlItem& aControlItem)
-{
-    if (aControlItem.iMMidItem
-            && aControlItem.iMMidItem->Type() == MMIDComponent::EChoiceGroup)
-    {
-        CMIDChoiceGroupItem& cgItem = static_cast<CMIDChoiceGroupItem&>(aControlItem);
-        CMIDChoiceGroupControl* cgControl =
-            static_cast<CMIDChoiceGroupControl*>(cgItem.ComponentControl(1));
-        if (cgControl && cgControl->ChoiceType() == MMIDChoiceGroup::EPopup)
-        {
-            return ETrue;
-        }
-    }
-    return EFalse;
 }
 
 TBool CMIDForm::IsDateField(CMIDControlItem& aControlItem)
@@ -3667,20 +3623,6 @@ void CMIDForm::PostPendingUpEventL()
             cgItem->PostPendingUpEventL();
         }
     }
-}
-
-TInt CMIDForm::FormRowIndex(CMIDFormRow* aRow)
-{
-    return iRows.Find(aRow);
-}
-
-CMIDFormRow* CMIDForm::FormRow(TInt aIndex)
-{
-    if (iRows.Count() > aIndex)
-    {
-        return iRows[aIndex];
-    }
-    return NULL;
 }
 #endif // RD_JAVA_S60_RELEASE_9_2
 
@@ -3749,7 +3691,7 @@ void CMIDForm::DeleteRows()
     // CMIDForm::HandleHighlightTimer or
     // in CMIDForm::HandlePhysicsPointerEventL),
     // iPointedControl must be set to NULL.
-    if (iPointedControl)
+    if (iPointedControl && !iUpEventSent)
     {
         // Store the index to last poited control. It will
         // be restored after item are placed to new rows
@@ -4059,18 +4001,13 @@ CMIDPopupNoteController* CMIDForm::GetPopupNoteController() const
 
 TInt CMIDForm::GetMidpNaviPos()
 {
-    TAknLayoutRect mainMidpPane;
+    // get main pane size from CEikAppU
+    TRect mainPane = iAvkonAppUi->ApplicationRect();
 
-    // get main pane size from Avkon (size in pixels)
-#ifdef RD_JAVA_S60_RELEASE_9_2
-    TRect mainPane;
-    AknLayoutUtils::LayoutMetricsRect(AknLayoutUtils::EMainPane, mainPane);
-    mainMidpPane.LayoutRect(mainPane,
-                            AknLayoutScalable_Avkon::main_midp_pane().LayoutLine());
-#else
+    // get screen size in pixels
+    TAknLayoutRect mainMidpPane;
     mainMidpPane.LayoutRect(iEikonEnv->ScreenDevice()->SizeInPixels(),
                             AknLayoutScalable_Avkon::main_midp_pane().LayoutLine());
-#endif // RD_JAVA_S60_RELEASE_9_2
 
     // getting form size depends on screen orientation
     TInt variety = Layout_Meta_Data::IsLandscapeOrientation() ? 1 : 0;
@@ -4228,6 +4165,12 @@ void CMIDForm::HandlePhysicsPointerEventL(const TPointerEvent& aPointerEvent)
             iPhysics->Stop();
             CMIDControlItem* ci = ControlItemAtPoint(aPointerEvent.iPosition);
 
+            if (ci && IsInteractiveGaugeItem(*ci))
+            {
+                CMIDGaugeItem* gauge = static_cast<CMIDGaugeItem*>(ci);
+                this->iLastGaugeValue = gauge->GetValue();
+            }
+
             // Physics scrolling was not ongoing and tap hit already selected item.
             // Then forward pointer event to the item.
             if (ci && IsCurrentItem((CMIDItem*)ci) && !iFlickStoppedOnDownEvent)
@@ -4263,10 +4206,6 @@ void CMIDForm::HandlePhysicsPointerEventL(const TPointerEvent& aPointerEvent)
                 if (iPointedControl)
                 {
                     TInt highlightTimeout = iPhysics->HighlightDelay() * 1000;
-                    if (IsPopupChoiceGroup(*iPointedControl))
-                    {
-                        highlightTimeout /= 2;
-                    }
                     iHighlightTimer->Start(TTimeIntervalMicroSeconds32(highlightTimeout),
                                            TTimeIntervalMicroSeconds32(highlightTimeout),
                                            TCallBack(HighlightTimerCallback, this));
@@ -4291,7 +4230,8 @@ void CMIDForm::HandlePhysicsPointerEventL(const TPointerEvent& aPointerEvent)
             // Override triggering of physicsScrolling in case of doing text painting in TextField-item
             // or moving slider in Gauge-item.
             if (!iPreventPhysicsScrolling && iPointedControl && iPointedControl->iMMidItem &&
-                    iPointedControl->iMMidItem->Type() == MMIDComponent::ETextField)
+                    (iPointedControl->iMMidItem->Type() == MMIDComponent::ETextField ||
+                     IsInteractiveGaugeItem(*iPointedControl)))
             {
                 // If physics scrolling is not ongoing (abs(dragY) < DragTreshold)
                 // then stop flicking and forward event to the item (iPreventPhysicsScrolling = ETrue).
@@ -4315,6 +4255,28 @@ void CMIDForm::HandlePhysicsPointerEventL(const TPointerEvent& aPointerEvent)
                         && IsTextFieldItem(ControlItem(iFocused)))
                 {
                     ControlItem(iFocused).HandlePointerEventL(aPointerEvent);
+                }
+                if (iPointedControl && IsInteractiveGaugeItem(*iPointedControl))
+                {
+                    CMIDGaugeItem* gauge = static_cast<CMIDGaugeItem*>(iPointedControl);
+
+                    // If panning is started here (i.e. dragging of slider
+                    // didn't exceed the horizontal threshold), reset
+                    // gauge value to original value (from pointer down).
+                    // To ensure that slider updates its visual appearance
+                    // (i.e. thumb will be displayed as released),
+                    // lets send dummy event with original position.
+                    TPointerEvent newEvent;
+                    newEvent.iType = TPointerEvent::EButton1Up;
+                    newEvent.iPosition = iStartPosition;
+                    ForwardPointerEventToItemL(newEvent);
+
+                    // reset value
+                    gauge->SetValueL(iLastGaugeValue);
+
+                    // post event to ensure that item state listener is notified
+                    // about change
+                    iEnv->PostJavaEvent(*this, EDisplayable, Index(iPointedControl));
                 }
             }
             // If panning is already ongoing. Update panning position. Also we redraw entire Form
@@ -4374,12 +4336,46 @@ void CMIDForm::HandlePhysicsPointerEventL(const TPointerEvent& aPointerEvent)
             // forward event to the item.
             if (!iUpEventSent)
             {
-                ForwardPointerEventToItemL(aPointerEvent);
+                if (iPointedControl && IsInteractiveGaugeItem(*iPointedControl))
+                {
+                    // In case that pointed control is GaugeItem and
+                    // pointer up happened outside of its bound,
+                    // reset gauge value to original value (from pointer down).
+                    CMIDGaugeItem* gauge = static_cast<CMIDGaugeItem*>(iPointedControl);
+                    if (!gauge->Rect().Contains(aPointerEvent.iPosition))
+                    {
+                        // To ensure that slider updates its visual appearance
+                        // (i.e. thumb will be displayed as released),
+                        // lets send dummy event with original position.
+                        TPointerEvent newEvent;
+                        newEvent.iType = TPointerEvent::EButton1Up;
+                        newEvent.iPosition = iStartPosition;
+                        ForwardPointerEventToItemL(newEvent);
+
+                        // reset value
+                        gauge->SetValueL(iLastGaugeValue);
+                        
+                        // post event to ensure that item state listener is notified
+                        // about change
+                        iEnv->PostJavaEvent(*this, EDisplayable, Index(iPointedControl));
+                    }
+                    else
+                    {
+                        // Pointer up happened inside of GaugeItem,
+                        // forward pointer event to item.
+                        ForwardPointerEventToItemL(aPointerEvent);
+                    }
+                }
+                else
+                {
+                    ForwardPointerEventToItemL(aPointerEvent);
+                }
                 iUpEventSent = ETrue;
             }
 
             iPanningOngoing = EFalse;
             iCanDragFocus = EFalse;
+            iLastPointedControl = KErrNotFound;
             break;
         }
         default:
@@ -4406,14 +4402,7 @@ void CMIDForm::ForwardPointerEventToItemL(const TPointerEvent& aPointerEvent)
         {
             if (iFocused != KErrNotFound)
             {
-                if (IsPopupChoiceGroup(*iPointedControl))
-                {
-                    iPointedControl->HandlePointerEventL(aPointerEvent);
-                }
-                else
-                {
-                    ControlItem(iFocused).HandlePointerEventL(aPointerEvent);
-                }
+                ControlItem(iFocused).HandlePointerEventL(aPointerEvent);
             }
 
             if (LayoutPending())

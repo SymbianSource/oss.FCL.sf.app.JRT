@@ -16,11 +16,7 @@
 */
 
 
-#include <../../../../inc/project_defines.hrh>
-#include <data_caging_paths.hrh>
 #include <platform_paths.hrh>
-
-#include <../../../../inc/java_stdcpp_support_for_dll.hrh>
 
 
 TARGET          javaiconsizenotifplugin.dll
@@ -37,10 +33,6 @@ APP_LAYER_SYSTEMINCLUDE
 START RESOURCE  ../data/javaiconsizenotifplugin.rss
 TARGET          javaiconsizenotifplugin.rsc
 END
-START RESOURCE  ../data/javaiconsizenotifplugin_iad.rss
-TARGET          javaiconsizenotifplugin.rsc
-TARGETPATH      resource/java/iad
-END
 
 SOURCEPATH      ../src
 SOURCE          iconsizenotifier.cpp
@@ -51,8 +43,8 @@ USERINCLUDE     ../../../../inc
 
 LIBRARY         euser.lib
 LIBRARY         eiksrv.lib              // MEikSrvNotifierBase2
-LIBRARY         CdlEngine.lib           // AknLayoutScalable_Avkon
-LIBRARY         AknLayout2Scalable.lib  // TAknWindowComponentLayout
+LIBRARY         cdlengine.lib           // AknLayoutScalable_Avkon
+LIBRARY         aknlayout2scalable.lib  // TAknWindowComponentLayout
 LIBRARY         avkon.lib               // TAknLayoutRect
 LIBRARY         eikcore.lib             // TAknLayoutRect
 

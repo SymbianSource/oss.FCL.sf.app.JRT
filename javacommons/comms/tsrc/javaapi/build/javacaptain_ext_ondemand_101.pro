@@ -25,6 +25,5 @@ SOURCES += ../src/*.cpp
 
 symbian {
     SOURCES += ../src.s60/lookup.cpp
-    TARGET.UID3 = 0xE0000055
 }
 include(../../../../../build/omj.pri)

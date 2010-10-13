@@ -12,7 +12,7 @@
 #
 # Contributors:
 #
-# Description:
+# Description: 
 #
 -->
 
@@ -41,24 +41,13 @@
       for reason why this property is defined"/> -->
   <property name="platform.utilities.xml.file" value="utilities.fake.xml"/>
 
-  <!-- Set internal epoc root -->
-  <condition property="epocroot" value="${env.EPOCROOT}" else="">
-    <isset property="env.EPOCROOT"/>
-  </condition>
-
-  <!--The cldc/cdc class file locations, within the sources -->
-  <available file="${java.src.root}/inc/classes.cldc.zip" property="bootclasspath.cldc"
-             value="${java.src.root}/inc/classes.cldc.zip" />
-  <available file="${java.src.root}/inc/classes.cdc.zip" property="bootclasspath.cdc"
-             value="${java.src.root}/inc/classes.cdc.zip" />
-  <available file="${java.src.root}/inc/classes.fp.zip" property="bootclasspath.fp"
-             value="${java.src.root}/inc/classes.fp.zip" />
-
-  <!--The cldc/cdc class file locations, external if not found in default places -->
-  <property name="bootclasspath.cldc" location="${epocroot}epoc32/jrt/classes.cldc.zip"/>
-  <property name="bootclasspath.cdc"  location="${epocroot}epoc32/jrt/classes.cdc.zip"/>
-  <property name="bootclasspath.fp"   location="${epocroot}epoc32/jrt/classes.fp.zip"/>
-
+  <!--The cldc/cdc class file locations -->
+  <property name="bootclasspath.cldc" location="${java.src.root}/inc/classes.cldc.zip"/>
+  <property name="bootclasspath.cdc"  location="${java.src.root}/inc/classes.cdc.zip"/>
+  <property name="bootclasspath.fp"   location="${java.src.root}/inc/classes.fp.zip"/>
+  
+  
+  
   <!--NOTE!!! Properties defined below can be used only inside a target-->
 
 
@@ -71,33 +60,36 @@
       <equals arg1="${target.cfg}" arg2="debug"/>
 	</condition>
 
-    <!--Location of eswt.jar. This is not needed in S60 Avkon,
+    <!-- Set internal epoc root -->
+	<condition property="epocroot"
+               value="${env.EPOCROOT}"
+               else="">
+      <isset property="env.EPOCROOT"/>
+	</condition>
+
+    <!--Location of eswt.jar. This is not needed in S60 Avkon, 
         but needed in S60 Qt. -->
     <property name="eswt.jar" value=":${java.src.root}/javauis/bin/eswt.jar"/>
 
     <!--The root for the java compile time outputs-->
-    <property name="compile.result.root"
+    <property name="compile.result.root" 
               location="${epocroot}epoc32/build/jrt/javabuild"/>
-
+    
     <!--The root file where the jarfiles are put that are used to build against-->
-    <property name="jar.destination.root"
+    <property name="jar.destination.root" 
               location="${epocroot}epoc32/release/${target.platform}/${real.cfg.name}"/>
-
+    
     <!--JAVA_HOME for JAPT & JAR2JXE -->
 
     <!-- Set executable ending for Java platform tools -->
-	<condition property="j9.java.home"
+	<condition property="j9.java.home" 
                value="${epocroot}epoc32/tools/java/japtjxe.windows"
                else="${epocroot}epoc32/tools/java/japtjxe.linux">
       <os family="windows"/>
     </condition>
-
+    
     <!--The utility file containing platform specific fetures-->
-    <condition property="dyn.platform.utilities.xml.file"
-               value="utilities.linux.xml"
-               else="utilities.s60.xml">
-      <isset property="no.rommizing" />
-    </condition>
+    <property name="dyn.platform.utilities.xml.file" value="utilities.s60.xml"/>
 
     <!--The default directory for cldc based s60 java code-->
     <property name="javasrc.platform.specific" value="../javasrc.s60"/>
@@ -106,20 +98,20 @@
     <property name="javasrc.platform.specific.cdc" value="../javasrc.s60.cdc"/>
 
     <!--The java resource root -->
-    <property name="java.res.root"
+    <property name="java.res.root" 
       location="${epocroot}epoc32/release/${target.platform}/${real.cfg.name}/z/resource/java"/>
 
     <!--The java captain datacage -->
-    <property name="java.captain.datacage"
+    <property name="java.captain.datacage" 
       location="${epocroot}epoc32/release/${target.platform}/${real.cfg.name}/z/private/200211dc"/>
 
     <!--The extension directory of the VM. -->
-    <property name="vm.extension.directory"
+    <property name="vm.extension.directory" 
       location="${java.res.root}/jvm/lib/common"/>
 
-    <!--The directory for entitys to be set to bootclass path. This is the location
+    <!--The directory for entitys to be set to bootclass path. This is the location 
         where the jar and/or odc files goes to -->
-    <property name="bcp.dest.directory"
+    <property name="bcp.dest.directory" 
       location="${java.res.root}/jvm/lib/jrt"/>
 
   </target>
@@ -128,14 +120,14 @@
   <!--Set the properties with linux specific values-->
   <target name="set.linux.properties" if="target.linux">
     <!--The root for the java compile time outputs-->
-    <property name="compile.result.root"
+    <property name="compile.result.root" 
               location="${env.JAVA_BIN_ROOT}/javabuild"/>
-
+    
     <!--Location of eswt.jar. This is needed in compile time in Linux-->
     <property name="eswt.jar" value=":${java.src.root}/javauis/bin/eswt.jar"/>
 
     <!--The root file where the interface jarfiles are put -->
-    <property name="jar.destination.root"
+    <property name="jar.destination.root" 
               location="${compile.result.root}/jars/${target.platform}/${target.cfg}"/>
 
     <!--The utility file containing platform specific fetures-->
@@ -148,19 +140,19 @@
     <property name="javasrc.platform.specific.cdc" value="../javasrc.linux.cdc"/>
 
     <!--The java resource root -->
-    <property name="java.res.root"
+    <property name="java.res.root" 
       location="${env.JAVA_BIN_ROOT}"/>
 
     <!--The java captain datacage -->
-    <property name="java.captain.datacage"
+    <property name="java.captain.datacage" 
       location="${env.JAVA_BIN_ROOT}"/>
 
     <!--The extension directory of the VM. -->
     <property name="vm.extension.directory" location="${env.JAVA_BIN_ROOT}/jsr/classes/common"/>
 
-    <!--The directory for entitys to be set to bootclass path. This is the location
+    <!--The directory for entitys to be set to bootclass path. This is the location 
         where the jar and/or odc files goes to -->
-    <property name="bcp.dest.directory"
+    <property name="bcp.dest.directory" 
       location="${vm.extension.directory}"/>
 
   </target>
@@ -170,7 +162,7 @@
 	<condition property="target.s60">
       <equals arg1="${target.type}" arg2="s60"/>
 	</condition>
-	<condition property="target.linux">
+	<condition property="target.linux">	
       <equals arg1="${target.type}" arg2="linux"/>
     </condition>
   </target>
@@ -187,10 +179,10 @@
 
   <!-- Get explicit target type from variable "target.buildenv" -->
   <target name="explicit.target.type" if="env.BUILDENV">
-	<condition property="target.type" value="s60">
+	<condition property="target.type" value="s60">  
 	  <equals arg1="${env.BUILDENV}" arg2="symbian"/>
 	</condition>
-	<condition property="target.type" value="linux">
+	<condition property="target.type" value="linux">  
 	  <equals arg1="${env.BUILDENV}" arg2="linux"/>
 	</condition>
 
@@ -247,7 +239,7 @@
 
   <!--Target for making component specific initalizations depending on
       the values of dynamic properties (e.g. Target platform).
-      The default implementation of this target is empty and the component
+      The default implementation of this target is empty and the component 
       should override this if it provides public APIs -->
   <target name="init.component.properties">
   </target>
@@ -259,7 +251,7 @@
                                           define.target.cfg,
                                           set.s60.properties,
                                           set.linux.properties,
-                                          define.bootclasspath,
+                                          define.bootclasspath, 
                                           init.component.properties,
                                           define.javasrc.path,
                                           define.jar.filename,
@@ -279,7 +271,7 @@
 
     <!--The directory where the component specific classes (2) are put to -->
     <property name="classes.second.dir" location="${classes.dir}/second"/>
-
+    
     <!--The directory where the component specific classes are collected to -->
     <property name="classes.collection.dir" location="${classes.dir}/collection"/>
 
@@ -308,14 +300,14 @@
     <!--The jar file containing all the cldc based class files and cldc classes itself
         This is for signature testing -->
     <property name="signature.jar" location="${jar.destination.root}/java_signature_test.jar"/>
-
+    
     <!--Property for setting the javadebug for java compilation-->
 	<condition property="javac.debug.on"
                value="true"
                else="false">
       <equals arg1="${target.cfg}" arg2="debug"/>
 	</condition>
-
+    
     <!--Does the directory containing platform specific cldc based code exist -->
     <available file="${javasrc.platform.specific}" property="javasrc.platform.specific.present"/>
 

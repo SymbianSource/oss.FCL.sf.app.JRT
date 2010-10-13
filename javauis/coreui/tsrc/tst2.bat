@@ -1,1 +1,0 @@
-testcoreui -nomemleaks -g NoDllCoreUiTest

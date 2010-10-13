@@ -203,7 +203,7 @@ public final class PermissionResolver
                     // add new settings
                     newPermissionInstancesAndSettings.addElement(
                         new PermisionInstanceAndSettings(
-                            p.getPermissionInstance(),
+                            p.getPermissionInstance(), 
                             p.getType(),
                             newSettings));
                 }
@@ -678,14 +678,10 @@ public final class PermissionResolver
                     // permission and the policy permission
                     String target = legacyPermission.getTarget();
                     if (target != null
-                        && !("*".equals(policyPermissions[i].getTarget()))
-                        && !target.equals(policyPermissions[i].getTarget()))
+                            && target.indexOf("*") == -1
+                            && !target.equals(policyPermissions[i].getTarget()))
                     {
                         continue;
-                    }
-                    if (target == null)
-                    {
-                        target = policyPermissions[i].getTarget();
                     }
                     // choose the action
                     String actionList = legacyPermission.getActionList();
@@ -694,7 +690,7 @@ public final class PermissionResolver
                         resolvedPermissions.addElement(
                             new PolicyBasedPermissionImpl(
                                 policyPermissions[i].getName(),
-                                target,
+                                policyPermissions[i].getTarget(),
                                 policyPermissions[i].getActionList(),
                                 policyPermissions[i].getUserSecuritySettings()));
                     }
@@ -706,7 +702,7 @@ public final class PermissionResolver
                             resolvedPermissions.addElement(
                                 new PolicyBasedPermissionImpl(
                                     policyPermissions[i].getName(),
-                                    target,
+                                    policyPermissions[i].getTarget(),
                                     actionList,
                                     policyPermissions[i].getUserSecuritySettings()));
                         }
@@ -739,7 +735,7 @@ public final class PermissionResolver
         {
             return settings;
         }
-
+        
         public int getType()
         {
             return type;

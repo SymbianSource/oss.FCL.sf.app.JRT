@@ -55,7 +55,6 @@ void CMMACanvasDisplay::SourceSizeChanged(const TSize& aSourceSize)
               aSourceSize.iWidth);
     DEBUG_INT("MMA::CMMACanvasDisplay::SourceSizeChanged %d",
               aSourceSize.iHeight);
-
     iSourceSize = aSourceSize;
     // If user rect size was set or full screen was set then we need to take
     // that into account then the actual source size
@@ -64,6 +63,7 @@ void CMMACanvasDisplay::SourceSizeChanged(const TSize& aSourceSize)
         return;
     }
     TSize fullScreenSize(iCanvas->ContentSize());
+
 
     TBool sourceIsBigger = (aSourceSize.iWidth > fullScreenSize.iWidth ||
                             aSourceSize.iHeight > fullScreenSize.iHeight);

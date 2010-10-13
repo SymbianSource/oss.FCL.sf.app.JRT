@@ -129,6 +129,7 @@ public class InstallerUiEswt extends InstallerUi
         // Create a hashtable for icons.
         iImageTable = new Hashtable();
         // Create a new thread to be the UI main thread.
+        iUiThreadExists = true;
         UIThreadSupport.startInUIThread(new Runnable()
         {
             public void run()
@@ -147,7 +148,6 @@ public class InstallerUiEswt extends InstallerUi
     private void uiMain()
     {
         log("uiMain: thread started");
-        iUiThreadExists = true;
         try
         {
             // Create the necessary views.
@@ -1000,14 +1000,6 @@ public class InstallerUiEswt extends InstallerUi
     }
 
     /**
-     * Executes given Runnable synchronously in the UI thread.
-     */
-    public void syncExec(Runnable aRunnable)
-    {
-        iParent.getDisplay().syncExec(aRunnable);
-    }
-
-    /**
      * Returns string title basing on mode of this InstallerUi.
      */
     protected String getTitle()
@@ -1152,11 +1144,14 @@ public class InstallerUiEswt extends InstallerUi
         {
             long startTime = System.currentTimeMillis();
             
+            int maxWidth = DisplayExtension.getBestImageWidth(DisplayExtension.LIST_ELEMENT);
+            int maxHeight = DisplayExtension.getBestImageHeight(DisplayExtension.LIST_ELEMENT);
+            
+            aDisplay.setData("org.eclipse.swt.internal.image.loadSize", new Point(maxWidth, maxHeight));
             Image image = new Image(aDisplay, aInputStream);
+            
             if (aScaleImage)
             {
-                int maxWidth = DisplayExtension.getBestImageWidth(DisplayExtension.LIST_ELEMENT);
-                int maxHeight = DisplayExtension.getBestImageHeight(DisplayExtension.LIST_ELEMENT);
                 Rectangle rect = image.getBounds();
                 if (maxWidth != rect.width || maxHeight != rect.height)
                 {

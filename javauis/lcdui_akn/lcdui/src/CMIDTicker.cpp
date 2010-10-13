@@ -795,7 +795,7 @@ void CMIDTicker::SetDisplayableL(CMIDDisplayable* aDisplayable, TInt aAdd)
 
     if (aAdd)
     { //KAddDisplayable:
-        iDisplayableRArray.AppendL(aDisplayable);
+        iDisplayableRArray.Append(aDisplayable);
     }
     else
     {

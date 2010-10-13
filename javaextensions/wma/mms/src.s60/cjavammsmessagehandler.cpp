@@ -790,6 +790,8 @@ void CJavaMMSMessageHandler::ResolveMapL(RBufReadStream& aReadStream,
         {
             // get cc length
             aHeaderLengths[KCcFieldIndex] = ReadIntL(aReadStream);
+            if (div == 0)
+                break;
             mmsMap = div;
         }
         break;

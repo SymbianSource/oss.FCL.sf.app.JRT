@@ -450,18 +450,6 @@
 #define qtn_java_secur_error_drm_rights_not_valid "No digital rights to launch application."
 
 // d:Security error message:
-// d:short error message
-// l:popup_info_list_pane_t1
-//
-#define qtn_java_secur_error_jar_not_found "Application's deployment package not found."
-
-// d:Security error message:
-// d:short error message
-// l:popup_info_list_pane_t1
-//
-#define qtn_java_secur_error_jar_not_found_details "Possible reasons for the missing files: the files might reside on a memory card which is not currently present or has been formatted."
-
-// d:Security error message:
 // d:detailed error message
 // l:popup_info_list_pane_t1
 //

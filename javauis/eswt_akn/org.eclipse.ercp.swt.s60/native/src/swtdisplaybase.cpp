@@ -21,6 +21,7 @@
 #include <AknsConstants.h>
 #include <aknconsts.h>
 #include <AknIconUtils.h>
+#include <e32math.h>
 #include <swtlaffacade.h>
 #include "s60commonutils.h"
 #include "swtfactory.h"
@@ -36,6 +37,7 @@
 #include "swtfont.h"
 #include "swtuiutils.h"
 #include "imagescaler.h"
+#include "mifconverter.h"
 
 #define ASSERT_JAVAUITHREAD() ASSERT(IsCurrentThreadJavaUi())
 #define ASSERT_NATIVEUITHREAD() ASSERT(IsCurrentThreadNativeUi())
@@ -44,6 +46,17 @@
 // Assuming ResourceLanguageFileNameL inserts DRIVE:/KDC_RESOURCE_FILES_DIR/java/
 // Assuming KDC_RESOURCE_FILES_DIR = /resource/java/
 _LIT(KSwtResFile, "eswtcore.rsc");
+
+const TInt KMifFileHeaderUid = 0x34232342;
+const TInt KMifFileHeaderVersion = 2;
+const TInt KMifFileHeaderLength = 2;
+const TInt KMifIconHeaderUid = 0x34232343;
+const TInt KMifIconHeaderVersion = 1;
+const TInt KMifIconHeaderType = 1;
+const TInt KMifIconHeaderAnimated = 0;
+
+_LIT(KTempMifFileDrive, "D:\\");
+_LIT(KTempMifFileExt, ".mif");
 
 
 // ======== MEMBER FUNCTIONS ========
@@ -425,11 +438,81 @@ MSwtImage* ASwtDisplayBase::NewImageFromThemeL(const TInt aId)
     {
         if (size.iWidth > 0)
         {
-            AknIconUtils::SetSize(bmp, size);
+            AknIconUtils::SetSize(bmp, size); // will resize the mask as well
         }
         // bmp & mask ownership transferred to returned object
         return CSwtImage::NewL(*bmp, mask);
     }
+}
+
+MSwtImage* ASwtDisplayBase::NewImageFromSvgBufL(const TDesC8& aBuf, const TSize& aSize)
+{
+    CFbsBitmap* mifBmp = NULL;
+    CFbsBitmap* mifMask = NULL;
+    CFbsBitmap* bmp = NULL;
+    CFbsBitmap* mask = NULL;
+    TInt bmpId(0);
+    TInt maskId(1);
+    
+    TFileName tmpFile;
+    StoreSvgAsMifL(aBuf, tmpFile);
+    AknIconUtils::ValidateLogicalAppIconId(tmpFile, bmpId, maskId);
+    AknIconUtils::CreateIconL(mifBmp, mifMask, tmpFile, bmpId, maskId);
+    
+    if (!mifBmp)
+    {
+        return NULL;
+    }
+    else
+    {
+        AknIconUtils::ExcludeFromCache(mifBmp);
+        if (mifMask)
+        {
+            AknIconUtils::ExcludeFromCache(mifMask);
+        }
+        
+        // Will resize the mask as well
+        AknIconUtils::SetSize(mifBmp, aSize, EAspectRatioPreservedAndUnusedSpaceRemoved);
+
+        // Rasterize
+        CleanupStack::PushL(mifBmp);
+        if (mifMask)
+        {
+            CleanupStack::PushL(mifMask);
+        }
+        bmp = RasterizeL(*mifBmp);
+        CleanupStack::PushL(bmp);
+        if (mifMask)
+        {
+            mask = RasterizeL(*mifMask);
+        }
+        CleanupStack::Pop(bmp);
+        
+        // Delete the mif bitmaps
+        if (mifMask)
+        {
+            AknIconUtils::DestroyIconData(mifMask);
+            CleanupStack::PopAndDestroy(mifMask);
+        }
+        
+        AknIconUtils::DestroyIconData(mifBmp);
+        CleanupStack::PopAndDestroy(mifBmp);
+        
+        // Delete the temp file
+        iCoeEnv->FsSession().Delete(tmpFile);
+        
+        // bmp & mask ownership transferred to returned object
+        return CSwtImage::NewL(*bmp, mask);
+    }
+}
+
+MSwtImage* ASwtDisplayBase::NewImageFromSvgFileL(const TDesC& aFile, const TSize& aSize)
+{
+    HBufC8* buf = LoadFileL(aFile);
+    CleanupStack::PushL(buf);
+    MSwtImage* res = NewImageFromSvgBufL(*buf, aSize);
+    CleanupStack::PopAndDestroy(buf);
+    return res;
 }
 
 /**
@@ -1300,12 +1383,100 @@ void ASwtDisplayBase::HandleMediaKeyEvent(TKeyEvent& aKeyEvent, TInt aEventType)
     }
 }
 
-// ---------------------------------------------------------------------------
-// CSwtUiUtils::LoadResourceFileL
-// ---------------------------------------------------------------------------
-//
 TInt ASwtDisplayBase::LoadResourceFileL()
 {
     TFileName langFile = java::util::S60CommonUtils::ResourceLanguageFileNameL(KSwtResFile);
     return iCoeEnv->AddResourceFileL(langFile);
 }
+
+void ASwtDisplayBase::StoreSvgAsMifL(const TDesC8& aSvgBuf, TFileName& aGeneratedFile)
+{
+    TInt iconDataSize = aSvgBuf.Length();
+
+    // File header
+    TMifFileHeader fileHeader;
+    fileHeader.iUid = KMifFileHeaderUid;
+    fileHeader.iVersion = KMifFileHeaderVersion;
+    fileHeader.iOffset = sizeof(fileHeader);
+    fileHeader.iLength = KMifFileHeaderLength;  // number of indexes
+
+    // Icon offset element
+    TMifIconOffset iconOffset;
+    iconOffset.iIconOffset = sizeof(fileHeader) + sizeof(iconOffset) * KMifFileHeaderLength; // mif header + icon offset
+    iconOffset.iIconLength = sizeof(TMifIconHeader) + iconDataSize; // icon header + icon data
+
+    // Icon header
+    TMifIconHeader iconHeader;
+    iconHeader.iUid = KMifIconHeaderUid;
+    iconHeader.iVersion = KMifIconHeaderVersion;
+    iconHeader.iOffset = sizeof(iconHeader);  // dataOffset
+    iconHeader.iLength = iconDataSize;  // dataLength
+    iconHeader.iType = KMifIconHeaderType;  // svg
+    iconHeader.iDepth = EColor16M;
+    iconHeader.iAnimated = KMifIconHeaderAnimated;
+    iconHeader.iMaskDepth = EColor16M;
+
+    // Generate a unique filename for the temporary mif file.
+    // During the execution of the app, there cannot be 2 svg 
+    // images loaded from the same mif file due to caching.
+    aGeneratedFile.Append(KTempMifFileDrive);
+    TTime now;
+    if (now.UniversalTimeSecure() != KErrNone)
+    {
+        now.UniversalTime();
+    }
+    TInt64 seed = now.Int64();
+    aGeneratedFile.AppendNum(iApplicationUid, EHex); // the app uid
+    aGeneratedFile.AppendNum(seed, EHex);            // universal time
+    aGeneratedFile.AppendNum(Math::Rand(seed), EHex);// random number
+    aGeneratedFile.Append(KTempMifFileExt);
+
+    // Create MIFConverter class
+    CMifConverter* mifConverter = CMifConverter::NewL(iCoeEnv->FsSession(), aGeneratedFile);
+    CleanupStack::PushL(mifConverter);
+
+    // Write mif file header
+    mifConverter->WriteMifFileHeaderL(fileHeader);
+    
+    // Insert 2 iconOffset elements: first for the image, the other for the mask
+    mifConverter->WriteMifIconOffsetL(iconOffset);
+    mifConverter->WriteMifIconOffsetL(iconOffset);
+    mifConverter->WriteMifIconHeaderL(iconHeader);
+
+    // Write mif file body
+    mifConverter->WriteMifBodyL(aSvgBuf);
+
+    // Cleanup
+    CleanupStack::PopAndDestroy(mifConverter);
+}
+
+HBufC8* ASwtDisplayBase::LoadFileL(const TDesC& aFileName)
+{
+    RFile file;
+    User::LeaveIfError(file.Open(iCoeEnv->FsSession(), aFileName, EFileRead));
+    TInt size;
+    User::LeaveIfError(file.Size(size));
+    HBufC8* buf = HBufC8::NewLC(size);
+    TPtr8 ptr(buf->Des());
+    User::LeaveIfError(file.Read(ptr, size));
+    CleanupStack::Pop(buf);
+    file.Close();
+    return buf;
+}
+
+CFbsBitmap* ASwtDisplayBase::RasterizeL(const CFbsBitmap& aMifBmp)
+{
+    CFbsBitmap* bmp = new(ELeave) CFbsBitmap;
+    CleanupStack::PushL(bmp);
+    User::LeaveIfError(bmp->Create(aMifBmp.SizeInPixels(), aMifBmp.DisplayMode()));
+    CFbsBitmapDevice* dev = CFbsBitmapDevice::NewL(bmp);
+    CleanupStack::PushL(dev);
+    CFbsBitGc* gc = NULL;
+    User::LeaveIfError(dev->CreateContext(gc));
+    gc->BitBlt(TPoint(), &aMifBmp);
+    delete gc;
+    CleanupStack::PopAndDestroy(dev);
+    CleanupStack::Pop(bmp);
+    return bmp;
+}
+

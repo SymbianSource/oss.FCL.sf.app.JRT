@@ -187,6 +187,35 @@ JNIEXPORT void JNICALL Java_com_nokia_mj_impl_fileutils_FileStreamHandler__1writ
 
 /*
  * Class:     com_nokia_mj_impl_fileutils_FileStreamHandler
+* Method:    _flush
+* Signature: (I)V
+*/
+JNIEXPORT void JNICALL Java_com_nokia_mj_impl_fileutils_FileStreamHandler__1flush
+(JNIEnv *aJni, jobject, jint aHandle)
+{
+    try
+    {
+        NativeFileIOHandler* handler =
+            reinterpret_cast<NativeFileIOHandler*>(aHandle);
+        handler->flush();
+    }
+    catch (int error)
+    {
+        WLOG1(EJavaFile, "FileStreamHandler: JNI: flush error : Error: %d",
+              error);
+        JniUtils::throwNewException(aJni, "java/io/IOException",
+                                    "Flush failed.");
+    }
+    catch (...)
+    {
+        ELOG(EJavaFile, "FileStreamHandler: JNI: flush: Unknown error.");
+        JniUtils::throwNewException(aJni, "java/io/IOException",
+                                    "Flush failed.");
+    }
+}
+
+/*
+ * Class:     com_nokia_mj_impl_fileutils_FileStreamHandler
  * Method:    _closeFileStream
  * Signature: (I)V
  */

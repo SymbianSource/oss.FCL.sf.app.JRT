@@ -88,6 +88,8 @@ void CSwtImageDataLoader::ConstructL()
 {
     iImageDataArray = new(ELeave) CSwtImageDataArray(10);
     User::LeaveIfError(iFs.Connect());
+    
+    // In case there is no UI make sure there is an instance of FBS running
     User::LeaveIfError(RFbsSession::Connect(iFs));
 }
 
@@ -166,7 +168,7 @@ void CSwtImageDataLoader::DecodeImageL(const TDesC& aFileName)
         else
         {
 
-            iDecoder->Convert(&localStatus,*iBitmap, *iMask, index);
+            iDecoder->Convert(&localStatus, *iBitmap, *iMask, index);
         }
 
         // We are waiting on the TRequestStatus we passed to the asynchronous
@@ -181,7 +183,7 @@ void CSwtImageDataLoader::DecodeImageL(const TDesC& aFileName)
     FreeBitmaps();
 }
 
-void CSwtImageDataLoader::DecodeWholeImageFromBufferL(const TDesC8& aBuffer)
+void CSwtImageDataLoader::DecodeWholeImageFromBufferL(const TDesC8& aBuf)
 {
     iWholeImageAtOnce = ETrue;
 
@@ -192,7 +194,8 @@ void CSwtImageDataLoader::DecodeWholeImageFromBufferL(const TDesC8& aBuffer)
     iDecoder = NULL;
     // Same applies to other data members of CSwtImageDataLoader
 
-    TRAPD(error,(iDecoder = CImageDecoder::DataNewL(iFs, aBuffer,CImageDecoder::EOptionAlwaysThread)));
+    TRAPD(error,(iDecoder = CImageDecoder::DataNewL(iFs, aBuf, CImageDecoder::EOptionAlwaysThread)));
+    
     LeaveIfErrorFromICLDecoderL(error);
 
     TInt nbFrame = iDecoder->FrameCount();
@@ -204,50 +207,6 @@ void CSwtImageDataLoader::DecodeWholeImageFromBufferL(const TDesC8& aBuffer)
     FreeBitmaps();
 
     LeaveIfErrorFromICLDecoderL(iResult);
-}
-
-void CSwtImageDataLoader::DecodeImageFromBufferL(const TDesC8& aBuffer)
-{
-    iNextFrameToDecode = 0;
-
-    iBuffer = aBuffer.AllocL();
-    iDesc.Set(iBuffer->Des());
-
-    // In normal use of ImageDataLoader, it must be disposed by its creator after decoding an image ( so iDecoder should not be not NULL because of a previous call to this method )
-    ASSERT(iDecoder == NULL);
-    // In case ImageDataLoader is not used normally and we are not in debug, ASSERT is ignored, so deleting iDecoder is safer
-    delete iDecoder;
-    iDecoder = NULL;
-    // Same applies to other data members of CSwtImageDataLoader
-
-    TRAPD(error, (iDecoder = CImageDecoder::DataNewL(iFs, iDesc, CImageDecoder::EOptionAlwaysThread)));
-    LeaveIfErrorFromICLDecoderL(error);
-
-    // We are starting with a new frame ( the first one )
-    iStartDecodingAnother = ETrue;
-
-    // If frame to decode has not been detected by decoder and header is not complete, then more data is needed
-    if ((iDecoder->FrameCount() <= iNextFrameToDecode) && (!iDecoder->IsImageHeaderProcessingComplete()))
-        return; // need data
-
-    // Start decoding frames from the buffer
-    while (iStartDecodingAnother)
-    {
-        DecodeNextFrameL();
-    };
-}
-
-TBool CSwtImageDataLoader::DecodeNextFrameL()
-{
-    if (iNextFrameToDecode < iDecoder->FrameCount() && iStartDecodingAnother)
-    {
-        DecodeFrameL(iNextFrameToDecode);
-        LeaveIfErrorFromICLDecoderL(iResult);
-
-        return ETrue;
-    }
-
-    return EFalse;
 }
 
 void CSwtImageDataLoader::DecodeFrameL(TInt aIndexOfFrame)
@@ -303,58 +262,6 @@ void CSwtImageDataLoader::DecodeFrameL(TInt aIndexOfFrame)
     CActiveScheduler::Start();
 
     // Extracting Imagedata is performed in Runl;
-}
-
-void CSwtImageDataLoader::AppendDataL(const TDesC8& aBuffer)
-{
-    // newBuffer is created and initialized with iBuffer content ( and iBuffer is deleted )
-    HBufC8* newBuffer = iBuffer->ReAllocL(iBuffer->Length()+aBuffer.Length());
-    // Set iBuffer to the new larger buffer ( for next time )
-    iBuffer = newBuffer;
-    // Refresh iDesc and append new data
-    iDesc.Set(iBuffer->Des());
-    iDesc.Append(aBuffer);
-
-    // In normal use of ImageDataLoader, it must be disposed by its creator after decoding an image ( so iDecoder should not be not NULL because of a previous call to DecodeImageFromBufferL method )
-    ASSERT(iDecoder);
-    // In case ImageDataLoader is not used normally and we are not in debug, ASSERT is ignored, so deleting iDecoder is safer
-    delete iDecoder;
-    iDecoder = NULL;
-    // Same applies to other data members of CSwtImageDataLoader
-
-    TRAPD(error, (iDecoder = CImageDecoder::DataNewL(iFs, iDesc, CImageDecoder::EOptionAlwaysThread)));
-    LeaveIfErrorFromICLDecoderL(error);
-
-    // data have been appended. Now launching the correct action
-    iStartDecodingAnother = ETrue;
-
-    // If frame to decode has not been detected by decoder and header is not complete, then process newly read data
-    if ((iDecoder->FrameCount() <= iNextFrameToDecode) && (!iDecoder->IsImageHeaderProcessingComplete()))
-    {
-        iDecoder->ContinueProcessingHeaderL();
-        // If now processed data is enough to decode then do it
-        if (!((iDecoder->FrameCount() <= iNextFrameToDecode) && (!iDecoder->IsImageHeaderProcessingComplete())))
-        {
-            while (DecodeNextFrameL()) {};
-            return;
-        }
-        // If processed data is still not enough to decode then wait for next data
-        else
-        {
-            return;
-        }
-    }
-    // If frame to decode has been detected by decoder then decode frame
-    else if (iDecoder->FrameCount() > iNextFrameToDecode)
-    {
-        while (DecodeNextFrameL()) {};
-        return;
-    }
-    // If frame to decode has not been detected by decoder while header is complete, then don't process this unknown newly read data
-    else
-    {
-        return;
-    }
 }
 
 void CSwtImageDataLoader::EncodeImageToFileL(MSwtImageData& aImageData, TInt aFormat, const TDesC& aDestination)
@@ -711,6 +618,7 @@ const TDesC8& CSwtImageDataLoader::GetMimeType(TSwtImageType aFormat) const
         return KNullDesC8;
     }
 }
+
 
 //lint +esym( 613, CSwtImageDataLoader::iDecoder )
 //lint +esym( 613, CSwtImageDataLoader::iEncoder )

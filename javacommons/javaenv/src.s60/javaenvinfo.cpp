@@ -113,7 +113,7 @@ TVersion JavaEnvInfo::GetJavaVersionL()
 {
     JELOG2(EUtils);
 
-    TInt size = 0;
+    TInt size;
 
     RFs rfs;
     User::LeaveIfError(rfs.Connect());

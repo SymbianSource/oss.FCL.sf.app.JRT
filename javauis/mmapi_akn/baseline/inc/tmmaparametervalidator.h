@@ -21,7 +21,7 @@
 
 //  INCLUDES
 #include <e32base.h>
-#include <mmf/common/mmfutilities.h>
+#include <mmfutilities.h>
 #include <imageconversion.h>
 // STRUCTS
 

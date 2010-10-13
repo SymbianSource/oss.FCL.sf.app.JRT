@@ -18,24 +18,11 @@
 
 
 // INCLUDE FILES
-
-
-
 #include "cstsseprompt.h"
-
-#ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS
-
-#include <hbdevicedialog.h>
-#include <QtCore\qvariant.h>
-const QString KMessageTextKey = "text";
-
-#else 
-
 #include <AknGlobalNote.h>
 #include <avkon.rsg>
 #include <caosynchronizer.h>
 
-#endif 
 
 
 // ============================ MEMBER FUNCTIONS ===============================
@@ -56,10 +43,8 @@ CSTSSEPrompt* CSTSSEPrompt::NewLC()
 // Destructor
 CSTSSEPrompt::~CSTSSEPrompt()
 {
-#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
     delete iGlobalNote;
     delete iSynchronizer;
-#endif
 }
 
 // -----------------------------------------------------------------------------
@@ -69,26 +54,11 @@ CSTSSEPrompt::~CSTSSEPrompt()
 //
 void CSTSSEPrompt::DisplayPromptL(const TDesC& aPrompt)
 {
-    #ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS
-            HbDeviceDialog* dialog;
-            dialog = new(ELeave) HbDeviceDialog();
-            
-            QVariantMap parameters;
-            QString qString((QChar*)aPrompt.Ptr(),aPrompt.Length());
-            parameters[QString(KMessageTextKey)] = qString;
-            
-            dialog->show("com.nokia.hb.devicemessagebox/1.0", parameters);
-            
-            delete dialog;
-    #else
-            
     iGlobalNote->ShowNoteL(
         iSynchronizer->iStatus,
-        EAknGlobalConfirmationNote, 
+        EAknGlobalConfirmationNote,
         aPrompt);
     iSynchronizer->ExecuteL((TTimeIntervalMicroSeconds32) 0);
-            
-    #endif
 }
 
 // -----------------------------------------------------------------------------
@@ -107,11 +77,9 @@ CSTSSEPrompt::CSTSSEPrompt()
 // -----------------------------------------------------------------------------
 void CSTSSEPrompt::ConstructL()
 {
-    #ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
     iGlobalNote = CAknGlobalNote::NewL();
     iGlobalNote->SetSoftkeys(R_AVKON_SOFTKEYS_OK_EMPTY);
     iSynchronizer = CAOSynchronizer::NewL();
-    #endif
 }
 
 

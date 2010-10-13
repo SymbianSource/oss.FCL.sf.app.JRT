@@ -856,11 +856,15 @@ public class GetComponentInfoTest extends TestCase implements InstallerMain
         try
         {
             String value = aMsg.getStringValue(aName);
-            assertTrue("Unexpected value " + aName + "=" + value, value == null);
+            assertTrue("Unexpected value " + aName + "=" + value, false);
+        }
+        catch (IllegalArgumentException iae)
+        {
+            // Expected exception.
         }
         catch (Throwable t)
         {
-            assertTrue("Unexpected exception for string value " + aName +
+            assertTrue("Incorrect exception for string value " + aName +
                        ": " + t, false);
         }
 

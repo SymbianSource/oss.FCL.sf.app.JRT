@@ -33,7 +33,6 @@ import com.nokia.microedition.media.protocol.ProtocolFactory;
 import com.nokia.microedition.media.tone.PlayToneImpl;
 import com.nokia.microedition.volumekeys.ForegroundListener;
 import com.nokia.mj.impl.rt.support.Finalizer;
-import com.nokia.mj.impl.utils.Logger;
 
 /**
  * ManagerImpl implements the functionality specified in
@@ -57,7 +56,6 @@ public class ManagerImpl implements PlugIn
     private final ProtocolFactory iProtocolFactory = new ProtocolFactory();
     private final ForegroundListener iForegroundListener;
 
-    private boolean iClosed = false;
     private Finalizer mFinalizer = new Finalizer()
     {
         public void finalizeImpl()
@@ -168,17 +166,6 @@ public class ManagerImpl implements PlugIn
         iPlugIns.addElement(aPlugIn);
     }
 
-    private void checkClose() throws MediaException
-    {
-        if (iClosed)
-        {
-            MediaException me = new MediaException("MIDlet closed.");
-            Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,
-                       "Trying to create player when MIDlet is destroyed ", me);
-            throw me;
-        }
-    }
-
     private void doFinalize()
     {
         if (mFinalizer != null)
@@ -193,7 +180,6 @@ public class ManagerImpl implements PlugIn
      */
     synchronized final void registeredFinalize()
     {
-        iClosed = true;
         _dispose(sEventSourceHandle);
         sEventSourceHandle = 0;
     }
@@ -205,7 +191,6 @@ public class ManagerImpl implements PlugIn
      */
     synchronized final void release()
     {
-        iClosed = true;
         _release(sEventSourceHandle);
     }
 
@@ -363,10 +348,9 @@ public class ManagerImpl implements PlugIn
     /**
      * From PlugIn.
      */
-    public synchronized InternalPlayer createPlayer(DataSource aSource)
+    public InternalPlayer createPlayer(DataSource aSource)
     throws MediaException, IOException
     {
-        checkClose();
         InternalPlayer player = null;
         if (aSource.getContentType() != null)
         {
@@ -440,10 +424,9 @@ public class ManagerImpl implements PlugIn
      * @exception SecurityException Thrown if the caller does not
      * have security permission to create the <code>Player</code>.
      */
-    public synchronized Player createPlayer(String aLocator)
+    public Player createPlayer(String aLocator)
     throws IOException, MediaException
     {
-        checkClose();
         if (aLocator == null)
         {
             throw new IllegalArgumentException("Locator is null.");
@@ -536,10 +519,9 @@ public class ManagerImpl implements PlugIn
      * @exception SecurityException Thrown if the caller does not
      * have security permission to create the <code>Player</code>.
      */
-    public synchronized Player createPlayer(InputStream aStream, String aType)
+    public Player createPlayer(InputStream aStream, String aType)
     throws IOException, MediaException
     {
-        checkClose();
         if (aStream == null)
         {
             throw new IllegalArgumentException("InputStream is null.");

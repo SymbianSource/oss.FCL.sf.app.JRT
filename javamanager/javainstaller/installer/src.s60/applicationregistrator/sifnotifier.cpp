@@ -21,13 +21,20 @@
 #include "javasymbianoslayer.h" // for CleanupResetAndDestroyPushL
 #include "logger.h"
 
-#ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
+#if defined(SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK) && defined(RD_JAVA_USIF_NOTIFY_PROGRESS)
 
-#include <hb/hbcore/hbindicatorsymbian.h>
-#include <hb/hbcore/hbsymbianvariant.h>
-#include <sifuiinstallindicatordefinitions.h>
 #include <usif/sif/sifnotification.h>
 #include <usif/usifcommon.h>
+
+// Helper macro for logging a TDesC.
+#define LOG_TDESC_L(compIdParam, logLevelParam, msgParam, tdescParam) \
+    {                                                               \
+        HBufC8* tdescBuf = HBufC8::NewLC(tdescParam.Length() + 1);  \
+        TPtr8 tdescPtr(tdescBuf->Des());                            \
+        tdescPtr.Append(tdescParam);                                \
+        LOG1(compIdParam, logLevelParam, msgParam, tdescPtr.PtrZ());\
+        CleanupStack::PopAndDestroy(tdescBuf);                      \
+    }
 
 // NAMESPACE DECLARATION
 using namespace java;
@@ -54,7 +61,7 @@ JNIEXPORT jboolean JNICALL Java_com_nokia_mj_impl_installer_applicationregistrat
  * This method makes calls that may leave (the actual notifying).
  */
 void NotifyStartL(
-    JNIEnv *aEnv, CPublishSifOperationInfo *aNotifier, jint aOperation,
+    JNIEnv *aEnv, CPublishSifOperationInfo *aNotifier,
     jstring aGlobalComponentId, jstring aComponentName,
     jobjectArray aApplicationNames, jobjectArray aApplicationIcons,
     jint aComponentSize, jstring aIconDir, jstring /*aComponentIcon*/)
@@ -94,7 +101,6 @@ void NotifyStartL(
                 HBufC *appIcon = CreateHBufCFromJavaStringLC(aEnv, tmpAppIcon);
                 applicationIcons.AppendL(appIcon);
                 CleanupStack::Pop(appIcon);
-                aEnv->DeleteLocalRef(tmpAppIcon);
             }
             else
             {
@@ -109,8 +115,7 @@ void NotifyStartL(
         CSifOperationStartData::NewLC(
             *globalComponentId, *componentName, applicationNames, applicationIcons,
             aComponentSize, /*aIconPath=*/ (NULL != aIconDir? *iconDir: KNullDesC()),
-            /*aComponentIcon=*/ KNullDesC(), Usif::KSoftwareTypeJava,
-            (TSifOperationPhase)aOperation);
+            /*aComponentIcon=*/ KNullDesC(), Usif::KSoftwareTypeJava);
 
     aNotifier->PublishStartL(*startData);
 
@@ -134,17 +139,16 @@ void NotifyStartL(
  * Signature: (IILjava/lang/String;Ljava/lang/String;[Ljava/lang/String;I)I
  */
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifNotifier__1notifyStart
-(JNIEnv *aEnv, jclass, jint aHandle, jint aOperation,
- jstring aGlobalComponentId, jstring aComponentName,
- jobjectArray aApplicationNames, jobjectArray aApplicationIcons,
- jint aComponentSize, jstring aIconDir, jstring aComponentIcon)
+(JNIEnv *aEnv, jclass, jint aHandle, jstring aGlobalComponentId,
+ jstring aComponentName, jobjectArray aApplicationNames,
+ jobjectArray aApplicationIcons, jint aComponentSize,
+ jstring aIconDir, jstring aComponentIcon)
 {
     CPublishSifOperationInfo *pNotifier =
         reinterpret_cast<CPublishSifOperationInfo*>(aHandle<<2);
-    TRAPD(err, NotifyStartL(aEnv, pNotifier, aOperation, aGlobalComponentId,
-                            aComponentName, aApplicationNames,
-                            aApplicationIcons, aComponentSize,
-                            aIconDir, aComponentIcon));
+    TRAPD(err, NotifyStartL(aEnv, pNotifier, aGlobalComponentId, aComponentName,
+                            aApplicationNames, aApplicationIcons,
+                            aComponentSize, aIconDir, aComponentIcon));
     return err;
 }
 
@@ -157,7 +161,7 @@ void NotifyEndL(
     jstring aGlobalComponentId, jint aErrCategory, jint aErrCode,
     jstring aErrMsg, jstring aErrMsgDetails)
 {
-    //__UHEAP_MARK;
+    __UHEAP_MARK;
     HBufC *globalComponentId = CreateHBufCFromJavaStringLC(aEnv, aGlobalComponentId);
     HBufC *errMsg = NULL;
     if (NULL != aErrMsg)
@@ -170,29 +174,24 @@ void NotifyEndL(
         errMsgDetails = CreateHBufCFromJavaStringLC(aEnv, aErrMsgDetails);
     }
 
-    CSifOperationEndData *endData =
-        CSifOperationEndData::NewLC(
-            *globalComponentId, (TErrorCategory)aErrCategory, aErrCode,
-            (NULL != errMsg? *errMsg: KNullDesC()),
-            (NULL != errMsgDetails? *errMsgDetails: KNullDesC()));
+    CSifOperationEndData *endData = CSifOperationEndData::NewLC(
+                                        *globalComponentId, (TErrorCategory)aErrCategory, aErrCode,
+                                        *errMsg, *errMsgDetails);
 
-    // Do not use UHEAP macros around PublishCompletionL() because it
-    // creates a timer object which gets deleted only when the notifier
-    // object is deleted.
     aNotifier->PublishCompletionL(*endData);
 
     CleanupStack::PopAndDestroy(endData);
 
-    if (NULL != errMsgDetails)
-    {
-        CleanupStack::PopAndDestroy(errMsgDetails);
-    }
-    if (NULL != errMsg)
+    if (NULL != aErrMsg)
     {
         CleanupStack::PopAndDestroy(errMsg);
     }
+    if (NULL != aErrMsgDetails)
+    {
+        CleanupStack::PopAndDestroy(errMsgDetails);
+    }
     CleanupStack::PopAndDestroy(globalComponentId);
-    //__UHEAP_MARKEND;
+    __UHEAP_MARKEND;
 }
 
 /*
@@ -204,25 +203,10 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
 (JNIEnv *aEnv, jclass, jint aHandle, jstring aGlobalComponentId,
  jint aErrCategory, jint aErrCode, jstring aErrMsg, jstring aErrMsgDetails)
 {
-    CActiveScheduler* newScheduler = 0;
-    if (0 == CActiveScheduler::Current())
-    {
-        // Create ActiveScheduler as it does not yet exist.
-        newScheduler = new CActiveScheduler;
-        CActiveScheduler::Install(newScheduler);
-    }
-
     CPublishSifOperationInfo *pNotifier =
         reinterpret_cast<CPublishSifOperationInfo*>(aHandle<<2);
     TRAPD(err, NotifyEndL(aEnv, pNotifier, aGlobalComponentId,
                           aErrCategory, aErrCode, aErrMsg, aErrMsgDetails));
-
-    if (newScheduler)
-    {
-        delete newScheduler;
-        newScheduler = 0;
-    }
-
     return err;
 }
 
@@ -302,104 +286,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
     return KErrNone;
 }
 
-/*
- * Class:     com_nokia_mj_impl_installer_applicationregistrator_SifNotifier
- * Method:    _initIndicator
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifNotifier__1initIndicator
-(JNIEnv *, jclass)
-{
-    CHbIndicatorSymbian *pIndicator = NULL;
-    TRAPD(err, pIndicator = CHbIndicatorSymbian::NewL());
-    if (KErrNone != err)
-    {
-        ELOG1(EJavaInstaller,
-              "SifNotifier.initIndicator: Creating indicator failed, error %d",
-              err);
-        return err;
-    }
-    // Return handle to the object. Utilize the fact that in Symbian
-    // all pointer addresses are MOD 4 so the last 2 bits are 0
-    // and can be shifted out. This way the returned handle is
-    // always positive whereas Symbian error codes are always negative.
-    return reinterpret_cast<TUint>(pIndicator)>>2;
-}
-
-/**
- * See JNI method __1updateIndicator.
- * This method makes calls that may leave (the actual notifying).
- */
-void UpdateIndicatorL(
-    JNIEnv *aEnv, CHbIndicatorSymbian *pIndicator, jstring aName, jint aPhase, jint aProgress)
-{
-    HBufC *name = CreateHBufCFromJavaStringLC(aEnv, aName);
-
-    CHbSymbianVariantMap *variantMap = CHbSymbianVariantMap::NewL();
-    CleanupStack::PushL(variantMap);
-    CHbSymbianVariant *variantName = CHbSymbianVariant::NewL(name, CHbSymbianVariant::EDes);
-    variantMap->Add(KSifUiInstallIndicatorAppName, variantName);
-    CHbSymbianVariant *variantPhase = CHbSymbianVariant::NewL(&aPhase, CHbSymbianVariant::EInt);
-    variantMap->Add(KSifUiInstallIndicatorPhase, variantPhase);
-    CHbSymbianVariant *variantProgress = CHbSymbianVariant::NewL(&aProgress, CHbSymbianVariant::EInt);
-    variantMap->Add(KSifUiInstallIndicatorProgress, variantProgress);
-
-    CHbSymbianVariant *variant = CHbSymbianVariant::NewL(variantMap, CHbSymbianVariant::EVariantMap);
-    CleanupStack::PushL(variant);
-
-    TInt err = KErrNone;
-    if (!pIndicator->Activate(KSifUiInstallIndicatorType, variant))
-    {
-        err = pIndicator->Error();
-        ELOG1(EJavaInstaller,
-              "SifNotifier.updateIndicator: activating indicator failed, error %d",
-              err);
-        err = KErrGeneral;
-    }
-
-    CleanupStack::PopAndDestroy(variant);
-    CleanupStack::PopAndDestroy(variantMap);
-    CleanupStack::PopAndDestroy(name);
-}
-
-/*
- * Class:     com_nokia_mj_impl_installer_applicationregistrator_SifNotifier
- * Method:    _updateIndicator
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifNotifier__1updateIndicator
-(JNIEnv *aEnv, jclass, jint aHandle, jstring aName, jint aPhase, jint aProgress)
-{
-    CHbIndicatorSymbian *pIndicator =
-        reinterpret_cast<CHbIndicatorSymbian*>(aHandle<<2);
-    TRAPD(err, UpdateIndicatorL(aEnv, pIndicator, aName, aPhase, aProgress));
-    return err;
-}
-
-/*
- * Class:     com_nokia_mj_impl_installer_applicationregistrator_SifNotifier
- * Method:    _destroyIndicator
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifNotifier__1destroyIndicator
-(JNIEnv *, jclass, jint aHandle, jint aState)
-{
-    CHbIndicatorSymbian *pIndicator =
-        reinterpret_cast<CHbIndicatorSymbian*>(aHandle<<2);
-    TInt err = KErrNone;
-    if (aState && !pIndicator->Deactivate(KSifUiInstallIndicatorType))
-    {
-        err = pIndicator->Error();
-        ELOG1(EJavaInstaller,
-              "SifNotifier.destroyIndicator: Deactivating indicator failed, error %d",
-              err);
-        err = KErrGeneral;
-    }
-    delete pIndicator;
-    return err;
-}
-
-#else // SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
+#else // SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK && RD_JAVA_USIF_NOTIFY_PROGRESS
 
 /*
  * Class:     com_nokia_mj_impl_installer_applicationregistrator_SifNotifier
@@ -418,7 +305,7 @@ JNIEXPORT jboolean JNICALL Java_com_nokia_mj_impl_installer_applicationregistrat
  * Signature: (IILjava/lang/String;Ljava/lang/String;[Ljava/lang/String;I)I
  */
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifNotifier__1notifyStart
-(JNIEnv *, jclass, jint, jint, jstring, jstring, jobjectArray, jobjectArray, jint, jstring, jstring)
+(JNIEnv *, jclass, jint, jstring, jstring, jobjectArray, jobjectArray, jint, jstring, jstring)
 {
     LOG(EJavaInstaller, EInfo, "SifNotifier.notifyStart");
     return KErrNone;
@@ -483,40 +370,4 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
     return KErrNone;
 }
 
-/*
- * Class:     com_nokia_mj_impl_installer_applicationregistrator_SifNotifier
- * Method:    _initIndicator
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifNotifier__1initIndicator
-(JNIEnv *, jclass)
-{
-    LOG(EJavaInstaller, EInfo, "SifNotifier.initIndicator");
-    return 1; // return dummy object handle
-}
-
-/*
- * Class:     com_nokia_mj_impl_installer_applicationregistrator_SifNotifier
- * Method:    _updateIndicator
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifNotifier__1updateIndicator
-(JNIEnv *, jclass, jint, jstring, jint, jint)
-{
-    LOG(EJavaInstaller, EInfo, "SifNotifier.updateIndicator");
-    return KErrNone;
-}
-
-/*
- * Class:     com_nokia_mj_impl_installer_applicationregistrator_SifNotifier
- * Method:    _destroyIndicator
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifNotifier__1destroyIndicator
-(JNIEnv *, jclass, jint, jint)
-{
-    LOG(EJavaInstaller, EInfo, "SifNotifier.destroyIndicator");
-    return KErrNone;
-}
-
-#endif // SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
+#endif // SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK && RD_JAVA_USIF_NOTIFY_PROGRESS

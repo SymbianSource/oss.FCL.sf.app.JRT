@@ -17,8 +17,6 @@
 
 #include "com_nokia_mj_impl_coreuiavkon_CoreUiImpl.h"
 
-#include <apgwgnam.h>
-
 #include "logger.h"
 #include "coreuiavkonimpl.h"
 #include "javauiavkonimpl.h"
@@ -145,17 +143,6 @@ jboolean JNICALL Java_com_nokia_mj_impl_coreuiavkon_CoreUiImpl__1createUi
     return success;
 }
 
-void hideFromTaskManager(TBool aHide)
-{
-    CApaWindowGroupName* wgName = java::ui::CoreUiAvkonLcdui::getInstance().getWindowGroupName();
-    if (wgName)
-    {
-        wgName->SetHidden(aHide);
-        // Refresh displayed name in tasklist
-        wgName->SetWindowGroupName(CCoeEnv::Static()->RootWin());
-    }
-}
-
 void bringToForeGround()
 {
     CCoeEnv::Static()->RootWin().SetOrdinalPosition(0);
@@ -231,37 +218,4 @@ JNIEXPORT jboolean JNICALL Java_com_nokia_mj_impl_coreuiavkon_CoreUiImpl__1isFor
               e.what());
     }
     return fg;
-}
-
-
-JNIEXPORT void JNICALL Java_com_nokia_mj_impl_coreuiavkon_CoreUiImpl__1hideApplication
-(JNIEnv* env, jobject peer, jboolean hide)
-{
-    try
-    {
-        if (CoreUiAvkonImpl::isCoreUiCreated())
-        {
-            int esHandle = CoreUiAvkonImpl::getInstanceImpl().getLcduiSupport().getEventServerHandle();
-            if (esHandle > 0)
-            {
-                int handle = CoreUiEventSource::New(*env, peer, esHandle);
-                if (handle > 0)
-                {
-                    CoreUiEventSource* es = JavaUnhand<CoreUiEventSource>(handle);
-                    es->ExecuteV(&hideFromTaskManager, (TBool)hide);
-                    es->Dispose(*env);
-                }
-            }
-        }
-    }
-    catch (ExceptionBase& ex)
-    {
-        ELOG1(EJavaUI,"ERROR in core UI to hideApplication. ExceptionBase: %s",
-              ex.toString().c_str());
-    }
-    catch (std::exception& e)
-    {
-        ELOG1(EJavaUI,"ERROR in core UI to hideApplication. std::exception: %s",
-              e.what());
-    }
 }

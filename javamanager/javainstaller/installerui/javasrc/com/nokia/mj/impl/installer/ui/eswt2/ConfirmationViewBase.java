@@ -100,8 +100,8 @@ abstract public class ConfirmationViewBase extends ViewBase
                     createCommands();
                     setDefaultCommand();
                 }
-                iInstallerUi.loadCss();
                 setVisible(true);
+                iInstallerUi.unhide();
             }
         });
         // The UI thread must not be blocked. Let's wait for the answer
@@ -184,14 +184,6 @@ abstract public class ConfirmationViewBase extends ViewBase
         if (iOkText != null)
         {
             iOkCommand = new Button(getCommandComposite(), SWT.PUSH);
-            if (iCancelText != null)
-            {
-                setCssId(iOkCommand, "softKeyButton");
-            }
-            else
-            {
-                setCssId(iOkCommand, "softKeyButtonWide");
-            }
             GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
             gridData.horizontalSpan = horizontalSpan;
             iOkCommand.setLayoutData(gridData);
@@ -238,14 +230,6 @@ abstract public class ConfirmationViewBase extends ViewBase
         if (iCancelText != null)
         {
             iCancelCommand = new Button(getCommandComposite(), SWT.PUSH);
-            if (iOkText != null)
-            {
-                setCssId(iCancelCommand, "softKeyButton");
-            }
-            else
-            {
-                setCssId(iCancelCommand, "softKeyButtonWide");
-            }
             GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
             gridData.horizontalSpan = horizontalSpan;
             iCancelCommand.setLayoutData(gridData);

@@ -16,14 +16,10 @@
 */
 
 
+//#include <avkon.rsg>
 #include <memory>
 #include <stringresourcereader.h>
-
-#ifdef RD_JAVA_UI_QT
-#include <QLocale>
-#else // RD_JAVA_UI_QT
 #include <AknUtils.h>
-#endif // RD_JAVA_UI_QT
 
 #include "com_nokia_mj_impl_utils_Formatter.h"
 #include "com_nokia_mj_impl_utils_ResourceLoader.h"
@@ -49,6 +45,7 @@ const TInt KMaxDateFormatSize = 30;
 const TInt KMaxNumberFormatSize = 40;
 using namespace java::util;
 
+// _LIT( KAvkonResFile, "z:\\resource\\avkon.rsc" );
 
 JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_utils_Formatter__1formatInteger
 (JNIEnv *aJni, jobject, jint aNumber)
@@ -71,10 +68,7 @@ JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_utils_Formatter__1formatInteger
               "Cannot format %d to current locale. Error: %d", aNumber, error);
     }
 
-#ifndef RD_JAVA_UI_QT
-        AknTextUtils::LanguageSpecificNumberConversion( numberPtr );
-#endif // RD_JAVA_UI_QT
-
+    AknTextUtils::LanguageSpecificNumberConversion( numberPtr );
     return aJni->NewString(
                (const jchar*)numberPtr.Ptr(), numberPtr.Length());
 }
@@ -122,24 +116,8 @@ JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_utils_Formatter__1formatDigits
     std::wstring wstr = JniUtils::jstringToWstring(aEnv, str);
     HBufC* buf = S60CommonUtils::wstringToDes(wstr.c_str());
     TPtr ptr(buf->Des());
-
-#ifndef RD_JAVA_UI_QT
     AknTextUtils::LanguageSpecificNumberConversion( ptr );
-#endif // RD_JAVA_UI_QT
     ret = S60CommonUtils::NativeToJavaString(*aEnv, ptr);
     delete buf; buf = NULL;
     return ret;
-}
-
-JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_utils_ResourceLoader__1getLocaleIdQt
-  (JNIEnv *env, jclass)
-{
-#ifdef RD_JAVA_UI_QT
-    QString localeName = QLocale::system().name();
-    jstring loc = env->NewString(localeName.utf16(), localeName.size());
-    return loc;
-#else // RD_JAVA_UI_QT
-    (void)env;     // just to suppress a warning
-    return NULL;
-#endif // RD_JAVA_UI_QT
 }

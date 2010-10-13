@@ -18,15 +18,11 @@
 
 // INCLUDES
 
-#include <ecom/registryinfov2.rh>
+#include <registryinfov2.rh>
 #include <ct/interfaceuid.hrh>
 
 // Some defines of useful values for attributes to simplify
 // writing resource files
-
-#ifndef ECOM_VERSION_NO
-#define ECOM_VERSION_NO 1
-#endif
 
 // True
 #define CT_TRUE 1,0,0,0
@@ -61,7 +57,7 @@ RESOURCE REGISTRY_INFO theInfo
 				BINARY_IMPLEMENTATION_INFO
 					{
 					implementation_uid = 0x200213A3;					
-					version_no = ECOM_VERSION_NO;
+					version_no = 1;
 					display_name = "Java Certificate store";
 					default_data = { CT_CERT_STORE, CT_WRITEABLE_CERT_STORE };
 					opaque_data = { CT_SOFTWARE, CT_TRUE,

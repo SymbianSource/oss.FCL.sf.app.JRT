@@ -24,12 +24,10 @@ symbian {
     SOURCES += ../src.s60/*.cpp
 
     LIBS += -lefsrv \
-            -lplatformenv \
+            -lPlatformEnv \
             -ljavacomms \
             -lcharconv \
-            -ljavastorage \
-            -lapparc \
-            -lapgrfx
+            -ljavastorage
 }
 
 include(../../../build/omj.pri)

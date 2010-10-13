@@ -57,11 +57,6 @@ public:
     TBool ShowBTQueryDialog(const TDesC& aAppName, const TBool aInstalling,
                             TBTGenericQueryNoteType aQueryType);
 
-#ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS
-    TBool ShowBTQueryHbDialogL(const TDesC& aBufData);
-#endif
-
-
     /**
      * Cancels the asynchronous request to the query list dialog.
      *
@@ -77,9 +72,7 @@ private:
 
 private: // data
     TRequestStatus mStatus;
-#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
     RNotifier mNotifier;
-#endif
     TBTGenericQueryNotiferParamsPckg mQueryParamsPckg;
     TPckgBuf<TBool> mQueryResult;
 };

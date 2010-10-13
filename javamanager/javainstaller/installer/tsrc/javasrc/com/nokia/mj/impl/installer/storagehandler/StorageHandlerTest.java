@@ -448,8 +448,7 @@ public class StorageHandlerTest extends TestCase implements InstallerMain
         {
             Uid[] uids = iStorageHandler.getSuiteUids();
             assertTrue("expected uids to be not null", uids != null);
-            assertTrue("expected uids.length (" + uids.length +
-                       ") to be suites.length (" + suites.length + ")",
+            assertTrue("expected uids.length to be suites.length",
                        uids.length == suites.length);
         }
         catch (Exception ex)

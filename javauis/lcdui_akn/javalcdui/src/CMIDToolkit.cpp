@@ -598,39 +598,16 @@ void CMIDToolkit::BringToForeground()
     if (appUi && appUi->hasStartScreen())
     {
         MMIDComponent* content = iCurrentDisplayable ? iCurrentDisplayable->Component() : NULL;
+        MMIDCanvas* canvas = GetCurrentCanvas();
+        TBool isCanvasReadyToBlit = canvas ? canvas->ReadyToBlit() : EFalse;
 
-        TBool isCanvas = EFalse;
-        TBool isCanvasReadyToBlit = EFalse;
-        TBool isFullscreenUI = ETrue;
-        if (content)
-        {
-            MMIDComponent::TType contentType = content->Type();
-
-            if (contentType == MMIDComponent::ECanvas)
-            {
-                isCanvas = ETrue;
-                MMIDCanvas* canvas = static_cast<MMIDCanvas*>(content);
-                isCanvasReadyToBlit = canvas->ReadyToBlit();
-            }
-            else
-            {
-                if (contentType == MMIDComponent::EAlert ||
-                        (contentType == MMIDComponent::ETextBox &&
-                         iCurrentDisplayable->IsPopupTextBox()))
-                {
-                    isFullscreenUI = EFalse;
-                }
-            }
-        }
-
-        if (!content || !isCanvas || isCanvasReadyToBlit)
+        if (!content || !canvas || isCanvasReadyToBlit)
         {
             if (iCurrentDisplayable)
             {
                 iCurrentDisplayable->DrawNow();
             }
-
-            appUi->stopStartScreen(isFullscreenUI);
+            appUi->stopStartScreen();
         }
     }
 }

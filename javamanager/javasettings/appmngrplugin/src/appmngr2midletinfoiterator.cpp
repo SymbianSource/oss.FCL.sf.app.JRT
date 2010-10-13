@@ -17,7 +17,7 @@
 
 
 #include <StringLoader.h>               // StringLoader
-#include <swinstcommonui.rsg>           // Resource IDs
+#include <SWInstCommonUI.rsg>           // Resource IDs
 #include <javaapplicationsettings.rsg>           // Midlet resource IDs
 #include <AknUtils.h>                   // AknTextUtils
 #include <SWInstDefs.h>                 // KJadMimeType

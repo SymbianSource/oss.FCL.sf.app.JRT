@@ -21,7 +21,6 @@
 #include <sensrvorientationsensor.h>
 #include <jdebug.h>
 #include <fbs.h>
-#include <e32svr.h>
 #include "cmmacameraplayer.h"
 #include "tmmaparametervalidator.h"
 #include "mmmadisplay.h"
@@ -581,6 +580,9 @@ MMMASnapshot::TEncoding CMMACameraPlayer::TakeSnapshotL(TRequestStatus* aStatus,
     // save status which will be notified
     iSnapshotStatus = aStatus;
 
+    // changing status to pending
+    *iSnapshotStatus = KRequestPending;
+
     // Source size not set in the beginning
     TSize sourceSize;
 
@@ -686,9 +688,7 @@ MMMASnapshot::TEncoding CMMACameraPlayer::TakeSnapshotL(TRequestStatus* aStatus,
 
     // play sound when capturing image
     CMMACameraSound::PlayImageCaptureSoundL();
-    
-    // changing status to pending
-    *iSnapshotStatus = KRequestPending;
+
     // start capture, ImageBufferReady will be called when ready
     iWindow->SetStarted(EFalse);
 

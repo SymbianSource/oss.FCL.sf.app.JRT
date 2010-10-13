@@ -25,7 +25,7 @@
 #include <cmmaplayerevent.h>
 #include <cmmaaudioplayer.h>
 #include <cmmaemcaudioplayer.h>
-#include <mmf/common/mmfcontroller.h>
+#include <mmfcontroller.h>
 #include <midiclientutility.h>
 
 

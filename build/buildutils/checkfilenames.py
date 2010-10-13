@@ -64,7 +64,6 @@ known_exts = [
 # Other peculiar filenames:
     "installerodclist", "installerodclist30", "midpodclist", "midpodclist30",
     "notice", "package-list", "tckrunnerodclist", "tckrunnerodclist30", "unknowncert","midprootslist",
-    "javacontrolpanelodclist", "javacontrolpanelodclist30",
 ]
 
 # Command line options.

@@ -239,7 +239,7 @@ void CSwtListView::ConstructL()
 
         iStylusPopupUnmarkAll = CSwtMenuItem::NewL(iDisplay, NULL, *iStylusPopupMenu, 1, 0, EAknUnmarkAll);
         iStylusPopupUnmarkAll->SetTextL(iMenuItemUnmarkAll->Text());
-#endif //RD_SCALABLE_UI_V2
+#endif //RD_SCALABLE_UI_V2        
     }
 
     iOldSelectionArray = new(ELeave) CArrayFixFlat<TInt>(2);
@@ -568,6 +568,13 @@ CGulIcon* CSwtListView::CreateIconL(const MSwtImage* aIcon) const
         ASSERT(bmp);
         icon = CGulIcon::NewL(bmp);
         CleanupStack::Pop(bmp);   // bmp
+
+        CFbsBitmap* mask = new(ELeave) CFbsBitmap;
+        CleanupStack::PushL(mask);
+        User::LeaveIfError(mask->Create(TSize(0, 0), EGray2));
+        ASSERT(mask);
+        icon->SetMask(mask);
+        CleanupStack::Pop(mask);   // mask
     }
     return icon;
 }
@@ -854,11 +861,11 @@ void CSwtListView::AddIconL(const MSwtImage* aImage,
     const TInt refImgCount = iRefImages.Count();
     if (refImgCount > aPos)
     {
-        iRefImages.InsertL(refImg, aPos);
+        iRefImages.Insert(refImg, aPos);
     }
     else
     {
-        iRefImages.AppendL(refImg);
+        iRefImages.Append(refImg);
     }
 
 #ifdef DEBUG_CHECK_IMAGES
@@ -1435,14 +1442,14 @@ void CSwtListView::UpdateControlMenu()
             iMenuItemUnmarkAll->SetEnabled(EFalse);
 #ifdef RD_SCALABLE_UI_V2
             iStylusPopupUnmarkAll->SetEnabled(EFalse);
-#endif //RD_SCALABLE_UI_V2
+#endif //RD_SCALABLE_UI_V2            
         }
         else
         {
             iMenuItemUnmarkAll->SetEnabled(ETrue);
 #ifdef RD_SCALABLE_UI_V2
             iStylusPopupUnmarkAll->SetEnabled(ETrue);
-#endif //RD_SCALABLE_UI_V2
+#endif //RD_SCALABLE_UI_V2                            
         }
 
         if (GetGridView()->SelectionIndexes()->Count() == GetGridModel()->NumberOfItems())
@@ -1450,14 +1457,14 @@ void CSwtListView::UpdateControlMenu()
             iMenuItemMarkAll->SetEnabled(EFalse);
 #ifdef RD_SCALABLE_UI_V2
             iStylusPopupMarkAll->SetEnabled(EFalse);
-#endif //RD_SCALABLE_UI_V2
+#endif //RD_SCALABLE_UI_V2                        
         }
         else
         {
             iMenuItemMarkAll->SetEnabled(ETrue);
 #ifdef RD_SCALABLE_UI_V2
             iStylusPopupMarkAll->SetEnabled(ETrue);
-#endif //RD_SCALABLE_UI_V2
+#endif //RD_SCALABLE_UI_V2                                    
         }
     }
 }
@@ -1546,7 +1553,7 @@ CSwtListView::~CSwtListView()
     {
         iStylusPopupMenu->Dispose();
     }
-#endif //RD_SCALABLE_UI_V2
+#endif //RD_SCALABLE_UI_V2    
 
     delete iMarkString;
     delete iUnmarkString;
@@ -3671,23 +3678,6 @@ TInt CSwtListView::FocusBackgroundPolicy() const
 #else
     return EDefaultFocusBackground;
 #endif // RD_JAVA_S60_RELEASE_9_2
-}
-
-void CSwtListView::PrepareForTraverse()
-{
-    ASSERT(iGrid);
-    ASSERT(iGrid->View());
-
-#ifdef RD_JAVA_S60_RELEASE_9_2
-    // AvKon enables highlight only when key event is recieved.
-    // When traversing, no key event is sent to AvKon, so we
-    // have to enable highlight by ourselves.
-    CListItemDrawer* itemDrawer = iGrid->View()->ItemDrawer();
-    if (itemDrawer)
-    {
-        itemDrawer->ClearFlags(CListItemDrawer::ESingleClickDisabledHighlight);
-    }
-#endif //RD_JAVA_S60_RELEASE_9_2
 }
 
 #ifdef RD_JAVA_ADVANCED_TACTILE_FEEDBACK

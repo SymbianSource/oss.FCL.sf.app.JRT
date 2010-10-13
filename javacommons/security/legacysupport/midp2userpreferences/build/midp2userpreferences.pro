@@ -19,7 +19,11 @@ TARGET=midp2userpreferences
 CONFIG += omj stl
 CONFIG -= qt
 
-INCLUDEPATH += ../../storageutils/inc
+INCLUDEPATH += /epoc32/include/j2me/midp2/data \
+               ../../../../../inc/j2me/midp2/security \
+               ../../../../../inc/j2me/midp2/runtime \
+               ../../../../../inc/j2me/midp2/dbv2 \
+               ../../storageutils/inc
 
 SOURCES += ../../storageutils/src/*.cpp \
            ../src/*.cpp

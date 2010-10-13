@@ -32,11 +32,7 @@
 #include <charconv.h>
 #include <pkcs10.h>
 #include <secdlg.h>
-
-#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
 #include <PKIDlg.h>
-#endif
-
 #include <securityerr.h>
 
 
@@ -71,12 +67,10 @@ CSTSCredentialManager::~CSTSCredentialManager()
 {
     delete iEncodedCert;
     delete iIssuerAndSerialNumber;
-#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS	
     if (iPKIDialog)
     {
         iPKIDialog->Release();
     }
-#endif
     delete iDistinguishedName;
     delete iDisplayName;
     delete iRequestEncoded;
@@ -539,9 +533,8 @@ CSTSCredentialManager::CSTSCredentialManager()
 //
 void CSTSCredentialManager::ConstructL()
 {
-	#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
     iPKIDialog = PKIDialogFactory::CreateNoteL();
- #endif
+
     User::LeaveIfError(iFileServer.Connect());
     iWait = new(ELeave) CActiveSchedulerWait;
     iStore = CUnifiedCertStore::NewL(iFileServer, ETrue);
@@ -626,10 +619,8 @@ void CSTSCredentialManager::AddRetrieveL()
     {
         // not found, ok to add
         iState = EAddDialog;
-        #ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
         iPKIDialog->SaveCertificate(EX509Certificate, EUserCertificate,
                                     iSubject, iStatus);
-        #endif
         SetActive();
         return;
     }
@@ -729,9 +720,7 @@ void CSTSCredentialManager::RemoveDialog()
     CCTCertInfo* certInfo = (*iCertInfoArray)[ 0 ];
     iState = ERemoveDialog;
     iHandle = certInfo->Handle();
-    #ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
     iPKIDialog->DeleteCertificate(iHandle, iStatus);
-    #endif
     SetActive();
 }
 
@@ -793,9 +782,8 @@ void CSTSCredentialManager::CSRDialog()
     }
     iState = ECSRDialog;
     iHandle = iKeyInfo->Handle();
-		#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
+
     iPKIDialog->CreateCSR(*iDisplayName, iHandle, iStatus);
-    #endif
     SetActive();
 
 }
@@ -1039,3 +1027,5 @@ void CSTSCredentialManager::doServerSideInit()
     FunctionServer::doServerSideInit();
 
 }
+
+

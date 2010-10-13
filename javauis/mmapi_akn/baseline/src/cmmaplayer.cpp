@@ -464,9 +464,6 @@ void CMMAPlayer:: DeleteControls()
 
 EXPORT_C void CMMAPlayer::HandleCallStateEventL(TUid aUid, TInt aKey)
 {
-    (void)aUid;     // Suppress warnings about unused arguments in urel builds
-    (void)aKey;
-
     DEBUG("CMMAPlayer::HandleCallStateEvent +");
     DEBUG_INT2( "CMMAVideoUrlPlayer::HandleCallStateEvent(TUid aUid, TInt aKey) = (%d, %d)",aUid.iUid, aKey);
 

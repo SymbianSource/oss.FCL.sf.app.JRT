@@ -26,7 +26,7 @@
 
 #include <CUIUtils.h>
 #include <eikenv.h>
-#include <sisxuidata.rsg>
+#include <SisxUIData.rsg>
 
 #include <javadomainpskeys.h>
 
@@ -228,7 +228,7 @@ void CJavaInstallLauncher::InstallL(RFile& aFile, TInstallReq& aInstallParams,
 
     // Do NOT close rJavaInstaller now -> the caller gets notification when the
     // process actually closes.
-    iHandlesToClose.AppendL(rJavaInstaller);
+    iHandlesToClose.Append(rJavaInstaller);
 }
 
 void CJavaInstallLauncher::SilentInstallL(RFile& aFile,
@@ -410,7 +410,7 @@ void CJavaInstallLauncher::SilentInstallL(RFile& aFile,
 
     // Do NOT close rJavaInstaller now -> the caller gets notification when the
     // process actually closes.
-    iHandlesToClose.AppendL(rJavaInstaller);
+    iHandlesToClose.Append(rJavaInstaller);
 }
 
 void CJavaInstallLauncher::UninstallL(const TUid& aUid, const TDesC8&, /*aMIME*/
@@ -451,7 +451,7 @@ void CJavaInstallLauncher::UninstallL(const TUid& aUid, const TDesC8&, /*aMIME*/
 
     // Do NOT close rJavaInstaller now -> the caller gets notification when the
     // process actually closes.
-    iHandlesToClose.AppendL(rJavaInstaller);
+    iHandlesToClose.Append(rJavaInstaller);
 }
 
 void CJavaInstallLauncher::SilentUninstallL(const TUid& aUid, const TDesC8&, /*aMIME*/
@@ -539,7 +539,7 @@ void CJavaInstallLauncher::SilentUninstallL(const TUid& aUid, const TDesC8&, /*a
 
     // Do NOT close rJavaInstaller now -> the caller gets notification when the
     // process actually closes.
-    iHandlesToClose.AppendL(rJavaInstaller);
+    iHandlesToClose.Append(rJavaInstaller);
 }
 
 TBool CJavaInstallLauncher::IsAppShellUpdate()
@@ -619,7 +619,7 @@ void CJavaInstallLauncher::OpenUiResourcesL()
     // Open UI env and resource file.
     if (!iEik)
     {
-        iEik = CEikonEnv::Static();  // codescanner::eikonenvstatic
+        iEik = CEikonEnv::Static();
     }
     if (!iEik)
     {

@@ -207,7 +207,7 @@ void CSwtMultiPageDialog::CreatePageL(MSwtComposite* aComposite,
     tabItem.iComposite = aComposite;
     tabItem.iTabId = newId;
     tabItem.iHasTitle = aTitle.Length() > 0 ? ETrue : EFalse;
-    iTabItems.AppendL(tabItem);
+    iTabItems.Append(tabItem);
 
     iTabGroup->SetTabFixedWidthL(ComputeTabStyle());
     RefreshStatusPane();

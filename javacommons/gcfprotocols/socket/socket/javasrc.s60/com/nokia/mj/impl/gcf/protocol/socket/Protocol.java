@@ -151,7 +151,7 @@ public class Protocol
             Logger.LOG(Logger.ESOCKET, Logger.EInfo,
                        "socket - protocol class : server connection");
             ApplicationUtils appUtils = ApplicationUtils.getInstance();
-            SocketPermissionImpl per = new SocketPermissionImpl(SocketPermissionImpl.SERVER_TARGET);
+            SocketPermissionImpl per = new SocketPermissionImpl("socket://");
             appUtils.checkPermission(per);
             /* security related stuff */
             Logger.LOG(Logger.ESOCKET, Logger.EInfo,
@@ -168,7 +168,7 @@ public class Protocol
                 throw new IllegalArgumentException("Invalid URL: " + fullurl);
             }
             ApplicationUtils appUtils = ApplicationUtils.getInstance();
-            SocketPermissionImpl per = new SocketPermissionImpl(SocketPermissionImpl.CLIENT_TARGET);
+            SocketPermissionImpl per = new SocketPermissionImpl("socket://*");
             appUtils.checkPermission(per);
             /* security related stuff */
             Logger.LOG(Logger.ESOCKET, Logger.EInfo,

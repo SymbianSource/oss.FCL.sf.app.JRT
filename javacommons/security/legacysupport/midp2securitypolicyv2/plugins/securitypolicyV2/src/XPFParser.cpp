@@ -385,8 +385,8 @@ void CXPFParser::ExclusionSetL(CBlanketPermissionPolicy* aBlanketPermissionPolic
 
     //Add the sets and permission downgrade policy to the
     //CBlanketPermissionPolicy object for this domain
-    aBlanketPermissionPolicy->AddL(pe);
     CleanupStack::Pop(pe);
+    aBlanketPermissionPolicy->Add(pe);
     DEBUG("CXPFParser::ExclusionSetL() - Exit");
 }
 

@@ -24,9 +24,7 @@
 #include "commsclientendpoint.h"
 #include "commsmessage.h"
 
-#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
 class CAknGlobalConfirmationQuery;
-#endif
 
 namespace java
 {
@@ -70,7 +68,8 @@ private:
 };
 
 class CJavaCertStoreImpl: public CActive, public MCTWritableCertStore,
-        public java::comms::CommsListener
+        public java::comms::CommsListener,
+        public java::comms::CommsClientEndpoint
 {
 public:
 
@@ -144,9 +143,7 @@ private:
     RPointerArray<CJavaCertData> mCertsData;
     TState mState;
     RThread mUiThread;
-#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
     std::auto_ptr<CAknGlobalConfirmationQuery> mQuery;
-#endif        
     //This class does not have ownership into this object.
     CJavaCertData* mTempCertData;
 

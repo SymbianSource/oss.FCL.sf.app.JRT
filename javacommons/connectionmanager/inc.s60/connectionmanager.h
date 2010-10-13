@@ -163,7 +163,6 @@ private:
 
     static HBufC8 * PromptUserSelectNetworkAccessPointL();
     static HBufC8 * CreateDescriptorL(const int aType, const int id);
-    static bool checkIapDefaultL(TUint32 aMatchIapId, TUint32 aDestId, bool aDefault);
 
 
 

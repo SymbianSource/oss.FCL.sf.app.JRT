@@ -43,17 +43,6 @@ IF NOT exists("Z:\system\install\Series60v5.0.sis")
   ; Popup error on Non-S60 v 5.0 platforms. Do not allow continuing.
   "incompatible_platform.txt"-"", FILETEXT, FORCEABORT
 ENDIF
-
-; Check OpenC versions
-; 0x10282872 = Standard C++ library
-; 0x10281F34 = Open C LIBSSL
-; 0x20009a80 = Symbian OS PIPS
-IF( version(0x10282872, <, 1, 5, 0) ) OR
-  ( version(0x10281F34, <, 1, 5, 0) ) OR
-  ( version(0x20009a80, <, 1, 5, 0) )
-    "incompatible_openc.txt"-"", FT, TA
-ENDIF
-
 #endif // RD_JAVA_S60_RELEASE_5_0_IAD
 
 
@@ -106,7 +95,6 @@ ENDIF
 
 "\epoc32\release\armv5\urel\javacaptain.exe"-"c:\sys\bin\javacaptain.exe"
 "\epoc32\release\armv5\urel\javalauncher.exe"-"c:\sys\bin\javalauncher.exe"
-"\epoc32\release\armv5\urel\javaupgradeapp.exe"-"c:\sys\bin\javaupgradeapp.exe"
 
 
 
@@ -114,7 +102,6 @@ ENDIF
 "\epoc32\data\z\resource\java\midpodclist"-"c:\resource\java\midpodclist"
 "\epoc32\data\z\resource\java\tckrunnerodclist"-"c:\resource\java\tckrunnerodclist"
 "\epoc32\data\z\resource\java\installerodclist"-"c:\resource\java\installerodclist"
-"\epoc32\data\z\resource\java\javacontrolpanelodclist"-"c:\resource\java\javacontrolpanelodclist"
 
 
 
@@ -391,10 +378,8 @@ ENDIF
 "\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javawmamms.odc"-"c:\resource\java\jvm\lib\jrt\javawmamms.odc"
 
 "\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\tckrunner.odc"-"c:\resource\java\jvm\lib\jrt\tckrunner.odc"
-"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javacontrolpanel.odc"-"c:\resource\java\jvm\lib\jrt\javacontrolpanel.odc"
 
-"\epoc32\release\armv5\urel\javacentrep.dll"-"c:\sys\bin\javacentrep.dll"
-"\epoc32\release\armv5\urel\z\resource\java\jvm\lib\jrt\javacentrep.odc"-"c:\resource\java\jvm\lib\jrt\javacentrep.odc"
+
 
 ; Misc dlls
 #ifdef RD_JAVA_S60_RELEASE_5_0_IAD
@@ -405,7 +390,7 @@ ENDIF
 ; Application Manager 2 plugin
 #ifndef RD_JAVA_S60_RELEASE_5_0_IAD
 "\epoc32\release\armv5\urel\appmngr2midletplugin.dll"-"c:\sys\bin\appmngr2midletplugin.dll"
-"\epoc32\data\z\resource\java\iad\appmngr2midletplugin.rsc"-"c:\resource\plugins\appmngr2midletplugin.rsc"
+"\epoc32\data\z\resource\plugins\appmngr2midletplugin.rsc"-"c:\resource\plugins\appmngr2midletplugin.rsc"
 "\epoc32\data\z\resource\java\javaapplicationsettings.r01"-"c:\resource\java\javaapplicationsettings.r01"
 "\epoc32\data\z\resource\java\javaapplicationsettings.r02"-"c:\resource\java\javaapplicationsettings.r02"
 "\epoc32\data\z\resource\java\javaapplicationsettings.r03"-"c:\resource\java\javaapplicationsettings.r03"
@@ -490,7 +475,6 @@ ENDIF
 "\epoc32\release\armv5\urel\jvmnativeport.dll"-"c:\sys\bin\jvmnativeport.dll"
 "\epoc32\release\armv5\urel\midp2backupplugin.dll"-"c:\sys\bin\midp2backupplugin.dll"
 "\epoc32\release\armv5\urel\javadebugapi.dll"-"c:\sys\bin\javadebugapi.dll"
-"\epoc32\release\armv5\urel\javastarter.dll"-"c:\sys\bin\javastarter.dll"
 
 #ifdef RD_JAVA_S60_RELEASE_5_0_IAD
 "\epoc32\release\armv5\urel\midp2cenrep.dll"-"c:\sys\bin\midp2cenrep.dll"
@@ -507,7 +491,6 @@ ENDIF
 "\epoc32\release\armv5\urel\javacaptain_ext_pushregistryplugin.dll"     -"c:\sys\bin\javacaptain_ext_pushregistryplugin.dll"
 "\epoc32\release\armv5\urel\javacaptain_ext_storageserverplugin.dll"    -"c:\sys\bin\javacaptain_ext_storageserverplugin.dll"
 "\epoc32\release\armv5\urel\javacaptain_ext_btdeviceclassmanager.dll"   -"c:\sys\bin\javacaptain_ext_btdeviceclassmanager.dll"
-"\epoc32\release\armv5\urel\javacaptain_ext_autostarter.dll"            -"c:\sys\bin\javacaptain_ext_autostarter.dll"
 "\epoc32\release\armv5\urel\javacaptain_ext_settingslistener.dll"       -"c:\sys\bin\javacaptain_ext_settingslistener.dll"
 ; PLUGIN_ID_JAVA_CERT_STORE_EXTENSION_C = 7
 "\epoc32\release\armv5\urel\javacaptain_ext_ondemand_7.dll"             -"c:\sys\bin\javacaptain_ext_ondemand_7.dll"
@@ -519,8 +502,8 @@ ENDIF
 
 
 ; resources
-"\epoc32\data\z\resource\java\iad\ifeui.rsc"                   -"c:\resource\plugins\ifeui.rsc"
-"\epoc32\data\z\resource\java\iad\javaappschemeplugin.rsc"     -"c:\resource\plugins\javaappschemeplugin.rsc"
+"\epoc32\data\z\resource\plugins\ifeui.rsc"                   -"c:\resource\plugins\ifeui.rsc"
+"\epoc32\data\z\resource\plugins\javaappschemeplugin.rsc"     -"c:\resource\plugins\javaappschemeplugin.rsc"
 "\epoc32\winscw\c\private\102033E6\installer\inst_plugins.cfg"-"c:\private\102033E6\installer\inst_plugins.cfg"
 "\epoc32\data\Z\Resource\versions\java.txt"-"c:\resource\versions\java.txt"
 #ifdef RD_JAVA_S60_RELEASE_5_0_IAD
@@ -534,9 +517,9 @@ ENDIF
 "\epoc32\data\z\resource\apps\javainstaller_icon.mif"-"c:\resource\apps\javainstaller_icon.mif"
 "\epoc32\data\z\resource\java\java_trusted.png"-"c:\resource\java\java_trusted.png"
 "\epoc32\data\z\resource\java\java_untrusted.png"-"c:\resource\java\java_untrusted.png"
-"\epoc32\data\z\resource\java\iad\javasidchecker.rsc"   -"c:\resource\plugins\javasidchecker.rsc"
-"\epoc32\data\z\resource\java\iad\javaunicertstoreplugin.rsc" -"c:\resource\plugins\javaunicertstoreplugin.rsc"
-"\epoc32\data\z\resource\java\iad\midp2backupplugin.rsc"-"c:\resource\plugins\midp2backupplugin.rsc"
+"\epoc32\data\z\resource\plugins\javasidchecker.rsc"   -"c:\resource\plugins\javasidchecker.rsc"
+"\epoc32\data\z\resource\plugins\javaunicertstoreplugin.rsc" -"c:\resource\plugins\javaunicertstoreplugin.rsc"
+"\epoc32\data\z\resource\plugins\midp2backupplugin.rsc"-"c:\resource\plugins\midp2backupplugin.rsc"
 #ifndef RD_JAVA_S60_RELEASE_5_0_IAD
 "\epoc32\data\z\resource\java\javausermessages.r01"-"c:\resource\java\javausermessages.r01"
 "\epoc32\data\z\resource\java\javausermessages.r02"-"c:\resource\java\javausermessages.r02"
@@ -672,13 +655,13 @@ ENDIF
 "\epoc32\release\armv5\urel\lcdgr.dll"-"c:\sys\bin\lcdgr.dll"
 "\epoc32\release\armv5\urel\lcdui.dll"-"c:\sys\bin\lcdui.dll"
 "\epoc32\release\armv5\urel\LCDC16MA.dll"-"c:\sys\bin\LCDC16MA.dll"
-"\epoc32\data\z\resource\java\iad\LCDC16MA.rsc"-"c:\resource\plugins\LCDC16MA.rsc"
+"\epoc32\data\z\resource\plugins\LCDC16MA.rsc"-"c:\resource\plugins\LCDC16MA.rsc"
 "\epoc32\release\armv5\urel\LCDC16MU.dll"-"c:\sys\bin\LCDC16MU.dll"
-"\epoc32\data\z\resource\java\iad\LCDC16MU.rsc"-"c:\resource\plugins\LCDC16MU.rsc"
+"\epoc32\data\z\resource\plugins\LCDC16MU.rsc"-"c:\resource\plugins\LCDC16MU.rsc"
 "\epoc32\release\armv5\urel\LCDC4K.dll"-"c:\sys\bin\LCDC4K.dll"
-"\epoc32\data\z\resource\java\iad\LCDC4K.rsc"-"c:\resource\plugins\LCDC4K.rsc"
+"\epoc32\data\z\resource\plugins\LCDC4K.rsc"-"c:\resource\plugins\LCDC4K.rsc"
 "\epoc32\release\armv5\urel\LCDC64K.dll"-"c:\sys\bin\LCDC64K.dll"
-"\epoc32\data\z\resource\java\iad\LCDC64K.rsc"-"c:\resource\plugins\LCDC64K.rsc"
+"\epoc32\data\z\resource\plugins\LCDC64K.rsc"-"c:\resource\plugins\LCDC64K.rsc"
 "\epoc32\release\armv5\urel\lcdgdrv.dll"-"c:\sys\bin\lcdgdrv.dll"
 "\epoc32\release\armv5\urel\lcdgdrvi.dll"-"c:\sys\bin\lcdgdrvi.dll"
 "\epoc32\release\armv5\urel\lcduiphysicswrap.dll"-"c:\sys\bin\lcduiphysicswrap.dll"
@@ -808,10 +791,6 @@ ENDIF
 "\epoc32\data\z\resource\java\eswtcore.rsc"-"c:\resource\java\eswtcore.rsc"
 
 
-#ifndef RD_JAVA_S60_RELEASE_5_0_IAD
-"\epoc32\release\armv5\urel\javaiconsizenotifplugin.dll"-"c:\sys\bin\javaiconsizenotifplugin.dll"
-"\epoc32\data\z\resource\java\iad\javaiconsizenotifplugin.rsc"-"c:\resource\plugins\javaiconsizenotifplugin.rsc"
-#endif // RD_JAVA_S60_RELEASE_5_0_IAD
 
 
 #ifdef RD_JAVA_S60_RELEASE_5_0_IAD
@@ -834,7 +813,8 @@ ENDIF
 "\epoc32\release\armv5\urel\javaappbackconverter.exe"-"c:\sys\bin\javaappbackconverter.exe", FR, RR, RW
 #endif // RD_JAVA_S60_RELEASE_5_0_IAD
 
+
 #ifndef RD_JAVA_S60_RELEASE_5_0_IAD
-; javafinishjrtinstall is ran after Jrt 2.2 installation
-"\epoc32\release\armv5\urel\javafinishjrtinstall.exe"-"c:\sys\bin\javafinishjrtinstall.exe", FR, RI, RW
+"\epoc32\release\armv5\urel\javaiconsizenotifplugin.dll"-"c:\sys\bin\javaiconsizenotifplugin.dll"
+"\epoc32\data\z\resource\plugins\javaiconsizenotifplugin.rsc"-"c:\resource\plugins\javaiconsizenotifplugin.rsc"
 #endif // RD_JAVA_S60_RELEASE_5_0_IAD

@@ -20,7 +20,7 @@
 
 #include <zipfile.h>
 #include <time.h>
-#include <bitmaptransforms.h>
+#include <BitmapTransforms.h>
 
 #include "javacommonutils.h"
 #include "logger.h"

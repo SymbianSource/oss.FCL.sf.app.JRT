@@ -41,7 +41,7 @@ public:
 public:
     static CSwtMobileDevice* NewL(MSwtDisplay& aDisplay, TSwtPeer aPeer);
     static TInt HwScreenCount();
-    static void GetHwInputsL(RArray<TSwtHwInput>& aInputs);
+    static void GetHwInputs(RArray<TSwtHwInput>& aInputs);
 private:
     inline CSwtMobileDevice(MSwtDisplay& aDisplay, TSwtPeer aPeer);
     virtual ~CSwtMobileDevice();

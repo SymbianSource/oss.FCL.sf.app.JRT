@@ -22,6 +22,7 @@ COMPONENTS += \
 	m2g_akn/build \
 	m3g_akn/build \
 	mmapi_akn/build \
+	nokiasound_akn/build \
 	remconobserver_akn/build \
 	runtimeui_akn/build \
 	softnotification_akn/build
@@ -32,12 +33,12 @@ NONQTSUBSYSTEMS += \
 	eswt_akn/eswtphysics/group
 
 SUBSYSTEMS += \
-	javalegacyutils \
 	lcdui_akn
 
 ifdef RD_JAVA_S60_RELEASE_5_0_IAD
     SUBSYSTEMS += ptivariation_akn
 endif
+
 
 #
 # Additional dependencies between the components

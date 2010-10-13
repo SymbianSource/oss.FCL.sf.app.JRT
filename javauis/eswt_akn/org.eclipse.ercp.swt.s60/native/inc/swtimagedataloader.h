@@ -46,9 +46,7 @@ public:
                             TInt aFormat, const TDesC& aDestination);
     HBufC8* EncodeImageToStreamL(MSwtImageData& aImageData, TInt aFormat);
     void DecodeImageL(const TDesC& aFileName);
-    void DecodeWholeImageFromBufferL(const TDesC8& aBuffer);
-    void DecodeImageFromBufferL(const TDesC8& aBuffer);
-    void AppendDataL(const TDesC8& aBuffer); //loading
+    void DecodeWholeImageFromBufferL(const TDesC8& aBuf);
     CSwtImageDataArray* GetImageData();
     void Dispose();
     TInt GetLogicalScreenHeight();
@@ -56,8 +54,7 @@ public:
 
 // Own methods
 private:
-    TBool DecodeNextFrameL();                 //starting
-    void  DecodeFrameL(TInt aIndexOfFrame);   //starting
+    void DecodeFrameL(TInt aIndexOfFrame);   //starting
 
 protected:
     /**

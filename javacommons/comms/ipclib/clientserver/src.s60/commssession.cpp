@@ -87,10 +87,7 @@ int CCommsSession::send(ipcMessage_t* aMsg)
         }
         else
         {
-            if (rc != KErrOverflow)
-            {
-                WLOG2(EJavaComms, "%s failed, err = %d", __PRETTY_FUNCTION__, rc);
-            }
+            WLOG2(EJavaComms, "%s failed, err = %d", __PRETTY_FUNCTION__, rc);
         }
     }
     return 0;
@@ -154,10 +151,7 @@ void CCommsSession::handleReceiveL(const RMessage2& aMessage)
         }
         else
         {
-            if (rc != KErrOverflow)
-            {
-                WLOG2(EJavaComms, "%s failed, err = %d", __PRETTY_FUNCTION__, rc);
-            }
+            WLOG2(EJavaComms, "%s failed, err = %d", __PRETTY_FUNCTION__, rc);
         }
     }
 }
@@ -199,7 +193,7 @@ TInt CCommsSession::doSend(const RMessagePtr2& aMessage, HBufC8& aData)
     else
     {
         rc = KErrOverflow;
-        LOG3(EJavaComms, EInfo, "%s: allocated length for message is too small (required size=%d, allocated size=%d)",
+        WLOG3(EJavaComms, "%s: allocated length for message is too small (required size=%d, allocated size=%d)",
               __PRETTY_FUNCTION__, neededLength, allocatedLength);
     }
 

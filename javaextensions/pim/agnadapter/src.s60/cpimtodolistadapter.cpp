@@ -49,11 +49,10 @@ CPIMToDoListAdapter::CPIMToDoListAdapter(
 // Symbian 2nd phase constructor can leave.
 // -----------------------------------------------------------------------------
 //
-void CPIMToDoListAdapter::ConstructL(TInt aCalSessionInt)
+void CPIMToDoListAdapter::ConstructL()
 {
     JELOG2(EPim);
-    CCalSession* calSession = reinterpret_cast <CCalSession*>(aCalSessionInt);
-    CPIMAgnListAdapter::ConstructL(MCalChangeCallBack::EChangeEntryTodo, calSession);
+    CPIMAgnListAdapter::ConstructL(MCalChangeCallBack::EChangeEntryTodo);
     iAgnToDoAdapter = CPIMAgnToDoAdapter::NewL(iFuncServer);
 }
 
@@ -62,14 +61,13 @@ void CPIMToDoListAdapter::ConstructL(TInt aCalSessionInt)
 // Two-phased constructor.
 // -----------------------------------------------------------------------------
 //
-CPIMToDoListAdapter* CPIMToDoListAdapter::NewL(java::util::FunctionServer* aFuncServer,
-        CCalSession *aCalSession)
+CPIMToDoListAdapter* CPIMToDoListAdapter::NewL(
+    java::util::FunctionServer* aFuncServer)
 {
     JELOG2(EPim);
     CPIMToDoListAdapter* self = new(ELeave) CPIMToDoListAdapter(aFuncServer);
     CleanupStack::PushL(self);
-    TInt calSessionInt = reinterpret_cast <TInt>(aCalSession);
-    CallMethodL(self, &CPIMToDoListAdapter::ConstructL,calSessionInt,self->iFuncServer);
+    CallMethodL(self, &CPIMToDoListAdapter::ConstructL, self->iFuncServer);
     CleanupStack::Pop(self);
     return self;
 }

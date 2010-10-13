@@ -40,11 +40,11 @@ public class RegisterApplicationToSif extends ExeStep
             Log.log("Old suite unregistered from SIF");
         }
 
-        if (ball.iAuthenticationCredentials != null)
+        if (ball.iSourceUrl != null)
         {
-            // Set protection domain name.
-            ball.iSuite.setProtectionDomainName(
-                ball.iAuthenticationCredentials[0].getProtectionDomainName());
+            // Save source URL to suite as jad URL which is
+            // registered to SIF as download URL.
+            ball.iSuite.setJadUrl(ball.iSourceUrl);
         }
 
         // Initialize application installation group to SuiteInfo.

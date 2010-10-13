@@ -102,6 +102,9 @@ public final class SecurityStorage
     public static final int AUTHENTICATION_JAR_HASH_QUERY = 8;
     public static final int AUTHENTICATION_VALID_CERTS_QUERY = 16;
 
+    private static final int NOT_FOUND = -2;
+    private static final int REMOVED = -1;
+
     /**
      * Constructor
      */
@@ -432,11 +435,10 @@ public final class SecurityStorage
         {
             if (oldAppUID != null)
             {
-                // remove granted permissions
-                removeGrantedPermissions(appUID);
-                
-                // write granted permissions
-                writeGrantedPermissions(appUID, null, grantedPermissions);
+                updateGrantedPermissions(
+                    appUID,
+                    oldAppUID,
+                    grantedPermissions);
                 return;
             }
             // put all the function group names into a vector and use it
@@ -740,9 +742,12 @@ public final class SecurityStorage
         if (data.getRootHashValue() != null
                 && data.getRootHashValue().length() > 0)
         {
+            int rootHashLength = (data.getRootHashValue().length() > 8
+                ? 8 : data.getRootHashValue().length());
             entry.addAttribute(new StorageAttribute(
                                    StorageNames.CERT_HASH,
-                                   data.getRootHashValue()));
+                                   data.getRootHashValue().substring(0, 
+                                   rootHashLength)));
         }
         String validCerts = encodeValidatedChainIndexes(
                                 data.getValidatedChainIndexes());
@@ -1244,6 +1249,146 @@ public final class SecurityStorage
             {/* move on with defaults */}
     }
 
+
+    private void updateGrantedPermissions(Uid newAppUID, Uid oldAppUID, Vector grantedPermissions)
+    {
+        // the vector containing the newGrantedPermissions
+        Vector newGrantedPermissions = new Vector();
+
+        // get the old permissions & settings
+        Vector oldPermissions = readGrantedPermissions(oldAppUID);
+
+        // filter out the the brand new permissions
+        // (permissions which are not found among the old permissions)
+        if (oldPermissions != null)
+        {
+            int index=0;
+            while (index < grantedPermissions.size())
+            {
+                // instead of calling Vector.removeElement(p) we will do the
+                // remove manually, since the search is to be based on
+                // the permission without the settings
+                PolicyBasedPermission p = (PolicyBasedPermission)
+                                          grantedPermissions.elementAt(index);
+                int status = removeElement(oldPermissions, p);
+                switch (status)
+                {
+                case NOT_FOUND:
+                    index++;
+                    break;
+                case REMOVED:
+                    grantedPermissions.removeElementAt(index);
+                    break;
+                default:
+                    // different settings
+                    UserSecuritySettings oldSettings
+                    = ((PolicyBasedPermission)oldPermissions
+                       .elementAt(status)).getUserSecuritySettings();
+                    UserSecuritySettings newSettings
+                    = p.getUserSecuritySettings();
+                    if (oldSettings != null
+                            && newSettings != null)
+                    {
+                        boolean activeSettings = false;
+                        if (oldSettings.isActive() 
+                            || newSettings.isActive())
+                        {
+                            activeSettings = true;
+                        }
+                        newGrantedPermissions.addElement(
+                            new PolicyBasedPermissionImpl(
+                                p.getName(),
+                                p.getTarget(),
+                                p.getActionList(),
+                                p.getType(),
+                                new UserSecuritySettingsImpl(
+                                    newSettings.getName(),
+                                    oldSettings.getCurrentInteractionMode(),
+                                    newSettings.getAllowedInteractionModes(),
+                                    oldSettings.getBlanketPrompt(),
+                                    activeSettings)));
+                    }
+                    else
+                    {
+                        newGrantedPermissions.addElement(p);
+                    }
+                    grantedPermissions.removeElementAt(index);
+                    break;
+                }
+            }
+        }
+        // write what's left from the granted permissions
+        writeGrantedPermissions(newAppUID, null, grantedPermissions, true /* preserveSettings */);
+        for (int i=0; i<newGrantedPermissions.size(); i++)
+        {
+            grantedPermissions.addElement(newGrantedPermissions.elementAt(i));
+        }
+
+        // remove what's left from the old permissions
+        if (oldPermissions != null)
+        {
+            for (int i=0; i<oldPermissions.size(); i++)
+            {
+                PolicyBasedPermission p = (PolicyBasedPermission)
+                                          oldPermissions.elementAt(i);
+                StorageEntry removePermissionQuery = new StorageEntry();
+                removePermissionQuery.addAttribute(new StorageAttribute(
+                                                       StorageAttribute.ID,
+                                                       oldAppUID.getStringValue()));
+                removePermissionQuery.addAttribute(new StorageAttribute(
+                                                       StorageNames.CLASS,
+                                                       p.getName()));
+                if (p.getTarget() != null
+                        && p.getTarget().length() > 0)
+                {
+                    removePermissionQuery.addAttribute(new StorageAttribute(
+                                                           StorageNames.NAME,
+                                                           p.getTarget()));
+                }
+                if (p.getActionList() != null
+                        && p.getActionList().length() > 0)
+                {
+                    removePermissionQuery.addAttribute(new StorageAttribute(
+                                                           StorageNames.ACTION,
+                                                           p.getActionList()));
+                }
+                doStorageRemove(StorageNames.MIDP_PERMISSIONS_TABLE,
+                                removePermissionQuery);
+                // remove the setting also if not used by some other permission
+                UserSecuritySettings settings =
+                    p.getUserSecuritySettings();
+                if (settings != null)
+                {
+                    StorageEntry permissionsQuery = new StorageEntry();
+                    permissionsQuery.addAttribute(new StorageAttribute(
+                                                      StorageAttribute.ID,
+                                                      newAppUID.getStringValue()));
+                    permissionsQuery.addAttribute(new StorageAttribute(
+                                                      StorageNames.FUNCTION_GROUP,
+                                                      settings.getName()));
+                    StorageEntry[] permissions = doStorageSearch(
+                                                     StorageNames.MIDP_PERMISSIONS_TABLE, permissionsQuery);
+                    if (permissions == null || (permissions != null
+                                                && permissions.length == 0))
+                    {
+                        // remove the orphaned settings from settings table
+                        StorageEntry removeSettingsQuery = new StorageEntry();
+                        removeSettingsQuery.addAttribute(new StorageAttribute(
+                                                             StorageAttribute.ID,
+                                                             newAppUID.getStringValue()));
+                        removeSettingsQuery.addAttribute(new StorageAttribute(
+                                                             StorageNames.FUNCTION_GROUP,
+                                                             settings.getName()));
+                        doStorageRemove(StorageNames.MIDP_FUNC_GRP_SETTINGS_TABLE,
+                                        removeSettingsQuery);
+                    }
+                }
+            }
+        }
+        // write the new permissions
+        writeGrantedPermissions(newAppUID, null, newGrantedPermissions, true /* preserveSettings */);
+    }
+
     private AuthenticationStorageData readAuthenticationStorageData(
         Uid appUID, String aAppName, String aAppVersion,
         String aAppVendor, int readFilter)
@@ -1695,6 +1840,41 @@ public final class SecurityStorage
             }
         }
         return attrValue;
+    }
+
+    private int removeElement(Vector elements, PolicyBasedPermission element)
+    {
+        PolicyBasedPermissionImpl p1 = new PolicyBasedPermissionImpl(
+            element.getName(),
+            element.getTarget(),
+            element.getActionList(),
+            null);
+        for (int i=0; i<elements.size(); i++)
+        {
+            PolicyBasedPermission tmp = (PolicyBasedPermission)elements
+                                        .elementAt(i);
+            PolicyBasedPermissionImpl p2 = new PolicyBasedPermissionImpl(
+                tmp.getName(),
+                tmp.getTarget(),
+                tmp.getActionList(),
+                null);
+            if (p1.equals(p2))
+            {
+                UserSecuritySettings s1 = element.getUserSecuritySettings();
+                UserSecuritySettings s2 = tmp.getUserSecuritySettings();
+                if ((s1 == null && s2 == null)
+                        || (s1 != null
+                            && s2 != null
+                            && s1.equals(s2)))
+                {
+                    // identical permissions
+                    elements.removeElementAt(i);
+                    return REMOVED;
+                }
+                return i;
+            }
+        }
+        return NOT_FOUND;
     }
     
     private String encodeFunctionGroup(int type, String name)

@@ -901,20 +901,6 @@ public:
     virtual void Dispose() =0;
 
     /**
-     * Function in charge of decoding an image from a buffer. This method is synchronous and enable
-     * to save memory space by filling the image buffer step by step (use AppendDataL(const HBufC8& aBuffer)
-     * param aBuffer contains a piece of the whole image data to decode
-     */
-    virtual void DecodeImageFromBufferL(const TDesC8& aBuffer) =0;
-
-    /**
-     * Enables to add data when a first call to DecodeImageFromBufferL has been initialized
-     *
-     * @param aBuffer contains a piece of the whole image data to decode.
-     */
-    virtual void AppendDataL(const TDesC8& aBuffer) =0;
-
-    /**
      * Simple getter that return the logical values for height
      */
     virtual TInt GetLogicalScreenHeight() =0;

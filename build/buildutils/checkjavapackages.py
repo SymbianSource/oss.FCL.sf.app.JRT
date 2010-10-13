@@ -16,17 +16,13 @@
 #   Checks that all the java source files declare a package and that 
 #   the directory within a java source file is located corresponds
 #   properly to the package.
-#
-#   Ignores tsrc directories unless the option -all is given.
 
 import sys, os, re
 
 
 def main():
 
-    root = sys.argv[1]
-    all = len(sys.argv) > 2 and sys.argv[2] == '-all'
-    
+    files = []
     
     # Create a reg exp matching to "package x.y.z;" with whitespace ignored
     regex = re.compile("\\s*package\\s*([\\w.]*);.*", re.IGNORECASE)
@@ -35,12 +31,8 @@ def main():
 
         # Skip SVN directories
         if dirname.find("\\.svn") != -1:
-            return
+            return names
             
-        # Skip tsrc
-        if not all and dirname.find("\\tsrc") != -1:
-            return
-                    
         for f in names:
             if not f.endswith(".java"):
                 continue
@@ -71,7 +63,7 @@ def main():
             except IOError:
                 print "Error reading the file " + fname
                 
-    os.path.walk(sys.argv[1], visitFun, None)
+    os.path.walk(sys.argv[1], visitFun, files)
 
 
 if __name__ == "__main__":

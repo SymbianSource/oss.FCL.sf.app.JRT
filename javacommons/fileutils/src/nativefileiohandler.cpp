@@ -18,8 +18,6 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <locale.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <unistd.h>
 #include <string>
 
@@ -177,6 +175,19 @@ void NativeFileIOHandler::stopWriting()
     JELOG2(EJavaFile);
     mWritePosition = -1;
     closeStream();
+}
+
+void NativeFileIOHandler::flush()
+{
+    JELOG2(EJavaFile);
+    int ret = fsync(mFileDescriptor);
+    if (ret < 0)
+    {
+        ELOG1(EJavaFile, "NativeFileIOHandler::flush() error %d", ret);
+        int error = errno;
+        throw error;
+    }
+
 }
 
 void NativeFileIOHandler::closeStream()

@@ -284,16 +284,16 @@ void CMIDDisplayable::ConstructL()
 }
 
 CMIDDisplayable::CMIDDisplayable(MMIDEnv& aEnv,CMIDUIManager& aUIManager)
-    :CEikBorderedControl(TGulBorder(KMIDLetBorder)),
-     iUIManager(&aUIManager),iEnv(aEnv),
-     iIsFullScreenMode(EFalse),iActive(EFalse), iSelectCommand(NULL), iSelectCommandEnabled(ETrue),
-     iFullscreenCanvasLabelCacheIsValid(EFalse)
+        :CEikBorderedControl(TGulBorder(KMIDLetBorder)),
+        iUIManager(&aUIManager),iEnv(aEnv),
+        iIsFullScreenMode(EFalse),iActive(EFalse), iSelectCommand(NULL), iSelectCommandEnabled(ETrue),
+        iFullscreenCanvasLabelCacheIsValid(EFalse)
 #ifdef RD_TACTILE_FEEDBACK
-     ,iPenInputServerConnected(EFalse)
+        ,iPenInputServerConnected(EFalse)
 #endif //RD_TACTILE_FEEDBACK
-     ,iIdOfMSKCommand(KErrNotFound)
-     ,iRestoreOrientation(EFalse)
-     ,iReleaseCnt(0)
+        ,iIdOfMSKCommand(KErrNotFound)
+        ,iRestoreOrientation(EFalse)
+        ,iReleaseCnt(0)
 {
 #ifdef RD_JAVA_S60_RELEASE_9_2
     iSplitScreenKeyboard = EFalse;
@@ -424,29 +424,14 @@ void CMIDDisplayable::Draw(const TRect& aRect) const
 {
     CWindowGc& gc = SystemGc();
 
-    // Set up update region - preventing MMAPI content area to
-    // be destroyed by redrawing
-#ifdef RD_JAVA_NGA_ENABLED
-    // Video overlays supported only for Canvas
-    CMIDCanvas* canvas = GetContentCanvas();
-    TBool overlayEnabled = iEnv.VideoOverlayEnabled() &&
-                           canvas && !canvas->IsGameCanvas();
-
-    if (!iDirectContentsRegion.IsEmpty() && !overlayEnabled)
-#else
+    // Set up update region - preventing DSA to be destroyed by redrawing
     if (!iDirectContentsRegion.IsEmpty())
-#endif // RD_JAVA_NGA_ENABLED
     {
         gc.CancelClippingRect();
         iUpdateRegion.Clear();
         iUpdateRegion.AddRect(aRect);
-
-        // Protect access to iDirectContentsRegion,
-        // because it may be modified in MMAPI thread.
-        MMIDEnv::TCriticalSectionAutoLock autoLock(iEnv.GetMMAPILock());
         // Remove occupied areas out from update region
         iUpdateRegion.SubRegion(iDirectContentsRegion);
-
         // Set the update region for the context
         gc.SetClippingRegion(iUpdateRegion);
     }
@@ -548,11 +533,11 @@ void CMIDDisplayable::PopulateMenuItemsWithListL
 #endif // RD_JAVA_S60_RELEASE_9_2            
         {
             if ((!isItemCommands &&
-                    (command->CommandType() != MMIDCommand::EOk) &&
-                    (command->CommandType() != MMIDCommand::EItem)) ||
-                    (command->Id() == CMIDEdwinUtils::EMenuCommandFetchPhoneNumber) ||
-                    (command->Id() == CMIDEdwinUtils::EMenuCommandFetchEmailAddress) ||
-                    (command->Id() == CMIDEdwinUtils::EMenuCommandCreatePhoneCall))
+            (command->CommandType() != MMIDCommand::EOk) &&
+            (command->CommandType() != MMIDCommand::EItem)) ||
+            (command->Id() == CMIDEdwinUtils::EMenuCommandFetchPhoneNumber) ||
+            (command->Id() == CMIDEdwinUtils::EMenuCommandFetchEmailAddress) ||
+            (command->Id() == CMIDEdwinUtils::EMenuCommandCreatePhoneCall))
             {
                 continue;
             }
@@ -1033,7 +1018,7 @@ void CMIDDisplayable::HandleForegroundL(TBool aForeground)
     {
 
         // If MIDlet is sent to background and JAD-attribute BackgroundEvent=Pause,
-        // and window is not faded yet or window is already faded but pauseApp was not called yet,
+        // and window is not faded yet or window is already faded but pauseApp was not called yet
         // then call pauseApp() method for the MIDlet.
         TBool isfaded = this->DrawableWindow()->IsFaded();
 
@@ -2468,7 +2453,7 @@ void CMIDDisplayable::InitializeCbasL()
             // There is no explicitly set MSK command and just one for the context menu.
             // Instead of a menu, put the command to MSK directly.
             RPointerArray<CMIDCommand> commands;
-            GetOkOptionsMenuCommandsL(commands);
+            GetOkOptionsMenuCommands(commands);
             ASSERT(commands.Count() == 1);
             CMIDCommand* command = commands[0];
             commands.Close();
@@ -2623,47 +2608,6 @@ TBool CMIDDisplayable::ShowOkOptionsMenuL()
     return EFalse;
 }
 
-// ---------------------------------------------------------------------------
-// See how many commands eligible for the screen or help - optins menu we have.
-// If we have only one command call ProcessCommandL. Otherwise show
-// options menu. In these two cases return ETrue. If zero or negative
-// commands do nothing and return EFalse.
-// ---------------------------------------------------------------------------
-TBool CMIDDisplayable::ShowScreenOrHelpOptionsMenuL()
-{
-    TBool ret = EFalse;
-    TInt numOkCommands = NumCommandsForOkOptionsMenu();
-    TInt numScreenOrHelpCommands = NumCommandsForScreenOrHelpOptionsMenu();
-    TInt screenOrHelpCmdIndex = GetHighestPriorityScreenOrHelpCommand();
-
-    // There is no OK or ITEM command defined on form
-    // There are SCREEN or HELP commands
-    if (iCommandList && screenOrHelpCmdIndex != KErrNotFound && numOkCommands == 0)
-    {
-        CMIDCommand *command = NULL;
-        if (iCommandList->IsValidIndex(screenOrHelpCmdIndex))
-        {
-            command = iCommandList->At(screenOrHelpCmdIndex).iCommand;
-        }
-
-        if (command && (command->CommandType() == MMIDCommand::EScreen ||
-                        command->CommandType() == MMIDCommand::EHelp) && iMenuHandler)
-        {
-            if (numScreenOrHelpCommands > 1)
-            {
-                iMenuHandler->ShowMenuL(CMIDMenuHandler::EOptionsMenu);
-                ret = ETrue;
-            }
-            else if (numScreenOrHelpCommands == 1)
-            {
-                ProcessCommandL(iCommandList->CommandOffset());
-                ret = ETrue;
-            }
-        }
-    }
-
-    return ret;
-}
 
 // ---------------------------------------------------------------------------
 // Return the number of commands that can be displayed in the ok-options menu.
@@ -2726,47 +2670,6 @@ TInt CMIDDisplayable::NumCommandsForOkOptionsMenu() const
 }
 
 // ---------------------------------------------------------------------------
-// Return the number of commands that can be displayed in the screen or help - options menu.
-// Form item screen or help commands are ignored
-//
-// TextBox/TextField device-provided commands:
-// - "Fetch number"
-// - "Call"
-// - "Fetch e-mail address"
-// are exception. Those are visible ONLY in Options menu so here they are
-// removed from context menu commands count.
-// ---------------------------------------------------------------------------
-TInt CMIDDisplayable::NumCommandsForScreenOrHelpOptionsMenu() const
-{
-    TInt ret = 0;
-
-    // Add SCREEN and HELP commands from form
-    if (iCommandList)
-    {
-        TInt numCommands = iCommandList->Count();
-        for (TInt i = 0; i < numCommands; i++)
-        {
-            const CMIDCommand& command = *(iCommandList->At(i).iCommand);
-
-            if (((command.CommandType() == MMIDCommand::EScreen) ||
-                    (command.CommandType() == MMIDCommand::EHelp)) &&
-                    (command.Id() != CMIDEdwinUtils::EMenuCommandFetchPhoneNumber) &&
-                    (command.Id() != CMIDEdwinUtils::EMenuCommandFetchEmailAddress) &&
-                    (command.Id() != CMIDEdwinUtils::EMenuCommandCreatePhoneCall))
-            {
-                TBool selectCommand = (&command == iSelectCommand);
-                if (selectCommand && !iSelectCommandEnabled)
-                {
-                    continue;
-                }
-                ret++;
-            }
-        }
-    }
-    return ret;
-}
-
-// ---------------------------------------------------------------------------
 // Returns a pointer to the command in the iCommandList with the specified
 // ID number. If such command is not found, returns NULL.
 // ---------------------------------------------------------------------------
@@ -2798,7 +2701,7 @@ CMIDCommand* CMIDDisplayable::FindCommandWithId(TInt aCommandId) const
 // If there are item commands, there are placed first. Form commands of ITEM
 // and OK type are then included always.
 // ---------------------------------------------------------------------------
-void CMIDDisplayable::GetOkOptionsMenuCommandsL(RPointerArray<CMIDCommand>& aCommands) const
+void CMIDDisplayable::GetOkOptionsMenuCommands(RPointerArray<CMIDCommand>& aCommands) const
 {
     aCommands.Reset();
     if (iItemCommandList && iItemCommandList->Count() > 0)
@@ -2810,7 +2713,7 @@ void CMIDDisplayable::GetOkOptionsMenuCommandsL(RPointerArray<CMIDCommand>& aCom
                     (command->Id() != CMIDEdwinUtils::EMenuCommandFetchEmailAddress) &&
                     (command->Id() != CMIDEdwinUtils::EMenuCommandCreatePhoneCall))
             {
-                aCommands.AppendL(command);
+                aCommands.Append(command);
             }
         }
     }
@@ -2830,7 +2733,7 @@ void CMIDDisplayable::GetOkOptionsMenuCommandsL(RPointerArray<CMIDCommand>& aCom
             {
                 continue;
             }
-            aCommands.AppendL(command);
+            aCommands.Append(command);
         }
     }
 }
@@ -3170,15 +3073,8 @@ void CMIDDisplayable::AddDirectContentArea(const TRect& aRect)
                      rect, TIdentityRelation< TDirectContentsRect >(CMIDDisplayable::MatchDirectContentsRects));
     if (index == KErrNotFound)
     {
-        TInt err = iDirectContentsRects.Append(rect);
-        if (KErrNone == err)
-        {
-            UpdateDirectContentsRegion();
-        }
-        else
-        {
-            DEBUG_INT("CMIDDisplayable::AddDirectContentArea - RArray append error %d", err);
-        }
+        iDirectContentsRects.Append(rect);
+        UpdateDirectContentsRegion();
     }
     else
     {
@@ -3227,9 +3123,6 @@ TBool CMIDDisplayable::MatchDirectContentsRects
 //
 void CMIDDisplayable::UpdateDirectContentsRegion()
 {
-    // iDirectContentsRegion is accessed both in LCDUI and MMAPI threads
-    MMIDEnv::TCriticalSectionAutoLock autoLock(iEnv.GetMMAPILock());
-
     iDirectContentsRegion.Clear();
     TInt count = iDirectContentsRects.Count();
     for (int index = 0; index < count; index++)
@@ -3238,6 +3131,11 @@ void CMIDDisplayable::UpdateDirectContentsRegion()
     }
 }
 
+
+TBool CMIDDisplayable::NoDirectContentAreaDefined()
+{
+    return iDirectContentsRegion.IsEmpty();
+}
 
 void CMIDDisplayable::SetPopupTextBox(TBool aPopup)
 {
@@ -3388,21 +3286,6 @@ void CMIDDisplayable::ProcessMSKCommandL()
     }
 }
 
-#ifdef RD_JAVA_NGA_ENABLED
-void CMIDDisplayable::GetDirectContentsRegion(RRegion& region) const
-{
-    // Protect access to iDirectContentsRegion,
-    // because it may be modified in MMAPI thread.
-    MMIDEnv::TCriticalSectionAutoLock autoLock(iEnv.GetMMAPILock());
-    region.Copy(iDirectContentsRegion);
-}
-
-TInt CMIDDisplayable::DirectContentsCount() const
-{
-    return iDirectContentsRegion.Count();
-}
-#endif // RD_JAVA_NGA_ENABLED
-
 void CMIDDisplayable::DisplayableBehindPopupIsDestroyed()
 {
     // Old fullscreen Displayable is destroyed.
@@ -3438,7 +3321,7 @@ void CMIDDisplayable::HideIndicators()
     HideIndicator(pane, EEikStatusPaneUidDigitalClock);
 }
 
-CMIDCanvas* CMIDDisplayable::GetContentCanvas() const
+CMIDCanvas* CMIDDisplayable::GetContentCanvas()
 {
     CMIDCanvas* ret = NULL;
     if (iContent && iContentControl &&
@@ -3507,7 +3390,7 @@ void CMIDDisplayable::ReleaseOrientation()
 }
 
 CPropertyWatch::CPropertyWatch()
-    : CActive(0)
+        : CActive(0)
 {
 }
 

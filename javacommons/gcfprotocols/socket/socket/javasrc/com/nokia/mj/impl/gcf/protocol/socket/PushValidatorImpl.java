@@ -127,7 +127,7 @@ public class PushValidatorImpl extends PushValidator
         Logger.LOG(Logger.ESOCKET, Logger.EInfo,
                    "socket - push validator : before security check");
         ApplicationUtils appUtils = ApplicationUtils.getInstance();
-        SocketPermissionImpl per = new SocketPermissionImpl(SocketPermissionImpl.SERVER_TARGET);
+        SocketPermissionImpl per = new SocketPermissionImpl("socket://");
         appUtils.checkPermission(per);
         /* security check */
         Logger.LOG(Logger.ESOCKET, Logger.EInfo,

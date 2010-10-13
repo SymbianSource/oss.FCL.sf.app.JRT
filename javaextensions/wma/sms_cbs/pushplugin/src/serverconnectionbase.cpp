@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -82,19 +82,21 @@ OS_EXPORT int ServerConnectionBase::getMessagesOnStore() const
     return mMessagesOnStore;
 }
 
-int ServerConnectionBase::createMessageStore(std::wstring aDirectoryPath)
+int ServerConnectionBase::createMessageStore(std::wstring aDirectoryPath, bool aDeleteStore)
 {
     JELOG2(EWMA);
     aDirectoryPath += JavaCommonUtils::intToWstring(mPort);
-    aDirectoryPath +=L"\\" ;
-    mMessageStoreDirName = aDirectoryPath;
+    // If not push connection delete the message store.
+    if (aDeleteStore)
+       removeDir(aDirectoryPath);
+    mMessageStoreDirName = aDirectoryPath + L"\\";
     LOG1(EWMA, EInfo , " Creating message store in path %S",
          mMessageStoreDirName.c_str());
     // See if directory is present
-    if (FileUtilities::isDirectory(mMessageStoreDirName))
+    if (FileUtilities::isDirectory(aDirectoryPath))
     {
         std::list<std::wstring> dirList = FileUtilities::getDirContentsList
-                                          (mMessageStoreDirName);
+                                          (aDirectoryPath);
         mMessagesOnStore = dirList.size();
         if (mMessagesOnStore> 0)
         {
@@ -198,7 +200,7 @@ int ServerConnectionBase::removeDir(const std::wstring aDirPath)
         {
             for (it = dirList.begin(); it != dirList.end(); it++)
             {
-                std::wstring element(aDirPath);
+                std::wstring element(aDirPath + L"\\");
                 element += *it;
                 char *fileName = JavaCommonUtils::wstringToUtf8(element);
                 if ((error = remove(fileName)) != 0)

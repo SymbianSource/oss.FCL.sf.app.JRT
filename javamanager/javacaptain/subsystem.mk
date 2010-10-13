@@ -36,7 +36,6 @@ NONQTSUBSYSTEMS = \
 endif
 
 COMPONENTS += extensionplugins/preinstallerstarter/build
-COMPONENTS += extensionplugins/autostarter/build
 ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 COMPONENTS += extensionplugins/scrupdater/build
 endif

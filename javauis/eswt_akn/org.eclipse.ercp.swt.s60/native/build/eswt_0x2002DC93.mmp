@@ -45,7 +45,6 @@ MACRO		RD_JAVA_EPOCALLOWDLLDATA_FIX
 MACRO		RD_JAVA_HTTP_EMC_ENABLED
 MACRO		RD_JAVA_NGA_ENABLED
 MACRO		RD_JAVA_PROXIMITY_LISTENER_ENABLED
-MACRO		RD_JAVA_PIM_MULTICAL_ENABLED
 MACRO		RD_JAVA_OPENC_BETA_PATCH
 MACRO		RD_JAVA_INSTALLERUI_ENABLED
 MACRO		RD_JAVA_PREWARM
@@ -53,8 +52,12 @@ MACRO		RD_JAVA_ADVANCED_TACTILE_FEEDBACK
 MACRO		RD_JAVA_MIDPRMS_DB
 MACRO		__SYMBIAN32__
 MACRO		J9EPOC32
+MACRO		RD_JAVA_OMJ_FSERVER
 
 SYSTEMINCLUDE		../../../../../../../mw/qt/mkspecs/common/symbian
+SYSTEMINCLUDE		/epoc32/include/domain/applications
+SYSTEMINCLUDE		/epoc32/include/applications
+SYSTEMINCLUDE		/epoc32/include/domain/middleware
 SYSTEMINCLUDE		../inc
 SYSTEMINCLUDE		../../../../inc
 SYSTEMINCLUDE		../../../../../inc
@@ -66,6 +69,7 @@ SYSTEMINCLUDE		.
 SOURCEPATH 	../src
 SOURCE		cswtclient.cpp
 SOURCE		methodcall.cpp
+SOURCE		mifconverter.cpp
 SOURCE		org_eclipse_ercp_swt_expanded_internal_OS.cpp
 SOURCE		org_eclipse_ercp_swt_mobile_internal_OS.cpp
 SOURCE		org_eclipse_swt_internal_symbian_OS.cpp
@@ -177,7 +181,7 @@ SOURCE		utils.cpp
 SOURCE		imagescaler.cpp
 
 
-LIBRARY		AknIcon.lib
+LIBRARY		aknicon.lib
 LIBRARY		aknhlist.lib
 LIBRARY		aknlayout.lib
 LIBRARY		aknpictograph.lib
@@ -192,11 +196,11 @@ LIBRARY		bafl.lib
 LIBRARY		bitgdi.lib
 LIBRARY		bitmaptransforms.lib
 LIBRARY		bmpanim.lib
-LIBRARY		CdlEngine.lib
+LIBRARY		cdlengine.lib
 LIBRARY		centralrepository.lib
 LIBRARY		commdb.lib
 LIBRARY		commondialogs.lib
-LIBRARY		CommonEngine.lib
+LIBRARY		commonengine.lib
 LIBRARY		commonui.lib
 LIBRARY		cone.lib
 LIBRARY		ecom.lib

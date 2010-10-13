@@ -94,6 +94,11 @@ public:
      * Returns the amount of data available in the file from current read offset.
      */
     virtual long available();
+    
+    /**
+     * Flush the contents to the permanent storage.
+     */
+    virtual void flush();
 
 protected:
     virtual void handleReopenCase();

@@ -78,6 +78,8 @@ public:
     MSwtImage* NewImageL(const TSize& aSize);
     MSwtImage* NewImageFromDataL(const MSwtImageData& aData);
     MSwtImage* NewImageFromThemeL(const TInt aId);
+    MSwtImage* NewImageFromSvgBufL(const TDesC8& aBuf, const TSize& aSize);
+    MSwtImage* NewImageFromSvgFileL(const TDesC& aFile, const TSize& aSize);
     MSwtImage* ScaleImageL(const MSwtImage& aSrcImage,
                            const TSize& aDestSize, TBool aKeepAspectRatio);
     inline CSwtJavaBufferDrawer& JavaBufferDrawer();
@@ -201,8 +203,12 @@ public:
 public:
     void HandleMediaKeyEvent(TKeyEvent& aKeyEvent, TInt aEventType);
 
+// Own private methods
 private:
     TInt LoadResourceFileL();
+    void StoreSvgAsMifL(const TDesC8& aSvgBuf, TFileName& aGeneratedFile);
+    CFbsBitmap* RasterizeL(const CFbsBitmap& aMifBmp);
+    HBufC8* LoadFileL(const TDesC& aFileName);
 
 // Java thread's data
 protected:

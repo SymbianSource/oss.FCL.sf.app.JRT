@@ -2200,27 +2200,6 @@ void CSwtTable::EnableFocusHighlight(TBool aEnable)
 }
 #endif //RD_JAVA_S60_RELEASE_9_2
 
-// ---------------------------------------------------------------------------
-// CSwtTable::PrepareForTraverse
-// From MSwtControl
-// ---------------------------------------------------------------------------
-//
-void CSwtTable::PrepareForTraverse()
-{
-    ASSERT(iTableListBox);
-    ASSERT(iTableListBox->View());
-
-#ifdef RD_JAVA_S60_RELEASE_9_2
-    // AvKon enables highlight only when key event is recieved.
-    // When traversing, no key event is sent to AvKon, so we
-    // have to enable highlight by ourselves.
-    CListItemDrawer* itemDrawer = iTableListBox->View()->ItemDrawer();
-    if (itemDrawer)
-    {
-        itemDrawer->ClearFlags(CListItemDrawer::ESingleClickDisabledHighlight);
-    }
-#endif //RD_JAVA_S60_RELEASE_9_2
-}
 
 // ---------------------------------------------------------------------------
 // From ASwtScrollableBase

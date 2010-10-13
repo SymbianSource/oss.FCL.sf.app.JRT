@@ -42,10 +42,15 @@ _LIT(KRfComm, "RFCOMM");
 OS_EXPORT RFCOMMServerConnection::RFCOMMServerConnection(
     java::bluetooth::BluetoothFunctionServer* server):
         mAcceptMonitor(NULL),
+        mAcceptStatus(0),
+        mAcceptedSocket(0),
         mAsyncAccept(false),
+        mAvoidFilter(false),
+        mPushEventListener(0),
         mBtUrlParams(NULL),
         mBtClientConn(NULL),
         mServer(server),
+        mListenSock(0),
         mIsConnected(EFalse),
         mServRec(NULL),
         mState(ENone)

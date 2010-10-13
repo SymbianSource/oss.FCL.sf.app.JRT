@@ -62,12 +62,12 @@ public:
     /**
      * Add a image which will be rotate after a call to the method Start().
      */
-    void AddImageL(CFbsBitmap* aImage);
+    void AddImage(CFbsBitmap* aImage);
 
     /**
     * Add images which will be rotate after a call to the method Start().
     */
-    void AddImagesL(const RArray<CFbsBitmap*>& aImages);
+    void AddImages(const RArray<CFbsBitmap*>& aImages);
 
     /**
     * Indicate if a redraw should be make when the rotation of all images is finih,

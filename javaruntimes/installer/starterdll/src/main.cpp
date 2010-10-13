@@ -221,7 +221,7 @@ TInt startJavaCaptain()
 #endif
 
         // Wait 3 seconds so that Java Captain has time to start
-        User::After(3000000); // codescanner::userafter
+        User::After(3000000);
     }
     else
     {
@@ -384,12 +384,7 @@ int startJvm(int argc, char *argv[])
     jvm->appendSystemProperty(
         L"-Dcom.nokia.mj.impl.rt.ui="
         L"com.nokia.mj.impl.installer.ui.eswt2.InstallerRuntimeUi");
-#ifdef __SYMBIAN32__
-#ifndef __WINS__
-    //jvm->appendSystemProperty(L"-Dcom.nokia.mj.impl.installer.ui.disableui=1");
-#endif //__WINS__
-#endif // __SYMBIAN32__
-#else // RD_JAVA_S60_RELEASE_10_1_ONWARDS
+#else
     jvm->appendSystemProperty(
         L"-Dcom.nokia.mj.impl.installer.ui="
         L"com.nokia.mj.impl.installer.ui.eswt.InstallerUiEswt");

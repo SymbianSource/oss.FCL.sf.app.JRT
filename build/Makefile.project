@@ -49,9 +49,6 @@ ifeq ($(BUILDENV),symbian)
       # Use release written in file
       include $(RD_JAVA_S60_RELEASE_FILE)
     else
-    ifneq ($(wildcard $(addsuffix Symbianv4.sis,$(S60_STUBSIS_DIRS))),)
-      RD_JAVA_S60_RELEASE = 10.1
-    else
     ifneq ($(wildcard $(addsuffix Series60v5.2.sis,$(S60_STUBSIS_DIRS))),)
       RD_JAVA_S60_RELEASE = 9.2
     else
@@ -62,7 +59,6 @@ ifeq ($(BUILDENV),symbian)
       RD_JAVA_S60_RELEASE = 5.0
     else
       $(error Cannot determine S60 release, no known stub files in $(S60_STUBSIS_DIRS))
-    endif
     endif
     endif
     endif
@@ -178,6 +174,13 @@ endif
 ifdef RD_JAVA_USIF_ENABLED
   SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK = 1
   PROJECT_DEFINES += SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
+  # Following flag enables application registrations to USIF
+  # and disables application registrations to AppArc.
+  PROJECT_DEFINES += RD_JAVA_USIF_APP_REG
+  # Following flag enables application notifications to AppArc.
+  #PROJECT_DEFINES += RD_JAVA_USIF_NOTIFY_APP_ARC
+  # Following flag enables installation progress notifications through USIF.
+  #PROJECT_DEFINES += RD_JAVA_USIF_NOTIFY_PROGRESS
 endif
 
 # Java proximity Listener support exsist in 9.2 only(can not be used if 5.0 untill IAD dependecy mentioned)
@@ -186,14 +189,6 @@ ifndef RD_JAVA_S60_RELEASE_5_0
 endif
 ifdef RD_JAVA_PROXIMITY_LISTENER_ENABLED
   PROJECT_DEFINES += RD_JAVA_PROXIMITY_LISTENER_ENABLED
-endif
-
-# Java PIM Multiple Calendar exsist in 9.2 only(can not be used if 5.0 and for 10.1 as native support doesn't exsist)
-ifdef RD_JAVA_S60_RELEASE_9_2
-  RD_JAVA_PIM_MULTICAL_ENABLED = 1
-endif
-ifdef RD_JAVA_PIM_MULTICAL_ENABLED
-  PROJECT_DEFINES += RD_JAVA_PIM_MULTICAL_ENABLED
 endif
 
 ifeq ($(OPENC_BETA_PATCH),1)

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -171,12 +171,12 @@ OS_EXPORT int java::start(const char* fileName)
 }
 
 JavaStarterImpl::JavaStarterImpl(const std::list<std::wstring>& args):
-    mJvmStarter(0),
-    mRuntimeStarterUtils(0),
-    mOriginalArgs(args),
-    mShudownOk(false),
-    mIsMainApp(true),
-    mConfiguration(JvmStarter::UNDEFINED)
+        mJvmStarter(0),
+        mRuntimeStarterUtils(0),
+        mOriginalArgs(args),
+        mShudownOk(false),
+        mIsMainApp(true),
+        mConfiguration(JvmStarter::UNDEFINED)
 
 {
     JELOG2(EJavaRuntime);
@@ -212,19 +212,12 @@ int JavaStarterImpl::start()
 
     // Create the start screen and start it if needed.
     std::auto_ptr<java::util::DynamicLibLoader> coreUiLoader;
+    CoreUi& coreUi = CoreUi::getUiInstance(coreUiLoader);
     if (mUiParams.getScreenMode() != NO_START_SCREEN)
     {
         LOG(EJavaRuntime, EInfo, "StartUI");
-        CoreUi::start(coreUiLoader, mAppUid, &mUiParams);
+        coreUi.start(mAppUid, &mUiParams);
         LOG(EJavaRuntime, EInfo, "StartUI ok");
-    }
-
-    // Add the rest of the JVM args.
-    for (std::list<std::wstring>::const_iterator iter = mFlagArgs.begin();
-            iter != mFlagArgs.end(); ++iter)
-    {
-        LOG1(EJavaRuntime, EInfo, "Adding args %S", iter->c_str());
-        mJvmStarter->appendRawJvmArgument(*iter);
     }
 
     // Sets the -jar, -jad, -cp (or -classpath) args if were provided.

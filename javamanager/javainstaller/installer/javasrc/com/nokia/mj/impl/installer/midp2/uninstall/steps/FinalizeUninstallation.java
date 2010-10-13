@@ -102,10 +102,6 @@ public class FinalizeUninstallation extends ExeStep
                 ball.log("Application with uid " + appUids[i] + " uninstalled");
             }
         }
-
-        // Add an entry to platform installation log.
-        ball.iApplicationRegistrator.addInstallLogEntry(ball.iSuite, 1);
-
         ball.log("Application suite with uid " + ball.iSuite.getUid() +
                  " successfully uninstalled.");
     }

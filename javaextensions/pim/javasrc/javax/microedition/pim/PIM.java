@@ -80,63 +80,20 @@ public abstract class PIM
     {
     }
 
-    /**
-     * @param aPimListType which list user want to open Ex.CONTACT_LIST, EVENT_LIST, or TODO_LIST.
-     * @param aMode list open mode  READ_ONLY or  WRITE_ONLY or READ_WRITE
-     * @return PIMList
-     * @throws javax.microedition.pim.PIMException
-     */
     public abstract PIMList openPIMList(int aPimListType, int aMode)
     throws PIMException;
 
-    /**
-     *
-     * @param aPimListType aPimListType which list user want to open Ex.CONTACT_LIST, EVENT_LIST, or TODO_LIST.
-     * @param aMode list open mode  READ_ONLY or  WRITE_ONLY or READ_WRITE
-     * @param aName List name
-     * @return  PIMList
-     * @throws javax.microedition.pim.PIMException
-     */
     public abstract PIMList openPIMList(int aPimListType, int aMode,
                                         String aName) throws PIMException;
 
-    /**
-     *
-     * @param aPimListType  aPimListType which list user want to open Ex.CONTACT_LIST, EVENT_LIST, or TODO_LIST.
-     * @return String which contains list of PIMList names
-     */
     public abstract String[] listPIMLists(int aPimListType);
 
-    /**
-     * @param aIs an inputstream object containing PIM information
-     * @param aEnc encoding of the characters in the input stream
-     * @return PIMItem Array
-     * @throws javax.microedition.pim.PIMException
-     * @throws java.io.UnsupportedEncodingException
-     */
     public abstract PIMItem[] fromSerialFormat(java.io.InputStream aIs,
             String aEnc) throws PIMException, UnsupportedEncodingException;
 
-    /**
-     *
-     * @param aItem the item to export
-     * @param aOs the OutputStream object that where is written to as a character stream.
-     * @param aEnc  encoding of the characters in the input stream
-     * @param aDataFormat PIM data format to use
-     * @throws javax.microedition.pim.PIMException
-     * @throws java.io.UnsupportedEncodingException
-     */
     public abstract void toSerialFormat(PIMItem aItem,
                                         java.io.OutputStream aOs, String aEnc, String aDataFormat)
     throws PIMException, UnsupportedEncodingException;
 
-    /**
-     *
-     * @param aPimListType which list user want to open Ex.CONTACT_LIST, EVENT_LIST, or TODO_LIST.
-     * @return String object
-     */
     public abstract String[] supportedSerialFormats(int aPimListType);
-
-
-
 }

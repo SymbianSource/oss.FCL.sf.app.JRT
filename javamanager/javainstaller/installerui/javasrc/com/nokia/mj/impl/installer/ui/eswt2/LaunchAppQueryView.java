@@ -18,9 +18,12 @@
 
 package com.nokia.mj.impl.installer.ui.eswt2;
 
+import com.nokia.mj.impl.installer.ui.InstallInfo;
 import com.nokia.mj.impl.installer.ui.LaunchAppInfo;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Button;
 
 /**
  * LaunchAppQueryView asks from the user if the installed
@@ -28,6 +31,9 @@ import org.eclipse.swt.widgets.Composite;
  */
 public class LaunchAppQueryView extends ConfirmationViewBase
 {
+    private LaunchAppInfo iLaunchAppInfo = null;
+    private Button iDefaultButton = null;
+
     /** Constructor */
     protected LaunchAppQueryView()
     {
@@ -40,7 +46,7 @@ public class LaunchAppQueryView extends ConfirmationViewBase
     {
         super(aInstallerUi, aParent, 8);
         setTitle(InstallerUiTexts.get(InstallerUiTexts.INSTALLATION_COMPLETE));
-        setCommands(InstallerUiTexts.get(InstallerUiTexts.SHOW),
+        setCommands("Show", //InstallerUiTexts.get(InstallerUiTexts.SHOW),
                     InstallerUiTexts.get(InstallerUiTexts.CLOSE));
     }
 
@@ -52,6 +58,7 @@ public class LaunchAppQueryView extends ConfirmationViewBase
             return false;
         }
 
+        iLaunchAppInfo = aLaunchAppInfo;
         // Use confirm() from super class to display the view.
         boolean result = confirm();
         // Return the result to the client.
@@ -61,8 +68,8 @@ public class LaunchAppQueryView extends ConfirmationViewBase
     protected void createView()
     {
         // Add header.
-        addHeader(InstallerUiTexts.get(InstallerUiTexts.INSTALLATION_COMPLETE),
-                  iInstallerUi.getInstallInfo(), null);
+        String title = "Installed";
+        addHeader(title, iInstallerUi.getInstallInfo(), null);
         // Add content to the application info Composite.
         addAppInfo(iInstallerUi.getInstallInfo(), true);
     }
@@ -73,5 +80,27 @@ public class LaunchAppQueryView extends ConfirmationViewBase
     protected void getDataFromView()
     {
         // User selection data is initialized in button listeners.
+    }
+
+    /**
+     * Returns SWT style for this view.
+     */
+    protected int getStyle()
+    {
+        return SWT.V_SCROLL;
+    }
+
+    /**
+     * Called after view and commands have been created. Subclasses
+     * can overrride this method to set focus to their own default
+     * commands.
+     */
+    protected void setDefaultCommand()
+    {
+        if (iDefaultButton != null)
+        {
+            iDefaultButton.setFocus();
+            getShell().setDefaultButton(iDefaultButton);
+        }
     }
 }

@@ -69,20 +69,20 @@ public class ErrorDetailsView extends ConfirmationViewBase
     protected void createView()
     {
         // Add title.
-        Label titleLabel = null;
         String title = InstallerUiTexts.get(InstallerUiTexts.INSTALL_FAILED);
         if (iInstallerUi.getInstallInfo() != null)
         {
-            titleLabel = createLabel(title, getColumns() - 1, SWT.WRAP);
+            Label titleLabel = createLabel(title, getColumns() - 1, SWT.WRAP);
+            titleLabel.setFont(iInstallerUi.getBoldFont());
             // Add security icon.
             iCertificates = iInstallerUi.getInstallInfo().getCertificates();
             createSecurityButton();
         }
         else
         {
-            titleLabel = createLabel(title, getColumns(), SWT.WRAP);
+            Label titleLabel = createLabel(title, getColumns(), SWT.WRAP);
+            titleLabel.setFont(iInstallerUi.getBoldFont());
         }
-        setCssId(titleLabel, "heading");
 
         int horizontalSpan = getColumns();
         int labelStyle = SWT.WRAP;
@@ -90,7 +90,6 @@ public class ErrorDetailsView extends ConfirmationViewBase
         // Begin widgets creation.
         Label errorLabel = createLabel(
             iException.getDetailedMessage(), horizontalSpan, labelStyle);
-        setCssId(errorLabel, "errorLabel");
         // End of widgets creation.
     }
 

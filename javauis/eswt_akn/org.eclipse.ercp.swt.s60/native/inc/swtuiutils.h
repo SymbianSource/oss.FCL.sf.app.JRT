@@ -15,7 +15,7 @@
 
 
 #include <AknPopupFader.h>
-#include <aknappui.h>
+#include <AknAppUi.h>
 #include "eswtwidgetscore.h"
 
 

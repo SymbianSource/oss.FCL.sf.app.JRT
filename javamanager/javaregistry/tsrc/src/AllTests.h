@@ -15,7 +15,7 @@
 *
 */
 
-#include <CppUTest/Utest.h>
+#include "Utest.h"
 
 //Include this in the test main to execute these tests
 IMPORT_TEST_GROUP(TestRegistry);

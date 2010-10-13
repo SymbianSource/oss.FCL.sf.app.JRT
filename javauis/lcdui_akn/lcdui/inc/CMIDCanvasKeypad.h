@@ -22,6 +22,7 @@
 #include <coecntrl.h>
 #include <gdi.h>
 #include <lcdui.h>
+#include <AknsBasicBackgroundControlContext.h> //skin
 
 class CAknButton;
 class CMIDDisplayable;
@@ -170,7 +171,7 @@ private:
     *
     * @since S60 5.0
     */
-    void InitializeKeysL();
+    void InitializeKeys();
 
     /**
     * Sets key event struct for each button.
@@ -365,6 +366,11 @@ private:
      * Static callback function called on tap timer.
      */
     static TInt TapTimerCallbackL(TAny* aThis);
+
+    /**
+    * Basic Background Control Context
+    */
+    MAknsControlContext* iBackgroundCC;
 
     /**
      * Tap counter with timer interval KTapTimerExpiryInterval

@@ -39,19 +39,16 @@ PAGED
 // Includes
 USERINCLUDE     .
 USERINCLUDE     ../inc
-USERINCLUDE     ../../../inc
+
+SYSTEMINCLUDE ../../../inc /epoc32/include/ecom /epoc32/include/swi
 
 // Sources
 SOURCEPATH    ../src
 SOURCE        javasidchecker.cpp
 
-START RESOURCE ../data/10281FBE.rss
-target         javasidchecker.rsc
-END
-START RESOURCE ../data/10281FBE_iad.rss
-TARGET         javasidchecker.rsc
-TARGETPATH     resource/java/iad
-END
+start RESOURCE ../data/10281FBE.rss
+target javasidchecker.rsc
+end
 
 #ifdef RD_JAVA_OLD_SIDCHECKER_LIBRARY
 LIBRARY apfile.lib

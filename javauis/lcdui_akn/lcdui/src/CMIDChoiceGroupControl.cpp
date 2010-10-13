@@ -216,21 +216,8 @@ void CMIDChoiceGroupControl::CreateControlL(
     }
 
     //in case skin or resolution has changed
-#ifdef RD_JAVA_S60_RELEASE_9_2
-    TBool highlighted = EFalse;
-    if (iItem)
-    {
-        highlighted = iItem->IsHighlighted();
-    }
-#endif // RD_JAVA_S60_RELEASE_9_2
-
     iModel->ReConstructSelectionIconsL();
-
-#ifdef RD_JAVA_S60_RELEASE_9_2
-    iModel->UpdateIconArrayL(highlighted);
-#else
     iModel->UpdateIconArrayL();
-#endif // RD_JAVA_S60_RELEASE_9_2
 
     iListBox = CreateListBoxL(aParent);
 
@@ -642,19 +629,6 @@ void CMIDChoiceGroupControl::HandleChoiceGroupModelEventL(
     }
 }
 
-#ifdef RD_JAVA_S60_RELEASE_9_2
-TBool CMIDChoiceGroupControl::IsControlOnFormHighlighted()
-{
-    if (iItem)
-    {
-        return iItem->IsHighlighted();
-    }
-    else
-    {
-        return EFalse;
-    }
-}
-#endif // RD_JAVA_S60_RELEASE_9_2
 
 // --- from MEikListBoxObserver ---
 // Handles choice listbox events (as in selection)
@@ -714,36 +688,20 @@ TKeyResponse CMIDChoiceGroupControl::OfferKeyEventL(
     // Save the currently selected item (if exclusive choice)
     TInt oldSelected = iModel->SelectedElement();
     TInt oldCurrentIndex = -1;
-#ifdef RD_JAVA_S60_RELEASE_9_2
-    TBool wasHighlighted = EFalse;
-#endif // RD_JAVA_S60_RELEASE_9_2
 
     if (iListBox)
     {
-#ifdef RD_JAVA_S60_RELEASE_9_2
-        wasHighlighted = iListBox->GetHighlight();
-#endif // RD_JAVA_S60_RELEASE_9_2
-
         oldCurrentIndex = iListBox->View()->CurrentItemIndex();
         // Let the listbox take a shot at the key
         resp = iListBox->OfferKeyEventL(aKeyEvent, aType);
-
-#ifdef RD_JAVA_S60_RELEASE_9_2
-        wasHighlighted = (iListBox->GetHighlight() && !wasHighlighted) ? EFalse : ETrue;
-#endif // RD_JAVA_S60_RELEASE_9_2
     }
 
     // If click (enter) on an already selected item in an exclusive choice,
-    // do not consume the key. This allows the form to display a context menu.
-    // Choicegroup element need to be focused and selected
+    // do not consume the key. This allows the form to display a context menu
     if ((iType == MMIDChoiceGroup::EExclusive) &&
             ((aKeyEvent.iCode == EKeyOK) || (aKeyEvent.iCode == EKeyEnter)) &&
             ((oldSelected != -1) || (oldSelected == -1 && oldCurrentIndex == -1)) &&
-            (oldSelected == iModel->SelectedElement())
-#ifdef RD_JAVA_S60_RELEASE_9_2
-            && (wasHighlighted && iListBox->GetHighlight())
-#endif // RD_JAVA_S60_RELEASE_9_2
-       )
+            (oldSelected == iModel->SelectedElement()))
     {
         // Do not consume the key, so that form can pop a menu
         CMIDDisplayable& displayable = iItem->Form()->CurrentDisplayable();
@@ -765,19 +723,10 @@ TKeyResponse CMIDChoiceGroupControl::OfferKeyEventL(
         }
         else
         {
-            TInt numScreenOrHelpCommands = displayable.NumCommandsForScreenOrHelpOptionsMenu();
-
             // if ( cntOpt > 1 ) will run menu, else execute ProcessCommandL( CommandOffset )
             if (cntOpt > 1)
             {
                 displayable.MenuHandler()->ShowMenuL(CMIDMenuHandler::EOkMenu);
-                resp = EKeyWasConsumed;
-            }
-            else if (cntOpt == 0 && numScreenOrHelpCommands > 1)
-            {
-                // If there is more than one screen command on form
-                // and there is no ok/item commands then show menu
-                displayable.MenuHandler()->ShowMenuL(CMIDMenuHandler::EOptionsMenu);
                 resp = EKeyWasConsumed;
             }
             else if (command && command->CommandType() != MMIDCommand::EBack &&
@@ -1418,12 +1367,7 @@ void CMIDChoiceGroupControl::DoPopupL()
 {
     //in case skin or resolution has changed
     iModel->ReConstructSelectionIconsL();
-
-#ifdef RD_JAVA_S60_RELEASE_9_2
-    iModel->UpdateIconArrayL(EFalse);
-#else
     iModel->UpdateIconArrayL();
-#endif
 
     // In order for the listbox to have popup as parent, it
     // needs to be allocated and constructed separately
@@ -1920,20 +1864,5 @@ TInt CMIDChoiceGroupControl::FirstInvisibleElement(CMIDForm::TDirection aScrollD
 CMIDForm* CMIDChoiceGroupControl::Form() const
 {
     return iItem->Form();
-}
-
-CMIDControlItem* CMIDChoiceGroupControl::ControlItem() const
-{
-    return iItem;
-}
-
-CMIDChoiceGroupListBox* CMIDChoiceGroupControl::InnerListBoxControl() const
-{
-    return iListBox;
-}
-
-CMIDChoiceGroupModel* CMIDChoiceGroupControl::InnerListBoxModel() const
-{
-    return iModel;
 }
 #endif // RD_JAVA_S60_RELEASE_9_2    

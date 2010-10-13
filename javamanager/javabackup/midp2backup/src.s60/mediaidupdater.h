@@ -19,6 +19,8 @@
 #ifndef MEDIAIDUPDATER_H
 #define MEDIAIDUPDATER_H
 
+#include "javaosheaders.h"
+
 #include <string>
 #include <set>
 
@@ -39,7 +41,7 @@ namespace backup
 *   - another memory card is used during restore than originally
 */
 
-class MediaIdUpdater
+OS_NONSHARABLE_CLASS(MediaIdUpdater)
 {
 public:
     MediaIdUpdater();

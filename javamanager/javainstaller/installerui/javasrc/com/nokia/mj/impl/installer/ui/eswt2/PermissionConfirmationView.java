@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
@@ -61,7 +62,7 @@ public class PermissionConfirmationView extends ConfirmationViewBase
     protected PermissionConfirmationView(
         InstallerUiEswt aInstallerUi, Composite aParent)
     {
-        super(aInstallerUi, aParent, 8);
+        super(aInstallerUi, aParent, 8, true);
         setTitle(InstallerUiTexts.get(InstallerUiTexts.INSTALLING));
         setCommands(null, null);
     }
@@ -92,30 +93,39 @@ public class PermissionConfirmationView extends ConfirmationViewBase
     protected void createView()
     {
         // Add header.
-        addHeader(null, iInstallInfo, null);
+        String title = "Install?";
+        String appName = "";
+        if (iInstallInfo != null)
+        {
+            if (iInstallInfo.getOldVersion() != null)
+            {
+                title = "Update?";
+            }
+            appName = iInstallInfo.getName();
+        }
+        addHeader(title, iInstallInfo, null);
 
         GridData gridData = null;
+        int horizontalSpan = getColumns();
         int labelStyle = SWT.WRAP;
 
         // Add permission query label.
-        int detailsColumns = 2;
-        int horizontalSpan = getColumns() - detailsColumns;
-        Label permissionQueryLabel = createLabel(
-            InstallerUiTexts.get(InstallerUiTexts.PERM_QUERY),
+        Label domainLabel = createLabel(
+            InstallerUiTexts.get(InstallerUiTexts.PERM_QUERY,
+                                 new String[] { appName }),
             horizontalSpan, labelStyle);
-        setCssId(permissionQueryLabel, "permissionDetails");
 
         // Add link for permission details.
         if (iPermissionInfo != null &&
                 iPermissionInfo.getPermissionNames() != null &&
                 iPermissionInfo.getPermissionNames().length > 0)
         {
-            horizontalSpan = detailsColumns;
-            Button detailsButton = new Button(getComposite(), SWT.NONE);
-            setCssId(detailsButton, "detailsLink");
-            detailsButton.setText(
-                InstallerUiTexts.get(InstallerUiTexts.PERM_VIEW_DETAILS));
-            detailsButton.addListener(SWT.Selection, new Listener()
+            Link detailsLink = new Link(getComposite(), SWT.NONE);
+            detailsLink.setText(
+                "<a>" +
+                InstallerUiTexts.get(InstallerUiTexts.PERM_VIEW_DETAILS) +
+                "</a>");
+            detailsLink.addListener(SWT.Selection, new Listener()
             {
                 public void handleEvent(Event aEvent)
                 {
@@ -124,15 +134,15 @@ public class PermissionConfirmationView extends ConfirmationViewBase
             });
             gridData = new GridData(GridData.FILL_HORIZONTAL);
             gridData.horizontalSpan = horizontalSpan;
-            detailsButton.setLayoutData(gridData);
-            addSoftKeyListenerFor(detailsButton);
+            detailsLink.setLayoutData(gridData);
+            addSoftKeyListenerFor(detailsLink);
         }
 
-        horizontalSpan = getColumns();
+        // Number of pixels on top of the buttons.
+        int verticalIndent = 5;
 
         // Add allow button.
         iAllowButton = new Button(getComposite(), SWT.NONE);
-        setCssId(iAllowButton, "allowButton");
         iAllowButton.setText(InstallerUiTexts.get(
                                  InstallerUiTexts.PERM_ALLOW_ALWAYS));
         iAllowButton.addListener(SWT.Selection, new Listener()
@@ -159,13 +169,13 @@ public class PermissionConfirmationView extends ConfirmationViewBase
         });
         gridData = new GridData(GridData.FILL_HORIZONTAL);
         gridData.horizontalSpan = horizontalSpan;
+        gridData.verticalIndent = verticalIndent;
         iAllowButton.setLayoutData(gridData);
         iAllowButton.setFocus();
         addSoftKeyListenerFor(iAllowButton);
 
         // Add deny button.
         iDenyButton = new Button(getComposite(), SWT.NONE);
-        setCssId(iDenyButton, "denyButton");
         iDenyButton.setText(InstallerUiTexts.get(
                                 InstallerUiTexts.PERM_ASK_ME_LATER));
         iDenyButton.addListener(SWT.Selection, new Listener()
@@ -192,12 +202,12 @@ public class PermissionConfirmationView extends ConfirmationViewBase
         });
         gridData = new GridData(GridData.FILL_HORIZONTAL);
         gridData.horizontalSpan = horizontalSpan;
+        gridData.verticalIndent = verticalIndent;
         iDenyButton.setLayoutData(gridData);
         addSoftKeyListenerFor(iDenyButton);
 
         // Add cancel button.
         iCancelButton = new Button(getComposite(), SWT.NONE);
-        setCssId(iCancelButton, "cancelButton");
         iCancelButton.setText(InstallerUiTexts.get(InstallerUiTexts.PERM_CANCEL));
         iCancelButton.addListener(SWT.Selection, new Listener()
         {
@@ -222,12 +232,9 @@ public class PermissionConfirmationView extends ConfirmationViewBase
         });
         gridData = new GridData(GridData.FILL_HORIZONTAL);
         gridData.horizontalSpan = horizontalSpan;
+        gridData.verticalIndent = verticalIndent;
         iCancelButton.setLayoutData(gridData);
         addSoftKeyListenerFor(iCancelButton);
-
-        // After other widgets have been added, add content to
-        // application info Composite.
-        addAppInfo(iInstallInfo, false);
     }
 
     /**

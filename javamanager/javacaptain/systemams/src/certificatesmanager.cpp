@@ -231,7 +231,7 @@ void CertificatesManager::EnableTrustRootL(const TInt aId)
     LazyInit();
     iCurrentCertInfo = getTrustRootL(aId);
     RArray<TUid> applications;
-    applications.AppendL(KMidletInstallApplicabilityUid);
+    applications.Append(KMidletInstallApplicabilityUid);
     iCertStore->SetApplicability(*iCurrentCertInfo, applications, iStatus);
     User::WaitForRequest(iStatus);
     if (iStatus.Int() == KErrNone)

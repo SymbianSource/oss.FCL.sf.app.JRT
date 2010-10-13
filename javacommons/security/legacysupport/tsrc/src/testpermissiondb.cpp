@@ -23,7 +23,7 @@
 #include "javastoragenames.h"
 #include "javauid.h"
 
-#include "j2me/midp2/security/midp2permissiondb.h"
+#include <midp2permissiondb.h>
 
 using namespace MIDP;
 using namespace java::storage;

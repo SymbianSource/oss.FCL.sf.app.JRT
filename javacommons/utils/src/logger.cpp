@@ -30,10 +30,6 @@
 #include <sstream>
 #include <iomanip>
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
 #include "jdebug_omj.h"
 #include "logger.h"
 #include "javacommonutils.h"
@@ -340,16 +336,14 @@ void Logger::Print(const char* txt, int index)
     int logFileNameLen = strlen(fileName);
     TPtr8 fileNamePtr((unsigned char*)fileName, logFileNameLen, logFileNameLen);
     RBuf nameBuf;
-    int rc = nameBuf.Create(fileNamePtr.MaxLength());
-    if (rc == KErrNone)
-    {
-        nameBuf.Copy(fileNamePtr);
+    nameBuf.Create(fileNamePtr.MaxLength());
+    nameBuf.Copy(fileNamePtr);
 
-        TInt len = strlen(txt);
-        TPtr8 ptr((unsigned char*)txt, len, len);
-        RFileLogger::Write(KJavaLogDir, nameBuf, EFileLoggingModeAppendRaw, ptr);
-        nameBuf.Close();
-    }
+    TInt len = strlen(txt);
+    TPtr8 ptr((unsigned char*)txt, len, len);
+    RFileLogger::Write(KJavaLogDir, nameBuf, EFileLoggingModeAppendRaw, ptr);
+
+    nameBuf.Close();
 
 #else //J_LOG_USE_RLOGGER_ENABLED
 

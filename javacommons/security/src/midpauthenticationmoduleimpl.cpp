@@ -40,7 +40,6 @@
 #include <openssl/rsa.h>
 #include <openssl/sha.h>
 #include <string.h>
-#include <errno.h>
 
 using namespace java::security;
 using namespace java::storage;
@@ -54,7 +53,7 @@ const char SHA_1_ALG_FOOTPRINT[] =
 /* forward declarations of local/private methods */
 static int verify_callback(int, X509_STORE_CTX *);
 int getErrCode(int);
-int verifyCertChain(char **, int, const unsigned char *, int, vector<string> CAs, char *, char *, CERT_DETAILS*);
+int verifyCertChain(char **, int, const unsigned char *, int, vector<string> CAs, char *, char *, char *, CERT_DETAILS*);
 
 JNIEXPORT jobjectArray JNICALL Java_com_nokia_mj_impl_security_midp_authentication_AuthenticationModule__1validateChainsAndSignatures
 (JNIEnv * env, jobject, jobjectArray authInfos)
@@ -77,6 +76,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_nokia_mj_impl_security_midp_authenticati
     AUTH_INFO* authInfo = NULL;
     char * jar_hash = NULL;
     char * root_hash = NULL;
+    char * root_id = NULL;
     int validation_result = KDefault;
     for (int i=0; i<len; i++)
     {
@@ -87,20 +87,24 @@ JNIEXPORT jobjectArray JNICALL Java_com_nokia_mj_impl_security_midp_authenticati
         jar_hash[0] = '\0';
         root_hash = new char[MD5_DIGEST_LEN + 1];
         root_hash[0] = '\0';
+        root_id = new char[2*SHA_1_DIGEST_LEN + 1];
+        root_id[0] = '\0';
         details = new CERT_DETAILS();
         int chain_verification_result = verifyCertChain(
                                             authInfo->cert_chain, authInfo->cert_chain_len,
                                             (const unsigned char *)authInfo->signature,
                                             authInfo->signature_len, CAs, jar_hash,
-                                            root_hash, details);
+                                            root_hash, root_id, details);
         if (chain_verification_result == KCertAndSignatureOk)
         {
             validation_result = KCertAndSignatureOk;
             auth_credentials = new AUTH_CREDENTIALS();
             auth_credentials->jar_hash = new char[2*SHA_1_DIGEST_LEN + 1];
             auth_credentials->root_hash = new char[MD5_DIGEST_LEN + 1];
+            auth_credentials->root_id = new char[2*SHA_1_DIGEST_LEN + 1];
             memmove(auth_credentials->jar_hash, jar_hash, 2*SHA_1_DIGEST_LEN + 1);
             memmove(auth_credentials->root_hash, root_hash, MD5_DIGEST_LEN + 1);
+            memmove(auth_credentials->root_id, root_id, 2*SHA_1_DIGEST_LEN + 1);
             auth_credentials->chain_index = i+1;
             auth_credentials->signing_cert = details;
             all_auth_credentials.push_back(auth_credentials);
@@ -115,6 +119,8 @@ JNIEXPORT jobjectArray JNICALL Java_com_nokia_mj_impl_security_midp_authenticati
             jar_hash = NULL;
             delete[] root_hash;
             root_hash = NULL;
+            delete[] root_id;
+            root_id = NULL;
             // just record the failure of the chain validation
             if (chain_verification_result > validation_result)
             {
@@ -179,9 +185,19 @@ JNIEXPORT jobjectArray JNICALL Java_com_nokia_mj_impl_security_midp_authenticati
         std::string protection_domain_name;
         std::string protection_domain_category;
         JavaCertStoreHandler::retrieveRootProtDomainInfo(
-            all_auth_credentials[i]->root_hash,
+            all_auth_credentials[i]->root_id,
             protection_domain_name,
             protection_domain_category);
+        if (strcmp(protection_domain_name.c_str(),"") == 0)
+        {
+            // clean up the root_id
+            delete[] all_auth_credentials[i]->root_id;
+            all_auth_credentials[i]->root_id = NULL;
+            JavaCertStoreHandler::retrieveRootProtDomainInfo(
+                all_auth_credentials[i]->root_hash,
+                protection_domain_name,
+                protection_domain_category);
+        }
         if (strcmp(protection_domain_name.c_str(),""))
         {
             // DeveloperCertificates: if domain_category is manufacturer and we have predefined_domain_category use the predefined one
@@ -252,13 +268,6 @@ JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_security_midp_authentication_Au
         delete[] jar_hash_value;
         jar_hash_value = NULL;
         return hash;
-    }
-    else
-    {
-        if (errno == ENOENT)
-        {
-            SecurityUtils::throw_exception(env, "JAR_NOT_FOUND");
-        }
     }
     return NULL;
 }
@@ -401,7 +410,7 @@ MIDPAuthenticationModuleImpl::MIDPAuthenticationModuleImpl()
 int verifyCertChain(char **cert_chain, int no_certs,
                     const unsigned char * sig, int sig_len,
                     vector<string> CAs, char * jar_hash,
-                    char * root_hash, CERT_DETAILS* details)
+                    char * root_hash, char * root_id, CERT_DETAILS* details)
 {
     X509 *end_entity_cert;
     X509_STORE_CTX *x509_ctx = NULL;
@@ -494,6 +503,7 @@ int verifyCertChain(char **cert_chain, int no_certs,
                     if (user_cert != NULL)
                     {
                         sprintf(root_hash,"%08lX",X509_issuer_name_hash(user_cert));
+                        SecurityUtils::computePublicKeyHash(user_cert, root_id);
                         X509_free(user_cert);
                         ret_code = KCertAndSignatureOk;
                     }
@@ -541,13 +551,12 @@ int verifyCertChain(char **cert_chain, int no_certs,
             if (root != NULL)
             {
                 sprintf(root_hash,"%08lX",X509_issuer_name_hash(root));
-                // no need to free the root explicitly since it will be 
-                // freed when freeing all the roots from roots_certs_st 
-                // stack
+                SecurityUtils::computePublicKeyHash(root, root_id);
             }
         }
         // add the '\0'
         root_hash[MD5_DIGEST_LEN] = '\0';
+        root_id[SHA_1_DIGEST_LEN] = '\0';
 
         // 1. get the public key of the signing cert
         // 2. decode the provided signature using the signing cert's public key

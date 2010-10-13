@@ -326,6 +326,7 @@ void CMIDTextFieldItem::SetContainerWindowL(const CCoeControl& aContainer)
 
 void CMIDTextFieldItem::FocusChanged(TDrawNow aDrawNow)
 {
+    TBool cursorVisibility = EFalse;
     if (IsFocused())
     {
         // Setting focus to iTextField changes the cursor visibility. This might cause
@@ -335,17 +336,20 @@ void CMIDTextFieldItem::FocusChanged(TDrawNow aDrawNow)
         iTextField->AddFlagToUserFlags(CEikEdwin::EAvkonDisableCursor);
         iTextField->SetFocus(ETrue);
         iTextField->RemoveFlagFromUserFlags(CEikEdwin::EAvkonDisableCursor);
-        SetCursorVisibility(IsVisible());
+        cursorVisibility = IsVisible();
     }
     else
     {
         iTextField->SetFocus(EFalse);
+        cursorVisibility = EFalse;
     }
 
     CMIDControlItem::FocusChanged(aDrawNow);
     // DoLayout and change text color when focused
     SizeChanged();
     TRAP_IGNORE(UpdateTextColorsL());
+
+    SetCursorVisibility(cursorVisibility);
 }
 
 void CMIDTextFieldItem::HandleCurrentL(TBool aCurrent)
@@ -386,7 +390,7 @@ void CMIDTextFieldItem::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 {
     if (AknLayoutUtils::PenEnabled())
     {
-        if (!iForm->PhysicsScrolling())
+        if (!iForm->PhysicsScrolling() && !iTextField->IsReadOnly())
         {
             SetCursorVisibility(ETrue);
         }
@@ -667,6 +671,11 @@ void CMIDTextFieldItem::SetCursorVisibility(TBool aVisible)
         TCursor::TVisibility textCursor =
             aVisible ? TCursor::EFCursorFlashing : TCursor::EFCursorInvisible;
 
+        if (iTextField->IsReadOnly())
+        {
+            textCursor = TCursor::EFCursorInvisible;
+        }
+
         // lineCursor is not used in TextField, so it is set to TCursor::EFCursorInvisible always
         TRAP_IGNORE(iTextField->TextView()->SetCursorVisibilityL(TCursor::EFCursorInvisible,
                     textCursor));
@@ -675,7 +684,7 @@ void CMIDTextFieldItem::SetCursorVisibility(TBool aVisible)
 
 void CMIDTextFieldItem::UpdateTextColorsL()
 {
-    if (iTextField)
+    if (iTextField && !iTextField->IsReadOnly())
     {
         // Set color for content text according to item highlight
         // (logical color constants are defined in lcdui.h)

@@ -21,7 +21,7 @@
 
 
 #include <e32std.h>
-#include <ecom/implementationproxy.h>
+#include <implementationproxy.h>
 #include <appversion.h>
 
 #include "javauids.h"

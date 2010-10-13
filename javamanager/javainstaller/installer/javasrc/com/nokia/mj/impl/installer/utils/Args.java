@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -20,7 +20,6 @@ package com.nokia.mj.impl.installer.utils;
 
 import com.nokia.mj.impl.installer.utils.InstallerException;
 import com.nokia.mj.impl.installer.utils.Log;
-import com.nokia.mj.impl.utils.Base64;
 import com.nokia.mj.impl.utils.Tokenizer;
 
 import java.util.Hashtable;
@@ -60,7 +59,6 @@ public class Args
                 //Log.log("Args: " + arg + "=" + value);
             }
         }
-        decodeBase64Args();
     }
 
     /**
@@ -205,59 +203,7 @@ public class Args
             }
             drive = aDrive.toLowerCase().charAt(0) - 'a';
         }
-        Log.log("Args: Parsed drive " + aDrive + " --> " + drive);
+        Log.log("Parsed drive " + aDrive + " --> " + drive);
         return drive;
-    }
-
-    /**
-     * Decodes base64 encoded arguments.
-     * In Symbian environment the decoded argument is UTF-16LE string.
-     *
-     * @see /sf/app/jrt/javacommons/utils/inc/javacommonutils.h,
-     *  wbase64encode()
-     */
-    private void decodeBase64Args()
-    {
-        String base64Value = get("base64");
-        if (base64Value == null || base64Value.length() == 0)
-        {
-            return;
-        }
-        String[] tokens = Tokenizer.split(base64Value, ",");
-        String name = null;
-        String value = null;
-        for (int i = 0; i < tokens.length; i++)
-        {
-            name = tokens[i];
-            value = null;
-            if (name != null && name.length() > 0)
-            {
-                value = get(name);
-            }
-            if (value != null && value.length() > 0)
-            {
-                try
-                {
-                    byte[] valueBytes = Base64.decode(value);
-                    if (valueBytes != null && valueBytes.length > 0)
-                    {
-                        value = new String(valueBytes, "UTF-16LE");
-                        Log.log("Args: Base64 decoded option " +
-                                name + "=" + value);
-                        iArgs.put(name, value);
-                    }
-                    else
-                    {
-                        Log.logError("Args: Base64 decoding failed for " +
-                                     name + "=" + value);
-                    }
-                }
-                catch (Throwable t)
-                {
-                    Log.logError("Args: Base64 decoding failed for " +
-                                 name + "=" + value, t);
-                }
-            }
-        }
     }
 }

@@ -134,12 +134,6 @@ TBool CMIDGraphics::ProcessL(
         // need to be calculated.
         eglAvailable = ETrue;
     }
-    
-    // Use premultiplied colors in target bitmap if
-    // EGL surface is in use or Canvas has video overlay active.
-    TBool premultiplied = eglAvailable || 
-            (iCanvasTarget && iCanvasTarget->IsVideoOverlayActive());
-            
 #else // !RD_JAVA_NGA_ENABLED
 TBool CMIDGraphics::ProcessL(
     const TMIDBufferOp*& aRead, const TMIDBufferOp* aEnd,
@@ -356,7 +350,7 @@ TBool CMIDGraphics::ProcessL(
 #ifndef RD_JAVA_NGA_ENABLED
             graphics.DrawImage(image, drawImage->iPoint, drawImage->iAnchor);
 #else // RD_JAVA_NGA_ENABLED
-            graphics.DrawImage(image, drawImage->iPoint, drawImage->iAnchor, premultiplied);
+            graphics.DrawImage(image, drawImage->iPoint, drawImage->iAnchor, eglAvailable);
             if (eglAvailable)
             {
                 UpdateRect(CalcDstRect(
@@ -384,7 +378,7 @@ TBool CMIDGraphics::ProcessL(
             graphics.DrawRegion(
                 image, drawRegion->iSrcPosition, drawRegion->iSrcSize,
                 drawRegion->iTransform, drawRegion->iDstPoint,
-                drawRegion->iAnchor, premultiplied);
+                drawRegion->iAnchor, eglAvailable);
             if (eglAvailable)
             {
                 UpdateRect(CalcDstRect(drawRegion->iDstPoint, drawRegion->iSrcSize,
@@ -500,12 +494,6 @@ TInt CMIDGraphics::DrawPixels
     {
         premultiplied = ETrue;
         UpdateRect(aRect);
-    }
-    
-    // Video overlay support
-    if (iCanvasTarget && iCanvasTarget->IsVideoOverlayActive())
-    {
-        premultiplied = ETrue;
     }
 #endif
 

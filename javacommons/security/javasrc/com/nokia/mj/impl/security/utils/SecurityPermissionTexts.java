@@ -17,7 +17,6 @@
 
 package com.nokia.mj.impl.security.utils;
 
-import com.nokia.mj.impl.utils.Id;
 import com.nokia.mj.impl.utils.LocalizedTextProvider;
 import com.nokia.mj.impl.utils.ResourceLoader;
 
@@ -29,25 +28,20 @@ public class SecurityPermissionTexts extends LocalizedTextProvider
     private static ResourceLoader iRes = null;
 
     // identifiers for the security permission texts
-    public static final Id CALL_CONTROL = new Id("call_control", "N/A");
-    public static final Id NET_ACCESS = new Id("net_access", "N/A");
-    public static final Id LOW_LEVEL_NET_ACCESS = new Id("low_level_net_access", "N/A");
-    public static final Id MESSAGING = new Id("messaging", "qt_kalle_test_d");
-    public static final Id RESTRICTED_MESSAGING = new Id("restricted_messaging", "N/A");
-    public static final Id APP_AUTO_INVOCAT = new Id("app_auto_invocat", "N/A");
-    public static final Id LOCAL_CONN = new Id("local_conn", "N/A");
-    public static final Id MM_RECORD = new Id("mm_record", "N/A");
-    public static final Id READ_DATA = new Id("read_data", "N/A");
-    public static final Id WRITE_DATA = new Id("write_data", "N/A");
-    public static final Id LOCATION = new Id("location", "N/A");
-    public static final Id LANDMARKS = new Id("landmarks", "N/A");
-    public static final Id AUTH = new Id("auth", "N/A");
-    public static final Id BROADCAST = new Id("broadcast", "N/A");
-
-    private static final String AVKON_LOC_FILE = "javainstallation";
-    private static final String AVKON_PREFIX = "qtn_java_inst_perm_";
-    private static final String QT_LOC_FILE = "N/A";
-    private static final String QT_PREFIX = "N/A";
+    public static final String CALL_CONTROL = "call_control";
+    public static final String NET_ACCESS = "net_access";
+    public static final String LOW_LEVEL_NET_ACCESS = "low_level_net_access";
+    public static final String MESSAGING = "messaging";
+    public static final String RESTRICTED_MESSAGING = "restricted_messaging";
+    public static final String APP_AUTO_INVOCAT = "app_auto_invocat";
+    public static final String LOCAL_CONN = "local_conn";
+    public static final String MM_RECORD = "mm_record";
+    public static final String READ_DATA = "read_data";
+    public static final String WRITE_DATA = "write_data";
+    public static final String LOCATION = "location";
+    public static final String LANDMARKS = "landmarks";
+    public static final String AUTH = "auth";
+    public static final String BROADCAST = "broadcast";
 
     /**
      * Creates an instance of the SecurityPermissionTexts
@@ -79,13 +73,12 @@ public class SecurityPermissionTexts extends LocalizedTextProvider
      * @return            the localized text associated with the provided
      *                    identifier and parameters
      */
-    public String getText(Id aTextId, Object[] aTextParams)
+    public String getText(String aTextId, Object[] aTextParams)
     {
         if (iRes == null)
         {
-            iRes = ResourceLoader.getInstance(AVKON_LOC_FILE, AVKON_PREFIX, QT_LOC_FILE, QT_PREFIX);
+            iRes = ResourceLoader.getInstance("javainstallation", "qtn_java_inst_perm_");
         }
-
         return iRes.format(aTextId, aTextParams);
     }
 }

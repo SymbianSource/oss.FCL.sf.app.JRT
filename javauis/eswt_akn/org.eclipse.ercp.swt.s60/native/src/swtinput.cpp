@@ -24,10 +24,7 @@
 //
 CSwtInput* CSwtInput::NewL(TSwtPeer aPeer, TInt aId)
 {
-    CSwtInput* self = new(ELeave) CSwtInput(aPeer);
-    CleanupStack::PushL(self);
-    self->ConstructL(aId);
-    CleanupStack::Pop(self);
+    CSwtInput* self = new(ELeave) CSwtInput(aPeer, aId);
     return self;
 }
 
@@ -35,26 +32,20 @@ CSwtInput* CSwtInput::NewL(TSwtPeer aPeer, TInt aId)
 // CSwtInput::CSwtInput
 // ---------------------------------------------------------------------------
 //
-CSwtInput::CSwtInput(TSwtPeer aPeer)
+CSwtInput::CSwtInput(TSwtPeer aPeer, TInt aId)
         : iPeer(aPeer)
-        , iType(KErrNotFound)
-        , iLocation(KErrNotFound)
 {
-}
-
-void CSwtInput::ConstructL(TInt aId)
-{
+    iType = KErrNotFound;
+    iLocation = KErrNotFound;
     RArray<CSwtMobileDevice::TSwtHwInput> inputs;
-    CleanupClosePushL(inputs);
-    CSwtMobileDevice::GetHwInputsL(inputs);
+    CSwtMobileDevice::GetHwInputs(inputs);
     if (aId < inputs.Count())
     {
         iType = inputs[aId].iType;
         iLocation = inputs[aId].iLocation;
     }
-    CleanupStack::PopAndDestroy(&inputs);
+    inputs.Close();
 }
-
 
 // ---------------------------------------------------------------------------
 // CSwtInput::~CSwtInput

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -58,10 +58,9 @@ ServerConnection* ServerConnectionBase::getServerConnection(
     return cbsConn;
 }
 
-OS_EXPORT CbsServerConnection::~CbsServerConnection()
+CbsServerConnection::~CbsServerConnection()
 {
     JELOG2(EWMA);
-    removeDir(mMessageStoreDirName);
 }
 
 void CbsServerConnection::initializeL()
@@ -128,7 +127,7 @@ void CbsServerConnection::initializeL()
     }
 }
 
-OS_EXPORT void CbsServerConnection::open(ConnectionListener* aListener,
+void CbsServerConnection::open(ConnectionListener* aListener,
                                bool aIsAppLaunched)
 {
     JELOG2(EWMA);
@@ -192,7 +191,8 @@ OS_EXPORT void CbsServerConnection::open(ConnectionListener* aListener)
         const java::runtime::ApplicationInfo& appInf =
             java::runtime::ApplicationInfo::getInstance();
         const std::wstring& root = appInf.getRootPath();
-        error = createMessageStore(root + CBS_STORE_PATH);
+        // At this point mIsAppLaunched will be true if it not push connection.
+        error = createMessageStore(root + CBS_STORE_PATH, mIsAppLaunched);
         if (error != KErrNone)
         {
             ELOG1(EWMA,"CBS : create message store failed : %d",error);
@@ -214,12 +214,6 @@ OS_EXPORT void CbsServerConnection::open(ConnectionListener* aListener)
         }
 
         mOpenMonitor->wait();
-        // If there are any messages already available in the message store
-        // notify the listener
-        if (mMessagesOnStore > 0)
-        {
-            mListener->msgArrived();
-        }
         mIsListening = true;
     }
 }
@@ -282,7 +276,7 @@ void CbsServerConnection::DoCancel()
     }
 }
 
-OS_EXPORT int CbsServerConnection::retrieveMessage(TJavaMessageParametersBuf& aCbsBuf)
+int CbsServerConnection::retrieveMessage(TJavaMessageParametersBuf& aCbsBuf)
 {
     JELOG2(EWMA);
     TCBSParametersBuf cbsParametersBuf;
@@ -328,7 +322,7 @@ OS_EXPORT int CbsServerConnection::retrieveMessage(TJavaMessageParametersBuf& aC
 }
 
 
-OS_EXPORT void CbsServerConnection::close()
+void CbsServerConnection::close()
 {
     JELOG2(EWMA);
     // the close and RunL are synchronized to make it SMP safe.
@@ -524,7 +518,7 @@ void CbsServerConnection::readMessageFromStackL()
         }
         // Store the received page number, such that the message can
         // be reconstructed in the correct order later
-        mCbsMessagePagesRef.AppendL(currentPage);
+        mCbsMessagePagesRef.Append(currentPage);
 
         // Store the actual content of the message
         mCbsMessagePagesData->AppendL(messageData);

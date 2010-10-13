@@ -543,7 +543,7 @@ void CJavaRegStore::AddUidsL(
                 {
                     if (IsPresentL((*iter)))
                     {
-                        aUids.AppendL(uid);
+                        aUids.Append(uid);
                     }
                 }
             }
@@ -765,7 +765,7 @@ void CJavaRegStore::PopulateAppTypePropertiesL(
                         TInt err = uidToTUid(appUid, converted);
                         if (KErrNone == err)
                         {
-                            uids.AppendL(converted);
+                            uids.Append(converted);
                         }
                         else
                         {

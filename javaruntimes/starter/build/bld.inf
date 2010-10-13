@@ -19,5 +19,5 @@ PRJ_PLATFORMS
 default
 
 PRJ_MMPFILES  
-javamidp_0x102033E6.mmp 
+java_0x102033E6.mmp 
 #include "exports.inf" 

@@ -74,7 +74,6 @@
     value="com.nokia.mj.impl.installer.utils.SysUtil,
            com.nokia.mj.impl.installer.utils.FileRoots,
            com.nokia.mj.impl.installer.utils.FileWriter,
-           com.nokia.mj.impl.installer.utils.PropertyProvider,
            com.nokia.mj.impl.installer.jadjarmatcher.JadJarMatcher,
            com.nokia.mj.impl.installer.applicationregistrator.ApplicationRegistrator,
            com.nokia.mj.impl.installer.applicationregistrator.SifNotifier,

@@ -11,8 +11,6 @@
 
 package org.eclipse.swt.internal.extension;
 
-import java.io.InputStream;
-
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -36,15 +34,5 @@ public final class ImageUtil {
             Point destSize, boolean keepAspectRatio) {
         return Image.internal_new(device, OS.Image_Scale(device.handle,
                 srcImage.handle, destSize.x, destSize.y, keepAspectRatio));
-    }
-
-    public static Point getImageSize(Device device, String filename) {
-        // Stub implementation for compatibility with Qt-based eSWT.
-        return null;
-    }
-    
-    public static Point getImageSize(InputStream stream) {
-        // Stub implementation for compatibility with Qt-based eSWT.
-        return null;
     }
 }

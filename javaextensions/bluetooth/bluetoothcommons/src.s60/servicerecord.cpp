@@ -148,7 +148,7 @@ OS_EXPORT int ServiceRecord::initializeRecord(int aProtocol, int aPSMValue,
     TPtrC8 uuidDes(uuidBytes, uuidByteLength);
     TRAPD(err, uuid.SetL(uuidDes));
 
-    delete[] uuidBytes;
+    delete uuidBytes;
     uuidBytes = NULL;
 
     if (KErrNone != err)
@@ -205,7 +205,7 @@ int ServiceRecord::restorePersistentRecordFs()
             char *fileName = java::util::JavaCommonUtils::wstringToUtf8(
                                  persistentFileName);
             persistentRecFd = open(fileName, O_RDONLY);
-            delete[] fileName;
+            delete fileName;
         }
         catch (ExceptionBase ex)
         {
@@ -618,7 +618,7 @@ OS_EXPORT void ServiceRecord::initializeUpdateRecord(int aDeviceServiceClasses)
             write(mSrvRecFd, (char *) &aDeviceServiceClasses,
                   sizeof(aDeviceServiceClasses));
 
-            delete[] fileName;
+            delete fileName;
         }
         catch (ExceptionBase ex)
         {
@@ -1286,7 +1286,7 @@ OS_EXPORT void ServiceRecord::restoreJavaServiceRecordL(
             char *fileName =
                 java::util::JavaCommonUtils::wstringToUtf8(persistentFileName);
             persistentRecFd = open(fileName, O_RDONLY);
-            delete[] fileName;
+            delete fileName;
         }
         catch (ExceptionBase ex)
         {
@@ -1310,10 +1310,7 @@ OS_EXPORT void ServiceRecord::restoreJavaServiceRecordL(
     unsigned int devServClass = 0;
     ret = read(persistentRecFd, &devServClass, sizeof(devServClass));
     if (ret <= 0)
-    {
-        delete srvRecPopulator;
         return;
-    }
 
     elementBuilder = srvRecPopulator->SetDeviceServiceClass(devServClass);
 

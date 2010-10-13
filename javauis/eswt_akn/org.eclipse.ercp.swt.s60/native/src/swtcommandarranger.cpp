@@ -229,7 +229,7 @@ void CSwtCommandArranger::ClearMenu()
 
 #ifdef RD_SCALABLE_UI_V2
     TRAP_IGNORE(iDisplay.MenuArranger().CloseStylusPopupMenuL());
-#endif //RD_SCALABLE_UI_V2);
+#endif //RD_SCALABLE_UI_V2);        
 }
 
 void CSwtCommandArranger::ComputeAndRefreshCbaAndMenuL(TBool aFocusedControlOnly)
@@ -305,10 +305,10 @@ void CSwtCommandArranger::ComputeAndRefreshCbaAndMenuL(TBool aFocusedControlOnly
             // Add a separator in the command menu before appending the new commands to it
             if (itIsNotTheFirstControlWithCommands)
             {
-                iCommandMenu->AppendSeparatorL();
+                iCommandMenu->AppendSeparator();
                 if (iCommandMenuOK)
                 {
-                    iCommandMenuOK->AppendSeparatorL();
+                    iCommandMenuOK->AppendSeparator();
                 }
             }
             else
@@ -445,7 +445,10 @@ void CSwtCommandArranger::ComputeAndRefreshCbaAndMenuL(TBool aFocusedControlOnly
                 iCbaCommands[cbaIndex]->Text());
 
             // Dimming
-            iCba.DimCommand(commandId, !iCbaCommands[cbaIndex]->IsEnabled());
+            if (!iCbaCommands[cbaIndex]->IsEnabled())
+            {
+                iCba.DimCommand(commandId, ETrue);
+            }
 
             // Set default command
             if (iCbaCommands[cbaIndex] == iDefaultCommand)
@@ -1597,5 +1600,5 @@ TInt CSwtCommandArranger::GetIndexOfCommandContainer(const MSwtControl& aControl
     return iCommands.FindInOrder(iSearchedContainer, containerOrder);
 }
 
-#endif //RD_SCALABLE_UI_V2
+#endif //RD_SCALABLE_UI_V2    
 

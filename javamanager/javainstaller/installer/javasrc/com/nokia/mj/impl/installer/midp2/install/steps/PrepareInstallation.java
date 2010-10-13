@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -29,7 +29,6 @@ import com.nokia.mj.impl.installer.integrityservice.IntegrityService;
 import com.nokia.mj.impl.installer.jsrpluginnotifier.JsrPluginNotifier;
 import com.nokia.mj.impl.installer.storagehandler.StorageHandler;
 import com.nokia.mj.impl.installer.utils.Args;
-import com.nokia.mj.impl.installer.utils.DriveInfo;
 import com.nokia.mj.impl.installer.utils.FileRoots;
 import com.nokia.mj.impl.installer.utils.FileUtils;
 import com.nokia.mj.impl.installer.utils.InstallerException;
@@ -38,10 +37,7 @@ import com.nokia.mj.impl.installer.utils.MidpAttributeValidator;
 import com.nokia.mj.impl.installer.utils.SysUtil;
 import com.nokia.mj.impl.security.midp.authentication.AuthenticationModule;
 import com.nokia.mj.impl.security.midp.authentication.OcspSettings;
-import com.nokia.mj.impl.fileutils.FileURL;
 import com.nokia.mj.impl.utils.Uid;
-
-import java.util.Vector;
 
 public class PrepareInstallation extends ExeStep
 {
@@ -174,11 +170,6 @@ public class PrepareInstallation extends ExeStep
             {
                 aBall.iJarUrl = jarArg;
             }
-            else if (isFileUrl(jarArg))
-            {
-                aBall.iJarFilename = getFileFromUrl(jarArg);
-                Log.log("Jar " + aBall.iJarFilename + " from URL " + jarArg);
-            }
             else
             {
                 aBall.iJarFilename = jarArg;
@@ -189,11 +180,6 @@ public class PrepareInstallation extends ExeStep
             if (Downloader.isDownloadUrl(jadArg))
             {
                 aBall.iJadUrl = jadArg;
-            }
-            else if (isFileUrl(jadArg))
-            {
-                aBall.iJadFilename = getFileFromUrl(jadArg);
-                Log.log("Jad " + aBall.iJadFilename + " from URL " + jadArg);
             }
             else
             {
@@ -280,7 +266,6 @@ public class PrepareInstallation extends ExeStep
         if (arg != null)
         {
             aBall.iInstallationDrive = args.parseDrive(arg);
-            checkInstallationDrive(aBall.iInstallationDrive);
         }
     }
 
@@ -360,61 +345,5 @@ public class PrepareInstallation extends ExeStep
                              aBall.iIap, aBall.iSnap);
         Log.log("ocspSettings: " + ocspSettings);
         return ocspSettings;
-    }
-
-    /**
-     * Returns true if given URL is a file URL, false otherwise.
-     */
-    private static boolean isFileUrl(String aUrl)
-    {
-        if (aUrl == null || aUrl.length() == 0)
-        {
-            return false;
-        }
-        return aUrl.toLowerCase().startsWith("file://");
-    }
-
-    /**
-     * Returns a file path from file URL.
-     *
-     * @throws InstallerException if URL is invalid.
-     */
-    private static String getFileFromUrl(String aUrl)
-    {
-        String filePath = null;
-        try
-        {
-            FileURL fileUrl = new FileURL(aUrl);
-            filePath = fileUrl.getFullPath();
-        }
-        catch (Throwable t)
-        {
-            InstallerException.internalError("Invalid file URL: " + aUrl, t);
-        }
-        return filePath;
-    }
-
-    /**
-     * Checks that given installation drive is a valid one.
-     *
-     * @param aDrive installation drive
-     * @throws InstallerException if installation drive is not valid
-     */
-    private static void checkInstallationDrive(int aDrive)
-    {
-        Vector drives = new Vector();
-        SysUtil.getUserVisibleDrives(drives);
-        for (int i = 0; i < drives.size(); i++)
-        {
-            DriveInfo driveInfo = (DriveInfo)drives.elementAt(i);
-            if (driveInfo.getNumber() == aDrive)
-            {
-                // Installation drive found from user visible drives.
-                return;
-            }
-        }
-        InstallerException.internalError(
-            "Invalid installation drive: " + aDrive +
-            " (" + (char)('A' + aDrive) + ")");
     }
 }

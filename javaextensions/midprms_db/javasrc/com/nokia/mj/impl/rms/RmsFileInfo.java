@@ -71,7 +71,7 @@ class RmsFileInfo
 
     private long getSize()
     {
-        long size = -1;
+        long size = 0;
         try
         {
             size = iFile.fileSize();
@@ -82,7 +82,6 @@ class RmsFileInfo
         }
         if (size < 0)
         {
-            Logger.WLOG(Logger.EMidpRms, "fileSize = " + size);
             size = 0;
         }
         return size;
@@ -103,19 +102,18 @@ class RmsFileInfo
 
     private long getFreeSpace()
     {
-        long size = -1;
+        long size = 0;
         try
         {
             size = iFile.availableSize();
         }
         catch (Exception e)
         {
-            Logger.ELOG(Logger.EMidpRms, "availableSize() failed" , e);
+            Logger.ELOG(Logger.EMidpRms, "availableSize()" , e);
         }
         if (size < 0)
         {
-            Logger.WLOG(Logger.EMidpRms, "availableSize = " + size);
-            size = MAX_RMS_SIZE;
+            size = 0;
         }
         return size;
     }

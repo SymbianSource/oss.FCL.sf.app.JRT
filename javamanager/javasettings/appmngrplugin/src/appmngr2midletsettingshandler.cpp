@@ -244,11 +244,9 @@ bool CAppMngr2MidletSettingsHandler::OnScreenKeypadValuePreDefinedL()
 
     findEntry(queryResult, VALUE, value);
 
-    if (value.size() > 0
-        && ((value == L"no")
-        || (value == L"navigationkeys")
-        || (value == L"gameactions")))
+    if (value.size() > 0)
     {
+        // default is KValueGameactions if value is not defined
         predefined = true;
     }
     LOG(EJavaAppMngrPlugin, EInfo, " - CAppMngr2MidletSettingsHandler::OnScreenKeypadValuePreDefinedL ");
@@ -306,7 +304,7 @@ void CAppMngr2MidletSettingsHandler::SetSnapL(const CAppMngr2SuiteSnapItem& aSna
     LOG(EJavaAppMngrPlugin, EInfo, " - CAppMngr2MidletSettingsHandler::SetCurrentSuiteSnapL ");
 }
 
-const std::wstring CAppMngr2MidletSettingsHandler::GetSecurityDomainCategoryL()
+const std::wstring CAppMngr2MidletSettingsHandler::GetSecurityDomainCategory()
 {
     wstring securityDomainCategory = L"";
 
@@ -325,7 +323,6 @@ const std::wstring CAppMngr2MidletSettingsHandler::GetSecurityDomainCategoryL()
     catch (JavaStorageException& aJse)
     {
         ELOG1(EJavaAppMngrPlugin, "SECURITY_DOMAIN_CATEGORY value read failed: %d", aJse.mStatus);
-        User::Leave(KErrLocked);
     }
 
     findEntry(queryResult, SECURITY_DOMAIN_CATEGORY, securityDomainCategory);
@@ -334,7 +331,7 @@ const std::wstring CAppMngr2MidletSettingsHandler::GetSecurityDomainCategoryL()
 
 }
 
-const std::wstring CAppMngr2MidletSettingsHandler::GetSecurityDomainNameL()
+const std::wstring CAppMngr2MidletSettingsHandler::GetSecurityDomainName()
 {
     wstring securityDomainName = L"";
 
@@ -353,7 +350,6 @@ const std::wstring CAppMngr2MidletSettingsHandler::GetSecurityDomainNameL()
     catch (JavaStorageException& aJse)
     {
         ELOG1(EJavaAppMngrPlugin, "SECURITY_DOMAIN value read failed: %d", aJse.mStatus);
-        User::Leave(KErrLocked);
     }
 
     findEntry(queryResult, SECURITY_DOMAIN, securityDomainName);

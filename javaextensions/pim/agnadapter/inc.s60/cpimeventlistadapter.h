@@ -27,7 +27,6 @@
 // FORWARD DECLARATIONS
 class MPIMEventItem;
 class CPIMAgnEventAdapter;
-class CCalSession;
 
 // CLASS DECLARATION
 
@@ -48,8 +47,7 @@ public: // constructor and destructor
     static CPIMEventListAdapter* NewL(
         CCalEntry::TType aEntryType,
         CPIMAgnEventAdapter* aEventAdapter,
-        java::util::FunctionServer* aFuncServer,
-        CCalSession *aCalSession);
+        java::util::FunctionServer* aFuncServer);
 
     /**
      * Destructor.
@@ -139,8 +137,7 @@ public: // Functions from MPIMToDoListAdapter
      */
     void CreateEventItemL(MPIMEventItem& aEventItem);
 
-    void CPIMEventListAdapter::DoCreateEventItemL(
-        MPIMEventItem& aEventItem);
+    void DoCreateEventItemL(MPIMEventItem& aEventItem);
 
     /**
      * Reads an existing event item from the Agenda File.
@@ -165,8 +162,7 @@ public: // Functions from MPIMToDoListAdapter
      */
     void ReadEventItemL(MPIMEventItem& aEventItem);
 
-    void CPIMEventListAdapter::DoReadEventItemL(
-        MPIMEventItem& aEventItem);
+    void DoReadEventItemL(MPIMEventItem& aEventItem);
 
     /**
      * Writes an existing event item to the native Agenda File.
@@ -192,8 +188,7 @@ public: // Functions from MPIMToDoListAdapter
      */
     void WriteEventItemL(MPIMEventItem& aEventItem);
 
-    void CPIMEventListAdapter::DoWriteEventItemL(
-        MPIMEventItem& aEventItem);
+    void DoWriteEventItemL(MPIMEventItem& aEventItem);
 
     /**
      * Removes an existing event from the native Agenda File.
@@ -213,8 +208,7 @@ public: // Functions from MPIMToDoListAdapter
      */
     void RemoveEventItemL(TPIMItemID aItemID);
 
-    void CPIMEventListAdapter::DoRemoveEventItemL(
-        TPIMItemID aItemID);
+    void DoRemoveEventItemL(TPIMItemID aItemID);
 
 protected:
 
@@ -228,9 +222,7 @@ protected:
      */
     void ConstructL(
         CCalEntry::TType aEntryType,
-
-        CPIMAgnEventAdapter* aEventAdapter,
-        TInt aCalSessionInt);
+        CPIMAgnEventAdapter* aEventAdapter);
 
 private: // Member data
 

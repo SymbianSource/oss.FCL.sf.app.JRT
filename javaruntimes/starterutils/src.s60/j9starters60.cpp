@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -55,8 +55,8 @@ JvmStarter::getJvmStarterInstance()
 
 J9StarterS60::J9StarterS60()
 #ifdef __WINSCW__
-    :
-    mVariant(0)
+        :
+        mVariant(0)
 #endif // __WINSCW__
 {
     JELOG2(EJavaRuntime);
@@ -65,8 +65,8 @@ J9StarterS60::J9StarterS60()
 J9StarterS60::J9StarterS60(const Configuration configuration,
                            const std::wstring& indetifier)
 #ifdef __WINSCW__
-    :
-    mVariant(0)
+        :
+        mVariant(0)
 #endif // __WINSCW__
 {
     JELOG2(EJavaRuntime);
@@ -112,6 +112,7 @@ void J9StarterS60::setDefaultArguments()
     mJvmArgs.push_back(L"-Xmso16k"); // Native thread stack size.
     mJvmArgs.push_back(L"-Dcom.nokia.mj.impl.rt.ui="
                        L"com.nokia.mj.impl.rt.ui.avkon.RuntimeUiAvkon");
+    mJvmArgs.push_back(L"-Dcom.nokia.coreui=coreuiavkon");
 #endif // RD_JAVA_UI_QT
 
     mJvmArgs.push_back(L"-Dfile.encoding=ISO-8859-1");
@@ -183,7 +184,7 @@ void J9StarterS60::overrideMaxHeapSize(int heapSize)
 void J9StarterS60::doOverideHeap(const std::wstring& arg, const std::wstring& size)
 {
     JELOG2(EJavaRuntime);
-    std::wstring maxHeapArg(arg);
+	std::wstring maxHeapArg(arg);
     maxHeapArg += size;
     maxHeapArg += L"K";
     mJvmArgs.push_back(maxHeapArg);
@@ -228,10 +229,6 @@ void J9StarterS60::setInternalOdcFiles()
     else if (mIdentifier == L"TCK_runner")
     {
         pathType = BOOT_CLASSPATH_TCKRUNNER;
-    }
-    else if (mIdentifier == L"JavaControlPanel")
-    {
-        pathType = BOOT_CLASSPATH_JAVACONTROLPANEL;
     }
 
     std::list<std::wstring> odcFiles;

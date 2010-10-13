@@ -65,7 +65,7 @@ char * FileUtils::computeDigest(const char* aFileName, bool drmContent)
         if (err == KErrNone)
         {
             // figure out the size of the file
-            TInt size = 0;
+            TInt size;
             if (drmContent)
             {
                 TRAP(err, cafData->DataSizeL(size));

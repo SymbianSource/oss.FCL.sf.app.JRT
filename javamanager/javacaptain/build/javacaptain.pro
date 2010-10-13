@@ -35,7 +35,7 @@ SOURCES += ../src/*.cpp \
 LIBS +=  -ljavacomms -ljavaipc -ljavafileutils -ljavastorage
 
 symbian {
-    LIBS += -lefsrv
+    LIBS += -lefsrv -lAknNotify
     TARGET.EPOCHEAPSIZE  = 0x2800 0x100000
     TARGET.EPOCSTACKSIZE = 0x2000
     TARGET.UID2          = 0x200211DC

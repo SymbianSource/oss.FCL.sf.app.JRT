@@ -25,19 +25,12 @@
 #include <sysutil.h>
 #include <driveinfo.h>
 
-#ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
-#include "hbextendedlocale.h"
-#endif // SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
-
 #include "com_nokia_mj_impl_installer_utils_SysUtil.h"
-#include "javajniutils.h"
 #include "logger.h"
 
 #ifndef KPSUidJavaLatestInstallation
 #define KPSUidJavaLatestInstallation 0x10282567
 #endif
-
-using namespace java::util;
 
 /**
  * Helper method for creating HBufC from jstring.
@@ -93,8 +86,8 @@ jint GetRepositoryStringValueL
     TUid repositoryUid = { aRepository };
     CRepository* repository = CRepository::NewLC(repositoryUid);
     RBuf buf;
+    buf.Create(NCentralRepositoryConstants::KMaxUnicodeStringLength);
     CleanupClosePushL(buf);
-    buf.CreateL(NCentralRepositoryConstants::KMaxUnicodeStringLength);
     TInt err = repository->Get(aKey, buf) ;
     if (KErrNone == err)
     {
@@ -726,22 +719,4 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_utils_SysUtil__1getScree
         return err;
     }
     return value;
-}
-
-/*
- * Class:     com_nokia_mj_impl_installer_utils_SysUtil
- * Method:    _isoToLang
- * Signature: ()[Ljava/lang/String;
- */
-JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_utils_SysUtil__1isoToLang
-(JNIEnv *aEnv, jclass, jstring aLocale)
-{
-#ifdef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
-    return HbExtendedLocale::ISOToSymbianLang(
-        QString::fromStdWString(JniUtils::jstringToWstring(aEnv, aLocale)));
-#else // SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
-    (void)aEnv; // suppress compilation warning about unused argument
-    (void)aLocale; // suppress compilation warning about unused argument
-    return -1;
-#endif // SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
 }

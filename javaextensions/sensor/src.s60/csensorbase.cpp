@@ -139,14 +139,7 @@ void CSensorBase::CloseChannel()
 void CSensorBase::AsyncCallback(TMethod aMethod)
 {
     JELOG2(ESensor);
-    TInt err = iMethodArray.Append(aMethod);
-    // if there was error when adding the method to array then just return
-    if ( err  )
-    {
-        ELOG2(ESensor, "CSensorBase::AsyncCallback - Error (code = %d) when "
-              "adding method (type = %d) to method buffer.", err, aMethod.iMethodType);
-        return;
-    }
+    iMethodArray.Append(aMethod);
 
     // If there is old request ongoing, wait it for completion
     if (iMethodArray.Count() > 1)
@@ -249,13 +242,14 @@ TBool CSensorBase::EvaluateConditions(TReal aValue, TInt aChannelId)
             matched = ETrue;
             CSensorConditionBase *condition = iConditions[i];
             iConditions.Remove(i);
-
-            iSensorListener->ConditionMet(
-                condition,
-                condition->GetChannelId(),
-                currentValue,
-                javaTime);
-          
+            if (iSensorListener)
+            {
+                iSensorListener->ConditionMet(
+                    condition,
+                    condition->GetChannelId(),
+                    currentValue,
+                    javaTime);
+            }
             delete condition;
         }
     }
@@ -263,7 +257,6 @@ TBool CSensorBase::EvaluateConditions(TReal aValue, TInt aChannelId)
     // Also send all values separately if we have java side custom conditions
     if (iJavaConditionEval)
     {
-        if (iSensorListener != NULL)
         iSensorListener->ConditionMet(0, aChannelId, currentValue, javaTime);
     }
     return matched;

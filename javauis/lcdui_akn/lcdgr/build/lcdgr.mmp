@@ -78,16 +78,17 @@ END
 
 APP_LAYER_SYSTEMINCLUDE
 
-USERINCLUDE   ../inc
-USERINCLUDE   ../../inc
-USERINCLUDE   ../../../inc
-USERINCLUDE   ../../../../inc
+SYSTEMINCLUDE   ../inc
+
+SYSTEMINCLUDE   ../../inc
+SYSTEMINCLUDE   ../../../inc
+SYSTEMINCLUDE   ../../../../inc
 
 LIBRARY		avkon.lib
 LIBRARY		gdi.lib
 LIBRARY		bitgdi.lib
 LIBRARY		fbscli.lib
-LIBRARY		imageconversion.lib
+LIBRARY		ImageConversion.lib
 LIBRARY		lcdgdrv.lib
 LIBRARY		bafl.lib
 library		efsrv.lib

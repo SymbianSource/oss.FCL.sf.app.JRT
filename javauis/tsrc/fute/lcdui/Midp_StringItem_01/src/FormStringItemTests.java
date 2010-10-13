@@ -62,11 +62,9 @@ public class FormStringItemTests extends Form implements CommandListener, ItemCo
 
     //the command to create the StringItem with the entered label and text and with focus
     private Command cmdCreateHL = new Command("Create as Hyperlink", Command.SCREEN, 1);
-    private Command cmdCreateHLM = new Command("Create as Hyperlink 2 cmds", Command.SCREEN, 1);
 
     //the command to create the StringItem with the entered label and text and with focus
     private Command cmdCreateButton = new Command("Create as Button", Command.SCREEN, 1);
-    private Command cmdCreateButtonM = new Command("Create as Button 2 cmds", Command.SCREEN, 1);
 
     //the command to unlock the Item
     private Command cmdUnlock = new Command("Unlock", Command.SCREEN, 1);
@@ -99,11 +97,6 @@ public class FormStringItemTests extends Form implements CommandListener, ItemCo
     private Command cmdNext = new Command("Next", Command.SCREEN, 1);
     private Command cmdExit = new Command("Exit", Command.EXIT, 1);
 
-    // commands for the form
-    private Command cmdItemF = new Command("ItemF", Command.ITEM, 1);
-    private Command cmdOkF = new Command("OkF", Command.OK, 1);
-    private Command cmdScreenF = new Command("Add form commands", Command.SCREEN, 1);
-
     static int change = -1;
 
     public FormStringItemTests(Midp_StringItem_01 m)
@@ -125,9 +118,7 @@ public class FormStringItemTests extends Form implements CommandListener, ItemCo
         append(cg);
         addCommand(cmdCreate);
         addCommand(cmdCreateHL);
-        addCommand(cmdCreateHLM);
         addCommand(cmdCreateButton);
-        addCommand(cmdCreateButtonM);
         addCommand(cmdLayout);
         addCommand(cmdLayoutHL);
         addCommand(cmdLayoutButton);
@@ -143,7 +134,6 @@ public class FormStringItemTests extends Form implements CommandListener, ItemCo
         //create StringItemForm
         stringItemForm = new Form("StringItem");
         stringItemForm.addCommand(cmdBack);
-        stringItemForm.addCommand(cmdScreenF);
         stringItemForm.setCommandListener(this);
     }
 
@@ -233,27 +223,39 @@ public class FormStringItemTests extends Form implements CommandListener, ItemCo
         }
         else if (c == cmdLayout)
         {
+
             layoutTest(Item.PLAIN);
+
         }
         else if (c == cmdLayoutHL)
         {
+
             layoutTest(Item.HYPERLINK);
+
         }
         else if (c == cmdLayoutButton)
         {
+
             layoutTest(Item.BUTTON);
+
         }
         else if (c == cmdVLayout)
         {
+
             verticalLayoutTest(Item.PLAIN);
+
         }
         else if (c == cmdVLayoutHL)
         {
+
             verticalLayoutTest(Item.HYPERLINK);
+
         }
         else if (c == cmdVLayoutButton)
         {
+
             verticalLayoutTest(Item.BUTTON);
+
         }
         else if (c == cmdAddListeners)
         {
@@ -270,11 +272,6 @@ public class FormStringItemTests extends Form implements CommandListener, ItemCo
             m.destroyApp(false);
             m.notifyDestroyed();
         }
-        else if (c == cmdScreenF)
-        {
-            stringItemForm.addCommand(cmdItemF);
-            stringItemForm.addCommand(cmdOkF);
-        }
         else
         {
             String l = label.getString();
@@ -285,12 +282,12 @@ public class FormStringItemTests extends Form implements CommandListener, ItemCo
 
             if (c == cmdCreate)
                 si = new StringItem(l, t);
-            else if (c == cmdCreateHL || c == cmdCreateHLM)
+            else if (c == cmdCreateHL)
             {
                 si = new StringItem(l, t, Item.HYPERLINK);
                 si.setDefaultCommand(cmdItem);
             }
-            else if (c == cmdCreateButton || c == cmdCreateButtonM)
+            else if (c == cmdCreateButton)
             {
                 si = new StringItem(l, t, Item.BUTTON);
                 si.setDefaultCommand(cmdItem);
@@ -355,10 +352,6 @@ public class FormStringItemTests extends Form implements CommandListener, ItemCo
             stringItemForm.addCommand(cmdRemoveCommand);
             stringItemForm.addCommand(cmdRestoreCommand);
             stringItemForm.addCommand(cmdRemoveItem);
-            if (c == cmdCreateButtonM || c == cmdCreateHLM)
-            {
-                si.addCommand(cmdBack);
-            }
             Display.getDisplay(m).setCurrent(stringItemForm);
         }
     }

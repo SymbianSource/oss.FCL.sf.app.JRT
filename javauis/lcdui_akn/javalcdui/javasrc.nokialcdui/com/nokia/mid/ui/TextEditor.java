@@ -931,8 +931,6 @@ public class TextEditor
      * rendered using given color value. The default highlight background
      * color is fully opaque black.
      *
-     * This method is not supported on S40 platform.
-     *
      * @param color
      *            the color
      */
@@ -952,8 +950,6 @@ public class TextEditor
      * The text in a current selection range will be rendered
      * using given color value. The default highlight foreground color is fully
      * opaque white.
-     *
-     * This method is not supported on S40 platform.
      *
      * @param color
      *            the color

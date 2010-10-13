@@ -25,10 +25,6 @@
 #include <ecom/registryinfov2.rh>
 #include "javauids.h"
 
-#ifndef ECOM_VERSION_NO
-#define ECOM_VERSION_NO 2
-#endif
-
 RESOURCE REGISTRY_INFO r_registry
 {
     resource_format_version = RESOURCE_FORMAT_VERSION_2;
@@ -43,7 +39,8 @@ RESOURCE REGISTRY_INFO r_registry
 				IMPLEMENTATION_INFO
 				{
 					implementation_uid = KSidCheckerEcomImplUid;
-					version_no	   =  ECOM_VERSION_NO;
+					// Version number is 2 so that this implementation should override the old one in ROM
+                    version_no         =  2;
 					display_name = "JavaVerify";
 					default_data = "[10210e26]";
 					opaque_data  = "";

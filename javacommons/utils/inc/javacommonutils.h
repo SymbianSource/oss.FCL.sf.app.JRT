@@ -87,23 +87,6 @@ public:
     OS_IMPORT static std::string base64encode(const std::string& aData);
 
     /**
-     * Encode wstring to base64 wstring byte by byte.
-     *
-     * wstring aData is base64 encoded as a byte array.
-     * If the wstring has been created from TDesC16 in Symbian it contains
-     * UTF-16LE (UCS-2) encoded 16-bit characters.
-     * The result is byte array that contains 8-bit ASCII characters.
-     * Each of these 8-bit character is converted to the corresponding
-     * wchar and appended to the result wstring.
-     *
-     * @see \sf\app\jrt\javamanager\javainstaller\installer\javasrc\com\nokia
-     *  \mj\impl\installer\utils\Args.java, decodeBase64Args()
-     * @param aData wstring containing the data to be encoded.
-     * @return base64 encoded result wstring.
-     */
-    OS_IMPORT static std::wstring wbase64encode(const std::wstring& aData);
-
-    /**
      * Decode base64 string.
      *
      * @param aData base64 encoded string.

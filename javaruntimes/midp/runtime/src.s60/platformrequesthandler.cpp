@@ -18,7 +18,9 @@
 
 #include <memory>
 
-#ifndef RD_JAVA_S60_RELEASE_10_1_ONWARDS
+#ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS
+#include <SchemeHandler.h>
+#else
 #include <schemehandler.h>
 #endif
 
@@ -66,7 +68,7 @@ PlatformRequestHandler::~PlatformRequestHandler()
 void PlatformRequestHandler::handleUri(const std::wstring& aUri)
 {
     JELOG2(EJavaRuntime);
-    TRAPD(err, launchAppL(aUri));
+    TRAPD(err,launchAppL(aUri););
     if (err != KErrNone)
     {
         ELOG1(EJavaRuntime, "ERROR!!! PlatformRequestHandler::handleUri() %d",
@@ -74,8 +76,8 @@ void PlatformRequestHandler::handleUri(const std::wstring& aUri)
         if (KErrNotFound == err)
         {
             if ((aUri.find(L"localapp:jam/launch?") == 0) ||
-                (aUri.find(L"localapp://jam/launch?") == 0) ||
-                (aUri.find(L"javaapp:") == 0))
+                    (aUri.find(L"localapp://jam/launch?") == 0) ||
+                    (aUri.find(L"javaapp:") == 0))
             {
                 // The URI is supported but the MIDlet specified by the URI
                 // does not exist.
@@ -110,71 +112,9 @@ void PlatformRequestHandler::launchAppL(const std::wstring& aUri)
     }
     else
     {
-#ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS
-        std::wstring uri;
-        std::wstring okScheme(L"javaapp:");
-        if (aUri.find(L"localapp:jam/launch?") == 0)
-        {
-            // Remove the scheme not supported by the devices in 10.1 from the
-            // beginning, replace it with okScheme that is supported
-            uri = okScheme;
-            uri += aUri.substr(20);  // 20 == wstrlen(L"localapp:jam/launch?")
-        }
-        else if (aUri.find(L"localapp://jam/launch?") == 0)
-        {
-            uri = okScheme;
-            uri += aUri.substr(22);  // 22 == wstrlen(L"localapp://jam/launch?")
-        }
-        else if (aUri.find(L"javaapp://") == 0)
-        {
-            // TODO: after QtHighway has been fixed to that
-            // it can recognize "javaapp://" scheme, remove this.
-            // At 2010wk26 it recognizes only "javaapp:"
-            uri = okScheme;
-            uri += aUri.substr(10);  // 10 == wstrlen(L"javaapp://")
-        }
-        else
-        {
-            uri = aUri;
-        }
-        LOG1(EJavaRuntime, EInfo, "Platform request. Converted uri: %S", uri.c_str());
-
-        TPtrC ptr((const TUint16 *)uri.c_str(), uri.length());
-        // Start javaqtrequest.exe so that url is command line argument.
-        // javaqtrequest is a Qt application that will use Qt Highway API
-        // to send the url request to correct XQServiceProvider
-        _LIT(KJavaQtRequestExe, "javaqtrequest.exe");
-        RProcess rProcess;
-        TInt err = rProcess.Create(KJavaQtRequestExe, ptr);
-        if (KErrNone != err)
-        {
-            ELOG1(EJavaRuntime,
-                "PlatformRequestHandler: launchAppL: Starting javaqtrequest.exe failed, err %d",
-                err);
-            User::Leave(err);
-        }
-
-        // Wait until javaqtrequest exits
-        TRequestStatus status;
-        rProcess.Logon(status);
-        rProcess.Resume();
-        User::WaitForRequest(status);
-
-        // Check the exit code of javaqtrequest
-        err = status.Int();
-        rProcess.Close();
-        if (err != KErrNone)
-        {
-            ELOG1(EJavaRuntime,
-                "PlatformRequestHandler: launchAppL: javaqtrequest.exe exited with err %d",
-                err);
-            User::Leave(err);
-        }
-#else
         TPtrC ptr((const TUint16 *)aUri.c_str(), aUri.length());
         std::auto_ptr<CSchemeHandler> schemeHandler(CSchemeHandler::NewL(ptr));
         schemeHandler->HandleUrlStandaloneL(); // Process Uri in standalone mode.
-#endif
     }
 }
 

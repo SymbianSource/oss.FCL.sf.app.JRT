@@ -33,20 +33,8 @@ const TInt DEFAULT_BUFFER_SIZE  = 2048;
 CReceiver::CReceiver(IpcClient& aParent, IpcListener& aListener, RComms& aSession)
         : CActive(EPriorityStandard), mParent(aParent), mListener(aListener), mSession(aSession)
 {
-}
-
-CReceiver* CReceiver::NewLC(IpcClient& aParent, IpcListener& aListener, RComms& aSession)
-{
-    CReceiver* self = new(ELeave) CReceiver(aParent, aListener, aSession);
-    CleanupStack::PushL(self);
-    self->ConstructL();
-    return self;
-}
-
-void CReceiver::ConstructL()
-{
     CActiveScheduler::Add(this);
-    mBuffer.CreateL(DEFAULT_BUFFER_SIZE);
+    mBuffer.Create(DEFAULT_BUFFER_SIZE);
 }
 
 CReceiver::~CReceiver()
@@ -78,7 +66,7 @@ void CReceiver::RunL()
         // buffer was not big enough for the message so reallocate buffer with correct size
         mBuffer.Close();
         mBuffer.ReAllocL(mRequiredLength());
-        LOG2(EJavaComms, EInfo, "%s: increasing buffer size to %d", __PRETTY_FUNCTION__, mRequiredLength());
+        WLOG2(EJavaComms, "%s: increasing buffer size to %d", __PRETTY_FUNCTION__, mRequiredLength());
         Receive();
     }
     break;

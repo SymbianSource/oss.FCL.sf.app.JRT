@@ -179,8 +179,7 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
         authenticationModule.removeSecurityData(session, appUID);
         try
         {
-            authenticationModule.authenticateJar(appUID,null,"somethingWhichDoesNotExist", false);
-            authenticationModule.addSecurityData(session, appUID, null);
+            authenticationModule.authenticateJar(session, appUID,null,"somethingWhichDoesNotExist", false);
             assertTrue(false);
         }
         catch (InstallerSecurityException e)
@@ -194,15 +193,13 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
         authenticationModule.removeSecurityData(session, appUID);
         // 3. unsigned, install from JAR
         authenticationModule.removeSecurityData(session, appUID);
-        authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp"  + System.getProperty("file.separator") + "app.jar", false);
-        authenticationModule.addSecurityData(session, appUID, null);
+        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp"  + System.getProperty("file.separator") + "app.jar", false);
         assertTrue(authenticationModule.getProtectionDomainCategory(session, appUID).equals(ApplicationInfo.UNIDENTIFIED_THIRD_PARTY_DOMAIN)
                    && authenticationModule.getCertificatesDetails(session, appUID) == null);
         authenticationModule.removeSecurityData(session, appUID);
-        // 3.1. unsigned, install from JAR, no session provided to addSecurityData -> no authentication data stored to storage
+        // 3.1. unsigned, install from JAR, no session provided to authenticateJar -> no authentication data stored to storage
         authenticationModule.removeSecurityData(session, appUID);
-        authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp"  + System.getProperty("file.separator") + "app.jar", false);
-        authenticationModule.addSecurityData(null, appUID, null);
+        authenticationModule.authenticateJar(null, appUID,null,TEST_DATA_DIR + "security_tmp"  + System.getProperty("file.separator") + "app.jar", false);
         StorageEntry query = new StorageEntry();
         query.addAttribute(new StorageAttribute(
                                StorageAttribute.ID,
@@ -234,15 +231,13 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
         credentials = authenticationModule.authenticateJad(appUID,null,securityAttributes.getAuthenticationAttributes());
         assertTrue(credentials != null && credentials.length == 1 && credentials[0].getProtectionDomainName().equals("UnidentifiedThirdParty")
                    && authenticationModule.getCertificatesDetails(session, appUID) == null);
-        authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp"  +  System.getProperty("file.separator") + "app.jar", false);
-        authenticationModule.addSecurityData(session, appUID, null);
+        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp"  +  System.getProperty("file.separator") + "app.jar", false);
         assertTrue(authenticationModule.getProtectionDomainCategory(session, appUID).equals(ApplicationInfo.UNIDENTIFIED_THIRD_PARTY_DOMAIN));
         authenticationModule.removeSecurityData(session, appUID);
         // 5. upgrade of authentication storage data
         authenticationModule.removeSecurityData(session, appUID);
         storage.writeAuthenticationStorageData(appUID, new AuthenticationStorageData("UnidentifiedThirdParty", ApplicationInfo.UNIDENTIFIED_THIRD_PARTY_DOMAIN, "jarHash", "rootHash", new Vector()));
-        authenticationModule.authenticateJar(appUID,appUID,TEST_DATA_DIR + "security_tmp" + System.getProperty("file.separator") + "app.jar", false);
-        authenticationModule.addSecurityData(session, appUID, appUID);
+        authenticationModule.authenticateJar(session, appUID,appUID,TEST_DATA_DIR + "security_tmp" + System.getProperty("file.separator") + "app.jar", false);
         assertTrue(authenticationModule.getProtectionDomainCategory(session, appUID).equals(ApplicationInfo.UNIDENTIFIED_THIRD_PARTY_DOMAIN)
                    && authenticationModule.getCertificatesDetails(session, appUID) == null);
         authenticationModule.removeSecurityData(session, appUID);
@@ -277,8 +272,7 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
         securityAttributes.addDescriptorAttributes(allAttributes);
         authenticationModule.authenticateJad(appUID,null,securityAttributes.getAuthenticationAttributes());
         details = (SigningCertificate[])authenticationModule.getCertificatesDetails(session, appUID);
-        authenticationModule.authenticateJar(appUID, null,TEST_DATA_DIR + "security_tmp" + System.getProperty("file.separator") + "app.jar", false);
-        authenticationModule.addSecurityData(session, appUID, null);
+        authenticationModule.authenticateJar(session, appUID, null,TEST_DATA_DIR + "security_tmp" + System.getProperty("file.separator") + "app.jar", false);
         domainCategory = authenticationModule.getProtectionDomainCategory(session, appUID);
         // this empties the cache as well
         authenticationModule.removeSecurityData(session, appUID);
@@ -365,8 +359,7 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
         authenticationModule.authenticateJad(appUID,null,securityAttributes.getAuthenticationAttributes());
         try
         {
-            authenticationModule.authenticateJar(appUID, null,TEST_DATA_DIR + "security_tmp" + System.getProperty("file.separator") + "modified_app.jar", false);
-        authenticationModule.addSecurityData(session, appUID, null);
+            authenticationModule.authenticateJar(session, appUID, null,TEST_DATA_DIR + "security_tmp" + System.getProperty("file.separator") + "modified_app.jar", false);
             assertTrue(INVALID_CERTIFICATE_SIGNATURE_MSG, false);
         }
         catch (InstallerSecurityException e)
@@ -559,8 +552,7 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         authenticationModule.authenticateJad(appUID,null,securityAttributes.getAuthenticationAttributes());
-        authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "app.jar", false);
-        authenticationModule.addSecurityData(session, appUID, null);
+        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "app.jar", false);
         domainCategory = authenticationModule.getProtectionDomainCategory(session, appUID);
         assertTrue(domainCategory.equals(ApplicationInfo.IDENTIFIED_THIRD_PARTY_DOMAIN));
         // 17. Developer Certificates/Manufacturer - sign to operator party domain
@@ -574,8 +566,7 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         authenticationModule.authenticateJad(appUID,null,securityAttributes.getAuthenticationAttributes());
-        authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "app.jar", false);
-        authenticationModule.addSecurityData(session, appUID, null);
+        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "app.jar", false);
         domainCategory = authenticationModule.getProtectionDomainCategory(session, appUID);
         assertTrue(domainCategory.equals(ApplicationInfo.OPERATOR_DOMAIN));
         // 18. Developer Certificates/Manufacturer - sign to manufacturer domain
@@ -589,8 +580,7 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         authenticationModule.authenticateJad(appUID,null,securityAttributes.getAuthenticationAttributes());
-        authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "app.jar", false);
-        authenticationModule.addSecurityData(session, appUID, null);
+        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "app.jar", false);
         domainCategory = authenticationModule.getProtectionDomainCategory(session, appUID);
         assertTrue(domainCategory.equals(ApplicationInfo.MANUFACTURER_DOMAIN));
         // 19. Developer Certificates/Operator - sign to trusted third party domain
@@ -604,8 +594,7 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         authenticationModule.authenticateJad(appUID,null,securityAttributes.getAuthenticationAttributes());
-        authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "app.jar", false);
-        authenticationModule.addSecurityData(session, appUID, null);
+        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "app.jar", false);
         domainCategory = authenticationModule.getProtectionDomainCategory(session, appUID);
         assertTrue(domainCategory.equals(ApplicationInfo.IDENTIFIED_THIRD_PARTY_DOMAIN));
         // 20. Developer Certificates/Operator - sign to operator party domain
@@ -619,8 +608,7 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         authenticationModule.authenticateJad(appUID,null,securityAttributes.getAuthenticationAttributes());
-        authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "app.jar", false);
-        authenticationModule.addSecurityData(session, appUID, null);
+        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "app.jar", false);
         domainCategory = authenticationModule.getProtectionDomainCategory(session, appUID);
         assertTrue(domainCategory.equals(ApplicationInfo.OPERATOR_DOMAIN));
         // 21. Developer Certificates/Operator - sign to manufacturer domain -> still the operator domain is used
@@ -634,8 +622,7 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         authenticationModule.authenticateJad(appUID,null,securityAttributes.getAuthenticationAttributes());
-        authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "app.jar", false);
-        authenticationModule.addSecurityData(session, appUID, null);
+        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "app.jar", false);
         domainCategory = authenticationModule.getProtectionDomainCategory(session, appUID);
         assertTrue(domainCategory.equals(ApplicationInfo.OPERATOR_DOMAIN));
         // 22. Developer Certificates/TrustedThirdParty - sign to manufacturer domain -> still the trusted third party domain is used
@@ -649,8 +636,7 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         authenticationModule.authenticateJad(appUID,null,securityAttributes.getAuthenticationAttributes());
-        authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "app.jar", false);
-        authenticationModule.addSecurityData(session, appUID, null);
+        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "app.jar", false);
         domainCategory = authenticationModule.getProtectionDomainCategory(session, appUID);
         assertTrue(domainCategory.equals(ApplicationInfo.IDENTIFIED_THIRD_PARTY_DOMAIN));
         // 23. Developer Certificates/TrustedThirdParty - sign to operator domain -> still the trusted third party domain is used
@@ -664,8 +650,7 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         authenticationModule.authenticateJad(appUID,null,securityAttributes.getAuthenticationAttributes());
-        authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "app.jar", false);
-        authenticationModule.addSecurityData(session, appUID, null);
+        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "app.jar", false);
         domainCategory = authenticationModule.getProtectionDomainCategory(session, appUID);
         assertTrue(domainCategory.equals(ApplicationInfo.IDENTIFIED_THIRD_PARTY_DOMAIN));
         // 24. Developer Certificates - no domain info -> fail
@@ -702,8 +687,7 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         authenticationModule.authenticateJad(appUID,null,securityAttributes.getAuthenticationAttributes());
-        authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "app.jar", false);
-        authenticationModule.addSecurityData(session, appUID, null);
+        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "app.jar", false);
         domainCategory = authenticationModule.getProtectionDomainCategory(session, appUID);
         assertTrue(domainCategory.equals(ApplicationInfo.IDENTIFIED_THIRD_PARTY_DOMAIN));
         // 26. Developer Certificates - empty IMEI list -> failure
@@ -823,8 +807,7 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         authenticationModule.authenticateJad(appUID,null,securityAttributes.getAuthenticationAttributes());
-        authenticationModule.authenticateJar(appUID, null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "app.jar", false);
-        authenticationModule.addSecurityData(session, appUID, null);
+        authenticationModule.authenticateJar(session, appUID, null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "app.jar", false);
         SigningInfo info = authenticationModule.getSigningInfo("appName","appVersion","appVendor");
         // app is unknown
         assertTrue(info == null);
@@ -868,8 +851,7 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
         securityAttributes = new SecurityAttributes();
         securityAttributes.addDescriptorAttributes(allAttributes);
         authenticationModule.authenticateJad(appUID,null,securityAttributes.getAuthenticationAttributes());
-        authenticationModule.authenticateJar(appUID, null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "app.jar", false);
-        authenticationModule.addSecurityData(session, appUID, null);
+        authenticationModule.authenticateJar(session, appUID, null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "app.jar", false);
         info = authenticationModule.getSigningInfo("appName","appVersion","appVendor");
         assertTrue(info.getProtectionDomain() != null
                    && info.getProtectionDomain().getName() != null
@@ -976,8 +958,7 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
         authenticationModule.removeSecurityData(session, appUID);
         try
         {
-            authenticationModule.authenticateJar(appUID, null, domain, TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "app.jar");
-        authenticationModule.addSecurityData(session, appUID, null);
+            authenticationModule.authenticateJar(session, appUID, null, domain, TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "app.jar");
             assertTrue(!expectToFail);
         }
         catch (InstallerSecurityException e)
@@ -1065,8 +1046,8 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
         }
         catch (RuntimeSecurityException e)
         {
-            assertTrue(e.getShortMessage().equals(securityErrorMessage.get(SecurityErrorMessage.JAR_NOT_FOUND, null))
-                       && e.getDetailedMessage().equals(securityDetailedErrorMessage.get(SecurityDetailedErrorMessage.JAR_NOT_FOUND, null)));
+            assertTrue(e.getShortMessage().equals(securityErrorMessage.get(SecurityErrorMessage.JAR_TAMPERED, null))
+                       && e.getDetailedMessage().equals(securityDetailedErrorMessage.get(SecurityDetailedErrorMessage.JAR_TAMPERED, null)));
         }
         // root not enabled
         try
@@ -1219,8 +1200,7 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP3));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        authenticationModule.addSecurityData(session, appUID, null);
+        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
         assertTrue(true);
         // PreInstallation: ocsp disabled, warning undefined, silent mode
         ocspSettings = new OcspSettings(OcspSettings.OCSP_MODE_DISABLED, OcspSettings.OCSP_WARNING_UNDEFINED, true, "0", "0");
@@ -1238,8 +1218,7 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP3));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        authenticationModule.addSecurityData(session, appUID, null);
+        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
         assertTrue(true);
         // PreInstallation: ocsp enabled, warning ignore, silent mode, ocsp url not set
         ocspSettings = new OcspSettings(OcspSettings.OCSP_MODE_ENABLED, OcspSettings.OCSP_WARNING_IGNORE, true, "0", "0");
@@ -1257,8 +1236,7 @@ public class AuthenticationModuleTests extends TestCase implements InstallerMain
         allAttributes.clear();
         allAttributes.put(MIDP_PROFILE_ATTRIBUTE_NAME,new Attribute("",MIDP3));
         securityAttributes.addManifestAttributes(allAttributes);
-        authenticationModule.authenticateJar(appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
-        authenticationModule.addSecurityData(session, appUID, null);
+        authenticationModule.authenticateJar(session, appUID,null,TEST_DATA_DIR + "security_tmp" +  System.getProperty("file.separator") + "HelloWorld.jar", false);
         assertTrue(true);
     }
 

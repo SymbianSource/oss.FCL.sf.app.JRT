@@ -11,7 +11,7 @@
 
 
 #include <eikenv.h>
-#include <bitmaptransforms.h>
+#include <BitmapTransforms.h>
 #include "imagescaler.h"
 
 

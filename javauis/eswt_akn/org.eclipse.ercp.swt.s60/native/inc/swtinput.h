@@ -30,8 +30,7 @@ public:
     static CSwtInput* NewL(TSwtPeer aPeer, TInt aId);
 
 private:
-    inline CSwtInput(TSwtPeer aPeer);
-    void ConstructL(TInt aId);
+    inline CSwtInput(TSwtPeer aPeer, TInt aId);
     ~CSwtInput();
 
 // From MSwtInput

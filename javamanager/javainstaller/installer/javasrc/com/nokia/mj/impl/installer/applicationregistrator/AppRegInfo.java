@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -71,6 +71,41 @@ public final class AppRegInfo
 
 
     /*** ----------------------------- PUBLIC ------------------------------ */
+
+    /**
+     * Construct new AppRegInfo object.
+     * When this object is used for registering applications, all
+     * params must be valid. When used for unregistering applications,
+     * only aUid is really needed.
+     * Use default values for optional information.
+     *
+     * @param aUid  Java application Uid  (MIDlet Uid).
+     * @param aGroupName    The value of Nokia-MIDlet-Category attribute or empty.
+     *  Note that in Symbian only 16 first characters are stored to
+     *  application registry.
+     * @param aMIDletName     MIDlet name from MIDlet-<n> attribute.
+     * @param aTargetDrive    The installation drive, e.g. "C:" in S60
+     * @param aIconFileName   The full path name to the icon file in file system.
+     *    The file must be accessible and the path must have \\ chars.
+     * @param aJarFileName    Full path name to jar file.
+     * @see ApplicationRegistrator
+     */
+    public AppRegInfo(
+        Uid aUid,
+        String aGroupName,
+        String aMIDletName,
+        String aTargetDrive,
+        String aIconFileName,
+        String aJarFileName)
+    {
+        iUid = aUid;
+        iGroupName = aGroupName;
+        iMIDletName = aMIDletName;
+        iTargetDrive = aTargetDrive;
+        iIconFileName = aIconFileName;
+        iJarFileName = aJarFileName;
+    }
+
 
     /**
      * Construct new AppRegInfo object.

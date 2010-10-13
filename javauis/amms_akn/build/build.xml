@@ -27,7 +27,7 @@
        file -->
 
   <target name="compile">
-    <omj.javac classpath="${compile.result.root}/javalegacyutils/classes/collection:${compile.result.root}/javamobilemedia/classes/first"/>
+    <omj.javac classpath="${compile.result.root}/javalegacyutils/classes/collection:${compile.result.root}/javamobilemedia/classes/first:${compile.result.root}/javautils/classes/first"/>
   </target>
 
   <!-- Needed by the utilities.xml. See the description form the utilities.xml

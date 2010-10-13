@@ -61,7 +61,7 @@ void CSimpleMapping::ConstructL(const TDesC& aPermission, RArray<MPermission::TM
 
     for (TInt i = 0; i < count; i++)
     {
-        iMapping.AppendL(aMapping[i]);
+        iMapping.Append(aMapping[i]);
     }
 }
 

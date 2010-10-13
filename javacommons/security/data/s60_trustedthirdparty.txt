@@ -67,19 +67,10 @@ grant user "Url start" session,oneshot,no {
     permission javax.microedition.midlet.CmdLineArgsPermission;
 }
 
-grant user "NFC Write Access" session,blanket,oneshot,no {
-    permission javax.microedition.contactless.ndef.NDEFTagConnection.write "ndef://*" "write";
-}
-
 grant allowed {
     permission javax.microedition.io.Connector.sms "sms://*" "open,receive";
     permission javax.microedition.io.Connector.mms "mms://*" "open,receive";
     permission javax.microedition.io.Connector.cbs "cbs://*" "open,receive";
-    permission javax.microedition.contactless.DiscoveryManager "DiscoveryManager" "get_instance";
-    permission javax.microedition.io.Connector.ndef "ndef://*" "open";
-    permission javax.microedition.io.Connector.rf "rf://*" "open";
-    permission javax.microedition.io.Connector.sc "sc://*" "open";
-    permission javax.microedition.io.Connector.vtag "vtag://*" "open";
 }
 
 grant assigned "Location" {

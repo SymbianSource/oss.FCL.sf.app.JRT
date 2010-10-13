@@ -643,11 +643,6 @@ void CMIDItemLabel::SizeChanged()
     } //else
 }
 
-void CMIDItemLabel::LayoutItemLabel()
-{
-    SizeChanged();
-}
-
 void CMIDItemLabel::ResetLabelArray()
 {
     for (TInt i=0; i < iLabelArray->Count(); i++)

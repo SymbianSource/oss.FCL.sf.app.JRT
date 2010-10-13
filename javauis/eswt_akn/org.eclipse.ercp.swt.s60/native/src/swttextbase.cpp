@@ -12,7 +12,7 @@
 
 #include <eikedwin.h>
 #include <txtglobl.h>
-#include <eikcoctl.rsg>
+#include <EIKCOCTL.rsg>
 #include <AknsUtils.h>
 #include <swtlaffacade.h>
 #include <AknUtils.h>

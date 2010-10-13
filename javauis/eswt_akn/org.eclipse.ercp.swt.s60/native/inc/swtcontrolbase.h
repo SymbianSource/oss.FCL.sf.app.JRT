@@ -386,7 +386,6 @@ public:
     {
         return iPressed;
     };
-    IMPORT_C void PrepareForTraverse();
 
 protected:
     MSwtDisplay& iDisplay;

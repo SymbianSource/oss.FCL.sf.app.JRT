@@ -478,7 +478,7 @@ public:
      * @since  S60 v3.0
       * @param  aRect Content bounds.
      */
-    void MdcAddMMAPIContentBounds(const TRect& aRect);
+    void MdcAddContentBounds(const TRect& aRect);
 
     /**
      * From MDirectContainer.
@@ -487,7 +487,7 @@ public:
      * @since  S60 v3.2
      * @param  aRect Content bound to be removed.
      */
-    void MdcRemoveMMAPIContentBounds(const TRect& aRect);
+    void MdcRemoveContentBounds(const TRect& aRect);
 
     /**
      * From MDirectContainer.
@@ -1211,11 +1211,6 @@ public:
      * @see MMIDCanvas::MidletExiting()
      */
     void MidletExiting();
-
-    /**
-     * @see MMIDCanvas::IsVideoOverlayActive()
-     */
-    TBool IsVideoOverlayActive();
 private:
     /**
      * Blits pbuffer surface scaled to window surface
@@ -1405,14 +1400,6 @@ private:
      * @since S60 9.2
      */
     void PostForcedPaint();
-    
-    /**
-     * Used only in video overlay case.
-     * Sets frame buffer alpha channel back to 0xFF after MMAPI content area have been
-     * removed from canvas. Must be called only in LCDUI thread.
-     * @since S60 9.2
-     */
-    void CheckDirectContentUpdated();
 #endif // RD_JAVA_NGA_ENABLED
 
 private: // data
@@ -1777,7 +1764,7 @@ private: // data
     TUint8* iTexturePixels;
 
     /**
-     * OpenGL coordinate arrays used for rendering filled rectangles
+     * OpenGL coordinate arrays used fo r rendering filled rectangles
      */
     GLshort* iVertexArray;
     GLubyte* iTriangleStrip;
@@ -1786,13 +1773,6 @@ private: // data
      * ETrue, when midlet is exiting and this canvas is the current displayable
      */
     TBool iExiting;
-    
-    /**
-     * Indicates if MMAPI content areas have been updated.
-     * This flag is accessed from MMAPI and LCDUI threads.
-     */
-    TBool iMMAPIAreaUpdated;
-
 #endif // RD_JAVA_NGA_ENABLED
 
     /**

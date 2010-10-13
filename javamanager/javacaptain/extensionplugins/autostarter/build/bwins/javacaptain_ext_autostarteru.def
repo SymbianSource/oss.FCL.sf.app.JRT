@@ -1,3 +1,0 @@
-EXPORTS
-	?findDllMethod@@YAP6APAXXZPBD@Z @ 1 NONAME ; void * (*)(void) findDllMethod(char const *)
-

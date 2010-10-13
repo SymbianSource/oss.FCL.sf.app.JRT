@@ -815,11 +815,8 @@ void CSwtUiUtils::MoveToEndOfQueue(MSwtShell& aShell)
 {
     TInt index = iShells.Find(&aShell);
     ASSERT(index != KErrNotFound);
-    TInt err = iShells.Append(&aShell);
-    if (err == KErrNone)
-    {
-        iShells.Remove(index);
-    }
+    iShells.Remove(index);
+    iShells.Append(&aShell);
 }
 
 // ---------------------------------------------------------------------------

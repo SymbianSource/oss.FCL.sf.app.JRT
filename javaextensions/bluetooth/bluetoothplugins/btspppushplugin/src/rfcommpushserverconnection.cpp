@@ -38,10 +38,12 @@ const wchar_t BT_GOEP_PROTOCOL[]=L"btgoep";
 OS_EXPORT RFCOMMPushServerConnection::RFCOMMPushServerConnection(
     const wstring aUri, const wstring aFilter,ServerConnectionFactoryBase* aFactory):
         mAcceptMonitor(NULL),
+        mConnectionListener(0),
         mConnectionUri(aUri),
         mConnectionFilter(aFilter),
         mRFCOMMServer(NULL),
         mConnectionFactory(aFactory),
+        mClientConnection(0),
         mIsGOEP(false),
         mPendingConnection(false),
         mListening(false),

@@ -76,21 +76,21 @@ CMIDCustomItem* CMIDCustomItem::NewL(
 }
 
 CMIDCustomItem::CMIDCustomItem(MMIDEnv& aEnv, CMIDUIManager* aUIManager)
-    : CMIDControlItem(EDefault, aUIManager)
-    , iEntered(EFalse)
-    , iSupportsInternalTraversal(ETrue)
-    , iEnv(aEnv)
-    , iResetFrameBuffer(ETrue)
-    , iDirectAreaAddedToDisplayable(EFalse)
-    , iS60SelectionKeyCompatibility(EFalse)
+        : CMIDControlItem(EDefault, aUIManager)
+        , iEntered(EFalse)
+        , iSupportsInternalTraversal(ETrue)
+        , iEnv(aEnv)
+        , iResetFrameBuffer(ETrue)
+        , iDirectAreaAddedToDisplayable(EFalse)
+        , iS60SelectionKeyCompatibility(EFalse)
 #ifndef RD_JAVA_NGA_ENABLED
-    , iDirectPaused(ETrue)
+        , iDirectPaused(ETrue)
 #endif
-    , iRestoreDirectContentWhenUnfaded(EFalse)
-    , iPreviousVisibility(EFalse)
-    , iConsumerWaitingForDSAResourcesCallback(NULL)
-    , iUiFixed(EFalse)
-    , iUiToBeFixedLater(EFalse)
+        , iRestoreDirectContentWhenUnfaded(EFalse)
+        , iPreviousVisibility(EFalse)
+        , iConsumerWaitingForDSAResourcesCallback(NULL)
+        , iUiFixed(EFalse)
+        , iUiToBeFixedLater(EFalse)
 {
     iMMidItem = this;
 
@@ -259,7 +259,7 @@ CMIDCustomItem::~CMIDCustomItem()
     {
         iDirectContent->MdcContainerDestroyed();
     }
-
+    
     if (iUiFixed && iForm)
     {
         iForm->CurrentDisplayable().ReleaseOrientation();
@@ -467,8 +467,7 @@ void CMIDCustomItem::SetPreferredSizeL(const TSize& aSize)
     iRequestedPreferredSize = CheckRequestedSize(aSize);
 
     if (iRequestedPreferredSize.iWidth == -1)
-    {
-        // Width is not locked
+    { // Width is not locked
         iPreferredSize.iWidth = Min(FormClientAreaWidth(),
                                     PreferredContentSize().iWidth + iContentMargins.iLeft + iContentMargins.iRight);
     }
@@ -485,8 +484,7 @@ void CMIDCustomItem::SetPreferredSizeL(const TSize& aSize)
 
 
     if (iRequestedPreferredSize.iHeight == -1)
-    {
-        // Height is not locked
+    { // Height is not locked
         iPreferredSize.iHeight = PreferredContentSize().iHeight + iContentMargins.iTop
                                  + iContentMargins.iBottom + LabelHeight();
     }
@@ -515,8 +513,7 @@ void CMIDCustomItem::AdjustToSizeL(const TSize& aSize)
     DEBUG_INT("+ CMIDCustomItem::AdjustToSizeL - requested height = %d", requestedHeight);
 
     if (requestedHeight > availableHeight)
-    {
-        // label + control do not fit
+    {// label + control do not fit
         if (iLabelControl && iLabelControl->Text()->Length() > 0)
         {
             //reserve one line to the control
@@ -1350,7 +1347,7 @@ void CMIDCustomItem::ItemAddedToFormL()
     {
         ChangeDirectContainerVisibility(ETrue);
     }
-
+    
     if (iUiToBeFixedLater && iForm)
     {
         iForm->CurrentDisplayable().FixOrientation();
@@ -1563,7 +1560,7 @@ void CMIDCustomItem::MdcGetUICallback(
 // From class MDirectContainer.
 // CMIDCustomItem::MdcFixUIOrientation(TBool aEnableFix)
 // ---------------------------------------------------------------------------
-//
+// 
 
 void CMIDCustomItem::MdcFixUIOrientation(TBool aEnableFix)
 {
@@ -1574,42 +1571,42 @@ void CMIDCustomItem::MdcFixUIOrientation(TBool aEnableFix)
     else
     {
         iEnv.ToLcduiObserver().InvokeLcduiEvent(*this, EUnFixUIOrientation);
-    }
+    }     
 }
 
 void CMIDCustomItem::HandleLcduiEvent(int aType)
 {
-    switch (aType)
-    {
-    case EFixUIOrientation:
-        if (!iUiFixed)
-        {
-            if (iForm)
-            {
-                iForm->CurrentDisplayable().FixOrientation();
-                iUiFixed = ETrue;
-                iUiToBeFixedLater = EFalse;
-            }
-            else
-            {
-                iUiToBeFixedLater = ETrue;
-            }
-        }
-        break;
-    case EUnFixUIOrientation:
-        if (iForm && iUiFixed)
-        {
-            iForm->CurrentDisplayable().ReleaseOrientation();
-            iUiFixed = EFalse;
-            iUiToBeFixedLater = EFalse;
-        }
-        break;
+   switch (aType)
+   {
+       case EFixUIOrientation:
+           if (!iUiFixed)
+           {
+               if (iForm)
+               {
+                   iForm->CurrentDisplayable().FixOrientation();
+                   iUiFixed = ETrue;
+                   iUiToBeFixedLater = EFalse;
+               }
+               else
+               {
+                   iUiToBeFixedLater = ETrue;
+               }
+           }
+           break;
+       case EUnFixUIOrientation:
+           if (iForm && iUiFixed)
+           {
+               iForm->CurrentDisplayable().ReleaseOrientation();
+               iUiFixed = EFalse;
+               iUiToBeFixedLater = EFalse;
+           }
+           break;    
     }
 }
 //
 // ---------------------------------------------------------------------------
 //
-void CMIDCustomItem::MdcAddMMAPIContentBounds(const TRect& /*aRect*/)
+void CMIDCustomItem::MdcAddContentBounds(const TRect& /*aRect*/)
 {
     iDirectAreaAddedToDisplayable = UpdateDirectContentBounds();
 }
@@ -1618,7 +1615,7 @@ void CMIDCustomItem::MdcAddMMAPIContentBounds(const TRect& /*aRect*/)
 //
 // ---------------------------------------------------------------------------
 //
-void CMIDCustomItem::MdcRemoveMMAPIContentBounds(const TRect& /*aRect*/)
+void CMIDCustomItem::MdcRemoveContentBounds(const TRect& /*aRect*/)
 {
     if (iForm && iDirectAreaAddedToDisplayable)
     {

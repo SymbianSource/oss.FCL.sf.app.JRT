@@ -108,7 +108,7 @@ public class LayerManager
         final int transY = aGraphics.getTranslateY();
 
         // intersect Graphics clip region with View Window
-        if ((iViewWidth<Integer.MAX_VALUE) && (iViewHeight<Integer.MAX_VALUE))
+        if ((iViewWidth<Integer.MAX_VALUE) && (iViewWidth<Integer.MAX_VALUE))
             aGraphics.clipRect(aX,aY,iViewWidth,iViewHeight);
 
         // translate the graphics object so the point (aX,aY) corresponds to

@@ -11,47 +11,33 @@
 #
 # Contributors:
 #
-# Description:
+# Description: 
 #
-
-include(../../../inc/build_defines.pri)
 
 TARGET=javasatsa
 TEMPLATE=lib
-CONFIG += omj java stl
-
-contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_5_0) {
-    CONFIG -= qt
-}
-contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_9_2) {
-    CONFIG -= qt
-}
-contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_10_1_ONWARDS) {
-    CONFIG += hb
-}
+CONFIG += omj java  stl
+CONFIG -= qt
 
 symbian {
-
-
  			INCLUDEPATH +=  ../framework/inc	\
                             ../pki/inc	\
                             ../apdu/inc	\
  							../../inc	\
  							../../../inc \
-
-
-
+                   	 
+ 										  			
  			SOURCES +=  ../pki/src.s60/*.cpp \
                         ../crypto/src/*.cpp \
                         ../apdu/src/*.cpp	\
                         ../apdu/src.s60/*.cpp   \
                         ../framework/src/satsajnitools.cpp \
-
-
+                 							  								 
+ 								  			
  			LIBS +=    -ljavastorage	\
  								 -lCommonUI \
  								 -lrandom \
- 								 -lx509	\
+								 -lx509	\
 								 -lx500	\
 								 -llibcrypto \
 								 -lasn1	\
@@ -62,8 +48,10 @@ symbian {
 								 -lcertstore \
 								 -lcharconv \
 								 -lcms \
+								 -laknnotify \
 								 -leiksrv \
 								 -lctframework \
+								 -lctsecdlgs \ 
 								 -lcustomapi \
 								 -lefsrv \
 								 -letel \
@@ -73,18 +61,9 @@ symbian {
 								 -lhash \
 								 -lWimClient	\
 								 -lestlib	\
-								 -lcryptography \
-
-
-contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_5_0) {
-        LIBS +=    -laknnotify \
-        					 -lctsecdlgs \
-    }
-contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_9_2) {
-        LIBS +=    -laknnotify \
-        					 -lctsecdlgs \
-    }
-		
+								 -lcryptography \		
+								   
+ 
  }
 
 include(../../../build/omj.pri)

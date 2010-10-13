@@ -27,7 +27,7 @@ symbian {
                ../src.s60/*.cpp 
     
      LIBS += -lapmime \
-             -lplatformenv \
+             -lPlatformEnv \
              -lcharconv \
              -lCommonUI \ 
              -lefsrv \

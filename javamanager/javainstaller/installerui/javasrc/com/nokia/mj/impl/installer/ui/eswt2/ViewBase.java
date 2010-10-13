@@ -34,7 +34,6 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.qt.WidgetConstant;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -43,7 +42,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Widget;
 
 /**
  * Base class for different InstallerUi views.
@@ -52,8 +50,6 @@ abstract public class ViewBase
 {
     /** Maximum view height in percentage from display client area height. */
     protected static final int MAX_VIEW_HEIGHT = 80;
-    /** Maximum view width in percentage from display client area width. */
-    protected static final int MAX_VIEW_WIDTH = 90;
     /** Parent shell for this view. */
     protected Shell iParent = null;
     /** Container for the contents of the view */
@@ -78,7 +74,7 @@ abstract public class ViewBase
     private int iColumns = 1;
     /** Default content size. */
     private Point iDefaultContentSize = null;
-    /** Certificate details view. */
+    /** Certificate details view.  */
     private CertificateDetailsView iCertificateDetailsView = null;
     /** Certificates for this application. */
     protected SigningCertificate[] iCertificates = null;
@@ -103,7 +99,6 @@ abstract public class ViewBase
         iParent = (Shell)aParent;
 
         iContainer = new Composite(iParent, 0);
-        setCssId(iContainer, "dialogArea");
         iContainer.setVisible(false);
 
         iColumns = aColumns;
@@ -221,7 +216,7 @@ abstract public class ViewBase
     /** Set title for this view. */
     public void setTitle(String aTitle)
     {
-        // Dialog shells have no title.
+        // Dialog shells have no title anymore
     }
 
     /** Disposes this view. */
@@ -346,12 +341,12 @@ abstract public class ViewBase
                     SWT.DEFAULT, SWT.DEFAULT));
         }
 
-        int contentWidth = iDefaultContentSize.x * MAX_VIEW_WIDTH / 100;
+        int contentWidth = iDefaultContentSize.x;
         if (aVerticalScrollBarVisible)
         {
             int verticalScrollBarWidth =
                 getScrolledComposite().getVerticalBar().getSize().x;
-            contentWidth -= verticalScrollBarWidth;
+            contentWidth = iDefaultContentSize.x - verticalScrollBarWidth;
         }
 
         // Recalculate the size of the content.
@@ -360,7 +355,7 @@ abstract public class ViewBase
         Point cmdContentSize = cmdComp.computeSize(iDefaultContentSize.x, SWT.DEFAULT);
         cmdComp.setSize(cmdContentSize);
 
-        // Adjust Shell height and width.
+        // Adjust Shell height. The Shell never changes the x position, nor the width.
         Rectangle dispRect = shell.getDisplay().getClientArea();
         int offset = iDefaultContentSize.y - contentSize.y - cmdContentSize.y;
 
@@ -373,20 +368,18 @@ abstract public class ViewBase
             offset -= maxHeight - newHeight;
             newHeight = maxHeight;
         }
-        int newWidth = defShellBounds.width;
-        int maxWidth = dispRect.width * MAX_VIEW_WIDTH / 100;
-        if (newWidth > maxWidth)
-        {
-            newWidth = maxWidth;
-        }
 
-        // Always center horizontally and vertically.
         Rectangle dispBounds = shell.getDisplay().getBounds();
-        int x = dispBounds.width - newWidth;
         int y = dispBounds.height - newHeight;
-        x /= 2;
+        // Always center vertically.
         y /= 2;
-        shell.setBounds(x, y, newWidth, newHeight);
+        // For landscape orientation center vertically
+        //if (dispRect.width > dispRect.height)
+        //{
+        //    y /= 2;
+        //}
+        // Set bounds when command Buttons are in use.
+        shell.setBounds(defShellBounds.x, y, defShellBounds.width, newHeight);
         Rectangle clientArea = shell.getClientArea();
         iContainer.setSize(clientArea.width, clientArea.height);
         iContainer.layout(true);
@@ -441,14 +434,6 @@ abstract public class ViewBase
     }
 
     /**
-     * Sets CSS id for given widget.
-     */
-    protected void setCssId(Widget aWidget, String aCssId)
-    {
-        aWidget.setData(WidgetConstant.CSS_ID, aCssId);
-    }
-
-    /**
      * Adds header used in installation views.
      */
     protected void addHeader(
@@ -465,28 +450,26 @@ abstract public class ViewBase
         boolean aSecurityButton)
     {
         // Add title.
-        if (aTitle == null)
-        {
-            aTitle = InstallerUiTexts.get(InstallerUiTexts.INSTALL_QUERY);
-            if (aInstallInfo != null && aInstallInfo.getOldVersion() != null)
-            {
-                aTitle = InstallerUiTexts.get(InstallerUiTexts.UPDATE_QUERY);
-            }
-        }
-        Label titleLabel = createLabel(aTitle, getColumns() - 1, SWT.WRAP);
-        setCssId(titleLabel, "heading");
-
+        String title = InstallerUiTexts.get(InstallerUiTexts.INSTALL_QUERY);
         if (aInstallInfo != null)
         {
+            if (aInstallInfo.getOldVersion() != null)
+            {
+                title = InstallerUiTexts.get(InstallerUiTexts.UPDATE_QUERY);
+            }
             iCertificates = aInstallInfo.getCertificates();
         }
-        else if (aUninstallInfo != null)
+        if (aUninstallInfo != null)
         {
+            title = "Uninstall?";
             iCertificates = aUninstallInfo.getCertificates();
         }
+        Label titleLabel = createLabel(aTitle, getColumns() - 1, SWT.WRAP);
+        titleLabel.setFont(iInstallerUi.getBoldFont());
+
         if (aSecurityButton)
         {
-            // Add security button.
+            // Add security icon.
             createSecurityButton();
         }
         else
@@ -518,12 +501,11 @@ abstract public class ViewBase
         {
             iconColumns = 2;
             Label iconLabel = createLabel(iSuiteIcon, iconColumns, SWT.NONE);
-            setCssId(iconLabel, "contentIcon");
         }
 
         // Create a Composite for displaying application info.
         iAppInfoScrolledComposite =
-            new ScrolledComposite(getComposite(), SWT.V_SCROLL);
+            new ScrolledComposite(getComposite(), SWT.H_SCROLL | SWT.V_SCROLL);
         iAppInfoScrolledComposite.setAlwaysShowScrollBars(false);
         iAppInfoScrolledComposite.setExpandHorizontal(true);
         GridData gridData = new GridData(GridData.FILL_BOTH);
@@ -532,7 +514,6 @@ abstract public class ViewBase
         iAppInfoComposite = new Composite(iAppInfoScrolledComposite, SWT.NONE);
         iAppInfoComposite.setLayout(new GridLayout(1, true));
         iAppInfoScrolledComposite.setContent(iAppInfoComposite);
-        setCssId(iAppInfoScrolledComposite, "appInfoArea");
     }
 
     /**
@@ -549,7 +530,7 @@ abstract public class ViewBase
         // Add suite name and version.
         createAppInfoLabel(
             InstallerUiTexts.get(
-                InstallerUiTexts.SUITE_NAME_VERSION,
+                InstallerUiTexts.SUITE_NAME,
                 new String[] { aInstallInfo.getName(),
                                aInstallInfo.getVersion() }));
         if (aFull)
@@ -572,20 +553,10 @@ abstract public class ViewBase
         }
         if (size > 0)
         {
-            if (size > 1024*1024)
-            {
-                createAppInfoLabel(
-                    InstallerUiTexts.get(
-                        InstallerUiTexts.SIZE_MB,
-                        new Object[] { new Integer((int)(1 + size/(1024*1024))) }));
-            }
-            else
-            {
-                createAppInfoLabel(
-                    InstallerUiTexts.get(
-                        InstallerUiTexts.SIZE_KB,
-                        new Object[] { new Integer((int)(1 + size/1024)) }));
-            }
+            createAppInfoLabel(
+                InstallerUiTexts.get(
+                    InstallerUiTexts.SIZE_KB,
+                    new String[] { Long.toString(1 + size/1024) }));
         }
         if (aFull)
         {
@@ -668,7 +639,7 @@ abstract public class ViewBase
         GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
         gridData.horizontalSpan = aColumns;
         gridData.horizontalAlignment = SWT.CENTER;
-        gridData.verticalAlignment = SWT.TOP;
+        gridData.verticalAlignment = SWT.CENTER;
         label.setLayoutData(gridData);
         return label;
     }
@@ -700,7 +671,6 @@ abstract public class ViewBase
     protected Label createSecurityLabel(boolean aIdentified)
     {
         Label label = createLabel((Image)null, 1, SWT.NONE);
-        setCssId(label, "securityLabel");
         Image securityIcon = null;
         if (iInstallerUi != null)
         {
@@ -721,7 +691,6 @@ abstract public class ViewBase
     protected Button createSecurityButton()
     {
         Button button = new Button(getComposite(), SWT.PUSH);
-        setCssId(button, "securityButton");
         GridData gridData = new GridData(
             GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
         gridData.horizontalSpan = 1;
@@ -803,7 +772,6 @@ abstract public class ViewBase
         {
             public void run()
             {
-                iInstallerUi.setCertificateDetailsView(iCertificateDetailsView);
                 if (iCertificateDetailsView.confirm())
                 {
                     log("certificateDetailsView confirmed");
@@ -814,7 +782,6 @@ abstract public class ViewBase
                 }
                 iCertificateDetailsView.dispose();
                 iCertificateDetailsView = null;
-                iInstallerUi.setCertificateDetailsView(null);
                 setVisible(true);
             }
         }, "InstallerUiCertViewThread").start();

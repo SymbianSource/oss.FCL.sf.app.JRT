@@ -20,4 +20,3 @@ default
 
 PRJ_MMPFILES  
 javacaptain_ext_preinstallerstarter_0x2002DCA0.mmp 
-#include "exports.inf" 

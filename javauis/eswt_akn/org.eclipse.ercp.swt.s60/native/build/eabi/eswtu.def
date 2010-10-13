@@ -103,5 +103,4 @@ EXPORTS
 	_ZTV15ASwtControlBase @ 102 NONAME
 	_ZTV22CSwtBrowserPreferences @ 103 NONAME
 	_ZThn4_NK15ASwtControlBase4DrawER9CWindowGcRK11CCoeControlRK5TRect @ 104 NONAME
-	_ZN15ASwtControlBase18PrepareForTraverseEv @ 105 NONAME
 
