@@ -170,7 +170,8 @@ run.tests                  : Run JUnit and MT tests
     <target name="build.jar" depends="init" description="Produces eswt-qt.jar">
         <mkdir dir="${plugin.dir}/bin"/>
         <javac destdir="${plugin.dir}/bin" source="${javac.source}" target="${javac.target}"
-            debug="${javac.debug}" debuglevel="lines,vars,source" verbose="true" failonerror="true">
+            debug="${javac.debug}" debuglevel="lines,vars,source" verbose="true" failonerror="true"
+            excludes="**/Toolkit.java">
             <src path="${plugin.dir}/Eclipse SWT/common/"/>
             <src path="${plugin.dir}/Eclipse SWT/common_j2${java.edition}/"/>
             <src path="${plugin.dir}/Eclipse SWT/qt/"/>

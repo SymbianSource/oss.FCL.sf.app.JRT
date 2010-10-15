@@ -455,7 +455,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
  jint aMediaId, jstring aMidletInfoUrl, jstring aMidletDescription,
  jstring aDownloadUrl, jstring aUpdateUrl, jobject aComponentId)
 {
-    __UHEAP_MARK;
+    //__UHEAP_MARK;
     RSoftwareComponentRegistry *pScr =
         reinterpret_cast<RSoftwareComponentRegistry*>(aSessionHandle<<2);
     TComponentId componentId = -1;
@@ -465,7 +465,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
                                  aIsDrmProtected, aIsOriginVerified, aIsUpdate, aMediaId,
                                  aMidletInfoUrl, aMidletDescription,
                                  aDownloadUrl, aUpdateUrl));
-    __UHEAP_MARKEND;
+    //__UHEAP_MARKEND;
     if (KErrNone == err)
     {
         jclass clazz = aEnv->GetObjectClass(aComponentId);
@@ -483,7 +483,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1unregisterComponent
 (JNIEnv *, jclass, jint aSessionHandle, jint aComponentId)
 {
-    __UHEAP_MARK;
+    //__UHEAP_MARK;
     RSoftwareComponentRegistry *pScr =
         reinterpret_cast<RSoftwareComponentRegistry*>(aSessionHandle<<2);
     TInt err = KErrNone;
@@ -492,7 +492,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
     {
         TRAP(err, pScr->DeleteComponentL(aComponentId));
     }
-    __UHEAP_MARKEND;
+    //__UHEAP_MARKEND;
     return err;
 }
 
@@ -507,7 +507,7 @@ void RegisterApplicationL(
     jstring aIconFilename, jint aNumberOfIcons,
     jintArray aLanguages, jobjectArray aAppNames)
 {
-    __UHEAP_MARK;
+    //__UHEAP_MARK;
     // Application Uid.
     TUid appUid = TUid::Uid(aAppUid);
 
@@ -630,7 +630,7 @@ void RegisterApplicationL(
     CleanupStack::PopAndDestroy(groupName);
     CleanupStack::PopAndDestroy(appFilename);
     CleanupStack::PopAndDestroy(caption);
-    __UHEAP_MARKEND;
+    //__UHEAP_MARKEND;
 }
 
 /*
@@ -678,12 +678,12 @@ void RegisterLocalizedComponentNameL(
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1registerLocalizedComponentName
 (JNIEnv *aEnv, jclass, jint aSessionHandle, jint aComponentId, jstring aName, jstring aVendor, jint aLanguage)
 {
-    __UHEAP_MARK;
+    //__UHEAP_MARK;
     RSoftwareComponentRegistry *pScr =
         reinterpret_cast<RSoftwareComponentRegistry*>(aSessionHandle<<2);
     TRAPD(err, RegisterLocalizedComponentNameL(
               aEnv, pScr, aComponentId, aName, aVendor, aLanguage));
-    __UHEAP_MARKEND;
+    //__UHEAP_MARKEND;
     return err;
 }
 
@@ -701,16 +701,16 @@ void SetLocalizedComponentPropertyL(
         HBufC *value = CreateHBufCFromJavaStringLC(aEnv, aValue);
         if (KUnspecifiedLocale == aLanguage)
         {
-            __UHEAP_MARK;
+            //__UHEAP_MARK;
             aScr->SetComponentPropertyL(aComponentId, *name, *value);
-            __UHEAP_MARKEND;
+            //__UHEAP_MARKEND;
         }
         else
         {
-            __UHEAP_MARK;
+            //__UHEAP_MARK;
             aScr->SetComponentPropertyL(
                 aComponentId, *name, *value, (TLanguage)aLanguage);
-            __UHEAP_MARKEND;
+            //__UHEAP_MARKEND;
         }
         CleanupStack::PopAndDestroy(value);
         CleanupStack::PopAndDestroy(name);
@@ -725,12 +725,12 @@ void SetLocalizedComponentPropertyL(
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1setLocalizedComponentProperty
 (JNIEnv *aEnv, jclass, jint aSessionHandle, jint aComponentId, jstring aName, jstring aValue, jint aLanguage)
 {
-    __UHEAP_MARK;
+    //__UHEAP_MARK;
     RSoftwareComponentRegistry *pScr =
         reinterpret_cast<RSoftwareComponentRegistry*>(aSessionHandle<<2);
     TRAPD(err, SetLocalizedComponentPropertyL(
               aEnv, pScr, aComponentId, aName, aValue, aLanguage));
-    __UHEAP_MARKEND;
+    //__UHEAP_MARKEND;
     return err;
 }
 
@@ -756,12 +756,12 @@ TComponentId GetComponentIdL(
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1getComponentId
 (JNIEnv *aEnv, jclass, jint aSessionHandle, jstring aGlobalId, jobject aComponentId)
 {
-    __UHEAP_MARK;
+    //__UHEAP_MARK;
     RSoftwareComponentRegistry *pScr =
         reinterpret_cast<RSoftwareComponentRegistry*>(aSessionHandle<<2);
     TComponentId componentId = -1;
     TRAPD(err, componentId = GetComponentIdL(aEnv, pScr, aGlobalId));
-    __UHEAP_MARKEND;
+    //__UHEAP_MARKEND;
     if (KErrNone == err)
     {
         jclass clazz = aEnv->GetObjectClass(aComponentId);
@@ -780,13 +780,13 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
 (JNIEnv *aEnv, jclass, jint aSessionHandle, jint aAppUid, jobject aComponentId)
 {
     TInt err = KErrNone;
-    __UHEAP_MARK;
+    //__UHEAP_MARK;
     RSoftwareComponentRegistry *pScr =
         reinterpret_cast<RSoftwareComponentRegistry*>(aSessionHandle<<2);
     TUid appUid = TUid::Uid(aAppUid);
     TComponentId componentId = -1;
     TRAP(err, componentId = pScr->GetComponentIdForAppL(appUid));
-    __UHEAP_MARKEND;
+    //__UHEAP_MARKEND;
     if (KErrNone == err)
     {
         jclass clazz = aEnv->GetObjectClass(aComponentId);
@@ -823,10 +823,10 @@ TInt GetUidL(jint aCid)
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1getUid
 (JNIEnv *aEnv, jclass, jint aCid, jobject aComponentId)
 {
-    __UHEAP_MARK;
+    //__UHEAP_MARK;
     TInt uid = 0;
     TRAPD(err, uid = GetUidL(aCid));
-    __UHEAP_MARKEND;
+    //__UHEAP_MARKEND;
     if (KErrNone == err)
     {
         jclass clazz = aEnv->GetObjectClass(aComponentId);

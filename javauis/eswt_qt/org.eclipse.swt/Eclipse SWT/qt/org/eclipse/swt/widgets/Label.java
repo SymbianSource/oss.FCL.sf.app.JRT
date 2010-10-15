@@ -178,9 +178,9 @@ public class Label extends Control {
         } else {
             handle = OS.QLabel_new();
             /**
-             * Ampresands for keyboard shortcuts are not processed at all and
+             * Ampersands for keyboard shortcuts are not processed at all and
              * there won't be a shortcut unless buddy is set. The parent is
-             * used. Shortcut event can then be cancelled and focus moved
+             * used. Shortcut event can then be canceled and focus moved
              * manually. This way buddy doesn't ever need to be updated.
              */
             OS.QLabel_setBuddy(handle, parent.handle);
@@ -415,7 +415,7 @@ public class Label extends Control {
         }
         if (this.image == image)
             return;
-        OS.QLabel_setPixmap(handle, image == null ? 0 : Internal_GfxPackageSupport.getPixmapHandle(image));
+        OS.QLabel_swt_setPixmap(handle, image == null ? 0 : Internal_GfxPackageSupport.getImageHandle(image));
         this.image = image;
     }
 

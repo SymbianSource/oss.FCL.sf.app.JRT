@@ -399,7 +399,7 @@ private CaptionedControlLayout layout;
  * @see SWT#RIGHT_TO_LEFT
  */
 public CaptionedControl (Composite parent, int style) {
-    super(parent, Internal_PackageSupport.checkBits(style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0), 0,
+    super(parent, Internal_PackageSupport.checkBits(style, SWT.VERTICAL, SWT.HORIZONTAL, 0, 0, 0, 0), 0,
             new CaptionedControlPackageProxy(), false);
     if (parent instanceof CaptionedControl) {
         SWT.error(SWT.ERROR_INVALID_PARENT);

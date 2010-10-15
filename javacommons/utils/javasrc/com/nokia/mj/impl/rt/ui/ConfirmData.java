@@ -34,7 +34,8 @@ public class ConfirmData
      *
      * @param aQuestion              the question (as localized text) to be
      *                               asked from user
-     * @param aAnswerOptions         the answer options (as localized texts)
+     * @param aAnswerOptions         the answer options (as localized texts).
+     *                               If null UI loads default values.
      * @param aAnswerSuggestion      the suggestion for the option to be
      *                               selected (e.g. the option to be
      *                               highlighted when presenting the answer
@@ -62,6 +63,16 @@ public class ConfirmData
     public void setAnswer(int aAnswer)
     {
         iAnswer = aAnswer;
+    }
+
+    /**
+     * Setter for the answer options.
+     * @param aAnswerOptions Set answer options. Answer options are
+     *                       button labels.
+     */    
+    public void setAnswerOptions(String[] aAnswerOptions)
+    {
+        iAnswerOptions = aAnswerOptions;
     }
 
     /**

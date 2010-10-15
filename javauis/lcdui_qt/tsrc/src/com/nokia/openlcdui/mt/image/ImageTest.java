@@ -431,7 +431,6 @@ public class ImageTest extends SWTTestCase
     public void testCreateFromDataBuffer()
     {
 
-        DISABLE_TEST();
         Image testImage = null;
         String imgFile = "/image1.jpg";
         int dataLen = 0;

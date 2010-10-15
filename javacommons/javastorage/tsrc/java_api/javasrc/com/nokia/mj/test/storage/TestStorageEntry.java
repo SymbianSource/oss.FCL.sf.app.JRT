@@ -21,7 +21,7 @@ package com.nokia.mj.test.storage;
 import com.nokia.mj.test.storage.utils.StorageSessionTestUtils;
 import com.nokia.mj.impl.storage.*;
 
-import com.nokia.mj.impl.installer.utils.InstallerMain;
+import com.nokia.mj.impl.rt.test.UnitTestSuiteCreator;
 import j2meunit.framework.Test;
 import j2meunit.framework.TestCase;
 import j2meunit.framework.TestMethod;
@@ -31,20 +31,9 @@ import java.util.Enumeration;
 /**
  * StorageSession connection test cases. See test methods for test case details.
  */
-public class TestStorageEntry extends TestCase implements InstallerMain
+public class TestStorageEntry extends TestCase implements UnitTestSuiteCreator
 {
-    /**
-     * Directory for JavaStorage tests.
-     */
-    private static final String iTestRoot = "./jstest";
-
-    /**
-     * Directory for JavaStorage journal and temp files.
-     */
-    private static final String iIsRoot = iTestRoot + "/js";
-
-
-    public void installerMain(String[] args)
+    public TestSuite createTestSuite(String[] args)
     {
         TestSuite suite = new TestSuite(this.getClass().getName());
 
@@ -96,7 +85,7 @@ public class TestStorageEntry extends TestCase implements InstallerMain
             }
         }));
 
-        com.nokia.mj.impl.utils.OmjTestRunner.run(suite);
+        return suite;
     }
 
     public TestStorageEntry()

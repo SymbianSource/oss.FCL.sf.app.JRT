@@ -16,8 +16,8 @@
 
 namespace Java { namespace GFX {
 
-ImageloaderImpl::ImageloaderImpl()
-: mBufferData(new bufferData), loadSizeWidth(-1), loadSizeHeight(-1)
+ImageloaderImpl::ImageloaderImpl(TImageType aType)
+: mBufferData(new bufferData), loadSizeWidth(-1), loadSizeHeight(-1), mResultImageType(aType)
 {
     GFX_LOG_FUNC_CALL();
     mBufferData->buffer = NULL;
@@ -100,7 +100,7 @@ Image* ImageloaderImpl::endStream()
         throwError(imgReader);
     }
     
-    Image* img = GraphicsFactory::createImage(image);
+    Image* img = GraphicsFactory::createImage(image, mResultImageType);
 
     // cleanup, release buffer
     resetData();
@@ -131,7 +131,7 @@ Image* ImageloaderImpl::load(const QString& aFileName)
         throwError(imgReader);
     }
 
-    return GraphicsFactory::createImage(image);
+    return GraphicsFactory::createImage(image, mResultImageType);
 }
 
 void ImageloaderImpl::setLoadSize(int aWidth, int aHeight)
@@ -139,6 +139,13 @@ void ImageloaderImpl::setLoadSize(int aWidth, int aHeight)
     loadSizeWidth = aWidth;
     loadSizeHeight = aHeight;
 }
+
+void ImageloaderImpl::setResultImageType(TImageType aType)
+    {
+    Q_ASSERT((aType == EImage) || (aType == EPixmap));
+    mResultImageType = aType;
+    }
+
 
 // Private
 void ImageloaderImpl::growBuffer(const int aNewSize)

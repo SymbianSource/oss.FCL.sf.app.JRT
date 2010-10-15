@@ -162,7 +162,7 @@ int S60MmsServerConnection::listenThread(S60MmsServerConnection* aMmsSrvConn)
     TRAP(error, aMmsSrvConn->InitializeL());
     if (error != KErrNone)
     {
-        ELOG1(EWMA, "error Creating CRetrieveMobilePhoneBroadcastIdList =%d",
+        ELOG1(EWMA, "error while Initializing S60MmsServerConnection =%d",
               error);
         aMmsSrvConn->mError = error;
         (aMmsSrvConn->mOpenMonitor)->notify();

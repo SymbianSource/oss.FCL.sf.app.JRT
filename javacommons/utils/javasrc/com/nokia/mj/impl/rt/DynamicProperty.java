@@ -21,9 +21,10 @@ package com.nokia.mj.impl.rt;
 /**
  * Interface for accessing configuration dependent system property extension
  * mechanism.
+ * The package visiblity is set to public for unit testing purposes.
  */
 
-interface DynamicProperty
+public interface DynamicProperty
 {
     /**
      * Adds the defined system property containing all the system

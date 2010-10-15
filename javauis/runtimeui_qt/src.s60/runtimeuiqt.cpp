@@ -24,6 +24,8 @@
 
 using namespace java::runtimeui;
 
+_LIT(KTrustedWarningIcon, "qtg_large_warning_trusted");
+
 OS_EXPORT void RuntimeUiQt::errorL(const TDesC& /*aAppName*/, const TDesC& aShortMsg,
     const TDesC& aDetailedMsg, const TDesC& aDetailsButton, const TDesC& aOkButton)
 {
@@ -33,6 +35,7 @@ OS_EXPORT void RuntimeUiQt::errorL(const TDesC& /*aAppName*/, const TDesC& aShor
 
     messageBox->SetTextL(aShortMsg);
     messageBox->SetTimeout(HbPopup::NoTimeout);
+    messageBox->SetIconNameL(KTrustedWarningIcon);
 
     if (aDetailedMsg.Size() > 0)
     {
@@ -58,8 +61,11 @@ OS_EXPORT void RuntimeUiQt::errorL(const TDesC& /*aAppName*/, const TDesC& aShor
     CleanupStack::PopAndDestroy(messageBox);
 }
 
+_LIT(KTrustedIcon, "qtg_large_query_trusted");
+_LIT(KUntrustedIcon, "qtg_large_query_untrusted");
+
 OS_EXPORT int RuntimeUiQt::confirmL(const TDesC& /*aAppName*/, const TDesC& aQuestion,
-    const ConfirmData& aConfirmData, bool /*aIdentified*/)
+    const ConfirmData& aConfirmData, bool aIdentified)
 {
     CHbDeviceMessageBoxSymbian* messageBox
         = CHbDeviceMessageBoxSymbian::NewL(CHbDeviceMessageBoxSymbian::EWarning);
@@ -67,6 +73,15 @@ OS_EXPORT int RuntimeUiQt::confirmL(const TDesC& /*aAppName*/, const TDesC& aQue
 
     messageBox->SetTextL(aQuestion);
     messageBox->SetTimeout(HbPopup::NoTimeout);
+
+    if (aIdentified)   // Trusted application.
+    {
+        messageBox->SetIconNameL(KTrustedIcon);
+    }
+    else
+    {
+        messageBox->SetIconNameL(KUntrustedIcon);
+    }
 
     // Deny by default.
     int result = 1;

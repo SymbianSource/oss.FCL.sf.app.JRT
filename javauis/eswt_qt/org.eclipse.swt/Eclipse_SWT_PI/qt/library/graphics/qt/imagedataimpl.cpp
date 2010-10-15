@@ -65,7 +65,7 @@ int ImageDataWrapperImpl::getDataSize(ImageDataWrapper::TDataType aType)
 void ImageDataWrapperImpl::setData(Image* aSrc)
 {
     GFX_LOG_FUNC_CALL();
-    QImage image = aSrc->getPixmap()->toImage();
+    const QImage image = aSrc->toConstImage();
     fillData(&image, aSrc->getAlpha(), aSrc->hasMask());
 }
 
@@ -117,16 +117,33 @@ void ImageDataWrapperImpl::fillData(const QImage* aImage, int aAlpha, bool aMask
     const uchar* data = aImage->scanLine(0);
 
     char* pixelData = mPixelData.data();
+    uchar* alphaData = 0;
+    if (mDepth == 32 && !aMask && mAlpha == -1)
+    {
+        mAlphaData.fill(0xFF, aImage->width() * aImage->height());
+        alphaData = (uchar*) mAlphaData.data();
+    }
 
     int pixel = 0;
+    int alpha = 0;
+    bool alphaInUse = false;
 
     // Create
-    for (int i = 0; i < size; i += bpp)
+    for (int i = 0, j = 0; i < size; i += bpp, j++)
     {
         switch (mDepth)
         {
         case 32:
-            pixel = (data[i] & 0xFF) << 24 | (data[i+1] & 0xFF) << 16 | (data[i+2] & 0xFF) << 8 | (data[i+3] & 0xFF);
+            alpha = data[i+3] & 0xFF;
+            pixel = (data[i] & 0xFF) << 24 | (data[i+1] & 0xFF) << 16 | (data[i+2] & 0xFF) << 8 | alpha;
+            if (!aMask && mAlpha == -1 && alpha != 0xFF)
+            {
+                *(uchar*)(alphaData + j) = alpha;
+                if (!alphaInUse)
+                {
+                    alphaInUse = true;
+                }
+            }
             *(int*)(pixelData + i) = pixel;
             break;
         case 24:
@@ -143,6 +160,13 @@ void ImageDataWrapperImpl::fillData(const QImage* aImage, int aAlpha, bool aMask
         default:
             throw GfxException(EGfxErrorIllegalArgument, "Unsupported bit depth");
         }
+    }
+    
+    // According to eSWT's API, an alpha data should be present
+    // only when there are actual semi or fully transparent pixels.
+    if (!alphaInUse)
+    {
+        mAlphaData.clear();
     }
 
     if (aMask)
@@ -163,19 +187,6 @@ void ImageDataWrapperImpl::fillData(const QImage* aImage, int aAlpha, bool aMask
     else if (mAlpha != -1)
     {
         mAlphaData.fill(mAlpha, aImage->width()*aImage->height());
-    }
-    else if (aImage->hasAlphaChannel())
-    {
-
-    QImage alphaImage = aImage->alphaChannel();
-    const int w = alphaImage.width();
-    for(int j= 0; j < alphaImage.height(); j++)
-        {
-        for(int i = 0; i < w; i++)
-            {
-            mAlphaData[j * w + i] = alphaImage.pixel(i, j) & 0xFF;
-            }
-        }
     }
 
     // Create palette

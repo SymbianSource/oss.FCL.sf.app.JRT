@@ -46,10 +46,6 @@ public static int getImageHandle(Image i) {
     return i.getImageHandle();
 }
 
-public static int getPixmapHandle(Image i) {
-    return i.getPixmapHandle();
-}
-
 public static Image createImageWithoutSecurityCheck(Device device,
         String filename) {
     return Image.createImageWithoutSecurityCheck(device, filename);

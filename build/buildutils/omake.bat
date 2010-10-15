@@ -32,10 +32,6 @@ rem See if this is subdirectory within \ext\app\jrtext
 if "%JAVA_SRC_ROOT%" == "" for /F "delims=\ tokens=2-4" %%a in ("%CD%") do if "%%a\%%b\%%c" == "ext\app\jrtext" set JAVA_SRC_ROOT=\sf\app\jrt
 if not "%JAVA_SRC_ROOT%" == "" goto :resolved
 
-echo Could not determine JAVA_SRC_ROOT.
-goto :EOF
-
-
 :resolved
 echo JAVA_SRC_ROOT=%JAVA_SRC_ROOT%
 

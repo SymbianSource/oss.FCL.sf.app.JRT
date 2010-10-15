@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -21,16 +21,13 @@ import com.nokia.mj.impl.utils.ResourceLoader;
 
 /**
  * Class defining RuntimeUi texts.
- *
- * @author Nokia Corporation
- * @version 1.0
  */
 public class RuntimeUiTexts
 {
     /*** ----------------------------- PUBLIC ------------------------------ */
 
-    public static final String OK = "secur_prompt_ok";
-    public static final String DETAILS_QUERY = "secur_error_details_message";
+    public static final String OK = "secur_prompt_ok,prompt_ok";
+    public static final String DETAILS_QUERY = "secur_error_details_message,error_details";
 
     /**
      * Method for retrieving a text string with given id and no parameters.
@@ -54,7 +51,9 @@ public class RuntimeUiTexts
     {
         if (iRes == null)
         {
-            iRes = ResourceLoader.getInstance("javausermessages", "qtn_java_");
+            iRes = ResourceLoader.getInstance(
+                "javausermessages,javaapplicationsecuritymessages",
+                "qtn_java_,txt_java_secur_button_");
         }
         return iRes.format(aTextId, aTextParameters);
     }

@@ -12,11 +12,11 @@
 #define PIXMAP_H_
 
 #include <QPixmap>
-#include "graphics.h"
+#include "imagebase.h"
 
 namespace Java { namespace GFX {
 
-class Pixmap: public Image
+class Pixmap: public ImageBase
 {
 public:
     /**
@@ -41,24 +41,26 @@ public:
     virtual void createFromRGB(int* aRgbdata, int aWidth, int aHeight, bool aHasAlpha);
     virtual void dispose();
     virtual QPaintDevice* getBindable();
-    virtual int getFormat();
+    virtual TImageFormat getFormat();
     virtual int getHeight();
+    virtual const QImage* getConstImage();
+    virtual QImage* getImage();
+    virtual const QPixmap* getConstPixmap();
     virtual QPixmap* getPixmap();
     virtual void getRgb(int* aRgbdata, int aOffset, int aScanlength, int aX, int aY, int aWidth, int aHeight);
     virtual void getRgb(char* aRgbdata, char* aTransparencyMask,int aOffset, int aScanlength, int aX, int aY, int aWidth, int aHeight, int aFormat);
     virtual void getRgb(short* aRgbdata, int aOffset, int aScanlength, int aX, int aY, int aWidth, int aHeight, int aFormat);
     virtual int getWidth();
+    virtual const QImage toConstImage();
     virtual QImage toImage();
+    virtual QPixmap toPixmap();
     virtual void transform(TTransform aTransform);
     virtual TImageType type();
-    virtual int getAlpha();
-    virtual bool hasMask();
+
     virtual bool hasAlphaChannel();
 
 private:
     QPixmap  mPixmap;
-    int      mAlpha;
-    bool     mHasMask;
 };
 
 } // namespace GFX

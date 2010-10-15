@@ -26,6 +26,7 @@ import com.ibm.oti.vm.VM;
 import com.nokia.mj.impl.rt.SystemPropertyHashtable;
 import com.nokia.mj.impl.rt.support.Finalizer;
 import com.nokia.mj.impl.rt.JvmPort;
+import com.nokia.mj.impl.utils.Logger;
 
 /**
  * A class that implements a system property extension mechanism provided
@@ -44,23 +45,31 @@ public class SystemPropertyExtension implements SystemPropertiesHook
 
     public Hashtable extendSystemProperties(Hashtable originalProperties)
     {
-        // Vital to make finalizer implementation reliable. If this is not done
-        // the first class registering for finalization never receves
-        // finalization serverces - i.e. none of the instances of that
-        // particular class will ever be finalized.
-        VM.enableFinalization(Finalizer.class);
-
-        // Create a new object extending java.util.Hashtable and fill with the
-        // original properties.
-        SystemPropertyHashtable newProperties =
-            new SystemPropertyHashtable(originalProperties);
-
-        // Store the hashtable to be able to add properties during runtime.
-        JvmPort.setPropertiesContainer(newProperties);
-
-        // Override existing line.separator
-        newProperties.put("line.separator", "\n");
-
-        return newProperties;
+        try
+        {
+            // Vital to make finalizer implementation reliable. If this is not
+            // done the first class registering for finalization never receves
+            // finalization serverces - i.e. none of the instances of that
+            // particular class will ever be finalized.
+            VM.enableFinalization(Finalizer.class);
+    
+            // Create a new object extending java.util.Hashtable and fill with
+            // the original properties.
+            SystemPropertyHashtable newProperties = 
+                new SystemPropertyHashtable(originalProperties);
+            // Store the hashtable to be able to add properties during runtime.
+            JvmPort.setPropertiesContainer(newProperties);
+    
+            // Override existing line.separator
+            newProperties.put("line.separator", "\n");
+            return newProperties;
+        }
+        catch (Throwable t)
+        {
+            Logger.LOG(Logger.EUtils, Logger.EInfo, 
+               "Failed to init system properties", t);
+            // In case of error, return original properties.
+        }
+        return originalProperties;
     }
 }

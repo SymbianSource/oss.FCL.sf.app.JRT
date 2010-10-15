@@ -40,7 +40,7 @@ known_exts = [
      ".classpath_qt", ".classpath_qt_j2me",
     ".cmd", ".comp", ".conf", ".css", ".confml", ".cpp", ".cproject", ".crml",
     ".cvsignore", ".dat", ".dcf", ".def", ".defs", ".dll", ".der", ".doc",
-    ".dr", ".dso", ".dsp", ".dsw", ".dtd",
+    ".dm", ".dr", ".dso", ".dsp", ".dsw", ".dtd",
     ".emx", ".exe", ".flm", ".gcfml", ".gif",
     ".h", ".hrh", ".htm", ".html", ".iby", ".inf", ".ini", ".inl",
     ".jad", ".jar", ".java", ".javaversion", ".jpeg", ".jpg", ".js", ".jsp", ".jupiter",

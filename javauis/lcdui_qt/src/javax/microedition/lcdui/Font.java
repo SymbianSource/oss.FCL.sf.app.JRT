@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2009,2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -30,8 +30,13 @@ import org.eclipse.swt.widgets.*;
  */
 public final class Font
 {
+	/*
+	 * Point size value for the Medium LCDUI fonts. All
+	 * font sizes are relative to this value;
+	 */
+    private static final int MEDIUM_FONT_POINT_SIZE = 8;
 
-    /**
+	/**
      * System font face.
      *
      * @value for FACE_SYSTEM is 0.
@@ -241,6 +246,7 @@ public final class Font
             font.style |= Font.STYLE_UNDERLINED;
         }
         return font;
+
     }
 
     /**
@@ -459,11 +465,11 @@ public final class Font
      */
     public int charsWidth(char[] c, int offset, int length)
     {
-        try 
+        try
         {
            final String string = new String(c, offset, length);
            return stringWidth(string);
-        }catch (StringIndexOutOfBoundsException ex) 
+        }catch (StringIndexOutOfBoundsException ex)
         {
             throw new ArrayIndexOutOfBoundsException();
         }
@@ -681,25 +687,18 @@ public final class Font
      */
     private static int mapSizeToHeight(int size)
     {
-        //retreive the system default height
-        int defHeight = getSystemFontData().getHeight();
-
-        if(size == Font.SIZE_SMALL)
-        {
-            //calculate the small size height as a ratio of system default medium size and round off the value to an integer
-            return (int)Math.floor((defHeight * (3f/4)) + 0.5f);
-        }
-        else if(size == Font.SIZE_LARGE)
-        {
-            //calculate the large height as a ratio of system default medium size and round off the value to an integer
-            return (int)Math.floor((defHeight * (4.5f/4)) + 0.5f);
-        }
-        else
-        {
-            //return the system default height for medium size which is generally 12 but 7 in symbian for qt
-            return defHeight;
-        }
-    }
+    	//maps relative to the medium font size
+    	//This is a static value on LCDUI because
+    	// Qt value was static and very small.
+    	switch(size){
+    		case Font.SIZE_SMALL:
+    			return MEDIUM_FONT_POINT_SIZE - 1;
+    		case Font.SIZE_LARGE:
+    			return MEDIUM_FONT_POINT_SIZE + 1;
+    		default:
+    			return MEDIUM_FONT_POINT_SIZE;
+    	}
+      }
 
     /**
      * Get LCDUI size from eSWT font height
@@ -709,12 +708,11 @@ public final class Font
      */
     private static int mapHeightToSize(int height)
     {
-        int defHeight = getSystemFontData().getHeight();
-        if(height < defHeight)
+        if(height < MEDIUM_FONT_POINT_SIZE)
         {
             return Font.SIZE_SMALL;
         }
-        else if(height > defHeight)
+        else if(height > MEDIUM_FONT_POINT_SIZE)
         {
             return Font.SIZE_LARGE;
         }

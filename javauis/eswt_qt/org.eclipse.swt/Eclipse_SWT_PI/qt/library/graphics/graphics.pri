@@ -20,6 +20,8 @@ DEPENDPATH += $$PWD \
               $$PWD/qt
 
 HEADERS += $$PWD/qt/surfaceimpl.h \
+    $$PWD/qt/imagebase.h \
+    $$PWD/qt/imageimpl.h \
     $$PWD/qt/pixmap.h \
     $$PWD/qt/imageloaderimpl.h \
     $$PWD/qt/imagedataimpl.h \
@@ -41,6 +43,8 @@ symbian {
 }
 
 SOURCES += $$PWD/qt/surfaceimpl.cpp \
+    $$PWD/qt/imagebase.cpp \
+    $$PWD/qt/imageimpl.cpp \
     $$PWD/qt/pixmap.cpp \
     $$PWD/qt/imageloaderimpl.cpp \
     $$PWD/qt/imagedataimpl.cpp \

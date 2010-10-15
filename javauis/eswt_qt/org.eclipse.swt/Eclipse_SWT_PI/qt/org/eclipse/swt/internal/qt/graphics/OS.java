@@ -79,10 +79,11 @@ final class OS {
     static final native void graphicsContext_restoreSettings(int handle);
 
     // Image
-    static final native int image_create(int width, int height, int fillColor); 
+    static final native int image_create(int width, int height, int fillColor, int type);
     static final native int image_create(int imageHandle, int x, int y, int width, int height);
-    static final native int image_create(ImageData imageData);
-    static final native int image_create(int[] argbData, int width, int height, boolean hasAlpha);
+    static final native int image_create(int imageHandle, int x, int y, int width, int height, int typeOfCopy);
+    static final native int image_create(ImageData imageData, int type);
+    static final native int image_create(int[] argbData, int width, int height, boolean hasAlpha, int type);
     static final native int image_create(int pixmapHandle);
     static final native int image_getFormat(int handle);
     static final native int image_getHeight(int handle);
@@ -91,9 +92,10 @@ final class OS {
     static final native void image_getRGB(int handle, byte[] argbData, byte[] transparencyMask, int offset, int scanlength,int x, int y, int width, int height, int format);
     static final native void image_getRGB(int handle, short[] argbData, int offset, int scanlength,int x, int y, int width, int height, int format);
     static final native ImageData image_getImageData(int imageHandle);
+    static final native int image_getType(int imageHandle);
+    static final native int image_getQPaintDeviceHandle(int imageHandle);
     static final native void image_transform(int handle, int transform);
     static final native void image_dispose(int handle);
-    static final native int image_getPixmapHandle(int handle);
     static final native boolean image_detectCollision(int image1Handle, int transform1, int p1x, int p1y, int r1x1, int r1y1, int r1x2, int r1y2,
                                                       int image2Handle, int transform2, int p2x, int p2y, int r2x1, int r2y1, int r2x2, int r2y2);
 
@@ -101,10 +103,11 @@ final class OS {
     static final native void imageLoader_append(int handle, int length, int offset, byte[] data);
     static final native void imageLoader_beginStream(int handle, int bufferSize);
     static final native int imageLoader_endStream(int handle);
-    static final native int imageLoader_init();
+    static final native int imageLoader_init(int resultImageType);
     static final native void imageLoader_dispose(int handle);
     static final native int imageLoader_load(int handle, String fileName);
     static final native void imageLoader_setLoadSize(int handle, int width, int height);
+    static final native void imageloader_setResultImageType(int handle, int imageType);
     static final native Point imageLoader_getImageSize(byte[] data);
     
     // FontUtils

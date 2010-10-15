@@ -104,6 +104,14 @@ public:
     virtual void saveSettings();
     virtual void restoreSettings();
 
+    /**
+    * Returns trasformed image
+    *
+    * @param image image to perform transformation on
+    * @param manuplation indicates what kind of transformation is needed
+    */
+    QImage doTransform(QImage image, int manipulation);
+
 private:
 
     /**
@@ -134,14 +142,6 @@ private:
      */
     bool isPtrWithinRange(const int* aStartPtr, const int* aEndPtr, const int* aPrt);
 
-    /**
-     * Returns trasformed image
-     *
-     * @param image image to perform transformation on
-     * @param manuplation indicates what kind of transformation is needed
-     */
-
-    QImage doTransform(QImage image, int manipulation);
     /**
      * Performs clean for graphicsContext, i.e. deletes all allocations
      * and resets state.

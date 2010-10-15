@@ -21,7 +21,7 @@ package com.nokia.mj.test.storage;
 import com.nokia.mj.test.storage.utils.StorageSessionTestUtils;
 import com.nokia.mj.impl.storage.*;
 
-import com.nokia.mj.impl.installer.utils.InstallerMain;
+import com.nokia.mj.impl.rt.test.UnitTestSuiteCreator;
 import j2meunit.framework.Test;
 import j2meunit.framework.TestCase;
 import j2meunit.framework.TestMethod;
@@ -33,22 +33,12 @@ import j2meunit.framework.TestSuite;
  * they're not tested. If second transaction can be created however
  * writing data with it causes DB server busy.
  */
-public class TestTransaction extends TestCase implements InstallerMain
+public class TestTransaction extends TestCase implements UnitTestSuiteCreator
 {
-    /**
-     * Directory for JavaStorage tests.
-     */
-    private static final String iTestRoot = "./jstest";
-
-    /**
-     * Directory for JavaStorage journal and temp files.
-     */
-    private static final String iIsRoot = iTestRoot + "/js";
-
     private StorageSession iSession = null;
     private StorageSessionTestUtils iJtu = null;
 
-    public void installerMain(String[] args)
+    public TestSuite createTestSuite(String[] args)
     {
         TestSuite suite = new TestSuite(this.getClass().getName());
 
@@ -84,7 +74,7 @@ public class TestTransaction extends TestCase implements InstallerMain
             }
         }));
 
-        com.nokia.mj.impl.utils.OmjTestRunner.run(suite);
+        return suite;
     }
 
     public TestTransaction()

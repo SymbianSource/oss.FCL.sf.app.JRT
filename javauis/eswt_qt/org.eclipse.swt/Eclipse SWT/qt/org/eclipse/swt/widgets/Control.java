@@ -131,7 +131,12 @@ protected Control(Composite parent, int style, int extraStyle, Object packagePro
     this.parent = parent;
     this.extraStyle = extraStyle;
     createWidget(0);
-    OS.QWidget_setParent(topHandle, parent.handle);
+    
+    // Children of Table are attached into the table itself, not the viewport.
+    int containerHandle = parent.packageProxy != null ? 
+        parent.packageProxy.handleWithChildren() : parent.handleWithChildren_pp();
+    OS.QWidget_setParent(topHandle, containerHandle);
+    
     OS.QWidget_resize(topHandle, 0, 0);
     if(isParentMirrored()) {
         Point size = OS.QWidget_size(topHandle);
@@ -146,8 +151,8 @@ protected Control(Composite parent, int style, int extraStyle, Object packagePro
 }
 
 void addCommand(final Command command) {
-    if (command.control != this)
-        return;
+    // Impossible for Command.control to be anything else than 'this'
+    // since addCommand is called from Command's register() only.
     if (commandList == null) {
         commandList = new Command[1];
         commandList[0] = command;
@@ -2217,8 +2222,8 @@ void releaseWidget_pp() {
 }
 
 void removeCommand(final Command command) {
-    if (command.control != this)
-        return;
+    // Impossible for Command.control to be anything else than 'this'
+    // since removeCommand is called from Command's releaseParent() only.
     if (commandList == null || commandList.length == 0)
         return;
     if (commandList.length == 1 && command == commandList[0]) {
@@ -2998,7 +3003,7 @@ private final void setPaletteBgImage(int paletteHandle, Image image) {
                 OS.QPalette_swt_setBrush(paletteHandle, bkRoles[j], 0);
                 backgroundImageInherited(image);
             } else {
-                OS.QPalette_swt_setBrush(paletteHandle, bkRoles[j], Internal_GfxPackageSupport.getPixmapHandle(image));
+                OS.QPalette_swt_setBrush(paletteHandle, bkRoles[j], Internal_GfxPackageSupport.getImageHandle(image));
                 if(packageProxy != null) {
                     packageProxy.backgroundImageApplied(image);
                 } else {

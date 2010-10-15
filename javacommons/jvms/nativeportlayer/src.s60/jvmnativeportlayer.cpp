@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -30,13 +30,11 @@ MJvmNativePortLayer* CJvmNativePortLayer::NewL(void)
 {
     JELOG2(EJVM);
     CJvmNativePortLayer* portLayer = new(ELeave) CJvmNativePortLayer;
-    CleanupStack::PushL(portLayer);
-    portLayer->ConstructL();
-    CleanupStack::Pop(portLayer);
+    portLayer->Construct();
     return portLayer;
 }
 
-CJvmNativePortLayer::CJvmNativePortLayer():iStdOut(0), iStdErr(0)
+CJvmNativePortLayer::CJvmNativePortLayer()
 {
     JELOG2(EJVM);
 }
@@ -44,16 +42,6 @@ CJvmNativePortLayer::CJvmNativePortLayer():iStdOut(0), iStdErr(0)
 CJvmNativePortLayer::~CJvmNativePortLayer()
 {
     JELOG2(EJVM);
-    if (iStdOut != 0)
-    {
-        delete iStdOut;
-        iStdOut = 0;
-    }
-    if (iStdErr != 0)
-    {
-        delete iStdErr;
-        iStdErr = 0;
-    }
     iRedirector.close();
 }
 
@@ -62,13 +50,9 @@ _LIT(KOutpuDir,"java");
 _LIT(KOutpuFullDir,"c:\\logs\\java");
 _LIT(KConsole,"vmconsole.txt");
 
-void CJvmNativePortLayer::ConstructL(void)
+void CJvmNativePortLayer::Construct()
 {
     JELOG2(EJVM);
-    _LIT(KStdOut,"stdout_%02i%02i_%02i%02i%02i.txt");
-    _LIT(KStdErr,"stderr_%02i%02i_%02i%02i%02i.txt");
-    iStdOut = HBufC::NewL(KDesLength);
-    iStdErr = HBufC::NewL(KDesLength);
 
     RFs rfs;
     TUint dummy;
@@ -85,14 +69,6 @@ void CJvmNativePortLayer::ConstructL(void)
     else
     {
         iLogging = ETrue;
-        TTime time;
-        time.HomeTime();
-        TDateTime dt = time.DateTime();
-
-        iStdOut->Des().Format(KStdOut, dt.Month()+1, dt.Day()+1,
-                              dt.Hour(), dt.Minute(), dt.Second());
-        iStdErr->Des().Format(KStdErr, dt.Month()+1, dt.Day()+1,
-                              dt.Hour(), dt.Minute(), dt.Second());
     }
     rfs.Close();
 
@@ -102,15 +78,13 @@ void CJvmNativePortLayer::ConstructL(void)
 MJavaFile* CJvmNativePortLayer::GetJavaFileL()
 {
     JELOG2(EJVM);
-    MJavaFile* javaFile = CJavaFile::NewL();
-    return javaFile;
+    return new(ELeave) CJavaFile();
 }
 
 void CJvmNativePortLayer::WriteToStdoutL(const TDesC8& aData)
 {
     if (iLogging)
     {
-//              RFileLogger::Write( KOutpuDir, *iStdOut, EFileLoggingModeAppendRaw, aData);
         RFileLogger::Write(KOutpuDir, KConsole, EFileLoggingModeAppendRaw, aData);
     }
     iRedirector.systemOut(aData);
@@ -119,24 +93,18 @@ void CJvmNativePortLayer::WriteToStderrL(const TDesC8& aData)
 {
     if (iLogging)
     {
-//              RFileLogger::Write( KOutpuDir, *iStdErr, EFileLoggingModeAppendRaw, aData);
         RFileLogger::Write(KOutpuDir, KConsole, EFileLoggingModeAppendRaw, aData);
     }
     iRedirector.systemErr(aData);
 }
 
 
-
-//Obsolite method, but keeping to be in sync with legacy
-EXPORT_C void CJvmNativePortLayer::SetPointerToCafMethod(TBool(* /*aUseCafForFileOpen*/)(const TDesC&))
-{
-    JELOG2(EJVM);
-}
-EXPORT_C MJvmNativePortLayer* GetPortLayerL()
+EXPORT_C MJvmNativePortLayer* javaruntime::GetPortLayerL()
 {
     JELOG2(EJVM);
     return CJvmNativePortLayer::NewL();
 }
+
 const TThreadPriority priorityMapping[] =
 {
     EPriorityMuchLess, //0
@@ -152,7 +120,8 @@ const TThreadPriority priorityMapping[] =
     EPriorityNormal,   //10
     EPriorityMore,     //11
 };
-EXPORT_C TThreadPriority GetSingleThreadPriority(const TInt& aJavaPriority)
+
+EXPORT_C TThreadPriority javaruntime::GetSingleThreadPriority(const TInt& aJavaPriority)
 {
     JELOG2(EJVM);
     TInt index = Max(Min(aJavaPriority,11),0);

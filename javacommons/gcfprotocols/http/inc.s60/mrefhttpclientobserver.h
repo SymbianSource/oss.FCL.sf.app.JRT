@@ -23,6 +23,7 @@ class MRefHttpClientObserver
 public:
     virtual void SubmitComplete(TInt aStatus) =0 ;
     virtual void DataReadyForRead(TInt aStatus) = 0;
+    virtual void DoPostCallBack() = 0;
 };
 
 #endif // MREFHTTPCLIENTOBSERVER_H

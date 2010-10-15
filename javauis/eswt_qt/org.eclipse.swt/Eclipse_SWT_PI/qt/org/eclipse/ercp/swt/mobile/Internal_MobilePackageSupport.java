@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.ercp.swt.mobile;
 
+import org.eclipse.swt.widgets.Control;
+
 /**
  * <p>
  * <b>IMPORTANT:</b> This class is <em>not</em> part of the SWT public API. It
@@ -44,5 +46,11 @@ public static void mobiledevice_dispose(MobileDevice mobileDevice){
 	mobileDevice.internal_dispose();
 }
 
+public static Control control(Command command){
+    return command.control();
+}
 
+public static int type(Command command){
+    return command.type();
+}
 }

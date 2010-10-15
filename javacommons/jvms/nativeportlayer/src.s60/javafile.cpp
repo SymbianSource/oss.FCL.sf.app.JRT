@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -22,24 +22,7 @@
 using namespace javaruntime;
 
 //*****************************************************************************
-MJavaFile* CJavaFile::NewL()
-{
-    JELOG2(EJVM);
-    CJavaFile* self = new(ELeave) CJavaFile();
-    CleanupStack::PushL(self);
-    self->ConstructL();
-    CleanupStack::Pop(self);
-    return self;
-}
-
-//*****************************************************************************
 CJavaFile::CJavaFile(): iJavaFileMode(EJavaFileClosed)
-{
-    JELOG2(EJVM);
-}
-
-//*****************************************************************************
-void CJavaFile::ConstructL()
 {
     JELOG2(EJVM);
 }
@@ -81,11 +64,6 @@ TInt CJavaFile::Open(RFs& aFs,const TDesC& aFileName, TUint aFileMode)
         //in order to allow proper
         //cleanup if something fails.
         TRAP(status, OpenCafL(aFileName));
-        if (status != KErrNone)
-        {
-            // Clean up and set the class ready for opening another file.
-            Close();
-        }
     }
     else
     {
@@ -96,7 +74,11 @@ TInt CJavaFile::Open(RFs& aFs,const TDesC& aFileName, TUint aFileMode)
         {
             iJavaFileMode = EJavaFileOpenForNormalFile;
         }
-        // No need for cleaning.
+    }
+    if (status != KErrNone)
+    {
+        // Clean up and set the class ready for opening another file.
+        Close();
     }
     return status;
 }
@@ -176,7 +158,7 @@ TInt CJavaFile::Create(RFs& aFs,const TDesC& aName,TUint aFileMode)
 //*****************************************************************************
 TInt CJavaFile::Read(TDes8& aDes) const
 {
-    //JELOG4(EJVM, EEntry & EInfoHeavyLoad);
+    JELOG4(EJVM, EEntry & EInfoHeavyLoad);
     if (iJavaFileMode == EJavaFileOpenForCaf)
     {
         //Using CAF
@@ -192,7 +174,7 @@ TInt CJavaFile::Read(TDes8& aDes) const
 //*****************************************************************************
 TInt CJavaFile::Read(TDes8& aDes, TInt aLength) const
 {
-    //JELOG4(EJVM, EEntry & EInfoHeavyLoad);
+    JELOG4(EJVM, EEntry & EInfoHeavyLoad);
     if (iJavaFileMode == EJavaFileOpenForCaf)
     {
         //Using CAF
@@ -210,6 +192,11 @@ TInt CJavaFile::Replace(RFs& aFs,const TDesC& aName,TUint aFileMode)
 {
     JELOG2(EJVM);
     //Using RFile
+    if (iJavaFileMode != EJavaFileClosed)
+    {
+        // Not allowed if some file is already opened and not properly closed.
+        return KErrInUse;
+    }
     TInt status = iNormalFile.Replace(aFs, aName, aFileMode);
     if (status == KErrNone)
     {
@@ -324,7 +311,7 @@ TInt CJavaFile::UnLock(TInt aPos, TInt aLength) const
 //*****************************************************************************
 TInt CJavaFile::Seek(TSeek aMode,TInt& aPos) const
 {
-//        JELOG4(EJVM, EEntry & EInfoHeavyLoad);
+    JELOG4(EJVM, EEntry & EInfoHeavyLoad);
     if (iJavaFileMode == EJavaFileOpenForCaf)
     {
         //Using CAF
@@ -360,14 +347,17 @@ TBool CJavaFile::isDrmFile(const TDesC& aFileName)
     filename.Set(aFileName, NULL, NULL);
     TPtrC filenameExt = filename.Ext();
 
-    if (filenameExt.CompareF(_L(".dm")) == 0 ||
-            filenameExt.CompareF(_L(".dcf")) == 0)
+    _LIT(KDmExtension, ".dm");
+    _LIT(KDcfExtension, ".dcf");
+    if (filenameExt.CompareF(KDmExtension) == 0 ||
+            filenameExt.CompareF(KDcfExtension) == 0)
     {
         // Filename extension indicates this is a DRM protected file.
         return ETrue;
     }
 
-    if (filenameExt.CompareF(_L(".jar")) != 0)
+    _LIT(KJarExtension, ".jar");
+    if (filenameExt.CompareF(KJarExtension) != 0)
     {
         // Filename extension indicates this is not a jar file,
         // assume it is not DRM protected.
@@ -376,7 +366,8 @@ TBool CJavaFile::isDrmFile(const TDesC& aFileName)
 
     RProcess thisProcess;
     TName thisProcessName = thisProcess.Name();
-    if (KErrNotFound == thisProcessName.FindF(_L("Installer")))
+    _LIT(KInstallerName, "Installer");
+    if (KErrNotFound == thisProcessName.FindF(KInstallerName))
     {
         // We are not running in JavaInstaller process,
         // do not check if file is DRM protected from CAF
@@ -386,37 +377,23 @@ TBool CJavaFile::isDrmFile(const TDesC& aFileName)
 
     // Check from CAF if file is DRM protected.
     TBool drmFile = EFalse;
-    if (NULL == iCafContent)
+    TRAP_IGNORE(iCafContent = ContentAccess::CContent::NewL(aFileName));
+    if (NULL != iCafContent)
     {
-        TRAP_IGNORE(iCafContent = ContentAccess::CContent::NewL(aFileName));
-        if (NULL != iCafContent)
+        TInt value = 0;
+        TInt err = iCafContent->GetAttribute(
+                       ContentAccess::EIsProtected, value);
+        if (KErrNone == err && value)
         {
-            TInt value = 0;
-            TInt err = iCafContent->GetAttribute(
-                           ContentAccess::EIsProtected, value);
-            if (KErrNone == err && value)
-            {
-                // This is a DRM file.
-                drmFile = ETrue;
-            }
-            else
-            {
-                // Not a DRM file, delete iCafContent instance.
-                delete iCafContent;
-                iCafContent = NULL;
-            }
+            // This is a DRM file.
+            drmFile = ETrue;
+        }
+        else
+        {
+            // Not a DRM file, delete iCafContent instance.
+            delete iCafContent;
+            iCafContent = NULL;
         }
     }
     return drmFile;
 }
-
-
-EXPORT_C void Dummy1() {}
-EXPORT_C void Dummy2() {}
-EXPORT_C void Dummy3() {}
-EXPORT_C void Dummy4() {}
-EXPORT_C void Dummy5() {}
-EXPORT_C void Dummy6() {}
-EXPORT_C void Dummy7() {}
-EXPORT_C void Dummy8() {}
-EXPORT_C void Dummy9() {}

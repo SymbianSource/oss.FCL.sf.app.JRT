@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+# Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
 # All rights reserved.
 # This component and the accompanying materials are made available
 # under the terms of "Eclipse Public License v1.0"
@@ -13,6 +13,8 @@
 #
 # Description: 
 #
+
+include(../../../inc/build_defines.pri)
 
 TEMPLATE=lib
 TARGET=javasecurity
@@ -36,9 +38,7 @@ LIBS += -ljavacomms -ljavastorage
 
 symbian {
     DEPENDPATH += ../src.s60
-    INCLUDEPATH += ../src.s60 \
-                   /src/common/generic/security/common/inc \
-                   /sf/os/security/cryptomgmtlibs/securityutils/inc
+    INCLUDEPATH += ../src.s60
     SOURCES += ../src.s60/*.cpp
     LIBS += -llibcrypto \
             -letel \
@@ -51,6 +51,15 @@ symbian {
             -lx509 \
             -lcentralrepository \
             -lcaf
+
+    contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_5_0) {
+        INCLUDEPATH += /src/common/generic/security/common/inc
+    }
+
+    contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_10_1_ONWARDS) {
+        CONFIG += qt hb
+        TRANSLATIONS = javaapplicationsecuritymessages.ts
+    }
 }
 
 !symbian {

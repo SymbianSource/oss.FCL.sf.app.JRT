@@ -35,6 +35,12 @@ QScrollArea#appInfoArea {
 	margin-top: 13.4px; /*hb-param-margin-gene-popup; /*2un*/
 	margin-left: 13.4px; /*hb-param-margin-gene-popup; /*2un*/
 	margin-right: 13.4px; /*hb-param-margin-gene-popup; /*2un*/
+	margin-bottom: 13.4px; /*hb-param-margin-gene-popup; /*2un*/
+}
+
+QLabel#appInfoLabel {
+	/* The font size of application details; each detail is its own label */
+	font-size: 23.45px; /*hb-param-text-height-secondary; /*3.5un*/
 }
 
 QLabel#heading {

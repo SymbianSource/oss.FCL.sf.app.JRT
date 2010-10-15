@@ -50,8 +50,14 @@ RESOURCES_PATH = os.path.join("resources", "com", "nokia", "mj", "impl")
 
 def main():
     parser = OptionParser(
-        usage = "Usage: %prog [args] <input_dir> <output_dir>")
+        usage = "Usage: %prog [args] <input_dir> <output_dir> <loc-file.jar>")
+    parser.add_option(
+        "--files", dest = "files", default = ",".join(JAVA_LOC_FILES),
+        help = "list of Java loc files to read from input (default: %s)" % 
+        ",".join(JAVA_LOC_FILES))
     (opts, args) = parser.parse_args()
+
+    locFiles = opts.files.split(",")
 
     try:
         inputDir = args[0]
@@ -67,7 +73,7 @@ def main():
                     outFilename = os.path.join(outputDir, file.lower())
                     (fileIndex, fileExt) = os.path.splitext(file)
                     print "Extracting %s" % inFilename
-                    extractJavaLocFiles(fileIndex, inFilename)
+                    extractJavaLocFiles(locFiles, fileIndex, inFilename)
                     print "Creating %s" % outFilename
                     os.system("jar cfM " + outFilename + " " + fileIndex)
                     print "Updating %s" % resourcesFilename
@@ -83,12 +89,13 @@ def main():
         traceback.print_exc()
         sys.exit(1)
 
-def extractJavaLocFiles(index, inFilename):
+def extractJavaLocFiles(locFiles, index, inFilename):
     javaLocFiles = ""
-    for javaLocFile in JAVA_LOC_FILES:
-        javaLocFilename = os.path.join(index, javaLocFile + "_" + index + ".loc")
+    for javaLocFile in locFiles:
+        javaLocFilename = index + "/" + javaLocFile + "_" + index + ".loc"
         javaLocFiles = javaLocFiles + " " + javaLocFilename
-    os.system("jar xf " + inFilename + javaLocFiles)
+    command = "jar xf " + inFilename + javaLocFiles
+    os.system(command)
 
 def updateResources(index, resourcesFilename):
     resourcesDir = os.path.join(index, RESOURCES_PATH)

@@ -77,9 +77,9 @@ enum TImageFormat
  */
 enum TImageType
 {
-    ENone    = -1,
-    EImage    = 0,
-    EPixmap    = 1
+    ENone    = -1,  // Type not defined
+    EImage   = 0,   // QImage
+    EPixmap  = 1    // QPixmap
 };
 
 /**
@@ -98,6 +98,47 @@ enum TTransform
     ETransFlipHorizontal    = 108,
     ETransFlipVertical      = 109
 };
+
+/**
+ * Supported reflections.
+ */
+enum TReflection
+{
+    /**
+     * Identity transformation.
+     */
+    EReflectNone = 0,
+    /**
+     * Vertical reflection (in horizontal line through region center).
+     */
+    EReflectVert = 1,
+    /**
+     * Horizontal reflection (in vertical line through region center).
+     */
+    EReflectHorz = 2,
+    /**
+     * Reflection in diagonal line from top left corner to bottom right corner
+     */
+    EReflectDiag = 4
+}; 
+
+/**
+ * Supported transformation are all combinations of the supported reflections.
+ * Note that two reflections make a rotation, so that this list includes pure
+ * rotations by multiples of 90 degrees.
+ */
+enum TTransformType
+{
+    ETransNoneType          = EReflectNone,
+    ETransMirrorRot180Type  = EReflectVert,
+    ETransMirrorType        = EReflectHorz,
+    ETransRot180Type        = EReflectVert | EReflectHorz,
+    ETransMirrorRot270Type  = EReflectDiag,
+    ETransRot90Type         = EReflectVert | EReflectDiag,
+    ETransRot270Type        = EReflectHorz | EReflectDiag,
+    ETransMirrorRot90Type   = EReflectVert | EReflectHorz|EReflectDiag
+};
+
 
 /**
  * Blending modes
@@ -1044,7 +1085,7 @@ public:
      *
      * @return a format in which image is represented.
      */
-    virtual int getFormat() = 0;
+    virtual TImageFormat getFormat() = 0;
 
     /**
      * Gets the height of the image.
@@ -1053,13 +1094,49 @@ public:
     virtual int getHeight() = 0;
 
     /**
-     * Returnes native QPixmap.
+     * Returnes the actual QImage wrapper by this instance.
+     * If the image in guestion is not QImage, null is returned.
+     * The actual type of the image can be queried with type() -method.
+     * Note that the caller of this method must not delete returned QImage.
+     * This variant should be used if caller needs only to read the pixels
+     * of returned image. Using const Qimage pointer ensures that the QImage.bits()
+     * variant not detaching memory is used, i.e. it ensures better perfomance.
+     * @return native QImage or null if type is not QImage
+     */
+    virtual const QImage* getConstImage() = 0;
+    
+    /**
+     * Returnes the actual QImage wrapper by this instance.
+     * If the image in guestion is not QImage, null is returned.
+     * The actual type of the image can be queried with type() -method.
+     * Note that the caller of this method must not delete returned QImage.
+     * It is recommended to use toImage() instead if possible.
+     * @return native QImage or null if type is not QImage
+     */
+    virtual QImage* getImage() = 0;
+    
+    /**
+     * Returnes the actual QPixmap wrapper by this instance.
      * If the image in guestion is not QPixmap, null is returned.
+     * The actual type of the image can be queried with type() -method.
+     * It is recommended to use this method over the non const getPixmap(), 
+     * if possible. 
+     * @return native QPixmap or null if type is not QPixmap
+     */
+    virtual const QPixmap* getConstPixmap() = 0;
+
+    /**
+     * Returnes the actual QPixmap wrapper by this instance.
+     * If the image in guestion is not QPixmap, null is returned.
+     * The actual type of the image can be queried with type() -method.
      * Note that the caller of this method must not delete returned pixmap.
+     * This method must be used with extreme caution and only if 
+     * there's no other option.
+     * It is recommended to use toPixmap() or getConstPixmap() instead if possible.
      * @return native QPixmap or null if type is not QPixmap
      */
     virtual QPixmap* getPixmap() = 0;
-
+    
     /**
      * Copies image rgb (32-bit) data of given region to given data array.
      * @param aRgbdata The array to copy the data into.
@@ -1072,7 +1149,6 @@ public:
      * @exception GfxException
      */
     virtual void getRgb(int* aRgbdata, int aOffset, int aScanlength, int aX, int aY, int aWidth, int aHeight) = 0;
-
 
     /**
      * Copies image rgb (1-bit) data of given region to given data array.
@@ -1110,11 +1186,38 @@ public:
     virtual int getWidth() = 0;
 
     /**
-     * Converts this image to QImage for pixel access.
+     * Converts this image to QImage for pixel access regardless
+     * of the actual image type inside. Returned instance is always
+     * a copy of the original, thus modifications to it are not
+     * reflected to state of this Image instance.
+     * It is recommended to use this variant when it's only needed to 
+     * read the pixels of the image, as usign QImage.bits() with const
+     * QImage prevents any pixeldata detaching and thus is better in
+     * performance.
      * If conversion fails a null image is returned.
      * @return QImage instance created from wrapped Qt's image type.
      */
-      virtual QImage toImage() = 0;
+    virtual const QImage toConstImage() = 0;
+    
+    /**
+     * Converts this image to QImage for pixel access regardless
+     * of the actual image type inside. Returned instance is always
+     * a copy of the original, thus modifications to it are not
+     * reflected to state of this Image instance.
+     * If conversion fails a null image is returned.
+     * @return QImage instance created from wrapped Qt's image type.
+     */
+    virtual QImage toImage() = 0;
+    
+    /**
+     * Converts this image to QPixmap regardless of the actual
+     * image type inside. Returned instance is always a copy
+     * of the original, thus modifications to it are not
+     * reflected to state of this Image instance.
+     * If conversion fails a null pixmap is returned.
+     * @return QPixmap instance created from wrapped Qt's image type.
+     */
+    virtual QPixmap toPixmap() = 0;
 
     /**
      * Transforms image with given transformation.
@@ -1197,6 +1300,12 @@ public:
      * @param aHeight The height to scale to when the Image is loaded. 
      */
     virtual void setLoadSize(int aWidth, int aHeight) = 0;
+    
+    /**
+     * Sets the result image type.
+     * @param aType The type of the image either EImage or EPixmap
+     */
+    virtual void setResultImageType(TImageType aType) = 0;
 };
 
 /**
@@ -1650,12 +1759,14 @@ public:
      * @param aHeight Image height
      * @param aFillColor The initial color for the image in format #00RRGGBB
      * where hight order byte, i.e. alpha is ingored
+     * @param aType The type of the image either EImage or EPixmap
      */
-    static Image* createImage(int aWidth, int aHeight, int aFillColor);
+    static Image* createImage(int aWidth, int aHeight, int aFillColor, TImageType aType);
 
     /**
      * Create a copy based on the given image.
      * If the given copy region is empty, the whole image is copied.
+     * The copy will have the same native type as the original.
      *
      * @param aImage The source image
      * @param aX The top-left x coordinate of the copy region.
@@ -1664,22 +1775,37 @@ public:
      * @param aHeight The height of the copy region.
      * @see Image::createImage
      */
-    static Image* createImage(
-        Image* aImage, int aX = 0, int aY = 0, int aWidth = 0, int aHeight = 0);
+    static Image* createImage(Image* aImage, int aX = 0, int aY = 0, int aWidth = 0, int aHeight = 0);
+    
+    /**
+     * Create a copy based on the given image.
+     * If the given copy region is empty, the whole image is copied.
+     * The new copy will hav the native type specified by aTypeOfCopy. 
+     *
+     * @param aImage The source image
+     * @param aX The top-left x coordinate of the copy region.
+     * @param aY The top-left y coordinate of the copy region.
+     * @param aWidth The width of the copy region.
+     * @param aHeight The height of the copy region.
+     * @param aTypeOfCopy The native type of the new copy, either EImage or EPixmap
+     * @see Image::createImage
+     */
+    static Image* createImage(Image* aImage, int aX, int aY, int aWidth, 
+                                 int aHeight, TImageType aTypeOfCopy);
     
     /**
      * Create image from a QImage
      *
      * @param aImage The source QImage
      */
-    static Image* createImage(const QImage& aImage);
+    static Image* createImage(const QImage& aImage, TImageType aType);
 
     /**
      * Create image from a QPixmap.
      * 
      * @param aImage The source QPixmap
      */
-    static Image* createImage(const QPixmap& aPixmap);
+    static Image* createImage(const QPixmap& aPixmap, TImageType aType);
 
     /**
      * Creates an image based on the given ARGB data array.
@@ -1688,18 +1814,22 @@ public:
      * @param aHeight Image height
      * @param aHasAlpha If true the rgb data has also an alpha channel,
      * otherwise all pixels are fully opaque, e.g. 0xFFRRGGBB.
+     * @param aType The type of the image either EImage or EPixmap
      */
-    static Image* createImage(int* aRgbData, int aWidth, int aHeight, bool aHasAlpha);
+    static Image* createImage(int* aRgbData, int aWidth, int aHeight, bool aHasAlpha, TImageType aType);
 
     /**
      * Creates new imageloader instance
+     * @param aType The type of the loaded image either EImage or EPixmap
      */
-    static ImageLoader* createImageLoader();
+    static ImageLoader* createImageLoader(TImageType aType);
 
     /**
-     * TODO
+     * Creates an Image instance from given image data.
+     * @param aImageDataPtr The image data 
+     * @param aType The type of the image either EImage or EPixmap 
      */
-    static Image* createImage(ImageDataWrapper* aImageDataPtr);
+    static Image* createImage(ImageDataWrapper* aImageDataPtr, TImageType aType);
 
     /**
      * TODO

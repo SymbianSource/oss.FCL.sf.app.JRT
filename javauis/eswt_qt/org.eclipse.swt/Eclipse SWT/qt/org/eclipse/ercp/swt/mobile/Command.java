@@ -264,15 +264,15 @@ public class Command extends Item {
      */
     public static final int HELP = 9;
 
-
-    public Control control;
-    public int type;
+    private Control control;
+    private int type;
+    
     private int priority;
     private int accelerator;
     private String longLabel;
     private Command parent;
     private Command[] children;
-     //Holds the handle to QMenu that hold commandGroup
+     // Handle to QMenu that holds commandGroup
     private int commandgroup_handle;
 
     static final class CommandPackageProxy extends PackageProxy {
@@ -407,8 +407,7 @@ public class Command extends Item {
         this.control = control;
         this.type = type;
         this.priority = priority;
-        Internal_PackageSupport.createWidget(this,0);
-        Internal_PackageSupport.addCommand( control, this );
+        Internal_PackageSupport.createWidget(this, 0);
     }
 
     private void checkCommand(int type, int priority) {
@@ -454,6 +453,7 @@ public class Command extends Item {
         }
 
     }
+    
     /**
      * Adds the listener to the collection of listeners who will be notified
      * when the command is activated, by sending it one of the messages defined
@@ -488,11 +488,7 @@ public class Command extends Item {
         TypedListener typedListener = new TypedListener(listener);
         addListener (SWT.Selection,typedListener);
     }
-
-    public static Command[] internal_getCommands(Control control) {
-        return Internal_PackageSupport.getCommands(control);
-    }
-
+    
     /**
      * Returns <code>true</code> if the receiver is enabled, and
      * <code>false</code> otherwise. A disabled control is typically not
@@ -835,5 +831,13 @@ public class Command extends Item {
 
     private static final int topHandle(Widget w) {
         return Internal_PackageSupport.topHandle(w);
+    }
+
+    Control control() {
+        return control;
+    }
+    
+    int type() {
+        return type;
     }
 }

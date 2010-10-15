@@ -22,7 +22,7 @@ CONFIG -= qt
 include(../../../inc/build_defines.pri)
 
 contains(PROJECT_DEFINES,RD_JAVA_UI_QT) {
-  CONFIG += qt
+  CONFIG += qt hb
   QT = core
 }
 

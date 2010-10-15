@@ -46,8 +46,10 @@ JAVA_LOC_FILES = [
     'javaapplicationinstaller',
     'javaapplicationinstallererrors',
     'javaapplicationsecuritymessages',
+    'javapim',
     'javaruntimeapplicationsettings',
-    'javaruntimecertificatemanagement'
+    'javaruntimecertificatemanagement',
+    'javauitoolkits',
     ]
 
 # Path for java loc files inside RESOURCES_FILE.

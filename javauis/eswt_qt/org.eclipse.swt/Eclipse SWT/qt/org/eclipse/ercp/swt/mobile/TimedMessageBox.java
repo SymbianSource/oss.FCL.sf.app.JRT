@@ -200,7 +200,8 @@ public class TimedMessageBox extends Dialog {
         }
         int layoutDirection = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.QT_RIGHTTOLEFT
                 : OS.QT_LEFTTORIGHT;
-        int pixmapHandle = (image == null) ? 0 : Internal_GfxPackageSupport.getPixmapHandle(image);
+
+        int cgImageHandle = (image == null) ? 0 : Internal_GfxPackageSupport.getImageHandle(image);
 
         int icon = OS.QMESSAGEBOX_NOICON;
         if (image == null) {
@@ -211,7 +212,7 @@ public class TimedMessageBox extends Dialog {
 
         int parentHandle = Internal_PackageSupport.handle(getParent());
         OS.QMessageBox_swt_execTimer(icon, getText(), message, parentHandle,
-                dialogID, layoutDirection, modality, pixmapHandle);
+                dialogID, layoutDirection, modality, cgImageHandle);
 
         if (getParent() != null && !getParent().isDisposed()) {
             getParent().removeDisposeListener(listener);

@@ -217,7 +217,14 @@ void SymbianUtils::setAppName(JNIEnv* aJniEnv, jstring aName)
         {
         SwtTlsData* data = reinterpret_cast<SwtTlsData*>(Dll::Tls());
         wgn->SetAppUid(TUid::Uid(static_cast<TInt>(data->uid)));
-        TRAP_IGNORE(wgn->SetCaptionL(*buffer));
+        if (buffer != NULL)
+        {
+            TRAP_IGNORE(wgn->SetCaptionL(*buffer));
+        }
+        else
+        {
+            TRAP_IGNORE(wgn->SetCaptionL(KNullDesC));
+        }
         wgn->SetWindowGroupName(coe->RootWin());
         delete wgn;
         }

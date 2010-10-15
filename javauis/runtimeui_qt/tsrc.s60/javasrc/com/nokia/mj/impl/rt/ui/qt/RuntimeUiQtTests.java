@@ -18,7 +18,7 @@
 
 package com.nokia.mj.impl.rt.ui.qt;
 
-import com.nokia.mj.impl.installer.utils.InstallerMain;
+import com.nokia.mj.impl.rt.test.UnitTestSuiteCreator;
 import com.nokia.mj.impl.utils.exception.ExceptionBase;
 import com.nokia.mj.impl.rt.ui.qt.RuntimeUiQt;
 import com.nokia.mj.impl.rt.ui.RuntimeUi;
@@ -32,11 +32,9 @@ import j2meunit.framework.TestSuite;
 /**
  * RuntimeUiQt unit tests.
  */
-public class RuntimeUiQtTests extends TestCase implements InstallerMain
+public class RuntimeUiQtTests extends TestCase implements UnitTestSuiteCreator
 {
-
-    // Begin j2meunit test framework setup
-    public void installerMain(String[] args)
+    public TestSuite createTestSuite(String[] args)
     {
         TestSuite suite = new TestSuite(this.getClass().getName());
 
@@ -48,7 +46,7 @@ public class RuntimeUiQtTests extends TestCase implements InstallerMain
             }
         }));
 
-        com.nokia.mj.impl.utils.OmjTestRunner.run(suite);
+        return suite;
     }
 
     public RuntimeUiQtTests()
@@ -103,6 +101,8 @@ public class RuntimeUiQtTests extends TestCase implements InstallerMain
             0,
             null /* no params for detailed msg */);
 
+        runtimeUi.error("MyApplication", exc);
+        
         boolean answerAvailable = false;
 
         // Test confirm
@@ -114,7 +114,7 @@ public class RuntimeUiQtTests extends TestCase implements InstallerMain
         answerAvailable = runtimeUi.confirm("MyFavouriteAplication", confirmData);
         assertTrue(answerAvailable && confirmData.getAnswer() == 1);
 
-        confirmData = new ConfirmData("Null Answer options", null /*Not Supported*/, 1);
+        confirmData = new ConfirmData("Null Answer options", null, 1);
         answerAvailable = runtimeUi.confirm("Null answer options", confirmData);
         assertTrue(answerAvailable);
 
@@ -128,6 +128,12 @@ public class RuntimeUiQtTests extends TestCase implements InstallerMain
 
         ConfirmData nullConf = null;
         runtimeUi.confirm("Null Application", nullConf);
+
+        // If confirm data does not contain localized texts for button names RuntimeUI populates them.
+        // Check those are localized and correct response is received.
+        confirmData = new ConfirmData("Test RuntimeUI loc working. Press allow", null, 0);
+        answerAvailable = runtimeUi.confirm("MyFavouriteAplication", confirmData);        
+        assertTrue(answerAvailable && confirmData.getAnswer() == 0);
 
         runtimeUi.destroy();
     }

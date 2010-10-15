@@ -29,6 +29,7 @@ uid             0x10009D8D 0x101F5B72
 CAPABILITY      CAP_ECOM_PLUGIN
 VENDORID        VID_DEFAULT
 
+SYSTEMINCLUDE /epoc32/include/ecom
 sourcepath      ../src
 
 source          testsmartcardtokenplugin.cpp

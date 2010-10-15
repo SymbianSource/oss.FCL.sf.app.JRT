@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -37,8 +37,8 @@ OS_NONSHARABLE_CLASS(CJavaFile): public CBase, public MJavaFile
 {
 
 public:
-    static MJavaFile* NewL();
 
+    CJavaFile();
     virtual ~CJavaFile();
 
     virtual TInt Open(RFs& aFs,const TDesC& aFileName, TUint aFileMode);
@@ -58,9 +58,6 @@ public:
     virtual TInt Size(TInt& aSize) const;
     virtual TInt SetSize(TInt aSize);
 
-protected:
-    CJavaFile();
-
 private:
     enum TJavaFileMode
     {
@@ -75,8 +72,8 @@ private:
     void OpenCafL(const TDesC& aFileName);
 
 private:
-    ContentAccess::CContent*    iCafContent; //Owns
-    ContentAccess::CData*       iCafData; //Owns
+    ContentAccess::CContent*    iCafContent; // Owns
+    ContentAccess::CData*       iCafData;    // Owns
     TJavaFileMode               iJavaFileMode;
     RFile                       iNormalFile;
     std::wstring                mFileName;
@@ -84,14 +81,5 @@ private:
 
 } // end of namespace javaruntime
 
-IMPORT_C void Dummy1(); //These are keeping the ordinals in J9 understandable order. TODO remove these at some point
-IMPORT_C void Dummy2();
-IMPORT_C void Dummy3();
-IMPORT_C void Dummy4();
-IMPORT_C void Dummy5();
-IMPORT_C void Dummy6();
-IMPORT_C void Dummy7();
-IMPORT_C void Dummy8();
-IMPORT_C void Dummy9();
 #endif // JAVAFILE_H
 

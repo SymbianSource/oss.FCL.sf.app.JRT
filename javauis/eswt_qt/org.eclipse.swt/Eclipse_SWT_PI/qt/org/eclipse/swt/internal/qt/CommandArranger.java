@@ -11,6 +11,7 @@
 package org.eclipse.swt.internal.qt;
 
 import org.eclipse.ercp.swt.mobile.Command;
+import org.eclipse.ercp.swt.mobile.Internal_MobilePackageSupport;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Decorations;
 import org.eclipse.swt.widgets.Display;
@@ -31,17 +32,19 @@ import org.eclipse.swt.widgets.Widget;
  * @see CommandCollection
  * @see CommandPresentationStrategy
  */
-public class CommandArranger {
+public class CommandArranger
+{
 
 /**
- * A helper for keeping an ordered list of {@link Command}s in the current focus
- * context. The Commands are ordered according to their proximity to the
- * currently focused control. The ordered list starts with Commands from the
- * currently focused Control if any and ends with the active Shell and includes
- * all the Commands in between. If a Control has more than one Command they are
- * ordered among themselves according to creation order.
+ * A helper for keeping an ordered list of {@link Command}s in the current
+ * focus context. The Commands are ordered according to their proximity to
+ * the currently focused control. The ordered list starts with Commands from
+ * the currently focused Control if any and ends with the active Shell and
+ * includes all the Commands in between. If a Control has more than one
+ * Command they are ordered among themselves according to creation order.
  */
-public class CommandCollection {
+public class CommandCollection
+{
 
 private Command[] fCommands;
 
@@ -50,8 +53,8 @@ CommandCollection() {
 }
 
 /**
- * Adds the command to the collection. Warning: This does not make duplicate
- * control.
+ * Adds the command to the collection. Warning: This does not make
+ * duplicate control.
  * 
  * @param command
  */
@@ -70,14 +73,15 @@ void addCommand(Command command) {
     Shell activeShell = display.getActiveShell();
     Control ctrl = display.getFocusControl();
     while (ctrl != null && ctrl != activeShell) {
-        if (ctrl == command.control) {
+        if (ctrl == Internal_MobilePackageSupport.control(command)) {
             // Adding a command to focused control increment by one.
             // adding Command.internal_getCommands(ctrl).length will
             // just duplicate the count for Commands already in array.
             insertPoint++;
             break;
         }
-        insertPoint += Command.internal_getCommands(ctrl).length;
+
+        insertPoint += Internal_PackageSupport.getCommands(ctrl).length;
         ctrl = ctrl.getParent();
     }
     System.arraycopy(fCommands, 0, newList, 0, insertPoint);
@@ -145,9 +149,10 @@ int getSize() {
 }
 
 /**
- * Retrieves the Commands of the types indicated by the commandTypes array. The
- * order of the commandTypes array has no significance. Passing a null parameter
- * or an empty array retrieves all the available Commands.
+ * Retrieves the Commands of the types indicated by the commandTypes
+ * array. The order of the commandTypes array has no significance.
+ * Passing a null parameter or an empty array retrieves all the
+ * available Commands.
  * 
  * @param commandTypes
  * @return Command list
@@ -161,7 +166,7 @@ Command[] getCommands(int[] commandTypes) {
     int index = 0;
     for (int i = 0; i < fCommands.length; i++) {
         for (int j = 0; j < commandTypes.length; j++) {
-            if (fCommands[i].type == commandTypes[j]) {
+            if (Internal_MobilePackageSupport.type(fCommands[i]) == commandTypes[j]) {
                 filteredCommands[index] = fCommands[i];
                 index++;
                 break;
@@ -186,7 +191,6 @@ Shell lastKnownActiveShell;
 private Command[] positiveKeyCommands;
 private Command negativeKeyCommand;
 
-
 public CommandArranger(Display display) {
     super();
     this.display = display;
@@ -194,9 +198,10 @@ public CommandArranger(Display display) {
 }
 
 /**
- * Called when the application changes the QMenuBar. This method does not handle
- * the cases when the QMenuBar may change when the active top-level Shell
- * changes. Since this does not cause a menu bar change on all platforms.
+ * Called when the application changes the QMenuBar. This method does not
+ * handle the cases when the QMenuBar may change when the active top-level
+ * Shell changes. Since this does not cause a menu bar change on all
+ * platforms.
  * 
  * @see org.eclipse.swt.widgets.Decorations#setMenuBar(Menu)
  * 
@@ -227,19 +232,19 @@ public void shellActivityChanged() {
     }
 
     Shell activeShell = display.getActiveShell();
-    
+
     if (activeShell == lastKnownActiveShell) {
         return;
     }
     lastKnownActiveShell = activeShell;
-    
+
     cleanPositiveCommands();
     cleanNegativeCommand();
-    
+
     currentCommands = new CommandCollection();
 
-    if (activeShell != null && Command.internal_getCommands(activeShell).length > 0) {
-        currentCommands.addCommand(Command.internal_getCommands(activeShell));
+    if (activeShell != null && Internal_PackageSupport.getCommands(activeShell).length > 0) {
+        currentCommands.addCommand(Internal_PackageSupport.getCommands(activeShell));
     }
 
     // Determine where the commands go
@@ -257,7 +262,7 @@ public void shellActivityChanged() {
  * @param command
  */
 public void commandAdded(Command command) {
-    if (isInFocusContext(command.control)) {
+    if (isInFocusContext(Internal_MobilePackageSupport.control(command))) {
         currentCommands.addCommand(command);
         handleCommandListChange(command, null, currentCommands);
     }
@@ -271,7 +276,7 @@ public void commandAdded(Command command) {
 public void commandRemoved(Command command) {
     if (command == defaultCommand)
         defaultCommand = null;
-    if (isInFocusContext(command.control)) {
+    if (isInFocusContext(Internal_MobilePackageSupport.control(command))) {
         currentCommands.removeCommand(command);
         handleCommandListChange(null, command, currentCommands);
     }
@@ -297,7 +302,7 @@ public void dispose() {
  */
 public void setDefaultCommand(Command command) {
     defaultCommand = command;
-    if (isInFocusContext(command.control)) {
+    if (isInFocusContext(Internal_MobilePackageSupport.control(command))) {
         handleDefaultCommandChange(command);
     }
 }
@@ -311,7 +316,6 @@ public void setDefaultCommand(Command command) {
 public Command getDefaultCommand() {
     return defaultCommand;
 }
-
 
 private boolean isInFocusContext(Control control) {
     Display display = control.getDisplay();
@@ -342,14 +346,16 @@ private void updateCommandPositions(Command[] commands) {
             defaultCommand = cmd;
             continue;
         }
-        if (CommandUtils.isNegativeType(cmd.type)) {
+        if (CommandUtils.isNegativeType(Internal_MobilePackageSupport.type(cmd))) {
             if (negativeKeyCommand == null || negativeKeyCommand.isDisposed()) {
                 negativeKeyCommand = cmd;
-            } else if (negativeKeyCommand.getPriority() <= cmd.getPriority()) {
+            }
+            else if (negativeKeyCommand.getPriority() <= cmd.getPriority()) {
                 positiveKeyCommands[positiveKeyIndex] = negativeKeyCommand;
                 positiveKeyIndex++;
                 negativeKeyCommand = cmd;
-            } else {
+            }
+            else {
                 positiveKeyCommands[positiveKeyIndex] = cmd;
                 positiveKeyIndex++;
             }
@@ -372,25 +378,32 @@ private void cleanPositiveCommands() {
         useBar = true;
     }
     if (defaultCommand != null && !defaultCommand.isDisposed()
-        && !defaultCommand.control.isDisposed()) {
+        && !Internal_MobilePackageSupport.control(defaultCommand).isDisposed()) {
         if (useBar) {
-            OS.QWidget_removeAction(defaultCommand.control.getShell().internal_getOwnMenuBar(),
+            OS.QWidget_removeAction(Internal_MobilePackageSupport.control(defaultCommand)
+                .getShell().internal_getOwnMenuBar(), topHandle(defaultCommand));
+        }
+        else {
+            OS.QWidget_removeAction(
+                topHandle(Internal_MobilePackageSupport.control(defaultCommand)),
                 topHandle(defaultCommand));
-        } else {
-            OS.QWidget_removeAction(topHandle(defaultCommand.control), topHandle(defaultCommand));
         }
     }
     if (positiveKeyCommands != null) {
         for (int i = 0; i < positiveKeyCommands.length; i++) {
             Command cmd = positiveKeyCommands[i];
-            if (cmd == null || cmd.isDisposed() || cmd.control.isDisposed()) {
+            if (cmd == null || cmd.isDisposed()
+                || Internal_MobilePackageSupport.control(cmd).isDisposed()) {
                 continue;
             }
             int handle = 0;
             if (useBar) {
-                handle = cmd.control.getShell().internal_getOwnMenuBar();
-            } else {
-                handle = topHandle(positiveKeyCommands[0].control);
+                handle = Internal_MobilePackageSupport.control(cmd).getShell()
+                    .internal_getOwnMenuBar();
+            }
+            else {
+                handle = topHandle(Internal_MobilePackageSupport
+                    .control(positiveKeyCommands[0]));
             }
             OS.QWidget_removeAction(handle, topHandle(cmd));
 
@@ -400,16 +413,17 @@ private void cleanPositiveCommands() {
 
 private void cleanNegativeCommand() {
     if (negativeKeyCommand != null && !negativeKeyCommand.isDisposed()
-        && !negativeKeyCommand.control.isDisposed()) {
-        OS.QWidget_removeAction(topHandle(negativeKeyCommand.control),
+        && !Internal_MobilePackageSupport.control(negativeKeyCommand).isDisposed()) {
+        OS.QWidget_removeAction(
+            topHandle(Internal_MobilePackageSupport.control(negativeKeyCommand)),
             topHandle(negativeKeyCommand));
     }
 }
 
 private void placeNegativeCommand() {
     if (negativeKeyCommand != null) {
-        OS.QWidget_addAction(Internal_PackageSupport.topHandle(negativeKeyCommand.control),
-            topHandle(negativeKeyCommand));
+        OS.QWidget_addAction(Internal_PackageSupport.topHandle(Internal_MobilePackageSupport
+            .control(negativeKeyCommand)), topHandle(negativeKeyCommand));
     }
 }
 
@@ -417,22 +431,27 @@ private void placePositiveCommands() {
     if (defaultCommand != null) {
         int defaultCmdHandle = topHandle(defaultCommand);
         if (positiveKeyCommands != null) {
-            OS.QMenuBar_addAction(defaultCommand.control.getShell().internal_getOwnMenuBar(),
-                defaultCmdHandle);
-        } else {
-            OS.QWidget_addAction(Internal_PackageSupport.topHandle(defaultCommand.control),
+            OS.QMenuBar_addAction(Internal_MobilePackageSupport.control(defaultCommand)
+                .getShell().internal_getOwnMenuBar(), defaultCmdHandle);
+        }
+        else {
+            OS.QWidget_addAction(Internal_PackageSupport
+                .topHandle(Internal_MobilePackageSupport.control(defaultCommand)),
                 defaultCmdHandle);
         }
     }
     if (positiveKeyCommands != null) {
         if (positiveKeyCommands.length == 1 && defaultCommand == null) {
-            OS.QWidget_addAction(Internal_PackageSupport.topHandle(positiveKeyCommands[0].control),
+            OS.QWidget_addAction(Internal_PackageSupport
+                .topHandle(Internal_MobilePackageSupport.control(positiveKeyCommands[0])),
                 topHandle(positiveKeyCommands[0]));
-        } else {
+        }
+        else {
             CommandUtils.sort(positiveKeyCommands);
             for (int i = 0; i < positiveKeyCommands.length; i++) {
-                OS.QMenuBar_addAction(positiveKeyCommands[i].control.getShell()
-                    .internal_getOwnMenuBar(), topHandle(positiveKeyCommands[i]));
+                OS.QMenuBar_addAction(
+                    Internal_MobilePackageSupport.control(positiveKeyCommands[i]).getShell()
+                        .internal_getOwnMenuBar(), topHandle(positiveKeyCommands[i]));
             }
         }
     }

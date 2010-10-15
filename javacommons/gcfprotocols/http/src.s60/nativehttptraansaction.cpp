@@ -108,7 +108,7 @@ void NativeHttpTransaction::ExecuteCreateTransactionL(int aSelfhandle, int aUrih
 }
 
 void NativeHttpTransaction::SubmitL(JNIEnv* aJni, jobject* /*aPeer*/,const jobjectArray aHeaders, const jbyteArray aPostData, const jint aPostDataLength,
-                                    int aResponseTimeout)
+                                    int aResponseTimeout, jboolean aPartialDataFlag)
 {
 
     //retrieve the headers
@@ -160,7 +160,7 @@ void NativeHttpTransaction::SubmitL(JNIEnv* aJni, jobject* /*aPeer*/,const jobje
 
     int hbufhandle = reinterpret_cast<int>(postBuf);
 
-    CallMethodL(this, &NativeHttpTransaction::ExecuteSubmitL,handle,arrayhandle , hbufhandle, aResponseTimeout, iFuncServer);
+    CallMethodL(this, &NativeHttpTransaction::ExecuteSubmitL,handle,arrayhandle , hbufhandle, aResponseTimeout, aPartialDataFlag, iFuncServer);
     if (postBuf!=NULL)
     {
         delete postBuf;
@@ -171,14 +171,14 @@ void NativeHttpTransaction::SubmitL(JNIEnv* aJni, jobject* /*aPeer*/,const jobje
     CleanupStack::PopAndDestroy();//rawHeaderArray;
 }
 
-void NativeHttpTransaction::ExecuteSubmitL(int aSelfhandle , int aRawHeadershandle , int aPostBufhandle, int aResponseTimeout)
+void NativeHttpTransaction::ExecuteSubmitL(int aSelfhandle , int aRawHeadershandle , int aPostBufhandle, int aResponseTimeout, bool aPartialDataFlag)
 {
 
     NativeHttpTransaction *aSelf = reinterpret_cast<NativeHttpTransaction*>(aSelfhandle);
     RPointerArray<HBufC8>* aRawHeaders = reinterpret_cast<RPointerArray<HBufC8>*>(aRawHeadershandle);
     HBufC8* aPostBuf = reinterpret_cast<HBufC8*>(aPostBufhandle);
 
-    aSelf->iTransactionClient->SubmitL(aRawHeaders, aPostBuf, aResponseTimeout);
+    aSelf->iTransactionClient->SubmitL(aRawHeaders, aPostBuf, aResponseTimeout, aPartialDataFlag);
 }
 
 jobjectArray NativeHttpTransaction::GetResponseL(JNIEnv* aJni)
@@ -273,6 +273,17 @@ void NativeHttpTransaction::DataReadyForRead(TInt aStatus)
     LOG(ESOCKET,EInfo,"-NativeHttpTransaction::DataReadyForRead");
 }
 
+void NativeHttpTransaction::DoPostCallBack()
+{
+    LOG(ESOCKET,EInfo,"+NativeHttpTransaction::DoPostCallBack");
+
+    NativeHttpSession* session = reinterpret_cast<NativeHttpSession*>(iFuncServer);
+    session->doDataConsumedCallback(iJniPeer);
+
+    LOG(ESOCKET,EInfo,"-NativeHttpTransaction::DoPostCallBack");
+
+}
+
 void NativeHttpTransaction::ExecuteCloseTransaction(int aSelfhandle)
 {
     NativeHttpTransaction *aSelf = reinterpret_cast<NativeHttpTransaction*>(aSelfhandle);
@@ -307,6 +318,35 @@ OS_EXPORT TInt NativeHttpTransaction::GetSecurityInfo()
         handle = reinterpret_cast<int>(security);
     }
     return handle;
+}
+
+int NativeHttpTransaction::PostDataL(JNIEnv* aJni,const jbyteArray aPostData, const jint aPostDataLength, const jboolean iEndOfRequest)
+{
+
+    HBufC8* postBuf=NULL;
+    TInt ret = 0;
+    if (aPostDataLength>KErrNone)
+    {
+        postBuf=HBufC8::NewLC(aPostDataLength);
+        TPtr8 bufPtr = postBuf->Des();
+        User::LeaveIfError(S60CommonUtils::CopyToNative(*aJni , aPostData , 0 , aPostDataLength , bufPtr));
+        CleanupStack::Pop(postBuf);
+    }
+    int handle = reinterpret_cast<int>(this);
+    int hbufhandle = reinterpret_cast<int>(postBuf);
+    CallMethodL(ret, this,&NativeHttpTransaction::ExecutePostDataL,handle, hbufhandle, iEndOfRequest, iFuncServer);
+    return KErrNone;
+}
+
+TInt NativeHttpTransaction::ExecutePostDataL(int aSelfhandle, int aPostBufhandle, bool iEndOfRequest)
+{
+
+    NativeHttpTransaction *aSelf = reinterpret_cast<NativeHttpTransaction*>(aSelfhandle);
+    HBufC8* aPostBuf = reinterpret_cast<HBufC8*>(aPostBufhandle);
+    aSelf->iTransactionClient->PostDataL(aPostBuf , iEndOfRequest);
+
+
+    return KErrNone;
 }
 
 /*

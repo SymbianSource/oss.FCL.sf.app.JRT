@@ -17,11 +17,13 @@
 
 package com.nokia.mj.impl.rt.support;
 
-import com.nokia.mj.impl.utils.Uid;
-import java.util.Vector;
-import java.util.Enumeration;
-import java.security.Permission;
 import java.security.AccessControlException;
+import java.security.Permission;
+import java.util.Enumeration;
+import java.util.Vector;
+
+import com.nokia.mj.impl.utils.Uid;
+import com.nokia.mj.impl.utils.Logger;
 
 /**
  * ApplicationUtils is an abstract base class for API implementations,
@@ -135,11 +137,12 @@ public abstract class ApplicationUtils
             Class clazz = Class.forName(className);
             sInstance = (ApplicationUtils)clazz.newInstance();
         }
-        catch (Exception e)
+        catch (Throwable t)
         {
-            e.printStackTrace();
-            throw new RuntimeException("Not able to instantiate class " +
-                                       className+". Reason is: " + e);
+            String err = "Not able to instantiate class " +
+                         className + ". Reason is: ";
+            Logger.LOG(Logger.EUtils, Logger.EInfo, err, t);
+            throw new RuntimeException(err + t);
         }
     }
 
@@ -189,8 +192,8 @@ public abstract class ApplicationUtils
      * This method is meant ONLY for the UI and no other API are allowed
      * to use it.
      * <p>
-     * It is possible that the method is called several times from different 
-     * phases of the UI exit sequence. 
+     * It is possible that the method is called several times from different
+     * phases of the UI exit sequence.
      */
     public void uiDisposed()
     {
@@ -220,11 +223,11 @@ public abstract class ApplicationUtils
      */
     public abstract void checkPermission(Permission p)
     throws AccessControlException,
-                NullPointerException;
+        NullPointerException;
 
     public abstract void checkPermission(Uid appUid,Permission p)
     throws AccessControlException,
-                NullPointerException;
+        NullPointerException;
 
     /**
      * Adds a shutdown notifications listener to receive notifications when
@@ -258,15 +261,15 @@ public abstract class ApplicationUtils
      * Removes the registered shutdown listener.
      *
      * @param listener the listener to be removed. If the listener is not
-     *                 found nothing happens. If the key is null, a 
+     *                 found nothing happens. If the key is null, a
      * @throws NullPointerException if the listener is null.
      */
     public void removeShutdownListener(ShutdownListener listener)
     {
         if (listener == null)
         {
-            throw new 
-              NullPointerException("Listener was null when trying to remove");
+            throw new
+            NullPointerException("Listener was null when trying to remove");
         }
         if (mListeners != null)
         {
@@ -353,5 +356,6 @@ public abstract class ApplicationUtils
                 listener.shuttingDown();
             }
         }
+        mListeners = null;
     }
 }

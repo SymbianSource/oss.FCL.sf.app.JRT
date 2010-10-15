@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Internal_PackageSupport;
 import org.eclipse.swt.internal.qt.OS;
 import org.eclipse.swt.internal.qt.PackageProxy;
+import org.eclipse.swt.internal.qt.QObjectDeleteWrapper;
 
 /**
  * 
@@ -163,8 +164,9 @@ public class HyperLink extends org.eclipse.swt.widgets.Link {
         if (event.doit == true) {    
             if (extraStyle() == PHONE) {
                 if (OS.windowServer == OS.WS_SYMBIAN_S60) {
-                    // TODO: Launch S60 phone application
+                	callToNumber();
                 }
+                return;
             }
             String url = getText();
             if ((extraStyle() == EMAIL) && (!getText().trim().toLowerCase().startsWith(emailScheme)))
@@ -172,7 +174,19 @@ public class HyperLink extends org.eclipse.swt.widgets.Link {
             OS.QDesktopServices_openUrl(url);
         }
     }
-
+    
+    void callToNumber(){
+    	int appMgr = OS.XQApplicationManager_new();
+    	int serviceRequest = OS.XQApplicationManager_create(appMgr, "phoneui","com.nokia.symbian.ICallDial","dial(QString)",false);
+    	if (serviceRequest <= 0) {
+	    	return;
+	    }
+    	OS.XQAiwRequest_setArguments(serviceRequest, getText());
+    	OS.XQAiwRequest_send(serviceRequest);
+	    QObjectDeleteWrapper.deleteSafely(serviceRequest);
+	    QObjectDeleteWrapper.deleteSafely(appMgr);
+    }
+    
     public void setText(String string) {
         checkWidget();
         if (string == null)

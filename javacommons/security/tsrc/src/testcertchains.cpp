@@ -110,7 +110,7 @@ TEST(TestCertChains, TestCertChains)
 
         certEntry = createEntry(suite1Uid.toString(),
                                 L"MIDlet-Certificate-1-1",
-                                L"abc123");
+                                L"YWJjMTIz");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
 
@@ -127,14 +127,13 @@ TEST(TestCertChains, TestCertChains)
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, foolEntry);
 
         authMod->getCertChains(suite1Uid, chains);
-        CHECK(chains.size() == 1);
-
-        string refString("abc123");
-        CHECK(chains.front() == refString);
-
         js->remove(MIDP_PACKAGE_TABLE, entry);
         js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
         js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, foolEntry);
+        
+        CHECK(chains.size() == 1);
+        string refString("YWJjMTIz");
+        CHECK(JavaCommonUtils::base64encode(chains.front()) == refString);
     }
     catch (JavaStorageException& aJse)
     {
@@ -158,31 +157,30 @@ TEST(TestCertChains, TestCertChains)
 
         certEntry = createEntry(suite1Uid.toString(),
                                 L"MIDlet-Certificate-1-1",
-                                L"abc123");
+                                L"YWJjMTIz");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
 
         JavaStorageApplicationEntry_t certEntry2;
         certEntry2 = createEntry(suite1Uid.toString(),
                                  L"MIDlet-Certificate-3-1",
-                                 L"def456");
+                                 L"ZGVmNDU2");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry2);
 
         authMod->getCertChains(suite1Uid, chains);
+        js->remove(MIDP_PACKAGE_TABLE, entry);
+        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
+        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry2);
 
         CHECK(chains.size() == 2);
 
         list<string>::const_iterator iter = chains.begin();
 
-        string cert1Ref("abc123");
-        CHECK((*iter++) == cert1Ref);
-        string cert2Ref("def456");
-        CHECK((*iter) == cert2Ref);
-
-        js->remove(MIDP_PACKAGE_TABLE, entry);
-        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
-        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry2);
+        string cert1Ref("YWJjMTIz");
+        CHECK(JavaCommonUtils::base64encode((*iter++)) == cert1Ref);
+        string cert2Ref("ZGVmNDU2");
+        CHECK(JavaCommonUtils::base64encode((*iter++)) == cert2Ref);
     }
     catch (JavaStorageException& aJse)
     {
@@ -206,51 +204,50 @@ TEST(TestCertChains, TestCertChains)
 
         certEntry = createEntry(suite1Uid.toString(),
                                 L"MIDlet-Certificate-1-1",
-                                L"abc123");
+                                L"YWJjMTIz");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
 
         JavaStorageApplicationEntry_t certEntry2;
         certEntry2 = createEntry(suite1Uid.toString(),
                                  L"MIDlet-Certificate-3-1",
-                                 L"def456");
+                                 L"ZGVmNDU2");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry2);
 
         JavaStorageApplicationEntry_t certEntry3;
         certEntry3 = createEntry(suite1Uid.toString(),
                                  L"MIDlet-Certificate-4-1",
-                                 L"fooBar");
+                                 L"Zm9vQmFy");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry3);
 
         JavaStorageApplicationEntry_t certEntry4;
         certEntry4 = createEntry(suite1Uid.toString(),
                                  L"MIDlet-Certificate-5-1",
-                                 L"HelloWorld");
+                                 L"SGVsbG9Xb3JsZA==");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry4);
 
         authMod->getCertChains(suite1Uid, chains);
-
-        CHECK(chains.size() == 4);
-
-        list<string>::const_iterator iter = chains.begin();
-
-        string cert1Ref("abc123");
-        CHECK((*iter++) == cert1Ref);
-        string cert2Ref("def456");
-        CHECK((*iter++) == cert2Ref);
-        string cert3Ref("fooBar");
-        CHECK((*iter++) == cert3Ref);
-        string cert4Ref("HelloWorld");
-        CHECK((*iter) == cert4Ref);
-
         js->remove(MIDP_PACKAGE_TABLE, entry);
         js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
         js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry2);
         js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry3);
         js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry4);
+
+        CHECK(chains.size() == 4);
+
+        list<string>::const_iterator iter = chains.begin();
+
+        string cert1Ref("YWJjMTIz");
+        CHECK(JavaCommonUtils::base64encode((*iter++)) == cert1Ref);
+        string cert2Ref("ZGVmNDU2");
+        CHECK(JavaCommonUtils::base64encode((*iter++)) == cert2Ref);
+        string cert3Ref("Zm9vQmFy");
+        CHECK(JavaCommonUtils::base64encode((*iter++)) == cert3Ref);
+        string cert4Ref("SGVsbG9Xb3JsZA==");
+        CHECK(JavaCommonUtils::base64encode((*iter++)) == cert4Ref);
     }
     catch (JavaStorageException& aJse)
     {
@@ -274,31 +271,30 @@ TEST(TestCertChains, TestCertChains)
 
         certEntry = createEntry(suite1Uid.toString(),
                                 L"MIDlet-Certificate-1-1",
-                                L"abc123");
+                                L"YWJjMTIz");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
 
         JavaStorageApplicationEntry_t certEntry2;
         certEntry2 = createEntry(suite1Uid.toString(),
                                  L"MIDlet-Certificate-2-1",
-                                 L"def456");
+                                 L"ZGVmNDU2");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry2);
 
         authMod->getCertChains(suite1Uid, chains);
+        js->remove(MIDP_PACKAGE_TABLE, entry);
+        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
+        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry2);
 
         CHECK(chains.size() == 2);
 
         list<string>::const_iterator iter = chains.begin();
 
-        string cert1Ref("abc123");
-        CHECK((*iter++) == cert1Ref);
-        string cert2Ref("def456");
-        CHECK((*iter) == cert2Ref);
-
-        js->remove(MIDP_PACKAGE_TABLE, entry);
-        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
-        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry2);
+        string cert1Ref("YWJjMTIz");
+        CHECK(JavaCommonUtils::base64encode((*iter++)) == cert1Ref);
+        string cert2Ref("ZGVmNDU2");
+        CHECK(JavaCommonUtils::base64encode((*iter++)) == cert2Ref);
     }
     catch (JavaStorageException& aJse)
     {
@@ -322,31 +318,30 @@ TEST(TestCertChains, TestCertChains)
 
         certEntry = createEntry(suite1Uid.toString(),
                                 L"MIDlet-Certificate-1-1",
-                                L"abc123");
+                                L"YWJjMTIz");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
 
         JavaStorageApplicationEntry_t certEntry2;
         certEntry2 = createEntry(suite1Uid.toString(),
                                  L"MIDlet-Certificate-2-1",
-                                 L"def456");
+                                 L"ZGVmNDU2");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry2);
 
         authMod->getCertChains(suite1Uid, chains);
+        js->remove(MIDP_PACKAGE_TABLE, entry);
+        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
+        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry2);
 
         CHECK(chains.size() == 2);
 
         list<string>::const_iterator iter = chains.begin();
 
-        string cert1Ref("abc123");
-        CHECK((*iter++) == cert1Ref);
-        string cert2Ref("def456");
-        CHECK((*iter) == cert2Ref);
-
-        js->remove(MIDP_PACKAGE_TABLE, entry);
-        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
-        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry2);
+        string cert1Ref("YWJjMTIz");
+        CHECK(JavaCommonUtils::base64encode((*iter++)) == cert1Ref);
+        string cert2Ref("ZGVmNDU2");
+        CHECK(JavaCommonUtils::base64encode((*iter++)) == cert2Ref);
     }
     catch (JavaStorageException& aJse)
     {
@@ -370,41 +365,40 @@ TEST(TestCertChains, TestCertChains)
 
         certEntry = createEntry(suite1Uid.toString(),
                                 L"MIDlet-Certificate-1-1",
-                                L"abc123");
+                                L"YWJjMTIz");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
 
         JavaStorageApplicationEntry_t certEntry2;
         certEntry2 = createEntry(suite1Uid.toString(),
                                  L"MIDlet-Certificate-2-1",
-                                 L"def456");
+                                 L"ZGVmNDU2");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry2);
 
         JavaStorageApplicationEntry_t certEntry3;
         certEntry3 = createEntry(suite1Uid.toString(),
                                  L"MIDlet-Certificate-3-1",
-                                 L"fooBar");
+                                 L"Zm9vQmFy");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry3);
 
         authMod->getCertChains(suite1Uid, chains);
+        js->remove(MIDP_PACKAGE_TABLE, entry);
+        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
+        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry2);
+        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry3);
 
         CHECK(chains.size() == 3);
 
         list<string>::const_iterator iter = chains.begin();
 
-        string cert1Ref("abc123");
-        CHECK((*iter++) == cert1Ref);
-        string cert2Ref("def456");
-        CHECK((*iter++) == cert2Ref);
-        string cert3Ref("fooBar");
-        CHECK((*iter) == cert3Ref);
-
-        js->remove(MIDP_PACKAGE_TABLE, entry);
-        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
-        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry2);
-        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry3);
+        string cert1Ref("YWJjMTIz");
+        CHECK(JavaCommonUtils::base64encode((*iter++)) == cert1Ref);
+        string cert2Ref("ZGVmNDU2");
+        CHECK(JavaCommonUtils::base64encode((*iter++)) == cert2Ref);
+        string cert3Ref("Zm9vQmFy");
+        CHECK(JavaCommonUtils::base64encode((*iter++)) == cert3Ref);
     }
     catch (JavaStorageException& aJse)
     {
@@ -428,31 +422,30 @@ TEST(TestCertChains, TestCertChains)
 
         certEntry = createEntry(suite1Uid.toString(),
                                 L"MIDlet-Certificate-1-1",
-                                L"abc123");
+                                L"YWJjMTIz");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
 
         JavaStorageApplicationEntry_t certEntry2;
         certEntry2 = createEntry(suite1Uid.toString(),
                                  L"MIDlet-Certificate-2-1",
-                                 L"def456");
+                                 L"ZGVmNDU2");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry2);
 
         authMod->getCertChains(suite1Uid, chains);
+        js->remove(MIDP_PACKAGE_TABLE, entry);
+        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
+        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry2);
 
         CHECK(chains.size() == 2);
 
         list<string>::const_iterator iter = chains.begin();
 
-        string cert1Ref("abc123");
-        CHECK((*iter++) == cert1Ref);
-        string cert2Ref("def456");
-        CHECK((*iter) == cert2Ref);
-
-        js->remove(MIDP_PACKAGE_TABLE, entry);
-        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
-        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry2);
+        string cert1Ref("YWJjMTIz");
+        CHECK(JavaCommonUtils::base64encode((*iter++)) == cert1Ref);
+        string cert2Ref("ZGVmNDU2");
+        CHECK(JavaCommonUtils::base64encode((*iter++)) == cert2Ref);
     }
     catch (JavaStorageException& aJse)
     {
@@ -476,31 +469,30 @@ TEST(TestCertChains, TestCertChains)
 
         certEntry = createEntry(suite1Uid.toString(),
                                 L"MIDlet-Certificate-1-1",
-                                L"abc123");
+                                L"YWJjMTIz");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
 
         JavaStorageApplicationEntry_t certEntry2;
         certEntry2 = createEntry(suite1Uid.toString(),
                                  L"MIDlet-Certificate-2-1",
-                                 L"def456");
+                                 L"ZGVmNDU2");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry2);
 
         authMod->getCertChains(suite1Uid, chains);
+        js->remove(MIDP_PACKAGE_TABLE, entry);
+        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
+        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry2);
 
         CHECK(chains.size() == 2);
 
         list<string>::const_iterator iter = chains.begin();
 
-        string cert1Ref("abc123");
-        CHECK((*iter++) == cert1Ref);
-        string cert2Ref("def456");
-        CHECK((*iter) == cert2Ref);
-
-        js->remove(MIDP_PACKAGE_TABLE, entry);
-        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
-        js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry2);
+        string cert1Ref("YWJjMTIz");
+        CHECK(JavaCommonUtils::base64encode((*iter++)) == cert1Ref);
+        string cert2Ref("ZGVmNDU2");
+        CHECK(JavaCommonUtils::base64encode((*iter++)) == cert2Ref);
     }
     catch (JavaStorageException& aJse)
     {
@@ -523,34 +515,33 @@ TEST(TestCertChains, TestCertChains)
 
         certEntry = createEntry(suite1Uid.toString(),
                                 L"MIDlet-Certificate-1-1",
-                                L"abc123");
+                                L"YWJjMTIz");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
 
         JavaStorageApplicationEntry_t certEntry2;
         certEntry2 = createEntry(suite1Uid.toString(),
                                  L"MIDlet-Certificate-1-2",
-                                 L"fib8");
+                                 L"ZmliOA==");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry2);
 
         JavaStorageApplicationEntry_t certEntry3;
         certEntry3 = createEntry(suite1Uid.toString(),
                                  L"MIDlet-Certificate-1-3",
-                                 L"D");
+                                 L"RA==");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry3);
 
         authMod->getCertChains(suite1Uid, chains);
-        CHECK(chains.size() == 1);
-
-        string refString("abc123fib8D");
-        CHECK(chains.front() == refString);
-
         js->remove(MIDP_PACKAGE_TABLE, entry);
         js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
         js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry2);
         js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry3);
+
+        CHECK(chains.size() == 1);
+        string refString("YWJjMTIzZmliOEQ=");
+        CHECK(JavaCommonUtils::base64encode(chains.front()) == refString);
     }
     catch (JavaStorageException& aJse)
     {
@@ -573,21 +564,21 @@ TEST(TestCertChains, TestCertChains)
 
         certEntry = createEntry(suite1Uid.toString(),
                                 L"MIDlet-Certificate-1-1",
-                                L"See");
+                                L"U2Vl");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
 
         JavaStorageApplicationEntry_t certEntry2;
         certEntry2 = createEntry(suite1Uid.toString(),
                                  L"MIDlet-Certificate-1-2",
-                                 L"No");
+                                 L"Tm8=");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry2);
 
         JavaStorageApplicationEntry_t certEntry3;
         certEntry3 = createEntry(suite1Uid.toString(),
                                  L"MIDlet-Certificate-1-3",
-                                 L"More");
+                                 L"TW9yZQ==");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry3);
 
@@ -614,16 +605,6 @@ TEST(TestCertChains, TestCertChains)
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry6);
 
         authMod->getCertChains(suite1Uid, chains);
-
-        CHECK(chains.size() == 2);
-
-        list<string>::const_iterator iter = chains.begin();
-
-        string cert1Ref("SeeNoMore");
-        CHECK((*iter++) == cert1Ref);
-        string cert2Ref("MeAndMy");
-        CHECK((*iter) == cert2Ref);
-
         js->remove(MIDP_PACKAGE_TABLE, entry);
         js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
         js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry2);
@@ -631,6 +612,13 @@ TEST(TestCertChains, TestCertChains)
         js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry4);
         js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry5);
         js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry6);
+
+        CHECK(chains.size() == 1);
+
+        list<string>::const_iterator iter = chains.begin();
+
+        string cert1Ref("U2VlTm9Nb3Jl");
+        CHECK(JavaCommonUtils::base64encode((*iter++)) == cert1Ref);
     }
     catch (JavaStorageException& aJse)
     {
@@ -653,7 +641,7 @@ TEST(TestCertChains, TestCertChains)
 
         certEntry = createEntry(suite1Uid.toString(),
                                 L"MIDlet-Certificate-1-1",
-                                L"abc123");
+                                L"YWJjMTIz");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
 
@@ -670,14 +658,14 @@ TEST(TestCertChains, TestCertChains)
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, foolEntry);
 
         authMod->getCertChains(suite1Uid, chains);
-        CHECK(chains.size() == 1);
-
-        string refString("abc123");
-        CHECK(chains.front() == refString);
-
         js->remove(MIDP_PACKAGE_TABLE, entry);
         js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
         js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, foolEntry);
+
+        CHECK(chains.size() == 1);
+
+        string refString("YWJjMTIz");
+        CHECK(JavaCommonUtils::base64encode(chains.front()) == refString);
     }
     catch (JavaStorageException& aJse)
     {
@@ -698,7 +686,7 @@ TEST(TestCertChains, TestCertChains)
 
         certEntry = createEntry(suite1Uid.toString(),
                                 L"MIDlet-Certificate-1-1",
-                                L"abc123");
+                                L"YWJjMTIz");
 
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
 
@@ -715,14 +703,14 @@ TEST(TestCertChains, TestCertChains)
         js->write(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, foolEntry);
 
         authMod->getCertChains(suite1Uid, chains);
-        CHECK(chains.size() == 1);
-
-        string refString("abc123");
-        CHECK(chains.front() == refString);
-
         js->remove(MIDP_PACKAGE_TABLE, entry);
         js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, certEntry);
         js->remove(APPLICATION_PACKAGE_ATTRIBUTES_TABLE, foolEntry);
+
+        CHECK(chains.size() == 1);
+
+        string refString("YWJjMTIz");
+        CHECK(JavaCommonUtils::base64encode(chains.front()) == refString);
     }
     catch (JavaStorageException& aJse)
     {
@@ -744,9 +732,9 @@ TEST(TestCertChains, TestCertChains)
         js->write(MIDP_PACKAGE_TABLE, entry);
 
         authMod->getCertChains(suite1Uid, chains);
-        CHECK(chains.size() == 0);
-
         js->remove(MIDP_PACKAGE_TABLE, entry);
+
+        CHECK(chains.size() == 0);
     }
     catch (JavaStorageException& aJse)
     {

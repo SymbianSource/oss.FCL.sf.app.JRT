@@ -78,6 +78,7 @@ public class HttpConnectionNative implements HttpConnection,
     protected final static int REQUEST_HEADERS_SENT = 3;
     protected final static int REQUEST_SENT = 4;
     protected final static int REPLY_RECEIVED = 5;
+    protected final static int PARTIAL_REQUEST_SENT = 6;
 
     // Character constants
     protected final static char HASH = '#';
@@ -131,6 +132,12 @@ public class HttpConnectionNative implements HttpConnection,
     private boolean iTrustedSuite = true;
     private int iRespTimeOut = -1;
     private int iRetries = 0;
+    private int iRequestBodyLen = -1;
+    private int iTotalPostDataLen = 0;
+    private boolean iEndOfRequest = false;
+    private boolean iChunkedTransfer = false;
+
+    protected final BlockingOperation iPostDataBlock;
 
     static
     {
@@ -194,6 +201,7 @@ public class HttpConnectionNative implements HttpConnection,
         iTransactionBlock = new BlockingOperation();
         iNativeDataReadyForRead = new BlockingOperation();
         iNativeDataReadyForRead.setResult(BlockingOperation.BLOCKED);
+        iPostDataBlock = new BlockingOperation();
         iFinalizer = registerForFinalization();
         Logger.LOG(Logger.ESOCKET, Logger.EInfo, "- HttpConnectionNative new ");
 
@@ -814,6 +822,20 @@ public class HttpConnectionNative implements HttpConnection,
             {
                 iRequestProperties.put(aKey, aValue);
             }
+            if (aKey.equals(TRANSFER_ENCODING))
+            {
+                String tmp = aValue.toLowerCase();
+                if (tmp.equals("chunked"))
+                {
+                    iChunkedTransfer = true;
+                    iRequestBodyLen = -1;    // as per RFC, precedence should be give to "transfer-encoding" when "content-length" is also set.
+                }
+            }
+            if (aKey.equals(CONTENT_LENGTH))
+            {
+                iRequestBodyLen = Integer.parseInt(aValue);
+
+            }
         }
         //Logger.LOG(Logger.ESOCKET, Logger.EInfo, "- setRequestProperty(String, String)" );
         return;
@@ -864,20 +886,114 @@ public class HttpConnectionNative implements HttpConnection,
     }
 
 
-    protected synchronized void outputStreamFlushed() throws IOException
+    private void waitForPostDataCompletion()
     {
-        // Logger.LOG(Logger.ESOCKET, Logger.EInfo, "+ outputStreamFlushed()" );
+        Logger.LOG(Logger.ESOCKET, Logger.EInfo, "+waitForPostDataCompletion");
+        iPostDataBlock.waitForCompletion();
+        Logger.LOG(Logger.ESOCKET, Logger.EInfo, "-waitForPostDataCompletion");
+
+    }
+
+    private synchronized void sendPartialRequest() throws IOException
+    {
+        // Logger.LOG(Logger.ESOCKET, Logger.EInfo, "HTTP sendPartialRequest() ");
         switch (iState)
         {
         case SETUP:
         case CONNECTED:
-        case REQUEST_HEADERS_SENT:
-            ensureResponse();
+
+            synchronized (iPostDataBlock.getLock())
+            {
+                synchronized (iPostDataBlock)
+                {
+                    sendRequest(true);
+                    iPostedDataStream.reset();
+                    waitForPostDataCompletion();
+                }
+            }
             break;
 
-        default:
-            // No-op
-            ;
+        case PARTIAL_REQUEST_SENT :
+
+            byte[] postData = iPostedDataStream.toByteArray();
+            iPostedDataStream.reset();
+            int len = -1;
+            if (postData != null)
+            {
+                len = postData.length;
+                iTotalPostDataLen = iTotalPostDataLen + len;
+            }
+            // Logger.LOG(Logger.ESOCKET, Logger.EInfo, "HTTP content-len = "+iRequestBodyLen + " totalflushed = "+ iTotalPostDataLen +" os len = "+ postData.length);
+            if (iTotalPostDataLen == iRequestBodyLen)
+            {
+                iEndOfRequest = true;
+            }
+
+            synchronized (iPostDataBlock.getLock())
+            {
+                synchronized (iPostDataBlock)
+                {
+                    int err = _postData(iNativeTransactionHande, postData, len, iEndOfRequest);
+
+                    if (err != 0)
+                    {
+                        throwIOException("Unable to write data .Symbian os error code: "
+                                         + err);
+                    }
+                    if (iEndOfRequest == false)
+                    {
+                        // wait until http stack consumes the data
+                        waitForPostDataCompletion();
+                    }
+                    else
+                    {
+                        // request complete, wait until the first chunk of response header arrives
+                        synchronized (iTransactionBlock.getLock())
+                        {
+                            synchronized (iTransactionBlock)
+                            {
+                                waitForTransaction();
+                            }
+                        }
+
+                    }  // end else
+                } // end syn
+
+            } // end syn getlock
+
+            break;
+        }
+
+    }
+
+    protected synchronized void outputStreamFlushed() throws IOException
+    {
+        int postDataLength = iPostedDataStream.size();
+
+
+        if ((iRequestBodyLen > postDataLength) || (iChunkedTransfer == true))
+        {
+            // chunked http request will be sent in two cases
+            // 1) application sets "Content-Lenght" request header and writes to output stream multiple times using flush
+            //     like a sequence of os.write(); os.flush() operations
+            // 2) application sets "Transfer-Encoding" request header and writes to ouput stream multiple times using flush
+            sendPartialRequest();
+
+        }
+        else
+        {
+            switch (iState)
+            {
+            case SETUP:
+            case CONNECTED:
+            case REQUEST_HEADERS_SENT:
+                ensureResponse();
+                break;
+
+            default:
+                // No-op
+                ;
+            }
         }
         // Logger.LOG(Logger.ESOCKET, Logger.EInfo, "- outputStreamFlushed()" );
     }
@@ -938,15 +1054,55 @@ public class HttpConnectionNative implements HttpConnection,
         return;
     }
 
+    private void waitForResponse() throws IOException
+    {
+        // Logger.LOG(Logger.ESOCKET, Logger.EInfo, "HTTP flush case, waitForResponse: total len =  "+iRequestBodyLen + " totalflushed = "+ iTotalPostDataLen );
+        if (iEndOfRequest == false)
+        {
+            // chunked http request was sent, but end of request not sent
+            // only in case of "transfer-encoding" request header, control will come here
+            iEndOfRequest = true;
+            byte[] postData = iPostedDataStream.toByteArray();
+            iPostedDataStream.reset();
+            int len = -1;
+            if (postData != null)
+            {
+                len = postData.length;
+                // Logger.LOG(Logger.ESOCKET, Logger.EInfo, "More data left in os, len = "+len);
+                iTotalPostDataLen = iTotalPostDataLen + len;
+            }
+            int err = _postData(iNativeTransactionHande, postData, len , iEndOfRequest);
+            if (err != 0)
+            {
+                throwIOException("Unable to write data .Symbian os error code: "
+                                 + err);
+            }
+            synchronized (iTransactionBlock.getLock())
+            {
+                synchronized (iTransactionBlock)
+                {
+                    waitForTransaction();
+                }
+            }
+        }
+        getResponse();
+        iState = REPLY_RECEIVED;
+
+    }
+
     protected void ensureResponse() throws IOException
     {
         // Logger.LOG(Logger.ESOCKET, Logger.EInfo, "+ ensureResponse()" );
         ensureConnected();
         switch (iState)
         {
+        case PARTIAL_REQUEST_SENT:
+            waitForResponse();
+            break;
+
         case CONNECTED:
 
-            sendRequest();
+            sendRequest(false);      // sendRequest() will block until the first chunk of http response arrives from the server.
             // Fall Through
         case REQUEST_HEADERS_SENT:
         case REQUEST_SENT:
@@ -1073,9 +1229,10 @@ public class HttpConnectionNative implements HttpConnection,
         //Logger.LOG(Logger.ESOCKET, Logger.EInfo, "- readHeaders(InputStream)" );
     }
 
-    protected synchronized void sendRequest() throws IOException
+    protected synchronized void sendRequest(boolean aPartialDataFlag) throws IOException
     {
         ensureConnected();
+        Logger.PLOG(Logger.ESOCKET, "HTTP sendRequest() , Flag : "  + aPartialDataFlag);
         final int count = iRequestProperties.size();
         int headerCount = count;
 
@@ -1107,6 +1264,7 @@ public class HttpConnectionNative implements HttpConnection,
         {
             postData = iPostedDataStream.toByteArray();
             postDataLength = postData.length;
+
         }
 
         synchronized (iTransactionBlock.getLock())
@@ -1119,7 +1277,7 @@ public class HttpConnectionNative implements HttpConnection,
                 Logger.LOG(Logger.ESOCKET, Logger.EInfo,
                            "before _submitTransaction ");
                 final int err = _submitTransaction(iNativeTransactionHande,
-                                                   headers, postData, postDataLength,iRespTimeOut);
+                                                   headers, postData, postDataLength,iRespTimeOut, aPartialDataFlag);
 
                 Logger.LOG(Logger.ESOCKET, Logger.EInfo,
                            "-_submitTransaction +err " + err);
@@ -1130,20 +1288,32 @@ public class HttpConnectionNative implements HttpConnection,
                 if (err != 0)
                     throwIOException("Unable to connect to server.Symbian os error code: "
                                      + err);
-                iState = REQUEST_SENT;
-                waitForTransaction();
+                if (aPartialDataFlag == true)
+                {
+                    iState = PARTIAL_REQUEST_SENT;
+                    iTotalPostDataLen = iTotalPostDataLen + postDataLength;
+                }
+                else
+                {
+                    // block and wait for response headers only when it a complete request
+                    iState = REQUEST_SENT;
+                    waitForTransaction();
+                }
                 Logger.LOG(Logger.ESOCKET, Logger.EInfo,
                            "- sendRequest _submitTransaction");
             }
         }
-        if ((iTransactionBlock.getResult() == -18) &&(iRetries < 2))
+        if (aPartialDataFlag == false)
         {
-            iRetries++;
-            Logger.LOG(Logger.ESOCKET, Logger.EInfo,
-                       "- sendRequest KErrNotReady erroi, calling recursive sendRequest()");
-            sendRequest();
-            Logger.LOG(Logger.ESOCKET, Logger.EInfo,
-                       "- sendRequest KErrNotReady erroi, calling recursive sendRequest() returned");
+            if ((iTransactionBlock.getResult() == -18) &&(iRetries < 2))
+            {
+                iRetries++;
+                Logger.LOG(Logger.ESOCKET, Logger.EInfo,
+                           "- sendRequest KErrNotReady erroi, calling recursive sendRequest()");
+                sendRequest(false);
+                Logger.LOG(Logger.ESOCKET, Logger.EInfo,
+                           "- sendRequest KErrNotReady erroi, calling recursive sendRequest() returned");
+            }
         }
     }
 
@@ -1291,6 +1461,13 @@ public class HttpConnectionNative implements HttpConnection,
         Logger.LOG(Logger.ESOCKET, Logger.EInfo, "- dataReadyForReadCallBack");
     }
 
+    protected void postDataConsumedCallback()
+    {
+        Logger.LOG(Logger.ESOCKET, Logger.EInfo, "+ postDataconsumedCallback  ");
+        iPostDataBlock.notifyCompleted(0);
+
+    }
+
     /*
      * Native Calls
      */
@@ -1300,13 +1477,14 @@ public class HttpConnectionNative implements HttpConnection,
             String aUri, String aRequestMethod);
     private native int _submitTransaction(int aNativeTransactionHande,
                                           String[] aHeaders, byte[] aPostData, int aPostLength,
-                                          int aRespTimeOut);
+                                          int aRespTimeOut, boolean aPartialData);
     private native String[] _getResponse(int aNativeTransactionHande);
     private native int _getBytes(int aNativeTransactionHande, byte[] aBuffer,
                                  int aLength);
     private native void _closeTransaction(int aNativeTransactionHande);
     private native int _available(int aNativeTransactionHande);
     private native String _getUserAgentHeaderValue(boolean aMidpRuntime);
+    private native int _postData(int aNativeTransactionHandle, byte[] aPostData, int aLength, boolean iEndOfRequest);
 
     /*
      *

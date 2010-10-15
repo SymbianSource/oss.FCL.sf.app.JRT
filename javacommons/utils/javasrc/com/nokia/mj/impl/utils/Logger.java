@@ -161,18 +161,20 @@ public final class Logger
     //private static ByteArrayOutputStream byte_stream = new ByteArrayOutputStream();
     //private static PrintStream print_stream = new PrintStream(byte_stream);
 
+    private static boolean mNativeAvailable = false;
+
     static
     {
 
         try
         {
             Jvm.loadSystemLibrary("javautils");
+            mNativeAvailable = true;
         }
 
-        catch (Exception e)
+        catch (Throwable t)
         {
-
-            System.err.println(e.toString());
+            System.err.println("Error loading javautils: " + t);
         }
     }
 
@@ -345,7 +347,24 @@ public final class Logger
         }
         else
         {
-            _logging(component, level, str, DebugUtils.getStackTrace(thrown));
+            if (mNativeAvailable)
+            {
+                _logging(component, level, str, DebugUtils.getStackTrace(thrown));
+            }
+            else
+            {
+                PrintStream printStream = System.out;
+                if (level == EError || level == EWarning)
+                {
+                    printStream = System.err;
+                }
+                printStream.println("Component: " + component + ", level: " +
+                                    level + ", msg: " + str);
+                if (thrown != null)
+                {
+                    thrown.printStackTrace();
+                }
+            }
         }
     }
 

@@ -65,7 +65,8 @@ symbian {
     contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_10_1_ONWARDS) {
         CONFIG += hb
         LIBS += -lsifnotification -lxqservice
-        TRANSLATIONS = javaapplicationinstaller.ts
+        TRANSLATIONS += javaapplicationinstaller.ts
+        TRANSLATIONS += javaapplicationinstallererrors.ts
     }
 
     MMP_RULES += \

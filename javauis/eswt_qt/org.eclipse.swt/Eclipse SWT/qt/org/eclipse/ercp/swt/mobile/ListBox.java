@@ -1439,7 +1439,7 @@ public class ListBox extends Scrollable {
                 imageCount = items[i].detailIcons.length;
                 detailImageHandles = new int[imageCount];
                 for (int j = 0; j < imageCount; j++) {
-                    detailImageHandles[j] = Internal_GfxPackageSupport.getPixmapHandle(items[i].detailIcons[j]);
+                    detailImageHandles[j] = Internal_GfxPackageSupport.getImageHandle(items[i].detailIcons[j]);
                 }
             } else {
                 detailImageHandles = null;
@@ -1449,7 +1449,7 @@ public class ListBox extends Scrollable {
                 imageCount = items[i].headingIcons.length;
                 headingImageHandles = new int[imageCount];
                 for (int j = 0; j < imageCount; j++) {
-                    headingImageHandles[j] = Internal_GfxPackageSupport.getPixmapHandle(items[i].headingIcons[j]);
+                    headingImageHandles[j] = Internal_GfxPackageSupport.getImageHandle(items[i].headingIcons[j]);
                 }
             } else {
                 headingImageHandles = null;

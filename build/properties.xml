@@ -61,6 +61,13 @@
              value="${epocroot}epoc32/include/platform/app/classes.cdc.zip" />
   <available file="${epocroot}epoc32/include/platform/app/classes.fp.zip" property="bootclasspath.fp"
              value="${epocroot}epoc32/include/platform/app/classes.fp.zip" />
+
+  <available file="${epocroot}epoc32/include/domain/applications/classes.cldc.zip" property="bootclasspath.cldc"
+             value="${epocroot}epoc32/include/domain/applications/classes.cldc.zip" />
+  <available file="${epocroot}epoc32/include/domain/applications/classes.cdc.zip" property="bootclasspath.cdc"
+             value="${epocroot}epoc32/include/domain/applications/classes.cdc.zip" />
+  <available file="${epocroot}epoc32/include/domain/applications/classes.fp.zip" property="bootclasspath.fp"
+             value="${epocroot}epoc32/include/domain/applications/classes.fp.zip" />
                           
   <!-- Old SF cldc/cdc class file location -->
   <property name="bootclasspath.cldc" location="${epocroot}epoc32/jrt/classes.cldc.zip"/>

@@ -188,7 +188,7 @@ void GraphicsContextImpl::releaseTarget()
  *  NOTE: This covers currently only Images
  */
 void GraphicsContextImpl::copyArea(Image* aImage, int aX, int aY)
-{
+    {
     GFX_LOG_FUNC_CALL();
 
     switch (mSurface.getType()) {
@@ -197,16 +197,16 @@ void GraphicsContextImpl::copyArea(Image* aImage, int aX, int aY)
         {
             QWidget* widget = 0;
             if (mSurface.getType() == ETypeWidget)
-            {
+                {
                 widget = mSurface.getWidget();
-            }
+                }
             else // ETypeBuffer
-            {
+                {
                 widget = static_cast<QWidget*>(reinterpret_cast<QObject*>(mSurface.getBufferFlushTarget()));
-            }
+                }
 
             if (widget)
-            {
+                {
                 // Determine the smallest area needed to grab, don't grab anything we don't need
                 const int widgetGrabWidth = widget->width() - aX;
                 const int widgetGrabHeight = widget->height() - aY;
@@ -281,34 +281,60 @@ void GraphicsContextImpl::copyArea(Image* aImage, int aX, int aY)
             break;
         }
         case ETypeImage:
-        {
-            TImageType type = mSurface.getImageType();
-
-            if (type == EPixmap)
             {
+            TImageType type = mSurface.getImageType();
+            QPaintDevice* target = NULL;
+            if(aImage->type() == EPixmap)
+                {
+                target = aImage->getPixmap();
+                }
+            else if(aImage->type() == EImage) 
+                {
+                target = aImage->getImage();
+                }
+            
+            if (type == EPixmap)
+                {
                 QPixmap* source = mSurface.getPixmap();
-                QPixmap* target = aImage->getPixmap();
                 QRect sourceRect(aX, aY, target->width(), target->height());
                 QRect targetRect(0, 0, target->width(), target->height());
 
                 // If copying on itself then don't try to create two QPainters
                 // for the same paint device
                 if(target == source)
-                {
+                    {
                     drawPixmapCheckOverlap(*mPainter, *target, targetRect, *source, sourceRect);
-                }
+                    }
                 else
-                {
+                    {
                     QPainter painter(target);
                     drawPixmapCheckOverlap(painter, *target, targetRect, *source, sourceRect);
+                    }
                 }
-            }
+            else if(type == EImage) 
+                {
+                QImage* source = mSurface.getImage();
+                QRect sourceRect(aX, aY, target->width(), target->height());
+                QRect targetRect(0, 0, target->width(), target->height());
+
+                // If copying on itself then don't try to create two QPainters
+                // for the same paint device
+                if(target == source)
+                    {
+                    drawImageCheckOverlap(*mPainter, *target, targetRect, *source, sourceRect);
+                    }
+                else
+                    {
+                    QPainter painter(target);
+                    drawImageCheckOverlap(painter, *target, targetRect, *source, sourceRect);
+                    }
+                }
             else
-            {
+                {
                 Q_ASSERT_X(false, "Graphics", "CopyArea image type not recognized");
-            }
+                }
             break;
-        }
+            }
         default:
             Q_ASSERT_X(false, "Graphics", "Surface type not recognized");
             break;
@@ -436,13 +462,16 @@ void GraphicsContextImpl::copyArea(int aSrcX, int aSrcY, int aWidth, int aHeight
         {
             // first obtain native image type of current target (QPixmap/QImage)
             TImageType type = mSurface.getImageType();
-
-
+            QRect sourceRect = QRect(aSrcX, aSrcY, aWidth, aHeight);
+            QRect targetRect = QRect(aDestX, aDestY, aWidth, aHeight);
+            
             if (type == EPixmap)
             {
-                QRect sourceRect = QRect(aSrcX, aSrcY, aWidth, aHeight);
-                QRect targetRect = QRect(aDestX, aDestY, aWidth, aHeight);
                 drawPixmapCheckOverlap(*mPainter, *mSurface.getBindable(), targetRect, *mSurface.getPixmap(), sourceRect);
+            }
+            else if (type == EImage)
+            {
+                drawImageCheckOverlap(*mPainter, *mSurface.getBindable(), targetRect, *mSurface.getImage(), sourceRect);
             }
             else
             {
@@ -486,7 +515,10 @@ void GraphicsContextImpl::drawImage(Image* aImage, int x, int y)
     switch (type)
     {
         case EPixmap:
-            mPainter->drawPixmap(x, y, *(aImage->getPixmap()));
+            mPainter->drawPixmap(x, y, *(aImage->getConstPixmap()));
+            break;
+        case EImage:
+            mPainter->drawImage(QPoint(x,y), *(aImage->getConstImage()));
             break;
         default:
             Q_ASSERT_X(false, "Graphics", "Image type not recognized");
@@ -510,7 +542,10 @@ void GraphicsContextImpl::drawImage(Image* aImage, int aManipulation, int aTx, i
     switch (type)
     {
         case EPixmap:
-            mPainter->drawPixmap(QRect(aTx ,aTy, aTw, aTh), *(aImage->getPixmap()), QRect(aSx, aSy, aSw, aSh));
+            mPainter->drawPixmap(QRect(aTx ,aTy, aTw, aTh), *(aImage->getConstPixmap()), QRect(aSx, aSy, aSw, aSh));
+            break;
+        case EImage:
+            mPainter->drawImage(QRect(aTx ,aTy, aTw, aTh), *(aImage->getConstImage()), QRect(aSx, aSy, aSw, aSh));
             break;
         default:
             Q_ASSERT_X(false, "Graphics", "Image type not recognized");

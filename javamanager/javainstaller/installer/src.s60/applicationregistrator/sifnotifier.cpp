@@ -59,7 +59,7 @@ void NotifyStartL(
     jobjectArray aApplicationNames, jobjectArray aApplicationIcons,
     jint aComponentSize, jstring aIconDir, jstring /*aComponentIcon*/)
 {
-    __UHEAP_MARK;
+    //__UHEAP_MARK;
     HBufC *globalComponentId = CreateHBufCFromJavaStringLC(aEnv, aGlobalComponentId);
     HBufC *componentName = CreateHBufCFromJavaStringLC(aEnv, aComponentName);
     HBufC *iconDir = NULL;
@@ -125,7 +125,7 @@ void NotifyStartL(
     }
     CleanupStack::PopAndDestroy(componentName);
     CleanupStack::PopAndDestroy(globalComponentId);
-    __UHEAP_MARKEND;
+    //__UHEAP_MARKEND;
 }
 
 /*
@@ -235,7 +235,7 @@ void NotifyProgressL(
     jstring aGlobalComponentId, jint aOperation, jint aSubOperation,
     jint aCurrent, jint aTotal)
 {
-    __UHEAP_MARK;
+    //__UHEAP_MARK;
     HBufC *globalComponentId = CreateHBufCFromJavaStringLC(aEnv, aGlobalComponentId);
     CSifOperationProgressData *progressData = CSifOperationProgressData::NewLC(
                 *globalComponentId, (TSifOperationPhase)aOperation,
@@ -245,7 +245,7 @@ void NotifyProgressL(
 
     CleanupStack::PopAndDestroy(progressData);
     CleanupStack::PopAndDestroy(globalComponentId);
-    __UHEAP_MARKEND;
+    //__UHEAP_MARKEND;
 }
 
 /*

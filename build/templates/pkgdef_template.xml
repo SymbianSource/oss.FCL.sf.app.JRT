@@ -36,32 +36,32 @@
     
     <collection id="javacommons" name="Java Commons" level="generic">
       <component id="javacommons_build" filter="s60" name="Java Commons Build">
-        <unit bldFile="javacommons" qt:proFile="javacommons.pro" qt:qmakeArgs="-r RD_JAVA_SF_BUILD=1"/>
+        <unit bldFile="javacommons" qt:proFile="javacommons.pro"/>
       </component>
     </collection>
     <collection id="javaruntimes" name="Java Runtimes" level="rt">
       <component id="javaruntimes_build" filter="s60" name="Java Runtimes Build">
-        <unit bldFile="javaruntimes" qt:proFile="javaruntimes.pro" qt:qmakeArgs="-r RD_JAVA_SF_BUILD=1"/>
+        <unit bldFile="javaruntimes" qt:proFile="javaruntimes.pro"/>
       </component>
     </collection>
     <collection id="javauis" name="Java UIs" level="ui">
       <component id="javauis_build" filter="s60" name="Java UIs Build">
-        <unit bldFile="javauis" qt:proFile="javauis.pro" qt:qmakeArgs="-r RD_JAVA_SF_BUILD=1"/>
+        <unit bldFile="javauis" qt:proFile="javauis.pro"/>
       </component>
     </collection>
     <collection id="javamanager" name="Java Manager" level="generic">
       <component id="javamanager_build" filter="s60" name="Java Manager Build">
-        <unit bldFile="javamanager" qt:proFile="javamanager.pro" qt:qmakeArgs="-r RD_JAVA_SF_BUILD=1"/>
+        <unit bldFile="javamanager" qt:proFile="javamanager.pro"/>
       </component>
     </collection>
     <collection id="javatools" name="Java Tools" level="util">
       <component id="javatools_build" filter="s60" name="Java Tools Build">
-        <unit bldFile="javatools" qt:proFile="javatools.pro" qt:qmakeArgs="-r RD_JAVA_SF_BUILD=1"/>
+        <unit bldFile="javatools" qt:proFile="javatools.pro"/>
       </component>
     </collection>
     <collection id="javaextensions" name="Java Extensions" level="generic">
       <component id="javaextensions_build" filter="s60" name="Java Extensions Build">
-        <unit bldFile="javaextensions" qt:proFile="javaextensions.pro" qt:qmakeArgs="-r RD_JAVA_SF_BUILD=1"/>
+        <unit bldFile="javaextensions" qt:proFile="javaextensions.pro"/>
       </component>
     </collection>
     

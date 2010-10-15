@@ -40,9 +40,9 @@ public:
     void doSubmitCallback(TInt aStatus,jobject &aPeer);
     //void doReadCallback(TInt aStatus);
     void doReadCallback(TInt aStatus,jobject &aPeer);
-
+    void doDataConsumedCallback(jobject &aPeer);
     void vmAttached();
-    
+
 private:
     NativeHttpSession();
 
@@ -51,12 +51,13 @@ private:
 private:
 
     TInt ExecuteCreateHttpSessionL(int aSelf, TInt aType,  TInt aAPNId, TInt* apnerr);
-    
+
 private:
     HttpSessionClient* iHttpSessionClient;
     TInt                iSuiteId;
     jmethodID   iSubmitCallbackMethodID;
     jmethodID   iReadCallbackMethodID;
+    jmethodID   iPostCallbackMethodID;
 public:
     java::util::Monitor *iMonitor;
 };

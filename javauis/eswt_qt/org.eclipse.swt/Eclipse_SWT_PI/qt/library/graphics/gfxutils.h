@@ -26,8 +26,10 @@ public:
     /**
      * Method for checking pixel level collision 
      */
-    static bool detectCollision(int aImage1PixmapHandle, int aTransform1, int aP1x, int aP1y, int aR1x1, int aR1y1, int aR1x2, int aR1y2,
-                                int aImage2PixmapHandle, int aTransform2, int aP2x, int aP2y, int aR2x1, int aR2y1, int aR2x2, int aR2y2);
+    static bool detectCollision(Image* aImage1, int aTransform1, int aP1x, int aP1y, int aR1x1, int aR1y1, int aR1x2, int aR1y2,
+                                Image* aImage2, int aTransform2, int aP2x, int aP2y, int aR2x1, int aR2y1, int aR2x2, int aR2y2);
+private:
+    static int getCgTransformValue(int aTransform);
 
 };
 

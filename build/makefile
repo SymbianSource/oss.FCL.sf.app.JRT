@@ -69,9 +69,9 @@ SUBTARGETS = $(COMPONENTS) $(NONQTSUBSYSTEMS) $(SUBSYSTEMS)
 include ${JAVA_SRC_ROOT}/build/Makefile.subsystem
 
 # Prepare delivery for S60/SF
-prep: sysdefsetup generatereleasefile
+prep: sysdefsetup generatereleasefile configure
 ifdef RD_JAVA_S60_RELEASE_9_2
-prep: configure qmake
+prep: qmake
 endif
 ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS
 prep: pkgdefsetup
@@ -82,19 +82,13 @@ sysdefsetup:
 	$(call CATCOMMAND,$(wildcard $(SYSDEF_TEMPLATE)))>$(JAVA_SRC_ROOT)/layers.sysdef.xml
 
 pkgdefsetup:
-	$(call MKDIR, $(call PATHFIX, $(JAVA_SRC_ROOT)/jrt_info))
-	$(call MKDIR, $(call PATHFIX, $(JAVA_SRC_ROOT)/jrt_info/nokia_jrt_metadata))
 	$(call CATCOMMAND,$(JAVA_SRC_ROOT)/build/templates/pkgmap_template.xml)>$(JAVA_SRC_ROOT)/package_map.xml
 	$(call CATCOMMAND,$(JAVA_SRC_ROOT)/build/templates/pkgdef_template.xml)>$(JAVA_SRC_ROOT)/package_definition.xml
-	$(call CATCOMMAND,$(JAVA_SRC_ROOT)/build/templates/nokia_pkgdef_template.xml)>$(JAVA_SRC_ROOT)/jrt_info/nokia_jrt_metadata/package_definition.xml
 
 # Cleaning java from top level cleans also the API jars
 clean_java: cleanapijars
 cleanapijars:
 	$(ANT) -f $(JAVA_SRC_ROOT)/build/utilities.xml -q -Dtarget.platform=$(PLATFORM) -Dtarget.cfg=$(VARIANT) clean.api.jars
-
-# Release build for build automation (sbs case is optimized to build on one go)
-releasebuild: build_all sis
 
 sis:
 ifeq ($(BUILDENV),symbian)

@@ -32,7 +32,7 @@ import com.ibm.oti.vm.OSMemoryAccessor;
 class NativeMemoryBlockImpl implements NativeMemoryBlock
 {
 
-    InputStream mMemInputStream = null;
+    private InputStream mMemInputStream = null;
 
     /**
      * Default constructor not allowed

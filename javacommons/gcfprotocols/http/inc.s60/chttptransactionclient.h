@@ -22,7 +22,7 @@
 #include <http/rhttptransaction.h>
 #include <http/mhttptransactioncallback.h>
 #include <http/mhttpdatasupplier.h>
-#include "monitor.h"
+
 
 class MNativeSecureConnectionInformation;
 class CX509Certificate;
@@ -43,7 +43,7 @@ public:
     * call this function to make the request.
     * Takes ownership of aPostData
     */
-    void SubmitL(RPointerArray<HBufC8>* aRawHeaders , TDesC8* aPostData, int aResponseTimeout);
+    void SubmitL(RPointerArray<HBufC8>* aRawHeaders , TDesC8* aPostData, int aResponseTimeout, bool aPartialDataFlag);
     /*
     * Get the response headers back from the transaction
     */
@@ -81,6 +81,8 @@ public:
      *The session is opened, but no transactions have been created on it
      */
     void SetHTTPAuthenticationCallbackL(MHTTPAuthenticationCallback& aCallBack);
+
+    void PostDataL(HBufC8* aPostData, const bool aEndOfRequest);
 
 private:
     enum TTransactionState
@@ -129,9 +131,6 @@ private:
     MHTTPDataSupplier* iRespBody;
     MRefHttpClientObserver* iObserver;
     CHttpsCertInfo* iCertInfo;
-    java::util::Monitor *iMonitor1;
-    java::util::Monitor *iMonitor2;
-    java::util::Monitor *iMonitor3;
     HBufC8* iBuf;
     HBufC8* iDrmBuf;
     TInt iStatus;
@@ -147,6 +146,9 @@ private:
     TInt iMinLength;
     TBool iDrmDownload;
     TInt iFlag;
+    bool iPartialPostData;
+    bool iEndOfRequest;
+
 };
 
 #endif // CHTTPTRANSACTIONCLIENT_H

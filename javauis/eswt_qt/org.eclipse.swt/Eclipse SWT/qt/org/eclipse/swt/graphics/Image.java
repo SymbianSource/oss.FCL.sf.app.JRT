@@ -701,7 +701,7 @@ public final class Image implements Drawable {
         	OS.QIcon_delete(icon);
         }
 
-        icon = OS.QIcon_new(cgImage.getNativePixmapHandle());
+        icon = OS.QIcon_swt_new(cgImage.getHandle());
         return icon;
     }
 
@@ -723,15 +723,6 @@ public final class Image implements Drawable {
             SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
         }
         return cgImage.getHandle();
-    }
-
-    /*
-     * Returns OS specific pixmap handle.
-     */
-    int getPixmapHandle() {
-        if(isDisposed())
-            SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-        return cgImage.getNativePixmapHandle();
     }
 
     /**
@@ -758,7 +749,7 @@ public final class Image implements Drawable {
         if(data == null) {
             SWT.error(SWT.ERROR_NULL_ARGUMENT);
         }
-        int paintDevice = OS.QPixmap_swt_paintDevice(cgImage.getNativePixmapHandle());
+        int paintDevice = cgImage.getQPainDeviceHandle();
         if(OS.QPaintDevice_paintingActive(paintDevice)) {
             SWT.error(SWT.ERROR_INVALID_ARGUMENT);
         }

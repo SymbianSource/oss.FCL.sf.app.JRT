@@ -87,6 +87,9 @@
 #include <qnetworkconfiguration.h>
 #include <hbinputsettingproxy.h>
 #include <hbicon.h>
+#include <XQAiwRequest.h>
+#include <xqappmgr.h>
+#include <xqaiwdecl.h>
 #endif
 
 #include <org_eclipse_swt_internal_qt_OS.h>
@@ -104,6 +107,7 @@
 #include "swtapplication.h"
 #include "qswttabwidget.h"
 #include "autorelease.h"
+#include "graphics.h"
 
 #ifdef __SYMBIAN32__
 #include "swts60.h"
@@ -3092,7 +3096,28 @@ JNIEXPORT void JNICALL OS_NATIVE( QLabel_1setAlignment)
 }
 
 JNIEXPORT void JNICALL OS_NATIVE( QLabel_1setPixmap)
-  (JNIEnv* aJniEnv , jclass, jint aHandle, jint aImageHandle)
+  (JNIEnv* aJniEnv , jclass, jint aHandle, jint aPixmapHandle)
+    {
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        SWT_LOG_DATA_2("handle=%x pixmapHandle=%x", aHandle, aPixmapHandle );
+        HANDLE_TO_POINTER( QLabel*, label, aHandle );
+        if(aPixmapHandle == 0 )
+            {
+            label->setPixmap(QPixmap());
+            }
+        else
+            {
+            QPixmap* image = static_cast< QPixmap* >( reinterpret_cast< QPaintDevice* >( aPixmapHandle ) );
+            label->setPixmap( *image );
+            }
+        }
+    SWT_CATCH
+    }
+
+JNIEXPORT void JNICALL OS_NATIVE( QLabel_1swt_1setPixmap )
+  ( JNIEnv* aJniEnv, jclass, jint aHandle, jint aImageHandle)
     {
     SWT_TRY
         {
@@ -3105,8 +3130,8 @@ JNIEXPORT void JNICALL OS_NATIVE( QLabel_1setPixmap)
             }
         else
             {
-            QPixmap* image = static_cast< QPixmap* >( reinterpret_cast< QPaintDevice* >( aImageHandle ) );
-            label->setPixmap( *image );
+            Java::GFX::Image* image = reinterpret_cast< Java::GFX::Image* >( aImageHandle );
+            label->setPixmap( image->toPixmap() );
             }
         }
     SWT_CATCH
@@ -4535,20 +4560,6 @@ JNIEXPORT void JNICALL OS_NATIVE( QPixmap_1delete )
 
     }
 
-JNIEXPORT jint JNICALL OS_NATIVE( QPixmap_1swt_1paintDevice )
-  (JNIEnv* aJniEnv, jclass, jint aHandle)
-    {
-    QPaintDevice* result = NULL;
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-        SWT_LOG_DATA_1("handle=%x", aHandle);
-        result = static_cast<QPaintDevice*>( reinterpret_cast<QPixmap*>( static_cast<int>( aHandle ) ) );
-        }
-    SWT_CATCH
-    return reinterpret_cast<jint>( result );
-    }
-
 //
 // QPalette
 //
@@ -4618,17 +4629,17 @@ JNIEXPORT void JNICALL OS_NATIVE( QPalette_1delete )
     }
 
 JNIEXPORT void JNICALL OS_NATIVE( QPalette_1swt_1setBrush )
-   (JNIEnv* aJniEnv , jclass, jint aHandle, jint aRole, jint aPixmap)
+   (JNIEnv* aJniEnv , jclass, jint aHandle, jint aRole, jint aCgImage)
     {
     SWT_TRY
         {
         SWT_LOG_JNI_CALL();
-        SWT_LOG_DATA_3( "handle=%x role=%x pixmap=%x", aHandle, aRole, aPixmap );
-        QPixmap* pixmap = reinterpret_cast<QPixmap*>(aPixmap);
+        SWT_LOG_DATA_3( "handle=%x role=%x cgImage=%x", aHandle, aRole, aCgImage );
+        Java::GFX::Image* image = reinterpret_cast<Java::GFX::Image*>(aCgImage);
         QPalette* palette = reinterpret_cast< QPalette* > ( aHandle );
-        if(pixmap)
+        if(aCgImage)
             {
-            palette->setBrush( static_cast< QPalette::ColorRole> ( aRole ), QBrush( *pixmap ) );
+            palette->setBrush( static_cast< QPalette::ColorRole> ( aRole ), QBrush( image->toPixmap() ) );
             }
         else
             {
@@ -5333,7 +5344,7 @@ JNIEXPORT void  JNICALL OS_NATIVE( ListModel_1append__ILjava_lang_String_2_3IILj
         jboolean isCopy;
         jint* imagesHandles = NULL;
 
-        QPixmap** detailImages = new QPixmap*[aDetailImageCount];
+        QPixmap* detailImages = new QPixmap[aDetailImageCount];
         if( !detailImages )
             {
             throw std::bad_alloc();
@@ -5348,12 +5359,12 @@ JNIEXPORT void  JNICALL OS_NATIVE( ListModel_1append__ILjava_lang_String_2_3IILj
                 }
             for(int i = 0; i < aDetailImageCount; i++)
                 {
-                detailImages[i] = reinterpret_cast< QPixmap* >( imagesHandles[i] );
+                detailImages[i] = (reinterpret_cast< Java::GFX::Image* >( imagesHandles[i] ))->toPixmap();
                 }
             aJniEnv->ReleaseIntArrayElements(aDetailImageHandles, imagesHandles, JNI_ABORT);
             }
 
-        QPixmap** headingImages = new QPixmap*[aHeadingImageCount];
+        QPixmap* headingImages = new QPixmap[aHeadingImageCount];
         if( !headingImages )
             {
             delete [] detailImages; // allocated earlier
@@ -5370,16 +5381,16 @@ JNIEXPORT void  JNICALL OS_NATIVE( ListModel_1append__ILjava_lang_String_2_3IILj
                 }
             for(int i = 0; i < aHeadingImageCount; i++)
                 {
-                headingImages[i] = reinterpret_cast< QPixmap* >( imagesHandles[i] );
+                headingImages[i] = (reinterpret_cast< Java::GFX::Image* >( imagesHandles[i] ))->toPixmap();
                 }
             aJniEnv->ReleaseIntArrayElements(aHeadingImageHandles, imagesHandles, JNI_ABORT);
             }
 
         ListModel* listDataModel = reinterpret_cast< ListModel* > ( aHandle );
         listDataModel->appendItem( swtApp->jniUtils().JavaStringToQString( aJniEnv, aDetailText ), 
-            const_cast<const QPixmap**>(detailImages), aDetailImageCount,
+            const_cast<const QPixmap*>(detailImages), aDetailImageCount,
             swtApp->jniUtils().JavaStringToQString( aJniEnv, aHeadingText ), 
-            const_cast<const QPixmap**>(headingImages), aHeadingImageCount );
+            const_cast<const QPixmap*>(headingImages), aHeadingImageCount );
         }
     SWT_CATCH
     }
@@ -6286,22 +6297,22 @@ JNIEXPORT void JNICALL OS_NATIVE( QKeySequence_1delete )
 //
 //QIcon
 //
-JNIEXPORT jint JNICALL OS_NATIVE( QIcon_1new__I )
-    ( JNIEnv* aJniEnv , jclass, jint aPixmap )
+JNIEXPORT jint JNICALL OS_NATIVE( QIcon_1swt_1new )
+    ( JNIEnv* aJniEnv , jclass, jint aImageHandle )
     {
     QIcon* icon = NULL;
     SWT_TRY
         {
         SWT_LOG_JNI_CALL();
-        SWT_LOG_DATA_1("aPixmap=%x", aPixmap);
-        QPixmap* pixmap = reinterpret_cast< QPixmap* >( aPixmap );
-        icon = new QIcon( *pixmap );
+        SWT_LOG_DATA_1("image=%x", aImageHandle);
+        Java::GFX::Image* image = reinterpret_cast< Java::GFX::Image* >( aImageHandle );
+        icon = new QIcon(image->toPixmap());
         }
     SWT_CATCH
     return reinterpret_cast< jint >( static_cast< QIcon* >( icon ) );
     }
 
-JNIEXPORT jint JNICALL OS_NATIVE ( QIcon_1new__ )
+JNIEXPORT jint JNICALL OS_NATIVE ( QIcon_1new )
     (JNIEnv* aJniEnv , jclass)
     {
     QIcon* icon = NULL;
@@ -6740,23 +6751,22 @@ JNIEXPORT jboolean JNICALL OS_NATIVE( QColor_1isValid)
 //QColorDialog
 //
 JNIEXPORT jint JNICALL OS_NATIVE( QColorDialog_1getColor )
-    (JNIEnv* aJniEnv , jclass, jint aColorHandle, jint aParentHandle, jstring aDialogID, jint aLayoutDirection )
+    (JNIEnv* aJniEnv , jclass, jint aRed, jint aGreen, jint aBlue, jint aParentHandle, jstring aDialogID, jint aLayoutDirection)
     {
     QColor* color = NULL;
     SWT_TRY
         {
         SWT_LOG_JNI_CALL();
-        SWT_LOG_DATA_3("colorHandle=%x parentHandle=%x layoutDirection=%d", aColorHandle, aParentHandle, aLayoutDirection);
-        HANDLE_TO_QCOLOR( initialColor, aColorHandle );
-        HANDLE_TO_POINTER( QWidget*, parent, aParentHandle );
-        QColorDialog dialog( *initialColor, parent );
-        dialog.setObjectName( swtApp->jniUtils().JavaStringToQString(aJniEnv, aDialogID) );
-        dialog.setLayoutDirection( static_cast<Qt::LayoutDirection>(aLayoutDirection) );
+        SWT_LOG_DATA_2("parentHandle=%x layoutDirection=%d", aParentHandle, aLayoutDirection);
+        HANDLE_TO_POINTER(QWidget*, parent, aParentHandle);
+        QColorDialog dialog(QColor(aRed, aGreen, aBlue), parent);
+        dialog.setObjectName(swtApp->jniUtils().JavaStringToQString(aJniEnv, aDialogID));
+        dialog.setLayoutDirection( static_cast<Qt::LayoutDirection>(aLayoutDirection));
         AutoPopExecStack stackExec(&dialog);
         int code = dialog.exec();
-        if( code == QDialog::Accepted )
+        if (code == QDialog::Accepted)
             {
-            color = new QColor( dialog.selectedColor() );
+            color = new QColor(dialog.selectedColor());
             }
         }
     SWT_CATCH
@@ -9966,7 +9976,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(QMessageBox_1swt_1exec)
 
 JNIEXPORT void JNICALL OS_NATIVE(QMessageBox_1swt_1execTimer)
    (JNIEnv* aJniEnv , jclass, jint aIcon, jstring aTitle, jstring aText,
-    jint aParent, jstring aDialogID, jint aLayoutDirection, jint aModality, jint aPixmapHandle)
+    jint aParent, jstring aDialogID, jint aLayoutDirection, jint aModality, jint aCgImageHandle)
     {
     SWT_TRY
         {
@@ -10003,7 +10013,7 @@ JNIEXPORT void JNICALL OS_NATIVE(QMessageBox_1swt_1execTimer)
 
 
         SWT_LOG_JNI_CALL();
-        SWT_LOG_DATA_5("dialogID=%s, parent=%x icon=%d, pixmap=%x, modality=%d", aDialogID, aParent, aIcon, aPixmapHandle, aModality);
+        SWT_LOG_DATA_5("dialogID=%s, parent=%x icon=%d, cgImage=%x, modality=%d", aDialogID, aParent, aIcon, aCgImageHandle, aModality);
         HANDLE_TO_POINTER(QWidget*, parent, aParent);
 
         QMessageBox msgBox( static_cast<QMessageBox::Icon>(aIcon),
@@ -10018,9 +10028,15 @@ JNIEXPORT void JNICALL OS_NATIVE(QMessageBox_1swt_1execTimer)
         msgBox.setWindowModality( static_cast<Qt::WindowModality>(aModality) );
         msgBox.setLayoutDirection( static_cast<Qt::LayoutDirection>(aLayoutDirection) );
 
-        if (aPixmapHandle) {
-            msgBox.setIconPixmap( *reinterpret_cast<QPixmap*>(aPixmapHandle) );
-        }
+        Java::GFX::Image* image = reinterpret_cast<Java::GFX::Image*>(aCgImageHandle);
+        if(image)
+            {
+            QPixmap pixmap = image->toPixmap();
+            if (!pixmap.isNull()) 
+                {
+                msgBox.setIconPixmap( pixmap );
+                }
+            }
 
         TimedMsgBoxEventFilter filter(msgBox);
         QTimer::singleShot(KTimedMessageBoxTimeout, &msgBox, SLOT(reject()));
@@ -10418,7 +10434,7 @@ JNIEXPORT jobjectArray JNICALL OS_NATIVE (QFileDialog_1swt_1getOpenFileName)
         QFileDialog dialog( parent,
             aTitle != NULL ? swtApp->jniUtils().JavaStringToQString(aJniEnv, aTitle) : QString(),
             aDirectory != NULL ?swtApp->jniUtils().JavaStringToQString(aJniEnv, aDirectory) : QString(),
-            aFilter != NULL ? swtApp->jniUtils().JavaStringToQString(aJniEnv, aFilter) : QString(0 ) );
+            aFilter != NULL ? swtApp->jniUtils().JavaStringToQString(aJniEnv, aFilter) : QString(static_cast<const char*>(0)) );
         dialog.setObjectName( swtApp->jniUtils().JavaStringToQString(aJniEnv, aDialogID ) );
         dialog.setLayoutDirection( static_cast<Qt::LayoutDirection>(aLayoutDirection) );
         dialog.setFileMode(QFileDialog::ExistingFile);
@@ -10452,7 +10468,7 @@ JNIEXPORT jobjectArray JNICALL OS_NATIVE (QFileDialog_1swt_1getOpenFileNames)
         QFileDialog dialog( parent,
             aTitle != NULL ? swtApp->jniUtils().JavaStringToQString(aJniEnv, aTitle) : QString(),
             aDirectory != NULL ?swtApp->jniUtils().JavaStringToQString(aJniEnv, aDirectory) : QString(),
-            aFilter != NULL ? swtApp->jniUtils().JavaStringToQString(aJniEnv, aFilter) : QString(0 ) );
+            aFilter != NULL ? swtApp->jniUtils().JavaStringToQString(aJniEnv, aFilter) : QString(static_cast<const char*>(0)) );
         dialog.setObjectName( swtApp->jniUtils().JavaStringToQString(aJniEnv, aDialogID ) );
         dialog.setLayoutDirection( static_cast<Qt::LayoutDirection>(aLayoutDirection) );
         dialog.setFileMode(QFileDialog::ExistingFiles);
@@ -10486,7 +10502,7 @@ JNIEXPORT jobjectArray JNICALL OS_NATIVE (QFileDialog_1swt_1getSaveFileName)
         QFileDialog dialog( parent,
             aTitle != NULL ? swtApp->jniUtils().JavaStringToQString(aJniEnv, aTitle) : QString(),
             aDirectory != NULL ?swtApp->jniUtils().JavaStringToQString(aJniEnv, aDirectory) : QString(),
-            aFilter != NULL ? swtApp->jniUtils().JavaStringToQString(aJniEnv, aFilter) : QString(0 ) );
+            aFilter != NULL ? swtApp->jniUtils().JavaStringToQString(aJniEnv, aFilter) : QString(static_cast<const char*>(0)) );
         dialog.setObjectName( swtApp->jniUtils().JavaStringToQString(aJniEnv, aDialogID ) );
         dialog.setLayoutDirection( static_cast<Qt::LayoutDirection>(aLayoutDirection) );
         dialog.setAcceptMode( static_cast<QFileDialog::AcceptMode>(QFileDialog::AcceptSave) );
@@ -11274,19 +11290,6 @@ JNIEXPORT void JNICALL OS_NATIVE( QLocale_1delete )
     SWT_CATCH
     }
 
-JNIEXPORT jint JNICALL OS_NATIVE( QImage_1swt_1paintDevice )
-  (JNIEnv* aJniEnv, jclass, jint aHandle)
-    {
-    QPaintDevice* result = NULL;
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-        SWT_LOG_DATA_1("handle=%x", aHandle);
-        result = static_cast<QPaintDevice*>( reinterpret_cast<QImage*>( static_cast<int>( aHandle ) ) );
-        }
-    SWT_CATCH
-    return reinterpret_cast<jint>( result );
-    }
 //
 // QChar
 //
@@ -11527,6 +11530,138 @@ JNIEXPORT jboolean JNICALL OS_NATIVE( XQServiceRequest_1send )
 #endif    
     }
 
+//
+// XQApplicationManager
+//
+
+JNIEXPORT jint JNICALL OS_NATIVE( XQApplicationManager_1new )
+#ifdef __SYMBIAN32__
+(JNIEnv* aJniEnv, jclass)
+#else
+(JNIEnv* aJniEnv, jclass)
+#endif
+    {
+#ifdef __SYMBIAN32__    
+    XQApplicationManager* aiwMgr = NULL;
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        aiwMgr = new XQApplicationManager();
+        }
+    SWT_CATCH
+    return reinterpret_cast<jint>(aiwMgr);
+#else
+    return NULL;
+#endif    
+    }
+
+JNIEXPORT jint JNICALL OS_NATIVE( XQApplicationManager_1create )
+#ifdef __SYMBIAN32__
+  (JNIEnv * aJniEnv, jclass,jint aHandle, jstring aService, jstring aInterface, jstring aOperation, jboolean aSynchronous)
+#else
+(JNIEnv *, jclass, jint, jstring, jstring, jstring, jboolean)
+#endif
+    {
+#ifdef __SYMBIAN32__
+    XQAiwRequest* request = NULL;
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        XQApplicationManager* aiwmgr = reinterpret_cast<XQApplicationManager*>(aHandle);
+        request = aiwmgr->create(swtApp->jniUtils().JavaStringToQString(aJniEnv, aService),
+                swtApp->jniUtils().JavaStringToQString(aJniEnv, aInterface), 
+                swtApp->jniUtils().JavaStringToQString(aJniEnv, aOperation), 
+                aSynchronous  == JNI_TRUE ? true : false);
+        }
+    SWT_CATCH
+    return reinterpret_cast<jint>(request);
+#else
+return NULL;
+#endif
+    }
+
+//
+// XQAiwRequest
+//
+JNIEXPORT void JNICALL OS_NATIVE( XQAiwRequest_1setArguments )
+#ifdef __SYMBIAN32__
+(JNIEnv* aJniEnv, jclass, jint aHandle, jstring aNumber)
+#else
+(JNIEnv* aJniEnv, jclass, jint, jstring)
+#endif
+    {
+#ifdef __SYMBIAN32__    
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        SWT_LOG_DATA_1( "handle=%x", aHandle );
+        XQAiwRequest* request = reinterpret_cast<XQAiwRequest*>(aHandle);
+        if (request)
+            {
+            QList<QVariant> args;
+            args << swtApp->jniUtils().JavaStringToQString(aJniEnv,
+                    aNumber);
+            request->setArguments(args);
+            }
+        }
+    SWT_CATCH
+#endif    
+    }
+
+JNIEXPORT void JNICALL OS_NATIVE( XQAiwRequest_1swtDialer_1setArguments )
+#ifdef __SYMBIAN32__
+(JNIEnv* aJniEnv, jclass, jint aHandle, jstring aNumber)
+#else
+(JNIEnv* aJniEnv, jclass, jint, jstring)
+#endif
+    {
+#ifdef __SYMBIAN32__    
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        SWT_LOG_DATA_1( "handle=%x", aHandle );
+        XQAiwRequest* request = reinterpret_cast<XQAiwRequest*>(aHandle);
+        if (request)
+            {
+            QList<QVariant> args;
+            QVariantMap map;
+            map.insert(XQLOGS_VIEW_INDEX, QVariant(int(XQService::LogsViewAll)));
+            map.insert(XQLOGS_SHOW_DIALPAD, QVariant(true));
+            map.insert(XQLOGS_DIALPAD_TEXT, QVariant(swtApp->jniUtils().JavaStringToQString(aJniEnv,
+                    aNumber)));
+            args.append(QVariant(map));
+            request->setArguments(args);
+            }
+        }
+    SWT_CATCH
+#endif    
+    }
+
+JNIEXPORT jboolean JNICALL OS_NATIVE( XQAiwRequest_1send )
+#ifdef __SYMBIAN32__
+(JNIEnv* aJniEnv, jclass, jint aHandle)
+#else
+(JNIEnv* aJniEnv, jclass, jint)
+#endif
+    {
+#ifdef __SYMBIAN32__    
+    bool result = false;
+    SWT_TRY
+        {
+        SWT_LOG_JNI_CALL();
+        SWT_LOG_DATA_1( "handle=%x", aHandle );
+        XQAiwRequest* request= reinterpret_cast<XQAiwRequest*>(aHandle);
+        if (request)
+            {
+            result = request->send();
+            }
+        }
+    SWT_CATCH
+    return result ? JNI_TRUE : JNI_FALSE;
+#else
+    return JNI_FALSE;
+#endif    
+    }
 
 //
 // CntServicesContactList

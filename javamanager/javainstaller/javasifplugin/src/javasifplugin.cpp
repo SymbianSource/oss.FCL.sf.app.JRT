@@ -94,19 +94,6 @@ const TInt KShortCmdLineLen = 256;
 // Java Installer is executed with same Uid as Java Runtime
 _LIT_SECURE_ID(KJavaInstallerSecureID, KJavaMidpSecureId);
 
-/**
- * This function is called to hide the 'Preparing Installation' dialog.
- */
-LOCAL_C TInt HidePrepInstDialog(TAny* aPlugin)
-{
-    CJavaSifPlugin *pPlugin = (CJavaSifPlugin *)aPlugin;
-    if (NULL != pPlugin)
-    {
-        TRAP_IGNORE(pPlugin->HidePrepInstDialogL());
-    }
-    return KErrNone;
-}
-
 // ============================ MEMBER FUNCTIONS ===============================
 
 CJavaSifPlugin* CJavaSifPlugin::NewL()
@@ -138,15 +125,6 @@ CJavaSifPlugin::~CJavaSifPlugin()
 
     delete mDummyInfo;
     mDummyInfo = NULL;
-
-    delete mPrepInstDialog;
-    mPrepInstDialog = NULL;
-
-    if (mWaitToHideDialog)
-    {
-        delete mWaitToHideDialog;
-        mWaitToHideDialog = NULL;
-    }
 }
 
 CJavaSifPlugin::CJavaSifPlugin()
@@ -160,7 +138,6 @@ void CJavaSifPlugin::ConstructL()
     mResultsServer = NULL;
     mDummyResults = COpaqueNamedParams::NewL(); // codescanner::forgottoputptroncleanupstack
     mDummyInfo = CComponentInfo::NewL();
-    mWaitToHideDialog = NULL;
 }
 
 void CJavaSifPlugin::GetComponentInfo(
@@ -383,17 +360,6 @@ void CJavaSifPlugin::Install(
 
         commandLine.Append(KSilent);
     }
-    else
-    {
-        // Uncomment this to enable 'preparing installation' dialog.
-        //TRAP(err, CreatePrepInstDialogL());
-        //if (KErrNone != err)
-        //{
-        //    WLOG1(EJavaInstaller,
-        //          "CJavaSifPlugin::Install Creating preparing installation dialog failed, err=%d",
-        //          err);
-        //}
-    }
 
     BuildInstallCommandLine(commandLine, aArguments);
 
@@ -482,25 +448,6 @@ void CJavaSifPlugin::Install(
         return;
     }
 
-    if (!silentInstall)
-    {
-        TRAP(err, mWaitToHideDialog =
-             CAsyncWaitCallBack::NewL(TCallBack(HidePrepInstDialog, this)));
-        if (KErrNone == err)
-        {
-            // The active object will wait until JavaInstaller process calls Rendezvous.
-            // If JavaInstaller specifies reason code EJavaInstaller, then
-            // the active object will call callback function that will hide the
-            // 'Preparing installation' dialog. If reason code is not EJavaInstaller,
-            // the wait object will automatically wait for the next rendezvous.
-            mWaitToHideDialog->Wait( rJavaInstaller, EJavaInstaller );
-        }
-        else
-        {
-            ELOG1(EJavaInstaller, "CJavaSifPlugin::Install: Creating "
-                  "mWaitToHideDialog failed, err %d", err);
-        }
-    }
     rJavaInstaller.Resume();
 
     // Do NOT close rJavaInstaller now -> the caller gets notification when the
@@ -851,24 +798,32 @@ void CJavaSifPlugin::BuildInstallCommandLine(
     const COpaqueNamedParams& aArguments)
 {
     // KSifInParam_Drive -> -drive=install_target_drive (A, B, C, ..., Z)
-    TInt intValue = GetPositiveIntParam(KSifInParam_Drive, aArguments);
-    // Value 0 is 'A:' drive and  value 25 is 'Z:' drive
-    if ((intValue > -1) && (intValue < 26))  // codescanner::magicnumbers
+    TInt intValue;
+    RArray<TInt> intArray;
+    TRAPD(err, intArray = aArguments.IntArrayByNameL(KSifInParam_Drive));
+    if (err == KErrNone && intArray.Count() > 0)
     {
-        aCommandLine.Append(KDrive);
-        TChar drive('A');
-        drive += intValue;
-        aCommandLine.Append(drive);
+        // Java installer supports one installation drive only, so take
+        // the first parameter which is the most preferred drive.
+        intValue = intArray[0];
+        // Value 0 is 'A:' drive and  value 25 is 'Z:' drive
+        if ((intValue > -1) && (intValue < 26))  // codescanner::magicnumbers
+        {
+            aCommandLine.Append(KDrive);
+            TChar drive('A');
+            drive += intValue;
+            aCommandLine.Append(drive);
+        }
     }
 
     // KSifInParam_PerformOCSP Yes/No/AskUser -> -ocsp=yes|no
     intValue = GetPositiveIntParam(KSifInParam_PerformOCSP, aArguments);
-    if (intValue == 0) // Yes
+    if (intValue == Usif::EAllowed) // Yes
     {
         aCommandLine.Append(KOcsp);
         aCommandLine.Append(KYes);
     }
-    else if (intValue == 1) // No
+    else if (intValue == Usif::ENotAllowed) // No
     {
         aCommandLine.Append(KOcsp);
         aCommandLine.Append(KNo);
@@ -877,12 +832,12 @@ void CJavaSifPlugin::BuildInstallCommandLine(
 
     // KSifInParam_IgnoreOCSPWarnings Yes/No/AskUser -> -ignore_ocsp_warnings=yes|no
     intValue = GetPositiveIntParam(KSifInParam_IgnoreOCSPWarnings, aArguments);
-    if (intValue == 0) // Yes
+    if (intValue == Usif::EAllowed) // Yes
     {
         aCommandLine.Append(KIgnoreOcspWarnings);
         aCommandLine.Append(KYes);
     }
-    else if (intValue == 1) // No
+    else if (intValue == Usif::ENotAllowed) // No
     {
         aCommandLine.Append(KIgnoreOcspWarnings);
         aCommandLine.Append(KNo);
@@ -891,12 +846,12 @@ void CJavaSifPlugin::BuildInstallCommandLine(
 
     // KSifInParam_AllowUpgrade Yes/No/AskUser -> -upgrade=yes|no
     intValue = GetPositiveIntParam(KSifInParam_AllowUpgrade, aArguments);
-    if (intValue == 0) // Yes
+    if (intValue == Usif::EAllowed) // Yes
     {
         aCommandLine.Append(KUpgrade);
         aCommandLine.Append(KYes);
     }
-    else if (intValue == 1) // No
+    else if (intValue == Usif::ENotAllowed) // No
     {
         aCommandLine.Append(KUpgrade);
         aCommandLine.Append(KNo);
@@ -905,12 +860,12 @@ void CJavaSifPlugin::BuildInstallCommandLine(
 
     // KSifInParam_AllowUpgradeData Yes/No/AskUser -> -upgrade_data=yes|no
     intValue = GetPositiveIntParam(KSifInParam_AllowUpgradeData, aArguments);
-    if (intValue == 0) // Yes
+    if (intValue == Usif::EAllowed) // Yes
     {
         aCommandLine.Append(KUpgradeData);
         aCommandLine.Append(KYes);
     }
-    else if (intValue == 1) // No
+    else if (intValue == Usif::ENotAllowed) // No
     {
         aCommandLine.Append(KUpgradeData);
         aCommandLine.Append(KNo);
@@ -919,12 +874,12 @@ void CJavaSifPlugin::BuildInstallCommandLine(
 
     // KSifInParam_AllowUntrusted Yes/No/AskUser -> -untrusted=yes|no
     intValue = GetPositiveIntParam(KSifInParam_AllowUntrusted, aArguments);
-    if (intValue == 0) // Yes
+    if (intValue == Usif::EAllowed) // Yes
     {
         aCommandLine.Append(KUntrusted);
         aCommandLine.Append(KYes);
     }
-    else if (intValue == 1) // No
+    else if (intValue == Usif::ENotAllowed) // No
     {
         aCommandLine.Append(KUntrusted);
         aCommandLine.Append(KNo);
@@ -933,12 +888,12 @@ void CJavaSifPlugin::BuildInstallCommandLine(
 
     // KSifInParam_AllowOverwrite Yes/No/AskUser -> -overwrite=yes|no
     intValue = GetPositiveIntParam(KSifInParam_AllowOverwrite, aArguments);
-    if (intValue == 0) // Yes
+    if (intValue == Usif::EAllowed) // Yes
     {
         aCommandLine.Append(KOverwrite);
         aCommandLine.Append(KYes);
     }
-    else if (intValue == 1) // No
+    else if (intValue == Usif::ENotAllowed) // No
     {
         aCommandLine.Append(KOverwrite);
         aCommandLine.Append(KNo);
@@ -947,12 +902,12 @@ void CJavaSifPlugin::BuildInstallCommandLine(
 
     // KSifInParam_AllowDownload Yes/No/AskUser -> -download=yes|no
     intValue = GetPositiveIntParam(KSifInParam_AllowDownload, aArguments);
-    if (intValue == 0) // Yes
+    if (intValue == Usif::EAllowed) // Yes
     {
         aCommandLine.Append(KDownload);
         aCommandLine.Append(KYes);
     }
-    else if (intValue == 1) // No
+    else if (intValue == Usif::ENotAllowed) // No
     {
         aCommandLine.Append(KDownload);
         aCommandLine.Append(KNo);
@@ -1185,36 +1140,6 @@ TBool CJavaSifPlugin::ExitIfJavaInstallerRunning(
     }
 
     return EFalse;
-}
-
-/**
- * Creates 'preparing installation' dialog.
- */
-void CJavaSifPlugin::CreatePrepInstDialogL()
-{
-    ILOG(EJavaInstaller, "CJavaSifPlugin::CreatePrepInstDialogL creating dialog");
-    mPrepInstDialog = CHbDeviceNotificationDialogSymbian::NewL();
-    _LIT(KPrepInstText, "Preparing installation...");
-    mPrepInstDialog->SetTitleL(KPrepInstText);
-    mPrepInstDialog->SetTimeout(20*1000); // ms
-    mPrepInstDialog->ShowL();
-    ILOG(EJavaInstaller, "CJavaSifPlugin::CreatePrepInstDialogL dialog created");
-}
-
-void CJavaSifPlugin::HidePrepInstDialogL()
-{
-    ILOG(EJavaInstaller, "CJavaSifPlugin::HidePrepInstDialogL hiding dialog");
-    // Stop further timed calls
-    if (mWaitToHideDialog)
-    {
-        mWaitToHideDialog->Cancel();
-    }
-    // Close wait dialog.
-    if (mPrepInstDialog)
-    {
-        mPrepInstDialog->Close();
-    }
-    ILOG(EJavaInstaller, "CJavaSifPlugin::HidePrepInstDialogL dialog hidden");
 }
 
 //  End of File

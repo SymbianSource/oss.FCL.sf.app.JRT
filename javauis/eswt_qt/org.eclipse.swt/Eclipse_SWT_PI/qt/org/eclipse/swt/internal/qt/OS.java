@@ -869,7 +869,8 @@ public final class OS {
     public static final native void QLabel_setText( int handle, String text );
     public static final native void QLabel_setAlignment ( int handle, int alignment );
     public static final native void QLabel_setWordWrap ( int handle, boolean wrap );
-    public static final native void QLabel_setPixmap ( int handle, int imageHandle );
+    public static final native void QLabel_setPixmap ( int handle, int pixmapHandle );
+    public static final native void QLabel_swt_setPixmap ( int handle, int imageHandle );
     public static final native int QLabel_new();
     public static final native void QLabel_setBuddy(int handle, int buddy);
     public static final native void QLabel_setTextInteractionFlags(int handle, int flags);
@@ -989,7 +990,7 @@ public final class OS {
     public static final native boolean QPixmap_load( int handle, String fileName );
     public static final native int QPixmap_new();
     public static final native void QPixmap_delete(int handle);
-    public static final native int QPixmap_swt_paintDevice(int handle);
+
 
     //
     // QPalette
@@ -998,7 +999,7 @@ public final class OS {
     public static final native void QPalette_setColor ( int handle, int role, int red, int green, int blue );
     public static final native int[] QPalette_color ( int handle, int group, int role );
     public static final native void QPalette_delete( int handle );
-    public static final native void QPalette_swt_setBrush(int handle, int role, int pixmap);
+    public static final native void QPalette_swt_setBrush(int handle, int role, int cgImage);
     public static final native void QPalette_swt_copyBrushFromPalette(int handle, int sourceHandle, int role);
 
     //
@@ -1057,7 +1058,7 @@ public final class OS {
     //
     // QIcon
     //
-    public static final native int QIcon_new(int pixmap);
+    public static final native int QIcon_swt_new(int cgImage);
     public static final native int QIcon_new();
     public static final native void QIcon_delete(int handle);
     public static final native int QIcon_pixmap(int handle, int w, int h);
@@ -1201,7 +1202,7 @@ public final class OS {
     //
     // QColorDialog
     //
-    public static final native int QColorDialog_getColor(int initialColor, int parentHandle, String dialogId, int layoutDirection) ;
+    public static final native int QColorDialog_getColor(int r, int g, int b, int parentHandle, String dialogId, int layoutDirection);
 
     //
     // QTableWidget
@@ -1500,7 +1501,7 @@ public final class OS {
     public static final native int QMessageBox_swt_exec(int icon, String title, String text,
             int buttons, int parentHandle, int modality, String dialogID, int layoutDirection);
     public static final native void QMessageBox_swt_execTimer(int aIcon, String title, String text,
-            int parentHandle, String aDialogID, int aLayoutDirection, int modality, int pixmapHandle);
+            int parentHandle, String aDialogID, int aLayoutDirection, int modality, int cgImageHandle);
 
     //
     // QInputDialog
@@ -1620,11 +1621,6 @@ public final class OS {
     public static final native void QLocale_delete(int handle);
 
     //
-    // QImage
-    //
-    public static final native int QImage_swt_paintDevice(int handle);
-
-    //
     // QChar
     //
     public static final native int QChar_direction(char c);
@@ -1708,6 +1704,19 @@ public final class OS {
     public static final native boolean XQServiceRequest_send(int handle);   
     public static final native void XQServiceRequest_swt_setArgumentsForFetchEmail(int handle, String title, String action, String filter);
     public static final native void XQServiceRequest_swt_setArgumentsForDial(int handle, String number, boolean asyncAnswer); 
+    
+    //
+    //XQApplicationManager
+    //
+    public static final native int XQApplicationManager_new();
+    public static final native int XQApplicationManager_create(int handle, String service, String Interface, String operation, boolean synchronous);
+    
+    //
+    //XQAiwRequest
+    //
+    public static final native void XQAiwRequest_setArguments(int handle, String number);
+    public static final native void XQAiwRequest_swtDialer_setArguments(int handle, String number);
+    public static final native boolean XQAiwRequest_send(int handle);
     
     //
     // CntServicesContactList

@@ -21,7 +21,7 @@ package com.nokia.mj.test.storage;
 import com.nokia.mj.test.storage.utils.StorageSessionTestUtils;
 import com.nokia.mj.impl.storage.*;
 
-import com.nokia.mj.impl.installer.utils.InstallerMain;
+import com.nokia.mj.impl.rt.test.UnitTestSuiteCreator;
 import j2meunit.framework.Test;
 import j2meunit.framework.TestCase;
 import j2meunit.framework.TestMethod;
@@ -31,7 +31,7 @@ import j2meunit.framework.TestSuite;
  * StorageSession OTA table specific test cases. See test methods for test
  * case details.
  */
-public class TestRobustness extends TestCase implements InstallerMain, StorageNames
+public class TestRobustness extends TestCase implements UnitTestSuiteCreator, StorageNames
 {
     /**
      * Directory for JavaStorage tests.
@@ -46,7 +46,7 @@ public class TestRobustness extends TestCase implements InstallerMain, StorageNa
     private StorageSession iSession = null;
     private StorageSessionTestUtils iJtu = null;
 
-    public void installerMain(String[] args)
+    public TestSuite createTestSuite(String[] args)
     {
         TestSuite suite = new TestSuite(this.getClass().getName());
 
@@ -66,7 +66,7 @@ public class TestRobustness extends TestCase implements InstallerMain, StorageNa
             }
         }));
 
-        com.nokia.mj.impl.utils.OmjTestRunner.run(suite);
+        return suite;
     }
 
     public TestRobustness()

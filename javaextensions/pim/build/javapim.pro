@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+# Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
 # All rights reserved.
 # This component and the accompanying materials are made available
 # under the terms of "Eclipse Public License v1.0"
@@ -13,6 +13,8 @@
 #
 # Description: 
 #
+
+include(../../../inc/build_defines.pri)
 
 TARGET=javapim
 TEMPLATE=lib
@@ -61,6 +63,11 @@ symbian {
             -lplatformenv
             
             
+    contains(PROJECT_DEFINES,RD_JAVA_S60_RELEASE_10_1_ONWARDS) {
+        CONFIG += qt hb
+        TRANSLATIONS = javapim.ts
+    }
+
 # Resource files
 MMP_RULES += "SOURCEPATH ../javapimloc/data"
 MMP_RULES += "START RESOURCE pimcm.rss"

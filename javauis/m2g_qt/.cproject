@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?>
+
+<cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+<storageModule buildFromInf="true" buildingTestComps="true" cleanLevel="0" concurrentBuildJobs="4" defaultMMPChangedAction="0" extraSBSv2Args="" infBuildComponents="" infFileLocation="build\bld.inf" macrosFile="" makeEngineToUse="make" manageDependencies="true" moduleId="com.nokia.carbide.cdt.builder.carbideCPPBuilder" overrideMakeEngine="false" overrideWorkspaceSettings="false" promptForMMPChangedAction="true" useConcurrentBuilding="true" useDebugMode="false" useIncrementalBuilder="false" useKeepGoing="false" useMMPMacros="true"/>
+<storageModule moduleId="org.eclipse.cdt.core.settings">
+<cconfiguration id="Emulator Debug (WINSCW) [mcl_wk_26]">
+<storageModule buildSystemId="com.nokia.carbide.cdt.builder.CarbideConfigurationDataProvider" id="Emulator Debug (WINSCW) [mcl_wk_26]" moduleId="org.eclipse.cdt.core.settings" name="Emulator Debug (WINSCW) [mcl_wk_26]">
+<externalSettings/>
+<extensions>
+<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.cdt.debug.cw.symbian.SymbianE32" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.CarbideMakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.SBSv2ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MWLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RCOMPErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MWCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakeDefErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+</extensions>
+</storageModule>
+<storageModule moduleId="CarbideConfigurationDataProvider">
+<ENV_VAR_DATA_ID/>
+<ARGUMENTS_DATA_ID ABLDFREEZEARGSSTORAGE="-r"/>
+<ROM_BUILDER_DATA_ID ROMBUILDWORKINGDIRECTORYSTORAGE="T:\epoc32\rom\"/>
+</storageModule>
+<storageModule filesCache="T:\epoc32\include\platform_paths.hrh;T:\sf\app\jrt\javauis\m2g_qt\build\javam2g_0x2002DCBD.mmp;T:\sf\app\jrt\javauis\m2g_qt\build\bld.inf;" includesCache="T:/sf/app/jrt/javauis/m2g_qt/build[LOCAL];T:/epoc32/include/mw/QtCore;T:/epoc32/include/mw/QtGui;T:/epoc32/include/mw;T:/sf/mw/qt/mkspecs/common/symbian;T:/epoc32/include;T:/epoc32/include/stdapis;T:/epoc32/include/stdapis/sys;T:/epoc32/include/platform/mw;T:/epoc32/include/platform;T:/epoc32/include/platform/loc;T:/epoc32/include/platform/mw/loc;T:/epoc32/include/platform/loc/sc;T:/epoc32/include/platform/mw/loc/sc;T:/epoc32/include/app;T:/epoc32/include/platform/app;T:/epoc32/include/platform/app/loc;T:/epoc32/include/platform/app/loc/sc;T:/epoc32/include/stdapis/openssl;T:/sf/app/jrt/javauis/m2g_qt/inc;T:/sf/app/jrt/javauis/inc;T:/sf/app/jrt/inc;T:/sf/app/jrt/javauis/m2g_qt/src;T:/sf/app/jrt/javauis/m2g_qt/src/jni;T:/sf/app/jrt/javauis/eswt_qt/org.eclipse.ercp.swt.s60/native/inc;T:/sf/app/jrt/javauis/lcdui_qt/lcdgr/inc;T:/sf/app/jrt/javauis/lcdui_qt/javalcdui/inc;T:/sf/app/jrt/javauis/eswt_qt/org.eclipse.swt/Eclipse_SWT_PI/qt/library/graphics;T:/epoc32/include/stdapis/stlportv5;T:/sf/app/jrt/javauis/m2g_qt/build;T:/epoc32/build/jrt/javabuild/inc.javah;" macrosCache="QT_CORE_LIB;__DLL__;RD_JAVA_APPLICATION_SETTINGS_QT;RD_JAVA_OPENLCDUI_ENABLED;RD_JAVA_HTTP_EMC_ENABLED;__WINSCW__;RD_JAVA_UI_QT;SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK;RD_JAVA_S60_RELEASE_5_0_ONWARDS;RD_JAVA_SYMBIAN_TARGET;__SERIES60_3X__;__S60_5X__;__CW32__;UNICODE;RD_JAVA_S60_RELEASE_10_1;J9EPOC32;_UNICODE;RD_JAVA_EPOCALLOWDLLDATA_FIX;RD_JAVA_PREWARM;__SUPPORT_CPP_EXCEPTIONS__;RD_JAVA_INSTALLERUI_ENABLED;RD_JAVA_S60_RELEASE_10_1_ONWARDS;RD_JAVA_PROXIMITY_LISTENER_ENABLED;RD_JAVA_STDCPPV5;RD_JAVA_ADVANCED_TACTILE_FEEDBACK;OPENLCDUI_ENABLED;__SYMBIAN32__;QT_KEYPAD_NAVIGATION;RD_JAVA_OPENC_BETA_PATCH;RD_JAVA_NGA_ENABLED;RD_JAVA_S60_RELEASE_9_2_ONWARDS;QT_USE_MATH_H_FLOATS;__S60_3X__;__WINS__;QT_GUI_LIB;RD_JAVA_MIDPRMS_DB;QT_SOFTKEYS_ENABLED;__S60_50__;_DEBUG;" moduleId="configDataCache" sourcesCache="/javam2g_0x2002DCBD/build;/javam2g_0x2002DCBD/inc;/javam2g_0x2002DCBD/src;/javam2g_0x2002DCBD/src/jni;" timestampCache="1278586007160" useMmpMacrosCache="true"/>
+<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+</cconfiguration>
+<cconfiguration id="Emulator Release (WINSCW) [mcl_wk_26]">
+<storageModule buildSystemId="com.nokia.carbide.cdt.builder.CarbideConfigurationDataProvider" id="Emulator Release (WINSCW) [mcl_wk_26]" moduleId="org.eclipse.cdt.core.settings" name="Emulator Release (WINSCW) [mcl_wk_26]">
+<externalSettings/>
+<extensions>
+<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.cdt.debug.cw.symbian.SymbianE32" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.CarbideMakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.SBSv2ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MWLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RCOMPErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MWCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakeDefErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+</extensions>
+</storageModule>
+<storageModule moduleId="CarbideConfigurationDataProvider">
+<ENV_VAR_DATA_ID/>
+<ARGUMENTS_DATA_ID ABLDFREEZEARGSSTORAGE="-r"/>
+<ROM_BUILDER_DATA_ID ROMBUILDWORKINGDIRECTORYSTORAGE="T:\epoc32\rom\"/>
+</storageModule>
+<storageModule filesCache="T:\epoc32\include\platform_paths.hrh;T:\sf\app\jrt\javauis\m2g_qt\build\javam2g_0x2002DCBD.mmp;T:\sf\app\jrt\javauis\m2g_qt\build\bld.inf;" includesCache="T:/sf/app/jrt/javauis/m2g_qt/build[LOCAL];T:/epoc32/include/mw/QtCore;T:/epoc32/include/mw/QtGui;T:/epoc32/include/mw;T:/sf/mw/qt/mkspecs/common/symbian;T:/epoc32/include;T:/epoc32/include/stdapis;T:/epoc32/include/stdapis/sys;T:/epoc32/include/platform/mw;T:/epoc32/include/platform;T:/epoc32/include/platform/loc;T:/epoc32/include/platform/mw/loc;T:/epoc32/include/platform/loc/sc;T:/epoc32/include/platform/mw/loc/sc;T:/epoc32/include/app;T:/epoc32/include/platform/app;T:/epoc32/include/platform/app/loc;T:/epoc32/include/platform/app/loc/sc;T:/epoc32/include/stdapis/openssl;T:/sf/app/jrt/javauis/m2g_qt/inc;T:/sf/app/jrt/javauis/inc;T:/sf/app/jrt/inc;T:/sf/app/jrt/javauis/m2g_qt/src;T:/sf/app/jrt/javauis/m2g_qt/src/jni;T:/sf/app/jrt/javauis/eswt_qt/org.eclipse.ercp.swt.s60/native/inc;T:/sf/app/jrt/javauis/lcdui_qt/lcdgr/inc;T:/sf/app/jrt/javauis/lcdui_qt/javalcdui/inc;T:/sf/app/jrt/javauis/eswt_qt/org.eclipse.swt/Eclipse_SWT_PI/qt/library/graphics;T:/epoc32/include/stdapis/stlportv5;T:/sf/app/jrt/javauis/m2g_qt/build;T:/epoc32/build/jrt/javabuild/inc.javah;" macrosCache="QT_CORE_LIB;__DLL__;RD_JAVA_APPLICATION_SETTINGS_QT;RD_JAVA_OPENLCDUI_ENABLED;NDEBUG;RD_JAVA_HTTP_EMC_ENABLED;__WINSCW__;RD_JAVA_UI_QT;SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK;RD_JAVA_S60_RELEASE_5_0_ONWARDS;RD_JAVA_SYMBIAN_TARGET;__SERIES60_3X__;__S60_5X__;__CW32__;UNICODE;RD_JAVA_S60_RELEASE_10_1;J9EPOC32;_UNICODE;RD_JAVA_EPOCALLOWDLLDATA_FIX;RD_JAVA_PREWARM;__SUPPORT_CPP_EXCEPTIONS__;RD_JAVA_INSTALLERUI_ENABLED;RD_JAVA_S60_RELEASE_10_1_ONWARDS;RD_JAVA_PROXIMITY_LISTENER_ENABLED;RD_JAVA_STDCPPV5;RD_JAVA_ADVANCED_TACTILE_FEEDBACK;OPENLCDUI_ENABLED;__SYMBIAN32__;QT_KEYPAD_NAVIGATION;RD_JAVA_OPENC_BETA_PATCH;RD_JAVA_NGA_ENABLED;RD_JAVA_S60_RELEASE_9_2_ONWARDS;QT_USE_MATH_H_FLOATS;__S60_3X__;__WINS__;QT_GUI_LIB;RD_JAVA_MIDPRMS_DB;QT_SOFTKEYS_ENABLED;__S60_50__;" moduleId="configDataCache" sourcesCache="/javam2g_0x2002DCBD/build;/javam2g_0x2002DCBD/inc;/javam2g_0x2002DCBD/src;/javam2g_0x2002DCBD/src/jni;" timestampCache="1278586008004" useMmpMacrosCache="true"/>
+</cconfiguration>
+<cconfiguration id="Phone Debug (ARMV5) [mcl_wk_26]">
+<storageModule buildSystemId="com.nokia.carbide.cdt.builder.CarbideConfigurationDataProvider" id="Phone Debug (ARMV5) [mcl_wk_26]" moduleId="org.eclipse.cdt.core.settings" name="Phone Debug (ARMV5) [mcl_wk_26]">
+<externalSettings/>
+<extensions>
+<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.cdt.debug.cw.symbian.SymbianE32" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RVCTLinkerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.CarbideMakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.SBSv2ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.Elf2E32ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RCOMPErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakeDefErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RVCTCompilerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+</extensions>
+</storageModule>
+<storageModule moduleId="CarbideConfigurationDataProvider">
+<ENV_VAR_DATA_ID/>
+<ARGUMENTS_DATA_ID ABLDFREEZEARGSSTORAGE="-r"/>
+<ROM_BUILDER_DATA_ID ROMBUILDWORKINGDIRECTORYSTORAGE="T:\epoc32\rom\"/>
+</storageModule>
+<storageModule filesCache="T:\epoc32\include\platform_paths.hrh;T:\sf\app\jrt\javauis\m2g_qt\build\javam2g_0x2002DCBD.mmp;T:\sf\app\jrt\javauis\m2g_qt\build\bld.inf;" includesCache="T:/sf/app/jrt/javauis/m2g_qt/build[LOCAL];T:/epoc32/include/mw/QtCore;T:/epoc32/include/mw/QtGui;T:/epoc32/include/mw;T:/sf/mw/qt/mkspecs/common/symbian;T:/epoc32/include;T:/epoc32/include/stdapis;T:/epoc32/include/stdapis/sys;T:/epoc32/include/platform/mw;T:/epoc32/include/platform;T:/epoc32/include/platform/loc;T:/epoc32/include/platform/mw/loc;T:/epoc32/include/platform/loc/sc;T:/epoc32/include/platform/mw/loc/sc;T:/epoc32/include/app;T:/epoc32/include/platform/app;T:/epoc32/include/platform/app/loc;T:/epoc32/include/platform/app/loc/sc;T:/epoc32/include/stdapis/openssl;T:/sf/app/jrt/javauis/m2g_qt/inc;T:/sf/app/jrt/javauis/inc;T:/sf/app/jrt/inc;T:/sf/app/jrt/javauis/m2g_qt/src;T:/sf/app/jrt/javauis/m2g_qt/src/jni;T:/sf/app/jrt/javauis/eswt_qt/org.eclipse.ercp.swt.s60/native/inc;T:/sf/app/jrt/javauis/lcdui_qt/lcdgr/inc;T:/sf/app/jrt/javauis/lcdui_qt/javalcdui/inc;T:/sf/app/jrt/javauis/eswt_qt/org.eclipse.swt/Eclipse_SWT_PI/qt/library/graphics;T:/epoc32/include/stdapis/stlportv5;T:/sf/app/jrt/javauis/m2g_qt/build;T:/epoc32/build/jrt/javabuild/inc.javah;" macrosCache="QT_CORE_LIB;__DLL__;RD_JAVA_APPLICATION_SETTINGS_QT;RD_JAVA_OPENLCDUI_ENABLED;RD_JAVA_HTTP_EMC_ENABLED;RD_JAVA_UI_QT;__ARMCC_2_2__;SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK;RD_JAVA_S60_RELEASE_5_0_ONWARDS;RD_JAVA_SYMBIAN_TARGET;__SERIES60_3X__;__S60_5X__;__GENERIC_MARM__;UNICODE;RD_JAVA_S60_RELEASE_10_1;__EABI__;J9EPOC32;_UNICODE;RD_JAVA_EPOCALLOWDLLDATA_FIX;RD_JAVA_PREWARM;__SUPPORT_CPP_EXCEPTIONS__;RD_JAVA_INSTALLERUI_ENABLED;__MARM_ARMV5__;RD_JAVA_S60_RELEASE_10_1_ONWARDS;RD_JAVA_PROXIMITY_LISTENER_ENABLED;RD_JAVA_STDCPPV5;RD_JAVA_ADVANCED_TACTILE_FEEDBACK;__ARMCC__;OPENLCDUI_ENABLED;__SYMBIAN32__;QT_KEYPAD_NAVIGATION;RD_JAVA_OPENC_BETA_PATCH;RD_JAVA_NGA_ENABLED;RD_JAVA_S60_RELEASE_9_2_ONWARDS;__MARM__;QT_USE_MATH_H_FLOATS;__S60_3X__;__ARMCC_2__;__EPOC32__;QT_GUI_LIB;RD_JAVA_MIDPRMS_DB;QT_SOFTKEYS_ENABLED;_DEBUG;__S60_50__;" moduleId="configDataCache" sourcesCache="/javam2g_0x2002DCBD/build;/javam2g_0x2002DCBD/inc;/javam2g_0x2002DCBD/src;/javam2g_0x2002DCBD/src/jni;" timestampCache="1278586008441" useMmpMacrosCache="true"/>
+</cconfiguration>
+<cconfiguration id="Phone Release (ARMV5) [mcl_wk_26]">
+<storageModule buildSystemId="com.nokia.carbide.cdt.builder.CarbideConfigurationDataProvider" id="Phone Release (ARMV5) [mcl_wk_26]" moduleId="org.eclipse.cdt.core.settings" name="Phone Release (ARMV5) [mcl_wk_26]">
+<externalSettings/>
+<extensions>
+<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.cdt.debug.cw.symbian.SymbianE32" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RVCTLinkerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.CarbideMakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.SBSv2ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.Elf2E32ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RCOMPErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakeDefErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RVCTCompilerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+</extensions>
+</storageModule>
+<storageModule moduleId="CarbideConfigurationDataProvider">
+<ENV_VAR_DATA_ID/>
+<ARGUMENTS_DATA_ID ABLDFREEZEARGSSTORAGE="-r"/>
+<ROM_BUILDER_DATA_ID ROMBUILDWORKINGDIRECTORYSTORAGE="T:\epoc32\rom\"/>
+</storageModule>
+<storageModule filesCache="T:\epoc32\include\platform_paths.hrh;T:\sf\app\jrt\javauis\m2g_qt\build\javam2g_0x2002DCBD.mmp;T:\sf\app\jrt\javauis\m2g_qt\build\bld.inf;" includesCache="T:/sf/app/jrt/javauis/m2g_qt/build[LOCAL];T:/epoc32/include/mw/QtCore;T:/epoc32/include/mw/QtGui;T:/epoc32/include/mw;T:/sf/mw/qt/mkspecs/common/symbian;T:/epoc32/include;T:/epoc32/include/stdapis;T:/epoc32/include/stdapis/sys;T:/epoc32/include/platform/mw;T:/epoc32/include/platform;T:/epoc32/include/platform/loc;T:/epoc32/include/platform/mw/loc;T:/epoc32/include/platform/loc/sc;T:/epoc32/include/platform/mw/loc/sc;T:/epoc32/include/app;T:/epoc32/include/platform/app;T:/epoc32/include/platform/app/loc;T:/epoc32/include/platform/app/loc/sc;T:/epoc32/include/stdapis/openssl;T:/sf/app/jrt/javauis/m2g_qt/inc;T:/sf/app/jrt/javauis/inc;T:/sf/app/jrt/inc;T:/sf/app/jrt/javauis/m2g_qt/src;T:/sf/app/jrt/javauis/m2g_qt/src/jni;T:/sf/app/jrt/javauis/eswt_qt/org.eclipse.ercp.swt.s60/native/inc;T:/sf/app/jrt/javauis/lcdui_qt/lcdgr/inc;T:/sf/app/jrt/javauis/lcdui_qt/javalcdui/inc;T:/sf/app/jrt/javauis/eswt_qt/org.eclipse.swt/Eclipse_SWT_PI/qt/library/graphics;T:/epoc32/include/stdapis/stlportv5;T:/sf/app/jrt/javauis/m2g_qt/build;T:/epoc32/build/jrt/javabuild/inc.javah;" macrosCache="QT_CORE_LIB;__DLL__;RD_JAVA_APPLICATION_SETTINGS_QT;RD_JAVA_OPENLCDUI_ENABLED;NDEBUG;RD_JAVA_HTTP_EMC_ENABLED;RD_JAVA_UI_QT;__ARMCC_2_2__;SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK;RD_JAVA_S60_RELEASE_5_0_ONWARDS;RD_JAVA_SYMBIAN_TARGET;__SERIES60_3X__;__S60_5X__;__GENERIC_MARM__;UNICODE;RD_JAVA_S60_RELEASE_10_1;__EABI__;J9EPOC32;_UNICODE;RD_JAVA_EPOCALLOWDLLDATA_FIX;RD_JAVA_PREWARM;__SUPPORT_CPP_EXCEPTIONS__;RD_JAVA_INSTALLERUI_ENABLED;__MARM_ARMV5__;RD_JAVA_S60_RELEASE_10_1_ONWARDS;RD_JAVA_PROXIMITY_LISTENER_ENABLED;RD_JAVA_STDCPPV5;RD_JAVA_ADVANCED_TACTILE_FEEDBACK;__ARMCC__;OPENLCDUI_ENABLED;__SYMBIAN32__;QT_KEYPAD_NAVIGATION;RD_JAVA_OPENC_BETA_PATCH;RD_JAVA_NGA_ENABLED;RD_JAVA_S60_RELEASE_9_2_ONWARDS;__MARM__;QT_USE_MATH_H_FLOATS;__S60_3X__;__ARMCC_2__;__EPOC32__;QT_GUI_LIB;RD_JAVA_MIDPRMS_DB;QT_SOFTKEYS_ENABLED;__S60_50__;" moduleId="configDataCache" sourcesCache="/javam2g_0x2002DCBD/build;/javam2g_0x2002DCBD/inc;/javam2g_0x2002DCBD/src;/javam2g_0x2002DCBD/src/jni;" timestampCache="1278586049270" useMmpMacrosCache="true"/>
+</cconfiguration>
+<cconfiguration id="Phone Debug (ARMV6) [mcl_wk_26]">
+<storageModule buildSystemId="com.nokia.carbide.cdt.builder.CarbideConfigurationDataProvider" id="Phone Debug (ARMV6) [mcl_wk_26]" moduleId="org.eclipse.cdt.core.settings" name="Phone Debug (ARMV6) [mcl_wk_26]">
+<externalSettings/>
+<extensions>
+<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.cdt.debug.cw.symbian.SymbianE32" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RVCTLinkerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.CarbideMakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.SBSv2ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.Elf2E32ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RCOMPErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakeDefErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RVCTCompilerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+</extensions>
+</storageModule>
+<storageModule moduleId="CarbideConfigurationDataProvider">
+<ENV_VAR_DATA_ID/>
+<ARGUMENTS_DATA_ID ABLDFREEZEARGSSTORAGE="-r"/>
+<ROM_BUILDER_DATA_ID ROMBUILDWORKINGDIRECTORYSTORAGE="T:\epoc32\rom\"/>
+</storageModule>
+<storageModule filesCache="T:\epoc32\include\platform_paths.hrh;T:\sf\app\jrt\javauis\m2g_qt\build\javam2g_0x2002DCBD.mmp;T:\sf\app\jrt\javauis\m2g_qt\build\bld.inf;" includesCache="T:/sf/app/jrt/javauis/m2g_qt/build[LOCAL];T:/epoc32/include/mw/QtCore;T:/epoc32/include/mw/QtGui;T:/epoc32/include/mw;T:/sf/mw/qt/mkspecs/common/symbian;T:/epoc32/include;T:/epoc32/include/stdapis;T:/epoc32/include/stdapis/sys;T:/epoc32/include/platform/mw;T:/epoc32/include/platform;T:/epoc32/include/platform/loc;T:/epoc32/include/platform/mw/loc;T:/epoc32/include/platform/loc/sc;T:/epoc32/include/platform/mw/loc/sc;T:/epoc32/include/app;T:/epoc32/include/platform/app;T:/epoc32/include/platform/app/loc;T:/epoc32/include/platform/app/loc/sc;T:/epoc32/include/stdapis/openssl;T:/sf/app/jrt/javauis/m2g_qt/inc;T:/sf/app/jrt/javauis/inc;T:/sf/app/jrt/inc;T:/sf/app/jrt/javauis/m2g_qt/src;T:/sf/app/jrt/javauis/m2g_qt/src/jni;T:/sf/app/jrt/javauis/eswt_qt/org.eclipse.ercp.swt.s60/native/inc;T:/sf/app/jrt/javauis/lcdui_qt/lcdgr/inc;T:/sf/app/jrt/javauis/lcdui_qt/javalcdui/inc;T:/sf/app/jrt/javauis/eswt_qt/org.eclipse.swt/Eclipse_SWT_PI/qt/library/graphics;T:/epoc32/include/stdapis/stlportv5;T:/sf/app/jrt/javauis/m2g_qt/build;T:/epoc32/build/jrt/javabuild/inc.javah;" macrosCache="QT_CORE_LIB;__DLL__;RD_JAVA_APPLICATION_SETTINGS_QT;RD_JAVA_OPENLCDUI_ENABLED;RD_JAVA_HTTP_EMC_ENABLED;RD_JAVA_UI_QT;__ARMCC_2_2__;SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK;RD_JAVA_S60_RELEASE_5_0_ONWARDS;RD_JAVA_SYMBIAN_TARGET;__SERIES60_3X__;__S60_5X__;__GENERIC_MARM__;__ARMV6__;UNICODE;RD_JAVA_S60_RELEASE_10_1;__EABI__;J9EPOC32;_UNICODE;RD_JAVA_EPOCALLOWDLLDATA_FIX;RD_JAVA_PREWARM;__SUPPORT_CPP_EXCEPTIONS__;RD_JAVA_INSTALLERUI_ENABLED;__MARM_ARMV5__;RD_JAVA_S60_RELEASE_10_1_ONWARDS;RD_JAVA_PROXIMITY_LISTENER_ENABLED;RD_JAVA_STDCPPV5;RD_JAVA_ADVANCED_TACTILE_FEEDBACK;__ARMCC__;OPENLCDUI_ENABLED;__SYMBIAN32__;QT_KEYPAD_NAVIGATION;RD_JAVA_OPENC_BETA_PATCH;RD_JAVA_NGA_ENABLED;RD_JAVA_S60_RELEASE_9_2_ONWARDS;__MARM__;QT_USE_MATH_H_FLOATS;__S60_3X__;__ARMCC_2__;__EPOC32__;QT_GUI_LIB;RD_JAVA_MIDPRMS_DB;QT_SOFTKEYS_ENABLED;_DEBUG;__S60_50__;" moduleId="configDataCache" sourcesCache="/javam2g_0x2002DCBD/build;/javam2g_0x2002DCBD/inc;/javam2g_0x2002DCBD/src;/javam2g_0x2002DCBD/src/jni;" timestampCache="1278586049864" useMmpMacrosCache="true"/>
+</cconfiguration>
+<cconfiguration id="Phone Release (ARMV6) [mcl_wk_26]">
+<storageModule buildSystemId="com.nokia.carbide.cdt.builder.CarbideConfigurationDataProvider" id="Phone Release (ARMV6) [mcl_wk_26]" moduleId="org.eclipse.cdt.core.settings" name="Phone Release (ARMV6) [mcl_wk_26]">
+<externalSettings/>
+<extensions>
+<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.cdt.debug.cw.symbian.SymbianE32" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RVCTLinkerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.CarbideMakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.SBSv2ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.Elf2E32ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RCOMPErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakeDefErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RVCTCompilerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+</extensions>
+</storageModule>
+<storageModule moduleId="CarbideConfigurationDataProvider">
+<ENV_VAR_DATA_ID/>
+<ARGUMENTS_DATA_ID ABLDFREEZEARGSSTORAGE="-r"/>
+<ROM_BUILDER_DATA_ID ROMBUILDWORKINGDIRECTORYSTORAGE="T:\epoc32\rom\"/>
+</storageModule>
+<storageModule filesCache="T:\epoc32\include\platform_paths.hrh;T:\sf\app\jrt\javauis\m2g_qt\build\javam2g_0x2002DCBD.mmp;T:\sf\app\jrt\javauis\m2g_qt\build\bld.inf;" includesCache="T:/sf/app/jrt/javauis/m2g_qt/build[LOCAL];T:/epoc32/include/mw/QtCore;T:/epoc32/include/mw/QtGui;T:/epoc32/include/mw;T:/sf/mw/qt/mkspecs/common/symbian;T:/epoc32/include;T:/epoc32/include/stdapis;T:/epoc32/include/stdapis/sys;T:/epoc32/include/platform/mw;T:/epoc32/include/platform;T:/epoc32/include/platform/loc;T:/epoc32/include/platform/mw/loc;T:/epoc32/include/platform/loc/sc;T:/epoc32/include/platform/mw/loc/sc;T:/epoc32/include/app;T:/epoc32/include/platform/app;T:/epoc32/include/platform/app/loc;T:/epoc32/include/platform/app/loc/sc;T:/epoc32/include/stdapis/openssl;T:/sf/app/jrt/javauis/m2g_qt/inc;T:/sf/app/jrt/javauis/inc;T:/sf/app/jrt/inc;T:/sf/app/jrt/javauis/m2g_qt/src;T:/sf/app/jrt/javauis/m2g_qt/src/jni;T:/sf/app/jrt/javauis/eswt_qt/org.eclipse.ercp.swt.s60/native/inc;T:/sf/app/jrt/javauis/lcdui_qt/lcdgr/inc;T:/sf/app/jrt/javauis/lcdui_qt/javalcdui/inc;T:/sf/app/jrt/javauis/eswt_qt/org.eclipse.swt/Eclipse_SWT_PI/qt/library/graphics;T:/epoc32/include/stdapis/stlportv5;T:/sf/app/jrt/javauis/m2g_qt/build;T:/epoc32/build/jrt/javabuild/inc.javah;" macrosCache="QT_CORE_LIB;__DLL__;RD_JAVA_APPLICATION_SETTINGS_QT;RD_JAVA_OPENLCDUI_ENABLED;NDEBUG;RD_JAVA_HTTP_EMC_ENABLED;RD_JAVA_UI_QT;__ARMCC_2_2__;SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK;RD_JAVA_S60_RELEASE_5_0_ONWARDS;RD_JAVA_SYMBIAN_TARGET;__SERIES60_3X__;__S60_5X__;__GENERIC_MARM__;__ARMV6__;UNICODE;RD_JAVA_S60_RELEASE_10_1;__EABI__;J9EPOC32;_UNICODE;RD_JAVA_EPOCALLOWDLLDATA_FIX;RD_JAVA_PREWARM;__SUPPORT_CPP_EXCEPTIONS__;RD_JAVA_INSTALLERUI_ENABLED;__MARM_ARMV5__;RD_JAVA_S60_RELEASE_10_1_ONWARDS;RD_JAVA_PROXIMITY_LISTENER_ENABLED;RD_JAVA_STDCPPV5;RD_JAVA_ADVANCED_TACTILE_FEEDBACK;__ARMCC__;OPENLCDUI_ENABLED;__SYMBIAN32__;QT_KEYPAD_NAVIGATION;RD_JAVA_OPENC_BETA_PATCH;RD_JAVA_NGA_ENABLED;RD_JAVA_S60_RELEASE_9_2_ONWARDS;__MARM__;QT_USE_MATH_H_FLOATS;__S60_3X__;__ARMCC_2__;__EPOC32__;QT_GUI_LIB;RD_JAVA_MIDPRMS_DB;QT_SOFTKEYS_ENABLED;__S60_50__;" moduleId="configDataCache" sourcesCache="/javam2g_0x2002DCBD/build;/javam2g_0x2002DCBD/inc;/javam2g_0x2002DCBD/src;/javam2g_0x2002DCBD/src/jni;" timestampCache="1278586050380" useMmpMacrosCache="true"/>
+</cconfiguration>
+<cconfiguration id="Phone Debug (ARMV7) [mcl_wk_26]">
+<storageModule buildSystemId="com.nokia.carbide.cdt.builder.CarbideConfigurationDataProvider" id="Phone Debug (ARMV7) [mcl_wk_26]" moduleId="org.eclipse.cdt.core.settings" name="Phone Debug (ARMV7) [mcl_wk_26]">
+<externalSettings/>
+<extensions>
+<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.cdt.debug.cw.symbian.SymbianE32" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RVCTLinkerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.CarbideMakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.SBSv2ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.Elf2E32ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RCOMPErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakeDefErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RVCTCompilerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+</extensions>
+</storageModule>
+<storageModule moduleId="CarbideConfigurationDataProvider">
+<ENV_VAR_DATA_ID/>
+<ARGUMENTS_DATA_ID ABLDFREEZEARGSSTORAGE="-r"/>
+<ROM_BUILDER_DATA_ID ROMBUILDWORKINGDIRECTORYSTORAGE="T:\epoc32\rom\"/>
+</storageModule>
+<storageModule filesCache="T:\epoc32\include\platform_paths.hrh;T:\sf\app\jrt\javauis\m2g_qt\build\javam2g_0x2002DCBD.mmp;T:\sf\app\jrt\javauis\m2g_qt\build\bld.inf;" includesCache="T:/sf/app/jrt/javauis/m2g_qt/build[LOCAL];T:/epoc32/include/mw/QtCore;T:/epoc32/include/mw/QtGui;T:/epoc32/include/mw;T:/sf/mw/qt/mkspecs/common/symbian;T:/epoc32/include;T:/epoc32/include/stdapis;T:/epoc32/include/stdapis/sys;T:/epoc32/include/platform/mw;T:/epoc32/include/platform;T:/epoc32/include/platform/loc;T:/epoc32/include/platform/mw/loc;T:/epoc32/include/platform/loc/sc;T:/epoc32/include/platform/mw/loc/sc;T:/epoc32/include/app;T:/epoc32/include/platform/app;T:/epoc32/include/platform/app/loc;T:/epoc32/include/platform/app/loc/sc;T:/epoc32/include/stdapis/openssl;T:/sf/app/jrt/javauis/m2g_qt/inc;T:/sf/app/jrt/javauis/inc;T:/sf/app/jrt/inc;T:/sf/app/jrt/javauis/m2g_qt/src;T:/sf/app/jrt/javauis/m2g_qt/src/jni;T:/sf/app/jrt/javauis/eswt_qt/org.eclipse.ercp.swt.s60/native/inc;T:/sf/app/jrt/javauis/lcdui_qt/lcdgr/inc;T:/sf/app/jrt/javauis/lcdui_qt/javalcdui/inc;T:/sf/app/jrt/javauis/eswt_qt/org.eclipse.swt/Eclipse_SWT_PI/qt/library/graphics;T:/epoc32/include/stdapis/stlportv5;T:/sf/app/jrt/javauis/m2g_qt/build;T:/epoc32/build/jrt/javabuild/inc.javah;" macrosCache="QT_CORE_LIB;__DLL__;__ARMV7__;RD_JAVA_APPLICATION_SETTINGS_QT;RD_JAVA_OPENLCDUI_ENABLED;RD_JAVA_HTTP_EMC_ENABLED;RD_JAVA_UI_QT;__ARMCC_2_2__;SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK;RD_JAVA_S60_RELEASE_5_0_ONWARDS;RD_JAVA_SYMBIAN_TARGET;__SERIES60_3X__;__S60_5X__;__GENERIC_MARM__;UNICODE;RD_JAVA_S60_RELEASE_10_1;__EABI__;J9EPOC32;_UNICODE;RD_JAVA_EPOCALLOWDLLDATA_FIX;RD_JAVA_PREWARM;__SUPPORT_CPP_EXCEPTIONS__;RD_JAVA_INSTALLERUI_ENABLED;__MARM_ARMV5__;RD_JAVA_S60_RELEASE_10_1_ONWARDS;RD_JAVA_PROXIMITY_LISTENER_ENABLED;RD_JAVA_STDCPPV5;RD_JAVA_ADVANCED_TACTILE_FEEDBACK;__ARMCC__;OPENLCDUI_ENABLED;__SYMBIAN32__;QT_KEYPAD_NAVIGATION;RD_JAVA_OPENC_BETA_PATCH;RD_JAVA_NGA_ENABLED;RD_JAVA_S60_RELEASE_9_2_ONWARDS;__MARM__;QT_USE_MATH_H_FLOATS;__S60_3X__;__ARMCC_2__;__EPOC32__;QT_GUI_LIB;RD_JAVA_MIDPRMS_DB;QT_SOFTKEYS_ENABLED;_DEBUG;__S60_50__;" moduleId="configDataCache" sourcesCache="/javam2g_0x2002DCBD/build;/javam2g_0x2002DCBD/inc;/javam2g_0x2002DCBD/src;/javam2g_0x2002DCBD/src/jni;" timestampCache="1278586051427" useMmpMacrosCache="true"/>
+</cconfiguration>
+<cconfiguration id="Phone Release (ARMV7) [mcl_wk_26]">
+<storageModule buildSystemId="com.nokia.carbide.cdt.builder.CarbideConfigurationDataProvider" id="Phone Release (ARMV7) [mcl_wk_26]" moduleId="org.eclipse.cdt.core.settings" name="Phone Release (ARMV7) [mcl_wk_26]">
+<externalSettings/>
+<extensions>
+<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.cdt.debug.cw.symbian.SymbianE32" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RVCTLinkerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.CarbideMakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.SBSv2ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.Elf2E32ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RCOMPErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakeDefErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RVCTCompilerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+</extensions>
+</storageModule>
+<storageModule moduleId="CarbideConfigurationDataProvider">
+<ENV_VAR_DATA_ID/>
+<ARGUMENTS_DATA_ID ABLDFREEZEARGSSTORAGE="-r"/>
+<ROM_BUILDER_DATA_ID ROMBUILDWORKINGDIRECTORYSTORAGE="T:\epoc32\rom\"/>
+</storageModule>
+<storageModule filesCache="T:\epoc32\include\platform_paths.hrh;T:\sf\app\jrt\javauis\m2g_qt\build\javam2g_0x2002DCBD.mmp;T:\sf\app\jrt\javauis\m2g_qt\build\bld.inf;" includesCache="T:/sf/app/jrt/javauis/m2g_qt/build[LOCAL];T:/epoc32/include/mw/QtCore;T:/epoc32/include/mw/QtGui;T:/epoc32/include/mw;T:/sf/mw/qt/mkspecs/common/symbian;T:/epoc32/include;T:/epoc32/include/stdapis;T:/epoc32/include/stdapis/sys;T:/epoc32/include/platform/mw;T:/epoc32/include/platform;T:/epoc32/include/platform/loc;T:/epoc32/include/platform/mw/loc;T:/epoc32/include/platform/loc/sc;T:/epoc32/include/platform/mw/loc/sc;T:/epoc32/include/app;T:/epoc32/include/platform/app;T:/epoc32/include/platform/app/loc;T:/epoc32/include/platform/app/loc/sc;T:/epoc32/include/stdapis/openssl;T:/sf/app/jrt/javauis/m2g_qt/inc;T:/sf/app/jrt/javauis/inc;T:/sf/app/jrt/inc;T:/sf/app/jrt/javauis/m2g_qt/src;T:/sf/app/jrt/javauis/m2g_qt/src/jni;T:/sf/app/jrt/javauis/eswt_qt/org.eclipse.ercp.swt.s60/native/inc;T:/sf/app/jrt/javauis/lcdui_qt/lcdgr/inc;T:/sf/app/jrt/javauis/lcdui_qt/javalcdui/inc;T:/sf/app/jrt/javauis/eswt_qt/org.eclipse.swt/Eclipse_SWT_PI/qt/library/graphics;T:/epoc32/include/stdapis/stlportv5;T:/sf/app/jrt/javauis/m2g_qt/build;T:/epoc32/build/jrt/javabuild/inc.javah;" macrosCache="QT_CORE_LIB;__DLL__;__ARMV7__;RD_JAVA_APPLICATION_SETTINGS_QT;RD_JAVA_OPENLCDUI_ENABLED;NDEBUG;RD_JAVA_HTTP_EMC_ENABLED;RD_JAVA_UI_QT;__ARMCC_2_2__;SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK;RD_JAVA_S60_RELEASE_5_0_ONWARDS;RD_JAVA_SYMBIAN_TARGET;__SERIES60_3X__;__S60_5X__;__GENERIC_MARM__;UNICODE;RD_JAVA_S60_RELEASE_10_1;__EABI__;J9EPOC32;_UNICODE;RD_JAVA_EPOCALLOWDLLDATA_FIX;RD_JAVA_PREWARM;__SUPPORT_CPP_EXCEPTIONS__;RD_JAVA_INSTALLERUI_ENABLED;__MARM_ARMV5__;RD_JAVA_S60_RELEASE_10_1_ONWARDS;RD_JAVA_PROXIMITY_LISTENER_ENABLED;RD_JAVA_STDCPPV5;RD_JAVA_ADVANCED_TACTILE_FEEDBACK;__ARMCC__;OPENLCDUI_ENABLED;__SYMBIAN32__;QT_KEYPAD_NAVIGATION;RD_JAVA_OPENC_BETA_PATCH;RD_JAVA_NGA_ENABLED;RD_JAVA_S60_RELEASE_9_2_ONWARDS;__MARM__;QT_USE_MATH_H_FLOATS;__S60_3X__;__ARMCC_2__;__EPOC32__;QT_GUI_LIB;RD_JAVA_MIDPRMS_DB;QT_SOFTKEYS_ENABLED;__S60_50__;" moduleId="configDataCache" sourcesCache="/javam2g_0x2002DCBD/build;/javam2g_0x2002DCBD/inc;/javam2g_0x2002DCBD/src;/javam2g_0x2002DCBD/src/jni;" timestampCache="1278586051833" useMmpMacrosCache="true"/>
+</cconfiguration>
+<cconfiguration id="Phone Debug (ARMV9E) [mcl_wk_26]">
+<storageModule buildSystemId="com.nokia.carbide.cdt.builder.CarbideConfigurationDataProvider" id="Phone Debug (ARMV9E) [mcl_wk_26]" moduleId="org.eclipse.cdt.core.settings" name="Phone Debug (ARMV9E) [mcl_wk_26]">
+<externalSettings/>
+<extensions>
+<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.cdt.debug.cw.symbian.SymbianE32" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RVCTLinkerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.CarbideMakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.SBSv2ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.Elf2E32ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RCOMPErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakeDefErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RVCTCompilerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+</extensions>
+</storageModule>
+<storageModule moduleId="CarbideConfigurationDataProvider">
+<ENV_VAR_DATA_ID/>
+<ARGUMENTS_DATA_ID ABLDFREEZEARGSSTORAGE="-r"/>
+<ROM_BUILDER_DATA_ID ROMBUILDWORKINGDIRECTORYSTORAGE="T:\epoc32\rom\"/>
+</storageModule>
+<storageModule filesCache="T:\epoc32\include\platform_paths.hrh;T:\sf\app\jrt\javauis\m2g_qt\build\javam2g_0x2002DCBD.mmp;T:\sf\app\jrt\javauis\m2g_qt\build\bld.inf;" includesCache="T:/sf/app/jrt/javauis/m2g_qt/build[LOCAL];T:/epoc32/include/mw/QtCore;T:/epoc32/include/mw/QtGui;T:/epoc32/include/mw;T:/sf/mw/qt/mkspecs/common/symbian;T:/epoc32/include;T:/epoc32/include/stdapis;T:/epoc32/include/stdapis/sys;T:/epoc32/include/platform/mw;T:/epoc32/include/platform;T:/epoc32/include/platform/loc;T:/epoc32/include/platform/mw/loc;T:/epoc32/include/platform/loc/sc;T:/epoc32/include/platform/mw/loc/sc;T:/epoc32/include/app;T:/epoc32/include/platform/app;T:/epoc32/include/platform/app/loc;T:/epoc32/include/platform/app/loc/sc;T:/epoc32/include/stdapis/openssl;T:/sf/app/jrt/javauis/m2g_qt/inc;T:/sf/app/jrt/javauis/inc;T:/sf/app/jrt/inc;T:/sf/app/jrt/javauis/m2g_qt/src;T:/sf/app/jrt/javauis/m2g_qt/src/jni;T:/sf/app/jrt/javauis/eswt_qt/org.eclipse.ercp.swt.s60/native/inc;T:/sf/app/jrt/javauis/lcdui_qt/lcdgr/inc;T:/sf/app/jrt/javauis/lcdui_qt/javalcdui/inc;T:/sf/app/jrt/javauis/eswt_qt/org.eclipse.swt/Eclipse_SWT_PI/qt/library/graphics;T:/epoc32/include/stdapis/stlportv5;T:/sf/app/jrt/javauis/m2g_qt/build;T:/epoc32/build/jrt/javabuild/inc.javah;" macrosCache="QT_CORE_LIB;__DLL__;RD_JAVA_APPLICATION_SETTINGS_QT;RD_JAVA_OPENLCDUI_ENABLED;RD_JAVA_HTTP_EMC_ENABLED;RD_JAVA_UI_QT;RD_JAVA_S60_RELEASE_5_0_ONWARDS;SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK;RD_JAVA_SYMBIAN_TARGET;__SERIES60_3X__;__S60_5X__;UNICODE;RD_JAVA_S60_RELEASE_10_1;J9EPOC32;_UNICODE;RD_JAVA_EPOCALLOWDLLDATA_FIX;RD_JAVA_PREWARM;__SUPPORT_CPP_EXCEPTIONS__;RD_JAVA_INSTALLERUI_ENABLED;RD_JAVA_S60_RELEASE_10_1_ONWARDS;RD_JAVA_STDCPPV5;RD_JAVA_PROXIMITY_LISTENER_ENABLED;RD_JAVA_ADVANCED_TACTILE_FEEDBACK;OPENLCDUI_ENABLED;__SYMBIAN32__;QT_KEYPAD_NAVIGATION;RD_JAVA_OPENC_BETA_PATCH;RD_JAVA_S60_RELEASE_9_2_ONWARDS;RD_JAVA_NGA_ENABLED;QT_USE_MATH_H_FLOATS;__S60_3X__;QT_GUI_LIB;RD_JAVA_MIDPRMS_DB;QT_SOFTKEYS_ENABLED;__S60_50__;_DEBUG;" moduleId="configDataCache" sourcesCache="/javam2g_0x2002DCBD/build;/javam2g_0x2002DCBD/inc;/javam2g_0x2002DCBD/src;/javam2g_0x2002DCBD/src/jni;" timestampCache="1278586052239" useMmpMacrosCache="true"/>
+</cconfiguration>
+<cconfiguration id="Phone Release (ARMV9E) [mcl_wk_26]">
+<storageModule buildSystemId="com.nokia.carbide.cdt.builder.CarbideConfigurationDataProvider" id="Phone Release (ARMV9E) [mcl_wk_26]" moduleId="org.eclipse.cdt.core.settings" name="Phone Release (ARMV9E) [mcl_wk_26]">
+<externalSettings/>
+<extensions>
+<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.cdt.debug.cw.symbian.SymbianE32" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RVCTLinkerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.CarbideMakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.SBSv2ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.Elf2E32ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RCOMPErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakeDefErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RVCTCompilerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+</extensions>
+</storageModule>
+<storageModule moduleId="CarbideConfigurationDataProvider">
+<ENV_VAR_DATA_ID/>
+<ARGUMENTS_DATA_ID ABLDFREEZEARGSSTORAGE="-r"/>
+<ROM_BUILDER_DATA_ID ROMBUILDWORKINGDIRECTORYSTORAGE="T:\epoc32\rom\"/>
+</storageModule>
+<storageModule filesCache="T:\epoc32\include\platform_paths.hrh;T:\sf\app\jrt\javauis\m2g_qt\build\javam2g_0x2002DCBD.mmp;T:\sf\app\jrt\javauis\m2g_qt\build\bld.inf;" includesCache="T:/sf/app/jrt/javauis/m2g_qt/build[LOCAL];T:/epoc32/include/mw/QtCore;T:/epoc32/include/mw/QtGui;T:/epoc32/include/mw;T:/sf/mw/qt/mkspecs/common/symbian;T:/epoc32/include;T:/epoc32/include/stdapis;T:/epoc32/include/stdapis/sys;T:/epoc32/include/platform/mw;T:/epoc32/include/platform;T:/epoc32/include/platform/loc;T:/epoc32/include/platform/mw/loc;T:/epoc32/include/platform/loc/sc;T:/epoc32/include/platform/mw/loc/sc;T:/epoc32/include/app;T:/epoc32/include/platform/app;T:/epoc32/include/platform/app/loc;T:/epoc32/include/platform/app/loc/sc;T:/epoc32/include/stdapis/openssl;T:/sf/app/jrt/javauis/m2g_qt/inc;T:/sf/app/jrt/javauis/inc;T:/sf/app/jrt/inc;T:/sf/app/jrt/javauis/m2g_qt/src;T:/sf/app/jrt/javauis/m2g_qt/src/jni;T:/sf/app/jrt/javauis/eswt_qt/org.eclipse.ercp.swt.s60/native/inc;T:/sf/app/jrt/javauis/lcdui_qt/lcdgr/inc;T:/sf/app/jrt/javauis/lcdui_qt/javalcdui/inc;T:/sf/app/jrt/javauis/eswt_qt/org.eclipse.swt/Eclipse_SWT_PI/qt/library/graphics;T:/epoc32/include/stdapis/stlportv5;T:/sf/app/jrt/javauis/m2g_qt/build;T:/epoc32/build/jrt/javabuild/inc.javah;" macrosCache="QT_CORE_LIB;__DLL__;RD_JAVA_APPLICATION_SETTINGS_QT;RD_JAVA_OPENLCDUI_ENABLED;NDEBUG;RD_JAVA_HTTP_EMC_ENABLED;RD_JAVA_UI_QT;RD_JAVA_S60_RELEASE_5_0_ONWARDS;SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK;RD_JAVA_SYMBIAN_TARGET;__SERIES60_3X__;__S60_5X__;UNICODE;RD_JAVA_S60_RELEASE_10_1;J9EPOC32;_UNICODE;RD_JAVA_EPOCALLOWDLLDATA_FIX;RD_JAVA_PREWARM;__SUPPORT_CPP_EXCEPTIONS__;RD_JAVA_INSTALLERUI_ENABLED;RD_JAVA_S60_RELEASE_10_1_ONWARDS;RD_JAVA_STDCPPV5;RD_JAVA_PROXIMITY_LISTENER_ENABLED;RD_JAVA_ADVANCED_TACTILE_FEEDBACK;OPENLCDUI_ENABLED;__SYMBIAN32__;QT_KEYPAD_NAVIGATION;RD_JAVA_OPENC_BETA_PATCH;RD_JAVA_S60_RELEASE_9_2_ONWARDS;RD_JAVA_NGA_ENABLED;QT_USE_MATH_H_FLOATS;__S60_3X__;QT_GUI_LIB;RD_JAVA_MIDPRMS_DB;QT_SOFTKEYS_ENABLED;__S60_50__;" moduleId="configDataCache" sourcesCache="/javam2g_0x2002DCBD/build;/javam2g_0x2002DCBD/inc;/javam2g_0x2002DCBD/src;/javam2g_0x2002DCBD/src/jni;" timestampCache="1278586052645" useMmpMacrosCache="true"/>
+</cconfiguration>
+</storageModule>
+</cproject>

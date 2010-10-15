@@ -758,7 +758,7 @@ jobject JniUtils::CreateJavaPaletteData(JNIEnv* aEnv, PaletteDataWrapper& aPalet
     return result;
 }
 
-Image* JniUtils::CreateImage(JNIEnv* aEnv, jobject& aImageDataObj)
+Image* JniUtils::CreateImage(JNIEnv* aEnv, jobject& aImageDataObj, jint aType)
 {
     SWT_LOG_FUNC_CALL();
     
@@ -844,7 +844,7 @@ Image* JniUtils::CreateImage(JNIEnv* aEnv, jobject& aImageDataObj)
     fid = aEnv->GetFieldID(imageDataClazz, "palette", "Lorg/eclipse/swt/graphics/PaletteData;");
     jobject paletteData = aEnv->GetObjectField(aImageDataObj, fid);
     imageData->setPaletteData(CreatePaletteData(aEnv, paletteData));
-    result = GraphicsFactory::createImage(imageData);
+    result = GraphicsFactory::createImage(imageData, (Java::GFX::TImageType)aType);
 
     delete imageData;
     if (paletteData)

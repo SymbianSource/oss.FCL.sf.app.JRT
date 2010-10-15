@@ -24,7 +24,8 @@ def main():
     def visitFun(arg, dirname, names):
 
         # Skip SVN directories
-        if dirname.find("\\.svn") != -1:
+        if dirname.endswith(".svn"):
+            names[:] = []
             return
         
         # Check if the directory is empty (except for the .svn subdirectory)

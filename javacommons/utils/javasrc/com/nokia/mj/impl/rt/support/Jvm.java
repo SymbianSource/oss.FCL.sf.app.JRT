@@ -100,8 +100,7 @@ public class Jvm
      * provided then it can be any Jar file availble in the file system.
      * @param resName Name of the desired resource
      *
-     * @return MemoryInputStream object as InputStream if resource is found,
-     *         otherwise null.
+     * @return NativeMemoryBlock instance if resource is found, otherwise null.
      */
     public static NativeMemoryBlock getResourceAsNativeMemory(String jarPath,
             String resName)

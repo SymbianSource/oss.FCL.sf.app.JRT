@@ -49,7 +49,7 @@ ifeq ($(BUILDENV),symbian)
       # Use release written in file
       include $(RD_JAVA_S60_RELEASE_FILE)
     else
-    ifneq ($(wildcard $(addsuffix Symbianv4.sis,$(S60_STUBSIS_DIRS))),)
+    ifneq ($(wildcard $(addsuffix Symbianv4*.sis,$(S60_STUBSIS_DIRS))),)
       RD_JAVA_S60_RELEASE = 10.1
     else
     ifneq ($(wildcard $(addsuffix Series60v5.2.sis,$(S60_STUBSIS_DIRS))),)

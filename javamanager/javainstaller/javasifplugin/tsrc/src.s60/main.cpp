@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -75,8 +75,8 @@ static void sifSimplestInstallL()
 
 
 /**
- * This test case requires that you start Java Installer 
- * manually before executing this one and keep it running 
+ * This test case requires that you start Java Installer
+ * manually before executing this one and keep it running
  * this test case ends.
  *
  *
@@ -181,7 +181,7 @@ static TInt sifByHandleAndArgsAndResultsInstallL()
     {
         ELOG1(EJavaConverters,
               "testsifapi: sifByHandleAndArgsAndResultsInstallL: Cannot open "
-              "E:\\stopwatch10midp2.jad, err %d", err);
+              "E:\\Private\\10281e17\\SimpleRMS.jar, err %d", err);
         User::Leave(err);
     }
     CleanupClosePushL(installFile);
@@ -212,21 +212,23 @@ static TInt sifByHandleAndArgsAndResultsInstallL()
     arguments->AddIntL(KSifInParam_InstallSilently, 1);
 
     // drive E:
-    arguments->AddIntL(KSifInParam_Drive, 4);
+    RArray<TInt> intArray;
+    CleanupClosePushL(intArray);
+    intArray.AppendL(4);
+    arguments->AddIntArrayL(KSifInParam_Drive, intArray);
+    CleanupStack::PopAndDestroy(&intArray);
 
-    // 0 is TSifPolicy::EUserAllowed == Yes
-    arguments->AddIntL(KSifInParam_PerformOCSP, 0);
-    arguments->AddIntL(KSifInParam_IgnoreOCSPWarnings, 0);
+    // TSifPolicy::EAllowed == Yes
+    arguments->AddIntL(KSifInParam_PerformOCSP, Usif::EAllowed);
+    arguments->AddIntL(KSifInParam_IgnoreOCSPWarnings, Usif::EAllowed);
 
-    arguments->AddIntL(KSifInParam_AllowUpgrade, 0);
-    arguments->AddIntL(KSifInParam_AllowUntrusted, 0);
-    arguments->AddIntL(KSifInParam_AllowOverwrite, 0);
-    arguments->AddIntL(KSifInParam_AllowDownload, 0);
+    arguments->AddIntL(KSifInParam_AllowUpgrade, Usif::EAllowed);
+    arguments->AddIntL(KSifInParam_AllowUntrusted, Usif::EAllowed);
+    arguments->AddIntL(KSifInParam_AllowOverwrite, Usif::EAllowed);
+    arguments->AddIntL(KSifInParam_AllowDownload, Usif::EAllowed);
 
-
-// TEMP TEST prevent overflow
-//    arguments->AddStringL(KSifInParam_UserName, KUserName);
-//    arguments->AddStringL(KSifInParam_Password, KPassWord);
+    arguments->AddStringL(KSifInParam_UserName, KUserName);
+    arguments->AddStringL(KSifInParam_Password, KPassWord);
 
     arguments->AddStringL(KSifInParam_SourceUrl, KSourceUrl);
 
@@ -234,7 +236,7 @@ static TInt sifByHandleAndArgsAndResultsInstallL()
 
     arguments->AddStringL(KSifInParam_Charset, KEmptyString);
 
-    arguments->AddStringL(KSifInParam_MimeType, KJadMimeType);
+    arguments->AddStringL(KSifInParam_MimeType, KJarMimeType);
 
 
     LOG(EJavaConverters, EInfo,
@@ -249,9 +251,10 @@ static TInt sifByHandleAndArgsAndResultsInstallL()
 
 
     TInt componentId = 0;
-    TBool idExisted = results->GetIntByNameL(KSifOutParam_ComponentId, componentId);
-    if ( idExisted )
+    intArray = results->IntArrayByNameL(KSifOutParam_ComponentId);
+    if (intArray.Count() > 0)
     {
+        componentId = intArray[0];
         LOG1(EJavaConverters, EInfo,
             "testsifapi: sifByHandleAndArgsAndResultsInstallL: Component id was %d", componentId);
     }
@@ -296,20 +299,23 @@ static TInt secondSifByFileAndArgsAndResultsInstallL()
     arguments->AddIntL(KSifInParam_InstallSilently, 1);
 
     // illegal drive number 33
-    arguments->AddIntL(KSifInParam_Drive, 33);
+    RArray<TInt> intArray;
+    CleanupClosePushL(intArray);
+    intArray.AppendL(33);
+    arguments->AddIntArrayL(KSifInParam_Drive, intArray);
+    CleanupStack::PopAndDestroy(&intArray);
 
-    // 1 is No
-    arguments->AddIntL(KSifInParam_PerformOCSP, 1);
-    arguments->AddIntL(KSifInParam_IgnoreOCSPWarnings, 1);
+    // Usif::ENotAllowed == No
+    arguments->AddIntL(KSifInParam_PerformOCSP, Usif::ENotAllowed);
+    arguments->AddIntL(KSifInParam_IgnoreOCSPWarnings, Usif::ENotAllowed);
 
-    arguments->AddIntL(KSifInParam_AllowUpgrade, 1);
-    arguments->AddIntL(KSifInParam_AllowUntrusted, 1);
-    arguments->AddIntL(KSifInParam_AllowOverwrite, 1);
-    arguments->AddIntL(KSifInParam_AllowDownload, 1);
+    //arguments->AddIntL(KSifInParam_AllowUpgrade, Usif::ENotAllowed);
+    //arguments->AddIntL(KSifInParam_AllowUntrusted, Usif::ENotAllowed);
+    //arguments->AddIntL(KSifInParam_AllowOverwrite, Usif::ENotAllowed);
+    //arguments->AddIntL(KSifInParam_AllowDownload, Usif::ENotAllowed);
 
-// TEMP TEST prevent overflow
-//    arguments->AddStringL(KSifInParam_UserName, KEmptyString);
-//    arguments->AddStringL(KSifInParam_Password, KEmptyString);
+    arguments->AddStringL(KSifInParam_UserName, KEmptyString);
+    arguments->AddStringL(KSifInParam_Password, KEmptyString);
 
     arguments->AddStringL(KSifInParam_SourceUrl, KEmptyString);
 
@@ -320,7 +326,7 @@ static TInt secondSifByFileAndArgsAndResultsInstallL()
     arguments->AddStringL(KSifInParam_MimeType, KJarMimeType);
 
     // forcecancel argument value is ignored, forcecancel is set if the value length > 0
-    arguments->AddStringL(_L("-forcecancel"), KCharSet);
+    //arguments->AddStringL(_L("-forcecancel"), KCharSet);
 
     LOG(EJavaConverters, EInfo,
         "testsifapi: secondSifByFileAndArgsAndResultsInstallL: arguments created");
@@ -332,18 +338,18 @@ static TInt secondSifByFileAndArgsAndResultsInstallL()
     LOG1(EJavaConverters, EInfo,
         "testsifapi: secondSifByFileAndArgsAndResultsInstallL: The return status of install operation was %d", status.Int());
 
-
     TInt componentId = 0;
-    TBool idExisted = results->GetIntByNameL(KSifOutParam_ComponentId, componentId);
-    if ( idExisted )
+    TRAP(err, intArray = results->IntArrayByNameL(KSifOutParam_ComponentId));
+    if (err == KErrNone && intArray.Count() > 0)
     {
+        componentId = intArray[0];
         LOG1(EJavaConverters, EInfo,
             "testsifapi: secondSifByFileAndArgsAndResultsInstallL: Component id was %d", componentId);
     }
     else
     {
-        LOG(EJavaConverters, EInfo,
-            "testsifapi: secondSifByFileAndArgsAndResultsInstallL: No component id was returned");
+        LOG1(EJavaConverters, EInfo,
+             "testsifapi: secondSifByFileAndArgsAndResultsInstallL: No component id was returned, err=%d", err);
     }
 
     // free resources before returning
@@ -764,7 +770,7 @@ TInt E32Main()
 
 
 
-    // This test case must be executed sepatately, while manually started 
+    // This test case must be executed sepatately, while manually started
     // Java Installer is running
     LOG(EJavaConverters, EInfo, "testsifapi: starting sifInstallerAlreadyRunningL");
     TRAP(err, sifInstallerAlreadyRunningL());

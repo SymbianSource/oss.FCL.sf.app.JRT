@@ -23,4 +23,10 @@ final class Config {
 	 * Default fill color for images. Used when fill color is not specified as an argument in Image constructor.
 	 */
 	static final int IMAGE_DEFAULT_FILL_COLOR = 0xffffffff;
+	
+	/**
+	 * Default type for images. Used when image type is not specified as an argument in Image constructor.
+	 * This setting is also used for ImageLoader output Images (default), if no explicit target Image type is specified.
+	 */
+	static final int IMAGE_DEFAULT_TYPE = Image.IMAGE_TYPE_QIMAGE;
 }

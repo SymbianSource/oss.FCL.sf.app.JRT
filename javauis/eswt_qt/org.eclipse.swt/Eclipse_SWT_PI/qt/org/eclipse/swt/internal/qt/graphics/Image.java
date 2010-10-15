@@ -111,6 +111,22 @@ public final class Image {
      */
     public static final int FORMAT_IMG_MONO = 8;
 
+    /**
+     * Specifies native image type QImage. This type
+     * is recommended when the image is modified frequently
+     * and especially if it's pixels need to be accessed.
+     */
+    public static final int IMAGE_TYPE_QIMAGE = 0;
+    
+    /**
+     * Specifies native image type QPixmap. This type is 
+     * recommended if the image is not modified at all
+     * or rarely, i.e. optimal for immutable images.
+     */
+    public static final int IMAGE_TYPE_QPIXMAP = 1;
+    
+    
+    
     // Native image handle
     int handle;
     // Handle of native QPixmap wrapped by image
@@ -160,7 +176,8 @@ public final class Image {
 
     /**
      * Constructs new image filled with default fill color with specified width and height.
-     *
+     * Image will have the default type defined by Config.IMAGE_DEFAULT_TYPE.
+     * 
      * @param width The width of new image
      * @param height The height of new image
      * @throws IllegalArgumetException if width or height is equal or less than zero
@@ -174,38 +191,38 @@ public final class Image {
         }
 
         // Construct image in native side and store the handle
-        handle = OS.image_create(width, height, Config.IMAGE_DEFAULT_FILL_COLOR);     // may throw outOfMemoryError
+        handle = OS.image_create(width, height, Config.IMAGE_DEFAULT_FILL_COLOR, Config.IMAGE_DEFAULT_TYPE ); 
         // set dimensions
         updateSize();
     }
 
     /**
-     * Constructs new image with specified width, height and fill color.
-     * The RGB values passed in is interpreted with the least significant eight bits giving the blue
-     * component, the next eight more significant bits giving the green component, and the next eight
-     * bits giving the red component. The high order byte of this value, i.e. alpha, is ignored.
+     * Constructs new image with specified width, height and type. 
      *
      * @param width The width of new image
      * @param height The height of new image
-     * @param fillColor The initial fill color for the image in format #00RRGGBB.
      * @throws IllegalArgumetException if width or height is equal or less than zero
+     * @throws IllegalArgumetException if type is not either IMAGE_TYPE_QIMAGE or IMAGE_TYPE_QPIXMAP
      * @throws OutOfMemoryError if memory allocation for new image fails
      */
-    public Image(int width, int height, int fillColor) {
+    public Image(int width, int height, int type) {
         Utils.validateUiThread();
-        // check width and height
         if (width <= 0 || height <= 0) {
             throw new IllegalArgumentException("width or height is equal or less than 0");
         }
+        if((type != IMAGE_TYPE_QIMAGE) && (type != IMAGE_TYPE_QPIXMAP)) {
+        	throw new IllegalArgumentException("Invalid type");
+        }
 
         // Construct image in native side and store the handle
-        handle = OS.image_create(width, height, fillColor);     // may throw outOfMemoryError
+        handle = OS.image_create(width, height, Config.IMAGE_DEFAULT_FILL_COLOR, type);     // may throw outOfMemoryError
         // set dimensions
         updateSize();
     }
 
     /**
      * Constructs a new instance of this class based on given image.
+     * The new instance will have the same type as the original.
      *
      * @param sourceImage The image used as source
      * @throws NullPointerException if sourceImage is null
@@ -217,7 +234,22 @@ public final class Image {
 
     /**
      * Constructs a new instance of this class based on given image.
+     * The new instance will have the type specified by the typeOfCopy.
+     *
+     * @param sourceImage The image used as source
+     * @param typeOfCopy The native type of the copy, either IMAGE_TYPE_QIMAGE or IMAGE_TYPE_QPIXMAP
+     * @throws NullPointerException if sourceImage is null
+     * @throws IllegalArgumetException if type is not either IMAGE_TYPE_QIMAGE or IMAGE_TYPE_QPIXMAP
+     * @throws OutOfMemoryError if memory allocation for new image fails
+     */
+    public Image(Image sourceImage, int typeOfCopy) {
+    	this(sourceImage, 0, 0, 0, 0, typeOfCopy);
+    }
+    
+    /**
+     * Constructs a new instance of this class based on given image.
      * If the given copy region is empty, the whole image is copied.
+     * The new instance will have the same native type as the original.
      *
      * @param sourceImage The image used as source
      * @param x The top-left x coordinate of the copy region.
@@ -229,13 +261,40 @@ public final class Image {
     public Image(Image sourceImage, int x, int y, int width, int height) {
         // validate sourceImage
         if (sourceImage == null) {
-            throw new NullPointerException("img is null");
+            throw new NullPointerException("sourceImage is null");
         }
         createCopy(sourceImage, x, y, width, height);
     }
 
     /**
-     * Creates a new image from given ImageData
+     * Constructs a new instance of this class based on given image.
+     * If the given copy region is empty, the whole image is copied.
+     * The new instance will have the native type speficied by typeOfCopy.
+     *
+     * @param sourceImage The image used as source
+     * @param x The top-left x coordinate of the copy region.
+     * @param y The top-left y coordinate of the copy region.
+     * @param width The width of the copy region.
+     * @param height The height of the copy region.
+     * @param typeOfCopy The native type of the copy, either IMAGE_TYPE_QIMAGE or IMAGE_TYPE_QPIXMAP
+     * @throws NullPointerException if sourceImage is null
+     * @throws IllegalArgumetException if type is not either IMAGE_TYPE_QIMAGE or IMAGE_TYPE_QPIXMAP
+     */
+    public Image(Image sourceImage, int x, int y, int width, int height, int typeOfCopy) {
+        // validate sourceImage
+        if (sourceImage == null) {
+            throw new NullPointerException("sourceImage is null");
+        }
+        if((typeOfCopy != IMAGE_TYPE_QIMAGE) && (typeOfCopy != IMAGE_TYPE_QPIXMAP)) {
+        	throw new IllegalArgumentException("Invalid typeOfCopy");
+        }
+        handle = OS.image_create(sourceImage.handle, x, y, width, height, typeOfCopy);
+        updateSize();
+    }
+    
+    /**
+     * Creates a new image from given ImageData.
+     * Image will have the default type defined by Config.IMAGE_DEFAULT_TYPE.
      * @param imageData
      * @throws NullPointerException if imageData is null
      */
@@ -243,13 +302,14 @@ public final class Image {
         if (imageData == null) {
             throw new NullPointerException("imageData is null");
         }
-        handle = OS.image_create(imageData);
+        handle = OS.image_create(imageData, Config.IMAGE_DEFAULT_TYPE);
         // set dimensions
         updateSize();
     }
 
     /**
      * Constructs a new instance of this class based on the given rgb data.
+     * Image will have the type IMAGE_TYPE_QPIXMAP.
      *
      * @param argbData a RGB data array where one pixel is specified as 0xAARRGGBB.
      * @param width The width of the image
@@ -264,8 +324,8 @@ public final class Image {
         if(argbData == null) {
             throw new NullPointerException("argbData is null");
         }
-        // Construct an ge in native side and store the handle
-        handle = OS.image_create(argbData, width, height, hasAlpha);
+        // Construct image in native side and store the handle
+        handle = OS.image_create(argbData, width, height, hasAlpha, IMAGE_TYPE_QPIXMAP);
         // set dimensions
         updateSize();
     }
@@ -314,6 +374,15 @@ public final class Image {
         return disposed;
     }
 
+    /**
+     * Gets the default Image native type, that is used when native type
+     * is not explicitly defined.
+     * @return The default native type, either IMAGE_TYPE_QIMAGE or IMAGE_TYPE_QPIXMAP
+     */
+    static public int getDefaultNativeType() {
+    	return Config.IMAGE_DEFAULT_TYPE;
+    }
+    
     /**
      * Gets the format of the image.
      *
@@ -401,11 +470,8 @@ public final class Image {
         if((scanlength > 0 ? scanlength : -scanlength) < width) {
             throw new IllegalArgumentException("scanlength is less than width");
         }
-
-
         OS.image_getRGB(handle, argbData, offset, scanlength, x, y, width, height);
     }
-
 
     /**TODO: change comments
      * Copies image data to given integer array from rectangle specified
@@ -470,8 +536,6 @@ public final class Image {
         if((scanlength > 0 ? scanlength : -scanlength) < width) {
             throw new IllegalArgumentException("scanlength is less than width");
         }
-
-
         OS.image_getRGB(handle, argbData, transparencyMask,offset, scanlength, x, y, width, height, format);
     }
 
@@ -530,8 +594,6 @@ public final class Image {
         if((scanlength > 0 ? scanlength : -scanlength) < width) {
             throw new IllegalArgumentException("scanlength is less than width");
         }
-
-
         OS.image_getRGB(handle, argbData, offset, scanlength, x, y, width, height, format);
     }
 
@@ -540,10 +602,9 @@ public final class Image {
      */
     public static boolean detectCollision(Image image1, int transform1, int p1x, int p1y, int r1x1, int r1y1, int r1x2, int r1y2,
                                           Image image2, int transform2, int p2x, int p2y, int r2x1, int r2y1, int r2x2, int r2y2) {
-
         return OS.image_detectCollision(
-                image1.getNativePixmapHandle(), transform1, p1x, p1y, r1x1, r1y1, r1x2, r1y2,
-                image2.getNativePixmapHandle(), transform2, p2x, p2y, r2x1, r2y1, r2x2, r2y2);
+                image1.getHandle(), transform1, p1x, p1y, r1x1, r1y1, r1x2, r1y2,
+                image2.getHandle(), transform2, p2x, p2y, r2x1, r2y1, r2x2, r2y2);
     }
 
     /**
@@ -603,31 +664,11 @@ public final class Image {
      * Returns native side handle.
      * @return the native handle.
      */
-    public int getHandle()
-    {
+    public int getHandle() {
         checkState();
         return handle;
     }
 
-    /**
-     * Returns native side QPixmap handle.
-     * @return the native QPixmap handle.
-     */
-    synchronized public int getNativePixmapHandle()
-    {
-        checkState();
-        if(pixmapHandle == 0)
-        {
-            // In the current implementation this will return
-            // pointer to the already existing QPixmap (which
-            // will be destroyed with the object), so the
-            // handle does not need to be released manually.
-            pixmapHandle = OS.image_getPixmapHandle(handle);
-        }
-        return pixmapHandle;
-    }
-
-    /**
     /**
      * Creates <code>ImageData</code> objects
      * @return New object
@@ -637,6 +678,25 @@ public final class Image {
         return OS.image_getImageData(handle);
     }
 
+    /**
+     * Gets the native type of this Image instance.
+     * @return Either Image.IMAGE_TYPE_QIMAGE or Image.IMAGE_TYPE_QPIXMAP
+     */
+    public int getNativeType() {
+    	checkState();
+    	return OS.image_getType(handle);
+    }
+    
+    /**
+     * Gets the handle of the QPaintDevice of contained 
+     * QImage or QPixmap instance.
+     * @return handle to native QPaintDevice
+     */
+    public int getQPainDeviceHandle() {
+    	checkState();
+    	return OS.image_getQPaintDeviceHandle(handle);
+    }
+    
     /**
      * Private helper to check the state of the current instance.
      */
@@ -654,26 +714,12 @@ public final class Image {
         w = OS.image_getWidth(handle);
         h = OS.image_getHeight(handle);
     }
-
-    /**
-     * Contructs an instance of Image based on the given <code>imageData</code>.
-     *
-     * @param imageData Image data @see org.eclipse.swt.graphics.ImageData
-     * @return Instance of loaded image
-     * @throws IllegalArgumentException if <code>imageData</code> is null.
-     */
-    public static Image createImage(ImageData imageData) {
-        if (imageData == null) {
-            throw new IllegalArgumentException("imageData is null");
-        }
-        int imageHandle = OS.image_create(imageData);
-        return new Image(imageHandle);
-    }
     
     /**
      * Constructs new image with given native QPixmap handle.
+     * The native type if new image instance will be IMAGE_TYPE_QPIXMAP.
      * @param pixmapHandle Handle of native QPixmap.
-     * @return Instance of loaded image.
+     * @return new image instance
      */
     public static Image createImageFromPixmap(int pixmapHandle) {
         // input validation

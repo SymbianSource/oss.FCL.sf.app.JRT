@@ -46,7 +46,6 @@ END
 
 // Sources
 SOURCEPATH      ../src
-SOURCE          asyncwaitcallback.cpp
 SOURCE          javasifplugin.cpp
 SOURCE          proxy.cpp
 SOURCE          resultsserver.cpp
@@ -57,14 +56,11 @@ USERINCLUDE     .
 USERINCLUDE     ../inc
 USERINCLUDE     ../../../../inc
 
-SYSTEMINCLUDE   /epoc32/include/mw/hb/hbwidgets
-
 // Libraries
 LIBRARY         apgrfx.lib
 LIBRARY         apmime.lib
 LIBRARY         ecom.lib
 LIBRARY         efsrv.lib
-LIBRARY         hbwidgets.lib
 LIBRARY         sif.lib
 LIBRARY         javacomms.lib
 LIBRARY         javaruntimestarterutils.lib

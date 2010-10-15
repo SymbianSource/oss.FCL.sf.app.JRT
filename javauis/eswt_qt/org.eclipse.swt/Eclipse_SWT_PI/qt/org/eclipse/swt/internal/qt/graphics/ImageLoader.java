@@ -46,14 +46,20 @@ final public class ImageLoader {
      * Status of native peer
      */
     private boolean disposed;
+    
+    /**
+     * Default native type of loaded images
+     */
+    private int nativeImageType = Config.IMAGE_DEFAULT_TYPE;
 
     /**
      * Creates an instance of this class and initializes native
-     * image loader.
+     * image loader. Type of native image created is set to 
+     * the default type defined Config.IMAGE_DEFAULT_TYPE;
      */
     public ImageLoader() {
-    	Utils.validateUiThread();
-        handle = OS.imageLoader_init();
+        Utils.validateUiThread();
+        handle = OS.imageLoader_init(nativeImageType);
         if (handle == 0) {
             throw new OutOfMemoryError();
         }
@@ -61,10 +67,30 @@ final public class ImageLoader {
     }
 
     /**
+     * Creates an instance of this class and initializes native
+     * image loader with specified target image type. 
+     * @param resultImageType The native type of image for loaded images,
+     *                        either Image.IMAGE_TYPE_QIMAGE or Image.IMAGE_TYPE_QPIXMAP.
+     */
+    public ImageLoader(int resultImageType) {
+        Utils.validateUiThread();
+        if((resultImageType != Image.IMAGE_TYPE_QIMAGE) &&
+           (resultImageType != Image.IMAGE_TYPE_QPIXMAP)) {
+            throw new IllegalArgumentException("Illegal resultImageType");
+        }
+        nativeImageType = resultImageType;
+        handle = OS.imageLoader_init(nativeImageType);
+        if (handle == 0) {
+            throw new OutOfMemoryError();
+        }
+        disposed = false;
+    }
+    
+    /**
      * Disposes native image, i.e. frees resources.
      */
     public void dispose() {
-    	Utils.validateUiThread();
+        Utils.validateUiThread();
         if (disposed) {
             return;
         } else {
@@ -74,6 +100,14 @@ final public class ImageLoader {
         }
     }
 
+    /**
+     * Returns current result native image type.
+     * @return Native image type, either Image.IMAGE_TYPE_QIMAGE or Image.IMAGE_TYPE_QPIXMAP
+     */
+    public int getResultImageType() {
+        return nativeImageType;
+    }
+    
     /**
      * Gets the status of this image loader.
      *
@@ -114,14 +148,14 @@ final public class ImageLoader {
      * Loads image from given byte array.
      *
      * @param data The array containing image data
-     * @param offset The offset from beginnig of data where image data starts
+     * @param offset The offset from beginning of data where image data starts
      * @param length The length of data beginning form offset
      * @return Instance of loaded image
      * @throws NullPointerException if data is null
      * @throws IllegalArgumentException if offset is less than 0
      * @throws IllegalArgumentException if length is equal or less than 0
      * @throws ArrayIndexOutOfBoundsException if offset and length define an invalid range
-     * @throws IOException if image cannot be loaded or it is unsupported format
+     * @throws IllegalArgumentException if image cannot be loaded or it is unsupported format
      * @throws OutOfMemoryError if native buffer allocation fails
      */
     public Image loadImage(byte[] data, int offset, int length) throws IOException {
@@ -147,14 +181,14 @@ final public class ImageLoader {
         return new Image(OS.imageLoader_endStream(handle));
     }
 
-	/**
-	 * Loads image from file directly using the native APIs. Note that Java
-	 * security checks are not done.
-	 *
-	 * @param filename The filename to pass to the native APIs.
-	 * @return Image The loaded image.
-	 * @throws IOException
-	 */
+    /**
+     * Loads image from file directly using the native APIs. Note that Java
+     * security checks are not done.
+     *
+     * @param filename The filename to pass to the native APIs.
+     * @return Image The loaded image.
+     * @throws IOException
+     */
     public Image nativelyLoadImageFromFileNoSecurity(String filename) throws IOException {
         checkState();
         if (filename == null) {
@@ -164,12 +198,12 @@ final public class ImageLoader {
     }
 
     /**
-     * Contructs an instance of Image by reading image data from given InputStream.
+     * Constructs an instance of Image by reading image data from given InputStream.
      *
      * @param is The InputStream from where to read the image data from
      * @return Instance of loaded image
      * @throws NullPointerException if InputStream is is null
-     * @throws IOException if image cannot be loaded
+     * @throws IllegalArgumentException if image cannot be loaded
      * @throws OutOfMemoryError if allocation of native buffer of image creation fails
      * @throws IllegalStateException if image data is invalid
      * @throws IllegalArgumentException if image format is not supported
@@ -227,9 +261,27 @@ final public class ImageLoader {
      * @param height The height to scale to
      */
     public void setLoadSize(int width, int height) {
-    	OS.imageLoader_setLoadSize(handle, width, height);
+        OS.imageLoader_setLoadSize(handle, width, height);
     }
 
+    /**
+     * Sets the result image type, i.e. the native type for the images
+     * loaded. 
+     * 
+     * @param resultImageType The type of loaded image, either Image.IMAGE_TYPE_QIMAGE or 
+     *                  Image.IMAGE_TYPE_QPIXMAP 
+     * @throws IllegalArgumentException if imageType is not one of Image.
+     *                                  IMAGE_TYPE_QIMAGE or Image.IMAGE_TYPE QPIXMAP
+     */
+    public void setResultImageType(int resultImageType) {
+        if((resultImageType != Image.IMAGE_TYPE_QIMAGE) && 
+           (resultImageType != Image.IMAGE_TYPE_QPIXMAP)) {
+            throw new IllegalArgumentException("Illegal resultImageType");
+        }
+        nativeImageType = resultImageType;
+        OS.imageloader_setResultImageType(handle, nativeImageType);
+    }
+    
     /**
      * Returns the bounds of an Image without creating an actual Image instance.
      *
@@ -261,7 +313,7 @@ final public class ImageLoader {
      * Private helper to check the state of the current instance.
      */
     private void checkState() {
-    	Utils.validateUiThread();
+        Utils.validateUiThread();
         if (disposed) {
             throw new IllegalStateException("Image loader already disposed");
         }

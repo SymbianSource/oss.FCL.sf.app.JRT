@@ -37,8 +37,7 @@ public final class JvmPortCldc extends JvmPortCommon
         }
         catch (Exception e)
         {
-            e.printStackTrace();
-            throw new RuntimeException("Not able to load library "+libName+". Reason is: "+e);
+            throw new Error("Not able to load library "+libName+". Reason is: "+e);
         }
     }
 

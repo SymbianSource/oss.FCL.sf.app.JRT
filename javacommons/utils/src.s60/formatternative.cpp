@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -19,13 +19,11 @@
 #include <memory>
 #include <stringresourcereader.h>
 
-#ifdef RD_JAVA_UI_QT
-#include <QLocale>
-#else // RD_JAVA_UI_QT
+#ifndef RD_JAVA_UI_QT
 #include <AknUtils.h>
 #endif // RD_JAVA_UI_QT
 
-#include "com_nokia_mj_impl_utils_Formatter.h"
+#include "com_nokia_mj_impl_utils_FormatterAvkon.h"
 #include "com_nokia_mj_impl_utils_ResourceLoader.h"
 #include "javajniutils.h"
 #include "s60commonutils.h"
@@ -50,8 +48,8 @@ const TInt KMaxNumberFormatSize = 40;
 using namespace java::util;
 
 
-JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_utils_Formatter__1formatInteger
-(JNIEnv *aJni, jobject, jint aNumber)
+JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_utils_FormatterAvkon__1formatInteger
+(JNIEnv *aJni, jclass, jint aNumber)
 {
     JELOG2(EUtils);
     TReal64 realNumber = aNumber;
@@ -79,8 +77,8 @@ JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_utils_Formatter__1formatInteger
                (const jchar*)numberPtr.Ptr(), numberPtr.Length());
 }
 
-JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_utils_Formatter__1formatDate
-(JNIEnv * aJni, jobject, jlong timeInMillis)
+JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_utils_FormatterAvkon__1formatDate
+(JNIEnv * aJni, jclass, jlong timeInMillis)
 {
     std::auto_ptr<HBufC> dateString(HBufC::New(KMaxDateFormatSize));
     if (dateString.get() == 0)
@@ -108,15 +106,8 @@ JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_utils_Formatter__1formatDate
                (const jchar*)datePtr.Ptr(), datePtr.Length());
 }
 
-JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_utils_ResourceLoader__1getLocaleId
-(JNIEnv *, jobject)
-
-{
-    return (jint)User::Language();
-}
-
-JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_utils_Formatter__1formatDigits
-  (JNIEnv * aEnv, jclass, jstring str)
+JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_utils_FormatterAvkon__1formatDigits
+(JNIEnv * aEnv, jclass, jstring str)
 {
     jstring ret = str;
     std::wstring wstr = JniUtils::jstringToWstring(aEnv, str);
@@ -131,15 +122,8 @@ JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_utils_Formatter__1formatDigits
     return ret;
 }
 
-JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_utils_ResourceLoader__1getLocaleIdQt
-  (JNIEnv *env, jclass)
+JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_utils_ResourceLoader__1getLocaleId
+(JNIEnv *, jclass)
 {
-#ifdef RD_JAVA_UI_QT
-    QString localeName = QLocale::system().name();
-    jstring loc = env->NewString(localeName.utf16(), localeName.size());
-    return loc;
-#else // RD_JAVA_UI_QT
-    (void)env;     // just to suppress a warning
-    return NULL;
-#endif // RD_JAVA_UI_QT
+    return (jint)User::Language();
 }

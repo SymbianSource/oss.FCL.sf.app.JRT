@@ -72,6 +72,7 @@ void CHttpTransactionClient::ConstructL(const TDesC* aUri, const TDesC* aRequest
     LOG(ESOCKET,EInfo, "CHttpTransactionClient::ConstructL ");
     iFlag = 0;
     iDrmBuf = HBufC8::NewL(256);
+    iEndOfRequest = false;
     OpenTransactionL(aUri , aRequestMethod);
 }
 
@@ -98,10 +99,11 @@ void CHttpTransactionClient::OpenTransactionL(const TDesC* aUri, const TDesC* aR
     LOG(ESOCKET,EInfo,"CHttpTransactionClient::OpenTransactionL - ");
 }
 
-void CHttpTransactionClient::SubmitL(RPointerArray<HBufC8>* aRawHeaders , TDesC8* aPostData, int aResponseTimeout)
+void CHttpTransactionClient::SubmitL(RPointerArray<HBufC8>* aRawHeaders , TDesC8* aPostData, int aResponseTimeout, bool aPartialDataFlag)
 {
     //ELOG(ESOCKET,"CHttpTransactionClient::SubmitL + ");
     //retrieve the headers
+    iPartialPostData = aPartialDataFlag;
     TInt respTimeOut = aResponseTimeout;
     delete iBuf;
     iBuf=NULL;
@@ -696,7 +698,7 @@ TInt CHttpTransactionClient::MHFRunError(TInt aError, RHTTPTransaction aTransact
 
 void CHttpTransactionClient::NotifyErrorL(TInt aErrorCode)
 {
-    LOG1(ESOCKET,EInfo," CHttpTransactionClient::NotifyErrorL: %d ",aErrorCode);
+    ELOG1(ESOCKET," CHttpTransactionClient::NotifyErrorL: %d ",aErrorCode);
     if ((aErrorCode  ==  KErrNotReady))
     {
         iTransaction.Cancel();
@@ -761,12 +763,18 @@ CHttpTransactionClient::~CHttpTransactionClient()
 TBool CHttpTransactionClient::GetNextDataPart(TPtrC8& aDataPart)
 {
     LOG(ESOCKET,EInfo,"CHttpTransactionClient::GetNextDataPart");
-    TBool lastPart=EFalse;
+    TBool lastPart=ETrue;
+
     if (iBuf!=NULL)
     {
-        lastPart = ETrue;
+        // in-case of non-chunked, this is the end of POST data
         aDataPart.Set(iBuf->Des());
     }
+    if (iPartialPostData)
+    {
+        lastPart = iEndOfRequest;
+    }
+    LOG1(ESOCKET,EInfo,"CHttpTransactionClient::GetNextDataPart, returning : %d", lastPart);
     return lastPart;
 }
 
@@ -776,12 +784,18 @@ TBool CHttpTransactionClient::GetNextDataPart(TPtrC8& aDataPart)
     appropriate.  */
 void CHttpTransactionClient::ReleaseData()
 {
-    LOG(ESOCKET,EInfo," CHttpTransactionClient::ReleaseData: delete iBuf");
+    LOG(ESOCKET,EInfo," CHttpTransactionClient::ReleaseData: ");
     if (iBuf)
     {
         delete iBuf;
         iBuf=NULL;
     }
+    if (iPartialPostData)
+    {
+        // inform the java side that post data is consumed
+        TRAP_IGNORE(iObserver->DoPostCallBack());
+    }
+
 }
 
 /** Obtain the overall size of the data being supplied, if known
@@ -795,12 +809,34 @@ void CHttpTransactionClient::ReleaseData()
 TInt CHttpTransactionClient::OverallDataSize()
 {
     TInt overallSize = KErrNotFound;
-    if (iBuf)
+    if (iPartialPostData == true)
+    {
+        overallSize = KErrNotFound;
+    }
+    else if (iBuf)
     {
         overallSize=iBuf->Length();
     }
     LOG1(ESOCKET,EInfo," CHttpTransactionClient::OverallDataSize: %d",overallSize);
     return overallSize;
+}
+
+void CHttpTransactionClient::PostDataL(HBufC8* aPostData, const bool aEndOfRequest)
+{
+    LOG(ESOCKET,EInfo,"CHttpTransactionClient::PostData ");
+    iEndOfRequest = aEndOfRequest;
+    if (aPostData!=NULL && aPostData->Length()>0)
+    {
+        iBuf=aPostData;
+    }
+    else
+    {
+        HBufC8* buf = HBufC8::NewL(1);      // descriptor of length 0
+        iBuf = buf;
+    }
+    iTransaction.NotifyNewRequestBodyPartL();  // notify the stack that new request body data is available
+
+
 }
 
 /** Reset the data supplier.  This indicates to the data supplier that it should
@@ -814,7 +850,16 @@ TInt CHttpTransactionClient::OverallDataSize()
 TInt CHttpTransactionClient::Reset()
 {
     LOG(ESOCKET,EInfo,"CHttpTransactionClient::Reset");
-    TInt err = KErrNone;
+    ELOG1(ESOCKET, "Reset() , Tran = %d", iTransaction.Id());
+    TInt err = 0;
+    if(iPartialPostData == false)
+    {
+        err = KErrNone; 
+    }
+    else
+    {
+        err = KErrNotSupported;
+    }
     return err;
 }
 

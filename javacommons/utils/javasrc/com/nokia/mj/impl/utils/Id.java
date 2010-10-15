@@ -19,8 +19,7 @@
 package com.nokia.mj.impl.utils;
 
 /**
- * Localisation Identifier. This class is used to hide platform localisation
- * specifics.
+ * Localisation identifier.
  */
 public class Id
 {
@@ -34,6 +33,12 @@ public class Id
     {
     }
 
+    /**
+     * Localisation identifier with Avkon and Qt type text identifiers.
+     *
+     * @param aAvkonLocString text id fof Avkon based localisation
+     * @param aQtLocString text id for Qt based localisation
+     */
     public Id(String aAvkonLocString, String aQtLocString)
     {
         this.iAvkonLocString = aAvkonLocString;
@@ -48,7 +53,7 @@ public class Id
         }
         else
         {
-            return iAvkonLocString;       
+            return iAvkonLocString;
         }
-    }     
+    }
 }

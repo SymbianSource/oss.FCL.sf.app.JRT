@@ -68,8 +68,6 @@ abstract public class ViewBase
     private Composite iAppInfoComposite = null;
     /** Composite to which command buttons are added. */
     private Composite iCommandComposite = null;
-    /** Application suite icon */
-    protected Image iSuiteIcon = null;
     /** InstallerUi owning this view. */
     protected InstallerUiEswt iInstallerUi = null;
     /** True if this view is visible. */
@@ -82,6 +80,15 @@ abstract public class ViewBase
     private CertificateDetailsView iCertificateDetailsView = null;
     /** Certificates for this application. */
     protected SigningCertificate[] iCertificates = null;
+
+    /** Application suite icon */
+    protected Image iSuiteIcon = null;
+    /** Label for application suite icon */
+    protected Label iSuiteIconLabel = null;
+    /** InputStream for application suite icon */
+    private InputStream iSuiteIconInputStream = null;
+    /** Path for application suite icon */
+    private String iSuiteIconPath = null;
 
     /** Constructor */
     protected ViewBase()
@@ -173,9 +180,13 @@ abstract public class ViewBase
         return iComposite;
     }
 
-    /** Returns ScrolledComposite for Composite. */
+    /** Returns ScrolledComposite for this view. */
     public ScrolledComposite getScrolledComposite()
     {
+        if (iAppInfoScrolledComposite != null)
+        {
+            return iAppInfoScrolledComposite;
+        }
         return iScrolledComposite;
     }
 
@@ -321,6 +332,15 @@ abstract public class ViewBase
         getShell().setRedraw(false);
         // First calculate size without vertical scrollbar.
         doUpdateSize(false);
+        // After layout has been calculated, load and set the
+        // suite icon with correct size.
+        setSuiteIcon();
+        if (getScrolledComposite() != null &&
+            getScrolledComposite().getVerticalBar() != null)
+        {
+            log("updateSize: getScrolledComposite().getVerticalBar().getVisible()="
+                + getScrolledComposite().getVerticalBar().getVisible());
+        }
         if (getScrolledComposite() != null &&
                 getScrolledComposite().getVerticalBar() != null &&
                 getScrolledComposite().getVerticalBar().getVisible())
@@ -341,9 +361,20 @@ abstract public class ViewBase
         if (getAppInfoComposite() != null)
         {
             // Recalculate the size of the app info composite.
-            getAppInfoComposite().setSize(
-                getAppInfoComposite().computeSize(
-                    SWT.DEFAULT, SWT.DEFAULT));
+            if (aVerticalScrollBarVisible)
+            {
+                int contentWidth = getAppInfoComposite().getSize().x -
+                    getScrolledComposite().getVerticalBar().getSize().x;
+                getAppInfoComposite().setSize(
+                    getAppInfoComposite().computeSize(
+                        contentWidth, SWT.DEFAULT));
+            }
+            else
+            {
+                getAppInfoComposite().setSize(
+                    getAppInfoComposite().computeSize(
+                        SWT.DEFAULT, SWT.DEFAULT));
+            }
         }
 
         int contentWidth = iDefaultContentSize.x * MAX_VIEW_WIDTH / 100;
@@ -495,30 +526,23 @@ abstract public class ViewBase
             createSecurityLabel(iCertificates != null);
         }
 
-        // Add suite icon.
-        InputStream iconInputStream = null;
-        String iconPath = null;
+        // Init suite icon data.
         if (aInstallInfo != null)
         {
-            iconInputStream = aInstallInfo.getIconInputStream();
-            iconPath = aInstallInfo.getIconPath();
+            iSuiteIconInputStream = aInstallInfo.getIconInputStream();
+            iSuiteIconPath = aInstallInfo.getIconPath();
         }
         if (aUninstallInfo != null)
         {
-            iconInputStream = aUninstallInfo.getIconInputStream();
-            iconPath = aUninstallInfo.getIconPath();
-        }
-        if (iSuiteIcon == null && iconInputStream != null)
-        {
-            iSuiteIcon = InstallerUiEswt.loadImage(
-                             getComposite().getDisplay(), iconInputStream, iconPath);
+            iSuiteIconInputStream = aUninstallInfo.getIconInputStream();
+            iSuiteIconPath = aUninstallInfo.getIconPath();
         }
         int iconColumns = 0;
-        if (iSuiteIcon != null)
+        if (iSuiteIconInputStream != null)
         {
             iconColumns = 2;
-            Label iconLabel = createLabel(iSuiteIcon, iconColumns, SWT.NONE);
-            setCssId(iconLabel, "contentIcon");
+            iSuiteIconLabel = createLabel((Image)null, iconColumns, SWT.NONE);
+            setCssId(iSuiteIconLabel, "contentIcon");
         }
 
         // Create a Composite for displaying application info.
@@ -697,6 +721,7 @@ abstract public class ViewBase
     protected Label createAppInfoLabel(String aText)
     {
         Label label = new Label(getAppInfoComposite(), SWT.WRAP);
+        setCssId(label, "appInfoLabel");
         label.setText(aText);
         GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
         gridData.horizontalSpan = 1;
@@ -768,6 +793,25 @@ abstract public class ViewBase
             }
         });
         return button;
+    }
+
+    protected void setSuiteIcon()
+    {
+        if (iSuiteIcon == null &&
+            iSuiteIconInputStream != null &&
+            iSuiteIconLabel != null)
+        {
+            //Rectangle rect = iSuiteIconLabel.getBounds();
+            //log("iSuiteIconLabel bounds: " + rect);
+            iSuiteIcon = InstallerUiEswt.loadImage(
+                getComposite().getDisplay(), iSuiteIconInputStream,
+                iSuiteIconPath, new Point(54, 54)); // new Point(rect.width, rect.height));
+        }
+        if (iSuiteIcon != null)
+        {
+            //log("iSuiteIcon bounds: " + iSuiteIcon.getBounds());
+            iSuiteIconLabel.setImage(iSuiteIcon);
+        }
     }
 
     /**

@@ -15,15 +15,16 @@
 #
 #!/usr/bin/python
 
-import datetime, os, os.path, sys, traceback
+import datetime, os, os.path, sys, traceback, shutil
 from optparse import OptionParser
 
-"""This script sets up S60 distribution policy files."""
+"""This script sets up S60 distribution policy files and optionally filters out non-distributed directories."""
 
 class PolicyData:
     def __init__(self):
         self.root_policy = None
         self.policies = []
+        self.filtered_directories = 0
         self.created_policies = 0
         self.existing_policies = 0
         self.warning_count = 0
@@ -35,6 +36,7 @@ class PolicyData:
         msg = "Distribution policies generation time " + str(self.stop_time - self.start_time)
         msg += "\nCreated policies: " + str(self.created_policies)
         msg += "\nExisting policies: " + str(self.existing_policies)
+        msg += "\nFiltered directories: " + str(self.filtered_directories)
         if self.warning_count > 0:
             msg += "\nWarnings: " + str(self.warning_count)
         return msg
@@ -43,7 +45,14 @@ policy_data = PolicyData()
 
 def main():
     parser = OptionParser(usage = "python -u %prog [options] <path>")
+    parser.add_option("-f", "--filter", action="store_true", dest="filter",
+                  help="filter non-distributed directories")
     (opts, args) = parser.parse_args()
+    if len(args) == 0:
+        print "Mandatory argument <path> missing"
+        parser.print_help()
+        sys.exit(1);
+    
     root_path = args[0]
     if not os.path.isdir(root_path):
         print "ERROR: %s is not a directory" % root_path
@@ -54,9 +63,11 @@ def main():
         print "Started " + str(policy_data.start_time)
         parseConfigurationFile(policy_data)
         print "Generating S60 distribution policies to", root_path
+        if opts.filter:
+            print "Removing non-contributed directories"
         print "Policy config:", str(policy_data.policies)
         print "Policy for root dir:", str(policy_data.root_policy)
-        writePolicies(root_path, policy_data)
+        filterAndWritePolicies(root_path, policy_data, opts.filter)
         policy_data.stop_time = datetime.datetime.now()
         print "Finished " + str(policy_data.stop_time)
         print str(policy_data)
@@ -97,7 +108,7 @@ def parseConfigurationFile(policy_data):
     finally:
         f.close()
 
-def writePolicies(root_path, policy_data):
+def filterAndWritePolicies(root_path, policy_data, filter):
     # Write policy for the root directory.
     if (not policy_data.root_policy is None) and \
             (policy_data.root_policy != "IGNORE"):
@@ -108,7 +119,12 @@ def writePolicies(root_path, policy_data):
             path = os.path.join(root, dir)
             policy = getPolicyForPath(path.replace(root_path, ""), policy_data)
             if policy != "IGNORE":
-                writePolicy(path, policy)
+                if filter and policy != "7":
+                    print "Removing directory", path
+                    shutil.rmtree(path)
+                    policy_data.filtered_directories += 1
+                else:
+                    writePolicy(path, policy)
 
 def writePolicy(path, policy):
     global policy_data

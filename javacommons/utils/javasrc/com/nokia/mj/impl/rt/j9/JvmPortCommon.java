@@ -48,7 +48,12 @@ abstract class JvmPortCommon extends JvmPort
      */
     public final NativeMemoryBlock getResourceAsNativeMemory(String jarPath, String resName)
     {
-        return new NativeMemoryBlockImpl(jarPath, resName);
+        NativeMemoryBlock nativeMemoryBlock = new NativeMemoryBlockImpl(jarPath, resName);
+        if (nativeMemoryBlock.getPointer() != 0)
+        {
+            return nativeMemoryBlock;
+        }
+        return null;
     }
 
     /**

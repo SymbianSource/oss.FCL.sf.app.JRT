@@ -375,14 +375,14 @@ public class CollisionDetectionTest extends SWTTestCase
         sprite1.setTransform(Sprite.TRANS_ROT180);
         sprite1.setPosition(0, 0);
         assertTrue("sprite-tiledlayer fail 26.", sprite1.collidesWith(tiledLayer, false));
-        assertTrue("sprite-tiledlayer fail 27.", !sprite1.collidesWith(tiledLayer, true));
+        assertTrue("sprite-tiledlayer fail 27.", sprite1.collidesWith(tiledLayer, true));
 
         // Test collision rectangle in transformed sprite:
         sprite1.setTransform(Sprite.TRANS_NONE);
         sprite1.defineCollisionRectangle(0, 0, 50, 50);
         sprite1.setTransform(Sprite.TRANS_ROT90);
         sprite1.setPosition(0, 0);
-        assertTrue("sprite-tiledlayer fail 28.", sprite1.collidesWith(tiledLayer, false));
+        assertTrue("sprite-tiledlayer fail 28.", !sprite1.collidesWith(tiledLayer, false));
         assertTrue("sprite-tiledlayer fail 29.", !sprite1.collidesWith(tiledLayer, true));
 
     }

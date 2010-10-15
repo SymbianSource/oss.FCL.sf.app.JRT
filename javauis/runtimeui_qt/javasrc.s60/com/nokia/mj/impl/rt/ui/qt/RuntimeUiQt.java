@@ -23,7 +23,6 @@ import com.nokia.mj.impl.utils.Logger;
 import com.nokia.mj.impl.utils.exception.ExceptionBase;
 import com.nokia.mj.impl.rt.support.Jvm;
 
-import com.nokia.mj.impl.utils.Id;
 import com.nokia.mj.impl.utils.ResourceLoader;
 
 /**
@@ -32,10 +31,10 @@ import com.nokia.mj.impl.utils.ResourceLoader;
  */
 public class RuntimeUiQt extends RuntimeUi
 {
-    private static final Id ALLOW_BUTTON = new Id(null, "prompt_allow");
-    private static final Id DENY_BUTTON = new Id(null, "prompt_deny");
-    private static final Id DETAILS_BUTTON = new Id(null, "error_details");
-    private static final Id OK_BUTTON = new Id(null, "prompt_ok");
+    private static final String ALLOW_BUTTON = "prompt_allow";
+    private static final String DENY_BUTTON = "prompt_deny";
+    private static final String DETAILS_BUTTON = "error_details";
+    private static final String OK_BUTTON = "prompt_ok";
     private static final String QT_LOC_FILE = "javaapplicationsecuritymessages";
     private static final String QT_PREFIX = "txt_java_secur_button_";
 
@@ -67,7 +66,6 @@ public class RuntimeUiQt extends RuntimeUi
      */
     public boolean confirm(String aAppName, ConfirmData aConfirmData)
     {
-
         if (aConfirmData == null)
         {
             Logger.LOG(Logger.EJavaRuntime,
@@ -80,17 +78,13 @@ public class RuntimeUiQt extends RuntimeUi
         {
             if (iRes == null)
             {
-                iRes = ResourceLoader.getInstance(null, null, QT_LOC_FILE, QT_PREFIX);
+                iRes = ResourceLoader.getInstance(QT_LOC_FILE, QT_PREFIX);
             }
 
-            String allowButton = iRes.format(ALLOW_BUTTON, null);
-            String denyButton = iRes.format(DENY_BUTTON, null);
-
-            aConfirmData = new ConfirmData(aConfirmData.getQuestion(),
-                                           new String[] {allowButton, denyButton},
-                                           aConfirmData.getAnswerSuggestion());
+            String[] answerOptions = {iRes.format(ALLOW_BUTTON).toString(),
+                                      iRes.format(DENY_BUTTON).toString()};
+            aConfirmData.setAnswerOptions(answerOptions);
         }
-
         return _confirm(aAppName, aConfirmData, isIdentified());
     }
 
@@ -111,14 +105,11 @@ public class RuntimeUiQt extends RuntimeUi
                 iRes = ResourceLoader.getInstance(null, null, QT_LOC_FILE, QT_PREFIX);
             }
 
-            String detailsButton = iRes.format(DETAILS_BUTTON, null);
-            String okButton = iRes.format(OK_BUTTON, null);
-
             _error(aAppName,
                    aException.getShortMessage(),
                    aException.getDetailedMessage(),
-                   detailsButton,
-                   okButton);
+                   iRes.format(DETAILS_BUTTON).toString(),
+                   iRes.format(OK_BUTTON).toString());
         }
     }
 

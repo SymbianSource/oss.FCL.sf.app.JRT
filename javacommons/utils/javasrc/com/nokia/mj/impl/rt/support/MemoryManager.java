@@ -105,6 +105,11 @@ class MemoryManager
                 setWindow();
                 return;
             }
+            else
+            {
+                // inside window - nothing to do
+                return;
+            }
         }
 
         // Collection has been requested

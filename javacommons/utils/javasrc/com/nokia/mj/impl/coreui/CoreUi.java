@@ -141,10 +141,56 @@ public abstract class CoreUi
         }
     }
 
+    /**
+     * Executes given Runnable synchronously in UI thread.
+     * <br>
+     * This method should only be used in cases where it
+     * is absolutely needed. Before using this method,
+     * consider carefully if the use case really requires
+     * code to be executed in UI thread.
+     * <br>
+     * This method is only supported in Qt based runtimes.
+     * <br>
+     * @param runnable Runnable to be executed
+     * @throws RuntimeException if execution in UI thread
+     * is not supported
+     */
+    public static void runInSyncUiThread(Runnable runnable)
+    {
+        if (sInstance != null)
+        {
+            sInstance.runInSyncUiThreadImpl(runnable);
+        }
+    }
+
+    /**
+     * Executes given Runnable asynchronously in UI thread.
+     * <br>
+     * This method should only be used in cases where it
+     * is absolutely needed. Before using this method,
+     * consider carefully if the use case really requires
+     * code to be executed in UI thread.
+     * <br>
+     * This method is only supported in Qt based runtimes.
+     * <br>
+     * @param runnable Runnable to be executed
+     * @throws RuntimeException if execution in UI thread
+     * is not supported
+     */
+    public static void runInAsyncUiThread(Runnable runnable)
+    {
+        if (sInstance != null)
+        {
+            sInstance.runInAsyncUiThreadImpl(runnable);
+        }
+    }
+
     protected abstract boolean connectToUiImpl();
     protected abstract void createUiImpl(Uid uid, boolean backGroundStart);
     protected abstract void shutdownRequestImpl();
     protected abstract void foregroundRequestImpl();
     protected abstract boolean isUiInForegroundImpl();
     protected abstract void hideApplicationImpl(boolean hide);
+    protected abstract void runInSyncUiThreadImpl(Runnable runnable);
+    protected abstract void runInAsyncUiThreadImpl(Runnable runnable);
 }

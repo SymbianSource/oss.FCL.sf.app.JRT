@@ -324,7 +324,10 @@ public class ApplicationInfo
      * found.
      * @return application root path as String
      */
-    //public abstract String getRootPath();
+    public String getRootPath()
+    {
+        return "";
+    }
 
     /**
      * Returns the main class of the application. The main class concept might

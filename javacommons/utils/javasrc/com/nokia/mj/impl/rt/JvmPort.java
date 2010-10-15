@@ -39,16 +39,18 @@ public abstract class JvmPort
     private static final String PORTCLASS_PACKAGE = "com.nokia.mj.impl.rt.";
 
     /**
-     * When the class is loaded it will try to create the VM porting class
-     * defined in the system property PORTCLASS_PROPERTY_NAME
+     * When the getInstace() is first called it will be tried to create the
+     * VM porting class defined in the system property PORTCLASS_PROPERTY_NAME.
+     * The package visiblity is set to protected for unit testing purposes.
      */
-    private static JvmPort sInstance = null;
+    protected static JvmPort sInstance = null;
 
     /**
      * A reference to object containing properties. In CLDC it is Hashtable,
      * otherwise it is Properties.
+     * The package visiblity is set to protected for unit testing purposes.
      */
-    private static DynamicProperty mPropertiesContainer;
+    protected static DynamicProperty mPropertiesContainer;
 
     protected JvmPort()
     {
@@ -57,8 +59,12 @@ public abstract class JvmPort
     /**
      * Static initializer
      */
-    static
+    private static synchronized void loadImpl()
     {
+		if (sInstance != null)
+		{
+			return;
+		}
         String vmPortClass = System.getProperty(PORTCLASS_PROPERTY_NAME);
         if (vmPortClass == null)
         {
@@ -74,8 +80,7 @@ public abstract class JvmPort
         }
         catch (Exception e)
         {
-            String errTxt = "Not able to instantiate class " +
-                            vmPortClass + ".";
+            String errTxt = "Not able to instantiate class " + vmPortClass;
             Logger.ELOG(Logger.EUtils, errTxt, e);
             throw new RuntimeException(errTxt);
         }
@@ -88,6 +93,10 @@ public abstract class JvmPort
      */
     public static JvmPort getInstance()
     {
+        if (sInstance == null)
+        {
+            loadImpl();
+        }
         return sInstance;
     }
 
@@ -125,7 +134,7 @@ public abstract class JvmPort
     public abstract void setThreadAsDaemon(Thread Thread,
                                            boolean daemon)
     throws IllegalThreadStateException,
-                SecurityException;
+        SecurityException;
 
 
     /**

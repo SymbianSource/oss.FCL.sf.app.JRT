@@ -46,7 +46,6 @@ import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.extension.DisplayExtension;
@@ -110,8 +109,6 @@ public class InstallerUiEswt extends InstallerUi
 
     /** Hashtable for storing the loaded icons. */
     private static Hashtable iImageTable = null;
-    /** Best size for application icon. */
-    private static Point iBestImageSize = null;
 
     /** Default shell bounds. */
     private Rectangle iDefaultShellBounds = null;
@@ -190,12 +187,6 @@ public class InstallerUiEswt extends InstallerUi
                     //aEvent.doit = false;
                 }
             });
-
-            // Initialize best image size.
-            iBestImageSize = new Point(
-                DisplayExtension.getBestImageWidth(DisplayExtension.LIST_ELEMENT),
-                DisplayExtension.getBestImageHeight(DisplayExtension.LIST_ELEMENT));
-            log("Best image size: " + iBestImageSize);
 
             synchronized (iInitWaitObject)
             {
@@ -1126,7 +1117,7 @@ public class InstallerUiEswt extends InstallerUi
             for (int i = 1; iSecurityIcon == null && resourceDir != null; i++)
             {
                 iSecurityIcon = loadImage(
-                    aDisplay, resourceDir + iconFilename, false);
+                    aDisplay, resourceDir + iconFilename, null);
                 resourceDir = ResourceUtil.getResourceDir(i);
             }
         }
@@ -1138,30 +1129,15 @@ public class InstallerUiEswt extends InstallerUi
     }
 
     /**
-     * Loads image from specified InputStream. This method scales the image
-     * to optimum size.
-     *
-     * @param aDisplay display to which the icon will be added
-     * @param aInputStream InputStream where the image is loaded
-     * @param aImageName name of the image to be loaded
-     * @return image from InputStream or null if image cannot be loaded
-     */
-    protected static Image loadImage(
-        Display aDisplay, InputStream aInputStream, String aImageName)
-    {
-        return loadImage(aDisplay, aInputStream, aImageName, true);
-    }
-
-    /**
      * Loads image from specified file.
      *
      * @param aDisplay display to which the icon will be added
      * @param aImageFilename name of the image file to be loaded
-     * @param aScaleImage flag telling if the loaded image should be scaled
+     * @param aImageSize size to which the image should be scaled, can be null
      * @return image from file or null if image cannot be loaded
      */
-    private static Image loadImage(
-        Display aDisplay, String aImageFilename, boolean aScaleImage)
+    protected static Image loadImage(
+        Display aDisplay, String aImageFilename, Point aImageSize)
     {
         Image result = null;
         InputStream imageInputStream = null;
@@ -1172,7 +1148,7 @@ public class InstallerUiEswt extends InstallerUi
             {
                 imageInputStream = imageFile.openInputStream();
                 result = loadImage(aDisplay, imageInputStream,
-                                   aImageFilename, aScaleImage);
+                                   aImageFilename, aImageSize);
             }
         }
         catch (IOException ioe)
@@ -1203,17 +1179,18 @@ public class InstallerUiEswt extends InstallerUi
      * @param aDisplay display to which the icon will be added
      * @param aInputStream InputStream where the image is loaded
      * @param aImageName name of the image to be loaded
-     * @param aScaleImage flag telling if the loaded image should be scaled
+     * @param aImageSize size to which the image should be scaled, can be null
      * @return image from InputStream or null if image cannot be loaded
      */
-    private static Image loadImage(
+    protected static Image loadImage(
         Display aDisplay, InputStream aInputStream,
-        String aImageName, boolean aScaleImage)
+        String aImageName, Point aImageSize)
     {
+        String imageTableKey = aImageName + "," + aImageSize;
         Image result = null;
         if (aImageName != null)
         {
-            result = (Image)iImageTable.get(aImageName);
+            result = (Image)iImageTable.get(imageTableKey);
         }
         if (result != null)
         {
@@ -1223,29 +1200,16 @@ public class InstallerUiEswt extends InstallerUi
         try
         {
             long startTime = System.currentTimeMillis();
-            aDisplay.setData("org.eclipse.swt.internal.image.loadSize",
-                             iBestImageSize);
-            Image image = new Image(aDisplay, aInputStream);
-            if (aScaleImage)
+            if (aImageSize != null)
             {
-                ImageData imageData = image.getImageData();
-                if (iBestImageSize.x != imageData.width ||
-                        iBestImageSize.y != imageData.height)
-                {
-                    Point oldSize =
-                        new Point(imageData.width, imageData.height);
-                    imageData = imageData.scaledTo(iBestImageSize.x, iBestImageSize.y);
-                    log("Image " + aImageName + " scaled from " +
-                        oldSize.x + "x" + oldSize.y + " to " +
-                        iBestImageSize.x + "x" + iBestImageSize.y);
-                    image = new Image(aDisplay, imageData);
-                }
+                aDisplay.setData("org.eclipse.swt.internal.image.loadSize",
+                                 aImageSize);
             }
-            result = image;
+            result = new Image(aDisplay, aInputStream);
             long endTime = System.currentTimeMillis();
             log("Loaded image " + aImageName + " (load time " +
                 (endTime - startTime) + " ms)");
-            iImageTable.put(aImageName, result);
+            iImageTable.put(imageTableKey, result);
         }
         catch (Throwable t)
         {

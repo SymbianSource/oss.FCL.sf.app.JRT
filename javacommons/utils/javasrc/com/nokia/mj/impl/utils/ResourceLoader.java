@@ -18,135 +18,131 @@
 
 package com.nokia.mj.impl.utils;
 
-import java.io.*;
-import java.util.*;
+import com.nokia.mj.impl.coreui.CoreUi;
+
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 /**
  * Resource loader to get localised strings and Formatter patterns.
  * <br>
  * Usage:
  * <pre>
- *   ResourceLoader res = new ResourceLoader("javainstaller", "qtn_java_installer_");
+ *   ResourceLoader res = ResourceLoader.getInstance("javainstaller", "qtn_java_installer_");
  *   Label subjectLabel = createLabel(
  *       res.format("subject").arg(certificate.getSubject()).toString(),
  *       horizontalSpan, labelStyle);
  * </pre>
+ * <br>
+ * It is possible to pass a comma separated list of text ids to format
+ * method and also to pass a comma separated list of resource filenames
+ * and text id prefixes to getInstance method. In this case the texts
+ * are searched in the order they are listed and the first text
+ * that is found will be returned. This can be used to specify texts
+ * for different platforms in a single parameter, provided that the
+ * text ids, prefixes and resource filenames are unique in each platform.
+ * <br>
+ * If the text ids, prefixes and resource filenames are not unique
+ * in each platform, then a separate ResourceLoader instance must
+ * be obtained for every platform.
+ * <br>
+ * When more than one resource filenames and text id prefixes
+ * are used, the Nth prefix is applied only to the Nth resource file.
+ * This means that the number of comma separated resource filenames and
+ * prefixes must be the same.
+ * <br>
+ * If the localised text for given id is not found, ResourceLoader
+ * returns the id itself.
  */
-public class ResourceLoader
+abstract public class ResourceLoader
 {
     /** AVKON UI identifier. */
-    public static final int AVKON = 1;
+    protected static final int AVKON = 1;
     /** QT UI identifier. */
-    public static final int QT = 2;
+    protected static final int QT = 2;
 
-    /** Localisation resource basepath */
-    private static final String LOC_RESOURCE_BASE = "/resources/com/nokia/mj/impl/";
+    /** Separator in text id, resource filename, and prefix strings. */
+    protected static final String SEPARATOR = ",";
 
     /** Map for ResourceLoader instances. */
-    private static Hashtable resourceLoaders = new Hashtable();
+    protected static Hashtable iResourceLoaders = new Hashtable();
 
-    /** Resource string map. Null if resource could not be loaded. */
-    private Hashtable resourceMap = new Hashtable();
-
-    /** Resource name prefix */
-    private String prefix = null;
-
-    /** Platform localisation type. */
-    private int locType = -1;
+    /**
+     * Flag telling if ResourceLoader has already ensured that
+     * UI thread exists.
+     */
+    private static boolean iUiThreadExists = false;
 
     /*** ----------------------------- PUBLIC ------------------------------ */
 
-    public static ResourceLoader getInstance(String avkonFileName,
-                                             String avkonPrefix,
-                                             String qtFileName,
-                                             String qtPrefix)
+    /**
+     * Returns a resource loader instance.
+     *
+     * @param avkonFileName name of the Avkon resource file
+     * @param avkonPrefix prefix added before each id when retrieving
+     * @param qtFileName name of the Qt resource file
+     * @param qtPrefix prefix added before each id when retrieving
+     * @return resource loader instance
+     */
+    synchronized public static ResourceLoader getInstance(
+        String avkonFileName, String avkonPrefix,
+        String qtFileName, String qtPrefix)
     {
-        // Construct key from filenames and prefixes, this is the same
-        // between platforms.
-        String key = (new StringBuffer()).append(avkonFileName).append(":")
-            .append(avkonPrefix).append(":").append(qtFileName).append(":")
-            .append(qtPrefix).toString();
-        ResourceLoader result = (ResourceLoader)resourceLoaders.get(key);
-
-        if (result == null)
+        ResourceLoader rl = null;
+        if (getLocaleIdQt() == null || qtFileName == null)
         {
-            result = new ResourceLoader(avkonFileName, avkonPrefix, qtFileName, qtPrefix);
-            resourceLoaders.put(key, result);
+            rl = ResourceLoaderAvkon.getInstance(avkonFileName, avkonPrefix);
         }
-        return result;
+        else
+        {
+            try
+            {
+                rl = ResourceLoaderQt.getInstance(qtFileName, qtPrefix);
+            }
+            catch (Throwable t)
+            {
+                Logger.WLOG(Logger.EUtils,
+                            "ResourceLoader: Creating ResourceLoaderQt for " +
+                            qtFileName + " failed: " + t);
+            }
+            if (rl == null)
+            {
+                rl = ResourceLoaderAvkon.getInstance(
+                    avkonFileName, avkonPrefix, qtFileName, qtPrefix);
+            }
+        }
+        return rl;
     }
 
     /**
      * Returns a resource loader instance.
      *
-     * @param resourceName name of the resource
-     * @param prefix prefix added before each id when retrieving
+     * @param resourceName comma separated list of resource file names
+     * @param prefix comma separated list of prefixes added before each
+     * id when retrieving
      * @return resource loader instance
      */
-    public static ResourceLoader getInstance(String resourceName, String prefix)
+    synchronized public static ResourceLoader getInstance(
+        String resourceName, String prefix)
     {
-        String key = resourceName + ":" + prefix;
-        ResourceLoader result = (ResourceLoader)resourceLoaders.get(key);
-        if (result == null)
+        if (getLocaleIdQt() == null)
         {
-            result = new ResourceLoader(resourceName, prefix);
-            resourceLoaders.put(key, result);
-        }
-        return result;
-    }
-
-    /**
-     * Private constructor. Loads localisation resource file.
-     * On Avkon UI it's resources are loaded. On Qt platfor it's
-     * resource is first read and if that fails Avkon one is read.
-     *
-     * @param avkonFileName Avkon localisation resource file.
-     * @param avkonPrefix   Avkon logical string prefix.
-     * @param qtFileName    Qt localisation resource file.
-     * @param qtPrefix      Qt logical string prefix.
-     */
-    private ResourceLoader(String avkonFileName,
-                           String avkonPrefix,
-                           String qtFileName,
-                           String qtPrefix)
-    {
-        String localeId = getLocaleIdQt();
-
-        if (localeId == null)
-        {
-            locType = AVKON;
-            prefix = avkonPrefix;
-            loadFile(avkonFileName, true);
+            return getInstance(resourceName, prefix, null, null);
         }
         else
         {
-            if (!loadFile(qtFileName, false))
-            {
-                // Fallback to Avkon
-                locType = AVKON;
-                prefix = avkonPrefix;
-                loadFile(avkonFileName, true);
-            }
-            else
-            {
-                locType = QT;
-                prefix = qtPrefix;
-            }
+            return getInstance(resourceName, prefix, resourceName, prefix);
         }
     }
 
     /**
-     * Creates resource loader, using the current locale of the environment.
+     * Get a string formatter of a given resource id.
      *
-     * @param resourceName name of the resource
-     * @param aPrefix prefix added before each id when retrieving
+     * @param id comma separated list of resource ids
+     * @return formatter instance
+     * @see Formatter
      */
-    ResourceLoader(String resourceName, String aPrefix)
-    {
-        locType = AVKON;
-        prefix = aPrefix;
-        loadFile(resourceName, true);  // Avkon
-    }
+    public abstract Formatter format(String id);
 
     /**
      * Get a string formatter of a given resource id.
@@ -155,22 +151,17 @@ public class ResourceLoader
      * @return formatter instance
      * @see Formatter
      */
-    public Formatter format(String id)
-    {
-        return new Formatter(string(id), locType);
-    }
+    public abstract Formatter format(Id id);
 
     /**
-     * Get a string formatter of a given resource id.
+     * Formats localised text with specified parameters from an array.
      *
-     * @param id resource id
-     * @return formatter instance
+     * @param id comma separated list of resource ids
+     * @param textParameters parameters to be filled into the text
+     * @return localised text formatted with the provided parameters
      * @see Formatter
      */
-    public Formatter format(Id id)
-    {
-        return new Formatter(string(id.getString(locType)), locType);
-    }
+    public abstract String format(String id, Object[] textParameters);
 
     /**
      * Formats localised text with specified parameters from an array.
@@ -180,32 +171,16 @@ public class ResourceLoader
      * @return localised text formatted with the provided parameters
      * @see Formatter
      */
-    public String format(String id, Object[] textParameters)
-    {
-        return new Formatter(string(id), locType).format(textParameters);
-    }
+    public abstract String format(Id id, Object[] textParameters);
 
     /**
-     * Formats localised text with specified parameters from an array.
-     *
-     * @param id resource id
-     * @param textParameters parameters to be filled into the text
-     * @return localised text formatted with the provided parameters
-     * @see Formatter
-     */
-    public String format(Id id, Object[] textParameters)
-    {
-        return new Formatter(string(id.getString(locType)), locType).format(textParameters);
-    }
-
-
-    /**
-     * Gets the locale ID currently being used on the phone. This can be used
-     * e.g. to load a localized icon file, by adding the locale id as suffix.
+     * Gets the locale ID currently being used on the phone.
+     * This can be used e.g. to load a localized icon file, by
+     * adding the locale id as suffix.
      *
      * @return Locale ID as provided by the platform
      */
-    public String getLocaleId()
+    public static String getLocaleId()
     {
         int localeId = _getLocaleId();
         if (localeId > 0)
@@ -230,265 +205,56 @@ public class ResourceLoader
      */
     public static String getLocaleIdQt()
     {
+        if (!iUiThreadExists)
+        {
+            // Do something in UI thread to ensure that it exists
+            // before _getLocaleIdQt() is called. If _getLocaleIdQt()
+            // has been called before creating QApplication,
+            // QApplication creation will panic.
+            try
+            {
+                CoreUi.runInSyncUiThread(new Runnable() {
+                    public void run()
+                    {
+                        iUiThreadExists = true;
+                    }
+                });
+            }
+            catch (Throwable t)
+            {
+                // Assume that UI thread already exists.
+                iUiThreadExists = true;
+            }
+        }
         return _getLocaleIdQt();
     }
 
+    /**
+     * Releases resources and destroys all ResourceLoader instances.
+     */
+    synchronized public static void destroyAll()
+    {
+        Enumeration e = iResourceLoaders.keys();
+        while (e.hasMoreElements())
+        {
+            String key = (String)e.nextElement();
+            ResourceLoader rl = (ResourceLoader)iResourceLoaders.get(key);
+            if (rl instanceof ResourceLoaderQt)
+            {
+                ((ResourceLoaderQt)rl).destroy();
+            }
+        }
+        iResourceLoaders.clear();
+    }
 
     /*** ----------------------------- PRIVATE ---------------------------- */
 
     /**
-     * Get a plain string resource with a given resource id.
-     *
-     * @param id resource id, either with prefix or without
-     * @return resource string, or the id if does not exist
+     * Default constructor.
      */
-    private String string(String id)
+    protected ResourceLoader()
     {
-        String str = (String)resourceMap.get(id);
-        if (str == null)
-        {
-            // Try with prefix
-            str = (String)resourceMap.get(prefix + id);
-            if (str == null)
-            {
-                // Not found even with prefix. Use the id itself
-                if (!id.startsWith(prefix))
-                {
-                    str = prefix + id;
-                }
-                else
-                {
-                    str = id;
-                }
-
-                Logger.WLOG(Logger.EUtils, "Cannot find resource: " + id);
-            }
-
-            // Put back to hash with original key for quick retrieval
-            resourceMap.put(id, str);
-        }
-
-        str = decode(str);
-        str = replaceCharacterCodes(str);
-
-        return str;
     }
-
-    /**
-     * Loads the resources from .loc type file.
-     *
-     * @param resourceName name of the resource file.
-     * @param aIs InputStream pointing to resource. It will be closed after use.
-     * @param true if operation succeed.
-     */
-    private boolean loadFile(String resourceName, boolean avkon)
-    {
-        InputStream is = null;
-
-        if (!avkon)  // Qt resources.
-        {
-            String langName = getLocaleIdQt();
-
-            // Emulator returns falsely en_GB as engineering English locale name.
-            if (langName.equals("en_GB"))
-            {
-                langName = "en";
-            }
-
-            // Load with real locale id
-            is = this.getClass().getResourceAsStream(
-                LOC_RESOURCE_BASE + resourceName + "_" + langName + ".loc");
-
-            if (is == null)
-            {
-                /*
-                 * Does not exist. No need to continue as avkon file cannot
-                 * found using qt name.
-                 */
-                return false;
-            }
-        }
-        else  // Avkon resources.
-        {
-            // Load with real locale id
-            is = this.getClass().getResourceAsStream(
-                 LOC_RESOURCE_BASE + resourceName + "_" + getLocaleId() + ".loc");
-
-            if (is == null)
-            {
-                // Load the engineering english
-                is = this.getClass().getResourceAsStream(
-                         LOC_RESOURCE_BASE + resourceName + "_sc" + ".loc");
-            }
-            if (is == null)
-            {
-                // Load the reference engineering english
-                is = this.getClass().getResourceAsStream(
-                         LOC_RESOURCE_BASE + resourceName + ".loc");
-            }
-            if (is == null)
-            {
-                Logger.WLOG(Logger.EUtils,
-                            "Cannot load resource file: " + resourceName);
-                return false;
-            }
-        }
-
-        try
-        {
-            // Loc-files area always on UTF8 format
-            LineReader lr = new LineReader(
-                new BufferedReader(new InputStreamReader(is, "UTF-8")));
-            String line;
-
-            while ((line = lr.readLine()) != null)
-            {
-                // Ignore lines which are not #define's
-                if (!line.startsWith("#define "))
-                {
-                    continue;
-                }
-                try
-                {
-                    // Skip "#define" + any whitespace
-                    line = line.substring(line.indexOf(' ')).trim();
-
-                    int idEnd = line.indexOf(' ');
-                    String id = line.substring(0, idEnd);
-
-                    int strStart = line.indexOf('"', idEnd);
-                    int strEnd = line.lastIndexOf('"');
-                    String str = line.substring(strStart + 1, strEnd);
-
-                    resourceMap.put(id, str);
-
-                }
-                catch (IndexOutOfBoundsException ex)
-                {
-                    String error = "Incorrect line " + lr.getLineNumber() + "\"" +
-                                   line + "\"";
-                    Logger.WLOG(Logger.EUtils, error);
-                }
-            }
-            is.close();
-
-        }
-        catch (IOException ex)
-        {
-            Logger.WLOG(Logger.EUtils,
-                        "Resource file " + resourceName + " handling failed: "
-                        + ex.getMessage());
-        }
-
-        return true;
-    }
-
-    /**
-     * Decode given string. Decoding means unescaping escaped characters.
-     * Currently \n, \t, \', \\ and \" patterns are decoded to respective
-     * characters.
-     *
-     * @param str to be decoded.
-     * @return decoded String.
-     */
-    private String decode(String str)
-    {
-        str = replacePattern(str, "\\n", '\n');
-        str = replacePattern(str, "\\\\", '\\');
-        str = replacePattern(str, "\\\"", '\"');
-        str = replacePattern(str, "\\t", '\t');
-        str = replacePattern(str, "\\'", '\'');
-
-        return str;
-    }
-
-    /**
-     * Replace all occurrences of the pattern in the given String.
-     *
-     * @param resource string to be replaced.
-     * @param pattern to replace.
-     * @param replacement replacement character.
-     * @return String where all occurrences of the pattern are replaced.
-     */
-    private String replacePattern(
-        String resource, String pattern, char replacement)
-    {
-        StringBuffer sb = new StringBuffer();
-
-        int startIndex = resource.indexOf(pattern);
-        if (startIndex != -1)
-        {
-            sb.append(resource.substring(0, startIndex)).append(replacement);
-            startIndex = startIndex + pattern.length();
-            int endIndex = 0;
-
-            while ((endIndex = resource.indexOf(pattern, startIndex)) != -1)
-            {
-                sb.append(resource.substring(startIndex, endIndex))
-                .append(replacement);
-                startIndex = endIndex + pattern.length();
-            }
-
-            if (startIndex < resource.length())
-            {
-                sb.append(resource.substring(startIndex, resource.length()));
-            }
-            return sb.toString();
-        }
-        return resource;
-    }
-
-    /**
-     * Replace character codes. They are given as <0x0000> format. Where 0x0000
-     * contains character unicode as hex representation.
-     *
-     * @param str to replace characters.
-     * @return String where characters are replaced.
-     */
-    private String replaceCharacterCodes(String str)
-    {
-        StringBuffer sb = new StringBuffer();
-        int startIndex = str.indexOf("<0x");
-
-        if (startIndex != -1 && str.charAt(startIndex + 7) == '>')
-        {
-            sb.append(str.substring(0, startIndex));
-            try
-            {
-                int charint = Integer.parseInt(
-                                  str.substring(startIndex + 3, startIndex + 7), 16);
-                sb.append((char) charint);
-
-                int endIndex = 0;
-                startIndex+= 7;
-
-                while ((endIndex = str.indexOf("<0x", startIndex)) != -1
-                        && str.charAt(endIndex + 7) == '>')
-                {
-                    sb.append(str.substring(startIndex + 1, endIndex));
-
-                    charint = Integer.parseInt(
-                                  str.substring(endIndex + 3, endIndex + 7), 16);
-                    sb.append((char) charint);
-                    startIndex = endIndex + 7;
-                }
-            }
-            catch (NumberFormatException nfe)
-            {
-                Logger.ELOG(Logger.EUtils,
-                            "Cannot replace character from string: " + str);
-                return str;
-            }
-
-            if (startIndex < str.length())
-            {
-                sb.append(str.substring(startIndex + 1, str.length()));
-            }
-            return sb.toString();
-        }
-        return str;
-    }
-
 
     /*** ----------------------------- NATIVE ----------------------------- */
 
@@ -497,7 +263,7 @@ public class ResourceLoader
      *
      * @return languege code.
      */
-    private native int _getLocaleId();
+    private static native int _getLocaleId();
 
     /**
      * Get Locale Id on Qt platform.
@@ -505,5 +271,4 @@ public class ResourceLoader
      * @return locale Id string. If not in Qt null.
      */
     private static native String _getLocaleIdQt();
-
 }

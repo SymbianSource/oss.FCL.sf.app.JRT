@@ -112,7 +112,8 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_http_HttpConnectionNative__1submit
     jobjectArray aHeaders,
     jbyteArray aPostData,
     jint aPostDataLength,
-    jint aResponseTimeout)
+    jint aResponseTimeout,
+    jboolean aPartialDataFlag)
 {
     LOG(ESOCKET,EInfo,"http jni _submitTransaction");
     NativeHttpTransaction* tran = reinterpret_cast<NativeHttpTransaction*>(aNativeHttpTransaction);
@@ -120,7 +121,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_http_HttpConnectionNative__1submit
     tran->iJniPeer = aJni->NewWeakGlobalRef(aPeer);
     try
     {
-        TRAPD(err,tran->SubmitL(aJni, &aPeer,aHeaders, aPostData, aPostDataLength, respTimeOut));
+        TRAPD(err,tran->SubmitL(aJni, &aPeer,aHeaders, aPostData, aPostDataLength, respTimeOut, aPartialDataFlag));
         return err;
     }
     catch (...)
@@ -220,6 +221,7 @@ JNIEXPORT jstring JNICALL Java_com_nokia_mj_impl_http_HttpConnectionNative__1get
 
 jstring GetUserAgentL(JNIEnv *aJni, jboolean aMidpRuntime)
 {
+
     jstring header = NULL;
 
     if (aMidpRuntime == false)
@@ -293,3 +295,25 @@ jstring GetUserAgentL(JNIEnv *aJni, jboolean aMidpRuntime)
     LOG(ESOCKET,EInfo,"GetUserAgentL() -");
     return header;
 }
+
+JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_http_HttpConnectionNative__1postData
+(JNIEnv *aJni, jobject, jint aNativeHttpTransaction, jbyteArray aPostData, jint aPostDataLength, jboolean iEndOfRequest)
+{
+    LOG(ESOCKET,EInfo,"http jni _postData");
+    NativeHttpTransaction* tran = reinterpret_cast<NativeHttpTransaction*>(aNativeHttpTransaction);
+    try
+    {
+        TRAPD(err,tran->PostDataL(aJni, aPostData, aPostDataLength, iEndOfRequest));
+        return err;
+    }
+    catch (...)
+    {
+        ELOG(ESOCKET,"Http JNI Error, exception caught!: _submitTransaction");
+        return -1;
+    }
+
+
+
+
+}
+

@@ -2261,4 +2261,10 @@ public class Table extends Composite {
 
         return size;
     }
+    
+    // Children of Table are attached into the table itself, not the viewport.
+    int handleWithChildren_pp() {
+        return topHandle;
+    }
+
 }

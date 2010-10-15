@@ -15,6 +15,7 @@
 #include <QRect>
 #include <QImage>
 #include "gfxutils.h"
+#include "graphicscontextimpl.h"
 
 namespace Java { namespace GFX {
 
@@ -24,13 +25,61 @@ namespace Java { namespace GFX {
 
 #define HANDLE_TO_POINTER(type, variable, handle) type variable = reinterpret_cast<type>( handle )
 
-/*static*/ bool gfxUtils::detectCollision(int aImage1PixmapHandle, int aTransform1, int aP1x, int aP1y, int aR1x1, int aR1y1, int aR1x2, int aR1y2,
-                                          int aImage2PixmapHandle, int aTransform2, int aP2x, int aP2y, int aR2x1, int aR2y1, int aR2x2, int aR2y2)
+bool gfxUtils::detectCollision(Image* aImage1, int aTransform1, int aP1x, int aP1y, int aR1x1, int aR1y1, int aR1x2, int aR1y2,
+                               Image* aImage2, int aTransform2, int aP2x, int aP2y, int aR2x1, int aR2y1, int aR2x2, int aR2y2)
 {
+    int transform1 = getCgTransformValue(aTransform1);
+    int transform2 = getCgTransformValue(aTransform2);
+
     // Calculate the intersection of collisionRectangles:
     QRect rect1(aP1x, aP1y, aR1x2 - aR1x1, aR1y2 - aR1y1);
     QRect rect2(aP2x, aP2y, aR2x2 - aR2x1, aR2y2 - aR2y1);
+
+    if (aTransform1 & EReflectDiag)
+    {
+        int tmp = rect1.width();
+        rect1.setWidth(rect1.height());
+        rect1.setHeight(tmp);
+    }
+    if (aTransform2 & EReflectDiag)
+    {
+        int tmp = rect2.width();
+        rect2.setWidth(rect2.height());
+        rect2.setHeight(tmp);
+    }
+
     QRect rect3 = rect1.intersected(rect2);
+
+    QImage qimage1;
+
+    if(transform1 == ETransRot90)
+    {
+        GraphicsContextImpl gc;
+        // create a copy of the image and transform it, i.e. don't modify the original
+        qimage1 = gc.doTransform(aImage1->toImage(), transform1);
+    }
+    else
+    {
+        qimage1 = aImage1->toImage();
+    }
+    int totalWidth1 = qimage1.width();
+
+    QImage qimage2;
+
+    if(transform2 == ETransRot90)
+    {
+        GraphicsContextImpl gc;
+        // create a copy of the image and transform it, i.e. don't modify the original
+        qimage2 = gc.doTransform(aImage2->toImage(), transform2);
+    }
+    else
+    {
+        qimage2 = aImage2->toImage();
+    }
+    int totalWidth2 = qimage2.width();	
+        
+    const unsigned char* data1 = qimage1.bits();
+    const unsigned char* data2 = qimage2.bits();
 
     // Save intersection to collisionRectangles:
     aR1x1 += rect3.x() - aP1x;
@@ -41,17 +90,6 @@ namespace Java { namespace GFX {
     aR2y1 += rect3.y() - aP2y;
     aR2x2 = aR2x1 + rect3.width();
     aR2y2 = aR2y1 + rect3.height();
-
-    // Get image's pixel data:
-    HANDLE_TO_POINTER(QPixmap*, image1, aImage1PixmapHandle);
-    QImage qimage1 = image1->toImage();
-    const unsigned char* data1 = qimage1.bits();
-    int totalWidth1 = qimage1.width();
-
-    HANDLE_TO_POINTER(QPixmap*, image2, aImage2PixmapHandle);
-    QImage qimage2 = image2->toImage();
-    const unsigned char* data2 = qimage2.bits();
-    int totalWidth2 = qimage2.width();
 
     // These rectangles defines areas to be checked.
     QRect image1Rect(aR1x1, aR1y1, aR1x2 - aR1x1, aR1y2 - aR1y1);
@@ -90,8 +128,9 @@ namespace Java { namespace GFX {
     int rect2XEnd = 0;
     int rect2YEnd = 0;
 
-    switch(aTransform1) {
-        case 0: // TRANS_NONE:
+    switch(transform1) 
+    {
+        case ETransNone:
             rect1XInc = 1;
             rect1YInc = 0;
             rect1XLineInc = 0;
@@ -101,7 +140,7 @@ namespace Java { namespace GFX {
             rect1XEnd = image1Rect.x() + image1Rect.width() - 1;
             rect1YEnd = image1Rect.y() + image1Rect.height() - 1;
             break;
-        case 5: // TRANS_ROT90:
+        case ETransRot90:
             rect1XInc = 0;
             rect1YInc = 1;
             rect1XLineInc = -1;
@@ -109,9 +148,9 @@ namespace Java { namespace GFX {
             rect1XStart = image1Rect.x() + image1Rect.width() -1;
             rect1YStart = image1Rect.y();
             rect1XEnd = image1Rect.x();
-            rect1YEnd = image1Rect.y() + image1Rect.width() - 1;
+            rect1YEnd = image1Rect.y() + image1Rect.height() - 1;
             break;
-        case 3: // TRANS_ROT180:
+        case ETransRot180:
             rect1XInc = -1;
             rect1YInc = 0;
             rect1XLineInc = 0;
@@ -121,7 +160,7 @@ namespace Java { namespace GFX {
             rect1XEnd = image1Rect.x();
             rect1YEnd = image1Rect.y();
             break;
-        case 6: // TRANS_ROT270:
+        case ETransRot270:
             rect1XInc = 0;
             rect1YInc = -1;
             rect1XLineInc = 1;
@@ -131,7 +170,7 @@ namespace Java { namespace GFX {
             rect1XEnd = image1Rect.x() + image1Rect.height() - 1;
             rect1YEnd = image1Rect.y();
             break;
-        case 2: // TRANS_MIRROR:
+        case ETransMirror:
             rect1XInc = -1;
             rect1YInc = 0;
             rect1XLineInc = 0;
@@ -141,7 +180,7 @@ namespace Java { namespace GFX {
             rect1XEnd = image1Rect.x();
             rect1YEnd = image1Rect.y() + image1Rect.height() - 1;
             break;
-        case 7: // TRANS_MIRROR_ROT90:
+        case ETransMirrorRot90:
             rect1XInc = 0;
             rect1YInc = -1;
             rect1XLineInc = -1;
@@ -151,7 +190,7 @@ namespace Java { namespace GFX {
             rect1XEnd = image1Rect.x();
             rect1YEnd = image1Rect.y();
             break;
-        case 1: // TRANS_MIRROR_ROT180:
+        case ETransMirrorRot180:
             rect1XInc = 1;
             rect1YInc = 0;
             rect1XLineInc = 0;
@@ -161,7 +200,7 @@ namespace Java { namespace GFX {
             rect1XEnd = image1Rect.x() + image1Rect.width() - 1;
             rect1YEnd = image1Rect.y();
             break;
-        case 4: // TRANS_MIRROR_ROT270:
+        case ETransMirrorRot270:
             rect1XInc = 0;
             rect1YInc = 1;
             rect1XLineInc = 1;
@@ -175,8 +214,9 @@ namespace Java { namespace GFX {
             break;
     }
 
-    switch(aTransform2) {
-        case 0: // TRANS_NONE:
+    switch(transform2) 
+    {
+        case ETransNone:
             rect2XInc = 1;
             rect2YInc = 0;
             rect2XLineInc = 0;
@@ -186,7 +226,7 @@ namespace Java { namespace GFX {
             rect2XEnd = image2Rect.x() + image2Rect.width() - 1;
             rect2YEnd = image2Rect.y() + image2Rect.height() - 1;
             break;
-        case 5: // TRANS_ROT90:
+        case ETransRot90:
             rect2XInc = 0;
             rect2YInc = 1;
             rect2XLineInc = -1;
@@ -194,9 +234,9 @@ namespace Java { namespace GFX {
             rect2XStart = image2Rect.x() + image2Rect.width() -1;
             rect2YStart = image2Rect.y();
             rect2XEnd = image2Rect.x();
-            rect2YEnd = image2Rect.y() + image2Rect.width() - 1;
+            rect2YEnd = image2Rect.y() + image2Rect.height() - 1;
             break;
-        case 3: // TRANS_ROT180:
+        case ETransRot180:
             rect2XInc = -1;
             rect2YInc = 0;
             rect2XLineInc = 0;
@@ -206,7 +246,7 @@ namespace Java { namespace GFX {
             rect2XEnd = image2Rect.x();
             rect2YEnd = image2Rect.y();
             break;
-        case 6: // TRANS_ROT270:
+        case ETransRot270:
             rect2XInc = 0;
             rect2YInc = -1;
             rect2XLineInc = 1;
@@ -216,7 +256,7 @@ namespace Java { namespace GFX {
             rect2XEnd = image2Rect.x() + image2Rect.height() - 1;
             rect2YEnd = image2Rect.y();
             break;
-        case 2: // TRANS_MIRROR:
+        case ETransMirror:
             rect2XInc = -1;
             rect2YInc = 0;
             rect2XLineInc = 0;
@@ -226,7 +266,7 @@ namespace Java { namespace GFX {
             rect2XEnd = image2Rect.x();
             rect2YEnd = image2Rect.y() + image2Rect.height() - 1;
             break;
-        case 7: // TRANS_MIRROR_ROT90:
+        case ETransMirrorRot90:
             rect2XInc = 0;
             rect2YInc = -1;
             rect2XLineInc = -1;
@@ -236,7 +276,7 @@ namespace Java { namespace GFX {
             rect2XEnd = image2Rect.x();
             rect2YEnd = image2Rect.y();
             break;
-        case 1: // TRANS_MIRROR_ROT180:
+        case ETransMirrorRot180:
             rect2XInc = 1;
             rect2YInc = 0;
             rect2XLineInc = 0;
@@ -246,7 +286,7 @@ namespace Java { namespace GFX {
             rect2XEnd = image2Rect.x() + image2Rect.width() - 1;
             rect2YEnd = image2Rect.y();
             break;
-        case 4: // TRANS_MIRROR_ROT270:
+        case ETransMirrorRot270:
             rect2XInc = 0;
             rect2YInc = 1;
             rect2XLineInc = 1;
@@ -268,41 +308,53 @@ namespace Java { namespace GFX {
 
     // Go through the intersection area pixel by pixel.
     // Following code assumes that format is 32-bit RGBA or 32-bit RGB.
-    while(true) {
+    while(true) 
+    {
         // Check is there hit:
-        if(data1[rect1Y * totalWidth1 * 4 + rect1X * 4 + 3]) {
-            if(data2[rect2Y * totalWidth2 * 4 + rect2X * 4 + 3]) {
+        if(data1[rect1Y * totalWidth1 * 4 + rect1X * 4 + 3])
+        {
+            if(data2[rect2Y * totalWidth2 * 4 + rect2X * 4 + 3]) 
+            {
                 return true;
             }
         }
 
-        if((rect1X == rect1XEnd) && (rect1Y == rect1YEnd)) {
+        if((rect1X == rect1XEnd) && (rect1Y == rect1YEnd))
+        {
             // Done, no hit:
             return false;
         }
 
         // Move to next line if in the end:
-        if(rect1XLineInc == 0) {
-            if(rect1X == rect1XEnd) {
+        if(rect1XLineInc == 0)
+        {
+            if(rect1X == rect1XEnd)
+            {
                 rect1X = rect1XStart - rect1XInc;
                 rect1Y += rect1YLineInc;
             }
         }
-        else {
-            if(rect1Y == rect1YEnd) {
+        else
+        {
+            if(rect1Y == rect1YEnd)
+            {
                 rect1Y = rect1YStart - rect1YInc;
                 rect1X += rect1XLineInc;
             }
         }
 
-        if(rect2XLineInc == 0) {
-            if(rect2X == rect2XEnd) {
+        if(rect2XLineInc == 0)
+        {
+            if(rect2X == rect2XEnd)
+            {
                 rect2X = rect2XStart - rect2XInc;
                 rect2Y += rect2YLineInc;
             }
         }
-        else {
-            if(rect2Y == rect2YEnd) {
+        else
+        {
+            if(rect2Y == rect2YEnd)
+            {
                 rect2Y = rect2YStart - rect2YInc;
                 rect2X += rect2XLineInc;
             }
@@ -316,6 +368,43 @@ namespace Java { namespace GFX {
     }
 }
 
+    /**
+     *  Maps transform constants to Common Graphics.
+     */
+	int gfxUtils::getCgTransformValue(int aTransform)
+    {
+        int retVal = ETransNone;
+        switch(aTransform)
+        {
+            case ETransNoneType:
+                retVal = ETransNone;
+                break;
+            case ETransRot90Type:
+                retVal = ETransRot90;
+                break;
+            case ETransRot180Type:
+                retVal = ETransRot180;
+                break;
+            case ETransRot270Type:
+                retVal = ETransRot270;
+                break;
+            case ETransMirrorType:
+                retVal = ETransMirror;
+                break;
+            case ETransMirrorRot90Type:
+                retVal = ETransMirrorRot90;
+                break;
+            case ETransMirrorRot180Type:
+                retVal = ETransMirrorRot180;
+                break;
+            case ETransMirrorRot270Type:
+                retVal = ETransMirrorRot270;
+                break;
+            default:
+                break;
+        }
+        return retVal;
+    }
 } // namespace GFX
 } // namespace Java
 

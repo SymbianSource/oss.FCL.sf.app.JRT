@@ -19,7 +19,12 @@
 #define __JAVALOCALIZATION_IBY__
 
 data=DATAZ_\RESOURCE_FILES_DIR\java\javausermessages.rsc            RESOURCE_FILES_DIR\java\javausermessages.rsc
-data=DATAZ_\QT_TRANSLATIONS_DIR\javaruntimeapplicationsettings.qm   QT_TRANSLATIONS_DIR\javaruntimeapplicationsettings.qm
 data=DATAZ_\QT_TRANSLATIONS_DIR\javaapplicationinstaller.qm         QT_TRANSLATIONS_DIR\javaapplicationinstaller.qm
+data=DATAZ_\QT_TRANSLATIONS_DIR\javaapplicationinstallererrors.qm   QT_TRANSLATIONS_DIR\javaapplicationinstallererrors.qm
+data=DATAZ_\QT_TRANSLATIONS_DIR\javaapplicationsecuritymessages.qm  QT_TRANSLATIONS_DIR\javaapplicationsecuritymessages.qm
+data=DATAZ_\QT_TRANSLATIONS_DIR\javapim.qm                          QT_TRANSLATIONS_DIR\javapim.qm
+data=DATAZ_\QT_TRANSLATIONS_DIR\javaruntimeapplicationsettings.qm   QT_TRANSLATIONS_DIR\javaruntimeapplicationsettings.qm
+data=DATAZ_\QT_TRANSLATIONS_DIR\javaruntimecertificatemanagement.qm QT_TRANSLATIONS_DIR\javaruntimecertificatemanagement.qm
+data=DATAZ_\QT_TRANSLATIONS_DIR\javauitoolkits.qm                   QT_TRANSLATIONS_DIR\javauitoolkits.qm
 
 #endif // __JAVALOCALIZATION_IBY__

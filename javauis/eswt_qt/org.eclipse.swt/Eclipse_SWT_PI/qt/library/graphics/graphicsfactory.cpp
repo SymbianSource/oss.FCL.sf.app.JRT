@@ -13,6 +13,7 @@
 #include "bufferimpl.h"
 #include "graphicscontextimpl.h"
 #include "pixmap.h"
+#include "imageimpl.h"
 #include "imageloaderimpl.h"
 #include "imagedataimpl.h"
 #include "palettedataimpl.h"
@@ -54,58 +55,142 @@ namespace Java { namespace GFX {
     return static_cast<GraphicsContext*>(gc);
 }
 
-/*static*/ Image* GraphicsFactory::createImage(int aWidth, int aHeight, int aFillColor)
+/*static*/ Image* GraphicsFactory::createImage(int aWidth, int aHeight, int aFillColor, TImageType aType)
 {
     GFX_LOG_FUNC_CALL();
-    Pixmap* pixmap = new Pixmap();
-    pixmap->createBySize(aWidth, aHeight, aFillColor ,EFormatNone /*format decided by framework*/);
-    return static_cast<Image*>(pixmap);
+    if(aType == EImage)
+        {
+        ImageImpl* image = new ImageImpl();
+        // create ARGB32 image
+        image->createBySize(aWidth, aHeight, aFillColor, EFormatARGB32); 
+        return static_cast<Image*>(image);
+        }
+    else if(aType == EPixmap)
+        {
+        Pixmap* pixmap = new Pixmap();
+        pixmap->createBySize(aWidth, aHeight, aFillColor ,EFormatNone /*format decided by framework*/);
+        return static_cast<Image*>(pixmap);
+        }
+    return NULL;
 }
 
 /*static*/ Image* GraphicsFactory::createImage(Image* aImage, int aX, int aY, int aWidth, int aHeight)
 {
     GFX_LOG_FUNC_CALL();
-    Pixmap* pixmap = new Pixmap();
-    pixmap->createFromImage(aImage, aX, aY, aWidth, aHeight);
-    return static_cast<Image*>(pixmap);
+    if(aImage->type() == EImage)
+        {
+        ImageImpl* image = new ImageImpl();
+        image->createFromImage(aImage, aX, aY, aWidth, aHeight); 
+        return static_cast<Image*>(image);    
+        }
+    else if(aImage->type() == EPixmap)
+        {
+        Pixmap* pixmap = new Pixmap();
+        pixmap->createFromImage(aImage, aX, aY, aWidth, aHeight);
+        return static_cast<Image*>(pixmap);       
+        }
+    return NULL;
 }
 
-/*static*/ Image* GraphicsFactory::createImage(const QImage& aImage)
+/*static*/ Image* GraphicsFactory::createImage(Image* aImage, int aX, int aY, int aWidth, 
+                                                  int aHeight, TImageType aTypeOfCopy)
 {
     GFX_LOG_FUNC_CALL();
-    Pixmap* pixmap = new Pixmap();
-    pixmap->createFromQImage(aImage);
-    return static_cast<Image*>(pixmap);
+    if(aTypeOfCopy == EImage)
+        {
+        ImageImpl* image = new ImageImpl();
+        image->createFromImage(aImage, aX, aY, aWidth, aHeight); 
+        return static_cast<Image*>(image);    
+        }
+    else if(aTypeOfCopy == EPixmap)
+        {
+        Pixmap* pixmap = new Pixmap();
+        pixmap->createFromImage(aImage, aX, aY, aWidth, aHeight);
+        return static_cast<Image*>(pixmap);       
+        }
+    return NULL;
 }
 
-/*static*/ Image* GraphicsFactory::createImage(const QPixmap& aPixmap)
+/*static*/ Image* GraphicsFactory::createImage(const QImage& aImage, TImageType aType)
 {
     GFX_LOG_FUNC_CALL();
-    Pixmap* pixmap = new Pixmap();
-    pixmap->createFromQPixmap(aPixmap);
-    return static_cast<Image*>(pixmap);
+    if(aType == EImage)
+         {
+         ImageImpl* image = new ImageImpl();
+         // create ARGB32 image
+         image->createFromQImage(aImage);
+         return static_cast<Image*>(image);
+         }
+     else if(aType == EPixmap)
+         {
+         Pixmap* pixmap = new Pixmap();
+         pixmap->createFromQImage(aImage);
+         return static_cast<Image*>(pixmap);
+         }
+    return NULL;
 }
 
-/*static*/ Image* GraphicsFactory::createImage(int* aRgbData, int aWidth, int aHeight, bool aHasAlpha)
-{
-    Pixmap* pixmap = new Pixmap();
-    pixmap->createFromRGB(aRgbData, aWidth, aHeight, aHasAlpha);
-    return static_cast<Image*>(pixmap);
-}
-
-/*static*/ ImageLoader* GraphicsFactory::createImageLoader()
+/*static*/ Image* GraphicsFactory::createImage(const QPixmap& aPixmap, TImageType aType)
 {
     GFX_LOG_FUNC_CALL();
-    ImageloaderImpl* loader = new ImageloaderImpl();
+    if(aType == EImage)
+         {
+         ImageImpl* image = new ImageImpl();
+         // create ARGB32 image
+         image->createFromQPixmap(aPixmap);
+         return static_cast<Image*>(image);
+         }
+     else if(aType == EPixmap)
+         {
+         Pixmap* pixmap = new Pixmap();
+         pixmap->createFromQPixmap(aPixmap);
+         return static_cast<Image*>(pixmap);
+         }
+    return NULL;
+}
+
+/*static*/ Image* GraphicsFactory::createImage(int* aRgbData, int aWidth, int aHeight, bool aHasAlpha, TImageType aType)
+{
+    GFX_LOG_FUNC_CALL();
+    if(aType == EImage)
+        {
+        ImageImpl* image = new ImageImpl();
+        image->createFromRGB(aRgbData, aWidth, aHeight, aHasAlpha); 
+        return static_cast<Image*>(image);    
+        }
+    else if(aType == EPixmap)
+        {
+        Pixmap* pixmap = new Pixmap();
+        pixmap->createFromRGB(aRgbData, aWidth, aHeight, aHasAlpha);
+        return static_cast<Image*>(pixmap);       
+        }
+    return NULL; 
+}
+
+/*static*/ ImageLoader* GraphicsFactory::createImageLoader(TImageType aType)
+{
+    GFX_LOG_FUNC_CALL();
+    ImageloaderImpl* loader = new ImageloaderImpl(aType);
     return static_cast<ImageLoader*>(loader);
 }
 
-/*static*/ Image* GraphicsFactory::createImage(ImageDataWrapper* aImageDataPtr)
+/*static*/ Image* GraphicsFactory::createImage(ImageDataWrapper* aImageDataPtr, TImageType aType)
 {
     GFX_LOG_FUNC_CALL();
-    Pixmap* pixmap = new Pixmap();
-    pixmap->createFromImageData(aImageDataPtr);
-    return static_cast<Image*>(pixmap);
+    
+    if(aType == EImage)
+         {
+         ImageImpl* image = new ImageImpl();
+         image->createFromImageData(aImageDataPtr); 
+         return static_cast<Image*>(image);    
+         }
+    else if(aType == EPixmap)
+         {
+         Pixmap* pixmap = new Pixmap();
+         pixmap->createFromImageData(aImageDataPtr);
+         return static_cast<Image*>(pixmap);       
+         }
+    return NULL;
 }
 
 /*static*/ ImageDataWrapper* GraphicsFactory::createImageData(Image* aImage)

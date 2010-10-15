@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -193,11 +193,11 @@ final class RuntimeErrorDialog extends ErrorMessageBase
         if (mMessageTable == null)
         {
             mMessageTable = new Hashtable();
-            mMessageTable.put(new Integer(UNHANDLED_ERROR), "runtime_error_unhandled");
-            mMessageTable.put(new Integer(START_UP_ERROR), "system_app_cannot_start");
-            mMessageTable.put(new Integer(UNHANDLED_ERROR_DETAILS), "runtime_error_unhandled_details");
-            mMessageTable.put(new Integer(START_UP_ERROR_DETAILS), "runtime_error_unhandled_details");
-            mMessageTable.put(new Integer(DRM_EXPIRED), "secur_error_drm_rights_not_valid");
+            mMessageTable.put(new Integer(UNHANDLED_ERROR), "runtime_error_unhandled,error_unhandled");
+            mMessageTable.put(new Integer(START_UP_ERROR), "system_app_cannot_start,app_cannot_start");
+            mMessageTable.put(new Integer(UNHANDLED_ERROR_DETAILS), "runtime_error_unhandled_details,error_unhandled_details");
+            mMessageTable.put(new Integer(START_UP_ERROR_DETAILS), "runtime_error_unhandled_details,error_unhandled_details");
+            mMessageTable.put(new Integer(DRM_EXPIRED), "secur_error_drm_rights_not_valid,drm_rights_not_valid");
         }
         return mMessageTable;
     }
@@ -213,8 +213,9 @@ final class RuntimeErrorDialog extends ErrorMessageBase
         {
             if (mRes == null)
             {
-                mRes = ResourceLoader.getInstance("javausermessages",
-                                                  "qtn_java_");
+                mRes = ResourceLoader.getInstance(
+                    "javausermessages,javaapplicationsecuritymessages",
+                    "qtn_java_,txt_java_secur_info_");
             }
         }
         return mRes;

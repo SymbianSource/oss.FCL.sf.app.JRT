@@ -907,14 +907,14 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_graphicsContext_1resto
 // Image class JNI calls
 //
 
-jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1create__III
-  (JNIEnv* aJniEnv , jclass, jint aWidth , jint aHeight, jint aFillColor)
+jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1create__IIII
+  (JNIEnv* aJniEnv , jclass, jint aWidth , jint aHeight, jint aFillColor, jint aType)
 {
     Image* img = NULL;
     GFX_TRY
     {
         SWT_LOG_JNI_CALL();
-        img = GraphicsFactory::createImage(aWidth, aHeight, aFillColor);
+        img = GraphicsFactory::createImage(aWidth, aHeight, aFillColor, (TImageType)aType);
     }
     GFX_CATCH
     return POINTER_TO_HANDLE(img);
@@ -934,34 +934,45 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1create__IIIII
     return POINTER_TO_HANDLE(newImage);
 }
 
-jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1create___3IIIZ
-  (JNIEnv* aJniEnv, jclass, jintArray aRgbData, jint aWidth, jint aHeight, jboolean aHasAlpha)
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1create__IIIIII
+  (JNIEnv* aJniEnv, jclass, jint aImageHandle, jint aX, jint aY, jint aWidth, jint aHeight, jint aTypeOfCopy)
+{
+    Image* newImage = NULL;
+    GFX_TRY
+    {
+        SWT_LOG_JNI_CALL();
+        HANDLE_TO_POINTER(Image*, image, aImageHandle);
+        newImage = GraphicsFactory::createImage(image, aX, aY, aWidth, aHeight, (TImageType)aTypeOfCopy);
+    }
+    GFX_CATCH
+    return POINTER_TO_HANDLE(newImage);        
+}
+
+jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1create___3IIIZI
+  (JNIEnv* aJniEnv, jclass, jintArray aRgbData, jint aWidth, jint aHeight, jboolean aHasAlpha, jint aType)
 {
     Image* img = NULL;
     GFX_TRY
     {
         SWT_LOG_JNI_CALL();
-
         int length = aJniEnv->GetArrayLength(aRgbData);
-
         int* buffer = new int[length]; // might throw bad_alloc
         AutoRelease<int> release(buffer, true);
         swtApp->jniUtils().GetJavaIntArrayRegionToIntArray(aJniEnv, aRgbData, 0, length, buffer); // might throw bad_alloc
-
-        img = GraphicsFactory::createImage(buffer, aWidth, aHeight, aHasAlpha);
+        img = GraphicsFactory::createImage(buffer, aWidth, aHeight, aHasAlpha, (TImageType)aType);
     }
     GFX_CATCH
     return POINTER_TO_HANDLE(img);
 }
 
-jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1create__Lorg_eclipse_swt_graphics_ImageData_2
-  (JNIEnv* aJniEnv , jclass, jobject aImageData)
+jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1create__Lorg_eclipse_swt_graphics_ImageData_2I
+  (JNIEnv* aJniEnv , jclass, jobject aImageData, jint aType)
 {
     Image* img = NULL;
     GFX_TRY
     {
         SWT_LOG_JNI_CALL();
-        img = swtApp->jniUtils().CreateImage(aJniEnv, aImageData);
+        img = swtApp->jniUtils().CreateImage(aJniEnv, aImageData, aType);
     }
     GFX_CATCH
     return POINTER_TO_HANDLE(img);
@@ -976,7 +987,7 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1create__I
         SWT_LOG_JNI_CALL();
         HANDLE_TO_POINTER(QPixmap*, pixmap, aPixmapHandle);
         if (pixmap)
-            img = GraphicsFactory::createImage(*pixmap);
+            img = GraphicsFactory::createImage(*pixmap, EPixmap);
     }
     GFX_CATCH
     return POINTER_TO_HANDLE(img);
@@ -1010,6 +1021,34 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1getHeight
     return height;
 }
 
+jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1getQPaintDeviceHandle
+  (JNIEnv* aJniEnv, jclass, jint aImageHandle)
+    {
+        QPaintDevice* device = NULL;
+        GFX_TRY
+        {
+            SWT_LOG_JNI_CALL();
+            HANDLE_TO_POINTER(Image*, image, aImageHandle);
+            device = image->getBindable();
+        }
+        GFX_CATCH
+        return POINTER_TO_HANDLE(device);
+    }
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1getType
+  (JNIEnv* aJniEnv, jclass, jint aImageHandle)
+{
+    jint type = ENone;
+    GFX_TRY
+    {
+        SWT_LOG_JNI_CALL();
+        HANDLE_TO_POINTER(Image*, image, aImageHandle);
+        type = static_cast<jint>( image->type() );
+    }
+    GFX_CATCH
+    return type;   
+}
+
 jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1getWidth
   (JNIEnv* aJniEnv , jclass, jint aImageHandle)
 {
@@ -1037,6 +1076,7 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1getRGB__I_3IIII
         int* buffer = new int[length]; // might throw bad_alloc
         AutoRelease<int> release(buffer, true);
         ::memset(buffer, 0, sizeof(int)*length);
+        swtApp->jniUtils().GetJavaIntArrayRegionToIntArray(aJniEnv, aRgbData, 0, length, buffer);
 
         // get the data (populated to data array)
         image->getRgb(buffer, aOffset, aScanlength, aX, aY, aWidth, aHeight);
@@ -1138,30 +1178,18 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1dispose
     GFX_CATCH
 }
 
-jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1getPixmapHandle
-  (JNIEnv* aJniEnv , jclass, jint aImageHandle)
-{
-    jint pixmapHandle = 0;
-    GFX_TRY
-    {
-        SWT_LOG_JNI_CALL();
-        HANDLE_TO_POINTER(Image*, image, aImageHandle);
-        pixmapHandle = POINTER_TO_HANDLE(image->getPixmap());
-    }
-    GFX_CATCH
-    return pixmapHandle;
-}
-
 jboolean JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_image_1detectCollision
-  (JNIEnv* aJniEnv, jclass, jint aImage1PixmapHandle, jint aTransform1, jint aP1x, jint aP1y, jint aR1x1, jint aR1y1, jint aR1x2, jint aR1y2,
-                            jint aImage2PixmapHandle, jint aTransform2, jint aP2x, jint aP2y, jint aR2x1, jint aR2y1, jint aR2x2, jint aR2y2)
+  (JNIEnv* aJniEnv, jclass, jint aImage1Handle, jint aTransform1, jint aP1x, jint aP1y, jint aR1x1, jint aR1y1, jint aR1x2, jint aR1y2,
+                            jint aImage2Handle, jint aTransform2, jint aP2x, jint aP2y, jint aR2x1, jint aR2y1, jint aR2x2, jint aR2y2)
 {
     jboolean collides = JNI_FALSE;
     GFX_TRY
     {
           SWT_LOG_JNI_CALL();
-          collides = gfxUtils::detectCollision(aImage1PixmapHandle, aTransform1, aP1x, aP1y, aR1x1, aR1y1, aR1x2, aR1y2,
-                                               aImage2PixmapHandle, aTransform2, aP2x, aP2y, aR2x1, aR2y1, aR2x2, aR2y2);
+          HANDLE_TO_POINTER(Image*, image1, aImage1Handle);
+          HANDLE_TO_POINTER(Image*, image2, aImage2Handle);
+          collides = gfxUtils::detectCollision(image1, aTransform1, aP1x, aP1y, aR1x1, aR1y1, aR1x2, aR1y2,
+                                               image2, aTransform2, aP2x, aP2y, aR2x1, aR2y1, aR2x2, aR2y2);
     }
     GFX_CATCH
     return collides;
@@ -1214,13 +1242,13 @@ jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_imageLoader_1endStream
 }
 
 jint JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_imageLoader_1init
-  (JNIEnv* aJniEnv , jclass)
+  (JNIEnv* aJniEnv , jclass, jint aType)
 {
     ImageLoader* loader = NULL;
     GFX_TRY
     {
         SWT_LOG_JNI_CALL();
-        loader = GraphicsFactory::createImageLoader();
+        loader = GraphicsFactory::createImageLoader((TImageType)aType);
     }
     GFX_CATCH
     return POINTER_TO_HANDLE(loader);
@@ -1262,6 +1290,18 @@ void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_imageLoader_1setLoadSi
         loader->setLoadSize(aWidth, aHeight);
     }
     GFX_CATCH
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_imageloader_1setResultImageType
+  (JNIEnv* aJniEnv, jclass, jint aHandle, jint aType)
+{
+    GFX_TRY
+    {
+        SWT_LOG_JNI_CALL();
+        HANDLE_TO_POINTER(ImageLoader*, loader, aHandle);
+        loader->setResultImageType((TImageType)aType);
+    }
+    GFX_CATCH 
 }
 
 JNIEXPORT jobject JNICALL Java_org_eclipse_swt_internal_qt_graphics_OS_imageLoader_1getImageSize

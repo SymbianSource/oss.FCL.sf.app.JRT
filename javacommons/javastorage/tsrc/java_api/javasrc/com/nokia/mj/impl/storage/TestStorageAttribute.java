@@ -20,7 +20,7 @@ package com.nokia.mj.impl.storage;
 
 import com.nokia.mj.test.storage.utils.StorageSessionTestUtils;
 
-import com.nokia.mj.impl.installer.utils.InstallerMain;
+import com.nokia.mj.impl.rt.test.UnitTestSuiteCreator;
 import j2meunit.framework.Test;
 import j2meunit.framework.TestCase;
 import j2meunit.framework.TestMethod;
@@ -30,22 +30,12 @@ import j2meunit.framework.TestSuite;
  * StorageAttirubte test cases. See test methods for test case details.
  */
 public class TestStorageAttribute extends TestCase
-        implements InstallerMain, StorageNames
+        implements UnitTestSuiteCreator, StorageNames
 {
-    /**
-     * Directory for JavaStorage tests.
-     */
-    private static final String iTestRoot = "./jstest";
-
-    /**
-     * Directory for JavaStorage journal and temp files.
-     */
-    private static final String iIsRoot = iTestRoot + "/js";
-
     private StorageSession iSession = null;
     private StorageSessionTestUtils iJtu = null;
 
-    public void installerMain(String[] args)
+    public TestSuite createTestSuite(String[] args)
     {
         TestSuite suite = new TestSuite(this.getClass().getName());
 
@@ -97,7 +87,7 @@ public class TestStorageAttribute extends TestCase
             }
         }));
 
-        com.nokia.mj.impl.utils.OmjTestRunner.run(suite);
+        return suite;
     }
 
     public TestStorageAttribute()
@@ -391,6 +381,9 @@ public class TestStorageAttribute extends TestCase
      * 4. Test value null. If value is not set null is returned.
      * 5. Test value "".
      * 6. Test one len arguments.
+     * 7. Test hashCode.
+     * 8. Test instanceof true.
+     * 9. Test instanceof false.
      */
     public void testAttribute()
     {
@@ -487,6 +480,58 @@ public class TestStorageAttribute extends TestCase
         {
             assertTrue("Attribute set failed: " + se.getMessage(), false);
         }
+
+        // 7. Test hashCode.
+        try
+        {
+            String name = "HashCode";
+            String value = "V";
+            sa.setAttribute(name, value, StorageAttribute.STRING_TYPE);
+
+            assertTrue(sa.hashCode() > 0);
+        }
+        catch (StorageException se)
+        {
+            assertTrue("Attribute hashCode failed: " + se.getMessage(), false);
+        }
+        // 8. Test instanceof true and same.
+        try
+        {
+            String name = "Instanceof";
+            String value = "V";
+            sa.setAttribute(name, value, StorageAttribute.STRING_TYPE);
+            StorageAttribute sa2 = sa;
+            assertTrue(sa.equals(sa2));
+        }
+        catch (StorageException se)
+        {
+            assertTrue("Attribute equals same failed: " + se.getMessage(), false);
+        }
+
+        // 9. Test instanceof false.
+        try
+        {
+            String name = "Instanceof";
+            assertTrue(!(sa.equals(name)));
+        }
+        catch (StorageException se)
+        {
+            assertTrue("Attribute equals instanceof failed: " + se.getMessage(), false);
+        }
+
+        // 10. Test equals false
+        try
+        {
+            String name = "nottheSame";
+            String value = "V";
+            StorageAttribute sa2 = new StorageAttribute(name, value);
+            assertTrue(!(sa.equals(sa2)));
+        }
+        catch (StorageException se)
+        {
+            assertTrue("Attribute equals instanceof failed: " + se.getMessage(), false);
+        }
+
     }
 
     /**

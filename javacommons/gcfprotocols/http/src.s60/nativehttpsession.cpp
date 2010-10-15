@@ -70,6 +70,9 @@ void NativeHttpSession::vmAttached()
     iReadCallbackMethodID = NULL;
     iReadCallbackMethodID = mJniEnv->GetMethodID(httpNativeClass, "dataReadyForReadCallBack", "(I)V");
 
+    iPostCallbackMethodID = NULL;
+    iPostCallbackMethodID = mJniEnv->GetMethodID(httpNativeClass, "postDataConsumedCallback", "()V");
+
     LOG(ESOCKET,EInfo,"-vmAttached");
 }
 
@@ -147,4 +150,22 @@ void NativeHttpSession::doReadCallback(TInt aStatus,jobject &aPeer)
     }
     LOG(ESOCKET,EInfo,"-doReadCallback1");
 }
+
+void NativeHttpSession::doDataConsumedCallback(jobject &aPeer)
+{
+    LOG(ESOCKET,EInfo,"+doDataConsumedCallback");
+    jobject localPeerObject = mJniEnv->NewLocalRef(aPeer);
+    if (localPeerObject)
+    {
+        mJniEnv->CallVoidMethod(aPeer,iPostCallbackMethodID);
+    }
+    else
+    {
+        ELOG(ESOCKET,"NativeHttpSession::doDataConsumedCallback: Error!! java peer object not found ");
+    }
+
+
+}
+
+
 

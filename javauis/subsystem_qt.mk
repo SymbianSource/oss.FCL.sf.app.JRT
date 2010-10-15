@@ -15,9 +15,9 @@
 #
 
 SUBSYSTEMS   += eswt_qt/build nokiauiapi_qt/build
-COMPONENTS   += coreui_qt/build lcdui_qt/build runtimeui_qt/build mmapi_qt/build amms_qt/build m3g_qt/build
+COMPONENTS   += coreui_qt/build lcdui_qt/build runtimeui_qt/build mmapi_qt/build amms_qt/build m3g_qt/build m2g_qt/build
 
-SYMBIAN_ONLY += coreui_qt/build mmapi_qt/build amms_qt/build m3g_qt/build
+SYMBIAN_ONLY += coreui_qt/build mmapi_qt/build amms_qt/build m3g_qt/build m2g_qt/build
 
 # Build order dependency
-coreui_qt/build lcdui_qt/build runtimeui_qt/build nokiauiapi_qt/build mmapi_qt/build amms_qt/build m3g_qt/build: eswt_qt/build
+coreui_qt/build lcdui_qt/build runtimeui_qt/build nokiauiapi_qt/build mmapi_qt/build amms_qt/build m3g_qt/build m2g_qt/build: eswt_qt/build

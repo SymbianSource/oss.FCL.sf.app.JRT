@@ -1,0 +1,30 @@
+/*
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:
+*
+*/
+
+PRJ_EXPORTS
+
+#include "../../../../../inc/build_defines.hrh"
+#ifdef RD_JAVA_SYMBIAN_TARGET
+../tst.bat          /epoc32/winscw/c/tst.bat
+../testfiles/test.dm          /epoc32/winscw/c/test.dm
+../testfiles/test.dcf         /epoc32/winscw/c/test.dcf
+../testfiles/test.jar         /epoc32/winscw/c/test.jar
+../testfiles/testDrm.jar      /epoc32/winscw/c/testDrm.jar
+../testfiles/testDrm.dcf      /epoc32/winscw/c/testDrm.dcf
+../testfiles/testDrm.dr       /epoc32/winscw/c/data/DRM/testDrm.dr
+
+#endif // RD_JAVA_SYMBIAN_TARGET

@@ -136,16 +136,15 @@ public class TextExtensionExtension extends TextExtension {
     }
     
     public void launchDialer(String phoneNumber) {
-        int serviceRequest = OS.XQServiceRequest_new(
-                "com.nokia.services.serviceapp.Dialer", "dial(QString, bool)",
-                false);
-        if (serviceRequest < 1) {
-            return;
-        }
-        OS.XQServiceRequest_swt_setArgumentsForDial(serviceRequest, phoneNumber,
-                false);
-        OS.XQServiceRequest_send(serviceRequest);
-        QObjectDeleteWrapper.deleteSafely(serviceRequest);
+    	int appMgr = OS.XQApplicationManager_new();
+    	int serviceRequest = OS.XQApplicationManager_create(appMgr, "logs","com.nokia.symbian.ILogsView","show(QVariantMap)",false);
+    	if (serviceRequest <= 0) {
+	    	return;
+	    }
+    	OS.XQAiwRequest_swtDialer_setArguments(serviceRequest, phoneNumber);
+    	OS.XQAiwRequest_send(serviceRequest);
+	    QObjectDeleteWrapper.deleteSafely(serviceRequest);
+	    QObjectDeleteWrapper.deleteSafely(appMgr);
      }    
 
 	/**

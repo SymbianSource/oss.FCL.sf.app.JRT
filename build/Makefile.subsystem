@@ -169,9 +169,12 @@ ifdef SKIP_IN_SF
 	echo #endif >> bld.inf
 endif
 
+# Release build for build automation (sbs case is optimized to build on one go)
+releasebuild: build_all sis
+
 build_all: configure qmake
 ifdef USESBS
-	$(SBS) -c winscw_udeb -c armv5_urel -f -
+	$(SBS) -c winscw_udeb -c armv5_urel$(RVCTREL) -f -
 else
 	$(MAKE) -f subsystem.mk PLATFORM=winscw VARIANT=debug NODEP=1 native
 	$(MAKE) -f subsystem.mk PLATFORM=armv5 VARIANT=release NODEP=1 native

@@ -42,7 +42,7 @@ public:
     * After the headers and other details have been set up,
     * call this function to make the request.
     */
-    void SubmitL(JNIEnv* aJni, jobject * aPeer,const jobjectArray aHeaders, const jbyteArray aPostData, const jint aPostDataLength, int aResponseTimeout);
+    void SubmitL(JNIEnv* aJni, jobject * aPeer,const jobjectArray aHeaders, const jbyteArray aPostData, const jint aPostDataLength, int aResponseTimeout, const jboolean aPartialDataFlag);
     /*
     * Get the response headers back from the transaction
     */
@@ -63,6 +63,8 @@ public:
     *   CloseTransaction
     */
     void CloseTransaction();
+
+    int PostDataL(JNIEnv* aJni,const jbyteArray aPostData, const jint aPostDataLength, const jboolean iEndOfRequest);
     /*
     * Get the secutiry information
     */
@@ -74,6 +76,7 @@ public:
 private: //from MRefHttpClientObserver
     void SubmitComplete(TInt aStatus);
     void DataReadyForRead(TInt aStatus);
+    void DoPostCallBack();
 private:
     NativeHttpTransaction(HttpSessionClient& aSession,FunctionServer* aFuncServer);
     void ConstructL(JNIEnv& aJni, jobject aPeer,/* TJavaEventServer aServer,*/ const TDesC* aUri, const TDesC* aRequestMethod);
@@ -81,7 +84,7 @@ private:
 private:
     //static void ExecuteCreateTransactionL(NativeHttpTransaction* aSelf, const TDesC* aUri, const TDesC* aRequestMethod);
     void ExecuteCreateTransactionL(int,int,int);
-    void ExecuteSubmitL(int aSelfhandle , int aRawHeadershandle , int aPostBufhandle, int aResponseTimeout);
+    void ExecuteSubmitL(int aSelfhandle , int aRawHeadershandle , int aPostBufhandle, int aResponseTimeout, bool aPartialDataFlag);
     //void ExecuteSubmitL(NativeHttpTransaction* aSelf , RPointerArray<HBufC8>* aRawHeaders, HBufC8* aPostBuf );
     //static void ExecuteGetResponseL(NativeHttpTransaction* aSelf, RPointerArray<HBufC8>* aRawHeaders);
     void ExecuteGetResponseL(int aSelf,int aRawHeaders);
@@ -89,6 +92,8 @@ private:
     //TInt ExecuteReadBytes(NativeHttpTransaction* aSelf, TUint8* aBytes, TInt aLength);
     //static void ExecuteCloseTransaction(NativeHttpTransaction* aSelf);
     void ExecuteCloseTransaction(int aSelfhandle);
+
+    TInt ExecutePostDataL(int aSelfhandle, int aPostBufhandle, bool iEndOfRequest);
 
 private:
     HttpSessionClient& iSessionClient;

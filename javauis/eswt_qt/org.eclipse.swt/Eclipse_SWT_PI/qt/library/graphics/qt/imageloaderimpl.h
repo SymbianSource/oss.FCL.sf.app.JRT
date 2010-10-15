@@ -24,7 +24,7 @@ public:
     /**
      * Ctor
      */
-    ImageloaderImpl();
+    ImageloaderImpl(TImageType aType);
 
     /**
      * Dtor
@@ -41,6 +41,7 @@ public:
     virtual void dispose();
     virtual Image* load(const QString& aFileName);
     virtual void setLoadSize(int aWidth, int aHeight);
+    virtual void setResultImageType(TImageType aType);
 
 private:
     /**
@@ -89,6 +90,7 @@ private:
     bufferData* mBufferData;
     int loadSizeWidth;
     int loadSizeHeight;
+    TImageType mResultImageType;
 };
 
 } // namespace GFX

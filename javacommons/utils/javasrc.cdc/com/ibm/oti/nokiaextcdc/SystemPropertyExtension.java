@@ -24,6 +24,7 @@ import com.ibm.oti.util.SystemPropertiesHook;
 
 import com.nokia.mj.impl.rt.SystemPropertyProperties;
 import com.nokia.mj.impl.rt.JvmPort;
+import com.nokia.mj.impl.utils.Logger;
 
 /**
  * A class that implements a system property extension mechanism provided
@@ -46,14 +47,24 @@ public class SystemPropertyExtension implements SystemPropertiesHook
     {
         // Create a new object extending jva.util.Properties and fill with the
         // original properties.
-        SystemPropertyProperties newProperties =
-            new SystemPropertyProperties(originalProperties);
+        SystemPropertyProperties newProperties = null;
 
-        // Store the hashtable to be able to add properties during runtime.
-        JvmPort.setPropertiesContainer(newProperties);
-
-        //Override existing line.separator
-        newProperties.put("line.separator", "\n");
+        try
+        {
+            newProperties = new SystemPropertyProperties(originalProperties);
+            // Store the hashtable to be able to add properties during runtime.
+            JvmPort.setPropertiesContainer(newProperties);
+    
+            // Override existing line.separator
+            newProperties.put("line.separator", "\n");
+        }
+        catch (Throwable t)
+        {
+            Logger.LOG(Logger.EUtils, Logger.EInfo, 
+               "Failed to init system properties", t);
+            // In case of error, return original properties.
+            return originalProperties;
+        }
 
         return newProperties;
     }

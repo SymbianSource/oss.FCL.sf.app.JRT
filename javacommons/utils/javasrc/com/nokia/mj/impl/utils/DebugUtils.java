@@ -34,10 +34,12 @@ public final class DebugUtils
             Jvm.loadSystemLibrary("javautils");
         }
 
-        catch (Exception e)
+        catch (Throwable t)
         {
-            Logger.ELOG(Logger.EUtils, "Error loading debug utils native.",
-                        e);
+            String errStr = "Error loading debug utils native. ";
+            Logger.ELOG(Logger.EUtils, errStr,
+                        t);
+            throw new RuntimeException(errStr);
         }
     }
 

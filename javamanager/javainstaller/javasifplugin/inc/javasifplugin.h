@@ -22,10 +22,8 @@
 #define JAVASIFPLUGIN_H
 
 #include <e32base.h>
-#include <hbdevicenotificationdialogsymbian.h>
 #include <usif/sif/sifplugin.h>
 
-#include "asyncwaitcallback.h"
 #include "f32file.h"
 
 class ResultsServer;
@@ -198,11 +196,6 @@ public:  // From base classes
     virtual void CancelOperation();
 
 
-    /**
-     * Hides 'preparing installation' dialog.
-     */
-    void HidePrepInstDialogL();
-
 private:
 
     /**
@@ -303,11 +296,6 @@ private:
         COpaqueNamedParams& aResults,
         TRequestStatus& aStatus);
 
-    /**
-     * Creates 'preparing installation' dialog.
-     */
-    void CreatePrepInstDialogL();
-
 private: //  Data
 
     RFs mRFs;
@@ -316,9 +304,6 @@ private: //  Data
 
     COpaqueNamedParams* mDummyResults;
     CComponentInfo*     mDummyInfo;
-
-    CHbDeviceNotificationDialogSymbian* mPrepInstDialog;
-    CAsyncWaitCallBack* mWaitToHideDialog;
 };
 
 } // Installer

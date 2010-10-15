@@ -190,19 +190,22 @@ endif
 
 export VARIANT
 
-# Specify RVCT version explicitly by default
-OVERRIDE_RVCT = 1
-SBSCONFIG = $(PLATFORM)_$(CFG)
-ifeq ($(OVERRIDE_RVCT),1)
-  ifeq ($(PLATFORM),armv5)
+ifeq ($(BUILDENV),symbian)
+  # Specify RVCT version explicitly by default
+  OVERRIDE_RVCT = 1
+  SBSCONFIG = $(PLATFORM)_$(CFG)
+  ifeq ($(OVERRIDE_RVCT),1)
     ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS
-      SBSCONFIG = $(PLATFORM)_$(CFG).rvct4_0
+      RVCTREL = .rvct4_0
       RVCTBIN = $(RVCT40BIN)
     else 
-      SBSCONFIG = $(PLATFORM)_$(CFG).rvct2_2
+      RVCTREL = .rvct2_2
       RVCTBIN = $(RVCT22BIN)
     endif
     export PATH:=$(RVCTBIN);$(subst $(RVCT40BIN),,$(subst $(RVCT22BIN),,$(PATH)))
+    ifeq ($(PLATFORM),armv5)
+      SBSCONFIG = $(PLATFORM)_$(CFG)$(RVCTREL)
+    endif
   endif
 endif
 
@@ -259,17 +262,21 @@ ifdef FIRSTTIME
 
 # Echo the S60 release before export
 ifeq ($(BUILDENV),symbian)
-all init export configure qmake java native releasebuild test: echo_s60_release
+all init export prep configure qmake java native releasebuild test: echo_s60_release
 echo_s60_release:
 	@echo Building on top of S60 $(RD_JAVA_S60_RELEASE), PLATFORM=$(PLATFORM) VARIANT=$(VARIANT)
 endif
+
+endif # FIRSTTIME
+
 
 include $(JAVA_SRC_ROOT)/build/makefile.javaversion
 
 COMMA = ,
 JAVA_VERSION_ = $(subst .,$(COMMA),$(JAVA_VERSION))
 
-configure: create_inc_dir generateconffiles generatereleasefile
+configure: make_configure
+make_configure: create_inc_dir generateconffiles generatereleasefile
 
 create_inc_dir:
 	$(call MKDIR, $(call PATHFIX,$(GEN_BUILD_FILES_DIR)/inc))
@@ -301,13 +308,12 @@ generatereleasefile:
 	$(shell echo RD_JAVA_S60_RELEASE=$(RD_JAVA_S60_RELEASE)>$(RD_JAVA_S60_RELEASE_FILE))
 
 # Clean file on clean_generated
-clean_configure: clean_conffiles
-
-clean_conffiles:
+clean_configure: make_clean_configure
+make_clean_configure: make_clean_conffiles
+make_clean_conffiles:
 	$(call RMFILES,$(BUILDDEFINEFILE) $(QBUILDDEFINEFILE) $(JAVAVERSIONFILE) \
 	$(PROJECTDEFINEFILE) $(RD_JAVA_S60_RELEASE_FILE))
 
-endif # FIRSTTIME
 
 
 # Symbian ----------------------------------

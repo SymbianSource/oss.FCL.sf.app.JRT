@@ -22,6 +22,8 @@ import com.nokia.mj.impl.rt.support.ApplicationUtils;
 import com.nokia.mj.impl.rt.support.ApplicationInfo;
 import com.nokia.mj.impl.coreui.CoreUi;
 
+import org.eclipse.swt.internal.extension.Toolkit;
+
 
 /**
  * A gate to CoreUi Qt implementation.
@@ -90,6 +92,44 @@ public class CoreUiImpl extends CoreUi
         // Native logic is reversed between Symbian^3 and Symbian^4.
         // platform specific part.
         _hideApplication(!hide);
+    }
+
+    /**
+     * Executes given Runnable synchronously in UI thread.
+     * <br>
+     * This method should only be used in cases where it
+     * is absolutely needed. Before using this method,
+     * consider carefully if the use case really requires
+     * code to be executed in UI thread.
+     * <br>
+     * This method is only supported in Qt based runtimes.
+     * <br>
+     * @param runnable Runnable to be executed
+     * @throws RuntimeException if execution in UI thread
+     * is not supported
+     */
+    protected void runInSyncUiThreadImpl(Runnable runnable)
+    {
+        Toolkit.getInternalDisplay().syncExec(runnable);
+    }
+
+    /**
+     * Executes given Runnable asynchronously in UI thread.
+     * <br>
+     * This method should only be used in cases where it
+     * is absolutely needed. Before using this method,
+     * consider carefully if the use case really requires
+     * code to be executed in UI thread.
+     * <br>
+     * This method is only supported in Qt based runtimes.
+     * <br>
+     * @param runnable Runnable to be executed
+     * @throws RuntimeException if execution in UI thread
+     * is not supported
+     */
+    protected void runInAsyncUiThreadImpl(Runnable runnable)
+    {
+        Toolkit.getInternalDisplay().asyncExec(runnable);
     }
 
     private native void _hideApplication(boolean hide);

@@ -164,14 +164,28 @@ void ResultsServer::processMessage(CommsMessage& aMessage)
 
                 if (INSTALL_OPERATION == operation)
                 {
-                    // Return the component ids of the installed Java application.
+                    // Return the component id of the installed Java application.
                     TComponentId resultComponentId = iIntPairs[L"suite-cid"];
-                    TRAP(err, mResults.AddIntL(KSifOutParam_ComponentId, resultComponentId));
+                    RArray<TInt> intArray;
+                    TRAP(err, intArray.AppendL(resultComponentId));
                     if (KErrNone != err)
                     {
                         ELOG1(EJavaInstaller,
-                              "ResultsServer::processMessage mResults.AddIntL cid error %d", err);
+                              "ResultsServer::processMessage intArray.AppendL "
+                              "error %d", err);
                     }
+                    else
+                    {
+                        TRAP(err, mResults.AddIntArrayL(
+                                 KSifOutParam_ComponentId, intArray));
+                        if (KErrNone != err)
+                        {
+                            ELOG1(EJavaInstaller,
+                                  "ResultsServer::processMessage "
+                                  "mResults.AddIntL cid error %d", err);
+                        }
+                    }
+                    intArray.Close();
                 }
                 else if (UNINSTALL_OPERATION == operation)
                 {

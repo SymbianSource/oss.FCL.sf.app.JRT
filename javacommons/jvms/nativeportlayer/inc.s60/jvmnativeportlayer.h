@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -29,7 +29,6 @@ OS_NONSHARABLE_CLASS(CJvmNativePortLayer): public CBase, public MJvmNativePortLa
 {
 public:
     static MJvmNativePortLayer* NewL();
-    IMPORT_C static void SetPointerToCafMethod(TBool(*aUseCafForFileOpen)(const TDesC&));
 public:
 
     virtual ~CJvmNativePortLayer();
@@ -42,13 +41,10 @@ private:
 
     CJvmNativePortLayer();
 
-    void ConstructL();
+    void Construct();
 
 private:
-//        static  TBool (*iUseCafForFileOpen)(const TDesC&);
-    TBool   iLogging;
-    HBufC*  iStdOut;
-    HBufC*  iStdErr;
+    TBool      iLogging;
     Redirector iRedirector;
 };
 } // end of namespace javaruntime

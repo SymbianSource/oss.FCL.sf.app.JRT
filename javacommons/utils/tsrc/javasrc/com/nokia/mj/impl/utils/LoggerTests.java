@@ -31,6 +31,15 @@ import j2meunit.framework.TestSuite;
  */
 public class LoggerTests extends TestCase implements UnitTestSuiteCreator
 {
+    static
+    {
+        if ("unexiting".equals(System.getProperty("com.nokia.jvm.port")))
+        {
+            System.out.println("NOTE!! IT IS EXPECTED THAT THIS TEST WILL " +
+                               "LEAD TO BIG AMOUNT OF TRACES.");
+        }
+
+    }
     // Create the test suite.
     public TestSuite createTestSuite(String[] args)
     {

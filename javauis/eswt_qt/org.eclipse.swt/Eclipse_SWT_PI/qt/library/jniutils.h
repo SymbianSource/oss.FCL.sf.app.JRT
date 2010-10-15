@@ -330,9 +330,10 @@ public:
      * Creates a native image object based on the given image data object.
      * @param aEnv JNI environment for the thread
      * @param aJavaImageData Java side image data object
+     * @param aType The native type of the image to be created 
      * @return Native image object
      */
-    Java::GFX::Image* CreateImage(JNIEnv* aEnv, jobject& aJavaImageData);
+    Java::GFX::Image* CreateImage(JNIEnv* aEnv, jobject& aJavaImageData, jint aType);
 
     /**
      * Checks if in terms of event processing the object can be deleted. Used 

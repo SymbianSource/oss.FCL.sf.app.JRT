@@ -572,6 +572,9 @@ void CPIMManager::DoCreateCalFileL(const TDesC& aFileName, const TDesC& aDisplay
     iDesCArray->AppendL(aFileName);
     CleanupStack::Pop(aCalSession);
 
+#else
+    (void )aFileName;
+    (void )aDisplayName;
     #endif
 }
 
@@ -628,7 +631,8 @@ void CPIMManager::DoDeleteCalFileL(const TDesC& aFileName)
     {
         User::Leave(KErrAccessDenied);
     }
-
+#else
+    (void) aFileName;
     #endif
 }
 

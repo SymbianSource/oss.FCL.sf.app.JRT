@@ -294,6 +294,7 @@ void OcspClient::InitOcspClientL()
         delete iCertArray;
     }
     COCSPParameters* ocspParams = COCSPParameters::NewL();
+    CleanupStack::PushL(ocspParams);
     if (iDefaultUrl)
     {
         ocspParams->SetURIL(*iDefaultUrl, ETrue);
@@ -323,6 +324,7 @@ void OcspClient::InitOcspClientL()
         }
     }
     iOcspClient = COCSPClient::NewL(ocspParams);
+    CleanupStack::Pop(ocspParams);
 }
 
 OcspResponse* OcspResponse::NewL()

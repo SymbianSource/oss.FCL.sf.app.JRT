@@ -1340,7 +1340,7 @@ public class Combo extends Composite {
             palette = OS.QWidget_swt_palette_new(view);
             int[] bkRoles = getBackgroundImageRoles();
             for(int i = 0; i < bkRoles.length; ++i) {
-                OS.QPalette_swt_setBrush(palette, bkRoles[i], Internal_GfxPackageSupport.getPixmapHandle(image));
+            	OS.QPalette_swt_setBrush(palette, bkRoles[i], Internal_GfxPackageSupport.getImageHandle(image));
             }
             OS.QWidget_setPalette(view, palette);
         } finally {

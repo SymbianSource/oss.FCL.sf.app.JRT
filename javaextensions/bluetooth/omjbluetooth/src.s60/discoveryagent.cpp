@@ -371,7 +371,7 @@ int DiscoveryAgent::getStatusOfCompletion()
     return mServiceSearchStatus;
 }
 
-int DiscoveryAgent::PopulateServiceRecordAttrValue(JNIEnv* aJni,
+int DiscoveryAgent::PopulateServiceRecordAttrValue(JNIEnv* /*aJni,*/,
         TInt64 aRemoteAddress, long aHandle,
         TPtrC16 aAttrIdsDes, jobject aServiceRecordImpl,
         java::util::Monitor* aMonitor)

@@ -8,15 +8,7 @@
     <layer name="app_layer">
       <module name="jrt">
         <unit name="jrt" unitID="jrt.jrt" mrp=""
-              bldFile="&layer_real_source_path;" proFile="jrt.pro" 
-              qmakeArgs="-r"
-              filter="!sf_build" />
-      </module>
-      <module name="jrt_sf">
-        <unit name="jrt_sf" unitID="jrt.jrt_sf" mrp=""
-              bldFile="&layer_real_source_path;" proFile="jrt.pro"
-              qmakeArgs="-r RD_JAVA_SF_BUILD=1"
-              filter="sf_build" />
+              bldFile="&layer_real_source_path;" proFile="jrt.pro" />
       </module>
     </layer>
   </systemModel>

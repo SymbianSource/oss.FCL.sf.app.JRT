@@ -18,6 +18,7 @@
 package com.nokia.mj.impl.rt.support;
 
 import com.nokia.mj.impl.utils.Uid;
+import com.nokia.mj.impl.utils.Logger;
 
 /**
  * ApplicationInfo is an abstract base class for API implementations,
@@ -192,11 +193,12 @@ public abstract class ApplicationInfo
             Class clazz = Class.forName(className);
             sInstance = (ApplicationInfo)clazz.newInstance();
         }
-        catch (Exception e)
+        catch (Throwable t)
         {
-            e.printStackTrace();
-            throw new RuntimeException("Not able to instantiate class " +
-                                       className+". Reason is: " + e);
+            String err = "Not able to instantiate class " +
+                         className + ". Reason is: ";
+            Logger.LOG(Logger.EUtils, Logger.EInfo, err, t);
+            throw new RuntimeException(err + t);
         }
     }
 

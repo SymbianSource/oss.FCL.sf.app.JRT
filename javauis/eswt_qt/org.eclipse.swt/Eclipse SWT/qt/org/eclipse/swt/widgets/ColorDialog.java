@@ -104,6 +104,7 @@ public ColorDialog (Shell parent, int style) {
 public RGB getRGB () {
     return rgb;
 }
+
 /**
  * Makes the receiver visible and brings it to the front
  * of the display.
@@ -117,43 +118,57 @@ public RGB getRGB () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public RGB open () {
-   int colorHandle = 0;
-   colorHandle = OS.QColor_new();
-   if (rgb != null ){
-       OS.QColor_setRed(colorHandle, rgb.red);
-       OS.QColor_setGreen(colorHandle, rgb.green);
-       OS.QColor_setBlue(colorHandle, rgb.blue);
-   }
-   
-   DisposeListener listener = new DisposeListener() {
-       public void widgetDisposed(DisposeEvent e) {
-           if (e.widget == parent) {
-               // Close dialogs which are opened on top of parent.
-               OS.QDialog_swt_closeDialogs(parent.handle, dialogID);
-           }
-       }
-   };
-   parent.addDisposeListener(listener);
-   int qtLayoutDirection = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.QT_RIGHTTOLEFT
-           : OS.QT_LEFTTORIGHT;
-   
-   int color = OS.QColorDialog_getColor( colorHandle,parent.handle, dialogID, qtLayoutDirection );
-   
-   if (parent != null && !parent.isDisposed()) {
-       parent.removeDisposeListener(listener);
-   }
-   
-   OS.QColor_delete( colorHandle );
-   if (color == 0 || !OS.QColor_isValid(color) ){
-       return null;
-   }
-   int red = OS.QColor_red(color);    
-   int blue = OS.QColor_blue( color );
-   int green = OS.QColor_green( color );
-   rgb = new RGB(red,green,blue);
-   return rgb;
+public RGB open() {
+    int r = 0;
+    int g = 0;
+    int b = 0;
+    if (rgb != null) {
+        r = rgb.red;
+        g = rgb.green;
+        b = rgb.blue;
+    }
+
+    DisposeListener listener = new DisposeListener() {
+        public void widgetDisposed(DisposeEvent e) {
+            if (e.widget == parent) {
+                // Close dialogs which are opened on top of parent.
+                OS.QDialog_swt_closeDialogs(parent.handle, dialogID);
+            }
+        }
+    };
+    parent.addDisposeListener(listener);
+
+    int newColorHandle = 0;
+    try {
+        // Open the dialog
+        newColorHandle = OS.QColorDialog_getColor(r, g, b, parent.handle, dialogID, 
+            (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.QT_RIGHTTOLEFT : OS.QT_LEFTTORIGHT);
+    }
+    finally {
+        if (parent != null && !parent.isDisposed()) {
+            parent.removeDisposeListener(listener);
+        }
+    }
+    
+    if (newColorHandle == 0) {
+        return null;
+    }
+    
+    try {
+        if (OS.QColor_isValid(newColorHandle)) {
+            int red = OS.QColor_red(newColorHandle);
+            int blue = OS.QColor_blue(newColorHandle);
+            int green = OS.QColor_green(newColorHandle);
+            rgb = new RGB(red, green, blue);
+        }
+    }
+    finally {
+        OS.QColor_delete(newColorHandle);
+    }
+    
+    return rgb;
 }
+
 /**
  * Sets the receiver's selected color to be the argument.
  *
