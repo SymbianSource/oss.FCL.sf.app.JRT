@@ -208,7 +208,7 @@ LIBRARY akntransitionutils.lib
 #endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
 
 #ifdef RD_JAVA_NGA_ENABLED
-LIBRARY libEGL.lib
+LIBRARY libEGL_sw.lib
 LIBRARY libGLESv1_CM.lib
 LIBRARY alfdecoderserverclient.lib
 LIBRARY	goommonitor.lib

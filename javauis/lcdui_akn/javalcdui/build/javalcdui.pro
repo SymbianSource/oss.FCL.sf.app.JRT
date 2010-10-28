@@ -48,7 +48,7 @@ LIBS += -lapgrfx \
         -lws32 \
         -lcentralrepository \ 
 #ifdef RD_JAVA_NGA_ENABLED
-	-llibEGL \
+-llibegl_sw \
 	-llibglesv1_cm
 #endif // RD_JAVA_NGA_ENABLED
 

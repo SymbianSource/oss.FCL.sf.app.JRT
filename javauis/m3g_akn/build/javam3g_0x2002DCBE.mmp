@@ -76,7 +76,7 @@ LIBRARY		cone.lib
 LIBRARY		ezlib.lib
 LIBRARY		fbscli.lib
 LIBRARY		javalegacyutils.lib
-LIBRARY		libegl.lib
+LIBRARY		libegl_sw.lib
 LIBRARY		libglesv1_cm.lib
 LIBRARY		libGLES_CM.lib
 LIBRARY		m3gcore.lib
