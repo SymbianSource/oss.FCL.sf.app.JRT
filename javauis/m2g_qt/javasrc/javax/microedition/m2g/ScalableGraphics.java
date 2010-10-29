@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -42,9 +42,7 @@ public class ScalableGraphics
      */
     private ScalableGraphics()
     {
-				
         iSg = new M2GScalableGraphics();
-        
     }
 
     /**
@@ -63,9 +61,7 @@ public class ScalableGraphics
      */
     public void bindTarget(java.lang.Object target)
     {
-    		
         iSg.bindTarget(target);
-        
     }
 
     /**
@@ -87,9 +83,7 @@ public class ScalableGraphics
      */
     public void releaseTarget()
     {
-				
         iSg.releaseTarget();
-     		
     }
 
     /**
@@ -106,9 +100,7 @@ public class ScalableGraphics
      */
     public void render(int x, int y, ScalableImage image)
     {
-    		
         iSg.render(x,y, image);
-        
     }
 
     /**

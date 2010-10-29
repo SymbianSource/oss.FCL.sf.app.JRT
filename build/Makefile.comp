@@ -21,7 +21,7 @@ endif
 include $(JAVA_SRC_ROOT)/build/Makefile.defs
 
 
-.PHONY: build_clean_java build_qmake build_clean_native really_clean_native clean_qmake qmakehelp emmareport
+.PHONY: build_clean_java build_qmake build_clean_native really_clean_native clean_qmake qmakehelp emmareport coberturareport
 
 
 PRO_FILE = $(wildcard *.pro)
@@ -71,7 +71,7 @@ endif
 build_java:
 	$(PHASEINFO)
 ifndef SBOX_CPUTRANSPARENCY_LOG
-	$(ANT) -Dtarget.platform=$(PLATFORM) -Dtarget.cfg=$(VARIANT) $(ANT_PROJECT_DEFINES) $(ANT_EMMA_DEFINES)
+	$(ANT) -Dtarget.platform=$(PLATFORM) -Dtarget.cfg=$(VARIANT) $(ANT_PROJECT_DEFINES) $(ANT_EMMA_DEFINES) $(ANT_COBERTURA_DEFINES)
 endif
 
 build_clean_java:
@@ -89,6 +89,11 @@ qmakehelp:
 emmareport:
 ifndef SBOX_CPUTRANSPARENCY_LOG
 	$(ANT) -f $(JAVA_SRC_ROOT)/build/emmautilities.xml -Dset.emma.enabled=true emma.report
+endif
+
+coberturareport:
+ifndef SBOX_CPUTRANSPARENCY_LOG
+	$(ANT) -f $(JAVA_SRC_ROOT)/build/coberturautilities.xml -Dset.cobertura.enabled=true cobertura.report
 endif
 
 # Add the pro-file to the subdirs of enclosing component. Must define the file

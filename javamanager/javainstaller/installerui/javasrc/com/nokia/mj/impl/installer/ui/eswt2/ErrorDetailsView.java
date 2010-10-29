@@ -40,7 +40,7 @@ public class ErrorDetailsView extends ConfirmationViewBase
     /** Constructor */
     protected ErrorDetailsView(InstallerUiEswt aInstallerUi, Composite aParent)
     {
-        super(aInstallerUi, aParent, 8);
+        super(aInstallerUi, aParent, 8, false, COMMAND_COMPOSITE);
         setTitle(InstallerUiTexts.get(InstallerUiTexts.INSTALL_FAILED));
         setCommands(InstallerUiTexts.get(InstallerUiTexts.OK), null);
     }
@@ -68,21 +68,25 @@ public class ErrorDetailsView extends ConfirmationViewBase
      */
     protected void createView()
     {
+        /*
         // Add title.
         Label titleLabel = null;
         String title = InstallerUiTexts.get(InstallerUiTexts.INSTALL_FAILED);
         if (iInstallerUi.getInstallInfo() != null)
         {
-            titleLabel = createLabel(title, getColumns() - 1, SWT.WRAP);
+            titleLabel = createLabel(
+                getHeadingComposite(), title, getHeadingColumns()-1, SWT.WRAP);
             // Add security icon.
             iCertificates = iInstallerUi.getInstallInfo().getCertificates();
-            createSecurityButton();
+            createSecurityButton(getHeadingComposite());
         }
         else
         {
-            titleLabel = createLabel(title, getColumns(), SWT.WRAP);
+            titleLabel = createLabel(
+                getHeadingComposite(), title, getHeadingColumns(), SWT.WRAP);
         }
         setCssId(titleLabel, "heading");
+        */
 
         int horizontalSpan = getColumns();
         int labelStyle = SWT.WRAP;

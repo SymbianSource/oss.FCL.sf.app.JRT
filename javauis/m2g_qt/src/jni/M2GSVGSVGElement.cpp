@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2006 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -61,17 +61,17 @@ Java_com_nokia_microedition_m2g_M2GSVGSVGElement__1getMediaTime(
     M2G_DEBUG_0("JNI ( M2GSVGSVGElement ) _getMediaTime - begin");
     TReal32 seconds = 0;
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
-        TRAP(err, aProxy->GetMediaTimeL(STATIC_CAST(TM2GSvgDocumentHandle, aDocumentHandle),seconds); );
-        }
+        TRAP(err, aProxy->GetMediaTimeL(STATIC_CAST(TM2GSvgDocumentHandle, aDocumentHandle),seconds););
+    }
     M2G_DO_UNLOCK(aJni)
 
     M2GGeneral::CheckErrorCode(aJni, err);
- 
+
     M2G_DEBUG_1("JNI ( M2GSVGSVGElement ) _getMediaTime: %f - end", seconds);
     return STATIC_CAST(jfloat, seconds);
 }
@@ -98,19 +98,19 @@ Java_com_nokia_microedition_m2g_M2GSVGSVGElement__1setMediaTime(
 {
     M2G_DEBUG_0("JNI ( M2GSVGSVGElement ) _setMediaTime - begin");
     TInt err = KM2GNotOk;
-    
+
     TReal32* lseconds = REINTERPRET_CAST(TReal32*, &aSeconds);
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
         TRAP(err, aProxy->SetMediaTimeL(
-                STATIC_CAST(TM2GSvgDocumentHandle, aDocumentHandle),
-                *lseconds); );
-        }
+                 STATIC_CAST(TM2GSvgDocumentHandle, aDocumentHandle),
+                 *lseconds););
+    }
     M2G_DO_UNLOCK(aJni)
-    
+
     M2GGeneral::CheckErrorCode(aJni, err);
 
     M2G_DEBUG_1("JNI ( M2GSVGSVGElement ) _setMediaTime: %f - end", aSeconds);

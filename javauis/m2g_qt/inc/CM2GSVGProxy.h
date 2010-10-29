@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2006 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -438,16 +438,15 @@ public: // METHODS
         TM2GBitmapHandle aSurfaceMaskHandle,
         TReal32 aCurrentTime);
 
-//    pankaj Qimage related changes TODO following Changes done 
     virtual void RenderDocumentL(
         const TM2GSvgEngineHandle& aEngineHandle,
         const TM2GSvgDocumentHandle& aDocumentHandle,
         const TM2GSvgBitmapHandle& aSurfaceHandle,
         TM2GSvgBitmapHandle aSurfaceMaskHandle,
         TReal32 aCurrentTime);
-     /**
-     * @see MM2GSVGProxy::RenderQualityL
-     */
+    /**
+    * @see MM2GSVGProxy::RenderQualityL
+    */
     virtual void RenderQualityL(
         const TM2GSvgEngineHandle& aEngineHandle,
         TInt aQuality);

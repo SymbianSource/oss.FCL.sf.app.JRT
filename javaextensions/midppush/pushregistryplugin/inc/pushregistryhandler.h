@@ -63,7 +63,7 @@ using java::captain::uids_t;
 
 /**
  * This class implements ExtensionPlugin interface of Java Manager.
- * I.e. this class is starting point for all push related tasks in the
+ * I.e. this class is a starting point for all push related tasks in the
  * Java Captain process.
  */
 OS_NONSHARABLE_CLASS(PushRegistryHandler) : public java::captain::ExtensionPluginInterface,
@@ -161,6 +161,39 @@ private:
     int readIntAsBooleanArg(java::comms::CommsMessage& aMsg,const std::string& aMsgName);
     int readIntArg(java::comms::CommsMessage& aMsg,const std::string& aMsgName);
     long long readLongLongArg(CommsMessage& aMsg,const std::string& aMsgName);
+
+    //Internal utility classes.
+    
+    /**
+     * This "function object" class is used as an "comparison object"
+     * when all driveInfo objects, which has equal root path, is removed from
+     * mDriveInfo vector container. This wrapper class is needed because 
+     * we did not wanted to add operator() method to fileutils::driveInfo struct.
+     */
+    class DriveInfoComparisonUtil
+    {
+        public:
+        DriveInfoComparisonUtil(const java::fileutils::driveInfo& aInfo)
+        : mObj(aInfo) {}
+        
+        ~DriveInfoComparisonUtil(){}
+        
+        DriveInfoComparisonUtil(const DriveInfoComparisonUtil& x)
+        :mObj(x.mObj){}
+        
+        bool operator()(const java::fileutils::driveInfo& x)
+        {
+            if (mObj.iRootPath == x.iRootPath)
+                return true;
+            return false;
+        }
+        
+        private:
+        const java::fileutils::driveInfo& mObj;
+        
+        //Not implemented.
+        DriveInfoComparisonUtil &operator=(const DriveInfoComparisonUtil& x);
+    };
 
     //Not implemented.
     PushRegistryHandler(const PushRegistryHandler &x);

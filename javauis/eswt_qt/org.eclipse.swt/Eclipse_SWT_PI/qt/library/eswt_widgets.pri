@@ -54,9 +54,7 @@ SOURCES += \
 ##### Symbian specific items ######
 symbian {
     CONFIG += mobility
-    MOBILITY += bearer
-
-    CONFIG +=hb
+    
     HEADERS += \
         swts60.h \
         swtmobiledevice.h \
@@ -77,12 +75,9 @@ symbian {
         -lapgrfx \
         -lHWRMVibraClient \
         -lHWRMLightClient \
-        -lxqservice \
-        -lxqtelephonyservice \
         -lQtContacts \
         -lhal \
         -lws32 \
         -lgdi \
-        -lHbCore \
         -lfbscli
 }

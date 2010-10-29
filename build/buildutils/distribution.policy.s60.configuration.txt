@@ -12,22 +12,23 @@
 # Always use slash ('/') as a path separator in this file
 # and do not end path definitions with a slash.
 
+DEFAULT_POLICY                     : 7
+ROOT_POLICY                        : 7
 /.svn                              : IGNORE
 /swt/internal                      : 7
 /swt/animation/internal            : 7
 /swt/expanded/internal             : 7
 /swt/mobile/internal               : 7
-/nokiauiapi_qt/javasrc/com/nokia/mid/ui/internal    : 7
+/nokiauiapi_qt/javasrc/com/nokia/mid/ui/internal : 7
 /internal                          : 1
 /releng                            : 1
 ROOT/tools                         : 1
-ROOT/javacommons/jvms/j9/s60       : 810
+/jrt_plat/java_registry_api/doc    : 1
+/CgfxTestRunner                    : 1
+/nokiatests                        : 1
+/broadcast_stub/javasrc            : 0
+/javaextensions/ccapi              : 0
+/javacommons/jvms/j9/s60           : 810
 /midprms                           : 102
 /webservices/javasrc               : 102
 /webservices/tsrc                  : 102
-/CgfxTestRunner                    : 1
-/nokiatests                        : 1
-/broadcast_stub/javasrc            : 1
-DEFAULT_POLICY                     : 7
-ROOT_POLICY                        : 7
-ROOT/javaextensions/ccapi          : 0

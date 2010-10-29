@@ -18,6 +18,11 @@
 
 package com.nokia.mj.impl.installer.jsrpluginnotifier;
 
+import com.nokia.mj.impl.utils.Attribute;
+import com.nokia.mj.impl.utils.InstallerErrorMessage;
+import com.nokia.mj.impl.utils.InstallerDetailedErrorMessage;
+import com.nokia.mj.impl.utils.OtaStatusCode;
+
 /**
  * Installer Jsr plugin just for test purposes.
  *
@@ -52,7 +57,19 @@ public class TestPlugin2 implements InstallerExtension
         if ((aInstallerExtensionInfo.iAttributes != null) &&
                 (aInstallerExtensionInfo.iAttributes.get("JSR-Plugin-Test-Exception") != null))
         {
-            throw new RuntimeException("TestPlugin2.install Exception");
+            if ("InstallerExtensionException".equals(
+                    ((Attribute)aInstallerExtensionInfo.iAttributes.get("JSR-Plugin-Test-Exception")).getValue()))
+            {
+                throw new InstallerExtensionException(
+                    InstallerErrorMessage.INST_UNEXPECTED_ERR, null,
+                    InstallerDetailedErrorMessage.INTERNAL_ERROR,
+                    new String[] { "TestPlugin2.install Exception" },
+                    OtaStatusCode.INTERNAL_ERROR);
+            }
+            else
+            {
+                throw new RuntimeException("TestPlugin2.install Exception");
+            }
         }
 
         return true;
@@ -85,7 +102,19 @@ public class TestPlugin2 implements InstallerExtension
         if ((aInstallerExtensionInfo.iAttributes != null) &&
                 (aInstallerExtensionInfo.iAttributes.get("JSR-Plugin-Test-Exception") != null))
         {
-            throw new RuntimeException("TestPlugin2.uninstall Exception");
+            if ("InstallerExtensionException".equals(
+                    ((Attribute)aInstallerExtensionInfo.iAttributes.get("JSR-Plugin-Test-Exception")).getValue()))
+            {
+                throw new InstallerExtensionException(
+                    InstallerErrorMessage.INST_UNEXPECTED_ERR, null,
+                    InstallerDetailedErrorMessage.INTERNAL_ERROR,
+                    new String[] { "TestPlugin2.uninstall Exception" },
+                    OtaStatusCode.INTERNAL_ERROR);
+            }
+            else
+            {
+                throw new RuntimeException("TestPlugin2.uninstall Exception");
+            }
         }
 
         return true;

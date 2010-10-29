@@ -150,10 +150,10 @@ public class TextFieldTests extends Form implements CommandListener
             tf4.setInitialInputMode("UCB_HEBREW");
 
             tf5.setLabel("UCB_ARABIC");
-            tf4.setInitialInputMode("UCB_ARABIC");
+            tf5.setInitialInputMode("UCB_ARABIC");
 
             tf6.setLabel("UCB_THAI");
-            tf4.setInitialInputMode("UCB_THAI");
+            tf6.setInitialInputMode("UCB_THAI");
             append(tf1);
             append(tf2);
             append(tf3);
@@ -188,10 +188,10 @@ public class TextFieldTests extends Form implements CommandListener
             tf4.setInitialInputMode("IS_FULLWIDTH_LATIN");
 
             tf5.setLabel("IS_HALFWIDTH_KATAKANA");
-            tf4.setInitialInputMode("IS_HALFWIDTH_KATAKANA");
+            tf5.setInitialInputMode("IS_HALFWIDTH_KATAKANA");
 
             tf6.setLabel("IS_KANJI");
-            tf4.setInitialInputMode("IS_KANJI");
+            tf6.setInitialInputMode("IS_KANJI");
 
             append(tf1);
             append(tf2);

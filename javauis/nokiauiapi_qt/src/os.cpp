@@ -14,7 +14,7 @@
 #include <touchfeedback.h>
 #include <com_nokia_mj_impl_nokiauiapi_OS.h>
 #include "autorelease.h"
-#include "csoftnotification.h"
+#include "CSoftNotification.h"
 
 static CCoeControl* convertToSymbian(QWidget* window)
     {
@@ -172,29 +172,31 @@ JNIEXPORT jint JNICALL
 Java_com_nokia_mj_impl_nokiauiapi_OS_setText(JNIEnv* aJniEnv, jclass /*aPeer*/,
         jint aSoftNotificationHandle, jstring aPrimaryText, jstring aSecondaryText)
     {
+    if (aPrimaryText == NULL || aSecondaryText == NULL)
+        {
+        // These arguments are checked already on Java side, no need to try
+        // to recover from NULL strings.
+        return KErrArgument;
+        }
+        
     CSoftNotification* softNotification =
             reinterpret_cast<CSoftNotification*> (aSoftNotificationHandle);
     // Convert from java string to Symbian descriptor
     HBufC* bufferPrimaryText = NULL;
-    if (aPrimaryText != NULL)
+    bufferPrimaryText = JavaStringToSymbianString(aJniEnv, aPrimaryText);
+    if (bufferPrimaryText == NULL)
         {
-        bufferPrimaryText = JavaStringToSymbianString(aJniEnv, aPrimaryText);
-        if (bufferPrimaryText == NULL)
-            {
-            return KErrNoMemory;
-            }
+        return KErrNoMemory;
         }
 
     HBufC* bufferSecondaryText = NULL;
-    if (aSecondaryText != NULL)
+    bufferSecondaryText = JavaStringToSymbianString(aJniEnv,
+            aSecondaryText);
+    if (bufferSecondaryText == NULL)
         {
-        bufferSecondaryText = JavaStringToSymbianString(aJniEnv,
-                aSecondaryText);
-        if (bufferSecondaryText == NULL)
-            {
-            return KErrNoMemory;
-            }
+        return KErrNoMemory;
         }
+
     TRAPD(err,softNotification->SetTextL(*bufferPrimaryText, *bufferSecondaryText));
     return err;
     }
@@ -232,18 +234,21 @@ JNIEXPORT jint JNICALL
 Java_com_nokia_mj_impl_nokiauiapi_OS_setImagePath(JNIEnv* aJniEnv,
         jclass /*aPeer*/, jint aSoftNotificationHandle, jstring aImagePath )
     {
+    if (aImagePath == NULL)
+        {
+        return KErrArgument;
+        }
+        
     CSoftNotification* softNotification =
     reinterpret_cast<CSoftNotification*> (aSoftNotificationHandle);
     // Convert from java string to Symbian descriptor
     HBufC* bufferImagePath = NULL;
-    if (aImagePath != NULL)
+    bufferImagePath = JavaStringToSymbianString(aJniEnv, aImagePath);
+    if (bufferImagePath == NULL)
         {
-        bufferImagePath = JavaStringToSymbianString(aJniEnv, aImagePath);
-        if (bufferImagePath == NULL)
-            {
-            return KErrNoMemory;
-            }
+        return KErrNoMemory;
         }
+
     TRAPD(err,softNotification->SetImagePathL(*bufferImagePath));
     return err;
     }

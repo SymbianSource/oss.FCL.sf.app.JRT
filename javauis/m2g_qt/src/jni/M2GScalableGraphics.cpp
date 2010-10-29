@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2006 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -53,53 +53,33 @@ M2G_NS_START
  * @param aRenderContextHandle Render context handle.
  * @param aTargetHandle Target graphics handle
  * @throws exception if not ok
- 
-LOCAL_C void DoBindL(TInt aRenderContextHandle, TInt aTargetHandle, TBool aUiToolkit)
-{
-    MM2GRenderContext* rc = JavaUnhand<MM2GRenderContext>(aRenderContextHandle);
-    rc->BindL(aTargetHandle, aUiToolkit);
-}
-*/
-/**
- * JNI method
- 
-JNIEXPORT jint JNICALL
-Java_com_nokia_microedition_m2g_M2GScalableGraphics__1bind(
-    JNIEnv* aJni,
-    jobject,
-    jint aEventSourceHandle,
-    jint aRenderContextHandle,
-    jint aTargetHandle,
-    jboolean aUiToolkit)
  */
 
-
-
 JNIEXPORT jint JNICALL
 Java_com_nokia_microedition_m2g_M2GScalableGraphics__1bind(
     JNIEnv* aJni,
     jobject,
     jint aRenderContextHandle,
-    jint aTargetHandle )
+    jint aTargetHandle)
 {
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GScalableGraphics ) _bind - begin");
-    
+
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
-    
+
     if (aRenderContextHandle)
-        {
+    {
         MM2GRenderContext* rc = JavaUnhand<MM2GRenderContext>(aRenderContextHandle);
         TRAP(err,rc->BindL(aTargetHandle););
-        }
+    }
 
     M2G_DO_UNLOCK(aJni)
-    
+
     M2GGeneral::CheckErrorCode(aJni, err);
     M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GScalableGraphics ) _bind: %d - end", err);
 
-    return err; 
+    return err;
 }
 
 
@@ -115,32 +95,28 @@ Java_com_nokia_microedition_m2g_M2GScalableGraphics__1bind(
  * @throws exception if not ok
  */
 
-
-
 JNIEXPORT jint JNICALL
 Java_com_nokia_microedition_m2g_M2GScalableGraphics__1createRenderContext(
     JNIEnv* aJni,
     jobject,
-    jint aSvgProxyHandle   )
+    jint aSvgProxyHandle)
 {
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GScalableGraphics ) _createRenderContext - begin");
     TInt handle = M2G_INVALID_HANDLE;
     TInt  err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
-  
+
     if (aSvgProxyHandle)
-        {
-         TRAP(err, MM2GRenderContext* rchandle = CM2GRenderContext::NewL(JavaUnhand<MM2GSVGProxy> (aSvgProxyHandle));  handle = JavaMakeHandle(rchandle); );
-        }
+    {
+        TRAP(err, MM2GRenderContext* rchandle = CM2GRenderContext::NewL(JavaUnhand<MM2GSVGProxy> (aSvgProxyHandle));  handle = JavaMakeHandle(rchandle););
+    }
     M2G_DO_UNLOCK(aJni)
-    
+
     handle = M2GGeneral::CheckErrorCodeAndHandle(aJni, err, handle, err);
 
     M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GScalableGraphics ) _createRenderContext: %d - end", handle);
-    
 
-    
     return handle;
 }
 
@@ -159,16 +135,16 @@ Java_com_nokia_microedition_m2g_M2GScalableGraphics__1deleteRenderContext(
     jint aRenderContextHandle)
 {
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GScalableGraphics ) _deleteRenderContext - begin");
-    
+
     M2G_DO_LOCK
-    
+
     if (aRenderContextHandle)
-        {
+    {
         MM2GRenderContext* rc = JavaUnhand<MM2GRenderContext>(aRenderContextHandle);
         delete rc;
-        }
+    }
     M2G_DO_UNLOCK(aJni)
-    
+
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GScalableGraphics ) _deleteRenderContext - end");
 }
 
@@ -182,37 +158,30 @@ Java_com_nokia_microedition_m2g_M2GScalableGraphics__1deleteRenderContext(
  * @return KM2GOk if ok
  */
 
-
-/**
- * JNI method
- */
 JNIEXPORT jint JNICALL
 Java_com_nokia_microedition_m2g_M2GScalableGraphics__1release(
     JNIEnv* aJni,
     jobject,
-    jint aSurfaceHandle,
+    jint /*aSurfaceHandle*/,
     jint aRenderContextHandle)
 {
-    
+
     // Release used target surface
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GScalableGraphics ) _release - begin");
     TInt err = KM2GNotOk;
     M2G_DO_LOCK
-   
+
     if (aRenderContextHandle)
-        {
+    {
         MM2GRenderContext* rc = JavaUnhand<MM2GRenderContext>(aRenderContextHandle);
         TRAP(err,rc->ReleaseL(););
-    
-        }
-    M2G_DO_UNLOCK(aJni)//TODO Check for M2G_DO_LOCK M2G_DO_UNLOCK
-//TODO just check it pankaj 8/9/2010    
-//    Java::GFX::WindowSurface* surf = reinterpret_cast<Java::GFX::WindowSurface*>(aSurfaceHandle);
-//    surf->release();  //TODO check This windows surface call detected from Graphics3d.inl 
+    }
+    M2G_DO_UNLOCK(aJni)
+
     M2GGeneral::CheckErrorCode(aJni, err);
-    
-    return err; 
-    
+
+    return err;
+
 }
 // -----------------------------------------------------------------------------
 // Java_com_nokia_microedition_m2g_M2GScalableGraphics::_render
@@ -228,10 +197,6 @@ Java_com_nokia_microedition_m2g_M2GScalableGraphics__1release(
  * @throws Exception if not ok
  */
 
-
-/**
- * JNI method
- */
 JNIEXPORT jint JNICALL
 Java_com_nokia_microedition_m2g_M2GScalableGraphics__1renderLCDUI(
     JNIEnv* aJni,
@@ -249,15 +214,15 @@ Java_com_nokia_microedition_m2g_M2GScalableGraphics__1renderLCDUI(
     TInt err = KM2GNotOk;
 
     M2G_DO_LOCK
-    
+
     if (aRenderContextHandle && aDocumentHandle)
-        {
-            MM2GRenderContext* rc = JavaUnhand<MM2GRenderContext>(aRenderContextHandle);
-            TRAP(err,rc->RenderLCDUIL(aDocumentHandle, aCurrentTime, aSvgW, aSvgH, rr););
-        }
+    {
+        MM2GRenderContext* rc = JavaUnhand<MM2GRenderContext>(aRenderContextHandle);
+        TRAP(err,rc->RenderLCDUIL(aDocumentHandle, aCurrentTime, aSvgW, aSvgH, rr););
+    }
     M2G_DO_UNLOCK(aJni)
-    
-    M2GGeneral::CheckErrorCode(aJni, err); 
+
+    M2GGeneral::CheckErrorCode(aJni, err);
     M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GScalableGraphics ) _render: %d - end", err);
     return err;
 }
@@ -280,23 +245,23 @@ Java_com_nokia_microedition_m2g_M2GScalableGraphics__1renderESWT(
     TM2GRenderRect rr(aX, aY, aClipX, aClipY, aClipW, aClipH);
     TInt err = KM2GNotOk;
     jintArray returnDataJava  = aJni->NewIntArray(10);
-    
+
     M2G_DO_LOCK
-    
+
     TInt returnData[10];
-    
+
     if (aRenderContextHandle && aDocumentHandle)
-        {
+    {
         MM2GRenderContext* rc = JavaUnhand<MM2GRenderContext>(aRenderContextHandle);
-        TRAP(err,rc->RenderESWTL(aDocumentHandle,aCurrentTime,aSvgW,aSvgH,rr,aUseNativeClear,returnData););    
-        }
+        TRAP(err,rc->RenderESWTL(aDocumentHandle,aCurrentTime,aSvgW,aSvgH,rr,aUseNativeClear,returnData););
+    }
     M2G_DO_UNLOCK(aJni)
 
-    
+
     if (returnDataJava != NULL)
         aJni->SetIntArrayRegion(returnDataJava, 0, 10, const_cast<TInt*>(returnData));
-    
-    M2GGeneral::CheckErrorCode(aJni, err); 
+
+    M2GGeneral::CheckErrorCode(aJni, err);
     M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GScalableGraphics ) _render: %d - end", err);
     return returnDataJava;
 }
@@ -318,16 +283,16 @@ Java_com_nokia_microedition_m2g_M2GScalableGraphics__1setRenderingQuality(
 {
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GScalableGraphics ) _setRenderingQuality - begin");
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
-    
-    if ( aRenderContextHandle)
-        {
+
+    if (aRenderContextHandle)
+    {
         MM2GRenderContext* rc = JavaUnhand<MM2GRenderContext>(aRenderContextHandle);
         TRAP(err,rc->SetRenderingQualityL(aMode););
-        }
+    }
     M2G_DO_UNLOCK(aJni)
-    
+
     M2GGeneral::CheckErrorCode(aJni, err);
 
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GScalableGraphics ) _setRenderingQuality - end");
@@ -351,16 +316,16 @@ Java_com_nokia_microedition_m2g_M2GScalableGraphics__1setTransparency(
 {
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GScalableGraphics ) _setTransparency - begin");
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
-    
+
     if (aRenderContextHandle)
-        {
+    {
         MM2GRenderContext* rc = JavaUnhand<MM2GRenderContext>(aRenderContextHandle);
-        TRAP(err,rc->SetTransparency( (TReal32)aAlpha ););
-        }
+        TRAP(err,rc->SetTransparency((TReal32)aAlpha););
+    }
     M2G_DO_UNLOCK(aJni)
-    
+
     M2GGeneral::CheckErrorCode(aJni, err);
 
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GScalableGraphics ) _setTransparency - end");

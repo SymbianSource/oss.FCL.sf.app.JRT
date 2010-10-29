@@ -94,6 +94,8 @@ TInt NativeHttpSession::CreateTransactionL(JNIEnv* aJni, jobject aPeer, jstring 
     HBufC* t2 = S60CommonUtils::wstringToDes(req2.c_str());
 
     TInt handle= NativeHttpTransaction::NewL(*aJni,aPeer,/* NULL, */*iHttpSessionClient, (const TDesC*)t1, (const TDesC*)t2,this);
+    delete t1;
+    delete t2;
     return handle;
 }
 

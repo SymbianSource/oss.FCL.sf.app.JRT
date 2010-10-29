@@ -273,6 +273,22 @@ final class MidletLifeCycle
         if (Log.mOn) Log.logI("Sending shutdown notifications to listeners.");
         ApplicationUtilsImpl.doShutdownImpl();
 
+        String shutdownExtension = System.getProperty("jrt.shutdown.extension");
+        if (Log.mOn) Log.logI("Invoking shutdown extension: " + shutdownExtension);
+
+        if (shutdownExtension != null && shutdownExtension.length() > 0)
+        {           
+            try
+            {
+                Class.forName(shutdownExtension).newInstance();
+            }
+            catch (Throwable t)
+            {
+                 // no extensions
+                 Log.logE("Exp. whe invoking coverage data: ", t);
+            }
+        }        
+
         if (Log.mOn) Log.logI("Sending close indication to runtime starter.");
         _closeInd(mNativeRuntimeStarterHandle);
 

@@ -76,6 +76,7 @@
     <!-- Path for JAPT classpath. Nonexistent files are skipped -->
     <path id="japt.classpath">
       <fileset file="${bcp}"/>
+      <fileset file="${cobertura.classpath}"/>
       <fileset file="${int.bcp}"/>
       <fileset file="${impl.cldc.jar}"/>
       <fileset file="${impl.cdc.jar.classpath}"/>

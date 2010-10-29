@@ -39,10 +39,10 @@ const TInt KPropertyGlobalChatIndicator = 0;
 const TInt KPropertyGlobalIndicatorUninitialized = 0;
     //com_nokia_mid_ui_GlobalIndicators_INDICATOR_UNINITIALIZED;
 
-const TInt KPropertyGlobalIndicatorHide = 0;
+//const TInt KPropertyGlobalIndicatorHide = 0;
     //com_nokia_mid_ui_GlobalIndicators_INDICATOR_HIDE;
 
-const TInt KPropertyGlobalIndicatorShow = 0;
+//const TInt KPropertyGlobalIndicatorShow = 0;
     //com_nokia_mid_ui_GlobalIndicators_INDICATOR_SHOW;
 }
 
@@ -57,10 +57,10 @@ const TInt KPropertyGlobalIndicatorShow = 0;
 // Sets the value for given global indicator.
 // -----------------------------------------------------------------------------
 //
-TInt CGlobalIndicators::SetGlobalIndicator(TInt aIndicator, TInt aValue)
+TInt CGlobalIndicators::SetGlobalIndicator(TInt /*aIndicator*/, TInt /*aValue*/)
 {
 
-    LOG2(EJavaGlobalInd, EInfo,
+   /* LOG2(EJavaGlobalInd, EInfo,
          "GlobalIndicators::SetGlobalIndicator indicator:%d, value:%d",
          aIndicator, aValue);
 
@@ -76,9 +76,9 @@ TInt CGlobalIndicators::SetGlobalIndicator(TInt aIndicator, TInt aValue)
     {
         //convertedIndicator = KCoreAppUIsUipInd;
     }
-
+*/
     TInt readValue = KPropertyGlobalIndicatorUninitialized;
-    RProperty property;
+    //RProperty property;
 
    /* TInt ret = property.Attach(KPSUidCoreApplicationUIs, convertedIndicator);
     if (KErrNone == ret)

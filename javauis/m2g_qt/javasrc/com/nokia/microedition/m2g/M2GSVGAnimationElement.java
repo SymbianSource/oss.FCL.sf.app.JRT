@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -52,7 +52,7 @@ public class M2GSVGAnimationElement
         _beginElementAt(
             getNativeSVGProxyHandle(),
             getDocument().getHandle(), getHandle(), offset,
-            getDocument().getRootElement().getCurrentTime() );
+            getDocument().getRootElement().getCurrentTime());
     }
 
     /**
@@ -71,7 +71,7 @@ public class M2GSVGAnimationElement
     {
         short endAttribute = _getEnumTrait(
                                  getNativeSVGProxyHandle(),
-                                 getHandle(), M2GSVGConstants.AT_END );
+                                 getHandle(), M2GSVGConstants.AT_END);
         // NOTE Native SVG engine checks that element is active so
         // java side doesn't have to do that
         if (endAttribute == M2GSVGConstants.ANIM_INDEFINITE)
@@ -84,7 +84,7 @@ public class M2GSVGAnimationElement
             _endElementAt(
                 getNativeSVGProxyHandle(),
                 getDocument().getHandle(), getHandle(),
-                (offset + getDocument().getRootElement().getCurrentTime())    );
+                (offset + getDocument().getRootElement().getCurrentTime()));
         }
     }
 

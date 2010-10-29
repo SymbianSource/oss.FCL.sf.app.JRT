@@ -199,9 +199,11 @@ RPointerArray<CPIMCategoryStateChange>*
 CPIMContactListAdapter::GetExternalCategoryModificationsL()
 {
     JELOG2(EPim);
+    iMutex.Wait();
     CallMethodL(this, &CPIMContactListAdapter::IsDatabaseReadyL, iFuncServer);
     RPointerArray<CPIMCategoryStateChange>* retval = iCategoryChanges;
     iCategoryChanges = NULL;
+    iMutex.Signal();
     return retval;
 }
 
@@ -290,6 +292,7 @@ void CPIMContactListAdapter::DoClose()
     iDatabase = NULL;
     delete iMinimalFieldsViewDef;
     iMinimalFieldsViewDef = NULL;
+    iMutex.Close();
 }
 
 // -----------------------------------------------------------------------------
@@ -640,6 +643,7 @@ void CPIMContactListAdapter::ConstructL()
                                 CContactItemViewDef::EIncludeFields,
                                 CContactItemViewDef::EIncludeHiddenFields);
     InitializeMinimalViewDefinitionL();
+    User::LeaveIfError(iMutex.CreateLocal());
 }
 
 // -----------------------------------------------------------------------------
@@ -652,6 +656,7 @@ void CPIMContactListAdapter::ExternalGroupChangeL(TContactItemId aId, // Id of t
         TPIMExternalChangeType aType) // type of the change
 {
     JELOG2(EPim);
+    iMutex.Wait();
     iCategoryManager->FlushCache();
 
     // This should never happen
@@ -702,6 +707,7 @@ void CPIMContactListAdapter::ExternalGroupChangeL(TContactItemId aId, // Id of t
     CleanupStack::PushL(change);
     User::LeaveIfError(iCategoryChanges->Append(change));
     CleanupStack::Pop(change);
+    iMutex.Signal();
 }
 
 // -----------------------------------------------------------------------------

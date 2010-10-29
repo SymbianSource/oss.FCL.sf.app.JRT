@@ -114,7 +114,7 @@ public class CentralRepositoryImpl extends CentralRepository
         synchronized (this)
         {
 
-            if (iState != CLOSED)
+            if (iState != CLOSED && iState == OPEN)
             {
                 iState = CLOSED;
                 _close(iFunctionSourceHandle, iCenrepHandle);
@@ -329,6 +329,7 @@ public class CentralRepositoryImpl extends CentralRepository
         long key,
         int value);
 
+   
 
     /**
      * Checks if MIDlet is permited to access the central repository.

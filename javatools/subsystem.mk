@@ -42,6 +42,11 @@ COMPONENTS += \
 	usersettingsconfigurator/build \
 	javarestoreconverter/build 
 
+ifdef RD_JAVA_S60_RELEASE_5_0_ROM
+COMPONENTS += \
+	javaafterflashconverter/build	
+endif
+
 else
 
 COMPONENTS += \

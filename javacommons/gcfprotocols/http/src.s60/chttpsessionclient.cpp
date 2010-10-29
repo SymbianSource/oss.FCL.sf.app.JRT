@@ -119,6 +119,7 @@ void HttpSessionClient::ConstructL(TInt aType, TInt aAPNId, TInt * apnerr)
 {
     LOG(ESOCKET,EInfo,"+HttpSessionClient::ConstructL ");
 
+    iApType = aType;
     /*CActiveScheduler * scheduler = new CActiveScheduler();
     CActiveScheduler::Install(scheduler);
     CActiveScheduler::Add(this);*/
@@ -188,6 +189,7 @@ void HttpSessionClient::ConstructL(TInt aType, TInt aAPNId, TInt * apnerr)
         if (aType == 3) // IAP Id
         {
             LOG(ESOCKET,EInfo,"+HttpSessionClient:: in iap case");
+            iApnId = aAPNId;
             if (aAPNId != -1)
             {
                 // Creates connection with selected IAP ID
@@ -336,7 +338,7 @@ HttpSessionClient::~HttpSessionClient()
 
 void HttpSessionClient::RestartConnection()
 {
-    LOG(ESOCKET,EInfo,"+HttpSessionClient::RestartConnection12 + ");
+    LOG2(ESOCKET,EInfo,"+HttpSessionClient::RestartConnection12 %d , type = %d ",iApnId,iApType);
     iConnection.Close();
     TInt ret = iConnection.Open(iSocketServ);
 
@@ -345,20 +347,29 @@ void HttpSessionClient::RestartConnection()
     TConnPrefList prefList;
     TExtendedConnPref prefs;
 
-    if (iApnId!=-1)
+    if ((iApnId!=-1) && (iApType == 2))
         prefs.SetSnapId(iApnId);
+    else if ((iApnId!=-1) && (iApType == 3))
+        prefs.SetIapId(iApnId);
     TRAPD(err,prefList.AppendL(&prefs));
     if (err == KErrNone)
         ret = iConnection.Start(prefList);
     else
         ret = iConnection.Start();
 #else
-    TCommSnapPref connPref;
-    if (iApnId!=-1)
-        connPref.SetSnap(iApnId);
-    ret = iConnection.Start(connPref);
-
+    if ((iApnId!=-1) && (iApType == 2)) // SNAP case
+    {
+    	  TCommSnapPref snapPref;
+        snapPref.SetSnap(iApnId);
+        ret = iConnection.Start(snapPref);
+    }
+    else if ((iApnId!=-1) && (iApType == 3)) // IAP case
+    {
+    	  TCommDbConnPref iapPref;
+        iapPref.SetIapId(iApnId);
+        ret = iConnection.Start(iapPref);
+    }
 #endif
-    LOG(ESOCKET,EInfo,"+HttpSessionClient::RestartConnection + ");
+    ELOG1(ESOCKET,"+HttpSessionClient::RestartConnection --ret = %d ",ret);
 
 }

@@ -226,6 +226,7 @@ public class ScreenTextBoxTests extends Form implements CommandListener
         listConstraints.setCommandListener(this);
         listConstraints.addCommand(cmdBack);
         listConstraints.addCommand(cmdOk);
+        listConstraints.setSelectCommand(cmdOk);
         Display.getDisplay(parent).setCurrent(listConstraints);
     }
 

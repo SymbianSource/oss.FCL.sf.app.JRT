@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -37,30 +37,7 @@ public class M2GDocument extends M2GObject
     // STATIC CONSTANTS
     //--------------------------------------------------
     // Error constants
-    /* Optimization: static finals changed to local variables
-    public static final String UNSUPORTED_ELEMENT_TYPE_ESTR =
-      "The type of element is not supported by the implementation.";
-    public static final String UNSUPORTED_NAMESPACE_ESTR =
-      "The URI is not the SVG namespace URI.";
-    public static final String ID_IS_NULL_ESTR =
-      "The ID is null.";
-    public static final String NAMESPACE_URI_IS_NULL_ESTR =
-      "The namespace URI is null.";
-    public static final String QUALIFIED_NAME_IS_NULL_ESTR =
-      "The qualifiedName is null.";
-    public static final String CANNOT_APPEND_CHILD_ESTR =
-      "Cannot appendChild to a Document node.";
-    public static final String CANNOT_INSERT_BEFORE_ESTR =
-      "Cannot insertBefore a Document node.";
-    public static final String CANNOT_REMOVE_CHILD_ESTR =
-      "Cannot removeChild from a Document node.";
-    public static final String DOCUMENT_IS_ILLEGAL_ESTR =
-      "The SVG document does not conform to the XML 1.0 specification.";
-    public static final String HEIGHT_IS_ILLEGAL_ESTR =
-      "The height is negative.";
-    public static final String WIDTH_IS_ILLEGAL_ESTR =
-      "The width is negative.";
-    */
+
 
     //--------------------------------------------------
     // VARIABLES
@@ -94,7 +71,7 @@ public class M2GDocument extends M2GObject
      * Creates new document object. If aData is null or empty then
      * an empty document is create.
      * @param aImage Svg image
-    * @param aBaseUrl A base url from where a document is downloaded.
+     * @param aBaseUrl A base url from where a document is downloaded.
      * @param aSuffixUrl A suffix url from where a document is downloaded
      * @param aData Plain text svg data
      */
@@ -102,8 +79,7 @@ public class M2GDocument extends M2GObject
                        String aData)
     {
         super();
-        
-     		
+
         iImage      = aImage;
         iBaseUrl    = aBaseUrl;
         iSuffixUrl  = aSuffixUrl;
@@ -357,7 +333,7 @@ public class M2GDocument extends M2GObject
         int elementHandle = _getElementById(
                                 getNativeSVGProxyHandle(),
                                 getHandle(),
-                                id );
+                                id);
         return M2GSVGElement.buildElement(elementHandle, this);
     }
 
@@ -442,7 +418,7 @@ public class M2GDocument extends M2GObject
     {
         return _getViewportWidth(
                    getNativeSVGProxyHandle(),
-                   getHandle() );
+                   getHandle());
     }
 
 
@@ -697,7 +673,7 @@ public class M2GDocument extends M2GObject
         _setViewportWidth(
             getNativeSVGProxyHandle(),
             getHandle(),
-            width );
+            width);
         Logger.LOG(Logger.EJavaUI, Logger.EInfo,
                    "setViewportWidth:" + width + " - end");
     }
@@ -1244,10 +1220,10 @@ public class M2GDocument extends M2GObject
                                             ExternalResourceHandler aHandler)
     throws IOException
     {
-    		
+
         if ((aData == null) || (aData.equals("")))
         {
-        		
+
             throw new IOException(
                 /*SF*/"The SVG document does not conform to the XML 1.0 specification."/*SF*/);
         }
@@ -1317,13 +1293,13 @@ public class M2GDocument extends M2GObject
         String aId);
 
     private static native int _getViewportHeight(
-         int aSvgProxyHandle, int aDocumentHandle);
+        int aSvgProxyHandle, int aDocumentHandle);
 
     private static native int _getViewportWidth(
-         int aSvgProxyHandle, int aDocumentHandle);
+        int aSvgProxyHandle, int aDocumentHandle);
 
     private native static int _isElementInDOM(
-         int aSvgProxyHandle, int aDocumentHandle,
+        int aSvgProxyHandle, int aDocumentHandle,
         int aElementHandle);
 
     private static native int _requestCompleted(

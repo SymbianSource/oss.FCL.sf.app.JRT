@@ -327,11 +327,11 @@ public:
 
     /**
     * Detach internal message loop thread from JVM.
-    * @param -
+    * @param[in] aEnv JNI context
     * @see attachToVm
     * @return 0 in success, errno in failure
     */
-    OS_IMPORT virtual int detachFromVm();
+    OS_IMPORT virtual int detachFromVm(JNIEnv* aEnv);
 
 protected:
     JavaVM* mVm;

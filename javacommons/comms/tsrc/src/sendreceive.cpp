@@ -410,3 +410,73 @@ TEST(SendReceive, sendsInProcessMessage)
     monitor->wait();
     CHECK(!con.disconnect());
 }
+
+
+/**
+ * Test sendReceive with two clients
+ * 1. server replies to first message after second message is received
+ *    (and two clients use sendReceive to send single messsage)
+ */
+class RoutingListener : public CommsListener
+{
+public:
+    RoutingListener(CommsEndpoint& aComms) : mComms(aComms), mMsgCount(0) {}
+
+    virtual void processMessage(CommsMessage& aMessage)
+    {
+        if (mMsgCount == 0)
+        {
+            // delay reply until second message is received
+            mFirstMessage = aMessage;
+        }
+        else
+        {
+            // reply to first client
+            CommsMessage reply;
+            reply.replyTo(mFirstMessage);
+            mComms.send(reply);
+
+            // reply to second client
+            reply.replyTo(aMessage);
+            mComms.send(reply);
+        }
+        mMsgCount++;
+    }
+private:
+    CommsMessage mFirstMessage;
+    int mMsgCount;
+    CommsEndpoint& mComms;
+};
+
+void doSendReceive()
+{
+    CommsClientEndpoint con;
+    CHECK(!con.connect(IPC_ADDRESS_COMMS_MODULE_TEST + 1));
+    CommsMessage msg;
+    CommsMessage receivedMsg;
+    CHECK(!con.sendReceive(msg, receivedMsg, WAIT_FOR_EVER));
+    CHECK(!con.disconnect());
+}
+
+void* clientSendReceiveThread(void*)
+{
+    doSendReceive();
+    return 0;
+}
+
+TEST(SendReceive, twoClientsAndServer)
+{
+    CommsServerEndpoint server;
+    RoutingListener listener(server);
+    CHECK(!server.registerDefaultListener(&listener));
+    CHECK(!server.start(IPC_ADDRESS_COMMS_MODULE_TEST + 1));
+
+    pthread_t thread1;
+    pthread_t thread2;
+    pthread_create(&thread1, 0, &clientSendReceiveThread, 0);
+    pthread_create(&thread2, 0, &clientSendReceiveThread, 0);
+    pthread_join(thread1, 0);
+    pthread_join(thread2, 0);
+
+    server.stop();
+}

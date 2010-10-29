@@ -1325,6 +1325,7 @@ void CMMSPlatformServiceS60Impl::Close()
         delete mMessageHandler;
         mMessageHandler = NULL;
     }
+    mRFs.Close();
 }
 // End of File
 } //namespace wma

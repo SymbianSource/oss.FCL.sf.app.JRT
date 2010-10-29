@@ -119,6 +119,15 @@ public class TestCommsServerEndpoint extends TestCase
             }
         }));
 
+        aSuite.addTest(new TestCommsServerEndpoint("testServerAndTwoClients", new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((TestCommsServerEndpoint) tc).testServerAndTwoClients();
+            }
+        }));
+
+
         return aSuite;
     }
 
@@ -724,6 +733,89 @@ public class TestCommsServerEndpoint extends TestCase
         }
     }
 
+    public void testServerAndTwoClients()
+    {
+        System.out.println("TestCommsServerEndpoint.testServerAndTwoClients()");
+
+        class RouterListener implements CommsListener
+        {
+            CommsEndpointBase iComms;
+            CommsMessage iFirstMessage;
+
+            public RouterListener(CommsEndpointBase aComms)
+            {
+                iComms = aComms;
+            }
+
+            public void processMessage(CommsMessage aMessage)
+            {
+                if (iFirstMessage == null)
+                {
+                    // delay reply until second message is received
+                    iFirstMessage = aMessage;
+                }
+                else
+                {
+                    // reply to first client
+                    CommsMessage reply = new CommsMessage();
+                    reply.replyTo(iFirstMessage);
+                    iComms.send(reply);
+        
+                    // reply to second client
+                    reply.replyTo(aMessage);
+                    iComms.send(reply);
+                }
+            }
+        }
+
+        class SendReceiver extends Thread
+        {
+            public void run()
+            {
+                try
+                {
+                    CommsEndpoint client = new CommsEndpoint();
+                    client.connect(SERVER_ADDRESS);
+                    CommsMessage reply = client.sendReceive(new CommsMessage(), CommsEndpoint.WAIT_FOR_EVER);
+                    client.disconnect();
+                    client.destroy();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                    fail("SendReceiver.run");
+                }
+            }
+        }
+
+        CommsServerEndpoint server = null;
+        try
+        {
+            server = new CommsServerEndpoint();
+            RouterListener listener = new RouterListener(server);
+            server.registerDefaultListener(listener);
+            server.start(SERVER_ADDRESS);
+
+            SendReceiver client1 = new SendReceiver();
+            SendReceiver client2 = new SendReceiver();
+
+            client1.start();
+            client2.start();
+            client1.join();
+            client2.join();
+
+            server.stop();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            fail("testServerAndTwoClients failed");
+        }
+        finally
+        {
+            server.destroy();
+        }
+    }
 
 
 }

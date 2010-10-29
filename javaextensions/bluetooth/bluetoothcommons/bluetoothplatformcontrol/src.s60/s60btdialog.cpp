@@ -26,7 +26,7 @@
 #ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS
 #include <hbdevicemessageboxsymbian.h>
 #include <hbpopup.h>
-#include <QtCore\qvariant.h>
+#include <QtCore/qvariant.h>
 
 #define QUERY_BUF_LEN 512
 #endif

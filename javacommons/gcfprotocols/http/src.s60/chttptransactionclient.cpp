@@ -73,6 +73,7 @@ void CHttpTransactionClient::ConstructL(const TDesC* aUri, const TDesC* aRequest
     iFlag = 0;
     iDrmBuf = HBufC8::NewL(256);
     iEndOfRequest = false;
+    iRestartedFlag = false;
     OpenTransactionL(aUri , aRequestMethod);
 }
 
@@ -129,11 +130,14 @@ void CHttpTransactionClient::SubmitL(RPointerArray<HBufC8>* aRawHeaders , TDesC8
     }
 
     //Submit the transaction
-    RHTTPHeaders hdr = iTransaction.Request().GetHeaderCollection();
-    TInt headerCount = aRawHeaders->Count();
-    for (TInt ii=0; ii < headerCount; ++ii)
+    if (!iRestartedFlag)
     {
-        SetHeaderL(hdr, (*aRawHeaders)[ii]);
+        RHTTPHeaders hdr = iTransaction.Request().GetHeaderCollection();
+        TInt headerCount = aRawHeaders->Count();
+        for (TInt ii=0; ii < headerCount; ++ii)
+        {
+            SetHeaderL(hdr, (*aRawHeaders)[ii]);
+        }
     }
 
     //iHttpSession.CustomiseHeadersL(hdr);
@@ -703,6 +707,7 @@ void CHttpTransactionClient::NotifyErrorL(TInt aErrorCode)
     {
         iTransaction.Cancel();
         iHttpSession.RestartConnection();
+        iRestartedFlag = true;
 
     }
     if (iJavaWaitingOnCallBack)

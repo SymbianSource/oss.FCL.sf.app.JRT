@@ -148,6 +148,7 @@ private:
     TInt iFlag;
     bool iPartialPostData;
     bool iEndOfRequest;
+    bool iRestartedFlag;
 
 };
 

@@ -226,7 +226,7 @@ void JavaSoftIndicator::RemoveSoftNoteFromStorage()
         }
     catch (JavaStorageException& ex)
         {
-        LOG1(EJavaStorage, EInfo," JavaSoftNote Exception %s", ex.toString());
+        LOG1(EJavaStorage, EInfo," JavaSoftNote Exception %S", ex.toString().c_str());
         }
     }
 

@@ -26,6 +26,7 @@ import com.nokia.mj.impl.installer.storagehandler.ApplicationInfo;
 import com.nokia.mj.impl.installer.storagehandler.SuiteInfo;
 import com.nokia.mj.impl.installer.utils.FileUtils;
 import com.nokia.mj.impl.installer.utils.InstallerException;
+import com.nokia.mj.impl.installer.utils.Log;
 
 import com.nokia.mj.impl.utils.Uid;
 
@@ -330,8 +331,9 @@ public class ConvertIcons extends ExeStep
                     }
                     else
                     {
-                        ball.log("Warning: Converting icon " + iconName + " inside .jar file "
-                                 + ball.iJarFilename + " failed.");
+                        Log.logWarning("Converting icon " + iconName +
+                                       " from " + ball.iJarFilename +
+                                       " failed.");
 
                         // MIDlet icon cannot be used, use already converted suite
                         // icon if it exists

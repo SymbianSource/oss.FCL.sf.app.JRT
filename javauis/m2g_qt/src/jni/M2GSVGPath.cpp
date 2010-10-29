@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2006 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -62,10 +62,10 @@ Java_com_nokia_microedition_m2g_M2GSVGPath__1addClose(
 
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand< MM2GSVGProxy >(aSvgProxyHandle);
-        TRAP(err, aProxy->AddCloseL(STATIC_CAST(TM2GSvgPathHandle, aPathHandle)); );
-        }
+        TRAP(err, aProxy->AddCloseL(STATIC_CAST(TM2GSvgPathHandle, aPathHandle)););
+    }
     M2G_DO_UNLOCK(aJni)
 
     M2GGeneral::CheckErrorCode(aJni, err);
@@ -89,29 +89,29 @@ Java_com_nokia_microedition_m2g_M2GSVGPath__1addCurveTo(
     jclass,
     jint aSvgProxyHandle,
     jint aPathHandle,
-    jfloat aX1, jfloat aY1, jfloat aX2, jfloat aY2, jfloat aX3, jfloat aY3 )
+    jfloat aX1, jfloat aY1, jfloat aX2, jfloat aY2, jfloat aX3, jfloat aY3)
 {
     M2G_DEBUG_6("M2G_DEBUG: JNI ( M2GSVGPath ) _addCurveTo: X1=%f, Y1=%f, X2=%f, Y2=%f, X3=%f, Y3=%f - begin", aX1, aY1, aX2, aY2, aX3, aY3);
     TInt err = KM2GNotOk;
 
     TM2GPathCurveData curve;
-              curve[ 0 ] = STATIC_CAST(TReal32, aX1);
-              curve[ 1 ] = STATIC_CAST(TReal32, aY1);
-              curve[ 2 ] = STATIC_CAST(TReal32, aX2);
-              curve[ 3 ] = STATIC_CAST(TReal32, aY2);
-              curve[ 4 ] = STATIC_CAST(TReal32, aX3);
-              curve[ 5 ] = STATIC_CAST(TReal32, aY3);
+    curve[ 0 ] = STATIC_CAST(TReal32, aX1);
+    curve[ 1 ] = STATIC_CAST(TReal32, aY1);
+    curve[ 2 ] = STATIC_CAST(TReal32, aX2);
+    curve[ 3 ] = STATIC_CAST(TReal32, aY2);
+    curve[ 4 ] = STATIC_CAST(TReal32, aX3);
+    curve[ 5 ] = STATIC_CAST(TReal32, aY3);
 
-      M2G_DO_LOCK        
-      if (aSvgProxyHandle)
-          {
-          MM2GSVGProxy* aProxy = JavaUnhand< MM2GSVGProxy >(aSvgProxyHandle);
-          TRAP(err,    aProxy->AddCurveToL(
+    M2G_DO_LOCK
+    if (aSvgProxyHandle)
+    {
+        MM2GSVGProxy* aProxy = JavaUnhand< MM2GSVGProxy >(aSvgProxyHandle);
+        TRAP(err,    aProxy->AddCurveToL(
                  STATIC_CAST(TM2GSvgPathHandle, aPathHandle),
-                 curve); );
-          }
+                 curve););
+    }
     M2G_DO_UNLOCK(aJni)
-    
+
     M2GGeneral::CheckErrorCode(aJni, err);
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGPath ) _addCurveTo - end");
 }
@@ -125,7 +125,7 @@ Java_com_nokia_microedition_m2g_M2GSVGPath__1addCurveTo(
  * @param aProxy Proxy instance.
  * @param aPathHandle Svg path handle
  * @param aX -
- * @param aY - 
+ * @param aY -
  */
 JNIEXPORT void JNICALL
 Java_com_nokia_microedition_m2g_M2GSVGPath__1addLineTo(
@@ -133,20 +133,20 @@ Java_com_nokia_microedition_m2g_M2GSVGPath__1addLineTo(
     jclass,
     jint aSvgProxyHandle,
     jint aPathHandle,
-    jfloat aX, jfloat aY )
+    jfloat aX, jfloat aY)
 {
     M2G_DEBUG_2("M2G_DEBUG: JNI ( M2GSVGPath ) _addLineTo: X=%f, Y=%f - begin", aX, aY);
     TInt err = KM2GNotOk;
 
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand< MM2GSVGProxy >(aSvgProxyHandle);
-        TRAP(err,     aProxy->AddLineToL(STATIC_CAST(TM2GSvgPathHandle, aPathHandle), *(REINTERPRET_CAST(TReal32*, &aX)), *(REINTERPRET_CAST(TReal32*, &aY))); );
-    
-        }
+        TRAP(err,     aProxy->AddLineToL(STATIC_CAST(TM2GSvgPathHandle, aPathHandle), *(REINTERPRET_CAST(TReal32*, &aX)), *(REINTERPRET_CAST(TReal32*, &aY))););
+
+    }
     M2G_DO_UNLOCK(aJni)
-    
+
     M2GGeneral::CheckErrorCode(aJni, err);
 
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGPath ) _addLineTo - end");
@@ -173,13 +173,13 @@ Java_com_nokia_microedition_m2g_M2GSVGPath__1addMoveTo(
 {
     M2G_DEBUG_2("M2G_DEBUG: JNI ( M2GSVGPath ) _addMoveTo: X=%f, Y=%f - begin", aX, aY);
     TInt err           = KM2GNotOk;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
-            MM2GSVGProxy *   aProxy = JavaUnhand< MM2GSVGProxy >(aSvgProxyHandle);
-            TRAP(err, aProxy->AddMoveToL(STATIC_CAST(TM2GSvgPathHandle, aPathHandle), aX, aY)   ); 
-        }
+    {
+        MM2GSVGProxy *   aProxy = JavaUnhand< MM2GSVGProxy >(aSvgProxyHandle);
+        TRAP(err, aProxy->AddMoveToL(STATIC_CAST(TM2GSvgPathHandle, aPathHandle), aX, aY));
+    }
     M2G_DO_UNLOCK(aJni)
 
     M2GGeneral::CheckErrorCode(aJni, err);
@@ -208,18 +208,18 @@ Java_com_nokia_microedition_m2g_M2GSVGPath__1addQuadTo(
     jfloat aX1, jfloat aY1, jfloat aX2, jfloat aY2)
 {
     M2G_DEBUG_4("M2G_DEBUG: JNI ( M2GSVGPath ) _addQuadTo: X1=%f, Y1=%f, X2=%f, Y2=%f - begin", aX1, aY1, aX2, aY2);
-    // TInt elementHandle = M2G_INVALID_HANDLE;
+
     TInt err           = KM2GNotOk;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
-            MM2GSVGProxy *   aProxy = JavaUnhand< MM2GSVGProxy >(aSvgProxyHandle);
-            TRAP(err, aProxy->AddQuadToL(
-                    STATIC_CAST(TM2GSvgPathHandle, aPathHandle),aX1, aY1, aX2, aY2); );
-        }
+    {
+        MM2GSVGProxy *   aProxy = JavaUnhand< MM2GSVGProxy >(aSvgProxyHandle);
+        TRAP(err, aProxy->AddQuadToL(
+                 STATIC_CAST(TM2GSvgPathHandle, aPathHandle),aX1, aY1, aX2, aY2););
+    }
     M2G_DO_UNLOCK(aJni)
-    
+
     M2GGeneral::CheckErrorCode(aJni, err);
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGPath ) _addQuadTo - end");
 }
@@ -243,13 +243,13 @@ Java_com_nokia_microedition_m2g_M2GSVGPath__1createPath(
 
     TInt err           = KM2GNotOk;
     TInt pathHandle = M2G_INVALID_HANDLE;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
-            MM2GSVGProxy *    aProxy = JavaUnhand< MM2GSVGProxy >(aSvgProxyHandle);
-            TRAP(err, aProxy->CreatePathL(pathHandle);  );
-        }
+    {
+        MM2GSVGProxy *    aProxy = JavaUnhand< MM2GSVGProxy >(aSvgProxyHandle);
+        TRAP(err, aProxy->CreatePathL(pathHandle););
+    }
     M2G_DO_UNLOCK(aJni)
 
     M2GGeneral::CheckErrorCode(aJni, err);
@@ -275,14 +275,14 @@ Java_com_nokia_microedition_m2g_M2GSVGPath__1destroyPath(
 {
     M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GSVGPath ) _destroyPath: %d - begin", aPathHandle);
     TInt err           = KM2GNotOk;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy *    aProxy = JavaUnhand< MM2GSVGProxy >(aSvgProxyHandle);
         TRAP(err, aProxy->DestroyPathL(
-                STATIC_CAST(TM2GSvgPathHandle, STATIC_CAST(TM2GSvgPathHandle, aPathHandle))); );
-        }
+                 STATIC_CAST(TM2GSvgPathHandle, STATIC_CAST(TM2GSvgPathHandle, aPathHandle))););
+    }
     M2G_DO_UNLOCK(aJni)
 
     M2GGeneral::CheckErrorCode(aJni, err);
@@ -309,17 +309,17 @@ Java_com_nokia_microedition_m2g_M2GSVGPath__1getNumberOfSegments(
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGPath ) _getNumberOfSegments - begin");
     TInt err              = KM2GNotOk;
     TInt numberOfSegments = 0;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy * aProxy = JavaUnhand< MM2GSVGProxy >(aSvgProxyHandle);
         TRAP(err, aProxy->GetNumberOfSegmentsL(
-                STATIC_CAST(TM2GSvgPathHandle, aPathHandle),
-                numberOfSegments); );
-        }
+                 STATIC_CAST(TM2GSvgPathHandle, aPathHandle),
+                 numberOfSegments););
+    }
     M2G_DO_UNLOCK(aJni)
-    
+
     M2GGeneral::CheckErrorCode(aJni, err);
     M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GSVGPath ) _getNumberOfSegments: %d - end", numberOfSegments);
     return STATIC_CAST(jint, numberOfSegments);
@@ -347,14 +347,14 @@ Java_com_nokia_microedition_m2g_M2GSVGPath__1getSegmentParameter(
     M2G_DEBUG_2("M2G_DEBUG: JNI ( M2GSVGPath ) _getSegmentParameter: seg index=%d, param index=%d - begin", aSegmentIndex, aParamIndex);
     TInt err              = KM2GNotOk;
     TReal32 segmentParam  = 0;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy *             aProxy = JavaUnhand< MM2GSVGProxy >(aSvgProxyHandle);
         TRAP(err,    aProxy->GetSegmentParameterL(
-            STATIC_CAST(TM2GSvgPathHandle, aPathHandle), aSegmentIndex,aParamIndex, segmentParam); );
-        }
+                 STATIC_CAST(TM2GSvgPathHandle, aPathHandle), aSegmentIndex,aParamIndex, segmentParam););
+    }
     M2G_DO_UNLOCK(aJni)
 
     M2GGeneral::CheckErrorCode(aJni, err);
@@ -386,14 +386,14 @@ Java_com_nokia_microedition_m2g_M2GSVGPath__1getSegmentType(
     M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GSVGPath ) _getSegmentType: index=%d - begin", aIndex);
     TInt err              = KM2GNotOk;
     TInt16 aSegmentType  = 0;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy *             aProxy = JavaUnhand< MM2GSVGProxy >(aSvgProxyHandle);
         TRAP(err, aProxy->GetSegmentTypeL(
-                   STATIC_CAST(TM2GSvgPathHandle, aPathHandle), aIndex,aSegmentType); );
-        }
+                 STATIC_CAST(TM2GSvgPathHandle, aPathHandle), aIndex,aSegmentType););
+    }
     M2G_DO_UNLOCK(aJni)
 
     M2GGeneral::CheckErrorCode(aJni, err);

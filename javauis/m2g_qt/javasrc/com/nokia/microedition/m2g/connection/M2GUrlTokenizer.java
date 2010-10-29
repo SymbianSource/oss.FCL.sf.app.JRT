@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -195,7 +195,7 @@ public class M2GUrlTokenizer
     /**
      * Resolve URL according to existing base url and
      * the given relative url
-     * TODO: Should be resolved by using RFC 2396
+     * Should be resolved by using RFC 2396
      * @aRelativeUrl Relative URL.
      * @return Resolved URL
      */

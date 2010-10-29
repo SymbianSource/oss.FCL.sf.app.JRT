@@ -42,8 +42,7 @@ public class FileDialog extends Dialog {
 	String fileName;
 	String[] fileNames = new String[] {};
 	int filterIndex = -1;
-	static final char SEPARATOR = System.getProperty("file.separator")
-			.charAt(0);
+	static final char SEPARATOR = '/'; // See QDir::fromNativeSeparators
 	static final String EXTENSION_SEPARATOR = ";;";
 	String dialogID;
 	static int dialogCount;

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2006 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -24,6 +24,7 @@
 #include "M2GGeneral.h"
 #include <QPixmap>
 #include <jni.h>
+#include "CSynchronization.h" //For UI Thread Execution.
 M2G_NS_START
 
 // CONSTANTS
@@ -32,6 +33,22 @@ M2G_NS_START
 
 // MACROS
 
+
+/*!
+ * \brief Macros for serializing m2gcore function calls
+ * in native threading environment.
+ */
+
+#define M2G_DO_LOCK CSynchronization::InstanceL()->Lock();
+
+#define M2G_DO_UNLOCK(aEnv) {\
+                    TInt errorCode = CSynchronization::InstanceL()->GetErrorCode();\
+                    if ( errorCode != 0){\
+                            M2GGeneral::CheckErrorCode(aEnv,errorCode);\
+                    }\
+                    CSynchronization::InstanceL()->Unlock();\
+                    }\
+ 
 // FORWARD DECLARATIONS
 class CFbsBitmapDevice;
 class CFbsBitGc;
@@ -39,19 +56,6 @@ class CFbsBitGc;
 // FUNCTION PROTOTYPES
 
 // CLASS DECLARATION
-
-
-//For UI Thread Execution.
-#include "CSynchronization.h"
-
-#define M2G_DO_LOCK CSynchronization::InstanceL()->Lock();
-
-
-//TODO Have to Raise Exception in case we find any error.
-#define M2G_DO_UNLOCK(aEnv) {\
-                    TInt errorCode = CSynchronization::InstanceL()->GetErrorCode();\
-                    CSynchronization::InstanceL()->Unlock();\
-                    }\
 
 /**
  * @class M2GBitmapUtils
@@ -84,13 +88,13 @@ public: // STATIC METHODS
                        const CFbsBitmap* aSourceMask,
                        /*MSwtClient* aClientHandle,*/
                        TBool aUseNativeClear = EFalse);
-    
+
     static TInt BitQBlt(QImage& aTargetQimage,
-                                const QImage& aSourceQimage,
-                                const TPoint& aPoint,
-                                const TRect* aRect,
-                                const CFbsBitmap* aSourceMask);
-    
+                        const QImage& aSourceQimage,
+                        const TPoint& aPoint,
+                        const TRect* aRect,
+                        const CFbsBitmap* aSourceMask);
+
     /**
      * Checks if two bitmap are equal.
      * @since Series S60 3.0

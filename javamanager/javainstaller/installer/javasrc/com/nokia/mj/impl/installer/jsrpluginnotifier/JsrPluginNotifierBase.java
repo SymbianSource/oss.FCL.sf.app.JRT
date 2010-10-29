@@ -76,6 +76,7 @@ public class JsrPluginNotifierBase
      * about to be installed by calling the install() method of the plugins.
      *
      * @param aInfo notification information object
+     * @throws InstallerExtensionException if thrown from any of the Jsr plugins
      * @throws InstallerException if any of the Jsr plugins cancels installation
      * @see InstallerExtension#install
      */
@@ -83,6 +84,7 @@ public class JsrPluginNotifierBase
     {
         Log.log("JsrPluginNotifierBase.NotifyInstallation called");
         boolean continueInstallation = true;
+        InstallerExtensionException installerExtensionException = null;
         InstallerExtension plugin = null;
         for (int i = 0; i < iJsrPlugins.size(); i++)
         {
@@ -91,6 +93,14 @@ public class JsrPluginNotifierBase
                 plugin = (InstallerExtension)iJsrPlugins.elementAt(i);
                 Log.log("Jsr plugin install " + plugin.getClass().getName());
                 continueInstallation = plugin.install(aInfo);
+            }
+            catch (InstallerExtensionException iee)
+            {
+                installerExtensionException = iee;
+                Log.logError("Installer Jsr plugin " +
+                             plugin.getClass().getName() +
+                             " install exception " + iee, iee);
+                continueInstallation = false;
             }
             catch (Throwable t)
             {
@@ -104,9 +114,16 @@ public class JsrPluginNotifierBase
             {
                 // Rollback those plugins which already got notified.
                 notifyRollbackInstall(aInfo, i);
-                InstallerException.internalError(
-                    "Jsr plugin " + plugin.getClass().getName() +
-                    " cancelled installation.");
+                if (installerExtensionException != null)
+                {
+                    throw installerExtensionException;
+                }
+                else
+                {
+                    InstallerException.internalError(
+                        "Jsr plugin " + plugin.getClass().getName() +
+                        " cancelled installation.");
+                }
             }
         }
     }
@@ -116,6 +133,7 @@ public class JsrPluginNotifierBase
      * about to be uninstalled by calling the uninstall() method of the plugins.
      *
      * @param aInfo notification information object
+     * @throws InstallerExtensionException if thrown from any of the Jsr plugins
      * @throws InstallerException if any of the Jsr plugins cancels uninstallation
      * @see InstallerExtension#uninstall
      */
@@ -123,6 +141,7 @@ public class JsrPluginNotifierBase
     {
         Log.log("JsrPluginNotifierBase.notifyUninstallation called");
         boolean continueUninstallation = true;
+        InstallerExtensionException installerExtensionException = null;
         InstallerExtension plugin = null;
         for (int i = 0; i < iJsrPlugins.size(); i++)
         {
@@ -131,6 +150,14 @@ public class JsrPluginNotifierBase
                 plugin = (InstallerExtension)iJsrPlugins.elementAt(i);
                 Log.log("Jsr plugin uninstall " + plugin.getClass().getName());
                 continueUninstallation = plugin.uninstall(aInfo);
+            }
+            catch (InstallerExtensionException iee)
+            {
+                installerExtensionException = iee;
+                Log.logError("Installer Jsr plugin " +
+                             plugin.getClass().getName() +
+                             " uninstall exception " + iee, iee);
+                continueUninstallation = false;
             }
             catch (Throwable t)
             {
@@ -144,9 +171,16 @@ public class JsrPluginNotifierBase
             {
                 // Rollback those plugins which already got notified.
                 notifyRollbackUninstall(aInfo, i);
-                InstallerException.internalError(
-                    "Jsr plugin " + plugin.getClass().getName() +
-                    " cancelled uninstallation.");
+                if (installerExtensionException != null)
+                {
+                    throw installerExtensionException;
+                }
+                else
+                {
+                    InstallerException.internalError(
+                        "Jsr plugin " + plugin.getClass().getName() +
+                        " cancelled uninstallation.");
+                }
             }
         }
     }

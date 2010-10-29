@@ -137,7 +137,7 @@ public:
     */
     OS_IMPORT virtual int send(CommsMessage& aMessage);
 
-    OS_IMPORT virtual int detachFromVm();
+    OS_IMPORT virtual int detachFromVm(JNIEnv* aEnv);
 private:
     std::auto_ptr<IpcConnectionInterface> mIpc;
     int mAddress;

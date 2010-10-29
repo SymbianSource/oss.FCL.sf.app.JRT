@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -27,13 +27,13 @@ import com.nokia.mj.impl.utils.Logger;
 /**
  * Base class
  */
-abstract class M2GObject 
+abstract class M2GObject
 {
     //--------------------------------------------------
     // STATIC CONSTANTS
     //--------------------------------------------------
     public static final int INVALID_NATIVE_HANDLE = 0;
-   // static final String ESWT_PACKAGE              =   "org.eclipse.swt.widgets.Display" ;
+    // static final String ESWT_PACKAGE              =   "org.eclipse.swt.widgets.Display" ;
     //--------------------------------------------------
     // VARIABLES
     //--------------------------------------------------
@@ -50,7 +50,7 @@ abstract class M2GObject
     M2GObject()
     {
         this(INVALID_NATIVE_HANDLE);
-        
+
     }
 
     /**
@@ -59,11 +59,11 @@ abstract class M2GObject
      */
     M2GObject(int aHandle)
     {
-				
+
         iNativeHandle = aHandle;
-        
+
         iManager = M2GManager.getInstance();
-        
+
     }
 
     /**
@@ -105,7 +105,7 @@ abstract class M2GObject
     {
         Logger.LOG(Logger.EJavaUI, Logger.EInfo,
                    "createDestroyer(): " + this.getClass().getName());
-        
+
     }
 
     /**

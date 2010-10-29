@@ -20,6 +20,7 @@
 #include <memory>
 #include <string>
 #include <time.h>
+#include <algorithm>
 
 #include "pushregistryhandler.h"
 #include "coreinterface.h"
@@ -1055,20 +1056,15 @@ void PushRegistryHandler::startOrKillMidlet(const unsigned int aMediaId,
  */
 void PushRegistryHandler::removeDriveFromContainer(const driveInfo& aDriveInfo)
 {
-    for (driveInfos::iterator iter = mDriveInfo.begin(); iter != mDriveInfo.end();)
-    {
-        //Root path is unique for every drive and it is always available
-        //in the driveInfo so it is safe to compare equality of two driveInfo objects
-        //with this value.
-        //On the safe side, a whole list is looped through.
-        if (aDriveInfo.iRootPath == iter->iRootPath)
-        {
-            mDriveInfo.erase(iter);
-            continue;
-        }
-        else
-            ++iter;
-    }//end for
+    //Root path is unique for every drive and it is always available
+    //in the driveInfo so it is safe to compare equality of two driveInfo objects
+    //with this value.
+    //In theory, there might be duplicate driveInfo objects with same root path
+    //in the vector, so it is better to loop through a whole vector.
+    //Multiple objects can be removed from vector by stl's remove_if method.
+    DriveInfoComparisonUtil searchObj(aDriveInfo);
+    mDriveInfo.erase( remove_if(mDriveInfo.begin(),mDriveInfo.end(),searchObj) ,
+                      mDriveInfo.end() );
 }
 
 /**

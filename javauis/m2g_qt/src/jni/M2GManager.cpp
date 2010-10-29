@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2006 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -60,20 +60,20 @@ Java_com_nokia_microedition_m2g_M2GManager__1createSvgEngine(
     jint aSvgProxyHandle)
 {
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GManager ) _createSvgEngine - begin");
-    
+
     TInt handle = M2G_INVALID_HANDLE;
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         TRAP(err,JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle)->CreateSvgEngineL(handle););
-        }
+    }
     M2G_DO_UNLOCK(aJni)
 
     handle = M2GGeneral::CheckErrorCodeAndHandle(
-                        aJni, err, handle, M2G_INVALID_HANDLE); 
-    
+                 aJni, err, handle, M2G_INVALID_HANDLE);
+
     M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GManager ) _createSvgEngine: %d - end", handle);
     return handle;
 }
@@ -84,7 +84,7 @@ Java_com_nokia_microedition_m2g_M2GManager__1createSvgEngine(
  * Creates an svg proxy.
  * @since Series S60 3.0
  * @param Svg proxy handle
-/**
+ *
  * JNI method
  */
 JNIEXPORT jint JNICALL
@@ -111,8 +111,7 @@ Java_com_nokia_microedition_m2g_M2GManager__1createSvgProxy(
  * Calls MM2GSVGProxy::DeleteSvgEnginedL method.
  * @since Series S60 3.0
  * @param aProxy Proxy instance.
- 
-/**
+ *
  * JNI method
  */
 JNIEXPORT void JNICALL
@@ -120,22 +119,22 @@ Java_com_nokia_microedition_m2g_M2GManager__1deleteSvgEngine(
     JNIEnv* aJni,
     jclass,
     jint aSvgProxyHandle,
-    jint aSvgEngineHandle   )
+    jint aSvgEngineHandle)
 {
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GManager ) _deleteSvgEngine - begin");
-    
+
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
-           TRAP(err,JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle)->DeleteSvgEngineL(
-           STATIC_CAST(TM2GSvgEngineHandle, aSvgEngineHandle)););
-        }
+    {
+        TRAP(err,JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle)->DeleteSvgEngineL(
+                 STATIC_CAST(TM2GSvgEngineHandle, aSvgEngineHandle)););
+    }
     M2G_DO_UNLOCK(aJni)
-    
+
     M2GGeneral::CheckErrorCode(aJni, err);
-    
+
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GManager ) _deleteSvgEngine: - end");
 }
 
@@ -149,8 +148,7 @@ Java_com_nokia_microedition_m2g_M2GManager__1deleteSvgEngine(
  * crashes when deleting svg document object that contains external resource)
  * @since Series S60 3.0
  * @param aProxy Proxy instance.
-
-/**
+ *
  * JNI method
  */
 JNIEXPORT void JNICALL
@@ -161,88 +159,17 @@ Java_com_nokia_microedition_m2g_M2GManager__1deleteSvgProxy(
 {
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GManager ) _deleteSvgProxy - begin");
     TInt            err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* proxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
         TRAP(err,delete proxy;);
-        }
+    }
     M2G_DO_UNLOCK(aJni)
 
     M2GGeneral::CheckErrorCode(aJni, err);
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GManager ) _deleteSvgProxy: - end");
 }
-// -----------------------------------------------------------------------------
-// Java_com_nokia_microedition_m2g_M2GManager::_finalizeEventSource
-// -----------------------------------------------------------------------------
-/**
- * JNI method TODO check this function for modifications
- */
-//JNIEXPORT void JNICALL
-//Java_com_nokia_microedition_m2g_M2GManager__1finalizeEventSource(
-//    JNIEnv *aJni, jclass, jint aEventSourceHandle, jboolean aUiToolkit)
-//{
-//    M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GManager ) _finalizeEventSource: %d", aEventSourceHandle);
-//    if (aUiToolkit)
-//    {
-////        MSwtClient* client  = reinterpret_cast< MSwtClient* >(aEventSourceHandle);
-////        if (client)
-////        {
-////            delete client;
-////            client = NULL;
-////        }
-//    }
-//    else
-//    {
-//        CM2GEventSource* eventSource = JavaUnhand< CM2GEventSource >(aEventSourceHandle);
-//        if (eventSource)
-//        {
-//            eventSource->Dispose(*aJni);
-//        }
-//        eventSource = NULL;
-//    }
-//}
 
-// -----------------------------------------------------------------------------
-// Java_com_nokia_microedition_m2g_M2GManager::_initEventSource
-// -----------------------------------------------------------------------------
-/**
- * JNI method TODO check this function for modifications
- 
-JNIEXPORT jint JNICALL
-Java_com_nokia_microedition_m2g_M2GManager__1initEventSource(
-    JNIEnv *aJni,
-    jclass aPeer,
-    jint aServer)
-{
-    M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GManager ) _initEventSource - begin");
-
-    M2G_DO_LOCK
-    TRAPD(eventSourceHandle, eventSourceHandle = CM2GEventSource::NewL(
-                *aJni, aPeer, aServer));
-    M2G_DO_UNLOCK(aJni)
-    
-    M2GGeneral::CheckHandle(aJni, eventSourceHandle);
-    M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GManager ) _initEventSource - end: %d", eventSourceHandle);
-    return eventSourceHandle;
-}*/
-////TODO check this function for modifications
-//JNIEXPORT jint JNICALL
-//Java_com_nokia_microedition_m2g_M2GManager__1initSwtEventSource(
-//    JNIEnv *aJni,
-//    jclass /*aPeer*/)
-//{
-//    M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GManager ) _initEventSource - begin");
-//
-//    MSwtClient* client = NULL;
-//    TRAP_IGNORE(client = SWT::CreateClientL());
-//    if (!client)
-//    {
-//        return KErrNotFound;
-//    }
-//    M2GGeneral::CheckHandle(aJni, (int)client);
-//    M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GManager ) _initEventSource - end: %d", eventSourceHandle);
-//    return (int)client;
-//}
 M2G_NS_END

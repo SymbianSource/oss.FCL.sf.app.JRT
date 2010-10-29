@@ -68,6 +68,12 @@ abstract public class ConfirmationViewBase extends ViewBase
         super(aInstallerUi, aParent, aColumns, aScrollable);
     }
 
+    /** Constructor */
+    protected ConfirmationViewBase(InstallerUiEswt aInstallerUi, Composite aParent, int aColumns, boolean aScrollable, int aComposites)
+    {
+        super(aInstallerUi, aParent, aColumns, aScrollable, aComposites);
+    }
+
     /**
      * Set user visible command names for OK and Cancel commands.
      * If either parameter is null, then default value is used.

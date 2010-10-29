@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -21,10 +21,8 @@ package com.nokia.microedition.m2g;
 import org.w3c.dom.*;
 import org.w3c.dom.svg.*;
 import org.w3c.dom.events.*;
-//import com.nokia.mj.impl.rt.legacy.ToolkitInvoker;
 import java.io.IOException;
 import org.eclipse.swt.widgets.*;
-//import org.eclipse.swt.widgets.Display;
 import com.nokia.mj.impl.utils.Logger;
 
 public class M2GSVGElement extends M2GObject implements SVGElement
@@ -39,79 +37,6 @@ public class M2GSVGElement extends M2GObject implements SVGElement
         "The listener is null.";
     static final String CAPTURE_NOT_SUPPORTED_ESTR =
         "The capture phase is not supported in SVG Tiny.";
-    //static final String ESWT_PACKAGE =
-       // "org.eclipse.swt.widgets.Display" ;
-
-    /* Optimization: static finals changed to local variables
-    static final String TRAIT_IS_NULL_ESTR =
-      "The trait is null.";
-    static final String TRAIT_NOT_SUPPORTED_ON_ELEM_ESTR =
-      "The trait is not supported on this element.";
-    static final String TRAIT_NOT_SUPPORTED_IN_NS_ESTR =
-      "The trait is not supported in this namespace.";
-    static final String GET_FLOAT_MISMATCH_ESTR =
-      "Trait's computed value cannot be converted to a float.";
-    static final String SET_FLOAT_MISMATCH_ESTR =
-      "Trait's value cannot be specified as a float.";
-    static final String GET_MATRIX_MISMATCH_ESTR =
-      "Trait's computed value cannot be converted to a SVGMatrix.";
-    static final String SET_MATRIX_MISMATCH_ESTR =
-      "Trait's value cannot be specified as a SVGMatrix.";
-    static final String GET_PATH_MISMATCH_ESTR =
-      "Trait's computed value cannot be converted to a SVGPath.";
-    static final String SET_PATH_MISMATCH_ESTR =
-      "Trait's value cannot be specified as a SVGPath.";
-    static final String GET_RECT_MISMATCH_ESTR =
-      "Trait's computed value cannot be converted to a SVGRect.";
-    static final String SET_RECT_MISMATCH_ESTR =
-      "Trait's value cannot be specified as a SVGRect.";
-    static final String GET_RGB_MISMATCH_ESTR =
-      "Trait's computed value cannot be converted to a SVGRGBColor.";
-    static final String SET_RGB_MISMATCH_ESTR =
-      "Trait's value cannot be specified as a SVGRGBColor.";
-    static final String NS_NOT_SUPPORTED_ESTR =
-      "The namespace is not supported.";
-    static final String GET_TRAIT_NS_STRING_MISMATCH_ESTR =
-      "Trait's computed value cannot be converted to a String.";
-    static final String SET_TRAIT_NS_STRING_MISMATCH_ESTR =
-      "Trait's value cannot be specified as a String.";
-    static final String ID_IS_NULL_ESTR =
-      "The id is null.";
-    static final String EXISTING_ELEM_ID_CHANGE_ESTR =
-      "Existing element id cannot be changed.";
-    static final String ELEM_ID_EXIST_IN_DOCUMENT_ESTR =
-      "Element id already exists in the document.";
-    static final String INVALID_INPUT_VALUE_ESTR =
-      "The input value is an invalid value for the given trait.";
-    static final String VALUE_IS_NULL_ESTR =
-      "Value cannot be set to null.";
-    static final String SET_READONLY_MISMATCH_ESTR =
-      "Attempt to change readonly trait.";
-    static final String INVALID_VALUE_ESTR =
-      "The value is invalid.";
-    static final String INVALID_USE_ELEMENT_ESTR =
-      "The <use> element is hooked into the document tree and the the value of xlink:href is set invalid.";
-    static final String CANNOT_REMOVE_NODE_ESTR =
-      "Cannot remove this type of node.";
-    static final String CANNOT_REMOVE_NOT_CHILD_ESTR =
-      "Not a child of this node.";
-    static final String CANNOT_REMOVE_NON_NULL_ID_ESTR =
-      "The element being removed or one of its decendants have non-null id.";
-    static final String INSERT_NODE_OF_THAT_TYPE_ESTR =
-      "Cannot insert node of that type.";
-    static final String APPEND_DOCUMENT_ESTR =
-      "Cannot append Document elements.";
-    static final String DOCUMENT_HIERARCHY_ESTR =
-      "Hierarchy request error in Document.";
-    static final String CHILD_IS_WRONG_TYPE_ESTR =
-      "Child is wrong type (Document).";
-    static final String CHILD_BELONG_TO_DIFFERENT_DOCUMENT_ESTR =
-      "Child belongs to different document.";
-    static final String CHILD_NOT_FOUND_ESTR =
-      "The child to insert before doesn't exist in this current node.";
-    static final String INVALID_ELEMENT_ID_VALUE =
-      "Invalid element id value.";
-    */
 
     //--------------------------------------------------
     // VARIABLES
@@ -262,7 +187,7 @@ public class M2GSVGElement extends M2GObject implements SVGElement
     {
         // Get child element's handle
         int childHandle = _getFirstElementChild(
-                               getNativeSVGProxyHandle(), getHandle());
+                              getNativeSVGProxyHandle(), getHandle());
         if (M2GObject.checkHandle(childHandle))
         {
             return (Element)M2GSVGElement.buildElement(childHandle, iDocument);
@@ -373,7 +298,7 @@ public class M2GSVGElement extends M2GObject implements SVGElement
     public Element getNextElementSibling()
     {
         int elementHandle = _getNextElementSibling(
-                                 getNativeSVGProxyHandle(), getHandle());
+                                getNativeSVGProxyHandle(), getHandle());
         if (M2GObject.checkHandle(elementHandle))
         {
             return M2GSVGElement.buildElement(elementHandle, iDocument);
@@ -394,7 +319,7 @@ public class M2GSVGElement extends M2GObject implements SVGElement
             throw new SecurityException(M2GSVGConstants.ACCESS_RIGHTS_ESTR);
         }
         int parentHandle = _getParent(
-                                getNativeSVGProxyHandle(), getHandle());
+                               getNativeSVGProxyHandle(), getHandle());
         if (M2GObject.checkHandle(parentHandle))
         {
             return M2GSVGElement.buildElement(parentHandle, iDocument);
@@ -767,7 +692,7 @@ public class M2GSVGElement extends M2GObject implements SVGElement
                           getNativeSVGProxyHandle(),
                           ((M2GSVGElement)newChild).getHandle(),
                           M2GSVGConstants.AT_XLINKHREF);
-        // Need to call resource handler if element is elementindom, image,
+        // call resource handler call if element is elementindom, image,
         // and if it has an href attribute
         if ((href != null) &&
                 (((M2GSVGElement)newChild).iElementTypeId == M2GSVGConstants.EL_IMAGE) &&
@@ -960,7 +885,7 @@ public class M2GSVGElement extends M2GObject implements SVGElement
                 /*SF*/"The input value is an invalid value for the given trait."/*SF*/);
         }
 
-        _setPathTrait( getNativeSVGProxyHandle(),
+        _setPathTrait(getNativeSVGProxyHandle(),
                       getHandle(), id, ((M2GSVGPath)path).getHandle());
 
         // inform observer about changes in DOM only if element is in DOM
@@ -1282,7 +1207,7 @@ public class M2GSVGElement extends M2GObject implements SVGElement
             String id = M2GSVGElement._getStringTrait(
                             M2GManager.getInstance().getSVGProxyHandle(),
                             aElementHandle,
-                            M2GSVGConstants.AT_ID );
+                            M2GSVGConstants.AT_ID);
             if ((id != null) && id.equals("text_use_svg_default_font"))
             {
                 return buildElement(

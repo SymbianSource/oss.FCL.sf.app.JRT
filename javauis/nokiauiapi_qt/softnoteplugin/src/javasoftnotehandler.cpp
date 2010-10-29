@@ -12,7 +12,7 @@
 #include <memory>
 #include <badesca.h>
 #include <hbsymbianvariant.h>
-#include <HbIndicatorsymbian.h>
+#include <hbindicatorsymbian.h>
 
 #include <javastorageentry.h>
 #include <javastorage.h>
@@ -110,10 +110,10 @@ void javasoftnotehandler::event(const std::string& eventProvider,
 // ----------------------------------------------------------------------------
 // javasoftnotehandler::amAdded
 // ----------------------------------------------------------------------------
-void javasoftnotehandler::amAdded(const uids_t& aUids)
+void javasoftnotehandler::amAdded(const uids_t& /*aUids*/)
     {
     JELOG2(EJavaCaptain);
-    LOG1(EJavaCaptain, EInfo, "javasoftnotehandler::amAdded, %d uids", aUids.size());
+    LOG(EJavaCaptain, EInfo, "javasoftnotehandler::amAdded");
     }
 
 // ----------------------------------------------------------------------------
@@ -236,7 +236,7 @@ void javasoftnotehandler::createIndicatorsL()
         }
     catch(JavaStorageException& ex)
         {
-        LOG1(EJavaStorage, EInfo," JavaSoftNote Exception %s", ex.toString());
+        LOG1(EJavaStorage, EInfo," JavaSoftNote Exception %S", ex.toString().c_str());
         }   
     }
 
@@ -294,7 +294,7 @@ void javasoftnotehandler::deleteIndicatorsL(const uids_t& aUids)
         }
     catch(JavaStorageException& ex)
         {
-        LOG1(EJavaStorage, EInfo," JavaSoftNote Exception %s", ex.toString());
+        LOG1(EJavaStorage, EInfo," JavaSoftNote Exception %s", ex.toString().c_str());
         }
     }
 

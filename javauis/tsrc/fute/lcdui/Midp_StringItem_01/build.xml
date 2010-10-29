@@ -25,13 +25,47 @@
     <property name="midlet1.name" value="Midp_StringItem_01"/>
     <property name="midlet1.icon.name" value=""/>
     <property name="midlet1.package.name" value="Midp_StringItem_01"/>
+    <property name="midlet2.name" value="StringItemTests1"/>
+    <property name="midlet2.icon.name" value=""/>
+    <property name="midlet2.package.name" value="StringItemTests1"/>
+    <property name="midlet3.name" value="StringItemTests2"/>
+    <property name="midlet3.icon.name" value=""/>
+    <property name="midlet3.package.name" value="StringItemTests2"/>
     <property name="midlet.permissions" value=""/>
     <property name="package.name" value="Midp_StringItem_01"/>
     <property name="company.name" value="Nokia"/>
-    <property name="midlet.version" value="1.2"/>
+    <property name="midlet.version" value="1.3"/>
     <property name="midlet.description" value=""/>
 
-    <!-- Get settings for a basic MIDlet. -->
-    <import file="../../properties-basic-midlet.xml"/>
+    <!-- Package Preverifed classes, resources and MANIFEST file -->
+    <target name="pack" depends="preverify">
+        <wtkjad jadfile="${bin}/${package.name}.jad"
+            jarfile="${bin}/${package.name}.jar"
+            update="true"
+            config="1.1"
+            profile="2.1"
+            manifest="${bin}/MANIFEST.MF"
+            name="${package.name}"
+            vendor="${company.name}">
+            <attribute name="MIDlet-Permissions" value="${midlet.permissions}"/>
+            <attribute name="MicroEdition-Profile" value="MIDP-2.1"/>
+            <attribute name="MicroEdition-Configuration" value="CLDC-1.1"/>
+            <attribute name="MIDlet-Version" value="${midlet.version}"/>
+            <attribute name="MIDlet-Description" value="${midlet.description}"/>
+            <midlet name="${midlet1.name}" icon="${midlet1.icon.name}" class="${midlet1.package.name}" />
+            <midlet name="${midlet2.name}" icon="${midlet2.icon.name}" class="${midlet2.package.name}" />
+            <midlet name="${midlet3.name}" icon="${midlet3.icon.name}" class="${midlet3.package.name}" />
+        </wtkjad>
+
+        <wtkpackage
+            jarfile="${bin}/${package.name}.jar"
+            jadfile="${bin}/${package.name}.jad"
+            classpath="${project.class.path}"
+            basedir="${prever}"
+            autoversion="false">
+            <fileset dir="${res}"
+                excludes="**/distribution.policy.s60" />
+        </wtkpackage>
+    </target>
 
 </project>

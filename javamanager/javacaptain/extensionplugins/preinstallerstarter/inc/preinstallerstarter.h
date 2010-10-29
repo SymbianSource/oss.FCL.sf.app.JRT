@@ -37,6 +37,13 @@ OS_NONSHARABLE_CLASS(PreinstallerStarter) :  public CActive,
         public EventConsumerInterface,
         public ExtensionPluginInterface
 {
+    enum TPreinstallerStartMode
+    {
+        ENormal,
+        EIad,
+        ERomUpgrade
+    };
+
 public:
     PreinstallerStarter();
     virtual ~PreinstallerStarter();
@@ -58,9 +65,15 @@ protected:
     virtual void DoCancel();
 
 private:
-    void startPreinstaller(TBool aIadBoot);
+    void startPreinstaller(enum TPreinstallerStartMode aStartMode);
 #ifndef SYMBIAN_UNIVERSAL_INSTALL_FRAMEWORK
     void registerMidletApplicationTypeHandler();
+#endif
+
+#ifdef RD_JAVA_S60_RELEASE_5_0_ROM
+    // If necessary start javaafterflashconverter.exe and return ETrue,
+    // else return EFalse
+    TBool startConverter();
 #endif
 
     CoreInterface* mCore;

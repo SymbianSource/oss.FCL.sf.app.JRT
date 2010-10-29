@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -18,9 +18,7 @@
 package com.nokia.microedition.m2g;
 
 import java.lang.ref.WeakReference;
-//import com.nokia.mj.impl.rt.legacy.MIDEventServer;
 import java.util.Hashtable;
-//import com.nokia.mj.impl.rt.legacy.MemoryUtil;
 import java.util.Enumeration;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.DisposeEvent;
@@ -54,26 +52,16 @@ public final class M2GManager implements  Listener
     private M2GManager()
     {
         super();
-				
-				
-				//As Display is created in Thread only.. So no need to handle display over here.
-				//scom.nokia.mj.impl.rt.support.Jvm.loadSystemLibrary("javam2g");      
-        /*// setup the finalization via eswt's Display
-        Display display = Display.getCurrent();
-        if (display == null)
+
+        // Execute in UI thread
+        Platform.executeInUIThread(
+            new M2GRunnableQt()
         {
-            return;  // ?
-        }
-        display.addListener(SWT.Dispose, (Listener)this); */
-        
-				
-		// Execute in UI thread     
-        	Platform.executeInUIThread(
-                new M2GRunnableQt() {
-                    public void doRun() {
-    															    	iSVGProxyHandle = _createSvgProxy();
-    															  		}
-    															  });
+            public void doRun()
+            {
+                iSVGProxyHandle = _createSvgProxy();
+            }
+        });
         M2GManager.heuristicGC();
     }
 
@@ -183,14 +171,14 @@ public final class M2GManager implements  Listener
         {
             if (sWeakManagerProxy != null)
             {
-      		    	
+
                 weakManager = (M2GWeakManager)sWeakManagerProxy.get();
             }
             // Check if object null
             if (weakManager == null)
             {
                 // Create a new object and put it into the static member variable
-                
+
                 weakManager = new M2GWeakManager(new M2GManager());
                 sWeakManagerProxy = new WeakReference(weakManager);
             }
@@ -209,13 +197,13 @@ public final class M2GManager implements  Listener
     //--------------------------------------------------
     // NATIVE METHODS
     //--------------------------------------------------
-    private static native int _createSvgEngine(int aSvgProxyHandle );
+    private static native int _createSvgEngine(int aSvgProxyHandle);
 
     private static native int _createSvgProxy();
 
     private static native void _deleteSvgEngine(int aSvgProxyHandle, int aSvgEngineHandle);
 
-    private static native void _deleteSvgProxy( int aSvgProxyHandle);
+    private static native void _deleteSvgProxy(int aSvgProxyHandle);
 
 
 }

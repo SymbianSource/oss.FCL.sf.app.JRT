@@ -384,6 +384,7 @@ public final class SifRegistrator
         int uid = ((PlatformUid)aSuiteInfo.getUid()).getIntValue();
         String[] componentFiles = getComponentFiles(aSuiteInfo);
         long componentSize = aSuiteInfo.getInitialSize();
+        int installState = (aSuiteInfo.isPreinstalled()? 1: 0);
         String attrValue = aSuiteInfo.getAttributeValue("Nokia-MIDlet-Block-Uninstall");
         boolean isRemovable = !(attrValue != null && attrValue.equalsIgnoreCase("true"));
         boolean isDrmProtected = (aSuiteInfo.getContentInfo() == aSuiteInfo.CONTENT_INFO_DRM);
@@ -397,7 +398,7 @@ public final class SifRegistrator
                       iSessionHandle, uid,
                       getScrString(suiteName), getScrString(vendor),
                       getScrString(version), getScrString(globalId),
-                      componentFiles, componentSize,
+                      componentFiles, componentSize, installState,
                       isRemovable, isDrmProtected,
                       isOriginVerified, aIsUpdate,
                       aSuiteInfo.getMediaId(),
@@ -867,6 +868,7 @@ public final class SifRegistrator
      * @param aGlobalId
      * @param aComponentFiles
      * @param aComponentSize
+     * @param aInstallState
      * @param aIsRemovable
      * @param aIsDrmProtected
      * @param aIsOriginVerified
@@ -883,7 +885,7 @@ public final class SifRegistrator
     private static native int _registerComponent(
         int aSessionHandle, int aUid, String aSuiteName, String aVendor,
         String aVersion, String aGlobalId,
-        String[] aComponentFiles, long aComponentSize,
+        String[] aComponentFiles, long aComponentSize, int aInstallState,
         boolean aIsRemovable, boolean aIsDrmProtected,
         boolean aIsOriginVerified, boolean aIsUpdate, int aMediaId,
         String aMidletInfoUrl, String aMidletDescription,

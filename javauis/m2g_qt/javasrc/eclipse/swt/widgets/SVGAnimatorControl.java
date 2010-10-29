@@ -16,8 +16,7 @@
 */
 package org.eclipse.swt.widgets;
 
-// this package is removed from Qt import org.eclipse.swt.internal.symbian.
-/*import org.eclipse.swt.internal.symbian.*;*/
+
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.widgets.Control;
 import javax.microedition.m2g.*;
@@ -29,7 +28,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.events.*;
 import com.nokia.mj.impl.utils.Logger;
 import org.eclipse.swt.widgets.Internal_PackageSupport;
-import org.eclipse.swt.graphics.Internal_GfxPackageSupport; 
+import org.eclipse.swt.graphics.Internal_GfxPackageSupport;
 
 
 
@@ -71,8 +70,6 @@ public class SVGAnimatorControl extends Canvas
      */
     public SVGAnimatorControl(SVGImage aSVGImage)
     {
-				
-
         iSVGImage = aSVGImage;
         iState = STATE_STOPPED;
         // Create render context, use M2GScalableGraphics
@@ -94,10 +91,6 @@ public class SVGAnimatorControl extends Canvas
 
         // Init widget after parent and display are known
         //Have to create Widget.
-//Workaround for Qt changes this method is now in with one int argument.L:\sf\app\jrt\javauis\eswt_qt\org.eclipse.swt\Eclipse SWT\qt\org\eclipse\swt\widgets\Control.java        
-//        int i =10;
-//        createWidget(i);
-//				internal_createWidget();
 
         // Add this to necessary listeners
         addControlListener(this);
@@ -113,9 +106,9 @@ public class SVGAnimatorControl extends Canvas
     /**
      * @see org.eclipse.swt.widgets.Control#paint()
      */
-        public void paintControl(PaintEvent e) {
+    public void paintControl(PaintEvent e)
+    {
         GC gc = e.gc;
-				
         // Render image
         try
         {
@@ -126,7 +119,6 @@ public class SVGAnimatorControl extends Canvas
         }
         finally
         {
-        		
             iSg.releaseTarget();
         }
     }

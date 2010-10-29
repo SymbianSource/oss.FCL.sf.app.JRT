@@ -199,10 +199,24 @@ public abstract class Displayable
         {
             eswtUpdateSizes();
 
-            // If it is popup textbox ticker should not be visible
+            // If it is popup textbox or alert ticker should not be visible
             if (ticker != null && !isPopup())
             {
+                if (tickerLabel != null && !tickerLabel.getVisible())
+                {
+                    // Show ticker:
+                    tickerLabel.setVisible(true);
+                }
                 ticker.start();
+            }
+            else if (ticker != null && isPopup())
+            {
+                if (tickerLabel != null && tickerLabel.getVisible())
+                {
+                    // Hide ticker:
+                    tickerLabel.setVisible(false);
+                }
+
             }
             shell.addShellListener(eswtShellListener);
             shell.addDisposeListener(eswtDisposeListener);
@@ -338,7 +352,7 @@ public abstract class Displayable
             int newWidth = (aWidth > 0 ? aWidth : contentBounds.width);
             int newHeight = (aHeight > 0 ? aHeight : contentBounds.height);
 
-            if(tickerLabel != null)
+            if(tickerLabel != null && !isPopup())
             {
                 newHeight += tickerLabel.getBounds().height;
             }
@@ -369,7 +383,7 @@ public abstract class Displayable
     {
         Rectangle shellArea = shell.getClientArea();
 
-        if(tickerLabel != null)
+        if(tickerLabel != null && !isPopup())
         {
             int tickerHeight = tickerLabel.getBounds().height;
 
@@ -396,7 +410,7 @@ public abstract class Displayable
         {
             contentArea = newArea;
             initialized = true;
-            if(ticker != null)
+            if(ticker != null && !isPopup())
             {
                 ticker.updateSpeed();
             }
@@ -725,7 +739,7 @@ public abstract class Displayable
                     // Setting ticker:
                     tickerLabel.setText(finalTicker.getFormattedString());
 
-                    // If it is popup textbox ticker should not be visible
+                    // If it is popup textbox or alert ticker should not be visible
                     if (!currentDisplayable.isPopup())
                     {
 
@@ -743,7 +757,7 @@ public abstract class Displayable
                     // Removing ticker:
                     tickerLabel.setText("");
 
-                    // If it is popup textbox ticker should not be visible
+                    // If it is popup textbox or alert ticker should not be visible
                     if (!currentDisplayable.isPopup())
                     {
                         // Removing ticker:
@@ -757,7 +771,7 @@ public abstract class Displayable
         {
             if(isLcduiVisible)
             {
-                // If it is popup textbox ticker should not be visible
+                // If it is popup textbox or alert ticker should not be visible
                 if (!isPopup())
                 {
                     // Start to scroll the ticker. Ticker may be already running
@@ -827,17 +841,7 @@ public abstract class Displayable
             {
                 public void run()
                 {
-                    // Alert's ticker should be added to top part of the screen
-                    Composite parent = shell;
-                    if (currentDisplayable instanceof Alert)
-                    {
-                        parent = shell.getParent();
-                        if(parent == null)
-                        {
-                            parent = shell;
-                        }
-                    }
-                    tickerLabel = new Label(parent,
+                    tickerLabel = new Label(shell,
                         SWT.SHADOW_NONE | SWT.HORIZONTAL | SWT.CENTER);
                 }
             });
@@ -906,10 +910,10 @@ public abstract class Displayable
     {
         boolean isPopup = false;
 
-        if(this instanceof TextBox && 
+        if(this instanceof Alert || (this instanceof TextBox && 
                     !JadAttributeUtil.isValue(
                         JadAttributeUtil.ATTRIB_NOKIA_UI_ENHANCEMENT, 
-                        JadAttributeUtil.VALUE_FULLSCREEN_TEXTBOX))
+                        JadAttributeUtil.VALUE_FULLSCREEN_TEXTBOX)))
         {
             isPopup = true;
         }

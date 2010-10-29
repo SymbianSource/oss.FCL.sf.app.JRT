@@ -87,10 +87,10 @@ OS_EXPORT int CommsClientEndpoint::send(CommsMessage& aMessage)
 }
 
 
-OS_EXPORT int CommsClientEndpoint::detachFromVm()
+OS_EXPORT int CommsClientEndpoint::detachFromVm(JNIEnv* aEnv)
 {
     JELOG2(EJavaComms);
-    CommsEndpoint::detachFromVm();
+    CommsEndpoint::detachFromVm(aEnv);
 
     int rc = disconnect();
     rc = connect(mAddress);

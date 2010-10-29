@@ -79,12 +79,9 @@
 #include <QChar>
 #include <QLibrary>
 
-#ifdef __SYMBIAN32__
+#if 0
 #include <xqservicerequest.h>
-#include <xqcallinfo.h>
 #include <cntservicescontact.h>
-#include <qnetworkconfigmanager.h>
-#include <qnetworkconfiguration.h>
 #include <hbinputsettingproxy.h>
 #include <hbicon.h>
 #include <XQAiwRequest.h>
@@ -6362,7 +6359,7 @@ JNIEXPORT jint JNICALL OS_NATIVE( QIcon_1pixmap )
 JNIEXPORT jint JNICALL OS_NATIVE ( HbIcon_1new )
     (JNIEnv* aJniEnv , jclass, jstring aName)
     {
-#ifdef __SYMBIAN32__
+#if 0
     HbIcon* icon = NULL;
     SWT_TRY
         {
@@ -6379,7 +6376,7 @@ JNIEXPORT jint JNICALL OS_NATIVE ( HbIcon_1new )
 JNIEXPORT jint JNICALL OS_NATIVE( HbIcon_1pixmap )
     (JNIEnv* aJniEnv , jclass, jint aHandle)
     {
-#ifdef __SYMBIAN32__
+#if 0
     QPixmap* pixmap = NULL;
     SWT_TRY
         {
@@ -6397,7 +6394,7 @@ JNIEXPORT jint JNICALL OS_NATIVE( HbIcon_1pixmap )
 JNIEXPORT void JNICALL OS_NATIVE( HbIcon_1delete )
     (JNIEnv* aJniEnv , jclass, jint aHandle)
     {
-#ifdef __SYMBIAN32__
+#if 0
     SWT_TRY
         {
         SWT_LOG_JNI_CALL();
@@ -11396,7 +11393,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_extension_OS_HbInputSetting
     (JNIEnv* aJniEnv, jclass)
     {
     jint result = 0;
-#ifdef __SYMBIAN32__
+#if 0
     SWT_TRY
         {
         SWT_LOG_JNI_CALL();
@@ -11446,13 +11443,13 @@ JNIEXPORT void JNICALL OS_NATIVE( SwtApplication_1postDeferredEvents )
 //
 
 JNIEXPORT jint JNICALL OS_NATIVE( XQServiceRequest_1new )
-#ifdef __SYMBIAN32__
+#if 0
 (JNIEnv* aJniEnv, jclass, jstring aService, jstring aOperation, jboolean aSynchronous)
 #else
 (JNIEnv* aJniEnv, jclass, jstring, jstring, jboolean)
 #endif
     {
-#ifdef __SYMBIAN32__
+#if 0
     XQServiceRequest* request = NULL;
     SWT_TRY
         {
@@ -11467,13 +11464,13 @@ return NULL;
     }
 
 JNIEXPORT void JNICALL OS_NATIVE( XQServiceRequest_1swt_1setArgumentsForFetchEmail )
-#ifdef __SYMBIAN32__
+#if 0
 (JNIEnv* aJniEnv, jclass, jint aHandle, jstring aTitle, jstring aAction, jstring)
 #else
 (JNIEnv* aJniEnv, jclass, jint, jstring, jstring, jstring)
 #endif
     {
-#ifdef __SYMBIAN32__    
+#if 0
     SWT_TRY
         {
         SWT_LOG_JNI_CALL();
@@ -11487,13 +11484,13 @@ JNIEXPORT void JNICALL OS_NATIVE( XQServiceRequest_1swt_1setArgumentsForFetchEma
     }
 
 JNIEXPORT void JNICALL OS_NATIVE( XQServiceRequest_1swt_1setArgumentsForDial )
-#ifdef __SYMBIAN32__
+#if 0
 (JNIEnv* aJniEnv, jclass, jint aHandle, jstring aNumber, jboolean aAsyncAnswer)
 #else
 (JNIEnv* aJniEnv, jclass, jint, jstring, jboolean)
 #endif
     {
-#ifdef __SYMBIAN32__    
+#if 0
     SWT_TRY
         {
         SWT_LOG_JNI_CALL();
@@ -11507,13 +11504,13 @@ JNIEXPORT void JNICALL OS_NATIVE( XQServiceRequest_1swt_1setArgumentsForDial )
     }
 
 JNIEXPORT jboolean JNICALL OS_NATIVE( XQServiceRequest_1send )
-#ifdef __SYMBIAN32__
+#if 0
 (JNIEnv* aJniEnv, jclass, jint aHandle)
 #else
 (JNIEnv* aJniEnv, jclass, jint)
 #endif
     {
-#ifdef __SYMBIAN32__    
+#if 0
     bool result = false;
     SWT_TRY
         {
@@ -11535,13 +11532,13 @@ JNIEXPORT jboolean JNICALL OS_NATIVE( XQServiceRequest_1send )
 //
 
 JNIEXPORT jint JNICALL OS_NATIVE( XQApplicationManager_1new )
-#ifdef __SYMBIAN32__
+#if 0
 (JNIEnv* aJniEnv, jclass)
 #else
 (JNIEnv* aJniEnv, jclass)
 #endif
     {
-#ifdef __SYMBIAN32__    
+#if 0
     XQApplicationManager* aiwMgr = NULL;
     SWT_TRY
         {
@@ -11556,13 +11553,13 @@ JNIEXPORT jint JNICALL OS_NATIVE( XQApplicationManager_1new )
     }
 
 JNIEXPORT jint JNICALL OS_NATIVE( XQApplicationManager_1create )
-#ifdef __SYMBIAN32__
+#if 0
   (JNIEnv * aJniEnv, jclass,jint aHandle, jstring aService, jstring aInterface, jstring aOperation, jboolean aSynchronous)
 #else
 (JNIEnv *, jclass, jint, jstring, jstring, jstring, jboolean)
 #endif
     {
-#ifdef __SYMBIAN32__
+#if 0
     XQAiwRequest* request = NULL;
     SWT_TRY
         {
@@ -11584,13 +11581,13 @@ return NULL;
 // XQAiwRequest
 //
 JNIEXPORT void JNICALL OS_NATIVE( XQAiwRequest_1setArguments )
-#ifdef __SYMBIAN32__
+#if 0
 (JNIEnv* aJniEnv, jclass, jint aHandle, jstring aNumber)
 #else
 (JNIEnv* aJniEnv, jclass, jint, jstring)
 #endif
     {
-#ifdef __SYMBIAN32__    
+#if 0
     SWT_TRY
         {
         SWT_LOG_JNI_CALL();
@@ -11609,13 +11606,13 @@ JNIEXPORT void JNICALL OS_NATIVE( XQAiwRequest_1setArguments )
     }
 
 JNIEXPORT void JNICALL OS_NATIVE( XQAiwRequest_1swtDialer_1setArguments )
-#ifdef __SYMBIAN32__
+#if 0
 (JNIEnv* aJniEnv, jclass, jint aHandle, jstring aNumber)
 #else
 (JNIEnv* aJniEnv, jclass, jint, jstring)
 #endif
     {
-#ifdef __SYMBIAN32__    
+#if 0
     SWT_TRY
         {
         SWT_LOG_JNI_CALL();
@@ -11638,13 +11635,13 @@ JNIEXPORT void JNICALL OS_NATIVE( XQAiwRequest_1swtDialer_1setArguments )
     }
 
 JNIEXPORT jboolean JNICALL OS_NATIVE( XQAiwRequest_1send )
-#ifdef __SYMBIAN32__
+#if 0
 (JNIEnv* aJniEnv, jclass, jint aHandle)
 #else
 (JNIEnv* aJniEnv, jclass, jint)
 #endif
     {
-#ifdef __SYMBIAN32__    
+#if 0
     bool result = false;
     SWT_TRY
         {
@@ -11668,13 +11665,13 @@ JNIEXPORT jboolean JNICALL OS_NATIVE( XQAiwRequest_1send )
 //
 
 JNIEXPORT jobjectArray  JNICALL OS_NATIVE( CntServicesContactList_1swt_1contacts )
-#ifdef __SYMBIAN32__
+#if 0
 (JNIEnv* aJniEnv, jclass, jint aHandle)
 #else
 (JNIEnv* aJniEnv, jclass, jint)
 #endif
     {
-#ifdef __SYMBIAN32__        
+#if 0
     jobjectArray javaStringArray = NULL;
     SWT_TRY
         {
@@ -11919,157 +11916,6 @@ JNIEXPORT jint JNICALL OS_NATIVE( getHwInputs )
 #endif
     return hwInputs;    
     }
-
-//
-// QNetworkConfigurationManager
-//
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_extension_OS_QNetworkConfigurationManager_1new
-#ifdef __SYMBIAN32__
-(JNIEnv* aJniEnv, jclass, jint aParent)
-#else
-(JNIEnv*, jclass, jint)
-#endif
-{
-    jint result = 0;
-#ifdef __SYMBIAN32__    
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-        SWT_LOG_DATA_1("parent=%x", aParent);
-        HANDLE_TO_POINTER(QObject*, parent, aParent);
-        result = POINTER_TO_HANDLE(new QtMobility::QNetworkConfigurationManager(parent));
-        }
-    SWT_CATCH
-#endif
-    return result;
-}
-
-JNIEXPORT jintArray JNICALL Java_org_eclipse_swt_internal_extension_OS_QNetworkConfigurationManager_1allConfigurations
-#ifdef __SYMBIAN32__
-(JNIEnv* aJniEnv, jclass, jint aHandle, jint aFilter)
-#else
-(JNIEnv*, jclass, jint, jint)
-#endif
-{
-    jintArray javaArray = NULL;
-#ifdef __SYMBIAN32__
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-        SWT_LOG_DATA_2("handle=%x filter=%x", aHandle, aFilter);
-
-        HANDLE_TO_POINTER(QtMobility::QNetworkConfigurationManager*, manager, aHandle);
-        
-        QList<QtMobility::QNetworkConfiguration> configs = 
-                manager->allConfigurations(static_cast<QtMobility::QNetworkConfiguration::StateFlags>(aFilter));
-
-        int count = configs.size();
-        QVector<int> handles(count);
-        int* handleData = handles.data();
-        for(int i = 0; i < count; ++i)
-            {
-            handleData[i] = reinterpret_cast<int>(new QtMobility::QNetworkConfiguration(configs.at(i)));
-            }
-        javaArray = swtApp->jniUtils().NewJavaIntArray(aJniEnv, handleData, count);
-        }
-    SWT_CATCH
-#endif
-    return javaArray;
-}
-
-//
-// QNetworkConfiguration
-//
-
-JNIEXPORT jstring JNICALL Java_org_eclipse_swt_internal_extension_OS_QNetworkConfiguration_1bearerName
-#ifdef __SYMBIAN32__
-(JNIEnv* aJniEnv, jclass, jint aHandle)
-#else
-(JNIEnv *, jclass, jint)
-#endif
-{
-#ifdef __SYMBIAN32__
-    jstring result = NULL;
-#ifdef __SYMBIAN32__    
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-        SWT_LOG_DATA_1("handle=%x", aHandle);
-        QtMobility::QNetworkConfiguration* config = reinterpret_cast<QtMobility::QNetworkConfiguration*>(aHandle);
-        result = swtApp->jniUtils().QStringToJavaString(aJniEnv, config->bearerName());
-        }
-    SWT_CATCH
-#endif
-    return result;
-#endif
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_extension_OS_QNetworkConfiguration_1delete
-#ifdef __SYMBIAN32__
-(JNIEnv* aJniEnv, jclass, jint aHandle)
-#else
-(JNIEnv *, jclass, jint)
-#endif
-{
-#ifdef __SYMBIAN32__
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-        SWT_LOG_DATA_1("handle=%x", aHandle);
-        delete reinterpret_cast<QtMobility::QNetworkConfiguration*>(aHandle);
-        }
-    SWT_CATCH
-#endif
-}
-
-//
-// XQCallInfo
-//
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_extension_OS_XQCallInfo_1create
-#ifdef __SYMBIAN32__
-(JNIEnv* aJniEnv, jclass)
-#else
-(JNIEnv *, jclass)
-#endif
-{
-    jint result = 0;
-#ifdef __SYMBIAN32__
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-#ifndef __WINSCW__
-        result = POINTER_TO_HANDLE(XQCallInfo::create());
-#endif
-        }
-    SWT_CATCH
-#endif
-    return result;
-}
-
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_extension_OS_XQCallInfo_1swt_1hasCalls
-#ifdef __SYMBIAN32__
-(JNIEnv* aJniEnv, jclass, jint aHandle)
-#else
-(JNIEnv *, jclass, jint)
-#endif
-{
-    jboolean result = JNI_FALSE;
-#ifdef __SYMBIAN32__
-    SWT_TRY
-        {
-        SWT_LOG_JNI_CALL();
-        SWT_LOG_DATA_1("handle=%x", aHandle);
-        HANDLE_TO_POINTER(XQCallInfo*, callInfo, aHandle);
-        QList<CallInfo> callInfos;
-        callInfo->getCalls(callInfos);
-        result = callInfos.empty() ? JNI_FALSE : JNI_TRUE;
-        }
-    SWT_CATCH
-#endif
-    return result;
-}
 
 //
 // Other

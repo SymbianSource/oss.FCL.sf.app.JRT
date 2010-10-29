@@ -24,54 +24,169 @@ import org.eclipse.swt.SWT;
  */
 final class MsgRepository
 {
-
+    
     // Command labels:
+    
+    // SCREEN command
+    // for Options menu position
     public static final String COMMAND_LABEL_SCREEN =
-        OpenLcduiLocalization.getMessage("key_select");
+        OpenLcduiLocalization.getMessage("opt_screen_cmd_select");
 
+    // for context menu position        
+    public static final String COMMAND_LABEL_SCREEN_CTX_MENU =
+        OpenLcduiLocalization.getMessage("menu_screen_cmd_select");
+
+    // for button position (one button/softkey only)
+    public static final String COMMAND_LABEL_SCREEN_BUTTON_1 =
+        OpenLcduiLocalization.getMessage("button_screen_cmd_select_1");
+        
+    // for button position (two buttons/softkeys)
+    public static final String COMMAND_LABEL_SCREEN_BUTTON_2 =
+        OpenLcduiLocalization.getMessage("button_screen_cmd_select_2");
+
+    // BACK command
+    // for Options menu positions
     public static final String COMMAND_LABEL_BACK =
-        OpenLcduiLocalization.getMessage("back");
-
+        OpenLcduiLocalization.getMessage("opt_cmd_back");
+    
+    // for context menu position    
+    public static final String COMMAND_LABEL_BACK_CTX_MENU =
+        OpenLcduiLocalization.getMessage("menu_cmd_back");
+        
+    // for button position (one button/softkey only)
+    public static final String COMMAND_LABEL_BACK_BUTTON_1 =
+        OpenLcduiLocalization.getMessage("button_cmd_back_1");
+    
+    // for button position (two buttons/softkeys)
+    public static final String COMMAND_LABEL_BACK_BUTTON_2 =
+        OpenLcduiLocalization.getMessage("button_cmd_back_2");
+        
+    // CANCEL command    
+    // for Options menu position
     public static final String COMMAND_LABEL_CANCEL =
-        SWT.getMessage("cancel");
+        SWT.getMessage("opt_cmd_cancel");
+        
+    // for context menu position
+    public static final String COMMAND_LABEL_CANCEL_CTX_MENU =
+        SWT.getMessage("menu_cmd_cancel");
 
+    // for button position (one button/softkey only)
+    public static final String COMMAND_LABEL_CANCEL_BUTTON_1 =
+        SWT.getMessage("button_cmd_cancel_1");
+        
+    // for button position (two buttons/softkeys)
+    public static final String COMMAND_LABEL_CANCEL_BUTTON_2 =
+        SWT.getMessage("button_cmd_cancel_2");
+
+    // OK command
+    // for Options menu position
     public static final String COMMAND_LABEL_OK =
-        SWT.getMessage("ok");
+        SWT.getMessage("opt_cmd_ok");
+        
+    // for context menu position
+    public static final String COMMAND_LABEL_OK_CTX_MENU =
+        SWT.getMessage("menu_cmd_ok");
+        
+    // for button position (one button/softkey only)
+    public static final String COMMAND_LABEL_OK_BUTTON_1 =
+        SWT.getMessage("button_cmd_ok_1");
+        
+    // for button position (two buttons/softkeys)
+    public static final String COMMAND_LABEL_OK_BUTTON_2 =
+        SWT.getMessage("button_cmd_ok_2");
 
+    // HELP command
+    // for Options menu position
     public static final String COMMAND_LABEL_HELP =
-        OpenLcduiLocalization.getMessage("help");
+        OpenLcduiLocalization.getMessage("opt_cmd_help");
+        
+    // for context menu position
+    public static final String COMMAND_LABEL_HELP_CTX_MENU =
+        OpenLcduiLocalization.getMessage("menu_cmd_help");
+    
+    // for button position (one button/softkey only)
+    public static final String COMMAND_LABEL_HELP_BUTTON_1 =
+        OpenLcduiLocalization.getMessage("button_cmd_help_1");
+        
+    // for button position (two buttons/softkeys)
+    public static final String COMMAND_LABEL_HELP_BUTTON_2 =
+        OpenLcduiLocalization.getMessage("button_cmd_help_2");
 
+    // STOP command
+    // for Options menu position
     public static final String COMMAND_LABEL_STOP =
-        OpenLcduiLocalization.getMessage("key_stop");
-
+        OpenLcduiLocalization.getMessage("opt_cmd_stop");
+        
+    // for context menu position
+    public static final String COMMAND_LABEL_STOP_CTX_MENU =
+        OpenLcduiLocalization.getMessage("menu_cmd_stop");
+        
+    // for button position (one button/softkey only)
+    public static final String COMMAND_LABEL_STOP_BUTTON_1 =
+        OpenLcduiLocalization.getMessage("button_cmd_stop_1");
+        
+    // for button position (two buttons/softkeys)
+    public static final String COMMAND_LABEL_STOP_BUTTON_2 =
+        OpenLcduiLocalization.getMessage("button_cmd_stop_2");
+   
+    // EXIT command
+    // for Options menu position
     public static final String COMMAND_LABEL_EXIT =
-        OpenLcduiLocalization.getMessage("close");
-
+        OpenLcduiLocalization.getMessage("opt_cmd_close");
+        
+    // for context menu position
+    public static final String COMMAND_LABEL_EXIT_CTX_MENU =
+        OpenLcduiLocalization.getMessage("menu_cmd_close");
+        
+    // for button position (one button/softkey only)    
+    public static final String COMMAND_LABEL_EXIT_BUTTON_1 =
+        OpenLcduiLocalization.getMessage("button_cmd_close_1");
+        
+    // for button position (two buttons/softkeys)
+    public static final String COMMAND_LABEL_EXIT_BUTTON_2 =
+        OpenLcduiLocalization.getMessage("button_cmd_close_2");
+   
+    // ITEM command
+    // for Options menu position (Note: should not be used, as ITEM type commands 
+    // should never be mapped to Options menu!)
     public static final String COMMAND_LABEL_ITEM =
-        OpenLcduiLocalization.getMessage("key_select");
-
+        OpenLcduiLocalization.getMessage("opt_item_cmd_select");
+        
+    // for context menu position
+    public static final String COMMAND_LABEL_ITEM_CTX_MENU =
+        OpenLcduiLocalization.getMessage("menu_item_cmd_select");
+        
+    // for button position (one button/softkey only)
+    public static final String COMMAND_LABEL_ITEM_BUTTON_1 =
+        OpenLcduiLocalization.getMessage("button_item_cmd_select_1");
+        
+    // for button position (two buttons/softkeys) 
+    public static final String COMMAND_LABEL_ITEM_BUTTON_2 =
+        OpenLcduiLocalization.getMessage("button_item_cmd_select_2");
+ 
     // Alert texts:
     public static final String ALERT_DEFAULT_TEXT_ERROR =
-        OpenLcduiLocalization.getMessage("alert_error");
+        OpenLcduiLocalization.getMessage("info_alert_error");
 
     public static final String ALERT_DEFAULT_TEXT_WARNING =
-        OpenLcduiLocalization.getMessage("alert_warning");
+        OpenLcduiLocalization.getMessage("info_alert_warning");
 
     public static final String ALERT_DEFAULT_TEXT_INFO =
-        OpenLcduiLocalization.getMessage("alert_info");
+        OpenLcduiLocalization.getMessage("info_alert_information");
 
     public static final String ALERT_DEFAULT_TEXT_CONFIRMATION =
-        OpenLcduiLocalization.getMessage("alert_conf");
+        OpenLcduiLocalization.getMessage("info_alert_confirmation");
 
     public static final String ALERT_DEFAULT_TEXT_ALARM =
-        OpenLcduiLocalization.getMessage("alert_alarm");
-
+        OpenLcduiLocalization.getMessage("info_alert_alarm");
+    
+    // AlertType.NULL
     public static final String ALERT_DEFAULT_TEXT_ALERT =
-        OpenLcduiLocalization.getMessage("alert_null");
+        OpenLcduiLocalization.getMessage("info_alert");
 
+    
 
     // Exceptions below - dont need translation !!!
-
 
     public static final String COMMAND_EXCEPTION_LABEL_IS_NULL =
         "Short label cannot be null";

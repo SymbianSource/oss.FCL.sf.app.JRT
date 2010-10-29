@@ -36,6 +36,7 @@ const int MODULE_ID_NO_REPLY    = 903;
 const int MODULE_ID_SLEEP_1S    = 1000;
 const int MODULE_ID_SLEEP_5S    = 5000;
 const int MODULE_ID_SLEEP_10S   = 10000;
+const int MODULE_ID_DELAY_REPLY = 11000;
 
 #ifdef __SYMBIAN32__
 java::captain::ExtensionPluginInterface* getExtensionPlugin()
@@ -68,7 +69,7 @@ std::string wstringToUtf8(const std::wstring& str)
     return result;
 }
 
-CommsExtensionPlugin::CommsExtensionPlugin() : mCore(0), mComms(0)
+CommsExtensionPlugin::CommsExtensionPlugin() : mCore(0), mComms(0), mDelayedReplyCount(0)
 {
     JELOG2(EJavaComms);
 }
@@ -93,6 +94,7 @@ void CommsExtensionPlugin::startPlugin(CoreInterface* core)
     mComms->registerListener(MODULE_ID_SLEEP_1S, this);
     mComms->registerListener(MODULE_ID_SLEEP_5S, this);
     mComms->registerListener(MODULE_ID_SLEEP_10S, this);
+    mComms->registerListener(MODULE_ID_DELAY_REPLY, this);
 }
 
 void CommsExtensionPlugin::stopPlugin()
@@ -107,6 +109,7 @@ void CommsExtensionPlugin::stopPlugin()
     mComms->unregisterListener(MODULE_ID_SLEEP_1S, this);
     mComms->unregisterListener(MODULE_ID_SLEEP_5S, this);
     mComms->unregisterListener(MODULE_ID_SLEEP_10S, this);
+    mComms->unregisterListener(MODULE_ID_DELAY_REPLY, this);
 
     mCore = 0;
     mComms = 0;
@@ -197,6 +200,28 @@ void CommsExtensionPlugin::processMessage(CommsMessage& aMessage)
 #ifdef __SYMBIAN32__
         break;
 #endif
+    case MODULE_ID_DELAY_REPLY:
+    {
+        if (mDelayedReplyCount == 0)
+        {
+            mDelayedReply = aMessage;
+            mDelayedReplyCount++;
+        }
+        else
+        {
+            // reply to first message
+            CommsMessage reply;
+            reply.replyTo(mDelayedReply);
+            mComms->send(reply);
+
+            // reply to message client
+            reply.replyTo(aMessage);
+            mComms->send(reply);
+            mDelayedReplyCount = 0;
+        }
+    }
+    break;
+
     default:
         mReply = aMessage;
         mReply.setReceiver(aMessage.getSender());

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -321,7 +321,7 @@ public class ApplicationRegistratorTest extends TestCase implements InstallerMai
                 "GameMIDlet",
                 // String aTargetDrive,
                 "C:",
-                // String aIconFileName contains alread the name of the converted icon,
+                // String aIconFileName contains the name of the converted icon,
                 "c:\\private\\102033E6\\installer\\jiutdata\\icon1.mbm",
                 // String aJarFileName,
                 "c:\\private\\102033E6\\installer\\jiutdata\\utils\\einstein_EN_FR_IT_DE_ES_N97_v2942.jar",
@@ -348,7 +348,14 @@ public class ApplicationRegistratorTest extends TestCase implements InstallerMai
             boolean convOk = appReg.convertIcon("icon.png", "c:\\private\\102033E6\\installer\\jiutdata\\icon1.mbm",
                                                 "c:\\private\\102033E6\\installer\\jiutdata\\utils\\einstein_EN_FR_IT_DE_ES_N97_v2942.jar", iconSuffix);
             assertTrue("Icon conversion failed.", convOk);
-            assertTrue("Suffix of the converted icon is incorrect.", iconSuffix.toString().equals(".mbm"));
+            // Allowed icon suffixes .mbm and .png.
+            String expectedSuffix = ".mbm";
+            if (iconSuffix.toString().equals(".png"))
+            {
+                expectedSuffix = ".png";
+            }
+            assertTrue("Suffix of the converted icon is incorrect.",
+                       iconSuffix.toString().equals(expectedSuffix));
 
             appReg.registerApplication(appRegInfo);
             appReg.commitSession(true);
@@ -706,7 +713,14 @@ public class ApplicationRegistratorTest extends TestCase implements InstallerMai
             boolean convOk = appReg.convertIcon("gear.svg", "c:\\private\\102033E6\\installer\\jiutdata\\icon2.mif",
                                                 "c:\\private\\102033E6\\installer\\jiutdata\\utils\\MIDPTestMisc.jar", iconSuffix);
             assertTrue("Icon conversion failed.", convOk);
-            assertTrue("Suffix of the converted icon is incorrect.", iconSuffix.toString().equals(".mif"));
+            // Allowed icon suffixes are .mif and .svg.
+            String expectedSuffix = ".mif";
+            if (iconSuffix.toString().equals(".svg"))
+            {
+                expectedSuffix = ".svg";
+            }
+            assertTrue("Suffix of the converted icon is incorrect.",
+                       iconSuffix.toString().equals(expectedSuffix));
 
             appReg.registerApplication(appRegInfo);
             appReg.commitSession(true);

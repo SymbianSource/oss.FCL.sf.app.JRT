@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2006 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -64,14 +64,14 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1appendChild(
 
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
         TRAP(err,   aProxy->AppendChildL(
-            STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
-            STATIC_CAST(TM2GSvgElementHandle, aChildElementHandle)); );
-        }
+                 STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
+                 STATIC_CAST(TM2GSvgElementHandle, aChildElementHandle)););
+    }
     M2G_DO_UNLOCK(aJni)
-    
+
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGElement ) _appendChild - end");
     M2GGeneral::CheckErrorCode(aJni, err);
 }
@@ -96,15 +96,15 @@ JNIEXPORT jint JNICALL Java_com_nokia_microedition_m2g_M2GSVGElement__1checkRemo
     TInt removeable = -1;
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGElement ) _checkRemoveable - begin");
     TInt err = KM2GNotOk;
-    
-    
+
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
-    
+
         TRAP(err, aProxy->CheckRemoveableL(aElementHandle, removeable););
-        }
+    }
     M2G_DO_UNLOCK(aJni)
 
     M2GGeneral::CheckErrorCode(aJni, err);
@@ -138,19 +138,19 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1getBBox(
     TM2GRectData rect;
     TInt result = 0;
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
 
         TRAP(err, aProxy->GetBBoxL(
-           STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
-           STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
-           rect, result); );
-        }
+                 STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
+                 STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
+                 rect, result););
+    }
     M2G_DO_UNLOCK(aJni)
-  
+
     M2GGeneral::CheckErrorCode(aJni, err);
 
     aJni->SetFloatArrayRegion(
@@ -187,17 +187,17 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1getColorTrait(
     TM2GColorData color;
     TInt result = -1;
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
         TRAP(err, aProxy->GetColorTraitL(
-            aElementHandle,
-            aAttributeTypeId,
-            color,
-            result); );
-        }
+                 aElementHandle,
+                 aAttributeTypeId,
+                 color,
+                 result););
+    }
     M2G_DO_UNLOCK(aJni)
 
     M2GGeneral::CheckErrorCode(aJni, err);
@@ -237,15 +237,15 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1getElementTypeId(
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGElement ) _getElementTypeId - begin");
     TInt16 id = 0;
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
-        TRAP(err,  aProxy->GetElementTypeIdL(aElementHandle, id); );
-        }
+        TRAP(err,  aProxy->GetElementTypeIdL(aElementHandle, id););
+    }
     M2G_DO_UNLOCK(aJni)
-    
+
     M2GGeneral::CheckErrorCode(aJni, err);
     M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GSVGElement ) _getElementTypeId: %d - end", id);
     return id;
@@ -273,19 +273,19 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1getEnumTrait(
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGElement ) _getEnumTrait - begin");
     TInt16 enumTrait = 0;
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
 
         TRAP(err, aProxy->GetEnumTraitL(
-            STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
-            STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
-            enumTrait); );
-        }
+                 STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
+                 STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
+                 enumTrait););
+    }
     M2G_DO_UNLOCK(aJni)
-        
+
     M2GGeneral::CheckErrorCode(aJni, err);
     M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GSVGElement ) _getEnumTrait: %d - end", enumTrait);
     return enumTrait;
@@ -314,10 +314,10 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1getFirstElementChild(
 
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
-        TRAP(err, aProxy->GetFirstElementChildL(aElementHandle, childHandle); );
-        }
+        TRAP(err, aProxy->GetFirstElementChildL(aElementHandle, childHandle););
+    }
     M2G_DO_UNLOCK(aJni)
 
     M2GGeneral::CheckErrorCode(aJni, err);
@@ -346,17 +346,17 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1getFloatTrait(
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGElement ) _getFloatTrait - begin");
     TInt err = KM2GNotOk;
     TReal32 floatTrait = 0;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
-       MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
+    {
+        MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
 
-       TRAP(err ,aProxy->GetFloatTraitL(
-           STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
-           STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
-           floatTrait););
-        }
+        TRAP(err ,aProxy->GetFloatTraitL(
+                 STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
+                 STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
+                 floatTrait););
+    }
     M2G_DO_UNLOCK(aJni)
 
     M2GGeneral::CheckErrorCode(aJni, err);
@@ -388,17 +388,17 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1getMatrixTrait(
     TM2GMatrixData matrix;
     TInt result = -1;
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
 
         TRAP(err, aProxy->GetMatrixTraitL(
-            STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
-            STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
-             matrix, result); );
-        }
+                 STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
+                 STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
+                 matrix, result););
+    }
     M2G_DO_UNLOCK(aJni)
 
     if (M2GGeneral::CheckErrorCode(aJni, err) == KM2GOk)
@@ -439,15 +439,15 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1getNextElementSibling(
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGElement ) _getNextElementSibling - begin");
     TInt siblingHandle = M2G_INVALID_HANDLE;
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
-           MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
-           TRAP(err, aProxy->GetNextElementSiblingL(aElementHandle, siblingHandle); );
-        }
+    {
+        MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
+        TRAP(err, aProxy->GetNextElementSiblingL(aElementHandle, siblingHandle););
+    }
     M2G_DO_UNLOCK(aJni)
-   
+
     M2GGeneral::CheckErrorCode(aJni, err);
     M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GSVGElement ) _getNextElementSibling: %d - end", siblingHandle);
     return siblingHandle;
@@ -472,14 +472,14 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1getParent(
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGElement ) _getParent - begin");
     TInt parentHandle = M2G_INVALID_HANDLE;
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
-    
+
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
         TRAP(err,    aProxy->GetParentL(aElementHandle, parentHandle););
-        }
+    }
     M2G_DO_UNLOCK(aJni)
 
     M2GGeneral::CheckErrorCode(aJni, err);
@@ -508,19 +508,19 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1getPathTrait(
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGElement ) _getPathTrait - begin");
     TInt aPathTrait = 0;
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
 
         TRAP(err, aProxy->GetPathTraitL(
-           STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
-           STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
-           aPathTrait); );
-        }
+                 STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
+                 STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
+                 aPathTrait););
+    }
     M2G_DO_UNLOCK(aJni)
- 
+
     M2GGeneral::CheckErrorCode(aJni, err);
     M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GSVGElement ) _getPathTrait: %d - end", aPathTrait);
     return aPathTrait;
@@ -551,19 +551,19 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1getRectTrait(
     TM2GRectData rect;
     TInt result = 0;
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
 
         TRAP(err , aProxy->GetRectTraitL(
-            STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
-            STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
-            rect, result); );
-        }
+                 STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
+                 STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
+                 rect, result););
+    }
     M2G_DO_UNLOCK(aJni)
-    
+
     M2GGeneral::CheckErrorCode(aJni, err);
     aJni->SetFloatArrayRegion(
         REINTERPRET_CAST(jfloatArray, aRectComponents),
@@ -595,15 +595,15 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1getRootElement(
     TInt err = KM2GNotOk;
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
 
         TRAP(err, aProxy->GetRootElementL(
-           STATIC_CAST(TM2GSvgDocumentHandle, aDocumentHandle),
-           rootElementHandle); );
-        }
+                 STATIC_CAST(TM2GSvgDocumentHandle, aDocumentHandle),
+                 rootElementHandle););
+    }
     M2G_DO_UNLOCK(aJni)
- 
+
     M2GGeneral::CheckErrorCode(aJni, err);
 
     M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GSVGElement ) _getRootElement: %d - end", rootElementHandle);
@@ -631,18 +631,18 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1getScreenBBox(
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGElement ) _getScreenBBox - begin");
     TM2GScreenBBoxData screenBBox;
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
 
         TRAP(err, aProxy->GetScreenBBoxL(
-            STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
-            screenBBox); );
-        }
+                 STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
+                 screenBBox););
+    }
     M2G_DO_UNLOCK(aJni)
- 
+
     M2GGeneral::CheckErrorCode(aJni, err);
 
     aJni->SetFloatArrayRegion(
@@ -676,19 +676,19 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1getStringTrait(
 
     TPtrC16 attribute;
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
 
         TRAP(err, aProxy->GetStringTraitL(
-           STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
-           STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
-           attribute); );
-        }
+                 STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
+                 STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
+                 attribute););
+    }
     M2G_DO_UNLOCK(aJni)
-   
+
     if ((M2GGeneral::CheckErrorCode(aJni, err) == KM2GOk) &&
             (attribute.Length() > 0))
     {
@@ -718,18 +718,18 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1getUsedFromElement(
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGElement ) _getUsedFromElement - begin");
     TInt handle = M2G_INVALID_HANDLE;
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
 
         TRAP(err, aProxy->GetUsedFromElementL(
-        STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
-        handle); );
-        }
+                 STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
+                 handle););
+    }
     M2G_DO_UNLOCK(aJni)
- 
+
     M2GGeneral::CheckErrorCode(aJni, err);
     M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GSVGElement ) _getUsedFromElement: %d - end", handle);
     return handle;
@@ -755,18 +755,18 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1insertBefore(
 {
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGElement ) _insertBefore - begin");
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
-    
+
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
-    
+
         TRAP(err, aProxy->InsertBeforeL(
-          STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
-          STATIC_CAST(TM2GSvgElementHandle, aNewChildElementHandle),
-          STATIC_CAST(TM2GSvgElementHandle, aReferenceElementHandle)); );
-        }
+                 STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
+                 STATIC_CAST(TM2GSvgElementHandle, aNewChildElementHandle),
+                 STATIC_CAST(TM2GSvgElementHandle, aReferenceElementHandle)););
+    }
     M2G_DO_UNLOCK(aJni)
 
     M2GGeneral::CheckErrorCode(aJni, err);
@@ -787,21 +787,21 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1isUsed(
     JNIEnv* aJni,
     jclass,
     jint aSvgProxyHandle,
-    jint aElementHandle )
+    jint aElementHandle)
 {
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGElement ) _isUsed - begin");
     TInt result = KM2GNotOk;
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
-        TRAP(err, aProxy->IsUsedL(STATIC_CAST(TM2GSvgElementHandle, aElementHandle), result); );
-        }
+        TRAP(err, aProxy->IsUsedL(STATIC_CAST(TM2GSvgElementHandle, aElementHandle), result););
+    }
     M2G_DO_UNLOCK(aJni)
 
-    
+
     M2GGeneral::CheckErrorCode(aJni, err);
     M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GSVGElement ) _isUsed: %d - end", result);
     return result;
@@ -832,15 +832,15 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1removeChild(
 
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
 
-         TRAP(err ,aProxy->RemoveChildL(
-           STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
-           STATIC_CAST(TM2GSvgElementHandle, aChildElementHandle), handle); );
-        }
+        TRAP(err ,aProxy->RemoveChildL(
+                 STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
+                 STATIC_CAST(TM2GSvgElementHandle, aChildElementHandle), handle););
+    }
     M2G_DO_UNLOCK(aJni)
-  
+
     M2GGeneral::CheckErrorCode(aJni, err);
 
     M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GSVGElement ) _removeChild: %d - end", handle);
@@ -876,16 +876,16 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1setColorTrait(
 
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
-           MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
+    {
+        MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
 
-           TRAP(err, aProxy->SetColorTraitL(
-            STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
-            STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
-            color); );
-        }
+        TRAP(err, aProxy->SetColorTraitL(
+                 STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
+                 STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
+                 color););
+    }
     M2G_DO_UNLOCK(aJni)
- 
+
     M2GGeneral::CheckErrorCode(aJni, err);
     M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GSVGElement ) _setColorTrait: %d - end", err);
 }
@@ -899,7 +899,7 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1setColorTrait(
  * @param aProxy Proxy instance.
  * @param aElementHandle Element pointer.
  * @param aAttributeTypeId -
- * @param aValue 
+ * @param aValue
  */
 JNIEXPORT void JNICALL
 Java_com_nokia_microedition_m2g_M2GSVGElement__1setEnumTrait(
@@ -912,17 +912,17 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1setEnumTrait(
 {
     M2G_DEBUG_2("M2G_DEBUG: JNI ( M2GSVGElement ) _setEnumTrait: type=%d, value=%d - begin", aAttributeTypeId, aValue);
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
-    
+
         TRAP(err, aProxy->SetEnumTraitL(
-        STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
-        STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
-        aValue); );
-        }
+                 STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
+                 STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
+                 aValue););
+    }
     M2G_DO_UNLOCK(aJni)
 
     M2GGeneral::CheckErrorCode(aJni, err);
@@ -950,17 +950,17 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1setFloatTrait(
 {
     M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GSVGElement ) _setFloatTrait: %f - begin", aValue);
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
 
         TRAP(err, aProxy->SetFloatTraitL(
-        STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
-        STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
-        aValue); );
-        }
+                 STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
+                 STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
+                 aValue););
+    }
     M2G_DO_UNLOCK(aJni)
 
     M2GGeneral::CheckErrorCode(aJni, err);
@@ -999,19 +999,19 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1setMatrixTrait(
     }
     // Release data source
     aJni->ReleaseFloatArrayElements(aMatrixComponents, components, JNI_ABORT);
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
 
         TRAP(err, aProxy->SetMatrixTraitL(
-            STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
-            STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
-            matrix); );
-        }
+                 STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
+                 STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
+                 matrix););
+    }
     M2G_DO_UNLOCK(aJni)
-   
+
     M2GGeneral::CheckErrorCode(aJni, err);
     M2G_DEBUG_6("JNI ( M2GSVGElement ) _setMatrixTrait: %f, %f, %f, %f, %f, %f - end", matrix[ 0 ], matrix[ 1 ], matrix[ 2 ], matrix[ 3 ], matrix[ 4 ], matrix[ 5 ]);
 }
@@ -1037,17 +1037,17 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1setPathTrait(
 {
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGElement ) _setPathTrait - begin");
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
 
         TRAP(err,aProxy->SetPathTraitL(
-           STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
-           STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
-           STATIC_CAST(TM2GSvgPathHandle, aPathHandle)); );
-        }
+                 STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
+                 STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
+                 STATIC_CAST(TM2GSvgPathHandle, aPathHandle)););
+    }
     M2G_DO_UNLOCK(aJni)
 
     M2GGeneral::CheckErrorCode(aJni, err);
@@ -1083,14 +1083,14 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1setRectTrait(
 
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
-    
+
         TRAP(err,  aProxy->SetRectTraitL(
-                STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
-                STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
-                rect); );
-        }
+                 STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
+                 STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
+                 rect););
+    }
     M2G_DO_UNLOCK(aJni)
 
     M2GGeneral::CheckErrorCode(aJni, err);
@@ -1117,23 +1117,23 @@ Java_com_nokia_microedition_m2g_M2GSVGElement__1setStringTrait(
     jstring aValue)
 {
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGElement ) _setStringTrait - begin");
-    //RJString str(*aJni, aValue);
+
     JStringUtils str(*aJni, aValue);
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy* aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
         TPtrC16 lValue=STATIC_CAST(TPtrC16, str);
-        
+
         TRAP(err, aProxy->SetStringTraitL(
-            STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
-            STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
-            lValue); );
-        }
+                 STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
+                 STATIC_CAST(TM2GSvgAttrType, aAttributeTypeId),
+                 lValue););
+    }
     M2G_DO_UNLOCK(aJni)
-   
+
     M2GGeneral::CheckErrorCode(aJni, err);
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGElement ) _setStringTrait - end");
 }

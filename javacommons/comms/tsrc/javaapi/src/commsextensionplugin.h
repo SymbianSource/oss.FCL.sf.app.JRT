@@ -53,6 +53,8 @@ private:
     CoreInterface*  mCore;
     CommsEndpoint* mComms;
     CommsMessage mReply;
+    CommsMessage mDelayedReply;
+    int mDelayedReplyCount;
 };
 
 } // namespace comms

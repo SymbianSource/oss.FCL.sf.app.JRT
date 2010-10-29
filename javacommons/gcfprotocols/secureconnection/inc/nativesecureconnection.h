@@ -156,8 +156,6 @@ public:
     ~NativeSecureConnection();
 
 private:
-    char* mName;
-    char* mHost;
     char **mResult;
     int mMode;
     int mPort;

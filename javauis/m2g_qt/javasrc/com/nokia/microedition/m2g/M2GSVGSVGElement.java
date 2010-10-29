@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -27,12 +27,7 @@ public class M2GSVGSVGElement extends M2GSVGLocatableElement implements SVGSVGEl
     //--------------------------------------------------
     // STATIC CONSTANTS
     //--------------------------------------------------
-    /* Optimization: static finals changed to local variables
-    public static final String INVALID_SVG_VERSION_ESTR =
-      "Invalid version.";
-    public static final String INVALID_SVG_BASE_PROFILE_ESTR =
-      "Invalid base profile.";
-    */
+
 
     //------------------------------------------------------------------
     // VARIABLES
@@ -250,7 +245,7 @@ public class M2GSVGSVGElement extends M2GSVGLocatableElement implements SVGSVGEl
         }
 
         M2GSVGElement._setMatrixTrait(
-             getNativeSVGProxyHandle(), getHandle(),
+            getNativeSVGProxyHandle(), getHandle(),
             M2GSVGConstants.AT_TRANSFORM, matrixComponents);
 
         // inform observer about changes in DOM
@@ -398,9 +393,9 @@ public class M2GSVGSVGElement extends M2GSVGLocatableElement implements SVGSVGEl
     // NATIVE METHODS
     //------------------------------------------------------------------
     protected native static float _getMediaTime(
-         int aSvgProxyHandle, int aDocumentHandle);
+        int aSvgProxyHandle, int aDocumentHandle);
     private native static void _setMediaTime(
         int aSvgProxyHandle, int aDocumentHandle,
-        float aSeconds );
+        float aSeconds);
 }
 

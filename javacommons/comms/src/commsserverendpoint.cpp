@@ -79,10 +79,10 @@ OS_EXPORT int CommsServerEndpoint::send(CommsMessage& aMessage)
     return rc;
 }
 
-OS_EXPORT int CommsServerEndpoint::detachFromVm()
+OS_EXPORT int CommsServerEndpoint::detachFromVm(JNIEnv* aEnv)
 {
     JELOG2(EJavaComms);
-    CommsEndpoint::detachFromVm();
+    CommsEndpoint::detachFromVm(aEnv);
 
     int rc = stop();
     rc = start(mAddress);

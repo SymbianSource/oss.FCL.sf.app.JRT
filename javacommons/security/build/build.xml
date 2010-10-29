@@ -57,7 +57,9 @@
            <pathelement path="${external.policy.editor.tool.bin}"/>
            <pathelement path="${impl.cldc.jar}:${impl.cdc.jar}"/>
            <pathelement path="${emma.dir}/emma.jar"/>
-         </classpath>
+           <pathelement path="${cobertura.classpath}"/>
+           <pathelement path="${cobertura.ant.classpath}"/>
+        </classpath>
     </java>
   </target>
 

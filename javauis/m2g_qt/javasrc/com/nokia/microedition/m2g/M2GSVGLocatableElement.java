@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -44,7 +44,7 @@ public class M2GSVGLocatableElement
     {
         M2GSVGRect bbox = new M2GSVGRect();
         M2GSVGElement._getBBox(getNativeSVGProxyHandle(), getHandle(),
-            M2GSVGConstants.AT_BBOX, bbox.getComponents());
+                               M2GSVGConstants.AT_BBOX, bbox.getComponents());
         // Checks element's type
         if ((iElementTypeId == M2GSVGConstants.EL_G) ||
                 (iElementTypeId == M2GSVGConstants.EL_PATH) ||

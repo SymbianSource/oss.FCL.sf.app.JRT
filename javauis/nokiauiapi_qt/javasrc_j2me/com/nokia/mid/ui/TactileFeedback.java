@@ -100,13 +100,13 @@ public class TactileFeedback
      */
     public static final int FEEDBACK_STYLE_SENSITIVE = 2;
 
-    private final String invalidFeedbackStyleMsg = "Invalid feedback style specified";
-    private final String invalidControlTypeMsg = "Invalid object provided for tactile feedback registration";
+    private static final String MSG_INVALID_FEEDBACK_STYLE = "Invalid feedback style specified";
+    private static final String MSG_INVALID_OBJECT_TYPE = "Invalid object provided for tactile feedback registration";
 
     private static final int TYPE_INVALID = 0;
     private static final int TYPE_ESWT = 1;
     private static final int TYPE_LCDUI = 2;
-    private static boolean feedbackEnabled;
+    private volatile boolean feedbackEnabled;
 
     /**
      * Constructs tactile feedback engine object. The object may be used in both
@@ -131,7 +131,7 @@ public class TactileFeedback
     {
         if ((style != FEEDBACK_STYLE_BASIC)
                 && (style != FEEDBACK_STYLE_SENSITIVE))
-            throw new IllegalArgumentException(invalidFeedbackStyleMsg);
+            throw new IllegalArgumentException(MSG_INVALID_FEEDBACK_STYLE);
         if (org.eclipse.swt.widgets.Display.getCurrent() == null)
         {
             final int fStyle = style;
@@ -241,11 +241,11 @@ public class TactileFeedback
     {
         int type = controlType(uiObject);
         if (type == TYPE_INVALID)
-            throw new IllegalArgumentException(invalidControlTypeMsg);
+            throw new IllegalArgumentException(MSG_INVALID_OBJECT_TYPE);
 
         if ((style != FEEDBACK_STYLE_BASIC)
                 && (style != FEEDBACK_STYLE_SENSITIVE))
-            throw new IllegalArgumentException(invalidFeedbackStyleMsg);
+            throw new IllegalArgumentException(MSG_INVALID_FEEDBACK_STYLE);
 
         int controlHandle = getControlHandle(uiObject);
         if (type == TYPE_LCDUI)
@@ -299,7 +299,7 @@ public class TactileFeedback
 
         int type = controlType(uiObject);
         if (type == TYPE_INVALID)
-            throw new IllegalArgumentException(invalidControlTypeMsg);
+            throw new IllegalArgumentException(MSG_INVALID_OBJECT_TYPE);
 
         int controlHandle = getControlHandle(uiObject);
         if (type == TYPE_LCDUI)
@@ -343,7 +343,7 @@ public class TactileFeedback
 
         int type = controlType(uiObject);
         if (type == TYPE_INVALID)
-            throw new IllegalArgumentException(invalidControlTypeMsg);
+            throw new IllegalArgumentException(MSG_INVALID_OBJECT_TYPE);
 
         int controlHandle = getControlHandle(uiObject);
 
@@ -395,7 +395,7 @@ public class TactileFeedback
 
         int type = controlType(uiObject);
         if (type == TYPE_INVALID)
-            throw new IllegalArgumentException(invalidControlTypeMsg);
+            throw new IllegalArgumentException(MSG_INVALID_OBJECT_TYPE);
 
         int controlHandle = getControlHandle(uiObject);
         if (type == TYPE_LCDUI)

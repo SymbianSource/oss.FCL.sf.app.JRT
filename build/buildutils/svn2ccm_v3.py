@@ -28,11 +28,10 @@
 # 2) Creates S60 distribution policies to <svn_path> directory
 #    using setpolicyfiles.py script.
 # 3) Makes CCM sync and reconf for the CCM project.
-# 4) Creates CCM default task.
-# 5) Synchronizes the <svn_path> and <ccm_path> directories.
-# 6) If there were any changes, reconciles CCM project to database
-#    and commits CCM default task. If there were no changes, leaves
-#    the CCM default task open.
+# 4) Synchronizes the <svn_path> and <ccm_path> directories.
+# 5) If there were any changes, creates CCM default task,
+#    reconciles CCM project to database and commits CCM
+#    default task.
 #
 # The script execution aborts immediately if any error occurs.
 # In this case the user must manually delete the ccm task and
@@ -94,8 +93,9 @@ ccm_filetypes = {
     "\.cproject$": "xml",
     "\.crml$": "xml",
     "\.gcfml$": "xml",
-    "\.dr$": "binary",
     "\.der$": "binary",
+    "\.dm$": "binary",
+    "\.dr$": "binary",
     "\.flm$": "makefile",
     "\.javaversion$": "ascii",
     "\.jupiter$": "xml",
@@ -238,13 +238,6 @@ def main():
             print "SVN2CCM: Reconfiguring CCM project", datetime.datetime.now()
             execute(["ccm", "reconf", "-r", "-p", quote_str(ccm_project_id)])
 
-        # Create CCM task.
-        print "SVN2CCM: Creating CCM task", datetime.datetime.now()
-        if opts.ccm_description_file:
-            execute(["ccm", "task", "-create", "-default", "-release", quote_str(ccm_project_release), "-descriptionfile", quote_str(opts.ccm_description_file), "-synopsis", get_comment_string()])
-        else:
-            execute(["ccm", "task", "-create", "-default", "-release", quote_str(ccm_project_release), "-description", get_comment_string(), "-synopsis", get_comment_string()])
-
         # Synchronize the SVN and CCM directories.
         print "SVN2CCM: Synchronizing from %s to %s %s" % \
             (svn_path, ccm_path, str(datetime.datetime.now()))
@@ -255,6 +248,12 @@ def main():
         sync_dirs(svn_path, ccm_path, opts.ignore, opts.ignore_all + [".svn"])
 
         if ccm_counter.changes_made():
+            # Create CCM task.
+            print "SVN2CCM: Creating CCM task", datetime.datetime.now()
+            if opts.ccm_description_file:
+                execute(["ccm", "task", "-create", "-default", "-release", quote_str(ccm_project_release), "-descriptionfile", quote_str(opts.ccm_description_file), "-synopsis", get_comment_string()])
+            else:
+                execute(["ccm", "task", "-create", "-default", "-release", quote_str(ccm_project_release), "-description", get_comment_string(), "-synopsis", get_comment_string()])
             # Reconcile CCM project.
             print "SVN2CCM: Reconciling CCM project", datetime.datetime.now()
             execute(["ccm", "reconcile", "-r", "-cu", "-mwaf", "-update_db", "-p", quote_str(ccm_project_id)])
@@ -266,7 +265,7 @@ def main():
                 execute(["ccm", "task", "-ci", "default"])
         else:
             # No changes, do not reconcile or commit.
-            print "SVN2CCM: WARNING: No changes, leaving CCM task open"
+            print "SVN2CCM: WARNING: No changes found"
 
         # Finished.
         ccm_counter.stop_time = datetime.datetime.now()

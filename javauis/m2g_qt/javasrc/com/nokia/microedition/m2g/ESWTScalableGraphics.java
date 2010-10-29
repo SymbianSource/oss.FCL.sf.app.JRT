@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -35,15 +35,15 @@ public class ESWTScalableGraphics
 
     public ESWTScalableGraphics(Display display)
     {
-				
-				
+
+
         iSg = ScalableGraphics.createInstance();
         iDisplay = display;
     }
 
     public ESWTScalableGraphics(Display display, Rectangle canvasBounds)
     {
-				
+
         iSg = ScalableGraphics.createInstance();
         iDisplay = display;
         iCanvasBounds = canvasBounds;
@@ -56,7 +56,7 @@ public class ESWTScalableGraphics
 
     public void bindTarget(GC gc)
     {
-				
+
         iRealGC = gc;
         iBufferedImage = new Image(iDisplay, iCanvasBounds);
         iBufferGC = new GC(iBufferedImage);
@@ -65,7 +65,7 @@ public class ESWTScalableGraphics
 
     public void releaseTarget()
     {
-    		
+
 
         iSg.releaseTarget();
         iBufferedImage.dispose();
@@ -76,20 +76,20 @@ public class ESWTScalableGraphics
 
     public void render(int x, int y, ScalableImage image)
     {
-    		
+
         iSg.render(x,y, image);
         iRealGC.drawImage(iBufferedImage, x, y);
     }
 
     public void setRenderingQuality(int mode)
     {
-    		
+
         iSg.setRenderingQuality(mode);
     }
 
     public void setTransparency(float alpha)
     {
-    		
+
         iSg.setTransparency(alpha);
     }
 }

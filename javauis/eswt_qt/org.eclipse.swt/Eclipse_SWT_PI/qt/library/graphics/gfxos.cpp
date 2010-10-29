@@ -38,7 +38,7 @@ catch(std::bad_alloc const&) \
         GfxException e(EGfxErrorNoMemory, "Bad alloc"); \
         swtApp->jniUtils().Throw(aJniEnv, e); \
     } \
-catch(GfxException e) \
+catch(GfxException& e) \
     { \
         swtApp->jniUtils().Throw(aJniEnv, e); \
     }

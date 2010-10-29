@@ -978,8 +978,11 @@ public class Tree extends Composite {
     void releaseChildren_pp(boolean destroy) {
         if (topLevelItems != null) {
             for (int i = topLevelItemCount-1; i >= 0; i--) {
-                TreeItem item = _getItem(i);
-                if(item.cached){
+                // Cannot use _getItem here, since in a VIRTUAL style Tree it may cause
+                // creating a new TreeItem, which doesn't make sense when trying to release
+                // all children.
+                TreeItem item = topLevelItems[i];
+                if(item != null && item.cached){
                     if (item != null && !item.isDisposed() ) {
                         item.childrenItemCount = 0;
                         item.childrenItems = null;

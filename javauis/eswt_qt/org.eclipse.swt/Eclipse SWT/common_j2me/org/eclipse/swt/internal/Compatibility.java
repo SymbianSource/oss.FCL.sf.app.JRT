@@ -381,31 +381,66 @@ public static String getMessage(String key) {
 
 	if (key == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 
+    // ok button in dialog
     if(key.equals("ok")){
-    	iRes = ResourceLoader.getInstance("eswtcore", "qtn_eswt_softkey_");
+    	iRes = ResourceLoader.getInstance("common", "txt_common_button_");
    		return iRes.format(key).toString();
     }
-
+    
+    // cancel button in dialog
     if(key.equals("cancel")){
-    	iRes = ResourceLoader.getInstance("eswtcore", "qtn_eswt_softkey_");
+    	iRes = ResourceLoader.getInstance("common", "txt_common_button_");
+   		return iRes.format(key).toString();
+    }
+    
+    // fetch contact from device phone book - in Options menu
+    if(key.equals("opt_fetch")){
+    	iRes = ResourceLoader.getInstance("javauitoolkits", "txt_java_");
    		return iRes.format(key).toString();
     }
 
-    if(key.equals("fetch_url")){
-    	iRes = ResourceLoader.getInstance("eswtmobile", "qtn_eswt_option_");
+    // fetch contact from device phone book - in context menu
+    if(key.equals("menu_fetch")){
+    	iRes = ResourceLoader.getInstance("javauitoolkits", "txt_java_");
+   		return iRes.format(key).toString();
+    }
+    
+    // fetch contact from device phone book - in button
+    if(key.equals("button_fetch")){
+    	iRes = ResourceLoader.getInstance("javauitoolkits", "txt_java_");
+   		return iRes.format(key).toString();
+    }
+    
+    // create a call - in Options menu
+    if(key.equals("opt_call")){
+    	iRes = ResourceLoader.getInstance("javauitoolkits", "txt_java_");
    		return iRes.format(key).toString();
     }
 
-    if(key.equals("fetch_email")){
-    	iRes = ResourceLoader.getInstance("eswtmobile", "qtn_eswt_option_pb_");
+    // create a call - in context menu
+    if(key.equals("menu_call")){
+    	iRes = ResourceLoader.getInstance("javauitoolkits", "txt_java_");
    		return iRes.format(key).toString();
     }
-
-    if(key.equals("dialog_title")){
-    	iRes = ResourceLoader.getInstance("eswtmobile", "qtn_eswt_favorites_");
+    
+    // create a call - in button
+    if(key.equals("button_call")){
+    	iRes = ResourceLoader.getInstance("javauitoolkits", "txt_java_");
    		return iRes.format(key).toString();
     }
-
+    
+    // title of selection list of bookmarks in TextExtension
+    if(key.equals("title_select_bookmark")){
+    	iRes = ResourceLoader.getInstance("javauitoolkits", "txt_java_");
+   		return iRes.format(key).toString();
+   	}
+   		
+   	// string displayed in empty list
+    if(key.equals("info_no_data")){
+    	iRes = ResourceLoader.getInstance("javauitoolkits", "txt_java_");
+   		return iRes.format(key).toString();
+    }
+ 		
     return key;
 }
 

@@ -37,6 +37,19 @@
 
 #include "preinstallerstarter.h"
 
+#ifdef RD_JAVA_S60_RELEASE_5_0_ROM
+// This file in Java Captain private data cage is used to indicate when
+// converting old S60 midlets to OMJ midlets has been done after
+// ROM upgrade flashing.
+_LIT(KAfterFlashConversionDone, "C:\\private\\200211dc\\afconversionsdone.dat");  // codescanner::driveletters
+
+_LIT(KAfterFlashConverterExe, "javaafterflashconverter.exe");
+
+#endif
+
+_LIT(KIad, " iad");
+_LIT(KWaitAFConversion , " waitafconversion");
+
 /**
  * Return pointer to ExtensionPluginInterface implementation for this
  * extension dll
@@ -46,9 +59,9 @@ java::captain::ExtensionPluginInterface* getExtensionPlugin()
     return new java::captain::PreinstallerStarter();
 }
 
-namespace java
+namespace java  // codescanner::namespace
 {
-namespace captain
+namespace captain  // codescanner::namespace
 {
 
 using java::fileutils::driveInfo;
@@ -126,7 +139,7 @@ void PreinstallerStarter::event(const std::string& eventProvider,
             // Preinstaller will be started with 'iad' command line option
             // so that it knows that it has been started for the first
             // time after java 2.0 IAD installation.
-            startPreinstaller(ETrue);
+            startPreinstaller(EIad);
         }
         break;
 
@@ -137,8 +150,19 @@ void PreinstallerStarter::event(const std::string& eventProvider,
             registerMidletApplicationTypeHandler();
 #endif
 
-            // Start preinstaller normally (without 'iad' option).
-            startPreinstaller(EFalse);
+            TPreinstallerStartMode startMode = ENormal;
+#ifdef RD_JAVA_S60_RELEASE_5_0_ROM
+            if (startConverter())
+            {
+                // Preinstaller must be started with 'waitconversion' command
+                // line option so that it will wait until javaafterflashconverter.exe
+                // has converted existing MIDlets.
+                startMode = ERomUpgrade;
+            }
+#endif
+
+            // Start preinstaller
+            startPreinstaller(startMode);
         }
         break;
 
@@ -167,7 +191,7 @@ void PreinstallerStarter::event(const std::string& eventProvider,
             // All other MMC events are ignored.
         case DriveListenerInterface::REMOVABLE_MEDIA_INSERTED_C:
         {
-            startPreinstaller(EFalse);
+            startPreinstaller(ENormal);
         }
         break;
         }
@@ -181,9 +205,11 @@ void PreinstallerStarter::event(const std::string& eventProvider,
  * and preinstalls those java applications in the directories that have not
  * yet been installed. After that preinstaller exits.
  *
- * @param aIadBoot when true, starts preinstaller with 'iad' parameter
+ * @param aStartMode when value is EIad, starts preinstaller with 'iad' parameter
+ *                   when value is ERomUpgrade, starts preinstaller with 'waitconversion' parameter
+ *                   when value is ENormal, starts preinstaller with no parameters
  */
-void PreinstallerStarter::startPreinstaller(TBool aIadBoot)
+void PreinstallerStarter::startPreinstaller(TPreinstallerStartMode aStartMode)
 {
     // Check that the device has enough free memory (800kB) to start preinstaller process
     // and (if needed) also java installer
@@ -270,13 +296,17 @@ void PreinstallerStarter::startPreinstaller(TBool aIadBoot)
         TPtr8 ptr8((TUint8 *)java::runtime::JAVA_PREINSTALLER_STARTER_DLL, len, len);
         commandLine.Copy(ptr8);
 
-        if (aIadBoot)
+        if (aStartMode == EIad)
         {
-            commandLine.Append(_L(" iad"));
+            commandLine.Append(KIad);
+        }
+        else if (aStartMode == ERomUpgrade)
+        {
+            commandLine.Append(KWaitAFConversion);
         }
 
         // start preinstaller
-        mPreinstaller = new RProcess();
+        mPreinstaller = new RProcess();  // codescanner::
         TBuf<64> preinstallerProcess;  // Actual len of the process name is 9
         len = strlen(java::runtime::JAVA_PROCESS);
         TPtr8 ptr8Process((TUint8 *)java::runtime::JAVA_PROCESS, len, len);
@@ -291,12 +321,19 @@ void PreinstallerStarter::startPreinstaller(TBool aIadBoot)
 
             // Allow the process to run
             mPreinstaller->Resume();
-            if (aIadBoot)
+            if (aStartMode == EIad)
             {
                 LOG(
                     EJavaCaptain,
                     EInfo,
                     "PreinstallerStarter: started preinstaller with iad parameter");
+            }
+            else if (aStartMode == ERomUpgrade)
+            {
+                LOG(
+                    EJavaCaptain,
+                    EInfo,
+                    "PreinstallerStarter: started preinstaller with waitconversion parameter");
             }
             else
             {
@@ -414,6 +451,81 @@ void PreinstallerStarter::DoCancel()
         mPreinstaller = 0;
     }
 }
+
+#ifdef RD_JAVA_S60_RELEASE_5_0_ROM
+/**
+ * Check whether there is flag file 'afconversionsdone.dat' in the private
+ * data cage of Java Captain.
+ * If the flag file exists, just return EFalse to indicate that Java Preinstaller
+ * does not need to wait for after ROM flash converter.
+ * Otherwise start 'javaafterflashconverter.exe' process and return ETrue
+ * so that Java Preinstaller is started with command line parameter that
+ * tells it to wait until 'javaafterflashconverter.exe' exits.
+ */
+TBool PreinstallerStarter::startConverter()
+{
+    RFs   fs; // codescanner::rfs
+    TInt  err = fs.Connect();
+    if (KErrNone != err)
+    {
+        ELOG1(EJavaCaptain,
+              "PreinstallerStarter:startConverter: "
+              "Cannot connect to RFs, err %d",
+              err);
+        // Assume that the conversion has been done
+        return EFalse;
+    }
+
+    // Check whether the flag file exists
+    TUint value;
+    TBool flagFileExists(ETrue);
+    err = fs.Att(KAfterFlashConversionDone, value);
+    if ((KErrNotFound == err) || (KErrPathNotFound == err))
+    {
+        flagFileExists = EFalse;
+    }
+    else if (KErrNone == err)
+    {
+        LOG(EJavaCaptain,
+            EInfo,
+            "PreinstallerStarter:startConverter: Flag file exists");
+        flagFileExists = ETrue;
+    }
+    else
+    {
+        WLOG1(EJavaCaptain,
+              "PreinstallerStarter:startConverter: Checking flag file, unexpected error %d",
+              err);
+        // Assume that the conversion has been done
+        flagFileExists = ETrue;
+    }
+
+    if (flagFileExists)
+    {
+        // Conversion has been done, no need to start converter process.
+        return EFalse;
+    }
+
+    // Start 'javaafterflashconverter.exe' process
+    RProcess converter;
+    err = converter.Create(KAfterFlashConverterExe, KNullDesC);
+    if (KErrNone == err)
+    {
+        converter.Resume();
+        LOG(EJavaCaptain, EInfo,
+            "PreinstallerStarter:startConverter: javaafterflashconverter.exe was started ok");
+    }
+    else
+    {
+        ELOG1(EJavaCaptain,
+            "PreinstallerStarter:startConverter: starting javaafterflashconverter failed: %d",
+            err);
+    }
+    converter.Close();
+
+    return ETrue;
+}
+#endif
 
 
 } // namespace captain

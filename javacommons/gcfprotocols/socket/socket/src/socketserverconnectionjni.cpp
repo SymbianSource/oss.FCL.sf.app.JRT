@@ -153,6 +153,7 @@ Java_com_nokia_mj_impl_socket_ServerSocketConnectionImpl__1getLocalAddress
     PLOG2(ESOCKET, "getLocalAddress, ret = %d, addr = %s" , err, addr);
     jstring jnistring = aJni->NewStringUTF(addr);
     aJni->SetObjectArrayElement(address, 0, jnistring);
+    delete[] addr;
     return err;
 }
 

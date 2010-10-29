@@ -61,7 +61,7 @@ public class PermissionConfirmationView extends ConfirmationViewBase
     protected PermissionConfirmationView(
         InstallerUiEswt aInstallerUi, Composite aParent)
     {
-        super(aInstallerUi, aParent, 8);
+        super(aInstallerUi, aParent, 8, false, TITLE_COMPOSITE);
         setTitle(InstallerUiTexts.get(InstallerUiTexts.INSTALLING));
         setCommands(null, null);
     }

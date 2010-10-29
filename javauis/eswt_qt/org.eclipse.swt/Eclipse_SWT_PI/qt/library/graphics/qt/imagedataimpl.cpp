@@ -101,6 +101,7 @@ void ImageDataWrapperImpl::fillData(const QImage* aImage, int aAlpha, bool aMask
     mAlphaData.clear();
     mMaskData.clear();
     delete mPaletteData;
+    mPaletteData = 0;
 
     // Get image information
     mDepth = aImage->depth();

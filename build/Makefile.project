@@ -129,6 +129,11 @@ ifdef RD_JAVA_S60_RELEASE_5_0
   PROJECT_DEFINES += RD_JAVA_S60_RELEASE_5_0_IAD
 endif
 
+ifdef RD_JAVA_S60_RELEASE_5_0_ROM
+  # build ROMized 5.0 release
+  PROJECT_DEFINES += RD_JAVA_S60_RELEASE_5_0_ROM
+endif
+
 # Define stdcpp version
 ifneq ($(wildcard $(EPOCROOT)epoc32/release/armv5/urel/libstdcppv5.dll),)
   RD_JAVA_STDCPPV5 = 1
@@ -226,6 +231,15 @@ endif
 # Enables emma instrumentation for Java code coverage measurement.
 ifdef EMMA
   ANT_EMMA_DEFINES += -Dset.emma.enabled=true
+endif
+
+# Enables cobertura instrumentation for Java code coverage measurement.
+ifdef COBERTURA
+  ANT_COBERTURA_DEFINES += -Dset.cobertura.enabled=true
+  COBERTURA_HOME=$(JAVA_SRC_ROOT)/../tools/cobertura
+  ifeq ($(wildcard $(COBERTURA_HOME)),)                                               
+  $(error Can not find $(COBERTURA_HOME) directory - cannot instrument with cobertura)
+  endif                                                                               
 endif
 
 #ifdef SHOW_MIDP_EXIT_FAILURE

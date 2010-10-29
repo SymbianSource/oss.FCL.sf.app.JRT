@@ -95,22 +95,22 @@ class Platform
         else
         {
             //display = DisplayExtension.getDisplayInstance();
-        	//As now the thread is always available we are taking it from Toolkit.
-        	display  = Toolkit. getInternalDisplay();
-        	
-			
-			if (display == null)
+            //As now the thread is always available we are taking it from Toolkit.
+            display  = Toolkit. getInternalDisplay();
+
+
+            if (display == null)
             {
-				
+
                 return false;
             }
             else
             {
-            		
+
                 // UI thread is available, so load native library if not already loaded
                 if (!libraryLoaded)
                 {
-                		
+
                     com.nokia.mj.impl.rt.support.Jvm.loadSystemLibrary("javam2g");
                     libraryLoaded = true;
                 }
@@ -118,81 +118,9 @@ class Platform
             }
         }
     }
-    
-    /**
-     * Load Library if not already loaded
-     * 
-     
-    static void loadLibarary()
-    {
-    	if (!libraryLoaded)
-        {
-    		
-            com.nokia.mj.impl.rt.support.Jvm.loadSystemLibrary("javam2g");
-            libraryLoaded = true;
-        }
-    }*/
 
-    /**
-     * Registers an Object3D in the global handle-to-object map. The
-     * handle of the object must already be set at this point!
-     */
-//    static final void registerFinalizer(Object3D obj)
-//    {
-//        //heuristicGC();
-//    }
-//
-//    /**
-//     * Registers a Graphics3D object (not derived from Object3D) for
-//     * finalization.
-//     */
-//    static final void registerFinalizer(Graphics3D g3d)
-//    {
-//        //heuristicGC();
-//    }
-//
-//    /**
-//     * Registers an Interface object for finalization
-//     */
-//    static final void registerFinalizer(Interface m2G)
-//    {
-//    }
-//
-//    /**
-//     * Registers a Loader object for finalization
-//     */
-//    static final void registerFinalizer(Loader loader)
-//    {
-//    }
-//
-//    /**
-//     * Flushes all pending rendering to a Graphics context and blocks
-//     * until finished
-//     */
-//    static final void sync(Graphics g)
-//    {
-//        //ToolkitInvoker invoker = ToolkitInvoker.getToolkitInvoker();
-//        //invoker.toolkitSync(invoker.getToolkit());
-//    }
-//
-//    /**
-//     * Flushes all pending rendering to an Image object
-//     */
-//    static final void sync(Image img)
-//    {
-//        //ToolkitInvoker invoker = ToolkitInvoker.getToolkitInvoker();
-//        //invoker.toolkitSync(invoker.getToolkit());
-//    }
-//
-//    /**
-//     * Finalizes the native peer of an interface
-//     */
-//    static final native void finalizeInterface(int handle);
-//
-//    /**
-//     * Finalizes the native peer of an object
-//     * JCF: added this wrapper method so we could pass the toolkit handle to the native method.
-//     */
+
+
     static final void finalizeObject(int handle)
     {
         try
@@ -212,31 +140,6 @@ class Platform
             // do nothing
         }
     }
-
-    /**
-     * Finalizes the native peer of an object associated with
-     * given Interface instance
-     */
-//    static final void finalizeObject(int handle, Interface aInterface)
-//    {
-//        try
-//        {
-//            final int finalHandle = handle;
-//            executeInUIThread(
-//                new M2GRunnableQt()
-//            {
-//                public void doRun()
-//                {
-//                    _finalizeObject(finalHandle);
-//                }
-//            });
-//        }
-//        catch (Exception e)
-//        {
-//            // do nothing
-//        }
-//    }
-
 
     //------------------------------------------------------------------
     // Private methods

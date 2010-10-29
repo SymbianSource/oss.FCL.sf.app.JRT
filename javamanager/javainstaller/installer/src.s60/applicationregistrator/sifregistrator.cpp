@@ -58,6 +58,7 @@ _LIT(KMIDletInfoURL, "MIDlet-Info-URL");
 _LIT(KMIDletDescription, "MIDlet-Description");
 _LIT(KDownloadURL, "Download-URL");
 _LIT(KUpdateURL, "Update-URL");
+_LIT(KInstallState, "InstallState");
 _LIT(KSettingsPlugin, "SettingsName");
 _LIT(KSettingsPluginValue, "javaapplicationsettingsview");
 
@@ -387,7 +388,7 @@ void SetComponentPropertyL(
 TComponentId RegisterComponentL(
     JNIEnv *aEnv, RSoftwareComponentRegistry *aScr, jint aUid,
     jstring aSuiteName, jstring aVendor, jstring aVersion, jstring aGlobalId,
-    jobjectArray aComponentFiles, TInt64 aComponentSize,
+    jobjectArray aComponentFiles, TInt64 aComponentSize, jint aInstallState,
     TBool aIsRemovable, TBool aIsDrmProtected,
     TBool aIsOriginVerified, TBool aIsUpdate, jint aMediaId,
     jstring aMidletInfoUrl, jstring aMidletDescription,
@@ -419,6 +420,8 @@ TComponentId RegisterComponentL(
     //LOG(EJavaInstaller, EInfo, "RegisterComponentL: Media-Id property set");
     aScr->SetComponentPropertyL(componentId, KSettingsPlugin(), KSettingsPluginValue());
     //LOG(EJavaInstaller, EInfo, "RegisterComponentL: Settings plugin property set");
+    aScr->SetComponentPropertyL(componentId, KInstallState(), aInstallState);
+    //LOG(EJavaInstaller, EInfo, "RegisterComponentL: InstallState property set");
 
     SetComponentPropertyL(aEnv, aScr, componentId, KMIDletInfoURL(), aMidletInfoUrl);
     SetComponentPropertyL(aEnv, aScr, componentId, KMIDletDescription(), aMidletDescription);
@@ -450,10 +453,11 @@ TComponentId RegisterComponentL(
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1registerComponent
 (JNIEnv *aEnv, jclass, jint aSessionHandle, jint aUid, jstring aSuiteName,
  jstring aVendor, jstring aVersion, jstring aGlobalId,
- jobjectArray aComponentFiles, jlong aComponentSize, jboolean aIsRemovable,
- jboolean aIsDrmProtected, jboolean aIsOriginVerified, jboolean aIsUpdate,
- jint aMediaId, jstring aMidletInfoUrl, jstring aMidletDescription,
- jstring aDownloadUrl, jstring aUpdateUrl, jobject aComponentId)
+ jobjectArray aComponentFiles, jlong aComponentSize, jint aInstallState,
+ jboolean aIsRemovable, jboolean aIsDrmProtected, jboolean aIsOriginVerified,
+ jboolean aIsUpdate, jint aMediaId, jstring aMidletInfoUrl,
+ jstring aMidletDescription, jstring aDownloadUrl, jstring aUpdateUrl,
+ jobject aComponentId)
 {
     //__UHEAP_MARK;
     RSoftwareComponentRegistry *pScr =
@@ -461,7 +465,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
     TComponentId componentId = -1;
     TRAPD(err, componentId = RegisterComponentL(
                                  aEnv, pScr, aUid, aSuiteName, aVendor, aVersion, aGlobalId,
-                                 aComponentFiles, aComponentSize, aIsRemovable,
+                                 aComponentFiles, aComponentSize, aInstallState, aIsRemovable,
                                  aIsDrmProtected, aIsOriginVerified, aIsUpdate, aMediaId,
                                  aMidletInfoUrl, aMidletDescription,
                                  aDownloadUrl, aUpdateUrl));
@@ -1085,7 +1089,7 @@ JNIEXPORT void JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_S
  */
 JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_installer_applicationregistrator_SifRegistrator__1registerComponent
 (JNIEnv *, jclass, jint, jint, jstring, jstring, jstring, jstring,
- jobjectArray, jlong, jboolean, jboolean, jboolean, jboolean, jint,
+ jobjectArray, jlong, jint, jboolean, jboolean, jboolean, jboolean, jint,
  jstring, jstring, jstring, jstring, jobject)
 {
     return KErrNone;

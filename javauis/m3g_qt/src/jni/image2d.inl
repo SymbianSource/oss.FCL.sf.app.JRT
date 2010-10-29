@@ -65,19 +65,10 @@ JNIEXPORT jint JNICALL Java_javax_microedition_m3g_Image2D__1ctorImage
     if (aImageHandle != 0)
     {
         Java::GFX::Image* cgfxImage = reinterpret_cast<Java::GFX::Image*>(aImageHandle);
-        QImage qtImage;
-
-        if (!cgfxImage)
+        QImage qtImage = cgfxImage->toImage();
+        if (qtImage.isNull())
         {
             return 0;
-        }
-        else
-        {
-            qtImage = cgfxImage->toImage();
-            if (qtImage.isNull())
-            {
-                return 0;
-            }
         }
 
         // m3g needs format in 32bpp, i.e. in RGB32 or ARGB32 so
@@ -102,6 +93,7 @@ JNIEXPORT jint JNICALL Java_javax_microedition_m3g_Image2D__1ctorImage
         image = m3gCreateImage((M3GInterface)aHM3g, (M3GImageFormat)aFormat, width, height, 0);
         if (image == NULL)
         {
+            M3G_DO_UNLOCK(aEnv)
             return 0;    // exception automatically raised
         }
 
@@ -109,6 +101,7 @@ JNIEXPORT jint JNICALL Java_javax_microedition_m3g_Image2D__1ctorImage
         if (tempPixels == NULL)
         {
             m3gDeleteObject((M3GObject) image);
+            M3G_DO_UNLOCK(aEnv)
             return 0;
         }
 
@@ -186,6 +179,7 @@ JNIEXPORT jint JNICALL Java_javax_microedition_m3g_Image2D__1ctorSizePixelsPalet
                 if (image == NULL)
                 {
                     M3G_RAISE_EXCEPTION(aEnv, "java/lang/OutOfMemoryError");
+                    M3G_DO_UNLOCK(aEnv)
                     return 0;
                 }
 
@@ -199,6 +193,7 @@ JNIEXPORT jint JNICALL Java_javax_microedition_m3g_Image2D__1ctorSizePixelsPalet
                         aEnv->ReleaseByteArrayElements(aImage, image, JNI_ABORT);
                     }
                     M3G_RAISE_EXCEPTION(aEnv, "java/lang/OutOfMemoryError");
+                    M3G_DO_UNLOCK(aEnv)
                     return 0;
                 }
 

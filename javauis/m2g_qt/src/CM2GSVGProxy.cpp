@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2006 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -279,7 +279,7 @@ void CM2GSVGProxy::DeleteDocumentL(const TM2GSvgDocumentHandle& aDocumentHandle)
     TInt findResult = iSvgDocuments.Find(aDocumentHandle);
     if (findResult != KErrNotFound)
     {
-        // Try to remove the handle from the container
+        // Remove the handle from the container
         TRAPD(err, iSvgDocuments.Remove(findResult));
         if (err != KM2GOk)
         {
@@ -301,7 +301,7 @@ void CM2GSVGProxy::DeleteSvgEngineL(const TM2GSvgEngineHandle& aEngineHandle)
     TInt findResult = iSvgEngines.Find(aEngineHandle);
     if (findResult != KErrNotFound)
     {
-        // Try to remove the handle from the container
+        // Remove the handle from the container
         TRAPD(err, iSvgEngines.Remove(findResult));
         if (err != KM2GOk)
         {
@@ -837,22 +837,20 @@ void CM2GSVGProxy::RenderDocumentL(
     M2G_DEBUG_0("M2G_DEBUG: CM2GSVGProxy::RenderDocumentL() - end");
 }
 
-//TODO following changes done for Qimage
-//Check for TUint or TInt for subsequent API Call
 void CM2GSVGProxy::RenderDocumentL(
     const TM2GSvgEngineHandle& aEngineHandle,
     const TM2GSvgDocumentHandle& aDocumentHandle,
     const TM2GSvgBitmapHandle& aSurfaceHandle,
     TM2GSvgBitmapHandle aSurfaceMaskHandle,
     TReal32 aCurrentTime)
-    {
+{
     M2G_DEBUG_2("M2G_DEBUG: CM2GSVGProxy::RenderDocumentL() Qimage variant native:%d, time=%f - begin", iNative, aCurrentTime);
     M2G_DEBUG_3("M2G_DEBUG: CM2GSVGProxy::RenderDocumentL() engine:%d, doc:%d, SvgBitmapHandle:%d", aEngineHandle, aDocumentHandle, aSurfaceHandle);
     iNative->SvgEngineRenderDocument(
         aEngineHandle, aDocumentHandle, aSurfaceHandle, aSurfaceMaskHandle, aCurrentTime);
     M2G_DEBUG_0("M2G_DEBUG: CM2GSVGProxy::RenderDocumentL() - end");
-    
-    }
+
+}
 
 // -----------------------------------------------------------------------------
 // CM2GSVGProxy::RenderQualityL
@@ -1098,34 +1096,7 @@ void CM2GSVGProxy::ConstructL()
     M2G_DEBUG_0("M2G_DEBUG: CM2GSVGProxy::ConstructL() - begin");
 
     //Get the font spec with variant default font
-    const TInt KApacFontId   = EApacPlain16;
-    const TInt KLatintFontId = ELatinBold12;
-    TInt fontId = KLatintFontId;
-    
-  /*  switch (AknLayoutUtils::Variant())
-    {
-    case EApacVariant:
-    {
-        fontId = KApacFontId;
-    }
-    break;
 
-    case EEuropeanVariant:
-    default:
-        break;
-    }
-    FeatureManager::InitializeLibL();
-
-    if (FeatureManager::FeatureSupported(KFeatureIdAvkonApac))
-    {
-    fontId = KApacFontId;
-    }
-
-    FeatureManager::UnInitializeLib();
-    
-    const CFont* font = AknLayoutUtils::FontFromId(fontId);
-    TFontSpec spec = font->FontSpecInTwips();*/
-    // TODO have to check for substitute of above. 
     const CFont* font = CEikonEnv::Static()->NormalFont();
     TFontSpec spec = font->FontSpecInTwips();
     iNative = CSvgJavaInterfaceImpl::NewL(spec);

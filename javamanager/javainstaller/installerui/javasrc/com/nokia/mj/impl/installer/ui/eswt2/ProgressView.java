@@ -85,7 +85,8 @@ public class ProgressView extends ViewBase
         else
         {
             setTitle(iMsg);
-            iLabel = createLabel(iMsg, SWT.WRAP);
+            iLabel = createLabel(getHeadingComposite(), iMsg,
+                                 getHeadingColumns(), SWT.WRAP);
             setCssId(iLabel, "heading");
         }
 

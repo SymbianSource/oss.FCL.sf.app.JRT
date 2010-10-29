@@ -162,13 +162,13 @@ JNIEXPORT void JNICALL Java_com_nokia_mj_impl_comms_CommsEndpointBase__1release(
 }
 
 JNIEXPORT void JNICALL Java_com_nokia_mj_impl_comms_CommsEndpointBase__1detach(
-    JNIEnv*,
+    JNIEnv* aEnv,
     jobject,
     jint aHandle)
 {
     JELOG2(EJavaComms);
     CommsEndpoint* endpoint = reinterpret_cast<CommsEndpoint*>(aHandle);
-    endpoint->detachFromVm();
+    endpoint->detachFromVm(aEnv);
 }
 
 // CommsEndpoint methods

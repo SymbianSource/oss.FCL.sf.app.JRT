@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2006 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -64,15 +64,15 @@ Java_com_nokia_microedition_m2g_M2GSVGImage__1dispatchMouseEvent(
 
     TInt elementHandle = M2G_INVALID_HANDLE;
     TInt err = KM2GNotOk;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
-            MM2GSVGProxy *  aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
-            TRAP(err, aProxy->DispatchMouseEventL(
-                    STATIC_CAST(TM2GSvgDocumentHandle, aDocumentHandle),
-                    aX, aY, elementHandle); );
-        }
+    {
+        MM2GSVGProxy *  aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
+        TRAP(err, aProxy->DispatchMouseEventL(
+                 STATIC_CAST(TM2GSvgDocumentHandle, aDocumentHandle),
+                 aX, aY, elementHandle););
+    }
     M2G_DO_UNLOCK(aJni)
 
     M2GGeneral::CheckErrorCode(aJni, err);
@@ -100,17 +100,16 @@ Java_com_nokia_microedition_m2g_M2GSVGImage__1focusOn(
 {
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGImage ) _focusOn - begin");
 
-    // TInt elementHandle = M2G_INVALID_HANDLE;
-     TInt err = KM2GNotOk;  
-     
-     if (aSvgProxyHandle)
-         {
-         MM2GSVGProxy *     aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
-         TRAP(err, aProxy->FocusOnL(
+    TInt err = KM2GNotOk;
+
+    if (aSvgProxyHandle)
+    {
+        MM2GSVGProxy *     aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
+        TRAP(err, aProxy->FocusOnL(
                  STATIC_CAST(TM2GSvgDocumentHandle, aDocumentHandle),
-                 STATIC_CAST(TM2GSvgElementHandle, aElementHandle)); ); 
-         }
-     
+                 STATIC_CAST(TM2GSvgElementHandle, aElementHandle)););
+    }
+
     M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GSVGImage ) _focusOn: %d - end", err);
 }
 
@@ -134,15 +133,15 @@ Java_com_nokia_microedition_m2g_M2GSVGImage__1focusOut(
     jint aDocumentHandle, jint aElementHandle)
 {
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGImage ) _focusOut - begin");
-    TInt err = KM2GNotOk; 
-    
+    TInt err = KM2GNotOk;
+
     if (aSvgProxyHandle)
-        {
+    {
         MM2GSVGProxy *    aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
         TRAP(err,aProxy->FocusOutL(
-            STATIC_CAST(TM2GSvgDocumentHandle, aDocumentHandle),
-            STATIC_CAST(TM2GSvgElementHandle, aElementHandle));  ); 
-        }
+                 STATIC_CAST(TM2GSvgDocumentHandle, aDocumentHandle),
+                 STATIC_CAST(TM2GSvgElementHandle, aElementHandle)););
+    }
 
     M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GSVGImage ) _focusOut: %d - end", err);
 
@@ -173,16 +172,16 @@ Java_com_nokia_microedition_m2g_M2GSVGImage__1getExternalListItem(
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGImage ) _getExternalListItem - begin");
     TPtrC16 lItem;
     TInt err    = KM2GNotOk;
-        
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
-         MM2GSVGProxy * aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
-         TRAP(err, aProxy->GetExternalListItemL(
-                             STATIC_CAST(TM2GSvgDocumentHandle, aDocumentHandle),
-                             aIndex,
-                             lItem); );
-        }
+    {
+        MM2GSVGProxy * aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
+        TRAP(err, aProxy->GetExternalListItemL(
+                 STATIC_CAST(TM2GSvgDocumentHandle, aDocumentHandle),
+                 aIndex,
+                 lItem););
+    }
     M2G_DO_UNLOCK(aJni)
 
     if ((M2GGeneral::CheckErrorCode(aJni, err) == KM2GOk) && (lItem.Length() > 0))
@@ -211,17 +210,16 @@ Java_com_nokia_microedition_m2g_M2GSVGImage__1getExternalListSize(
 {
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGImage ) _getExternalListSize - begin");
 
-    // TInt elementHandle = M2G_INVALID_HANDLE;
     TInt err           = KM2GNotOk;
     TInt listSz = 0;
-    
+
     M2G_DO_LOCK
     if (aSvgProxyHandle)
-        {
-         MM2GSVGProxy *  aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
-         TRAP(err, aProxy->GetExternalListSizeL(
-                STATIC_CAST(TM2GSvgDocumentHandle, aDocumentHandle), listSz); );
-        }
+    {
+        MM2GSVGProxy *  aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
+        TRAP(err, aProxy->GetExternalListSizeL(
+                 STATIC_CAST(TM2GSvgDocumentHandle, aDocumentHandle), listSz););
+    }
     M2G_DO_UNLOCK(aJni)
 
     M2GGeneral::CheckErrorCode(aJni, err);
@@ -251,18 +249,18 @@ Java_com_nokia_microedition_m2g_M2GSVGImage__1initViewport(
     jint aDocumentHandle)
 {
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGImage ) _initViewport - begin");
-    // TInt elementHandle = M2G_INVALID_HANDLE;
-     TInt err           = KM2GNotOk;
-     
-     if (aSvgProxyHandle)
-         {
-           MM2GSVGProxy * aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
-           TRAP(err, aProxy->InitViewportL(
-                STATIC_CAST(TM2GSvgDocumentHandle, aDocumentHandle));  ); 
-         }
-     M2GGeneral::CheckErrorCode(aJni, err);
-     
-     M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GSVGImage ) _initViewport: %d - end", err);
+
+    TInt err           = KM2GNotOk;
+
+    if (aSvgProxyHandle)
+    {
+        MM2GSVGProxy * aProxy = JavaUnhand<MM2GSVGProxy>(aSvgProxyHandle);
+        TRAP(err, aProxy->InitViewportL(
+                 STATIC_CAST(TM2GSvgDocumentHandle, aDocumentHandle)););
+    }
+    M2GGeneral::CheckErrorCode(aJni, err);
+
+    M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GSVGImage ) _initViewport: %d - end", err);
 
 }
 

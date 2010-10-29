@@ -43,7 +43,7 @@ public class PermissionDetailsView extends ConfirmationViewBase
         InstallerUiEswt aInstallerUi, Composite aParent,
         String aTitle, PermissionInfo aPermissionInfo)
     {
-        super(aInstallerUi, aParent, 1, true);
+        super(aInstallerUi, aParent, 1, true, COMMAND_COMPOSITE);
         iPermissionInfo = aPermissionInfo;
         setTitle(aTitle);
         setCommands(null, InstallerUiTexts.get(InstallerUiTexts.CLOSE));
@@ -60,11 +60,11 @@ public class PermissionDetailsView extends ConfirmationViewBase
         int labelStyle = SWT.WRAP;
 
         // Add title label.
-        Label detailsLabel = createLabel
-                             (InstallerUiTexts.get
-                              (InstallerUiTexts.PERM_VIEW_DETAILS_TITLE),
-                              horizontalSpan, labelStyle);
-        setCssId(detailsLabel, "heading");
+        Label titleLabel = createLabel(
+            InstallerUiTexts.get(
+                InstallerUiTexts.PERM_VIEW_DETAILS_TITLE),
+            horizontalSpan, labelStyle);
+        setCssId(titleLabel, "heading");
 
         // Add permission names.
         String[] permNames = iPermissionInfo.getPermissionNames();

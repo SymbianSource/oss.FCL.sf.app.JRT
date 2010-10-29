@@ -13,7 +13,7 @@
 #include <QString>
 #include <QUrl>
 #include <QModelIndex>
-#ifdef __SYMBIAN32__
+#if 0
 #include <cntservicescontact.h>
 #endif
 
@@ -199,7 +199,7 @@ void SlotCallback::widgetSignal(const QVariant& value)
     callJava(reinterpret_cast<jint>(&value));
 }
 
-#ifdef __SYMBIAN32__
+#if 0
 Q_IMPLEMENT_USER_METATYPE(CntServicesContact)
 Q_IMPLEMENT_USER_METATYPE_NO_OPERATORS(CntServicesContactList)
 #endif

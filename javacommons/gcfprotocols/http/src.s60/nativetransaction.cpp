@@ -18,12 +18,7 @@
 
 #include <e32def.h>
 #include <centralrepository.h>
-
-#ifdef RD_JAVA_S60_RELEASE_10_1_ONWARDS
-#include <CUserAgent.h>
-#else
 #include <cuseragent.h>
-#endif
 
 #include "com_nokia_mj_impl_http_HttpConnectionNative.h"
 #include "nativehttptransaction.h"

@@ -6,7 +6,7 @@
 	<classpathentry kind="src" path="extensions"/>
 	<classpathentry kind="src" path="Eclipse_SWT_PI/common_j2me"/>
 	<classpathentry kind="src" path="Eclipse_SWT_PI/s60"/>
-	<classpathentry kind="src" path="Eclipse SWT/common_j2me"/>
+	<classpathentry excluding="org/eclipse/swt/internal/CDCCompatibilityDelegate.java" kind="src" path="Eclipse SWT/common_j2me"/>
 	<classpathentry kind="src" path="Eclipse SWT/qt"/>
 	<classpathentry kind="src" path="Eclipse SWT Browser/common"/>
 	<classpathentry kind="src" path="Eclipse SWT Browser/qt"/>
@@ -14,6 +14,5 @@
 	<classpathentry kind="src" path="Eclipse_SWT_PI/qt"/>
 	<classpathentry kind="var" path="OMJ_CLASSES"/>
 	<classpathentry kind="var" path="CLDC_CLASSES"/>
-	<classpathentry kind="lib" path="extra_jars/cdc-compilation-support.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

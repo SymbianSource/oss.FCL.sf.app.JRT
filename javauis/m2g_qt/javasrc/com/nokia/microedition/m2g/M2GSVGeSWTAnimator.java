@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -31,26 +31,7 @@ public class M2GSVGeSWTAnimator extends SVGAnimator
         "org.eclipse.swt.widgets.Canvas";
 
     // Exception text
-    /* Optimization: static finals changed to local variables
-    private static final String COMPONENT_BASE_CLASS_NOT_SUPPORTED_ESTR =
-    "The requested componentBaseClass is not supported by the implementation.";
-    private static final String ILLEGAL_TIME_INCREMENT_ESTR =
-    "The timeIncrement is less than or equal to zero.";
-    private static final String ANIMATOR_PLAY_ESTR =
-    "The animator is not currently in the stopped or paused state.";
-    private static final String ANIMATOR_PAUSE_ESTR =
-    "The animator is not in the playing  state.";
-    private static final String ANIMATOR_STOP_ESTR =
-    "The animator is not in the playing or paused state.";
-    private static final String INVALID_RUNNABLE_ESTR =
-    "The runnable is null.";
-    private static final String ANIMATOR_IS_STOPPED_ESTR =
-    "The animator is in the stopped state.";
-    private static final String RUNNABLE_IS_NULL_ESTR =
-    "The runnable is null.";
-    private static final String ANIMATOR_INVOKE_ESTR =
-    "The animator is in the stopped state.";
-    */
+
 
     //--------------------------------------------------
     // VARIABLES

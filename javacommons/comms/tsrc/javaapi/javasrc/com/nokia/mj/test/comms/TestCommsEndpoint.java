@@ -39,6 +39,7 @@ public class TestCommsEndpoint extends TestCase
     private final int MODULE_ID_SLEEP_1S    = 1000;     // reply msg is delayed by 1s
     private final int MODULE_ID_SLEEP_5S    = 5000;
     private final int MODULE_ID_SLEEP_10S   = 10000;
+    private final int MODULE_ID_DELAY_REPLY = 11000;
 
     private final int PLUGIN_ID_JAVACAPTAIN_COMMS_TESTER_C = 101; // see comms.h
 
@@ -200,6 +201,22 @@ public class TestCommsEndpoint extends TestCase
             public void run(TestCase tc)
             {
                 ((TestCommsEndpoint) tc).testDestroy();
+            }
+        }));
+
+        aSuite.addTest(new TestCommsEndpoint("testDelayedReply", new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((TestCommsEndpoint) tc).testDelayedReply();
+            }
+        }));
+
+        aSuite.addTest(new TestCommsEndpoint("testNoUnregisterWhenDetaching", new TestMethod()
+        {
+            public void run(TestCase tc)
+            {
+                ((TestCommsEndpoint) tc).testNoUnregisterWhenDetaching();
             }
         }));
 
@@ -1483,5 +1500,86 @@ public class TestCommsEndpoint extends TestCase
 
     }
 
+    public void testDelayedReply()
+    {
+        System.out.println("TestCommsEndpoint.testDelayedReply()");
+
+        class SendReceiver extends Thread
+        {
+            public void run()
+            {
+                try
+                {
+                    CommsEndpoint client = new CommsEndpoint();
+                    client.connect(SERVER_ADDRESS);
+                    CommsMessage message = new CommsMessage();
+                    message.setModuleId(MODULE_ID_DELAY_REPLY);
+
+                    CommsMessage reply = client.sendReceive(message, CommsEndpoint.WAIT_FOR_EVER);
+                    client.disconnect();
+                    client.destroy();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                    fail("SendReceiver.run");
+                }
+            }
+        }
+
+        try
+        {
+            // reply to first message is delayed until second message is received
+            // by the server
+            SendReceiver client1 = new SendReceiver();
+            SendReceiver client2 = new SendReceiver();
+
+            client1.start();
+            client2.start();
+            client1.join();
+            client2.join();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            fail("testDelayedReply failed");
+        }
+    }
+
+    public void testNoUnregisterWhenDetaching()
+    {
+        System.out.println("TestCommsEndpoint.testNoUnregisterWhenDetaching()");
+        class TestListener implements CommsListener
+        {
+            public void processMessage(CommsMessage message) {}
+        }
+
+        CommsEndpoint comms = null;
+        try
+        {
+            comms = CommsEndpoint.find(SERVER_NAME);
+            assertNotNull(comms);
+
+            // leave listeners unregistered
+            comms.registerListener(MODULE_ID_A, new TestListener());
+            comms.registerDefaultListener(new TestListener());
+            CommsMessage msg = new CommsMessage();
+            msg.setModuleId(MODULE_ID_A);
+            comms.send(msg);
+            msg.setModuleId(MODULE_ID_B);
+            comms.send(msg);
+            msg = comms.sendReceive(msg, 1);
+        }
+        catch (CommsException e)
+        {
+            e.printStackTrace();
+            fail("ok case");
+        }
+        finally
+        {
+            comms.destroy();
+            comms = null;
+        }
+    }
 }
 

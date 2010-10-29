@@ -155,13 +155,13 @@ public class FormStringItemTests extends Form implements CommandListener, ItemCo
      */
     public void commandAction(Command c, Displayable s)
     {
-        if (c == cmdBack)
+        if(c == cmdBack)
         {
             label.setString(null);
             text.setString(null);
             Display.getDisplay(m).setCurrent(this);
         }
-        else if (c == cmdLongText)
+        else if(c == cmdLongText)
         {
             String longString = "This is a really long string. Check that you can successfully" +
                                 " read the last line (congratulations).\n" +
@@ -208,69 +208,69 @@ public class FormStringItemTests extends Form implements CommandListener, ItemCo
             stringItemForm.append(si);
             Display.getDisplay(m).setCurrent(stringItemForm);
         }
-        else if (c == cmdNext)
+        else if(c == cmdNext)
         {
             change++;
             changeForm();
         }
-        else if (c == cmdRemoveCommand)
+        else if(c == cmdRemoveCommand)
         {
             Item item = null;
             item = stringItemForm.get(0);
             item.removeCommand(cmdUnlock);
             item.removeCommand(cmdItem);
         }
-        else if (c == cmdRestoreCommand)
+        else if(c == cmdRestoreCommand)
         {
             Item item = null;
             item = stringItemForm.get(0);
             item.addCommand(cmdUnlock);
             item.setDefaultCommand(cmdItem);
         }
-        else if (c == cmdRemoveItem)
+        else if(c == cmdRemoveItem)
         {
             stringItemForm.delete(0);
         }
-        else if (c == cmdLayout)
+        else if(c == cmdLayout)
         {
             layoutTest(Item.PLAIN);
         }
-        else if (c == cmdLayoutHL)
+        else if(c == cmdLayoutHL)
         {
             layoutTest(Item.HYPERLINK);
         }
-        else if (c == cmdLayoutButton)
+        else if(c == cmdLayoutButton)
         {
             layoutTest(Item.BUTTON);
         }
-        else if (c == cmdVLayout)
+        else if(c == cmdVLayout)
         {
             verticalLayoutTest(Item.PLAIN);
         }
-        else if (c == cmdVLayoutHL)
+        else if(c == cmdVLayoutHL)
         {
             verticalLayoutTest(Item.HYPERLINK);
         }
-        else if (c == cmdVLayoutButton)
+        else if(c == cmdVLayoutButton)
         {
             verticalLayoutTest(Item.BUTTON);
         }
-        else if (c == cmdAddListeners)
+        else if(c == cmdAddListeners)
         {
             int size = stringItemForm.size();
-            for (int i = 0; i < size; i++)
+            for(int i = 0; i < size; i++)
             {
                 Item item = null;
                 item = stringItemForm.get(i);
                 item.setItemCommandListener(this);
             }
         }
-        else if (c == cmdExit)
+        else if(c == cmdExit)
         {
             m.destroyApp(false);
             m.notifyDestroyed();
         }
-        else if (c == cmdScreenF)
+        else if(c == cmdScreenF)
         {
             stringItemForm.addCommand(cmdItemF);
             stringItemForm.addCommand(cmdOkF);
@@ -283,68 +283,68 @@ public class FormStringItemTests extends Form implements CommandListener, ItemCo
             String lo = cg.getString(index);
             int layout = 0;
 
-            if (c == cmdCreate)
+            if(c == cmdCreate)
                 si = new StringItem(l, t);
-            else if (c == cmdCreateHL || c == cmdCreateHLM)
+            else if(c == cmdCreateHL || c == cmdCreateHLM)
             {
                 si = new StringItem(l, t, Item.HYPERLINK);
                 si.setDefaultCommand(cmdItem);
             }
-            else if (c == cmdCreateButton || c == cmdCreateButtonM)
+            else if(c == cmdCreateButton || c == cmdCreateButtonM)
             {
                 si = new StringItem(l, t, Item.BUTTON);
                 si.setDefaultCommand(cmdItem);
             }
 
-            if (lo.equals(cgTypes[0]))
+            if(lo.equals(cgTypes[0]))
             {
                 layout = Item.LAYOUT_DEFAULT;
             }
-            else if (lo.equals(cgTypes[1]))
+            else if(lo.equals(cgTypes[1]))
             {
                 layout = Item.LAYOUT_LEFT;
             }
-            else if (lo.equals(cgTypes[2]))
+            else if(lo.equals(cgTypes[2]))
             {
                 layout = Item.LAYOUT_RIGHT;
             }
-            else if (lo.equals(cgTypes[3]))
+            else if(lo.equals(cgTypes[3]))
             {
                 layout = Item.LAYOUT_CENTER;
             }
-            else if (lo.equals(cgTypes[4]))
+            else if(lo.equals(cgTypes[4]))
             {
                 layout = Item.LAYOUT_TOP;
             }
-            else if (lo.equals(cgTypes[5]))
+            else if(lo.equals(cgTypes[5]))
             {
                 layout = Item.LAYOUT_BOTTOM;
             }
-            else if (lo.equals(cgTypes[6]))
+            else if(lo.equals(cgTypes[6]))
             {
                 layout = Item.LAYOUT_VCENTER;
             }
-            else if (lo.equals(cgTypes[7]))
+            else if(lo.equals(cgTypes[7]))
             {
                 layout = Item.LAYOUT_NEWLINE_BEFORE;
             }
-            else if (lo.equals(cgTypes[8]))
+            else if(lo.equals(cgTypes[8]))
             {
                 layout = Item.LAYOUT_NEWLINE_AFTER;
             }
-            else if (lo.equals(cgTypes[9]))
+            else if(lo.equals(cgTypes[9]))
             {
                 layout = Item.LAYOUT_SHRINK;
             }
-            else if (lo.equals(cgTypes[10]))
+            else if(lo.equals(cgTypes[10]))
             {
                 layout = Item.LAYOUT_VSHRINK;
             }
-            else if (lo.equals(cgTypes[11]))
+            else if(lo.equals(cgTypes[11]))
             {
                 layout = Item.LAYOUT_EXPAND;
             }
-            else if (lo.equals(cgTypes[12]))
+            else if(lo.equals(cgTypes[12]))
             {
                 layout = Item.LAYOUT_VEXPAND;
             }
@@ -355,7 +355,7 @@ public class FormStringItemTests extends Form implements CommandListener, ItemCo
             stringItemForm.addCommand(cmdRemoveCommand);
             stringItemForm.addCommand(cmdRestoreCommand);
             stringItemForm.addCommand(cmdRemoveItem);
-            if (c == cmdCreateButtonM || c == cmdCreateHLM)
+            if(c == cmdCreateButtonM || c == cmdCreateHLM)
             {
                 si.addCommand(cmdBack);
             }
@@ -364,32 +364,32 @@ public class FormStringItemTests extends Form implements CommandListener, ItemCo
     }
     public void commandAction(Command c, Item i)
     {
-        if (c == cmdBack)
+        if(c == cmdBack)
         {
             label.setString(null);
             text.setString(null);
             Display.getDisplay(m).setCurrent(this);
         }
-        else if (c == cmdUnlock)
+        else if(c == cmdUnlock)
         {
             i.setPreferredSize(-1,-1);
         }
-        else if (c == cmdItem)
+        else if(c == cmdItem)
         {
             i.setLabel(i.getLabel() + ".");
         }
     }
     private void setSize(String width, String height)
     {
-        if (width.equals("") && height.equals(""))
+        if(width.equals("") && height.equals(""))
         {
             si.setPreferredSize(-1,-1);
         }
-        else if (height.equals(""))
+        else if(height.equals(""))
         {
             si.setPreferredSize(Integer.parseInt(width),-1);
         }
-        else if (width.equals(""))
+        else if(width.equals(""))
         {
             si.setPreferredSize(-1,Integer.parseInt(height));
         }
@@ -417,7 +417,7 @@ public class FormStringItemTests extends Form implements CommandListener, ItemCo
         si5.setLayout(StringItem.LAYOUT_EXPAND | StringItem.LAYOUT_NEWLINE_BEFORE);
         si5.setDefaultCommand(cmdBack);
 
-        if (mode != Item.PLAIN)
+        if(mode != Item.PLAIN)
         {
             si.setDefaultCommand(cmdBack);
             si2.setDefaultCommand(cmdBack);
@@ -438,7 +438,7 @@ public class FormStringItemTests extends Form implements CommandListener, ItemCo
         stringItemForm.deleteAll();
         si = new StringItem("Default","String",mode);
         Spacer sp = new Spacer(10, this.getHeight());
-        if (mode != Item.PLAIN)
+        if(mode != Item.PLAIN)
         {
             si.setDefaultCommand(cmdBack);
         }
@@ -451,7 +451,7 @@ public class FormStringItemTests extends Form implements CommandListener, ItemCo
     private void changeForm()
     {
 
-        switch (change)
+        switch(change)
         {
         case -1:
             stringItemForm.setTitle("Default");

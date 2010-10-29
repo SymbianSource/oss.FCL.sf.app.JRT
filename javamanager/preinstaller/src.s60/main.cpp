@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008 - 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -33,9 +33,11 @@ using namespace java::util;
 
 _LIT_SECURE_ID(KJavaCaptainSecureID, KJavaCaptainUid);
 
-// This file is used to indicate when converting old S60 midlets
-// to OMJ midlets has been done.
-_LIT(KConversionOngoing, "D:\\OMJConverting.dat");
+#ifdef RD_JAVA_S60_RELEASE_5_0_IAD
+// This file is used to indicate when preinstallation has been done and
+// converting old S60 midlets to OMJ midlets can start.
+_LIT(KConversionOngoing, "D:\\OMJConverting.dat");  // codescanner::driveletters
+#endif
 
 
 /**
@@ -43,10 +45,10 @@ _LIT(KConversionOngoing, "D:\\OMJConverting.dat");
  * has the same Symbian secure ID as javainstaller and so javainstaller
  * can later destroy the keys if necessary.
  */
-static void CreateJavaInstallerPSKeys()
+static void createJavaInstallerPSKeys()
 {
     LOG(EJavaPreinstaller, EInfo,
-        "CreateJavaInstallerPSKeys: Going to create Java Installer PS keys");
+        "createJavaInstallerPSKeys: Going to create Java Installer PS keys");
 
     // any process can read the values of the PS keys
     _LIT_SECURITY_POLICY_PASS(KReadPolicy);
@@ -61,7 +63,7 @@ static void CreateJavaInstallerPSKeys()
     }
     if (err != KErrNone)
     {
-        ELOG1(EJavaPreinstaller, "CreateJavaInstallerPSKeys: "
+        ELOG1(EJavaPreinstaller, "createJavaInstallerPSKeys: "
               "creating KPSUidJavaLatestInstallation failed with error %d", err);
     }
 
@@ -73,7 +75,7 @@ static void CreateJavaInstallerPSKeys()
     }
     if (err != KErrNone)
     {
-        ELOG1(EJavaPreinstaller, "CreateJavaInstallerPSKeys: "
+        ELOG1(EJavaPreinstaller, "createJavaInstallerPSKeys: "
               "creating KPSUidJavaLatestInstallationProgress failed with error %d", err);
     }
 
@@ -85,7 +87,7 @@ static void CreateJavaInstallerPSKeys()
     }
     if (err != KErrNone)
     {
-        ELOG1(EJavaPreinstaller, "CreateJavaInstallerPSKeys: "
+        ELOG1(EJavaPreinstaller, "createJavaInstallerPSKeys: "
               "creating KPSUidJavaLatestInstallationState failed with error %d", err);
     }
 }
@@ -97,7 +99,7 @@ static void CreateJavaInstallerPSKeys()
  */
 static void startPreinstallationL()
 {
-    JELOG2(EJavaPreinstaller);
+    LOG(EJavaPreinstaller, EInfo, "startPreinstallationL called");
 
     CActiveScheduler* as = new(ELeave) CActiveScheduler();
 
@@ -105,7 +107,7 @@ static void startPreinstallationL()
     CActiveScheduler::Install(as);
     CleanupStack::PushL(as);
 
-    RFs fs;
+    RFs fs;  // codescanner::rfs
     User::LeaveIfError(fs.Connect());
     CleanupClosePushL(fs);
 
@@ -123,22 +125,74 @@ static void startPreinstallationL()
 
     // Now preinstallation has been done
     LOG(EJavaPreinstaller, EInfo, "startPreinstallationL: Cleaning up");
+#ifdef RD_JAVA_S60_RELEASE_5_0_IAD
+    // Notify possibly waiting 'javaupdater.exe' process that preinstallation
+    // has been done and that it can continue.
     TInt err = fs.Delete(KConversionOngoing);
     LOG1(EJavaPreinstaller,
          EInfo,
          "startPreinstallationL: Delete flag file returned status code %d",
          err);
+#endif
 
     CleanupStack::PopAndDestroy(si);
     CleanupStack::PopAndDestroy(&fs); // close connection to file server
     CleanupStack::PopAndDestroy(as);
 }
 
+
+#ifdef RD_JAVA_S60_RELEASE_5_0_ROM
+/**
+ * If 'javaafterflashconverter.exe' is running, wait until it exits
+ * so that converter and preinstaller don't try to use Java Installer
+ * simultaneously.
+ */
+static void waitUntilAfterFlashConverterExits()
+{
+    LOG(EJavaPreinstaller, EInfo, "waitUntilAfterFlashConverterExits called");
+
+    TFullName processName;
+    _LIT(KJavaAFConverterProcess, "javaafterflashconverter*");
+    TFindProcess finder(KJavaAFConverterProcess);
+
+    if (finder.Next(processName) != KErrNotFound)
+    {
+        RProcess afConverterProcess;  // codescanner::resourcenotoncleanupstack
+        TInt err = afConverterProcess.Open(finder);
+
+        if (KErrNone != err)
+        {
+            WLOG1(EJavaPreinstaller,
+                "waitUntilAfterFlashConverterExits: Process open err: %d", err);
+        }
+        else
+        {
+            if (EExitPending == afConverterProcess.ExitType())
+            {
+                // Converter is still running. Wait until it exits.
+                LOG(EJavaPreinstaller, EInfo,
+                    "waitUntilAfterFlashConverterExits going to wait until converter exits");
+                TRequestStatus status;
+                afConverterProcess.Logon(status);
+                User::WaitForRequest(status);  // codescanner::userWaitForRequest
+            }
+
+            afConverterProcess.Close();
+        }
+    }
+}
+#endif
+
+
 /**
  * Allow starting process only from Java Captain.
  * Execute actual preinstaller code in CSilentMIDletInstall.
  */
+#ifdef RD_JAVA_S60_RELEASE_5_0_ROM
+void preinstallerMainL(int argc, const char *argv[])
+#else
 void preinstallerMainL()
+#endif
 {
     // The only time that this application should be executed
     // is when Java Captain calls it.
@@ -152,7 +206,19 @@ void preinstallerMainL()
     // Create the PS keys that Java Installer will update already now
     // so that other processes starting during device boot can start
     // immediately listening to the keys.
-    CreateJavaInstallerPSKeys();
+    createJavaInstallerPSKeys();
+
+#ifdef RD_JAVA_S60_RELEASE_5_0_ROM
+    if (argc > 1)
+    {
+        // The max size of a preinstaller command line parameter is 80
+        TBufC8<80> param((const TUint8 *)(argv[1]));  // codescanner::accessArrayElementWithoutCheck2
+        if (param == _L8("waitafconversion"))
+        {
+            waitUntilAfterFlashConverterExits();
+        }
+   }
+#endif
 
     startPreinstallationL();
 }
@@ -162,9 +228,12 @@ void preinstallerMainL()
  * the same starter process as installer and runtime (so that they have the same
  * Symbian secure Uid and can access the same data cage).
  */
-int dllMain(int /*argc*/, char */*argv*/[])
+#ifdef RD_JAVA_S60_RELEASE_5_0_ROM
+int dllMain(int argc, const char *argv[])
+#else
+int dllMain(int /* argc */, const char */*argv*/[])
+#endif
 {
-    JELOG(EJavaPreinstaller, "PREINSTALLER main()");
     JavaOsLayer::startUpTrace("PREINSTALLER main() start", -1, -1);
 
     User::RenameProcess(_L("javapreinstaller"));
@@ -175,7 +244,11 @@ int dllMain(int /*argc*/, char */*argv*/[])
     // Make sure that this thread has always cleanup stack
     CTrapCleanup* cleanupStack = CTrapCleanup::New();
 
+#ifdef RD_JAVA_S60_RELEASE_5_0_ROM
+    TRAPD(err, preinstallerMainL(argc, argv));
+#else
     TRAPD(err, preinstallerMainL());
+#endif
     if (KErrNone != err)
     {
         ELOG1(EJavaPreinstaller, "dllMain: preinstallerMainL leaved with error %d", err);

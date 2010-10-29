@@ -19,6 +19,6 @@ TARGET=javacaptain_ext_preinstallerstarter
 CONFIG += omj stl
 CONFIG -= qt
 
-LIBS += -lapgrfx -ljavacomms -lhal -lsysutil
+LIBS += -lapgrfx -ljavacomms -lhal -lsysutil -lefsrv
 
 include(../../../../../build/omj.pri)

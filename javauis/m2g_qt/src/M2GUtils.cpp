@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2006 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -96,13 +96,13 @@ TInt M2GBitmapUtils::BitBlt(CFbsBitmap& aTarget,
 
 
 TInt M2GBitmapUtils::BitQBlt(QImage& aTargetQimage,
-                            const QImage& aSourceQimage,
-                            const TPoint& aPoint,
-                            const TRect* aRect,
-                            const CFbsBitmap* aSourceMask)
+                             const QImage& aSourceQimage,
+                             const TPoint& aPoint,
+                             const TRect* aRect,
+                             const CFbsBitmap* aSourceMask)
 {
     M2G_DEBUG_2("M2G_DEBUG: M2GBitmapUtils::BitQBlt() - Point(x=%d, y=%d)", aPoint.iX, aPoint.iY);
-    
+
     QPixmap pixmapTarget = QPixmap::fromImage(aTargetQimage);
     CFbsBitmap* aTarget  = pixmapTarget.toSymbianCFbsBitmap();
 
@@ -341,6 +341,4 @@ void TSWTBitBlt::operator()() const
     CleanupStack::PopAndDestroy(tempBitmap);
     M2G_DEBUG_0("TSWTBitBlt()-");
 }
-//TODO Check for M2G_DO_LOCK M2G_DO_UNLOCK 
-//TODO Put Check for aSvgProxyHandle in all the functions.
 M2G_NS_END

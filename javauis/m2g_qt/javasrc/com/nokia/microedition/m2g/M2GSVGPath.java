@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -31,12 +31,7 @@ public class M2GSVGPath extends M2GObject implements SVGPath
     //--------------------------------------------------
     // STATIC CONTANTS
     //--------------------------------------------------
-    /* Optimization: static finals changed to local variables
-    private static final String SEGMENT_INDEX_SIZE_ESTR =
-    "The segment index is out of bounds.";
-    private static final String PARAMETER_INDEX_SIZE_ESTR =
-    "The parameter index is out of bounds for this segment's type.";
-    */
+
     private static final int CLOSE_PARAMETER_COUNT = 0;
     private static final int MOVE_TO_PARAMETER_COUNT = 2;
     private static final int LINE_TO_PARAMETER_COUNT = 2;
@@ -91,7 +86,7 @@ public class M2GSVGPath extends M2GObject implements SVGPath
     protected void doCleanup()
     {
         _destroyPath(getNativeSVGProxyHandle(),
-            getHandle());
+                     getHandle());
         resetHandles();
     }
 
@@ -111,7 +106,7 @@ public class M2GSVGPath extends M2GObject implements SVGPath
     public int getNumberOfSegments()
     {
         return _getNumberOfSegments(getNativeSVGProxyHandle(),
-                                    getHandle() );
+                                    getHandle());
     }
 
     /**
@@ -168,7 +163,7 @@ public class M2GSVGPath extends M2GObject implements SVGPath
     public void curveTo(float x1, float y1, float x2, float y2, float x3, float y3)
     {
         _addCurveTo(getNativeSVGProxyHandle(),
-            getHandle(), x1, y1, x2, y2, x3, y3);
+                    getHandle(), x1, y1, x2, y2, x3, y3);
     }
 
     /**
@@ -209,7 +204,7 @@ public class M2GSVGPath extends M2GObject implements SVGPath
      */
     public void moveTo(float x, float y)
     {
-        _addMoveTo(getNativeSVGProxyHandle(), getHandle(), x, y );
+        _addMoveTo(getNativeSVGProxyHandle(), getHandle(), x, y);
     }
 
     /**
@@ -222,7 +217,7 @@ public class M2GSVGPath extends M2GObject implements SVGPath
                    x1,
                    y1,
                    x2,
-                   y2 );
+                   y2);
     }
 
     //--------------------------------------------------

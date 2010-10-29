@@ -778,7 +778,9 @@ public class TreeItem extends Item {
     void releaseChildren_pp(boolean destroy) {
         if (childrenItems != null) {
             for (int i = childrenItemCount-1; i >= 0; i--) {
-                TreeItem item = _getItem(i);
+                // Don't use _getItem() here, in a VIRTUAL style Tree it would
+                // cause children items to be created.
+                TreeItem item = childrenItems[i];
 
                 if (item != null && !item.isDisposed()) {
                     item.release(destroy);

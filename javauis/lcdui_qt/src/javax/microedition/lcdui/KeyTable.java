@@ -123,25 +123,25 @@ final class KeyTable
             return "9";
 
         case Canvas.KEY_STAR:
-            return "*";
+            return OpenLcduiLocalization.getMessage("canvas_key_star_key");
 
         case Canvas.KEY_POUND:
-            return "#";
+            return OpenLcduiLocalization.getMessage("canvas_key_hash_key");
                 
         case -1:
-            return OpenLcduiLocalization.getMessage("key_up");
+            return OpenLcduiLocalization.getMessage("canvas_key_up"); 
 
         case -2:
-            return OpenLcduiLocalization.getMessage("key_down");
+            return OpenLcduiLocalization.getMessage("canvas_key_down");  
 
         case -3:
-            return OpenLcduiLocalization.getMessage("key_left");
+            return OpenLcduiLocalization.getMessage("canvas_key_left"); 
 
         case -4:
-            return OpenLcduiLocalization.getMessage("key_right");
+            return OpenLcduiLocalization.getMessage("canvas_key_right"); 
 
         case -5:
-            return OpenLcduiLocalization.getMessage("key_select");
+            return OpenLcduiLocalization.getMessage("canvas_key_selection_key"); 
 
         default:
             throw new IllegalArgumentException(

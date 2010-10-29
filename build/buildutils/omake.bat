@@ -19,13 +19,14 @@ rem -------------------
 rem Determine java root
 setlocal
 set JAVA_SRC_ROOT=
+set RECURSION=. .. ..\.. ..\..\.. ..\..\..\.. ..\..\..\..\.. ..\..\..\..\..\.. ..\..\..\..\..\..\.. ..\..\..\..\..\..\..\.. ..\..\..\..\..\..\..\..\.. ..\..\..\..\..\..\..\..\..\..
 
 rem See if we are within jrt package (indepent of actual location)
-for %%a in (. .. ..\.. ..\..\.. ..\..\..\.. ..\..\..\..\.. ..\..\..\..\..\.. ..\..\..\..\..\..\..) do if "%JAVA_SRC_ROOT%" == "" if exist %%a\build\Makefile.comp call :setroot %%a
+for %%a in (%RECURSION%) do if "%JAVA_SRC_ROOT%" == "" if exist %%a\build\Makefile.comp call :setroot %%a
 if not "%JAVA_SRC_ROOT%" == "" goto resolved
 
 rem See if we are within jrtext package co-located with jrt (indepent of actual location)
-for %%a in (. .. ..\.. ..\..\.. ..\..\..\.. ..\..\..\..\.. ..\..\..\..\..\.. ..\..\..\..\..\..\..) do if "%JAVA_SRC_ROOT%" == "" if "%%~nxa" == "jrtext" if exist %%a\build\omj.pri if exist %%a\..\jrt\build\Makefile.comp call :setroot %%a\..\jrt
+for %%a in (%RECURSION%) do if "%JAVA_SRC_ROOT%" == "" if "%%~nxa" == "jrtext" if exist %%a\build\omj.pri if exist %%a\..\jrt\build\Makefile.comp call :setroot %%a\..\jrt
 if not "%JAVA_SRC_ROOT%" == "" goto resolved
 
 rem See if this is subdirectory within \ext\app\jrtext

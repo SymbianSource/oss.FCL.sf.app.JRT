@@ -457,6 +457,8 @@ private: // Data
     TBool iFirstItemChanges;
 
     java::util::FunctionServer* iFuncServer;
+    
+    RMutex iMutex;
 
 };
 

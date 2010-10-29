@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2006 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -109,7 +109,7 @@ public: // METHODS
         TM2GSvgDocumentHandle& aSvgDocHandle,
         const TReal32 aCurrentTime,
         TInt aSvgW, TInt aSvgH,
-        TM2GRenderRect& aRect,       
+        TM2GRenderRect& aRect,
         TBool aUseNativeClear,
         TInt* aReturnData);
 
@@ -123,16 +123,7 @@ public: // METHODS
      */
     virtual void SetTransparency(TReal32 aAlpha);
 
-    
-    TInt SaveBitmapL(const CFbsBitmap& aNVGBitmap, const TFileName& aFileName);
-protected: // METHODS
-    /**
-     * Get the image's bitmap handle
-     *
-     * @return Svg surface handle.
-     * @throws Exception if not ok.
-     */
-    TM2GBitmapHandle GetImgHandleL() const;
+
 
 private:
     /**
@@ -179,59 +170,38 @@ private:
         TBool aUseNativeClear,
         TInt* aReturnData);
 
-    /**
-     * Clear the bitmap with 0
-     * Fills all pixel with 0 value
-     *
-     * @param aBmp the bitmap to be filled
-     */
-    void CM2GRenderContext::ClearBitmapL(CFbsBitmap* aBmp);
-
-    /**
-     * Fills all the pixels of a bitmap with a specific byte
-     *
-     * @param aBmp the bitmap to be filled
-     * @param aChar the character(byte) to fill with
-     */
-    void FillBitmapL(CFbsBitmap* aBmp, const TUint8& aChar);
-
-
 private: // VARIABLES
-    
-    //For WindowsSurface CFbsBitmap || Qimage 
-    Java::GFX::WindowSurface*   iWindowSurface;
-    
-    
+
     MM2GSVGProxy*       iProxy;
 
     TM2GSvgEngineHandle iEngineHandle;
 
     TReal32             iAlpha;
     TUint8              iScaledAlpha;
-    
+
 //for eswt compatibility
     CFbsBitmap*         iImgBmp;
     RFbsSession         iFbsSession;
-    
-    
+
+//For WindowsSurface CFbsBitmap || Qimage
+    Java::GFX::WindowSurface*   iWindowSurface;
+
+
+
 // Temporary buffer ( offscreen ) for QImage support
     QImage*                         iOffScreenQImage;
     CFbsBitmap*                     iOffScreenBitmap;
-            
+
     QImage*                         iTargetQImage;
 
     Java::GFX::WindowSurfaceType    wSurfaceType;
     CSvgtBitmap * targetBitmap;
-    
+
     CFbsBitmap* tempBitmapForMask ;
 
-protected:
-    TM2GSvgBitmapHandle GetBufferHandleL() const;
-    void InitializeQImageOffscreenBufferL(TSize aScreenSize,QImage* aQimage);
-    void InitializeCFbsBitmapOffscreenBufferL(TSize aScreenSize,CFbsBitmap* aBitmap);
-    void ClearSurfaceL(TM2GSvgBitmapHandle aSvgtBmpHandle);
+
 private:
-    
+
 };
 /*-----------------------------------------------------------
 class  : CFbsBitmapHack

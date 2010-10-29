@@ -442,13 +442,14 @@ OS_EXPORT int CommsEndpoint::registerDefaultJavaListener(jobject aListener, JNIE
     return rc;
 }
 
-OS_EXPORT int CommsEndpoint::unregisterDefaultJavaListener(jobject, JNIEnv*)
+OS_EXPORT int CommsEndpoint::unregisterDefaultJavaListener(jobject, JNIEnv* aEnv)
 {
     ScopedLock lock(mListenersMutex);
     int rc = 0;
 
     if (mDefaultListener && mDefaultListener->getListener() == 0)
     {
+        mDefaultListener->release(aEnv);
         delete mDefaultListener;
         mDefaultListener = 0;
         LOG(EJavaComms, EInfo, "Unregistered default java listener");
@@ -476,7 +477,7 @@ OS_EXPORT int CommsEndpoint::attachToVm(JNIEnv* aEnv)
     return rc;
 }
 
-OS_EXPORT int CommsEndpoint::detachFromVm()
+OS_EXPORT int CommsEndpoint::detachFromVm(JNIEnv* aEnv)
 {
 //    JELOG2(EJavaComms);
     ScopedLock lock(mListenersMutex);
@@ -484,6 +485,7 @@ OS_EXPORT int CommsEndpoint::detachFromVm()
     // remove java listeners
     if (mDefaultListener && mDefaultListener->getListener() == 0)
     {
+        mDefaultListener->release(aEnv);
         delete mDefaultListener;
         mDefaultListener = 0;
         LOG(EJavaComms, EInfo, "Removed default java listener (detach)");
@@ -495,7 +497,7 @@ OS_EXPORT int CommsEndpoint::detachFromVm()
         {
             LOG1(EJavaComms, EInfo, "Removed java listener for module id %d (detach)", it->first);
 
-            (it->second)->release(mJNIEnv);
+            (it->second)->release(aEnv);
             delete it->second;
             mListeners.erase(it);
             it = mListeners.begin();

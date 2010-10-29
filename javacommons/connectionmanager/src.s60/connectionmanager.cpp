@@ -85,7 +85,7 @@ bool ConnectionManager::checkIapDefaultL(TUint32 aMatchIapId, TUint32 aDestId, b
     TCmDefConnType type;
 
     RCmManager * mgr = new(ELeave) RCmManager();
-    mgr->OpenL();
+    mgr->OpenLC();
 
     if (aDefault)
     {
@@ -93,18 +93,24 @@ bool ConnectionManager::checkIapDefaultL(TUint32 aMatchIapId, TUint32 aDestId, b
         mgr->ReadDefConnL(obj);
         id = obj.iId;
         type = obj.iType;
+
         if ((type ==ECmDefConnConnectionMethod) && (id == aMatchIapId))
         {
+            CleanupStack::PopAndDestroy(mgr);
             return true;
         }
         else if (type != ECmDefConnDestination)
         {
+            CleanupStack::PopAndDestroy(mgr);
             return false;
         }
     }
 
     RCmDestination tmpdst =     mgr->DestinationL(id);
     ILOG1(ESOCKET,"Is connected return value = %d ", tmpdst.IsConnectedL());
+
+    CleanupStack::PopAndDestroy(mgr);
+
     if (!(tmpdst.IsConnectedL()))
     {
         return false;   // no access point within this destination are active
@@ -119,8 +125,6 @@ bool ConnectionManager::checkIapDefaultL(TUint32 aMatchIapId, TUint32 aDestId, b
         }
     }
     return false;
-
-
 }
 
 // ---------------------------------------------------------------------------
@@ -139,14 +143,12 @@ void ConnectionManager
     TCmDefConnValue obj;
     HBufC8 * des;
 
-
     mgr->ReadDefConnL(obj);
     id = obj.iId;
     type = obj.iType;
     LOG1(ESOCKET,EInfo,"readDefConnL returned %d",id);
     LOG1(ESOCKET,EInfo,"type is %d",type);
-    CleanupStack::PopAndDestroy();
-
+    CleanupStack::PopAndDestroy(mgr);
 
     if (type == ECmDefConnAskOnce || type == ECmDefConnConnectionMethod || type == ECmDefConnDestination)
     {
@@ -205,14 +207,12 @@ HBufC8 *ConnectionManager
     CleanupClosePushL(dlgSv);
     User::LeaveIfError(dlgSv.Connect());
 
-
     TRequestStatus status(KRequestPending);
     LOG(ESOCKET,EInfo,"prompting by regenconagent ");
     dlgSv.AccessPointConnection(dummy, dummy, snapOrIapId, prefs.iBearerSet, status);
     User::WaitForRequest(status);
     CleanupStack::PopAndDestroy(&dlgSv);
     User::LeaveIfError(status.Int());
-
 
     TMDBElementId tableId = snapOrIapId & KCDMaskShowRecordType;
     if (tableId == KCDTIdNetworkRecord)
@@ -289,12 +289,17 @@ EXPORT_C unsigned int ConnectionManager::getDestinationNetworkIdL(Uid aAppSuiteU
     int snapid = KJavaNetworkAccessNotSpecified;
     std::auto_ptr<JavaStorage> js(JavaStorage::createInstance());
 
-    js->open(JAVA_DATABASE_NAME);
-
-
-    // Read all attributes of one application specified by UID.
-    js->read(APPLICATION_PACKAGE_TABLE, aAppSuiteUid, entries);
-    js->close();
+    try
+    {
+        js->open(JAVA_DATABASE_NAME);
+        // Read all attributes of one application specified by UID.
+        js->read(APPLICATION_PACKAGE_TABLE, aAppSuiteUid, entries);
+        js->close();
+    }
+    catch (JavaStorageException& aJse)
+    {
+        LOG(ESOCKET,EInfo,"Attribute read failed.");
+    }
 
     // set the entry as ACCESS_POINT
     attribute.setEntry(ACCESS_POINT, L"");
@@ -308,14 +313,14 @@ EXPORT_C unsigned int ConnectionManager::getDestinationNetworkIdL(Uid aAppSuiteU
         {
             JavaStorageEntry sourceEntry = (*findIterator);
             temp.append(sourceEntry.entryValue().c_str());
-            HBufC * value = S60CommonUtils::wstringToDes(temp.c_str());
-            HBufC8 * temp1 = HBufC8::NewL(value->Des().Length());
+            std::auto_ptr<HBufC>value(S60CommonUtils::wstringToDes(temp.c_str()));
+            std::auto_ptr<HBufC8> temp1(HBufC8::NewL(value->Des().Length()));
             temp1->Des().Copy(value->Des());
             TRAP_IGNORE(snapid = ParseNetworkAccessPointL(*temp1));
         }
         else
         {
-            LOG(ESOCKET,EInfo,"Name attribute does not exists.");
+            LOG(ESOCKET,EInfo,"Access point attribute does not exists.");
         }
         entries.clear();
     }
@@ -447,7 +452,7 @@ EXPORT_C void ConnectionManager::setDestinationNetworkIdL(Uid aAppSuiteUid,int a
         }
     }
 
-    HBufC* temp1 = HBufC::NewL(des->Des().Length()+1);
+    std::auto_ptr<HBufC>temp1(HBufC::NewL(des->Des().Length()+1));
     temp1->Des().Copy(des->Des());
 
     int len1 = des->Length();
@@ -463,13 +468,7 @@ EXPORT_C void ConnectionManager::setDestinationNetworkIdL(Uid aAppSuiteUid,int a
     ptr16.ZeroTerminate();
 
     LOG1(ESOCKET,EInfo,"ConnectionManager::setApnIdL() - len of apnString = %d", wcslen(apnString));
-
-    std::wstring tmpstring(apnString);
-    char *dirName = JavaCommonUtils::wstringToUtf8(tmpstring);
-    LOG1(ESOCKET,EInfo,"COnnectionManager::setApnIdL() - storing %s into javastorage",dirName);
-
-
-    js->startTransaction();
+    LOG1(ESOCKET,EInfo,"COnnectionManager::setApnIdL() - storing %S into javastorage", apnString);
 
     attribute.setEntry(ACCESS_POINT, apnString);
     updateEntries.insert(attribute);
@@ -477,8 +476,10 @@ EXPORT_C void ConnectionManager::setDestinationNetworkIdL(Uid aAppSuiteUid,int a
     attribute.setEntry(ID, aAppSuiteUid.toString());
     matchEntries.insert(attribute);
 
+    delete [] apnString;
 
     LOG(ESOCKET,EInfo,"ConnectionManager::setApnIdL() - before js update");
+
     try
     {
         js->update(APPLICATION_PACKAGE_TABLE, updateEntries, matchEntries);
@@ -486,18 +487,6 @@ EXPORT_C void ConnectionManager::setDestinationNetworkIdL(Uid aAppSuiteUid,int a
     catch (JavaStorageException jse)
     {
         ELOG1(ESOCKET,"Updating the javastorage db failed %S",jse.toString().c_str());
-        js->close();
-        CleanupStack::PopAndDestroy(des);
-        return;
-    }
-
-    try
-    {
-        js->commitTransaction();
-    }
-    catch (JavaStorageException jse)
-    {
-        ELOG(ESOCKET,"Commit transaction in javastorage db failed");
         js->close();
         CleanupStack::PopAndDestroy(des);
         return;

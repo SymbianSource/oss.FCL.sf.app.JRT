@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -26,34 +26,13 @@ import com.nokia.mj.impl.rt.support.Finalizer;
 import com.nokia.mj.impl.utils.Logger;
 
 
-public class M2GSVGAnimator extends SVGAnimator 
+public class M2GSVGAnimator extends SVGAnimator
 {
     //--------------------------------------------------
     // STATIC CONSTANTS
     //--------------------------------------------------
     private static final String ANIMATOR_CANVAS_BASE_CLASS =
         "javax.microedition.lcdui.Canvas";
-    // Exception text
-    /* Optimization: static finals changed to local variables
-    private static final String COMPONENT_BASE_CLASS_NOT_SUPPORTED_ESTR =
-    "The requested componentBaseClass is not supported by the implementation.";
-    private static final String ILLEGAL_TIME_INCREMENT_ESTR =
-    "The timeIncrement is less than or equal to zero.";
-    private static final String ANIMATOR_PLAY_ESTR =
-    "The animator is not currently in the stopped or paused state.";
-    private static final String ANIMATOR_PAUSE_ESTR =
-    "The animator is not in the playing  state.";
-    private static final String ANIMATOR_STOP_ESTR =
-    "The animator is not in the playing or paused state.";
-    private static final String INVALID_RUNNABLE_ESTR =
-    "The runnable is null.";
-    private static final String ANIMATOR_IS_STOPPED_ESTR =
-    "The animator is in the stopped state.";
-    private static final String RUNNABLE_IS_NULL_ESTR =
-    "The runnable is null.";
-    private static final String ANIMATOR_INVOKE_ESTR =
-    "The animator is in the stopped state.";
-    */
 
     //--------------------------------------------------
     // VARIABLES
@@ -70,17 +49,17 @@ public class M2GSVGAnimator extends SVGAnimator
      */
     protected M2GSVGAnimator(SVGImage aImage)
     {
-				
+
         iSVGCanvas = new M2GSVGCanvas(false, aImage);
         mFinalizer = new Finalizer()
-        {	
+        {
             public void finalizeImpl()
             {
-            		
+
                 doFinalize();
             }
         };
-				
+
     }
 
     /**
@@ -157,14 +136,14 @@ public class M2GSVGAnimator extends SVGAnimator
     */
     public void play()
     {
-				
+
         if (iSVGCanvas.isPlaying())
         {
             throw new IllegalStateException(
                 /*SF*/"The animator is not currently in the stopped or paused state."/*SF*/);
         }
         Logger.LOG(Logger.EJavaUI, Logger.EInfo, "play()");
-        
+
         iSVGCanvas.play();
     }
 
@@ -172,7 +151,7 @@ public class M2GSVGAnimator extends SVGAnimator
     {
         if (mFinalizer != null)
         {
-						
+
             registeredFinalize();
             mFinalizer = null;
         }
@@ -201,7 +180,7 @@ public class M2GSVGAnimator extends SVGAnimator
      */
     public void setTimeIncrement(float timeIncrement)
     {
-    		
+
         if (timeIncrement <= 0)
         {
             throw new IllegalArgumentException(
@@ -210,7 +189,7 @@ public class M2GSVGAnimator extends SVGAnimator
         Logger.LOG(Logger.EJavaUI, Logger.EInfo, "setTimeIncrement() - "
                    + timeIncrement);
         iSVGCanvas.setTimeIncrement(timeIncrement);
-        
+
     }
 
     /**
@@ -218,7 +197,7 @@ public class M2GSVGAnimator extends SVGAnimator
      */
     public void stop()
     {
-    		
+
         if (iSVGCanvas.isStopped())
         {
             throw new IllegalStateException(
@@ -227,7 +206,7 @@ public class M2GSVGAnimator extends SVGAnimator
         Logger.LOG(Logger.EJavaUI, Logger.EInfo, "stop()");
 
         iSVGCanvas.stop();
-        
+
     }
 
     //--------------------------------------------------
@@ -241,13 +220,13 @@ public class M2GSVGAnimator extends SVGAnimator
      */
     public static SVGAnimator buildAnimator(SVGImage svgImage)
     {
-	   		
+
         if (svgImage == null)
         {
-        		
+
             throw new NullPointerException();
         }
-        
+
         return new M2GSVGAnimator(svgImage);
     }
 
@@ -319,10 +298,10 @@ class M2GSVGCanvas extends GameCanvas implements M2GDOMChangeObserver
      * @see javax.microedition.lcdui.game.GameCanvas#GameCanvas()
      */
     public M2GSVGCanvas(boolean aSuppressKeyEvents, SVGImage aSVGImage)
-    {					
+    {
 
         super(aSuppressKeyEvents);
-				
+
         // get the instance to the Graphics of the offscreen buffer
         iOffscreen = getGraphics();
 
@@ -331,8 +310,8 @@ class M2GSVGCanvas extends GameCanvas implements M2GDOMChangeObserver
         // down-casting to M2GDocument/M2GSVGSVGElement to have access to internal methods
         M2GDocument doc = (M2GDocument)iSVGImage.getDocument();
         iRootElement  = (M2GSVGSVGElement)iSVGImage.getDocument().getDocumentElement();
-        
-				
+
+
         iState = STATE_STOPPED;
         // Create render context
         iSg = ScalableGraphics.createInstance();
@@ -340,9 +319,9 @@ class M2GSVGCanvas extends GameCanvas implements M2GDOMChangeObserver
         iDeltaTime = DEFAULT_DELTA_TIME;
 
         doc.registerDOMChangeObserver(this);
-        
-        
-        
+
+
+
         Logger.LOG(Logger.EJavaUI, Logger.EInfo, "Ctor - delta time:"
                    + iDeltaTime + ", state:" + iState);
     }
@@ -500,25 +479,25 @@ class M2GSVGCanvas extends GameCanvas implements M2GDOMChangeObserver
     public void paint(Graphics g)
     {
         // Clears bitmap
-        
+
         g.setColor(255, 255, 255);
         g.fillRect(0, 0, getWidth(), getHeight());
 
         try
         {
-        		
+
             iSg.bindTarget(g);
 
-						
+
             // NOTE: Source is defaultly fully opaque
             iSg.render(0, 0, iSVGImage);
-            
+
         }
         finally
         {
-        		
+
             iSg.releaseTarget();
-            
+
         }
     }
 
@@ -637,7 +616,7 @@ class M2GSVGCanvas extends GameCanvas implements M2GDOMChangeObserver
     public synchronized void play()
     {
         Logger.LOG(Logger.EJavaUI, Logger.EInfo, "play()");
-				
+
         if (iState == STATE_PLAYING)
         {
             // don't do anything if animation is already playing

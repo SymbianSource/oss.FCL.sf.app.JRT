@@ -290,7 +290,7 @@ public class Display
             }
             else
             {
-                if(displayable.isPopup())
+                if(displayable.isPopup() && displayable instanceof TextBox)
                 {
                     TextBox textbox = (TextBox) displayable;
                     if(currentDisplayable == null)

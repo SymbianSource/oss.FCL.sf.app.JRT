@@ -27,7 +27,7 @@
 #   error includes Java dependencies; do not include into the core module.
 #endif
 
-#include <m3g/m3g_core.h>
+#include <M3G/m3g_core.h>
 
 #if defined(__cplusplus)
 extern "C"

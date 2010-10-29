@@ -50,6 +50,13 @@ import org.eclipse.swt.widgets.Widget;
  */
 abstract public class ViewBase
 {
+    /** Is command composite present in this view. */
+    protected static final int COMMAND_COMPOSITE = 1;
+    /** Is title composite present in this view. */
+    protected static final int TITLE_COMPOSITE = 2;
+    /** Which composites are present in this view. */
+    private int iComposites = COMMAND_COMPOSITE | TITLE_COMPOSITE;
+
     /** Maximum view height in percentage from display client area height. */
     protected static final int MAX_VIEW_HEIGHT = 80;
     /** Maximum view width in percentage from display client area width. */
@@ -58,6 +65,8 @@ abstract public class ViewBase
     protected Shell iParent = null;
     /** Container for the contents of the view */
     private Composite iContainer = null;
+    /** Composite for heading. */
+    private Composite iHeadingComposite = null;
     /** ScrolledComposite for iComposite. */
     private ScrolledComposite iScrolledComposite = null;
     /** Composite to which subclasses add their widgets. */
@@ -104,7 +113,14 @@ abstract public class ViewBase
     /** Constructor */
     protected ViewBase(InstallerUiEswt aInstallerUi, Composite aParent, int aColumns, boolean aScrollable)
     {
+        this(aInstallerUi, aParent, aColumns, aScrollable, COMMAND_COMPOSITE | TITLE_COMPOSITE);
+    }
+
+    /** Constructor */
+    protected ViewBase(InstallerUiEswt aInstallerUi, Composite aParent, int aColumns, boolean aScrollable, int aComposites)
+    {
         iInstallerUi = aInstallerUi;
+        iComposites = aComposites;
 
         // Each view gets a shell to be used as a parameter.
         iParent = (Shell)aParent;
@@ -123,10 +139,22 @@ abstract public class ViewBase
         // Let the contents fill the Shell.
         iContainer.setLayout(setZeroMargins(new GridLayout()));
 
+        if (isCompositePresent(TITLE_COMPOSITE))
+        {
+            // Create a composite for heading.
+            iHeadingComposite = new Composite(iContainer, SWT.NONE);
+            setCssId(iHeadingComposite, "headingArea");
+            GridLayout headingLayout = setZeroMargins(
+                new GridLayout(getHeadingColumns(), true));
+            iHeadingComposite.setLayout(headingLayout);
+            iHeadingComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        }
+
         if (aScrollable)
         {
             // Create a ScrolledComposite for views which need ScrollBars.
             iScrolledComposite = new ScrolledComposite(iContainer, getStyle());
+            setCssId(iScrolledComposite, "contentArea");
             iScrolledComposite.setAlwaysShowScrollBars(false);
             iScrolledComposite.setExpandHorizontal(true);
             iScrolledComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -139,30 +167,26 @@ abstract public class ViewBase
         {
             // Create the composite without ScrollBars.
             iComposite = new Composite(iContainer, SWT.NONE);
+            setCssId(iComposite, "contentArea");
             GridLayout compLayout =
                 setZeroMargins(new GridLayout(getColumns(), true));
             iComposite.setLayout(compLayout);
             iComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
         }
 
-        // Create a composite for command buttons.
-        iCommandComposite = new Composite(iContainer, SWT.NONE);
-        GridLayout cmdLayout = setZeroMargins(new GridLayout(2, true));
-        cmdLayout.marginTop = 5;
-        iCommandComposite.setLayout(cmdLayout);
-        iCommandComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        if (isCompositePresent(COMMAND_COMPOSITE))
+        {
+            // Create a composite for command buttons.
+            iCommandComposite = new Composite(iContainer, SWT.NONE);
+            setCssId(iCommandComposite, "commandButtonArea");
+            GridLayout cmdLayout = setZeroMargins(new GridLayout(2, true));
+            iCommandComposite.setLayout(cmdLayout);
+            iCommandComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        }
 
         // Layout now and get the default size of the content area.
         iContainer.layout(true);
-        Rectangle rect = null;
-        if (aScrollable)
-        {
-            rect = iScrolledComposite.getClientArea();
-        }
-        else
-        {
-            rect = iComposite.getClientArea();
-        }
+        Rectangle rect = iContainer.getClientArea();
         iDefaultContentSize = new Point(rect.width, rect.height);
     }
 
@@ -172,6 +196,12 @@ abstract public class ViewBase
     public Composite getContainer()
     {
         return iContainer;
+    }
+
+    /** Returns composite for heading. */
+    public Composite getHeadingComposite()
+    {
+        return iHeadingComposite;
     }
 
     /** Returns composite to which subclasses can add their widgets. */
@@ -354,10 +384,6 @@ abstract public class ViewBase
     /** Sets the view size according to display size. */
     private void doUpdateSize(boolean aVerticalScrollBarVisible)
     {
-        Shell shell = getShell();
-        Composite comp = getComposite();
-        Composite cmdComp = getCommandComposite();
-
         if (getAppInfoComposite() != null)
         {
             // Recalculate the size of the app info composite.
@@ -377,48 +403,60 @@ abstract public class ViewBase
             }
         }
 
-        int contentWidth = iDefaultContentSize.x * MAX_VIEW_WIDTH / 100;
+        int contentWidth = iDefaultContentSize.x;
         if (aVerticalScrollBarVisible)
         {
-            int verticalScrollBarWidth =
+            contentWidth = getComposite().getSize().x -
                 getScrolledComposite().getVerticalBar().getSize().x;
-            contentWidth -= verticalScrollBarWidth;
         }
 
         // Recalculate the size of the content.
-        Point contentSize = comp.computeSize(contentWidth, SWT.DEFAULT);
-        comp.setSize(contentSize);
-        Point cmdContentSize = cmdComp.computeSize(iDefaultContentSize.x, SWT.DEFAULT);
-        cmdComp.setSize(cmdContentSize);
+        Point headingContentSize = new Point(0, 0);
+        if (isCompositePresent(TITLE_COMPOSITE))
+        {
+            headingContentSize =
+                getHeadingComposite().computeSize(
+                    iDefaultContentSize.x, SWT.DEFAULT);
+            getHeadingComposite().setSize(headingContentSize);
+        }
+        Point contentSize =
+            getComposite().computeSize(contentWidth, SWT.DEFAULT);
+        getComposite().setSize(contentSize);
+        Point cmdContentSize = new Point(0, 0);
+        if (isCompositePresent(COMMAND_COMPOSITE))
+        {
+            cmdContentSize =
+                getCommandComposite().computeSize(
+                    iDefaultContentSize.x, SWT.DEFAULT);
+            getCommandComposite().setSize(cmdContentSize);
+        }
 
         // Adjust Shell height and width.
-        Rectangle dispRect = shell.getDisplay().getClientArea();
-        int offset = iDefaultContentSize.y - contentSize.y - cmdContentSize.y;
-
+        Rectangle dispClientArea = getShell().getDisplay().getClientArea();
         Rectangle defShellBounds = iInstallerUi.getDefaultShellBounds();
+        int offset = iDefaultContentSize.y - headingContentSize.y
+            - contentSize.y - cmdContentSize.y;
         int newHeight = defShellBounds.height - offset;
-        int maxHeight = dispRect.height * MAX_VIEW_HEIGHT / 100;
-
+        int maxHeight = dispClientArea.height * MAX_VIEW_HEIGHT / 100;
         if (newHeight > maxHeight)
         {
-            offset -= maxHeight - newHeight;
             newHeight = maxHeight;
         }
         int newWidth = defShellBounds.width;
-        int maxWidth = dispRect.width * MAX_VIEW_WIDTH / 100;
+        int maxWidth = dispClientArea.width * MAX_VIEW_WIDTH / 100;
         if (newWidth > maxWidth)
         {
             newWidth = maxWidth;
         }
 
         // Always center horizontally and vertically.
-        Rectangle dispBounds = shell.getDisplay().getBounds();
+        Rectangle dispBounds = getShell().getDisplay().getBounds();
         int x = dispBounds.width - newWidth;
         int y = dispBounds.height - newHeight;
         x /= 2;
         y /= 2;
-        shell.setBounds(x, y, newWidth, newHeight);
-        Rectangle clientArea = shell.getClientArea();
+        getShell().setBounds(x, y, newWidth, newHeight);
+        Rectangle clientArea = getShell().getClientArea();
         iContainer.setSize(clientArea.width, clientArea.height);
         iContainer.layout(true);
     }
@@ -464,6 +502,24 @@ abstract public class ViewBase
     }
 
     /**
+     * Returns true if specified composite is present in this view.
+     *
+     * @param aComposite COMMAND_COMPOSITE or TITLE_COMPOSITE.
+     */
+    protected boolean isCompositePresent(int aComposites)
+    {
+        return ((iComposites & aComposites) != 0);
+    }
+
+    /**
+     * Returns number of columns for heading of view.
+     */
+    protected int getHeadingColumns()
+    {
+        return 8;
+    }
+
+    /**
      * Returns number of columns for this view.
      */
     protected int getColumns()
@@ -481,19 +537,11 @@ abstract public class ViewBase
 
     /**
      * Adds header used in installation views.
+     * Note that this method can be called only for views which
+     * have TITLE_COMPOSITE defined.
      */
     protected void addHeader(
         String aTitle, InstallInfo aInstallInfo, UninstallInfo aUninstallInfo)
-    {
-        addHeader(aTitle, aInstallInfo, aUninstallInfo, true);
-    }
-
-    /**
-     * Adds header used in installation views.
-     */
-    protected void addHeader(
-        String aTitle, InstallInfo aInstallInfo, UninstallInfo aUninstallInfo,
-        boolean aSecurityButton)
     {
         // Add title.
         if (aTitle == null)
@@ -504,7 +552,8 @@ abstract public class ViewBase
                 aTitle = InstallerUiTexts.get(InstallerUiTexts.UPDATE_QUERY);
             }
         }
-        Label titleLabel = createLabel(aTitle, getColumns() - 1, SWT.WRAP);
+        Label titleLabel = createLabel(
+            getHeadingComposite(), aTitle, getHeadingColumns() - 1, SWT.WRAP);
         setCssId(titleLabel, "heading");
 
         if (aInstallInfo != null)
@@ -515,16 +564,8 @@ abstract public class ViewBase
         {
             iCertificates = aUninstallInfo.getCertificates();
         }
-        if (aSecurityButton)
-        {
-            // Add security button.
-            createSecurityButton();
-        }
-        else
-        {
-            // Add security icon.
-            createSecurityLabel(iCertificates != null);
-        }
+        // Add security button.
+        createSecurityButton(getHeadingComposite());
 
         // Init suite icon data.
         if (aInstallInfo != null)
@@ -669,7 +710,23 @@ abstract public class ViewBase
      */
     protected Label createLabel(String aText, int aColumns, int aStyle)
     {
-        Label label = new Label(getComposite(), aStyle);
+        return createLabel(getComposite(), aText, aColumns, aStyle);
+    }
+
+    /**
+     * Creates a new label with given text and adds it to given
+     * composite in this view.
+     *
+     * @param aComposite composite to which the label is added
+     * @param aText text for the label
+     * @param aColumns number of columns the label takes
+     * @param aStyle SWT style for the label
+     * @return label that was added to this view
+     */
+    protected Label createLabel(
+        Composite aComposite, String aText, int aColumns, int aStyle)
+    {
+        Label label = new Label(aComposite, aStyle);
         label.setText(aText);
         GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
         gridData.horizontalSpan = aColumns;
@@ -729,37 +786,9 @@ abstract public class ViewBase
         return label;
     }
 
-    /**
-     * Creates a new label with security icon.
-     *
-     * @param aIdentified true if security icon is for an
-     * identified application, false otherwise
-     * @return label that was added to this view
-     */
-    protected Label createSecurityLabel(boolean aIdentified)
+    protected Button createSecurityButton(Composite aComposite)
     {
-        Label label = createLabel((Image)null, 1, SWT.NONE);
-        setCssId(label, "securityLabel");
-        Image securityIcon = null;
-        if (iInstallerUi != null)
-        {
-            securityIcon = iInstallerUi.getSecurityIcon(
-                getDisplay(), aIdentified);
-        }
-        if (securityIcon != null)
-        {
-            label.setImage(securityIcon);
-        }
-        else
-        {
-            label.setText(aIdentified? "I": "U");
-        }
-        return label;
-    }
-
-    protected Button createSecurityButton()
-    {
-        Button button = new Button(getComposite(), SWT.PUSH);
+        Button button = new Button(aComposite, SWT.PUSH);
         setCssId(button, "securityButton");
         GridData gridData = new GridData(
             GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);

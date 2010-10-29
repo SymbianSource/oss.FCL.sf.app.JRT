@@ -22,6 +22,7 @@ import com.nokia.mj.impl.installer.storagehandler.SuiteInfo;
 import com.nokia.mj.impl.installer.utils.InstallerException;
 import com.nokia.mj.impl.installer.utils.FileRoots;
 import com.nokia.mj.impl.installer.utils.FileUtils;
+import com.nokia.mj.impl.installer.utils.IconConverterEswt;
 import com.nokia.mj.impl.installer.utils.Log;
 import com.nokia.mj.impl.installer.utils.PlatformUid;
 import com.nokia.mj.impl.utils.Uid;
@@ -347,7 +348,8 @@ public final class ApplicationRegistrator
      *    file inside jar file,
      *    or null if aInputIconFilename specifies file from disk
      * @param aIconSuffix the correct suffix of the icon is returned through
-     *    this parameter, will contain '.mbm' or '.mif' when function returns
+     *    this parameter, will contain '.mbm'/'.png' or '.mif'/'.svg'
+     *    when function returns
      * @return true if the conversion succeeds
      */
     public boolean convertIcon(
@@ -356,6 +358,12 @@ public final class ApplicationRegistrator
         String aJarFilename,
         StringBuffer aIconSuffix)
     {
+        if (SifRegistrator.getSifMode() > 0)
+        {
+            return IconConverterEswt.convertIcon(
+                aInputIconFilename, aOutputIconFilename,
+                aJarFilename, aIconSuffix);
+        }
         Log.log("ApplicationRegistrator.convertIcon: " + aInputIconFilename +
                 " --> " + aOutputIconFilename + ", from jar " + aJarFilename);
         return _convertIcon(aInputIconFilename, aOutputIconFilename,

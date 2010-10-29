@@ -307,11 +307,11 @@ protected TextExtension(Composite parent, int style, int extensionStyle, boolean
 
     String cmdTxt = null;
     if ((extraStyle() & EMAILADDRESS) != 0) {
-        cmdTxt = SWT.getMessage("fetch_email");
+        cmdTxt = SWT.getMessage("menu_fetch");
         inputFlags |= OS.QT_IMHEMAILCHARACTERSONLY;
         addCommand(cmdTxt);
     } else if ((extraStyle() & URL) != 0) {
-        cmdTxt = SWT.getMessage("fetch_url");
+        cmdTxt = SWT.getMessage("menu_fetch");
         inputFlags |= OS.QT_IMHURLCHARACTERSONLY;
         addCommand(cmdTxt);
     } 
@@ -348,7 +348,7 @@ String fetchEmail() {
         return null;
     }
     OS.XQServiceRequest_swt_setArgumentsForFetchEmail(serviceRequest,
-                    SWT.getMessage("fetch_email"), OS.CNT_ACTIONALL,
+                    SWT.getMessage("menu_fetch"), OS.CNT_ACTIONALL, 
                     OS.CNT_DISPLAYALL);
     Display display = Internal_PackageSupport.display(this);
     int handler = OS.SignalHandler_new(topHandle(), 
@@ -386,7 +386,7 @@ String getPhoneNumber() {
         return null;
     }
     OS.XQServiceRequest_swt_setArgumentsForFetchEmail(serviceRequest,
-                    SWT.getMessage("fetch_phonenumber"), OS.CNT_ACTIONALL,
+                    SWT.getMessage("menu_fetch"), OS.CNT_ACTIONALL, 
                     OS.CNT_DISPLAYALL);
     Display display = Internal_PackageSupport.display(this);
     int handler = OS.SignalHandler_new(topHandle(), 

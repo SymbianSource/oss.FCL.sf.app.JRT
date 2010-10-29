@@ -66,13 +66,14 @@
   <!-- Importing emma utilities for Java code coverage measurement. -->
   <import file="emmautilities.xml"/>
 
+  <!-- Import cobertura utilities for Java code coverage measurement on Symbian. -->
+  <condition property="cobertura.import"
+             value="coberturautilities.xml"
+               else="coberturautilities_stub.xml">
+    <isset property="set.cobertura.enabled" />
+  </condition>
 
-
-
-
-
-
-
+  <import file="${cobertura.import}"/>
 
 
 <!--STARTING POINTS START-->
@@ -229,6 +230,7 @@
     </condition>
 
     <ant target="${compile.target}"/>
+    <ant target="cobertura.instr" />
     <ant target="finetune.classes"/>
     <ant target="emma.instr"/>
     <ant target="add.classes.to.collection.jar"/>
@@ -319,7 +321,8 @@
       destdir="${dst.dir}"
       debug="${javac.debug.on}"
       debuglevel="lines,vars,source"
-      bootclasspath="${bcp}:${int.bcp}:${platform.api.jar}:${public.api.jar}${eswt.jar}">
+      includeAntRuntime="false"
+      bootclasspath="${bcp}:${int.bcp}:${platform.api.jar}:${public.api.jar}${eswt.jar}:${cobertura.classpath}">
 
    <!-- Uncomment the following line if you want to see Javac warnings. -->
    <!--   <compilerarg value="-Xlint"/> -->
@@ -374,7 +377,7 @@
 <!--ODC FILE START-->
 
   <!--Generate the odc files -->
-  <target name="generate.odc" depends="system.properties" unless="no.rommizing">
+  <target name="generate.odc" depends="system.properties,cobertura.systemprop" unless="no.rommizing">
     <exec executable="python" failonerror="true">
       <arg value="${java.src.root}/build/buildutils/generateOdcFile.py"/>
       <arg value="${component.root.dir}/${odc.file.name}.odc"/>
@@ -532,7 +535,7 @@ ${signature.jar}
 
   <!--Do the cleaning-->
   <target name="clean.impl" depends="init.properties, clean.from.collection.jars,
-                                     emma.clean">
+                                     emma.clean, cobertura.clean">
     <!--
     <echo message = "target.platform = ${target.platform}"/>
     <echo message = "target.cfg = ${target.cfg}"/>
@@ -624,24 +627,24 @@ ${signature.jar}
 <!--GENERATE JAVADOC START-->
   <target name="javadoc" description="Create javadoc. Use -javadoc.dir=dir to override location">
      <property name="javadoc.dir" value="javadoc" />
-	 <javadoc destdir="${javadoc.dir}"
-			  version="true"
-			  use="true"
+   <javadoc destdir="${javadoc.dir}"
+        version="true"
+        use="true"
               defaultexcludes="true"
-			  windowtitle="Runtime API">
+        windowtitle="Runtime API">
 
-	   <fileset dir="${java.src.root}/javacommons/" defaultexcludes="yes">
-		 <include name="utils/javasrc/com/nokia/mj/impl/rt/support/*.java"/>
-		 <include name="utils/javasrc/com/nokia/mj/impl/utils/**/*.java"/>
-		 <include name="utils/javasrc/com/nokia/mj/impl/rt/ui/**/*.java"/>
-		 <include name="fileutils/javasrc/**/*.java"/>
-  	     <include name="comms/javasrc/**/*.java"/>
-		 <include name="javastorage/javasrc/**/*.java"/>
-	   </fileset>
+     <fileset dir="${java.src.root}/javacommons/" defaultexcludes="yes">
+     <include name="utils/javasrc/com/nokia/mj/impl/rt/support/*.java"/>
+     <include name="utils/javasrc/com/nokia/mj/impl/utils/**/*.java"/>
+     <include name="utils/javasrc/com/nokia/mj/impl/rt/ui/**/*.java"/>
+     <include name="fileutils/javasrc/**/*.java"/>
+         <include name="comms/javasrc/**/*.java"/>
+     <include name="javastorage/javasrc/**/*.java"/>
+     </fileset>
 
-	   <doctitle><![CDATA[<h1>Runtime API</h1>]]></doctitle>
-	   <bottom><![CDATA[<i>Copyright &#169; 2008 Nokia. All Rights Reserved.</i>]]></bottom>
-	 </javadoc>
+     <doctitle><![CDATA[<h1>Runtime API</h1>]]></doctitle>
+     <bottom><![CDATA[<i>Copyright &#169; 2008 Nokia. All Rights Reserved.</i>]]></bottom>
+   </javadoc>
   </target>
 <!--GENERATE JAVADOC END-->
 

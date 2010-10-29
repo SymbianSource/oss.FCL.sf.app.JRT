@@ -392,6 +392,8 @@ long NativeFileIOHandler::available()
     struct stat fileStat;
     int error = lstat(utf8Name, &fileStat);
 
+    delete[] utf8Name;
+
     if (error < 0)
     {
         int error = errno;

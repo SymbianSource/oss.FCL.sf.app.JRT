@@ -1,0 +1,1 @@
+Folder for matching directory structure with s60 branch.

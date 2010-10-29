@@ -283,7 +283,32 @@ public class JsrPluginNotifierTest extends TestCase implements InstallerMain
         }
         catch (InstallerException e)
         {
-            // OK, installation is cancelled ok
+            // OK, expected exception
+        }
+        catch (Throwable t)
+        {
+            t.printStackTrace();
+            assertTrue("Test plugin threw unexpected exception: " + t, false);
+        }
+
+        att = new Attribute("JSR-Plugin-Test-Exception", "InstallerExtensionException");
+        iInstallerExtensionInfo.iAttributes.put("JSR-Plugin-Test-Exception", att);
+
+        try
+        {
+            notif.notifyInstallation(iInstallerExtensionInfo);
+            // Test plugin TestPlugin2 throws exception if JAD/JAR attribute
+            // JSR-Plugin-Test-Exception2 exists.
+            assertTrue("Test plugin did not throw exception like should have.", false);
+        }
+        catch (InstallerExtensionException iee)
+        {
+            // OK, expected exception
+        }
+        catch (Throwable t)
+        {
+            t.printStackTrace();
+            assertTrue("Test plugin threw unexpected exception: " + t, false);
         }
     }
 
@@ -371,8 +396,34 @@ public class JsrPluginNotifierTest extends TestCase implements InstallerMain
         }
         catch (InstallerException e)
         {
-            // OK, uninstallation is cancelled ok
+            // OK, expected exception
         }
+        catch (Throwable t)
+        {
+            t.printStackTrace();
+            assertTrue("Test plugin threw unexpected exception: " + t, false);
+        }
+
+        att = new Attribute("JSR-Plugin-Test-Exception", "InstallerExtensionException");
+        iInstallerExtensionInfo.iAttributes.put("JSR-Plugin-Test-Exception", att);
+
+        try
+        {
+            notif.notifyUninstallation(iInstallerExtensionInfo);
+            // Test plugin TestPlugin2 throws exception if JAD/JAR attribute
+            // JSR-Plugin-Test-Exception exists.
+            assertTrue("Test plugin did not throw exception like it should have.", false);
+        }
+        catch (InstallerExtensionException iee)
+        {
+            // OK, expected exception
+        }
+        catch (Throwable t)
+        {
+            t.printStackTrace();
+            assertTrue("Test plugin threw unexpected exception: " + t, false);
+        }
+
     }
 
     public void testPluginCancelsUninstallation()

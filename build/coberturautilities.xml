@@ -1,0 +1,151 @@
+<!--
+#
+# Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
+# All rights reserved.
+# This component and the accompanying materials are made available
+# under the terms of "Eclipse Public License v1.0"
+# which accompanies this distribution, and is available
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".
+#
+# Initial Contributors:
+# Nokia Corporation - initial contribution.
+#
+# Contributors:
+#
+# Description:
+#
+-->
+
+<project name="CoberturaUtilities">
+
+  <import file="properties.xml"/>
+
+  <!--
+      Steps to generate Cobertura coverage report in Symbian^x:
+
+      1) Build component with cobertura instrumentation from component build dir:
+
+        cd component_build_dir
+        make -f $JAVA_SRC_ROOT/build/Makefile.comp clean
+        make -f $JAVA_SRC_ROOT/build/Makefile.comp COBERTURA=1
+
+        Note that you can also instrument the whole build if necessary:
+
+        cd $JAVA_SRC_ROOT
+        make -f subsystem.mk reallyclean
+        make -f subsystem.mk COBERTURA=1
+
+      2) Run the tests from component test build dir:
+
+        cd component_tsrc_build_dir
+        ant run
+
+      3) Generate coverage report:
+
+        cd component_build_dir
+        make -f $JAVA_SRC_ROOT/build/Makefile.comp coberturareport
+
+        Reports are generated into /tmp/cobertura/results/index.html.
+        in firefox issue command:
+
+        firefox /tmp/cobertura/results/index.html
+
+      4) To reset coverage measurement, remove all other files from
+        /tmp/coverage except *_instr.ser
+
+    -->
+
+  <!-- Begin definitions for cobertura. -->
+
+  <!-- Location for cobertura tool. -->
+  <property name="cobertura.dir" value="${java.src.root}/../tools/cobertura"/>
+
+  <!-- Directory for cobertura coverage data. -->
+  <property name="cobertura.coverage.dir" location="/tmp/cobertura"/>
+
+  <!-- Cobertura jar files. -->
+  <property name="cobertura.runtime.jar" value="cobertura4j2me-runtime.jar"/>
+  <property name="cobertura.classpath" location="${cobertura.dir}/${cobertura.runtime.jar}"/>
+  <property name="cobertura.ant.classpath" location="${cobertura.dir}/cobertura4j2me.jar"/>
+
+  <!-- Coverage result data directory. -->
+  <property name="cobertura.emulator.path" location="/epoc32/winscw/c/logs/java"/>
+  <!-- Coverage result data file. -->
+  <property name="cobertura.result.file" value="cobertura.ser"/>
+
+  <!-- Cobertura jars. -->
+  <path id="cobertura.lib">
+    <pathelement location="${cobertura.dir}/${cobertura.runtime.jar}"/>
+    <pathelement location="${cobertura.dir}/cobertura4j2me.jar"/>
+  </path>
+
+  <!-- Cobertura task definitions. -->
+  <taskdef resource="cobertura4j2me-tasks.properties" classpathref="cobertura.lib" />
+
+  <!-- Defines do.cobertura to be true for enabling cobertura tasks. -->
+ <target name="cobertura" depends="init.properties">
+    <property name="do.cobertura" value="true"/>
+  </target>
+
+  <!-- Copy cobertura JAR to correct place. -->
+  <target name="cobertura.deploy">
+    <copy file="${cobertura.dir}/${cobertura.runtime.jar}" todir="${bcp.dest.directory}"/>
+  </target>
+
+  <!-- Make cobertura instrumentation. -->
+  <target name="cobertura.instr" depends="cobertura, cobertura.deploy">
+      <echo message="Cobertura: instrumenting ${ant.project.name}"/>
+      <cobertura4j2me-instrument todir="${dst.dir}" keepdata="true" devicepath="c:/logs/java" datafile="${ant.project.name}_instr.ser">
+          <fileset dir="${dst.dir}" includes="**/*.class" />
+      </cobertura4j2me-instrument>
+      <!-- Move instrumentation file coverage work dir. -->
+      <move file="${ant.project.name}_instr.ser" todir="${cobertura.coverage.dir}" overwrite="false"/>
+  </target>
+
+  <!-- Add System property enabling coverage result writing at shut down -->
+  <target name="cobertura.systemprop">
+    <echo file="${component.root.dir}/properties.txt" append="true">jrt.shutdown.extension=com.nokia.mj.impl.rt.test.CoverageResultInvoker</echo>
+  </target>
+
+  <!-- Generate Cobertura coverage report. -->
+  <target name="cobertura.report">
+    <echo message="Creating coverage report." />
+
+    <!-- Copy coverage data file from the emulator to report directory -->
+    <copy file="${cobertura.emulator.path}/${cobertura.result.file}" todir="${cobertura.coverage.dir}"/>
+
+    <!-- Merge instrumentation and coverage data for reporting. -->
+    <echo message="Merge coverage data." />
+
+    <!-- Copy cobertura to result dir for merging. -->
+    <copy file="${cobertura.ant.classpath}" todir="${cobertura.coverage.dir}"/>
+
+    <!-- Copy cobertura for reporting. -->
+    <copy file="${cobertura.dir}/cobertura4j2me.properties" todir="${cobertura.coverage.dir}"/>
+    <copy file="${cobertura.dir}/res/build_ant.xml" todir="${cobertura.coverage.dir}"/>
+    <copy file="${cobertura.dir}/res/mergeResults.bat" todir="${cobertura.coverage.dir}"/>
+    <copy file="${cobertura.dir}/res/reportResults.bat" todir="${cobertura.coverage.dir}"/>
+    <copy todir="${cobertura.coverage.dir}/lib">
+      <fileset dir="${cobertura.dir}/lib"/>
+    </copy>
+
+    <!-- Must merge using batch file at local filesystem because of cobertura feature. -->
+    <exec executable="${cobertura.coverage.dir}/mergeResults.bat" dir="${cobertura.coverage.dir}" failonerror="true" />
+
+    <!-- Create coverage report. -->
+
+    <!-- Must create report using batch file at local filesystem because of cobertura feature. -->
+    <exec executable="${cobertura.coverage.dir}/reportResults.bat" dir="${cobertura.coverage.dir}" failonerror="true" >
+      <arg value="${java.src.root}" />
+    </exec>
+  </target>
+
+  <!-- Clean cobertura related files. -->
+  <target name="cobertura.clean">
+    <delete file="${bcp.dest.directory}/${cobertura.runtime.jar}"/>
+    <delete dir="${cobertura.coverage.dir}"/>
+  </target>
+
+  <!-- End definitions for cobertura. -->
+
+</project>

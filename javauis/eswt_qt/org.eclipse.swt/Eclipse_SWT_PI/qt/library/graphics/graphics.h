@@ -1711,7 +1711,7 @@ public:
         mMsg = new char[aMsg.size()+1];
         strcpy(mMsg, aMsg.toAscii().data());
     };
-    //~GfxException() { delete mMsg; };
+    ~GfxException() { delete mMsg; mMsg = NULL; };
     int getErrorCode() { return mErrorCode; };
     const char* getMsg() { return (const char*)mMsg; };
 private:

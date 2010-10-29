@@ -31,7 +31,7 @@ EXPORTS
 	_ZN4java5comms12CommsMessagersERx @ 30 NONAME
 	_ZN4java5comms13CommsEndpoint10attachToVmEP7JNIEnv_ @ 31 NONAME
 	_ZN4java5comms13CommsEndpoint11sendReceiveERNS0_12CommsMessageES3_i @ 32 NONAME
-	_ZN4java5comms13CommsEndpoint12detachFromVmEv @ 33 NONAME
+	_ZN4java5comms13CommsEndpoint12detachFromVmEP7JNIEnv_ @ 33 NONAME
 	_ZN4java5comms13CommsEndpoint13handleMessageERNS0_12CommsMessageE @ 34 NONAME
 	_ZN4java5comms13CommsEndpoint14processMessageEPKNS0_12ipcMessage_sE @ 35 NONAME
 	_ZN4java5comms13CommsEndpoint16handleIpcMessageERNS0_12CommsMessageE @ 36 NONAME
@@ -51,7 +51,7 @@ EXPORTS
 	_ZN4java5comms13CommsEndpointD1Ev @ 50 NONAME
 	_ZN4java5comms13CommsEndpointD2Ev @ 51 NONAME
 	_ZN4java5comms19CommsClientEndpoint10disconnectEv @ 52 NONAME
-	_ZN4java5comms19CommsClientEndpoint12detachFromVmEv @ 53 NONAME
+	_ZN4java5comms19CommsClientEndpoint12detachFromVmEP7JNIEnv_ @ 53 NONAME
 	_ZN4java5comms19CommsClientEndpoint4findERKSbIwSt11char_traitsIwESaIwEE @ 54 NONAME
 	_ZN4java5comms19CommsClientEndpoint4sendERNS0_12CommsMessageE @ 55 NONAME
 	_ZN4java5comms19CommsClientEndpoint7connectEi @ 56 NONAME
@@ -62,7 +62,7 @@ EXPORTS
 	_ZN4java5comms19CommsClientEndpointD0Ev @ 61 NONAME
 	_ZN4java5comms19CommsClientEndpointD1Ev @ 62 NONAME
 	_ZN4java5comms19CommsClientEndpointD2Ev @ 63 NONAME
-	_ZN4java5comms19CommsServerEndpoint12detachFromVmEv @ 64 NONAME
+	_ZN4java5comms19CommsServerEndpoint12detachFromVmEP7JNIEnv_ @ 64 NONAME
 	_ZN4java5comms19CommsServerEndpoint4findERKSbIwSt11char_traitsIwESaIwEE @ 65 NONAME
 	_ZN4java5comms19CommsServerEndpoint4sendERNS0_12CommsMessageE @ 66 NONAME
 	_ZN4java5comms19CommsServerEndpoint4stopEv @ 67 NONAME

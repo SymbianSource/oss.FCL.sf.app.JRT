@@ -219,12 +219,16 @@ int ServiceRecord::restorePersistentRecordFs()
     if (persistentRecFd < 0)
         return errno;
 
+
     // Reading and restoring the DeviceServiceClasses bits
     int devServClass = 0;
     ret = read(persistentRecFd, &devServClass, sizeof(devServClass));
 
     if (ret <= 0)
+    {
+        close(persistentRecFd);
         return errno;
+    }
 
     if (devServClass != 0)
     {
@@ -429,7 +433,7 @@ int ServiceRecord::restorePersistentRecordFs()
     // Indicates a successful retrieval
     // of the service record from the persistent file
     mRestoredFromPersistentFile = true;
-
+    close(persistentRecFd);
     return ret;
 }
 
@@ -1312,6 +1316,7 @@ OS_EXPORT void ServiceRecord::restoreJavaServiceRecordL(
     if (ret <= 0)
     {
         delete srvRecPopulator;
+        close(persistentRecFd);
         return;
     }
 
@@ -1525,7 +1530,7 @@ OS_EXPORT void ServiceRecord::restoreJavaServiceRecordL(
     }
 
     delete srvRecPopulator;
-
+    close(persistentRecFd);
     return;
 }
 

@@ -14,7 +14,7 @@
 
 #include <e32base.h>
 #include <jni.h>
-#include <HbIndicatorsymbian.h>
+#include <hbindicatorsymbian.h>
 #include <HbDeviceNotificationDialogsymbian.h>
 
 NONSHARABLE_CLASS(CSoftNotification) : public CBase,

@@ -1232,7 +1232,6 @@ public class HttpConnectionNative implements HttpConnection,
     protected synchronized void sendRequest(boolean aPartialDataFlag) throws IOException
     {
         ensureConnected();
-        Logger.PLOG(Logger.ESOCKET, "HTTP sendRequest() , Flag : "  + aPartialDataFlag);
         final int count = iRequestProperties.size();
         int headerCount = count;
 

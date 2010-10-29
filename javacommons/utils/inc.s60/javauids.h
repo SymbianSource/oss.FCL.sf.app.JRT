@@ -55,8 +55,15 @@
 #define KOmjCleanerUid 0x2002119A
 
 // javaappconverter.exe is executed automatically once after OMJ has
-// been installed. It uses javainstaller to convert S60 MIDlets to OMJ
+// been installed as a SIS package. It uses javainstaller to convert 
+// S60 MIDlets to OMJ
 #define KJavaAppConverterUid 0x2002121C
+
+// javaafterflashconverter.exe is executed by Java Captain after 
+// ROM image that contains OMJ has been flashed to a device that 
+// earlier had Java 1.x. It uses javainstaller to convert 
+// S60 MIDlets to OMJ
+#define KJavaAfterFlashConverterUid 0x20034612
 
 // javarestoreconverter.exe is executed in if old Java 1.X MIDlet
 // have been restored and must be converted and installed to OMJ environment

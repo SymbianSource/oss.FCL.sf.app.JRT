@@ -430,8 +430,17 @@ int NativeCommConnection::connectToCommServer()
 {
     JELOG2(ESOCKET);
     int ret = 0;
-    User::LoadPhysicalDevice(PDD_NAME); // load physical device drivers
-    User::LoadLogicalDevice(LDD_NAME); // load logical device drivers
+    TInt err = User::LoadPhysicalDevice(PDD_NAME); // load physical device drivers
+    if ( KErrNone != err )
+	       {
+ 	       return err;
+	       }
+
+    err = User::LoadLogicalDevice(LDD_NAME); // load logical device drivers
+    if ( KErrNone != err )
+	       {
+ 	       return err;
+	       }
 
     ret = mCommServer.Connect();
     if (ret != KErrNone)

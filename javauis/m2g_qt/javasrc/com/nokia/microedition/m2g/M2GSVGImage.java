@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -39,18 +39,7 @@ public class M2GSVGImage
     //--------------------------------------------------
     // STATIC CONSTANTS
     //--------------------------------------------------
-    /* Optimization: static finals changed to local variables
-    private static final String NULL_TYPE_ESTR =
-      "The type is null.";
-    private static final String ILLEGAL_VALUS_ESTR =
-      "The x or y values are negative.";
-    private static final String EVENT_TYPE_NOT_SUPPORTED_ESTR =
-      "The event type is not supported.";
-    private static final String INVALID_ELEMENT_ESTR =
-      "Invalid element.";
-    public static final String URI_IS_NULL_ESTR =
-      "The URI is null.";
-    */
+
 
     //--------------------------------------------------
     //  VARIABLES
@@ -198,7 +187,7 @@ public class M2GSVGImage
             _focusOn(
                 ((M2GSVGElement)element).getNativeSVGProxyHandle(),
                 ((M2GSVGElement)element).getDocument().getHandle(),
-                ((M2GSVGElement)element).getHandle() );
+                ((M2GSVGElement)element).getHandle());
         }
         tempNode = element;
         while (tempNode != null)
@@ -339,7 +328,7 @@ public class M2GSVGImage
         {
             throw new NullPointerException();
         }
-				
+
 
         String strData = new String(StreamUtils.readBytesFromStream(stream, -1));
 
@@ -351,7 +340,7 @@ public class M2GSVGImage
 
         // Creates and setups svg image
         M2GSVGImage image = new M2GSVGImage();
-        
+
         M2GDocument document = M2GDocument.buildDocument(
                                    image,
                                    baseUrl,
@@ -359,9 +348,9 @@ public class M2GSVGImage
                                    strData,
                                    handler);
         // Checks document validity
-				
+
         image.setDocument(document);
-        
+
         if (handler != null)
         {
             // Gets size of external resources
@@ -383,11 +372,11 @@ public class M2GSVGImage
                 }
             }
         }
-        
+
         // initialise the viewport
         _initViewport(document.getNativeSVGProxyHandle(),
                       document.getHandle());
-        
+
 
         return image;
     }
@@ -454,19 +443,19 @@ public class M2GSVGImage
     // NATIVE METHODS
     //--------------------------------------------------
     private native static int _dispatchMouseEvent(
-        int aSvgProxyHandle,int aDocumentHandle, 
+        int aSvgProxyHandle,int aDocumentHandle,
         int aX, int aY);
 
     private native static void _focusOn(
-        int aSvgProxyHandle,int aDocumentHandle, 
+        int aSvgProxyHandle,int aDocumentHandle,
         int aSvgElementHandle);
 
     private native static void _focusOut(
-        int aSvgProxyHandle,int aDocumentHandle, 
+        int aSvgProxyHandle,int aDocumentHandle,
         int aSvgElementHandle);
 
     native static int _getExternalListSize(
-         int aSvgProxyHandle, int aDocumentHandle);
+        int aSvgProxyHandle, int aDocumentHandle);
 
     native static String _getExternalListItem(
         int aSvgProxyHandle, int aDocumentHandle,

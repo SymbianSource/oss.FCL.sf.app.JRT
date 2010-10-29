@@ -77,8 +77,9 @@ public class CertificateDetailsView extends ConfirmationViewBase
 
         // Add title label.
         Label detailsLabel = createLabel(
-                                 InstallerUiTexts.get(InstallerUiTexts.NOT_CERTIFIED_TITLE),
-                                 horizontalSpan, labelStyle);
+            getHeadingComposite(),
+            InstallerUiTexts.get(InstallerUiTexts.NOT_CERTIFIED_TITLE),
+            getHeadingColumns(), labelStyle);
         setCssId(detailsLabel, "heading");
 
         // Add domain category label.
@@ -102,7 +103,6 @@ public class CertificateDetailsView extends ConfirmationViewBase
                                  InstallerUiTexts.get(InstallerUiTexts.NOT_CERTIFIED_INFO,
                                                       new String[] { appName }),
                                  horizontalSpan, labelStyle);
-
         setCssId(warningLabel, "detailsWarningLabel");
     }
 
@@ -115,10 +115,10 @@ public class CertificateDetailsView extends ConfirmationViewBase
         int labelStyle = SWT.WRAP;
 
         // Add title label.
-        Label detailsLabel = createLabel
-                             (InstallerUiTexts.get
-                              (InstallerUiTexts.CERTIFICATE_TITLE),
-                              horizontalSpan, labelStyle);
+        Label detailsLabel = createLabel(
+            getHeadingComposite(),
+            InstallerUiTexts.get(InstallerUiTexts.CERTIFICATE_TITLE),
+            getHeadingColumns(), labelStyle);
         setCssId(detailsLabel, "heading");
 
         SigningCertificate certificate = iCerts[iCertIndex];

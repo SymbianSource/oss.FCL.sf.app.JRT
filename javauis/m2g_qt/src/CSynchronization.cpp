@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2006 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -33,8 +33,7 @@ public:
 M2gGlobals* getM2gGlobals()
 {
     // Access the PLS of this process.
-    //Todo have to check Uid for process. 
-    return Pls<M2gGlobals>(TUid::Uid(0x200211E2));
+    return Pls<M2gGlobals>(TUid::Uid(0x2002DCBD));
 }
 
 #else

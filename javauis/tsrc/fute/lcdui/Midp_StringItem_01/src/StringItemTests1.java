@@ -54,6 +54,8 @@ public class StringItemTests1 extends MIDlet implements CommandListener, ItemCom
     // Commands for the StringItems
     private Command cmdItem1 = new Command("Itemcommand1", Command.ITEM, 1);
     private Command cmdItem2 = new Command("Itemcommand2", Command.ITEM, 1);
+    // Command to exit the MIDlet
+    private Command cmdExit = new Command("Exit", Command.EXIT, 1);
 
     /**
      * Signals the MIDlet to start and enter the Active state.
@@ -75,6 +77,7 @@ public class StringItemTests1 extends MIDlet implements CommandListener, ItemCom
         stringItemForm.addCommand(cmd07);
         stringItemForm.addCommand(cmd08);
         stringItemForm.addCommand(cmd09);
+        stringItemForm.addCommand(cmdExit);
         stringItemForm.setCommandListener(this);
         Display.getDisplay(this).setCurrent(stringItemForm);
     }
@@ -103,14 +106,14 @@ public class StringItemTests1 extends MIDlet implements CommandListener, ItemCom
      */
     public void commandAction(Command c, Displayable s)
     {
-        if (c == cmdSI1)
+        if(c == cmdSI1)
         {
             // Plain type
             stringItemForm.deleteAll();
             si = new StringItem("Label", "Text");
             stringItemForm.append(si);
         }
-        else if (c == cmdSI2)
+        else if(c == cmdSI2)
         {
             // Hyperlink type
             stringItemForm.deleteAll();
@@ -120,7 +123,7 @@ public class StringItemTests1 extends MIDlet implements CommandListener, ItemCom
             si.addCommand(cmdItem2);
             si.setItemCommandListener(this);
         }
-        else if (c == cmdSI3)
+        else if(c == cmdSI3)
         {
             // Button type
             stringItemForm.deleteAll();
@@ -130,22 +133,22 @@ public class StringItemTests1 extends MIDlet implements CommandListener, ItemCom
             si.addCommand(cmdItem2);
             si.setItemCommandListener(this);
         }
-        else if (c == cmd01)
+        else if(c == cmd01)
         {
             si.setLabel("This is the label");
             si.setText("This is the text.");
         }
-        else if (c == cmd02)
+        else if(c == cmd02)
         {
             si.setLabel("");
             si.setText("This is the text.");
         }
-        else if (c == cmd03)
+        else if(c == cmd03)
         {
             si.setLabel("          ");
             si.setText("This is the text.");
         }
-        else if (c == cmd04)
+        else if(c == cmd04)
         {
             si.setLabel("This is the label");
             si.setText("This is a very long text. " +
@@ -156,27 +159,27 @@ public class StringItemTests1 extends MIDlet implements CommandListener, ItemCom
                        "This is a very long text. " +
                        "This is a very long text.");
         }
-        else if (c == cmd05)
+        else if(c == cmd05)
         {
             si.setLabel("Label with 1\nnewline char");
             si.setText("This is the text.");
         }
-        else if (c == cmd06)
+        else if(c == cmd06)
         {
             si.setLabel("Label with 2\n\nnewline chars");
             si.setText("This is the text.");
         }
-        else if (c == cmd07)
+        else if(c == cmd07)
         {
             si.setLabel("This is the label");
             si.setText("Text with 1\nnewline char.");
         }
-        else if (c == cmd08)
+        else if(c == cmd08)
         {
             si.setLabel("This is the label");
             si.setText("Text with 2\n\nnewline chars.");
         }
-        else if (c == cmd09)
+        else if(c == cmd09)
         {
             si.setText("This is the text.");
             si.setLabel("This is a very long label. " +
@@ -186,6 +189,10 @@ public class StringItemTests1 extends MIDlet implements CommandListener, ItemCom
                         "This is a very long label. " +
                         "This is a very long label. " +
                         "This is a very long label.");
+        }
+        else if(c == cmdExit)
+        {
+            this.notifyDestroyed();
         }
     }
 

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2006 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -65,43 +65,43 @@ Java_com_nokia_microedition_m2g_M2GSVGAnimationElement__1beginElementAt(
 {
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGAnimationElement ) _beginElementAt - begin");
     TInt err = KM2GNotOk;
-    
+
     if (aSvgProxyHandle && aDocumentHandle)
+    {
+        MM2GSVGProxy* aProxy =    JavaUnhand< MM2GSVGProxy >(aSvgProxyHandle);
+        TInt16 restartAttribute;
+
+        TRAP(err, aProxy->GetEnumTraitL(
+                 STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
+                 STATIC_CAST(TM2GSvgAttrType, KM2GRestartAttribute),
+                 restartAttribute);
+            )
+
+        TInt isActive;
+        TRAP(err, aProxy->IsActiveL(STATIC_CAST(TM2GSvgElementHandle, aElementHandle), isActive);)
+
+        if (isActive && (restartAttribute == KM2GRestartWhenNotActive))
         {
-            MM2GSVGProxy* aProxy =    JavaUnhand< MM2GSVGProxy >(aSvgProxyHandle);
-            TInt16 restartAttribute;
-            
-            TRAP(err, aProxy->GetEnumTraitL(
-                        STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
-                        STATIC_CAST(TM2GSvgAttrType, KM2GRestartAttribute),
-                        restartAttribute);
-                    )
-            
-            TInt isActive;
-            TRAP(err, aProxy->IsActiveL(STATIC_CAST(TM2GSvgElementHandle, aElementHandle), isActive); ) 
-            
-            if (isActive && (restartAttribute == KM2GRestartWhenNotActive))
-            {
-                M2G_DEBUG_1("M2G_DEBUG: M2GSVGAnimationElement::DoBeginElementAtL() - active & restart att:%d", restartAttribute);
-            }
-            else if ((aCurrentTime != 0) && (restartAttribute == KM2GRestartNever))
-            {
-                // Cannot restart even if animation hasn't ended?
-                M2G_DEBUG_1("M2G_DEBUG: M2GSVGAnimationElement::DoBeginElementAtL() - not active & restart att:%d", restartAttribute);
-            }
-            else
-                {
-                    M2G_DEBUG_2("M2G_DEBUG: M2GSVGAnimationElement::DoBeginElementAtL() - offset:%f & current:%f", aOffset, aCurrentTime);
-                    TRAP(err,   aProxy->BeginElementAtL(
-                                STATIC_CAST(TM2GSvgDocumentHandle, aDocumentHandle),
-                                STATIC_CAST(TM2GSvgElementHandle, aElementHandle), 
-                                (aOffset+aCurrentTime) );
-                    )
-                }
+            M2G_DEBUG_1("M2G_DEBUG: M2GSVGAnimationElement::DoBeginElementAtL() - active & restart att:%d", restartAttribute);
         }
+        else if ((aCurrentTime != 0) && (restartAttribute == KM2GRestartNever))
+        {
+            // Cannot restart even if animation hasn't ended?
+            M2G_DEBUG_1("M2G_DEBUG: M2GSVGAnimationElement::DoBeginElementAtL() - not active & restart att:%d", restartAttribute);
+        }
+        else
+        {
+            M2G_DEBUG_2("M2G_DEBUG: M2GSVGAnimationElement::DoBeginElementAtL() - offset:%f & current:%f", aOffset, aCurrentTime);
+            TRAP(err,   aProxy->BeginElementAtL(
+                     STATIC_CAST(TM2GSvgDocumentHandle, aDocumentHandle),
+                     STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
+                     (aOffset+aCurrentTime));
+                )
+        }
+    }
     M2GGeneral::CheckErrorCode(aJni, err);
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGAnimationElement ) _beginElementAt - end");
-    
+
 }
 // -----------------------------------------------------------------------------
 // Java_com_nokia_microedition_m2g_M2GSVGAnimationElement::_endElementAt
@@ -125,13 +125,13 @@ Java_com_nokia_microedition_m2g_M2GSVGAnimationElement__1endElementAt(
 {
     M2G_DEBUG_0("M2G_DEBUG: JNI ( M2GSVGAnimationElement ) _endElementAt - begin");
     TInt err = KM2GNotOk;
-    
+
     MM2GSVGProxy* aProxy = JavaUnhand< MM2GSVGProxy >(aSvgProxyHandle);
-    
+
     TRAP(err,  aProxy->EndElementAtL(STATIC_CAST(TM2GSvgDocumentHandle, aDocumentHandle),
-               STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
-               aOffset);
-            )
+                                     STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
+                                     aOffset);
+        )
 
     M2GGeneral::CheckErrorCode(aJni, err);
 
@@ -159,12 +159,12 @@ Java_com_nokia_microedition_m2g_M2GSVGAnimationElement__1isActive(
     TInt err = KM2GNotOk;
     TInt active = 0;
     MM2GSVGProxy* aProxy = JavaUnhand< MM2GSVGProxy >(aSvgProxyHandle);
-    
+
     TRAP(err, aProxy->IsActiveL(
-              STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
-              active);
+             STATIC_CAST(TM2GSvgElementHandle, aElementHandle),
+             active);
         )
-  
+
     M2GGeneral::CheckErrorCode(aJni, err);
     M2G_DEBUG_1("M2G_DEBUG: JNI ( M2GSVGAnimationElement ) _isActive: %d - end", active);
     return STATIC_CAST(jboolean, (active == 1 ? ETrue : EFalse));

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2004 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2004-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -142,55 +142,16 @@ public abstract class SVGAnimator
      * @return a new <code>SVGAnimator</code> instance.
      * @throws NullPointerException if <code>svgImage</code> is null.
      */
-	
-	public static SVGAnimator createAnimator(SVGImage svgImage)
-	{
-		SVGAnimator tempAnimator = null;
-		
-		
-		
-		tempAnimator=M2GSVGAnimator.buildAnimator(svgImage);
-		
-		
 
-		return tempAnimator;
-	}
-	
-	
-	
-	public static SVGAnimator createAnimator(SVGImage svgImage,java.lang.String componentBaseClass)
-	{
-		SVGAnimator tempAnimator = null;
-		
-		if (componentBaseClass == "org.eclipse.swt.widgets.Control")
-		{
-			
-			tempAnimator=M2GSVGeSWTAnimator.buildAnimator(svgImage);
-			
-		}
-		else
-		{
-			
-			tempAnimator=M2GSVGAnimator.buildAnimator(svgImage);
-			
-		}
-		return tempAnimator;
-	}
-	
-   /* public static SVGAnimator createAnimator(SVGImage svgImage)
+    public static SVGAnimator createAnimator(SVGImage svgImage)
     {
         SVGAnimator tempAnimator = null;
-        
-    		
-    		
-        tempAnimator=M2GSVGeSWTAnimator.buildAnimator(svgImage);
-        
-				
 
-        //tempAnimator=M2GSVGAnimator.buildAnimator(svgImage);
-        
+        tempAnimator=M2GSVGAnimator.buildAnimator(svgImage);
+
         return tempAnimator;
-    }*/
+    }
+
 
     /**
      * This method creates a new <code>SVGAnimator</code> for the specified SVGImage.
@@ -217,29 +178,34 @@ public abstract class SVGAnimator
      *         <code>componentBaseClass</code> is not supported by the
      *         implementation.
      */
-//	
-//	public static SVGAnimator createAnimator(SVGImage svgImage, String componentBaseClass)
-//		{
-//			SVGAnimator tempAnimator = null;
-//			
-//			tempAnimator=M2GSVGAnimator.buildAnimator(svgImage, componentBaseClass);
-//			
-//	        return tempAnimator;
-//
-//		}
-	
-	
-	
-/*    public static SVGAnimator createAnimator(
-        SVGImage svgImage, String componentBaseClass)
-    {
-				
 
+    public static SVGAnimator createAnimator(SVGImage svgImage,java.lang.String componentBaseClass)
+    {
         SVGAnimator tempAnimator = null;
+
+        if (componentBaseClass == null)
+        {
+            tempAnimator = createAnimator(svgImage);
+            return tempAnimator;
+        }
+
+        else if (componentBaseClass == "org.eclipse.swt.widgets.Control")
+        {
             tempAnimator=M2GSVGeSWTAnimator.buildAnimator(svgImage);
-// TODO Check for the toolkit?? tempAnimator=M2GSVGAnimator.buildAnimator(svgImage, componentBaseClass);
+        }
+
+        else if (componentBaseClass == "javax.microedition.lcdui.Canvas")
+        {
+            tempAnimator=M2GSVGAnimator.buildAnimator(svgImage);
+            return tempAnimator;
+        }
+
+        else
+        {
+            throw new IllegalArgumentException();
+        }
         return tempAnimator;
-    }*/
+    }
 
     /**
      * The type of target component associated with the animator depends on the

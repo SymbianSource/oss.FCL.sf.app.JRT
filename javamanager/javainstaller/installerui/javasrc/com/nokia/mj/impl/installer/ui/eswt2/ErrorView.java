@@ -77,7 +77,8 @@ public class ErrorView extends ConfirmationViewBase
         }
         else
         {
-            Label titleLabel = createLabel(title, getColumns(), SWT.WRAP);
+            Label titleLabel = createLabel(
+                getHeadingComposite(), title, getHeadingColumns(), SWT.WRAP);
             setCssId(titleLabel, "heading");
         }
 

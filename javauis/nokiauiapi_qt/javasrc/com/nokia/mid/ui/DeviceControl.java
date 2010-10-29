@@ -207,11 +207,9 @@ public class DeviceControl
                 {
                     public void run()
                     {
-                    	System.out.println("Java Nokia UI API flashLights duration = "+duration);
                         OS.MobileDevice_flashLights(
                             Internal_PackageSupport.initializeMobileDevice(
                                 Internal_PackageSupport.getDisplayInstance()),duration);
-                        System.out.println("Java Nokia UI API End flashLights ");
                     }
                 });
             }
@@ -291,11 +289,9 @@ public class DeviceControl
                 {
                     public void run()
                     {
-                    	System.out.println("Java Nokia UI API start vibra with duration = "+vibraDuration);
                         vibraSupported = OS.MobileDevice_vibration(
                                              Internal_PackageSupport.initializeMobileDevice(
                                                  Internal_PackageSupport.getDisplayInstance()),vibraDuration);
-                        System.out.println("Java Nokia UI API End vibra ");
                     }
                 });
             }

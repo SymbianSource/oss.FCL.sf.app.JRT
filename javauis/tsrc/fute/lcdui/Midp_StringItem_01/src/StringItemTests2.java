@@ -63,6 +63,8 @@ public class StringItemTests2 extends MIDlet implements CommandListener, ItemCom
     // Commands for the StringItems
     private Command cmdItem1 = new Command("Itemcommand1", Command.ITEM, 1);
     private Command cmdItem2 = new Command("Itemcommand2", Command.ITEM, 1);
+    // Command to exit the MIDlet
+    private Command cmdExit = new Command("Exit", Command.EXIT, 1);
 
     /**
      * Signals the MIDlet to start and enter the Active state.
@@ -81,6 +83,7 @@ public class StringItemTests2 extends MIDlet implements CommandListener, ItemCom
 
         mainForm.addCommand(cmdAdd);
         mainForm.addCommand(cmdForward);
+        mainForm.addCommand(cmdExit);
         mainForm.setCommandListener(this);
         stringItemForm.addCommand(cmdBack);
         stringItemForm.addCommand(cmdClear);
@@ -112,17 +115,17 @@ public class StringItemTests2 extends MIDlet implements CommandListener, ItemCom
      */
     public void commandAction(Command c, Displayable s)
     {
-        if (c == cmdAdd)
+        if(c == cmdAdd)
         {
             // Create correct type of stringitem
             int index = cgType.getSelectedIndex();
-            if (index == 0)
+            if(index == 0)
                 si = new StringItem("", "", Item.PLAIN);
             else
             {
-                if (index == 1)
+                if(index == 1)
                     si = new StringItem("", "", Item.HYPERLINK);
-                else if (index == 2)
+                else if(index == 2)
                     si = new StringItem("", "", Item.BUTTON);
                 si.addCommand(cmdItem1);
                 si.addCommand(cmdItem2);
@@ -131,7 +134,7 @@ public class StringItemTests2 extends MIDlet implements CommandListener, ItemCom
 
             // Set the label
             index = cgLabel.getSelectedIndex();
-            if (index == 0)
+            if(index == 0)
                 si.setLabel("");
             else
                 si.setLabel(cgLabel.getString(index));
@@ -142,17 +145,21 @@ public class StringItemTests2 extends MIDlet implements CommandListener, ItemCom
             Display.getDisplay(this).setCurrent(stringItemForm);
         }
 
-        else if (c == cmdBack)
+        else if(c == cmdBack)
         {
             Display.getDisplay(this).setCurrent(mainForm);
         }
-        else if (c == cmdClear)
+        else if(c == cmdClear)
         {
             stringItemForm.deleteAll();
         }
-        else if (c == cmdForward)
+        else if(c == cmdForward)
         {
             Display.getDisplay(this).setCurrent(stringItemForm);
+        }
+        else if(c == cmdExit)
+        {
+            this.notifyDestroyed();
         }
     }
 
