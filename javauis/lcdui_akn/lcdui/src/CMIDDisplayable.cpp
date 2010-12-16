@@ -55,6 +55,9 @@
 #include <PtiEngine.h>
 #include <PtiDefs.h>
 #endif // RD_SCALABLE_UI_V2
+#ifdef RD_JAVA_S60_RELEASE_9_2
+#include <AknPriv.hrh>
+#endif // RD_JAVA_S60_RELEASE_9_2
 
 // OMJ storage
 #include <applicationinfo.h>
@@ -430,13 +433,17 @@ void CMIDDisplayable::Draw(const TRect& aRect) const
         gc.CancelClippingRect();
         iUpdateRegion.Clear();
         iUpdateRegion.AddRect(aRect);
+
+        // Protect access to iDirectContentsRegion,
+        // because it may be modified in MMAPI thread.
         // Remove occupied areas out from update region
         iUpdateRegion.SubRegion(iDirectContentsRegion);
+
         // Set the update region for the context
         gc.SetClippingRegion(iUpdateRegion);
     }
 
-    if (iContent->Type() != ECanvas)
+    if (iContent && iContent->Type() != ECanvas)
     {
         // Draw background
         MAknsSkinInstance* skin = AknsUtils::SkinInstance();
@@ -1018,7 +1025,7 @@ void CMIDDisplayable::HandleForegroundL(TBool aForeground)
     {
 
         // If MIDlet is sent to background and JAD-attribute BackgroundEvent=Pause,
-        // and window is not faded yet or window is already faded but pauseApp was not called yet
+        // and window is not faded yet or window is already faded but pauseApp was not called yet,
         // then call pauseApp() method for the MIDlet.
         TBool isfaded = this->DrawableWindow()->IsFaded();
 
@@ -1041,22 +1048,43 @@ void CMIDDisplayable::HandleForegroundL(TBool aForeground)
 void CMIDDisplayable::HandleResourceChangeL(TInt aType)
 {
     DEBUG("+ CMIDDisplayable::HandleResourceChangeL");
-
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    if ((aType == KEikDynamicLayoutVariantSwitch) ||
+            (aType == KAknSplitInputDisabled))
+    {
+        TBool forceEventSend = EFalse;
+        // dynamic orientation change or partialkeyboard closed
+        if ((aType == KAknSplitInputDisabled) && !iSplitScreenKeyboard)
+        {
+            aType = KEikDynamicLayoutVariantSwitch;
+        }
+        if ((aType == KAknSplitInputDisabled) && iActive)
+        {
+            forceEventSend = ETrue;
+        }
+        TRect lastRect = iDisplayableRect;
+#else
     if (aType == KEikDynamicLayoutVariantSwitch)
     {
         // dynamic orientation change
 
+#endif //RD_JAVA_S60_RELEASE_9_2
         // Correct rect is set for displayable
         if (iActive && iCanvasKeypad)
         {
             //Update correct On-Screen Keypad type
             UpdateOnScreenKeypadSettings();
         }
+
         UpdateDisplayableRect();
         SetRect(iDisplayableRect);
 
         // MIDlet icon is resized in cpane SizeChanged()
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        if ((!iActive && iContentControl) || (forceEventSend && iContentControl))
+#else
         if (!iActive && iContentControl)
+#endif
         {
             //The active displayable already gets this call by the CONE framework but
             //background displayables don't, so for example a background form won't be
@@ -1127,14 +1155,13 @@ void CMIDDisplayable::HandleResourceChangeL(TInt aType)
 #endif // RD_SCALABLE_UI_V2
         iFullscreenCanvasLabelCacheIsValid = EFalse;
     }
-
-    DEBUG("- CMIDDisplayable::HandleResourceChangeL");
-
     // Language input change, needed by TextEditor.
-    if ((aType == KEikInputLanguageChange) && iContentControl)
+    else if ((aType == KEikInputLanguageChange) && iContentControl)
     {
         iContentControl->HandleResourceChange(aType);
     }
+
+    DEBUG("- CMIDDisplayable::HandleResourceChangeL");
 }
 
 #ifdef RD_JAVA_NGA_ENABLED
@@ -1479,6 +1506,17 @@ void CMIDDisplayable::HandleCurrentL(TBool aCurrent)
                 iDisplayableBehindPopup    = iMenuHandler->GetDisplayable();
             }
         }
+        else
+        {
+            if (this != defaultDisplayable)
+            {
+                iUIManager->DeactivateDefaultDisplayable();
+                if (defaultDisplayable)
+                {
+                     defaultDisplayable->MakeVisible(EFalse);
+                }
+            }
+        }
 
         iMenuHandler->SetDisplayable(this);
         // Tell the iAppUi about setting this as active
@@ -1500,7 +1538,7 @@ void CMIDDisplayable::HandleCurrentL(TBool aCurrent)
     }
     else if (type == ETextBox && iIsPopupTextBox)
     {
-        // Pop-up TextBox do their on thing, they rely on sleeping dialogs in fact
+        // Pop-up TextBox do their own thing, they rely on sleeping dialogs in fact
         CMIDTextBoxDialogControl* textBoxDialogControl =
             static_cast<CMIDTextBoxDialogControl*>(iContentControl);
         TRAP_IGNORE(textBoxDialogControl->HandleCurrentL(aCurrent));
@@ -2043,9 +2081,23 @@ void CMIDDisplayable::UpdateDisplayableRect()
         }
     }
 #endif //RD_SCALABLE_UI_V2
+
     if (iIsFullScreenMode)
     {
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        // When partial VKB is open, then displayable occupies  only part of screen.
+        // Whole screen otherwise.
+        if (iSplitScreenKeyboard)
+        {
+            iDisplayableRect = iAppUi->ClientRect();
+        }
+        else
+        {
+            iDisplayableRect = iAppUi->ApplicationRect();
+        }
+#else
         iDisplayableRect = iAppUi->ApplicationRect();
+#endif // RD_JAVA_S60_RELEASE_9_2
 
         // Update Cba because of softkey location properties
         // (see RenewFullscreenCanvasLabelCacheL())
@@ -2074,7 +2126,11 @@ void CMIDDisplayable::UpdateDisplayableRect()
         TBool paneVisible = pane->IsVisible();
         pane->MakeVisible(ETrue);
 
+#ifdef RD_JAVA_S60_RELEASE_9_2
         iDisplayableRect = iAppUi->ClientRect();
+#else
+        iDisplayableRect = iAppUi->ClientRect();
+#endif // RD_JAVA_S60_RELEASE_9_2
 
 #ifdef RD_SCALABLE_UI_V2
         if (iUseOnScreenKeypad && (canvasRect != TRect(0,0,0,0)))
@@ -2175,17 +2231,48 @@ void CMIDDisplayable::HandleSplitScreenKeyboard(TBool aOpened)
     }
     else
     {
-        if (iActive)
+        if (!((iContent->Type() == ETextBox) && iIsPopupTextBox))
         {
             UpdateOnScreenKeypadSettings();
             UpdateDisplayableRect();
             SetRect(iDisplayableRect);
-            // Ignoring leave
-            // The method was already called at least once
-            // and must be called here.
-            TRAP_IGNORE(UpdateVisualAppearanceL());
+            if (iActive)
+            {
+
+                // Ignoring leave
+                // The method was already called at least once
+                // and must be called here.
+                TRAP_IGNORE(UpdateVisualAppearanceL());
+                CMIDDisplayable* defaultDisplayable =
+                    iUIManager->GetDefaultDisplayable();
+                if (defaultDisplayable)
+                {
+                    defaultDisplayable->MakeVisible(EFalse);
+                }
+            }
+            else
+            {
+                // Update of current displayable, because switch
+                // displayable occured in editing state
+                if (iMenuHandler->GetDisplayable())
+                {
+                    iMenuHandler->GetDisplayable()->HandleResourceChangeL(KAknSplitInputDisabled);
+                    CMIDDisplayable* defaultDisplayable =
+                        iUIManager->GetDefaultDisplayable();
+                    if (defaultDisplayable)
+                    {
+                        defaultDisplayable->MakeVisible(EFalse);
+                    }
+
+                }
+            }
         }
     }
+}
+
+TBool CMIDDisplayable::IsSplitScreenOpened() const
+{
+    return iSplitScreenKeyboard;
 }
 #endif // RD_JAVA_S60_RELEASE_9_2
 
@@ -2997,7 +3084,6 @@ TBool CMIDDisplayable::IsVKBOnScreen()
 }
 #endif //RD_TACTILE_FEEDBACK
 
-
 #ifdef RD_SCALABLE_UI_V2
 TUint CMIDDisplayable::OnScreenKeypadL()
 {
@@ -3321,7 +3407,7 @@ void CMIDDisplayable::HideIndicators()
     HideIndicator(pane, EEikStatusPaneUidDigitalClock);
 }
 
-CMIDCanvas* CMIDDisplayable::GetContentCanvas()
+CMIDCanvas* CMIDDisplayable::GetContentCanvas() const
 {
     CMIDCanvas* ret = NULL;
     if (iContent && iContentControl &&

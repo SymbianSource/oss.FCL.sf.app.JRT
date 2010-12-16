@@ -417,7 +417,9 @@ private:
     void IsDatabaseReadyL();
 
     void DoRemoveContactItemL(TPIMItemID aItemID);
-
+    
+    void GetExternalCategoryModificationsFsL(RPointerArray<CPIMCategoryStateChange>*& aArray);
+    
 private: // Data
 
     // Contacts Model database used for storing contact data, owned.
@@ -452,7 +454,7 @@ private: // Data
     TBool iFirstItemChanges;
 
     java::util::FunctionServer* iFuncServer;
-
+    
 };
 
 #endif // CPIMCONTACTLISTADAPTER_H

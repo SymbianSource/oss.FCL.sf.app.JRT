@@ -28,12 +28,6 @@ NativeSecureConnection::NativeSecureConnection(const char * aName,
         NativeSocketConnection(aName, aMode, aHost, aPort)
 {
     JELOG2(ESOCKET);
-    mName = NULL;
-    mHost = NULL;
-    mName = new char[strlen(aName) + 1];
-    strcpy(mName, aName);
-    mHost = new char[strlen(aHost) + 1];
-    strcpy(mHost, aHost);
     mMode = aMode;
     mPort = aPort;
     mSecureSocketBuffer = NULL;

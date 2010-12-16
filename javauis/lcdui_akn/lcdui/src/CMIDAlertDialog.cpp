@@ -107,10 +107,16 @@ void CMIDAlertDialog::UpdateCbasL()
             ButtonGroupContainer().SetCommandSetL(R_AVKON_SOFTKEYS_EMPTY);
         }
 
-        CCoeControl* cba = ButtonGroupContainer().ButtonGroup()->AsControl();
-        cba->DrawableWindow()->SetOrdinalPosition(0);
-        cba->MakeVisible(ETrue);
-        cba->DrawNow();
+        CEikCba* cba = static_cast<CEikCba*>(ButtonGroupContainer().ButtonGroup()->AsControl());
+        if (cba)
+        {
+            cba->DrawableWindow()->SetOrdinalPosition(0);
+#ifdef RD_JAVA_S60_RELEASE_9_2
+            cba->EnableItemSpecificSoftkey(EFalse);
+#endif // RD_JAVA_S60_RELEASE_9_2
+            cba->MakeVisible(ETrue);
+            cba->DrawNow();
+        }
     }
     else
     {

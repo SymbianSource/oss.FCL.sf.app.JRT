@@ -51,6 +51,7 @@
 #ifdef RD_JAVA_S60_RELEASE_9_2
 // Used with partial VKB
 #include <AknPriv.hrh>
+#include <fepbase.h>
 #endif // RD_JAVA_S60_RELEASE_9_2
 
 #include "javaoslayer.h"
@@ -85,6 +86,7 @@
 #endif // RD_TACTILE_FEEDBACK
 
 #include "MMIDCustomComponent.h"
+#include "CMIDTextEditor.h"
 
 // Using CoreUiAvkonLcdui for the splash screen
 #include "coreuiavkonlcdui.h"
@@ -92,8 +94,6 @@
 #ifdef DEFER_BITBLT
 const TInt KEstCyclesPerPixel = 32;
 #endif // DEFER_BITBLT
-
-const TInt KAllowedTimeBetweenDragEvents = 50000; // 50ms
 
 // Used with component controls
 const TInt KComponentMainControl = 0;
@@ -438,6 +438,15 @@ void CMIDCanvas::SetFocusedComponent(MMIDCustomComponent* aComponent)
     }
 }
 
+MMIDCustomComponent* CMIDCanvas::GetFocusedComponent() const
+{
+    if (iFocusedComponent > KComponentFocusedNone)
+    {
+        return iCustomComponents[iFocusedComponent];
+    }
+    return NULL;
+}
+
 // ---------------------------------------------------------------------------
 // From class CCoeControl.
 // CMIDCanvas::OfferKeyEventL
@@ -483,7 +492,7 @@ TKeyResponse CMIDCanvas::OfferKeyEventL(
              CustomComponentControl(KComponentMainControl)->IsVisible()))
     {
         // Traversal check
-        if ((aType == EEventKeyDown) &&
+        if ((aType == EEventKey) &&
                 (((aEvent.iCode == EKeyUpArrow) ||
                   (aEvent.iCode == EKeyDownArrow)) ||
                  ((aEvent.iScanCode == EStdKeyUpArrow) ||
@@ -1485,6 +1494,12 @@ void CMIDCanvas::UnregisterComponent(MMIDCustomComponent* aComponent)
         }
         else if (index == iFocusedComponent)
         {
+#ifdef RD_JAVA_S60_RELEASE_9_2
+            if (iPartialVKBOpen)
+            {
+                iUpdateAfterRemove = ETrue;
+            }
+#endif //RD_JAVA_S60_RELEASE_9_2
             iFocusedComponent = KComponentFocusedNone;
         }
 
@@ -2181,13 +2196,23 @@ void CMIDCanvas::HandleResourceChange(TInt aType)
         // is open or closed. This is needed only when partial VKB changes
         // its state.
         TBool partialVKBOpen = (aType == KAknSplitInputEnabled);
+        iPartialVKBIsOpening = partialVKBOpen;
         if (partialVKBOpen != iPartialVKBOpen)
         {
-            // setting member variable
-            iPartialVKBOpen = partialVKBOpen;
-
-            // First we need inform focused item, after other.
-            iCustomComponents[iFocusedComponent]->HandleResourceChange(aType);
+            if (iUpdateAfterRemove && (aType == KAknSplitInputDisabled))
+            {
+                iDisplayable->HandleSplitScreenKeyboard(EFalse);
+                iUpdateAfterRemove = EFalse;
+            }
+            if (iFocusedComponent >= 0)
+            {
+                // First inform focused item, then non-focused items.
+                iCustomComponents[iFocusedComponent]->HandleResourceChange(aType);
+                if (iUpdateAfterFocusLost && (aType == KAknSplitInputDisabled))
+                {
+                    SetFocusedComponent(NULL);
+                }
+            }
             for (int i = 0; i < iCustomComponents.Count(); i++)
             {
                 if (i != iFocusedComponent)
@@ -2195,7 +2220,11 @@ void CMIDCanvas::HandleResourceChange(TInt aType)
                     iCustomComponents[i]->HandleResourceChange(aType);
                 }
             }
+            // setting member variables
+            iPartialVKBOpen = partialVKBOpen;
         }
+        //iPartialVKBIsOpening = EFalse;
+        iUpdateAfterFocusLost = EFalse;
     }
     else if (aType == KEikInputLanguageChange)
 #else
@@ -2426,25 +2455,6 @@ void CMIDCanvas::HandlePointerEventL(const TPointerEvent& aPointerEvent)
                 break;
             case TPointerEvent::EDrag:
                 type = EPointerDragged;
-                // If pointerEventSuppressor time is set to 0 don't do any
-                // drag event filtering. (default time here is 500ms and it
-                // can be changed with JAD parameter
-                // Nokia-MIDlet-Tap-Detection-Options)
-                if (iPESTimeInMilliseconds != 0)
-                {
-                    now.HomeTime();
-                    if (now.MicroSecondsFrom(iPreviousDragTimeStamp) <
-                            KAllowedTimeBetweenDragEvents)
-                    {
-                        // Ignore drag event because time between drags is
-                        // shorter than allowed interval.
-                        return;
-                    }
-                    else
-                    {
-                        iPreviousDragTimeStamp = now;
-                    }
-                }
                 break;
             default:
                 type = ENoType;
@@ -2463,7 +2473,10 @@ void CMIDCanvas::HandlePointerEventL(const TPointerEvent& aPointerEvent)
             }
 
             // To have the cursor on focused control
-            if (iFocusedComponent != KComponentFocusedNone)
+            if ((iFocusedComponent != KComponentFocusedNone) &&
+                    (iFocusedComponent < iCustomComponents.Count()) &&
+                    iCustomComponents[iFocusedComponent]->
+                    CustomComponentControl(KComponentMainControl)->IsVisible())
             {
                 iCustomComponents[iFocusedComponent]->
                 CustomComponentControl(KComponentMainControl)->
@@ -2621,7 +2634,7 @@ void CMIDCanvas::SizeChanged()
 
 #ifdef RD_JAVA_S60_RELEASE_9_2
         if (iFullScreen && (orientedOrgMIDletScrSize != controlSize)
-                && !iPartialVKBOpen)
+                && !iPartialVKBOpen && !iPartialVKBIsOpening)
 #else
         if (iFullScreen && (orientedOrgMIDletScrSize != controlSize))
 #endif // RD_JAVA_S60_RELEASE_9_2
@@ -2661,13 +2674,13 @@ void CMIDCanvas::SizeChanged()
             iLandscape = landscape;
 
             PostEvent(ESizeChanged, iContentSize.iWidth, iContentSize.iHeight);
-
             if (IsWindowVisible() && iWndUpdate)
             {
                 // Post forced paint to enable Canvas repaint behind
                 // Alert or Pop-up TextBox
                 PostForcedPaint();
             }
+
 #else
             iContentSize = contentSize;
             PostEvent(ESizeChanged, iContentSize.iWidth, iContentSize.iHeight);
@@ -2892,6 +2905,7 @@ void CMIDCanvas::ConstructL(CCoeControl& aWindow)
     iPressedComponent = NULL;
     iOrgMIDletScrSize = TSize();
     iTargetMIDletScrSize = TSize();
+    iCustomComponentsControlCount = 0;
 
 #ifdef CANVAS_DOUBLE_BUFFER
     // Create a framebuffer large enough for full screen mode.
@@ -3025,6 +3039,9 @@ void CMIDCanvas::ConstructL(CCoeControl& aWindow)
 
 #ifdef RD_JAVA_S60_RELEASE_9_2
     iPartialVKBOpen = EFalse;
+    iPartialVKBIsOpening = EFalse;
+    iUpdateAfterFocusLost = EFalse;
+    iUpdateAfterRemove = EFalse;
 #endif // RD_JAVA_S60_RELEASE_9_2
 }
 
@@ -3271,7 +3288,7 @@ void CMIDCanvas::Layout()
 #ifdef RD_JAVA_S60_RELEASE_9_2
         // If partial VKB is open then MIDlet is not scaled.
         // That we need set iViewRect to whole size of Canvas.
-        if (iPartialVKBOpen)
+        if (iPartialVKBOpen || iPartialVKBIsOpening)
         {
             viewSize = Size();
         }
@@ -5300,4 +5317,77 @@ void CMIDCanvas::PostForcedPaint()
     PostEvent(EForcedPaint, posPacked, sizePacked);
 }
 #endif // RD_JAVA_NGA_ENABLED        
+
+void CMIDCanvas::ChangeFocusStateOfTextEditorsL(TBool aFocusState,
+        MMIDCustomComponent* aTextEditor)
+{
+    CMIDTextEditor* current = NULL;
+    if (aFocusState)
+    {
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        // Focus is gained, if iUpdateAfterFocusLost == true it would
+        // set focused component to null
+        iUpdateAfterFocusLost = EFalse;
+#endif
+        // When we set new TextEditor as focused,
+        // then we have to set other TextEditors to non-focused.
+        for (int i = 0; i < iCustomComponents.Count(); i++)
+        {
+            MMIDCustomComponent* component =
+                static_cast<MMIDCustomComponent*>(iCustomComponents[i]);
+            current = static_cast<CMIDTextEditor*>(iCustomComponents[i]);
+            if (current && component &&
+                    component->IsTouchEnabled() && component != aTextEditor)
+            {
+                current->SetFocusL(EFalse);
+            }
+        }
+    }
+    current = static_cast<CMIDTextEditor*>(aTextEditor);
+    if (current)
+    {
+        // Now we can set focus state of the editor.
+        current->SetFocusL(aFocusState);
+    }
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    if (iPartialVKBOpen && !iPartialVKBIsOpening && iFocusedComponent < 0)
+    {
+        // This closes partial VKB, if editor loses focus.
+        if (iCoeEnv)
+        {
+            CCoeFep* fep = iCoeEnv->Fep();
+            if (fep)
+            {
+                fep->HandleDestructionOfFocusedItem();
+            }
+        }
+    }
+#endif
+
+    // Setting of Canvas member variable to new focused item.
+    CMIDTextEditor* newFocusedItem = aFocusState ? current : NULL;
+
+    // Do not change focused component if setfocus(false) was called
+    // on unfocused component
+    if (!((aFocusState == NULL) && (aTextEditor != this->GetFocusedComponent())))
+    {
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        if ((aFocusState == NULL) && (iPartialVKBOpen) && (aTextEditor == this->GetFocusedComponent()))
+        {
+            // force disable partialscreen event to focused component
+            iUpdateAfterFocusLost = ETrue;
+        }
+        else
+        {
+            // set new focused component, or none, if NULL passed
+            SetFocusedComponent(newFocusedItem);
+        }
+#else
+        // set new focused component, or none, if NULL passed
+        SetFocusedComponent(newFocusedItem);
+#endif
+    }
+
+}
 // End of File.

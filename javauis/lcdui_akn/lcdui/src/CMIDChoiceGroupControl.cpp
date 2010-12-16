@@ -1541,7 +1541,11 @@ void CMIDChoiceGroupControl::DeleteListBox(CMIDChoiceGroupListBox* aListBox)
     {
         CColumnListBoxData* columnData = aListBox->ItemDrawer()->ColumnData();
         columnData->SetIconArray(NULL);
-
+        
+        if (aListBox->IsFocused())
+        {
+            aListBox->SetFocus(EFalse);
+        }
         delete aListBox;
     }
 }

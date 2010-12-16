@@ -21,7 +21,6 @@ package com.nokia.mid.ui;
 // INTERNAL IMPORTS
 import com.nokia.mid.ui.impl.LCDUIPackageInvoker;
 import com.nokia.mid.ui.impl.TextEditorListenerImpl;
-import com.nokia.mid.ui.impl.TextEditorContainer;
 
 // EXTERNAL IMPORTS
 import com.nokia.mj.impl.rt.legacy.NativeError;

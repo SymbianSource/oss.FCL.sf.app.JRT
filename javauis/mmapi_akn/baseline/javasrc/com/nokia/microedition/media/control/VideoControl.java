@@ -262,7 +262,6 @@ public class VideoControl
         {
             // Update the foreground or background state of the midlet before
             // setting the visibility of the control
-            updateForeground();
             // cannot fail -> ignore return value
             setDisplayProperty(SET_DISPLAY_VISIBLE_TRUE);
         }
@@ -702,52 +701,7 @@ public class VideoControl
         }
         return guiObject;
     }
-    private int updateForeground()
-    {
-
-        int visible = 1;
-
-        // Check whether display is initialized
-        checkState();
-        if (iStatus == NOT_INITIALIZED)
-        {
-            return visible;
-        }
-
-
-        MIDlet midlet = LegacyRtPort.getMidlet();
-        //Displayable displayable;
-        if (midlet == null)
-        {
-            return visible;
-        }
-        else
-        {
-            Displayable displayable = Display.getDisplay(midlet).getCurrent();
-
-            if (displayable != null && displayable.isShown())
-            {
-                Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,
-                           "VideoControl.updateForeground isShown() = 1");
-                // visible
-            }
-            else
-            {
-                Logger.LOG(Logger.EJavaMMAPI, Logger.EInfo,
-                           "VideoControl.updateForeground isShown() = 0");
-                // not visible
-                visible = 0;
-            }
-
-            // Set the foreground state
-            _setForeground(iControlHandle,
-                           iEventSource,
-                           visible);
-        }
-
-        return visible;
-    }
-
+    
     private native int _construct(int aControlHandle,
                                   int aEventSourceHandle,
                                   int aToolkitHandle);

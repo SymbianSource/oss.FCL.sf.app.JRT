@@ -64,6 +64,9 @@
 // LAF
 #include <layoutmetadata.cdl.h>
 
+#ifdef RD_JAVA_S60_RELEASE_9_2
+#include <AknPriv.hrh>
+#endif // RD_JAVA_S60_RELEASE_9_2
 // Api for skin layout
 #include <skinlayout.cdl.h>
 using namespace SkinLayout;
@@ -159,7 +162,7 @@ void CMIDForm::SetItemL(MMIDItem& aItem,TInt aIndex)
 /**
  * Inserts a new Item.
  */
-void CMIDForm::InsertItemL(MMIDItem& aItem,TInt aIndex)
+void CMIDForm::InsertItemL(MMIDItem& aItem, TInt aIndex)
 {
     DEBUG("CMIDForm::InsertItemL");
 
@@ -215,8 +218,24 @@ void CMIDForm::DeleteItemL(TInt aIndex)
     }
     else if (iFocused == aIndex)
     {
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        if (iPartialScreenOpened)
+        {
+            // If focused item is deleted and is open partial VKB open,
+            // then we have to close this VKB.
+            CCoeFep* fep = iCoeEnv->Fep();
+            if (fep)
+            {
+                fep->HandleDestructionOfFocusedItem();
+            }
+            iRemovedEditingItem = ETrue;
+        }
+#endif // RD_JAVA_S60_RELEASE_9_2
         iDisplayable.MenuHandler()->HideMenuIfVisible();
         ReplaceFocusedItem();
+#ifdef RD_JAVA_S60_RELEASE_9_2
+        iRemovedEditingItem = EFalse;
+#endif // RD_JAVA_S60_RELEASE_9_2
         updateFocused = ETrue;
     }
 
@@ -1387,12 +1406,6 @@ TBool CMIDForm::TryMovingFocusVertically(TDirection aDirection, TBool aSelectClo
     DEBUG("> CMIDForm::TryMovingFocusVertically");
     ASSERT(aDirection == EUp || aDirection == EDown);
 
-    // is VKB opened
-    if (iDisplayable.IsVKBOnScreen())
-    {
-        return ETrue;
-    }
-
     TInt rowIdx = NextPartiallyVisibleRowWithFocusableItem(aDirection);
 
     if (rowIdx == KErrNotFound)
@@ -1956,26 +1969,40 @@ void CMIDForm::ReplaceFocusedItem()
         DEBUG("CMIDForm::ReplaceFocusedItem - calling layout");
         TRAP_IGNORE(LayoutFormL());
     }
-
-    CMIDForm::TDirection direction = (iInitialAlignment == MMIDItem::ERight) ? ELeft : ERight;
-
-    if (!TryMovingFocusHorizontally(direction))
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    if (iRemovedEditingItem)
     {
-        if (iInitialAlignment == MMIDItem::ERight)
-        {//RIGHT TO LEFT
-            if (!TryMovingFocusVertically(direction == ELeft ? EDown : EUp, EFalse, EFalse))
-            {
-                SetFocusedItem(KErrNotFound);
-            }
-        }
-        else
-        {//LEFT TO RIGHT
-            if (!TryMovingFocusVertically(direction == ELeft ? EUp : EDown, EFalse, EFalse))
-            {
-                SetFocusedItem(KErrNotFound);
-            }
-        }
+        // When is deleted focused item in editing state, we set focus off.
+        CMIDControlItem& control = ControlItem(iFocused);
+        control.SetFocus(EFalse);
+        UpdateItemCommands(NULL, NULL);
+        iRemovedEditingItem = EFalse;
     }
+    else
+    {
+#endif // RD_JAVA_S60_RELEASE_9_2
+        CMIDForm::TDirection direction = (iInitialAlignment == MMIDItem::ERight) ? ELeft : ERight;
+
+        if (!TryMovingFocusHorizontally(direction))
+        {
+            if (iInitialAlignment == MMIDItem::ERight)
+            {//RIGHT TO LEFT
+                if (!TryMovingFocusVertically(direction == ELeft ? EDown : EUp, EFalse, EFalse))
+                {
+                    SetFocusedItem(KErrNotFound);
+                }
+            }
+            else
+            {//LEFT TO RIGHT
+                if (!TryMovingFocusVertically(direction == ELeft ? EUp : EDown, EFalse, EFalse))
+                {
+                    SetFocusedItem(KErrNotFound);
+                }
+            }
+        }
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    }
+#endif // RD_JAVA_S60_RELEASE_9_2
 }
 
 void CMIDForm::SetFocusedItem(TInt aFocusIdx, TDirection aDirection /*= ENone*/,
@@ -2017,9 +2044,7 @@ void CMIDForm::SetFocusedItem(TInt aFocusIdx, TDirection aDirection /*= ENone*/,
     if (iFocused != KErrNotFound)
     { // actions for the item gaining focus
         CMIDControlItem& control = ControlItem(iFocused);
-
         SetHighlightBackgroundRects();
-
         control.PostFocusTransferEvent(ETrue, aDirection);
         control.SetHighlight(ETrue);
         control.SetFocus(ETrue);
@@ -2294,6 +2319,10 @@ void CMIDForm::HandleCurrentL(TBool aCurrent)
 
 void CMIDForm::ConstructL()
 {
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    iPartialScreenOpened = EFalse;
+    iRemovedEditingItem = EFalse;
+#endif // RD_JAVA_S60_RELEASE_9_2
     UpdateMemberVariables();
 
     SetContainerWindowL(iDisplayable);
@@ -2381,7 +2410,15 @@ void CMIDForm::UpdateMemberVariables()
 
 #ifdef RD_JAVA_S60_RELEASE_9_2
     TRect mainPaneRect;
-    AknLayoutUtils::LayoutMetricsRect(AknLayoutUtils::EMainPane, mainPaneRect);
+    if (iPartialScreenOpened)
+    {
+        mainPaneRect = Rect();
+    }
+    else
+    {
+        AknLayoutUtils::LayoutMetricsRect(AknLayoutUtils::EMainPane, mainPaneRect);
+    }
+
     mainMidpPane.LayoutRect(mainPaneRect,
                             AknLayoutScalable_Avkon::main_midp_pane().LayoutLine());
 #else
@@ -3855,6 +3892,26 @@ void CMIDForm::HandleResourceChange(TInt aType)
         }
         iLastFadeMessage = 0;
     }
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    else if (aType == KAknSplitInputEnabled)
+    {
+        if (!iPartialScreenOpened)
+        {
+            DEBUG("CMIDForm::HandleResourceChange - KAknSplitInputEnabled");
+            iPartialScreenOpened = ETrue;
+            UpdateFormForSplitScreenChange();
+        }
+    }
+    else if (aType == KAknSplitInputDisabled)
+    {
+        if (iPartialScreenOpened)
+        {
+            DEBUG("CMIDForm::HandleResourceChange - KAknSplitInputDisabled");
+            iPartialScreenOpened = EFalse;
+            UpdateFormForSplitScreenChange();
+        }
+    }
+#endif // RD_JAVA_S60_RELEASE_9_2
 
     UpdatePhysics();
 
@@ -3862,6 +3919,21 @@ void CMIDForm::HandleResourceChange(TInt aType)
     UpdateTactileFeedbackDensity();
 #endif // RD_JAVA_ADVANCED_TACTILE_FEEDBACK
 }
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+void CMIDForm::UpdateFormForSplitScreenChange()
+{
+    iDisplayable.HandleSplitScreenKeyboard(iPartialScreenOpened);
+    UpdateMemberVariables();
+    UpdateHeightOfAllItems();
+    TRAP_IGNORE(LayoutFormL());
+    SetHighlightBackgroundRects();
+    HandleItemVisibilityChange();
+    ScrollToFocused();
+    UpdateScrollBar();
+    DrawDeferred();
+}
+#endif // RD_JAVA_S60_RELEASE_9_2
 
 TBool CMIDForm::TryDetectLongTapL(const TPointerEvent &aPointerEvent)
 {

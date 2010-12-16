@@ -61,13 +61,14 @@ Java_com_nokia_mj_impl_connectionmanager_ConnectionManager__1askNetworkAccessPoi
     {
         LOG1(ESOCKET,EInfo,"+apnInfo =  %s",apnInfo);
         jstring jnistring = aJni->NewStringUTF(apnInfo);
+        delete[] apnInfo;
         return jnistring;
     }
     else
     {
+        delete[] apnInfo;
         return NULL;
     }
-
 }
 
 JNIEXPORT jstring JNICALL
@@ -81,10 +82,12 @@ Java_com_nokia_mj_impl_connectionmanager_ConnectionManager__1getDeviceDefaultAcc
     {
         LOG1(ESOCKET,EInfo,"+apnInfo =  %s",apnInfo);
         jstring jnistring = aJni->NewStringUTF(apnInfo);
+        delete[] apnInfo;
         return jnistring;
     }
     else
     {
+        delete[] apnInfo;
         return NULL;
     }
 }

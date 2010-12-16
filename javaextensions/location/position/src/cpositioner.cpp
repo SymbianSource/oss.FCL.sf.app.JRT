@@ -76,8 +76,8 @@ CPositioner* CPositioner::NewL(LocationFunctionServer* aFunctionSource,
 // Destructor
 CPositioner::~CPositioner()
 {
-    iTimer.Close();
     Cancel();
+    iTimer.Close();
 }
 
 // -----------------------------------------------------------------------------

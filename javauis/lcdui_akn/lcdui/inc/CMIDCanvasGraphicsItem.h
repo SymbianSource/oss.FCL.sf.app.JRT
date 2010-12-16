@@ -280,7 +280,7 @@ public: // From MMIDComponent
 public: // Own methods
 
     /**
-     * Removes this component from component container 
+     * Removes this component from component container
      * when its painter being disposed first (during finalization)
      */
     void CMIDCanvasGraphicsItem::DeregisterCanvasGraphicsItem();
@@ -327,10 +327,6 @@ private: // Data
     // A non-scaled position of item. Needed by scaling.
     TPoint iNonScaledPosition;
 
-#ifdef RD_JAVA_S60_RELEASE_9_2
-    // Indicates state of partial VKB
-    TBool iPartialVKBOpen;
-#endif
 };
 
 #endif // CMIDCANVASGRAPHICSITEM_H

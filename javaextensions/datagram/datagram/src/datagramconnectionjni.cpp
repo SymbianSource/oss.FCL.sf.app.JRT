@@ -88,6 +88,7 @@ JNIEXPORT jint JNICALL Java_com_nokia_mj_impl_datagram_UDPDatagramConnectionImpl
     LOG1(ESOCKET,EInfo,"addr = %s",addr);
 
     jnistring = aJni->NewStringUTF(addr);
+    delete[] addr;
     aJni->SetObjectArrayElement(aSenderAddr,0,jnistring);
 
     aJni->SetIntArrayRegion(aSenderPort,0,1,&port);

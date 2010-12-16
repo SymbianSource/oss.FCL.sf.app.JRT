@@ -22,13 +22,14 @@
 #include "CMIDTextEditorEdwinCustomDraw.h"
 #include "CMIDEditingStateIndicator.h"
 #include "CMIDDisplayable.h"
+#include "CMIDTextEditor.h"
 
 // EXTERNAL INCLUDES
-#include <MMIDTextEditor.h> // MMIDTextEditorObserver
 #include <aknextendedinputcapabilities.h>
 #include <AknSettingCache.h>
 #include <eikedwob.h>
 #include <j2me/jdebug.h>
+#include <MMIDCustomComponentContainer.h>
 
 #ifdef RD_JAVA_S60_RELEASE_9_2
 #include <AknPriv.hrh>
@@ -50,7 +51,6 @@ CMIDTextEditorEdwin::CMIDTextEditorEdwin(CMIDEdwinUtils& aEdwinUtils)
     DEBUG("CMIDTextEditorEdwin::CMIDTextEditorEdwin +");
 
 #ifdef RD_JAVA_S60_RELEASE_9_2
-    iPartialVKBOpen = EFalse;
     iDisplayable = NULL;
     iJavaAppUi = NULL;
 #endif // RD_JAVA_S60_RELEASE_9_2
@@ -157,9 +157,9 @@ TKeyResponse CMIDTextEditorEdwin::OfferKeyEventL(
 
         // Not handled, try with CEikEdwin
         // Consume down and up type of keyevents
-        if ((response == EKeyWasConsumed) || 
-                (aType != EEventKey && aKeyEvent.iScanCode != 
-                EStdKeyApplication0))
+        if ((response == EKeyWasConsumed) ||
+                (aType != EEventKey && aKeyEvent.iScanCode !=
+                 EStdKeyApplication0))
         {
             response = EKeyWasConsumed;
         }
@@ -178,8 +178,9 @@ TKeyResponse CMIDTextEditorEdwin::OfferKeyEventL(
             CleanupStack::PushL(oldContent);
 
             response = CEikEdwin::OfferKeyEventL(aKeyEvent, aType);
-            
-            if (response == EKeyWasConsumed) {
+
+            if (response == EKeyWasConsumed)
+            {
                 // Validate new content and undo if not valid.
                 if (!iEdwinUtils.ConstraintsValidForText(
                             Read(), iConstraints, EFalse))
@@ -192,14 +193,13 @@ TKeyResponse CMIDTextEditorEdwin::OfferKeyEventL(
                 }
             }
             else
-            { 
-                // Consuming the up/down arrows, because edwin does not 
-                // consume them if at first/last line. 
-                if ((aType == EEventKey) &&
-                        (((aKeyEvent.iCode == EKeyUpArrow) ||
-                          (aKeyEvent.iCode == EKeyDownArrow)) ||
-                         ((aKeyEvent.iScanCode == EStdKeyUpArrow) ||
-                          (aKeyEvent.iScanCode == EStdKeyDownArrow))))
+            {
+                // Consuming the up/down arrows, because edwin does not
+                // consume them when using predictive text
+                if (((aKeyEvent.iCode == EKeyUpArrow) ||
+                        (aKeyEvent.iCode == EKeyDownArrow)) ||
+                        ((aKeyEvent.iScanCode == EStdKeyUpArrow) ||
+                         (aKeyEvent.iScanCode == EStdKeyDownArrow)))
                 {
                     response = EKeyWasConsumed;
                 }
@@ -588,59 +588,43 @@ void CMIDTextEditorEdwin::HandleResourceChange(TInt aType)
         }
     }
 #ifdef RD_JAVA_S60_RELEASE_9_2
+    TBool isFocused = iContainer &&
+                      (static_cast<CMIDTextEditor*>(iContainer->GetFocusedComponent()) == iItem);
     if ((aType == KAknSplitInputEnabled))
     {
+        // If status pane is visible or TextEditor,
+        // on which is this edwin is focused,
+        // then we need handle enabling of partial VKB.
+
         // Partial screen keyboard is opened
         CEikStatusPane* pane = GetStatusPane();
-        if (!iPartialVKBOpen || pane->IsVisible())
+
+        if (pane->IsVisible() || isFocused)
         {
             // Hide status pane and resize displayable
             iDisplayable->HandleSplitScreenKeyboard(ETrue);
-            // Preventing from notification when pane is visible, but VKB is
-            // already opened
-            if (iObserver && !iPartialVKBOpen)
+            // Preventing from notification when pane is visible.
+            if (iObserver)
             {
                 iObserver->NotifyInputAction(
                     MMIDTextEditorObserver::EActionPartialInputEnabled);
             }
-            iPartialVKBOpen = ETrue;
         }
     }
-    else if ((aType == KAknSplitInputDisabled) && (iPartialVKBOpen))
+    else if ((aType == KAknSplitInputDisabled)
+             && isFocused && iContainer->IsPartialVKBOpen())
     {
+        // If partial VKB is visible and TextEditor,
+        // on which is this edwin is focused,
+        // then we need handle diseabling of partial VKB.
+
         HandlePartialVKBDisable();
     }
 #endif // RD_JAVA_S60_RELEASE_9_2
 }
 
 #ifdef RD_JAVA_S60_RELEASE_9_2
-// ---------------------------------------------------------------------------
-// CMIDTextEditorEdwin::FocusLost
-// (other items were commented in the header file)
-// ---------------------------------------------------------------------------
-//
-void CMIDTextEditorEdwin::FocusLost()
-{
-    if (iPartialVKBOpen)
-    {
-        DEBUG("Focus LOST - disable VKB");
-        CloseVKB();
-    }
-}
 
-// ---------------------------------------------------------------------------
-// CMIDTextEditorEdwin::FocusLost
-// (other items were commented in the header file)
-// ---------------------------------------------------------------------------
-//
-void CMIDTextEditorEdwin::CloseVKB()
-{
-    CCoeFep* fep = iCoeEnv->Fep();
-    if (fep)
-    {
-        fep->HandleDestructionOfFocusedItem();
-    }
-}
 
 // ---------------------------------------------------------------------------
 // CMIDTextEditorEdwin::DisablePartialVKB
@@ -649,8 +633,6 @@ void CMIDTextEditorEdwin::CloseVKB()
 //
 void CMIDTextEditorEdwin::HandlePartialVKBDisable()
 {
-    // Partial screen keyboard is closed
-    iPartialVKBOpen = EFalse;
     // Show status pane if not in fullscreen and resize displayable
     iDisplayable->HandleSplitScreenKeyboard(EFalse);
     if (iObserver)
@@ -891,9 +873,12 @@ inserting full stop");
 // (other items are commented in the header file)
 // ---------------------------------------------------------------------------
 //
-void CMIDTextEditorEdwin::SetTopParent(CCoeControl* aControl)
+void CMIDTextEditorEdwin::SetTopParent(CCoeControl* aControl, MMIDCustomComponentContainer* aContainer)
 {
     iParent = aControl;
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    iContainer = aContainer;
+#endif //RD_JAVA_S60_RELEASE_9_2
 }
 
 // ---------------------------------------------------------------------------

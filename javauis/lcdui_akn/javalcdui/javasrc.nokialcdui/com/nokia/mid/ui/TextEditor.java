@@ -21,7 +21,6 @@ package com.nokia.mid.ui;
 // INTERNAL IMPORTS
 import com.nokia.mid.ui.impl.LCDUIPackageInvoker;
 import com.nokia.mid.ui.impl.TextEditorListenerImpl;
-import com.nokia.mid.ui.impl.TextEditorContainer;
 
 // EXTERNAL IMPORTS
 import com.nokia.mj.impl.rt.legacy.NativeError;
@@ -149,9 +148,6 @@ public class TextEditor
     // The current font of this text editor component
     private Font iFont;
 
-    // Text editor container for handling editor focusing.
-    private static TextEditorContainer iEditorContainer;
-
     // Color indicators. Must be in sync with MMIDTextEditor::TColorType
     private static final int COLOR_BACKGROUND = 0;
     private static final int COLOR_FOREGROUND = 1;
@@ -160,12 +156,6 @@ public class TextEditor
 
     // The maximum value for all colors.
     private static final int COLOR_MAX_VALUE = 255;
-
-    // Static block for creating editor container.
-    static
-    {
-        iEditorContainer = new TextEditorContainer();
-    }
 
     private Finalizer mFinalizer;
 
@@ -348,24 +338,6 @@ public class TextEditor
         {
             checkParent();
 
-            // If focus is set, adjust the focus of other known editors.
-            if (focused)
-            {
-                // Remove focus from other editors in this parent
-                Enumeration editors = iEditorContainer.getEditors(iParent);
-
-                while (editors.hasMoreElements())
-                {
-                    TextEditor editor = (TextEditor) editors.nextElement();
-
-                    // Do not remove focus from this editor if it is on.
-                    if (editor != this)
-                    {
-                        editor.setFocus(false);
-                    }
-                }
-            }
-
             NativeError.check(_setFocusState(getToolkitHandle(), iHandle,
                                              focused));
         }
@@ -445,18 +417,6 @@ public class TextEditor
 
                 // Check if an error occured when setting the parent object.
                 NativeError.check(error);
-
-                // Operation was successful. Store parent and register
-                // to container. Remove from container and previous parent.
-                if (iParent != null)
-                {
-                    iEditorContainer.removeEditor(this, iParent);
-                }
-                // Store the editor with new parent if not null.
-                if (parent != null)
-                {
-                    iEditorContainer.addEditor(this, parent);
-                }
 
                 iParent = parent;
             }
@@ -1444,12 +1404,6 @@ public class TextEditor
                 {
                     iToolkitInvoker.toolkitDisposeObject(iToolkit,iHandle);
                     iHandle = 0;
-
-                    if (iParent != null)
-                    {
-                        // Remove from editor container.
-                        iEditorContainer.removeEditor(this, iParent);
-                    }
                 }
             }
             mFinalizer = null;

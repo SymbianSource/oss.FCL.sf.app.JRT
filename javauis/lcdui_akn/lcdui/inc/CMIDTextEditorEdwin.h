@@ -35,6 +35,8 @@
 class CMIDEditingStateIndicator;
 class MMIDTextEditorObserver;
 class CAknExtendedInputCapabilities;
+class MMIDCustomComponentContainer;
+class CMIDTextEditor;
 
 // CLASS DESCRIPTION
 /**
@@ -250,13 +252,6 @@ public: // New methods
     void FocusLost();
 
     /**
-     * Closes VKB if editor is loosing visibility, disposing etc.,
-     *
-     * @since S60 5.0
-     */
-    void CloseVKB();
-
-    /**
      * Handles disabling of partial VKB.
      *
      * @since S60 5.0
@@ -283,9 +278,11 @@ public: // New methods
      * parent also in order to correctly draw the transparent background.
      *
      * @param aControl The parent control for this control.
+     * @param aContainer The container of parent control of this control.
      * @since S60 5.0
      */
-    void SetTopParent(CCoeControl* aControl);
+    void SetTopParent(CCoeControl* aControl,
+                      MMIDCustomComponentContainer* aContainer);
 
     /**
      * Sets the observer for this text editor component.
@@ -553,6 +550,14 @@ public: // New methods
      */
     inline void SetScaling(TBool aScaling);
 
+    /**
+     * Sets the item. Called during construction of CMIDTextEditor.
+     *
+     * @param aItem CMIDTextEditorto which is this edwin assigned.
+     * @since S60 5.0
+     */
+    inline void SetItem(CMIDTextEditor* aItem);
+
 public: // From MMIDScalable
     inline TBool IsScalingOn() const;
 
@@ -639,8 +644,6 @@ private: // Data
     // Visible content height used for sending scroll event
     TInt iVisibleContentHeight;
 #ifdef RD_JAVA_S60_RELEASE_9_2
-    // Indicates state of partial VKB
-    TBool iPartialVKBOpen;
     // Used for Statuspane visibility
     CAknAppUi* iJavaAppUi;
     /**
@@ -648,11 +651,15 @@ private: // Data
      * Not own.
      */
     CMIDDisplayable* iDisplayable;
+    // Container on which it is. Now own.
+    MMIDCustomComponentContainer* iContainer;
 #endif // RD_JAVA_S60_RELEASE_9_2
     // Canvas fullscreen size
     TRect iOnScreenCanvasRect;
     // Flag if scaling is on now.
     TBool iIsScalingOn;
+    // TextEditor on which it is. not own
+    CMIDTextEditor* iItem;
 };
 
 // ---------------------------------------------------------------------------
@@ -683,6 +690,11 @@ inline TBool CMIDTextEditorEdwin::IsScalingOn() const
 inline void CMIDTextEditorEdwin::SetScaling(TBool aScaling)
 {
     iIsScalingOn = aScaling;
+}
+
+inline void CMIDTextEditorEdwin::SetItem(CMIDTextEditor* aItem)
+{
+    iItem = aItem;
 }
 
 #endif // CMIDTEXTEDITOREDWIN_H

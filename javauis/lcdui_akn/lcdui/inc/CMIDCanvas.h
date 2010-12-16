@@ -701,6 +701,13 @@ public:
     void SetFocusedComponent(MMIDCustomComponent* aComponent);
 
     /**
+     * Returns pointer to focused component.
+     *
+     * @return Pointer to focused component.
+     */
+    MMIDCustomComponent* GetFocusedComponent() const;
+
+    /**
      * Returns the index of the given component in this container.
      *
      * @return The index of the given component in this container. KErrNotFound
@@ -729,7 +736,21 @@ public:
     */
     inline const TRect ViewRect() const;
 
+    /**
+     * Changes focused component to argument (now only for TextEditor).
+     *
+     * @param Pointer to new focused TextEditor.
+     */
+    void ChangeFocusStateOfTextEditorsL(TBool aFocusState, MMIDCustomComponent* aTextEditor);
+
 #ifdef RD_JAVA_S60_RELEASE_9_2
+    /**
+     * Returns flag information, if partial keyboard is open.
+     *
+     * @return True if Partial VKB is open. False otherwise.
+     */
+    inline TBool IsPartialVKBOpen() const;
+
     /**
      * Gets a Displayable from the container.
      *
@@ -1550,12 +1571,7 @@ private: // data
     TBool iPointerEventSuppressionOngoing;
     TInt iPESPointerMovementInTwips;
     TInt iPESTimeInMilliseconds;
-
-    /**
-     * For drag event filtering.
-     */
-    TTime iPreviousDragTimeStamp;
-
+      
     /**
      * Direct content listeners.
      * Not own.
@@ -1650,6 +1666,16 @@ private: // data
 #ifdef RD_JAVA_S60_RELEASE_9_2
     // Indicates state of partial VKB
     TBool iPartialVKBOpen;
+
+    // Indicates future state of partial VKB
+    TBool iPartialVKBIsOpening;
+
+    // Indicates focus lost on TextEditor
+    TBool iUpdateAfterFocusLost;
+
+    // Indicates needed update when focused TextEditor is removed
+    // from Canvas while partial vkb is opened
+    TBool iUpdateAfterRemove;
 #endif
 
 #ifdef RD_JAVA_NGA_ENABLED
@@ -1764,7 +1790,7 @@ private: // data
     TUint8* iTexturePixels;
 
     /**
-     * OpenGL coordinate arrays used fo r rendering filled rectangles
+     * OpenGL coordinate arrays used for rendering filled rectangles
      */
     GLshort* iVertexArray;
     GLubyte* iTriangleStrip;
@@ -1812,6 +1838,14 @@ inline const TRect CMIDCanvas::ViewRect() const
 {
     return iViewRect;
 }
+
 #endif // RD_JAVA_NGA_ENABLED
+
+#ifdef RD_JAVA_S60_RELEASE_9_2
+inline TBool CMIDCanvas::IsPartialVKBOpen() const
+{
+    return iPartialVKBOpen;
+}
+#endif
 
 #endif // CMIDCANVAS_H

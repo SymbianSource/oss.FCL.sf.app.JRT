@@ -1,0 +1,72 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+PRJ_EXPORTS
+
+#include "../../../../inc/build_defines.hrh"
+
+inc/j9cfg.h         |../../../../inc/j9cfg.h
+inc/j9comp.h        |../../../../inc/j9comp.h
+inc/jni.h           |../../../../inc/jni.h
+inc/jniport.h       |../../../../inc/jniport.h
+inc/jvmpi.h         |../../../../inc/jvmpi.h
+inc/jvmri.h         |../../../../inc/jvmri.h
+
+classes.cdc.zip     |../../../../inc/classes.cdc.zip
+classes.cldc.zip    |../../../../inc/classes.cldc.zip
+classes.fp.zip      |../../../../inc/classes.fp.zip
+
+#ifdef RD_JAVA_SYMBIAN_TARGET
+
+:zip winscw.triplicates.zip   /epoc32/release/winscw/udeb
+:zip winscw.triplicates.zip   /epoc32/release/winscw/urel
+#ifdef RD_JAVA_S60_RELEASE_5_0_IAD
+:zip winscw.zip               /epoc32/release/winscw/udeb
+:zip winscw.zip               /epoc32/release/winscw/urel
+:zip armv5.zip                /epoc32/release/armv5/urel
+:zip armv5.zip                /epoc32/release/armv5/udeb
+#else
+:zip winscw92.zip             /epoc32/release/winscw/udeb
+:zip winscw92.zip             /epoc32/release/winscw/urel
+:zip armv592.zip              /epoc32/release/armv5/urel
+:zip armv592.zip              /epoc32/release/armv5/udeb
+#endif // RD_JAVA_S60_RELEASE_5_0_IAD
+
+
+:zip properties.zip           /epoc32/release/winscw/udeb/z/resource/java/jvm/bin
+:zip properties.zip           /epoc32/release/winscw/urel/z/resource/java/jvm/bin
+:zip properties.zip           /epoc32/release/armv5/udeb/z/resource/java/jvm/bin
+:zip properties.zip           /epoc32/release/armv5/urel/z/resource/java/jvm/bin
+                              
+:zip security.zip             /epoc32/release/winscw/udeb/z/resource/java/jvm/lib/security
+:zip security.zip             /epoc32/release/winscw/urel/z/resource/java/jvm/lib/security
+:zip security.zip             /epoc32/release/armv5/udeb/z/resource/java/jvm/lib/security
+:zip security.zip             /epoc32/release/armv5/urel/z/resource/java/jvm/lib/security
+                              
+locale.cdc.zip                /epoc32/release/winscw/udeb/z/resource/java/jvm/lib/jclCdc11/locale.zip
+locale.cdc.zip                /epoc32/release/winscw/urel/z/resource/java/jvm/lib/jclCdc11/locale.zip
+locale.cdc.zip                /epoc32/release/armv5/udeb/z/resource/java/jvm/lib/jclCdc11/locale.zip
+locale.cdc.zip                /epoc32/release/armv5/urel/z/resource/java/jvm/lib/jclCdc11/locale.zip
+                              
+locale.fp.zip                 /epoc32/release/winscw/udeb/z/resource/java/jvm/lib/jclFoundation11/locale.zip
+locale.fp.zip                 /epoc32/release/winscw/urel/z/resource/java/jvm/lib/jclFoundation11/locale.zip
+locale.fp.zip                 /epoc32/release/armv5/udeb/z/resource/java/jvm/lib/jclFoundation11/locale.zip
+locale.fp.zip                 /epoc32/release/armv5/urel/z/resource/java/jvm/lib/jclFoundation11/locale.zip
+
+:zip japt_jar2jxe/japt_jar2jxe_lnx_x86.zip /epoc32/tools/java/japtjxe.linux
+:zip japt_jar2jxe/japt_jar2jxe_win.zip     /epoc32/tools/java/japtjxe.windows
+
+#endif

@@ -390,8 +390,17 @@ TInt CMIDKeyDecoder::GetKeyCode(TInt aGameAction)
     {
         if (iGameActions[i]->iActionCode == aGameAction)
         {
-            DEBUG_INT("> CMIDKeyDecoder::GetKeyCode - return code %D", iGameActions[i]->iCodes[0]);
-            return iGameActions[i]->iCodes[0]; //just return the first code
+            TInt numCodes = iGameActions[i]->iCodes.Count();
+            if (numCodes > 0)
+            {
+                DEBUG_INT("> CMIDKeyDecoder::GetKeyCode - return code %D", iGameActions[i]->iCodes[0]);
+                return iGameActions[i]->iCodes[0]; //just return the first code
+            }
+            else
+            {
+                DEBUG("Err - missing key code for valid game action");
+                break;
+            }
         }
     }
 

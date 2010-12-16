@@ -48,8 +48,9 @@ public: // new types
     {
         EFullscreenChange,
         EResolutionChange,
-        EPartialVKBChange,
-        EForegroundGained
+        EForegroundGained,
+        EPartialVKBEnabled,
+        EPartialVKBDisabled
     };
 
 public: // New methods

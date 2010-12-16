@@ -141,19 +141,20 @@ void* DatagramServerConnection::listenThread(void* aParams)
 
 
     int rt = -1;
-    char * addr = new char[MAX_SIZE];
+    //char * addr = new char[MAX_SIZE];
 
     if (rt < 0 && pThis->mKeepRunning)
     {
         char *buf = new char[BUFFER_SIZE];
         // wchar_t * sender = new wchar_t[256];
-        char *  sender = new  char[256];
+        //char *  sender = new  char[256];
         while (match == false)
         {
             rt = recvfrom(pThis->mListenDatagram, buf, BUFFER_SIZE, 0,
                           (sockaddr*) &sender_addr, &size);
-
-            strcpy(sender,inet_ntoa(sender_addr.sin_addr));
+					  delete[] buf;
+            //strcpy(sender,inet_ntoa(sender_addr.sin_addr));// Do we need this?
+            //delete[] sender;
             ILOG2(ESOCKET, "pThis->mListenDatagram =  %d, port = %d",pThis-> mListenDatagram,pThis->mPort);
 
             // validate the filter

@@ -22,7 +22,7 @@
 #include <jdebug.h>
 #include "cmmammfplayerbase.h"
 #include "cmmammfresolver.h"
-
+#include <Oma2Agent.h>
 
 CMMAMMFPlayerBase::~CMMAMMFPlayerBase()
 {
@@ -88,19 +88,60 @@ EXPORT_C TInt CMMAMMFPlayerBase::DoOpen(TUid aSourceUid,
     iEventMonitor->Cancel();
     iController.Close();
 
+	// File type
+	TInt fileType = ContentAccess::ENoDcf;
+	
+	// Determine file-type (9.2 onwards)
+	#ifdef RD_JAVA_S60_RELEASE_9_2_ONWARDS
+	if (iFileName)
+	{
+		ContentAccess::CContent* content = NULL;
+		TRAPD(err, content = ContentAccess::CContent::NewL(
+				  *iFileName, ContentAccess::EContentShareReadOnly));
+		if (err)
+		{
+			DEBUG_INT("CMMAMMFPlayerBase::DoOpen: Trapped  err  = %d ", err);
+		}
+		else 
+		{
+			TInt value = 0;
+			if (content->GetAttribute(ContentAccess::EFileType, value) == KErrNone)
+			{
+				fileType = value;
+			}
+			delete content ;
+		}
+	}
+	#endif
+
     // Try opening and configuring each controller in turn
     TInt error = KErrNotSupported;
     TInt index = 0;
 
     // Try controllers until found a good controller or out of list
-    while ((error != KErrNone) &&
-            (index < iControllerInfos->Count()))
+    while (index < iControllerInfos->Count())
     {
-        // Open the controller
-        error = iController.Open((*iControllerInfos)[ index ]->Uid(),
-                                 aPrioritySettings, ETrue);
+        #ifdef RD_JAVA_S60_RELEASE_9_2_ONWARDS
+		// from 9.2 onwards we have overloaded API to open the controller in 
+		// secure and non-secure process
+		if (fileType != ContentAccess::ENoDcf)
+		{
+			DEBUG_INT("CMMAMMFPlayerBase::DoOpen: DRM ContentType = %d ", fileType);
+			// Open the controller for OMA DRM file (v1 or v2)
+			error = iController.OpenInSecureDRMProcess((*iControllerInfos)[ index ]->Uid(),
+													   aPrioritySettings, ETrue);
+		}
+		else
+		#endif
 
-        // If the controller was opened without error, start receiving events from it.
+		{
+			DEBUG("CMMAMMFPlayerBase::DoOpen: No DRM a Content");
+			// Open the controller for non DRM file
+			error = iController.Open((*iControllerInfos)[ index ]->Uid(),
+									 aPrioritySettings, ETrue);
+		}
+
+		// If the controller was opened without error, start receiving events from it.
         if (!error)
         {
             iEventMonitor->Start();
@@ -115,14 +156,19 @@ EXPORT_C TInt CMMAMMFPlayerBase::DoOpen(TUid aSourceUid,
             error = iController.AddDataSink(aSinkUid, aSinkData);
         }
 
-        // If an error occurred in any of the above, close the controller.
-        if (error)
+        // Got a working controller -> done
+        if (!error)
         {
-            iEventMonitor->Cancel();
-            iController.Close();
+            break;
         }
 
+        // Close the non-working controller.
+        iEventMonitor->Cancel();
+        iController.Close();
+
+        // Try the next one
         index++;
+
     }
 
     return error;

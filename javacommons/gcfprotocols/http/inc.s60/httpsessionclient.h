@@ -77,7 +77,8 @@ private:
     RLibrary iCustomiserLib;
     RSocketServ iSocketServ;
     RConnection iConnection;
-    TInt     iApnId ;
+    TInt     iApnId ;       // stores the ap id, could be SNAP id or IAP id depending on iApType
+    TInt  iApType;          // stores the access point type, 2= SNAP, 3=IAP
     //MHttpClientCustomiser* iCustomiser;
 };
 

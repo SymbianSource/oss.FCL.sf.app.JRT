@@ -164,13 +164,6 @@ void CMIDTextEditor::CustomComponentContainerDisposing()
 {
     DEBUG("CMIDTextEditor::CustomComponentContainerDisposing +");
 
-#ifdef RD_JAVA_S60_RELEASE_9_2
-    if (iFocusState)
-    {
-        iTextEdwin->CloseVKB();
-    }
-#endif // RD_JAVA_S60_RELEASE_9_2
-
     // Call SetFocus on edwin
     iTextEdwin->SetFocus(EFalse);
     // Disable the custom indicators as in Avkon if not controlled by
@@ -320,7 +313,7 @@ void CMIDTextEditor::SetParentL(
         CCoeControl& control = aComponentContainer->Control();
         // Register container window for the editor.
         iTextEdwin->SetContainerWindowL(control);
-        iTextEdwin->SetTopParent(&control);
+        iTextEdwin->SetTopParent(&control, aComponentContainer);
         // Initialize the editor window.
         CMIDDisplayable* displayable = NULL;
 #ifdef RD_JAVA_S60_RELEASE_9_2
@@ -452,7 +445,7 @@ void CMIDTextEditor::TraverseL(const TKeyEvent& aEvent)
     }
     else
     {
-        iTextEdwin->OfferKeyEventL(aEvent, EEventKeyDown);
+        iTextEdwin->OfferKeyEventL(aEvent, EEventKey);
     }
 }
 
@@ -479,7 +472,7 @@ void CMIDTextEditor::SetVisibleL(TBool aVisible)
         if (iFocusState)
         {
             iFocusState = EFalse;
-            SetFocusStateL(ETrue);
+            SetFocusL(ETrue);
             // Cursor is not shown automatically if the editor has focus.
             // So, set cursor visible.
             iTextEdwin->SetCursorVisible(ETrue);
@@ -500,7 +493,7 @@ void CMIDTextEditor::SetVisibleL(TBool aVisible)
         if (iFocusState)
         {
             // Remove the focus from the editor also.
-            SetFocusStateL(EFalse);
+            SetFocusL(EFalse);
             // Keep focus state for visibility changes
             iFocusState = ETrue;
         }
@@ -591,18 +584,18 @@ void CMIDTextEditor::SetCaretXYL(TInt aX, TInt aY)
 // (other items are commented in the header file)
 // ---------------------------------------------------------------------------
 //
-void CMIDTextEditor::SetFocusStateL(TBool aFocusState)
+void CMIDTextEditor::SetFocusL(TBool aFocus)
 {
-    DEBUG_INT("CMIDTextEditor::SetFocusStateL +, aFocusState=%d",
-              aFocusState);
+    DEBUG_INT("CMIDTextEditor::SetFocusL +, aFocus=%d", aFocus);
+    if (!iTextEdwin || !iComponentContainer)
+    {
+        return;
+    }
 
-    if ((aFocusState) && !(iFocusState))
+    if ((aFocus) && !(iFocusState))
     {
         // Set focus if the text editor is not focused
         iFocusState = ETrue;
-
-        // Send the information about new focused component to parent
-        iComponentContainer->SetFocusedComponent(this);
 
         // If the editor is visible, give him focus.
         if (iTextEdwin->IsVisible())
@@ -625,23 +618,14 @@ void CMIDTextEditor::SetFocusStateL(TBool aFocusState)
             iTextEdwin->Redraw();
         }
     }
-    else if (!(aFocusState) && (iFocusState))
+    else if (!(aFocus) && (iFocusState))
     {
         // Remove focus if the text editor is focused.
         iFocusState = EFalse;
 
-#ifdef RD_JAVA_S60_RELEASE_9_2
-        iTextEdwin->FocusLost();
-#endif // RD_JAVA_S60_RELEASE_9_2
-
         // Call SetFocus on edwin
         iTextEdwin->SetFocus(EFalse);
 
-        if (iComponentContainer)
-        {
-            // Send the information about new focused component to parent
-            iComponentContainer->SetFocusedComponent(NULL);
-        }
 
         // Disable the custom indicators as in Avkon if not controlled by
         // the client application.
@@ -654,11 +638,6 @@ void CMIDTextEditor::SetFocusStateL(TBool aFocusState)
     }
 
     DEBUG("CMIDTextEditor::SetFocusStateL -");
-}
-
-TBool CMIDTextEditor::GetFocusState()
-{
-    return iFocusState;
 }
 
 // ---------------------------------------------------------------------------
@@ -1681,13 +1660,6 @@ void CMIDTextEditor::SetDefaultIndicatorsL()
 void CMIDTextEditor::Dispose()
 {
     DEBUG("CMIDTextEditor::Dispose +");
-
-#ifdef RD_JAVA_S60_RELEASE_9_2
-    if (iFocusState)
-    {
-        iTextEdwin->CloseVKB();
-    }
-#endif // RD_JAVA_S60_RELEASE_9_2
     delete this;
     DEBUG("CMIDTextEditor::Dispose -");
 }
@@ -1730,6 +1702,17 @@ void CMIDTextEditor::MdcContentBoundsChanged(const TRect& /*aRect*/)
 {
     DEBUG("CMIDTextEditor::MdcContentBoundsChanged +");
 
+    UpdateIndicator();
+
+    DEBUG("CMIDTextEditor::MdcContentBoundsChanged -");
+}
+
+// ---------------------------------------------------------------------------
+// Updates the indicator
+// ---------------------------------------------------------------------------
+//
+void CMIDTextEditor::UpdateIndicator()
+{
     CMIDEditingStateIndicator::TIndicatorState state =
         iEditingStateIndicator->EnabledState();
 
@@ -1771,8 +1754,6 @@ setting indicators relative");
 
     // Notify editor about state change.
     TRAP_IGNORE(iTextEdwin->NotifyEditorStateObserverOfStateChangeL());
-
-    DEBUG("CMIDTextEditor::MdcContentBoundsChanged -");
 }
 
 // ---------------------------------------------------------------------------
@@ -2028,7 +2009,10 @@ TBool CMIDTextEditor::isConnected()
 // CMIDTextEditor::CMIDTextEditor
 // ---------------------------------------------------------------------------
 //
-CMIDTextEditor::CMIDTextEditor() : iNonScaledFont(NULL)
+CMIDTextEditor::CMIDTextEditor() :
+        iTextEdwin(NULL),
+        iComponentContainer(NULL),
+        iNonScaledFont(NULL)
 {
     // No implementation.
 }
@@ -2059,6 +2043,7 @@ void CMIDTextEditor::ConstructL(const TCtorParams& aParams)
     // Create text editor component.
     iTextEdwin = new(ELeave) CMIDTextEditorEdwin(*iEdwinUtils);
 
+    iTextEdwin->SetItem(this);
     // Set custom editing state indicator.
     iTextEdwin->SetEditingStateIndicator(iEditingStateIndicator);
 
@@ -2150,13 +2135,18 @@ void CMIDTextEditor::HandleFullscreenModeChange()
         // We need reposition text editor.
         HandleChangeForScaling(EFullscreenChange);
     }
+    else
+    {
+        // Updates the state of indicator
+        UpdateIndicator();
+    }
 }
 
 TBool CMIDTextEditor::IsScalingOn() const
 {
     return iUtils && iComponentContainer && iUtils->IsScalingEnabled()
 #ifdef RD_JAVA_S60_RELEASE_9_2
-           && !iPartialVKBOpen
+           && !iComponentContainer->IsPartialVKBOpen()
 #endif // RD_JAVA_S60_RELEASE_9_2
            && iComponentContainer->IsFullScreen();
 }
@@ -2167,8 +2157,7 @@ void CMIDTextEditor::HandleResourceChange(TInt aType)
     if ((aType == KAknSplitInputEnabled) ||
             (aType == KAknSplitInputDisabled))
     {
-        iPartialVKBOpen = (aType == KAknSplitInputEnabled);
-        if (iTextEdwin && iTextEdwin->IsFocused())
+        if (iTextEdwin)
         {
             // Inform edwin about the event.
             iTextEdwin->HandleResourceChange(aType);
@@ -2178,7 +2167,14 @@ void CMIDTextEditor::HandleResourceChange(TInt aType)
                 iComponentContainer->IsFullScreen())
         {
             // Reposition the text editor.
-            HandleChangeForScaling(EPartialVKBChange);
+            if (aType == KAknSplitInputEnabled)
+            {
+                HandleChangeForScaling(EPartialVKBEnabled);
+            }
+            else
+            {
+                HandleChangeForScaling(EPartialVKBDisabled);
+            }
         }
     }
 #endif // RD_JAVA_S60_RELEASE_9_2
@@ -2210,9 +2206,17 @@ void CMIDTextEditor::HandleChangeForScaling(TChange aChange)
     // It is needed to store iRowCountActive, because SetEditorSize resets it.
     TBool rowCountActive = iRowCountActive;
 
-    // Calling all functions which sets sizes and position of TextEditor.
-    SetEditorSize(iNonScaledEditorSize.iWidth, iNonScaledEditorSize.iHeight);
-    SetPosition(iNonScaledPosition.iX, iNonScaledPosition.iY);
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    if (aChange != EFullscreenChange || !iComponentContainer
+            || !iComponentContainer->IsPartialVKBOpen())
+#else
+    if (aChange != EFullscreenChange || !iComponentContainer)
+#endif
+    {
+        // Calling all functions which sets sizes and position of TextEditor.
+        SetEditorSize(iNonScaledEditorSize.iWidth, iNonScaledEditorSize.iHeight);
+        SetPosition(iNonScaledPosition.iX, iNonScaledPosition.iY);
+    }
     if (iNonScaledFont)
     {
         TRAPD(err, SetFontL(iNonScaledFont));
@@ -2252,32 +2256,34 @@ void CMIDTextEditor::HandleChangeForScaling(TChange aChange)
     }
 
 #ifdef RD_JAVA_S60_RELEASE_9_2
-    if (aChange == EPartialVKBChange)
+    if (aChange == EPartialVKBEnabled)
     {
-        if (iPartialVKBOpen)
-        {
-            // When partial keyboard is opening, the scalingmust be stoped.
-            // Setting edwin's variables, it is necessary for correct clipping.
-            iTextEdwin->SetOnScreenCanvasRect(iComponentContainer->Control().Rect());
-            iTextEdwin->SetScaling(EFalse);
+        // When partial keyboard is opening, the scalingmust be stoped.
+        // Setting edwin's variables, it is necessary for correct clipping.
+        iTextEdwin->SetOnScreenCanvasRect(iComponentContainer->Control().Rect());
+        iTextEdwin->SetScaling(EFalse);
 
-            // Setting indicator's variables, it is necessary for correct clipping.
-            iEditingStateIndicator->SetScalingOn(EFalse);
-            iEditingStateIndicator->SetCanvasRect(iComponentContainer->Control().Rect());
-        }
-        else if (iUtils)
-        {
-            // When partial keybord is closing, the scaling needs to be restored.
-            // Setting edwin's variables, it is necessary for correct clipping.
-            iTextEdwin->SetOnScreenCanvasRect(iUtils->GetOnScreenCanvasRect());
-            iTextEdwin->SetScaling(IsScalingOn());
+        // Setting indicator's variables, it is necessary for correct clipping.
+        iEditingStateIndicator->SetScalingOn(EFalse);
+        iEditingStateIndicator->SetCanvasRect(iComponentContainer->Control().Rect());
+    }
+    if (aChange == EPartialVKBDisabled)
+    {
+        // When partial keybord is closing, the scaling needs to be restored.
+        // Setting edwin's variables, it is necessary for correct clipping.
+        iTextEdwin->SetOnScreenCanvasRect(iUtils->GetOnScreenCanvasRect());
+        iTextEdwin->SetScaling(IsScalingOn());
 
-            // Setting indicator's variables, it is necessary for correct clipping.
-            iEditingStateIndicator->SetScalingOn(IsScalingOn());
-            iEditingStateIndicator->SetCanvasRect(iUtils->GetOnScreenCanvasRect());
-        }
+        // Setting indicator's variables, it is necessary for correct clipping.
+        iEditingStateIndicator->SetScalingOn(IsScalingOn());
+        iEditingStateIndicator->SetCanvasRect(iUtils->GetOnScreenCanvasRect());
     }
 #endif // RD_JAVA_S60_RELEASE_9_2
+}
+
+void CMIDTextEditor::SetFocusStateL(TBool aFocusState)
+{
+    iComponentContainer->ChangeFocusStateOfTextEditorsL(aFocusState, this);
 }
 
 // End of file

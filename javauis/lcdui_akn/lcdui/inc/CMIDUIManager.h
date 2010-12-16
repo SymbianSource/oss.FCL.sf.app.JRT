@@ -72,7 +72,7 @@ public:
     enum TPESValues
     {
         EPESPointerMovementInTwips = 200,//1 twip == 1/1440 of an inch
-        EPESTimeInMilliseconds = 500//default time 0.5s
+        EPESTimeInMilliseconds = 350//default time 0.35s
     };
 
 
@@ -280,6 +280,16 @@ public:
     CMIDDisplayable* GetDefaultDisplayable();
 
     /**
+     * Deactivates default displayable
+     *
+     * From now on the default displayable can be used
+     * only as a background for split view
+     *
+     * @since s60 9.2
+     */
+    inline void DeactivateDefaultDisplayable();
+
+    /**
      * Get Gauge item data
      * @return Data pointer
      * @since s60 3.2
@@ -352,7 +362,13 @@ private:
     void*                   iGaugeItemData;
     CMIDDisplayable*        iDefaultDisplayable;
     CMIDDefaultBackground*  iDefaultBackground;
+    TBool                   iDefDispDeactivated;
 };
+
+inline void CMIDUIManager::DeactivateDefaultDisplayable()
+{
+    iDefDispDeactivated = ETrue;
+}
 
 #endif // CMIDUIMANAGER_H
 

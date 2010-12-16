@@ -34,7 +34,7 @@ public:
     FileContent(char* content) : mContent(content) {}
     ~FileContent()
     {
-        delete mContent;
+        delete[] mContent;
         mContent = 0;
     }
     char* getContent()

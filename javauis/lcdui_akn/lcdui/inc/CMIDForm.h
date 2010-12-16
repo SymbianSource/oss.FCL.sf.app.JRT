@@ -507,6 +507,9 @@ private:
     void UpdateTactileFeedbackDensity();
     void DoScrollingFeedback();
 #endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    void UpdateFormForSplitScreenChange();
+#endif // RD_JAVA_S60_RELEASE_9_2
 
 private: //data
     CMIDDisplayable& iDisplayable;
@@ -590,6 +593,10 @@ private: //data
     TInt iTactileFeedbackDensity;
     TInt iLastPointerEventType;
 #endif //RD_JAVA_ADVANCED_TACTILE_FEEDBACK
+#ifdef RD_JAVA_S60_RELEASE_9_2
+    TBool iPartialScreenOpened;
+    TBool iRemovedEditingItem;
+#endif // RD_JAVA_S60_RELEASE_9_2
 
     // Storing index to last pointed control
     // before Form layout is performed

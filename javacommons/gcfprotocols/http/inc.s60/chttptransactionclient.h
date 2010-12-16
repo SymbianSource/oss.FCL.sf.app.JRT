@@ -147,6 +147,7 @@ private:
     TInt iMinLength;
     TBool iDrmDownload;
     TInt iFlag;
+    bool iRestartedFlag;
 };
 
 #endif // CHTTPTRANSACTIONCLIENT_H

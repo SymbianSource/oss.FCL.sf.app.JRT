@@ -55,7 +55,7 @@ void CMIDUIManager::ConstructL()
 {
     iEnv.AddObserverL(*this);
     RestoreIniL();
-
+    iDefDispDeactivated = EFalse;
 }
 
 CMIDUIManager::CMIDUIManager(MMIDEnv& aEnv)
@@ -400,18 +400,27 @@ void CMIDUIManager::CloseCanvasKeypad(CMIDCanvasKeypad* aCanvasKeypad)
 // parameter aVisible is for DafaultDisplayable visibility.
 CMIDDisplayable* CMIDUIManager::OpenDefaultDisplayableL(TBool aVisible)
 {
-    if (!iDefaultDisplayable)
+    if (!iDefDispDeactivated)
     {
-        iDefaultDisplayable = CMIDDisplayable::NewL(iEnv, *this);
-        CCoeControl& window = static_cast< CMIDDisplayable& >(*iDefaultDisplayable).ContentWindow();
-        iDefaultBackground = CMIDDefaultBackground::NewL(window);
-        iDefaultDisplayable->SetComponentL(*iDefaultBackground);
-        // call HandleCurrent with TRUE for store pointer of Displayable
-        iDefaultDisplayable->HandleCurrentL(ETrue);
-        // Default displayable is not currnet in this moment
-        iDefaultDisplayable->HandleCurrentL(EFalse);
-        iDefaultDisplayable->MakeVisible(aVisible);
-        CEikonEnv::Static()->EikAppUi()->RemoveFromStack(iDefaultBackground);
+        if (!iDefaultDisplayable)
+        {
+            // When a default displayable is not create, then it will be created.
+            iDefaultDisplayable = CMIDDisplayable::NewL(iEnv, *this);
+            CCoeControl& window = static_cast< CMIDDisplayable& >(*iDefaultDisplayable).ContentWindow();
+            iDefaultBackground = CMIDDefaultBackground::NewL(window);
+            iDefaultDisplayable->SetComponentL(*iDefaultBackground);
+            // call HandleCurrent with TRUE for store pointer of Displayable
+            iDefaultDisplayable->HandleCurrentL(ETrue);
+            // Default displayable is not currnet in this moment
+            iDefaultDisplayable->HandleCurrentL(EFalse);
+            iDefaultDisplayable->MakeVisible(aVisible);
+            CEikonEnv::Static()->EikAppUi()->RemoveFromStack(iDefaultBackground);
+        }
+        else if (aVisible)
+        {
+            // This makes active default displayable visible.
+            iDefaultDisplayable->MakeVisible(ETrue);
+        }
     }
     return iDefaultDisplayable;
 }

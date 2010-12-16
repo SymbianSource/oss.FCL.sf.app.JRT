@@ -69,7 +69,7 @@ class CPropertyWatch;
 
 // Container for MIDlet Displayables.
 NONSHARABLE_CLASS(CMIDDisplayable) : public CEikBorderedControl, public MMIDDisplayable,
-public MMIDEnvObserver, public MAknLongTapDetectorCallBack, public MEikMenuObserver
+        public MMIDEnvObserver, public MAknLongTapDetectorCallBack, public MEikMenuObserver
 {
 public:
 
@@ -120,6 +120,7 @@ public:
     void SetFullScreenModeL(TBool aFullScreen);
 #ifdef RD_JAVA_S60_RELEASE_9_2
     void HandleSplitScreenKeyboard(TBool aOpened);
+    TBool IsSplitScreenOpened() const;
 #endif // RD_JAVA_S60_RELEASE_9_2
     CCoeControl& ContentWindow();
     TBool SoftKeyLabelLocation(TInt aSoftKeyId, TPoint& aPosition, TSize& aSize);
@@ -169,6 +170,7 @@ public:
     TInt GetHighestPriorityScreenOrHelpCommand() const;
     void SetItemCommandList(CMIDCommandList* aList, CMIDCommand* aMSKCommand);
     void SetMSKCommand(CMIDCommand* aMSKCommand);
+
     /**
      * Stores select command to Displayable
      * @param aSelectCommand a command used in MSK and in menu
@@ -315,7 +317,7 @@ public:
      */
     void ProcessMSKCommandL();
     /**
-     * Enum callback type 
+     * Enum callback type
      * @since S60 9.2
      */
     enum TLcduiUiCallbackType
@@ -323,16 +325,16 @@ public:
         EFixUIOrientation,
         EUnFixUIOrientation
     };
-    
+
     /**
-     * Fix orientation from MMA 
+     * Fix orientation from MMA
      *
      * @return void
      *
      * @since S60 9.2
      */
     void FixOrientation();
-    
+
     /**
      * Release orientation from MMA
      *
@@ -385,14 +387,14 @@ private:
          * Default ctor
          */
         TDirectContentsRect()
-            : iRefCount(0) {}
+                : iRefCount(0) {}
 
         /**
          * Ctor
          * @param aRect Rectangle
          */
         TDirectContentsRect(const TRect& aRect)
-            : iRect(aRect), iRefCount(1) {}
+                : iRect(aRect), iRefCount(1) {}
 
         TRect iRect;
         TInt iRefCount;
@@ -478,7 +480,7 @@ private:
      * If content control is CMIDCanvas, returns pointer to it, NULL otherwise.
      * @since S60 9.2
      */
-    CMIDCanvas* GetContentCanvas();
+    CMIDCanvas* GetContentCanvas() const;
 
 private:
     CMIDAppUi* iAppUi;
@@ -595,14 +597,11 @@ private:
     // Indicates opened split screen keyboard
     TBool iSplitScreenKeyboard;
 #endif // RD_JAVA_S60_RELEASE_9_2
-    
+
     TBool iRestoreOrientation;
     CAknAppUiBase::TAppUiOrientation iOldUiOrientation;
     TInt iReleaseCnt;
 };
-
-
-
 
 // Timer delay
 const TInt KTimerDelayValue = 200000;//0.2s

@@ -70,7 +70,6 @@
                    com.nokia.mid.ui.TactileFeedback,
                    com.nokia.mid.ui.CanvasItem,
                    com.nokia.mid.ui.impl.LCDUIPackageInvoker,
-                   com.nokia.mid.ui.impl.TextEditorContainer,
                    com.nokia.mid.ui.impl.TextEditorListenerImpl,
                    javax.microedition.lcdui.LCDUIPackageInvokerImpl,
                    com.nokia.mid.ui.TextEditor,

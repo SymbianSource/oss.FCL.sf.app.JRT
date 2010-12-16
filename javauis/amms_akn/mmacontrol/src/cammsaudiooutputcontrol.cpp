@@ -477,6 +477,10 @@ void CAMMSAudioOutputControl::CreateNativeAudioOutputControlL()
             CAMMSCustomCommandUtility::NewL(mmfController);
         iAudioOutput = CAudioOutput::NewL(*customCommandUtility);
     }
+    else
+    {
+			  User::Leave(KErrNotSupported);
+	  }
 }
 
 

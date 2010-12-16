@@ -193,16 +193,33 @@ TBool CPIMContactListAdapter::IsCategoriesExternallyModified()
 // Returns: An array of category state change objects. The ownership
 //          of the array is transferred to the caller. Note that the
 //          array elements contain heap-allocated data.
+// This method is run always in the Function Server thread, see the comment of
+// the method GetExternalCategoryModificationsFsL() for further information.
 // -----------------------------------------------------------------------------
 //
 RPointerArray<CPIMCategoryStateChange>*
 CPIMContactListAdapter::GetExternalCategoryModificationsL()
 {
     JELOG2(EPim);
-    CallMethodL(this, &CPIMContactListAdapter::IsDatabaseReadyL, iFuncServer);
-    RPointerArray<CPIMCategoryStateChange>* retval = iCategoryChanges;
-    iCategoryChanges = NULL;
+    RPointerArray<CPIMCategoryStateChange>* retval = NULL;
+    CallMethodL(this,&CPIMContactListAdapter::GetExternalCategoryModificationsFsL,retval,iFuncServer);
     return retval;
+}
+
+// -----------------------------------------------------------------------------
+// CPIMContactListAdapter::GetExternalCategoryModificationsFsL
+// This method and the method ExternalGroupChangeL() which modify the category 
+// change cache are run always in the Function Server thread so that all access 
+// to the cache will be serialized preventing concurrent access problems. These 
+// could occur when there are new changes added to the cache at the same time 
+// as some other thread is fetching the changes.
+// -----------------------------------------------------------------------------
+//
+void CPIMContactListAdapter::GetExternalCategoryModificationsFsL(RPointerArray<CPIMCategoryStateChange>*& aArray)
+{
+    IsDatabaseReadyL();
+    aArray = iCategoryChanges;
+    iCategoryChanges = NULL;
 }
 
 // -----------------------------------------------------------------------------

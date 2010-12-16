@@ -86,7 +86,7 @@ CMIDCanvasGraphicsItem::~CMIDCanvasGraphicsItem()
     {
         iItemPainter->SetItem(NULL);
     }
-    
+
     // Remove this component from the container if set.
     if (iComponentContainer)
     {
@@ -95,7 +95,7 @@ CMIDCanvasGraphicsItem::~CMIDCanvasGraphicsItem()
 
     iComponentContainer = NULL;
     iUtils = NULL;
-    
+
     DEBUG("CMIDCanvasGraphicsItem::~CMIDCanvasGraphicsItem -");
 }
 
@@ -173,7 +173,7 @@ void CMIDCanvasGraphicsItem::SetParentL(
         SetSizeL(size.iWidth, size.iHeight);
         TPoint position = iItemPainter->Position();
         SetPosition(position.iX, position.iY);
-    
+
         if (iUtils)
         {
             // Set canvas fullscreen size is needed here.
@@ -319,7 +319,7 @@ void CMIDCanvasGraphicsItem::SetPosition(const TInt aX, const TInt aY)
 void CMIDCanvasGraphicsItem::Dispose()
 {
     DEBUG("CMIDCanvasGraphicsItem::Dispose +");
-    
+
     delete this;
 
     DEBUG("CMIDCanvasGraphicsItem::Dispose -");
@@ -343,7 +343,7 @@ TBool CMIDCanvasGraphicsItem::IsScalingOn() const
 {
     return iUtils && iComponentContainer && iUtils->IsScalingEnabled()
 #ifdef RD_JAVA_S60_RELEASE_9_2
-           && !iPartialVKBOpen
+           && !iComponentContainer->IsPartialVKBOpen()
 #endif // RD_JAVA_S60_RELEASE_9_2
            && iComponentContainer->IsFullScreen();
 }
@@ -354,18 +354,23 @@ void CMIDCanvasGraphicsItem::HandleResourceChange(TInt aType)
     if ((aType == KAknSplitInputEnabled) ||
             (aType == KAknSplitInputDisabled))
     {
-        iPartialVKBOpen = (aType == KAknSplitInputEnabled);
-
         if (iUtils && iComponentContainer && iUtils->IsScalingEnabled() &&
                 iComponentContainer->IsFullScreen())
         {
             // We need reposition text editor.
-            HandleChangeForScaling(EPartialVKBChange);
+            if (aType == KAknSplitInputEnabled)
+            {
+                HandleChangeForScaling(EPartialVKBEnabled);
+            }
+            else
+            {
+                HandleChangeForScaling(EPartialVKBDisabled);
+            }
         }
     }
 #endif // RD_JAVA_S60_RELEASE_9_2
 
-    if (KEikDynamicLayoutVariantSwitch)
+    if (aType == KEikDynamicLayoutVariantSwitch)
     {
         if (iUtils && iComponentContainer && iUtils->IsScalingEnabled() &&
                 iComponentContainer->IsFullScreen())
@@ -407,25 +412,22 @@ void CMIDCanvasGraphicsItem::HandleChangeForScaling(TChange aChange)
     }
 
 #ifdef RD_JAVA_S60_RELEASE_9_2
-    if (aChange == EPartialVKBChange)
+    if (aChange == EPartialVKBEnabled)
     {
-        if (iPartialVKBOpen)
-        {
-            // When partial VKB is opening, stop scaling.
-            iItemPainter->SetOnScreenCanvasRect(iComponentContainer->Control().Rect());
-        }
-        else if (iUtils)
-        {
-            // When partial VKB is closing, restore scaling.
-            iItemPainter->SetOnScreenCanvasRect(iUtils->GetOnScreenCanvasRect());
-        }
+        // When partial VKB is opening, stop scaling.
+        iItemPainter->SetOnScreenCanvasRect(iComponentContainer->Control().Rect());
+    }
+    if (iUtils && aChange == EPartialVKBDisabled)
+    {
+        // When partial VKB is closing, restore scaling.
+        iItemPainter->SetOnScreenCanvasRect(iUtils->GetOnScreenCanvasRect());
     }
 #endif // RD_JAVA_S60_RELEASE_9_2
 }
 
 void CMIDCanvasGraphicsItem::DeregisterCanvasGraphicsItem()
 {
-    // This method is called on item from painter, when painter is disposed 
+    // This method is called on item from painter, when painter is disposed
     // before disposal of item
     if (iComponentContainer)
     {

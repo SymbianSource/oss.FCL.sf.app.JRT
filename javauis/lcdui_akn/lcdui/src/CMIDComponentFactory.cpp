@@ -71,7 +71,6 @@ CMIDComponentFactory::CMIDComponentFactory() : iUtils(NULL)
 
 CMIDComponentFactory::~CMIDComponentFactory()
 {
-    displayableCreated = EFalse;
     delete iUIManager;
     if (iUtils)
     {
@@ -88,7 +87,6 @@ CMIDComponentFactory::~CMIDComponentFactory()
 void CMIDComponentFactory::ConstructL(MMIDEnv& aEnv)
 {
     iEnv = &aEnv;
-    displayableCreated = EFalse;
     iUIManager = CMIDUIManager::NewL(aEnv);
 }
 
@@ -101,29 +99,23 @@ MMIDCanvas* CMIDComponentFactory::CreateCanvasL(
     MMIDDisplayable& aDisplayable,MMIDComponent::TType aCanvasType)
 {
     CCoeControl& window = static_cast< CMIDDisplayable& >(aDisplayable).ContentWindow();
-    displayableCreated = ETrue;
     return CMIDCanvas::NewL(*iEnv, window, aCanvasType);
 }
 
 MMIDAlert* CMIDComponentFactory::CreateAlertL(MMIDDisplayable& aDisplayable,MMIDAlert::TAlertType aType,const TDesC& aString,MMIDImage* aImage)
 {
-    if (!iUIManager->OpenMenuHandlerL()->GetDisplayable() && !displayableCreated)
-    {
-        iUIManager->OpenDefaultDisplayableL(ETrue);
-    }
+    iUIManager->OpenDefaultDisplayableL(ETrue);
     return CMIDAlert::NewL(
                *iEnv, aType, aDisplayable, aString, aImage, GetUtils());
 }
 
 MMIDForm* CMIDComponentFactory::CreateFormL(MMIDDisplayable& aDisplayable)
 {
-    displayableCreated = ETrue;
     return CMIDForm::NewL(*iEnv,aDisplayable);
 }
 
 MMIDList* CMIDComponentFactory::CreateListL(TInt aType,MMIDDisplayable& aDisplayable,RArray<TPtrC>& aStringArray, RArray<MMIDImage*>& aImageArray)
 {
-    displayableCreated = ETrue;
     return CMIDList::NewL(*iEnv,aDisplayable,aType,aStringArray,aImageArray);
 }
 
@@ -135,10 +127,7 @@ MMIDTextBox* CMIDComponentFactory::CreateTextBoxL(TInt aConstraints, TInt aMaxSi
     }
     else
     {
-        if (!iUIManager->OpenMenuHandlerL()->GetDisplayable() && !displayableCreated)
-        {
-            iUIManager->OpenDefaultDisplayableL(ETrue);
-        }
+        iUIManager->OpenDefaultDisplayableL(ETrue);
         return CMIDTextBoxDialogControl::NewL(aConstraints, aText, aMaxSize, &aDisplayable);
     }
 }
@@ -182,10 +171,7 @@ MMIDGauge* CMIDComponentFactory::CreateGaugeL(
 MMIDTextField* CMIDComponentFactory::CreateTextFieldL(
     const TDesC& aLabel, const TDesC& aText, TInt aConstraints, TInt aMaxSize)
 {
-    if (!iUIManager->OpenMenuHandlerL()->GetDisplayable())
-    {
-        iUIManager->OpenDefaultDisplayableL(EFalse);
-    }
+    iUIManager->OpenDefaultDisplayableL(EFalse);
     return CMIDTextFieldItem::NewL(aLabel, aText, aConstraints, aMaxSize, iUIManager);
 }
 

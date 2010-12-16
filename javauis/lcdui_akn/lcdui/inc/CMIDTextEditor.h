@@ -319,7 +319,7 @@ public: // From MMIDTextEditor
      * @return focus state of text component.
      * @since S60 5.0
      */
-    TInt GetFocusState();
+    inline TInt GetFocusState();
 
     /**
      * Returns the content of this text editor in a new <code>HBufC</code>
@@ -665,6 +665,13 @@ public: // own methods
     void HandleFullscreenModeChange();
 
     /**
+     * Updates the indicator.
+     *
+     * @since S60 5.0
+     */
+    void UpdateIndicator();
+
+    /**
      * Handles changes of screen orientation.
      *
      * @since S60 5.0
@@ -699,6 +706,13 @@ public: // own methods
      *      The y coordinate of the wanted caret position.
      */
     void SetCaretXYL(TInt aX, TInt aY);
+
+    /**
+     * This set focus.
+     *
+     * @param aFocus New state of focus.
+     */
+    void SetFocusL(TBool aFocus);
 
 public: // From MMIDComponent
 
@@ -885,10 +899,6 @@ private: // Data
     // Nonscaled editor size. This is needed for correct scaling.
     TSize iNonScaledEditorSize;
 
-#ifdef RD_JAVA_S60_RELEASE_9_2
-    // Indicates state of partial VKB
-    TBool iPartialVKBOpen;
-#endif
 
 #ifdef RD_TACTILE_FEEDBACK
     // True if editor is already connected to the pen input server
@@ -898,6 +908,10 @@ private: // Data
 #endif // RD_TACTILE_FEEDBACK
 };
 
+inline TBool CMIDTextEditor::GetFocusState()
+{
+    return iFocusState;
+}
 #endif // CMIDTEXTEDITOR_H
 
 // End of file

@@ -138,7 +138,6 @@ private:
 private:
     MMIDEnv* iEnv;
     CMIDUIManager* iUIManager;
-    TBool displayableCreated;
 
     // Shared instance of CMIDUtils. Other components uses this instance.
     // Those components gets it by GetUtils method. Owned

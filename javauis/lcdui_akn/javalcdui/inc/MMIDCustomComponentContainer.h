@@ -89,6 +89,13 @@ public: // New methods
         MMIDCustomComponent* aComponent) = 0;
 
     /**
+     * Returns pointer to focused component.
+     *
+     * @return Pointer to focused component.
+     */
+    virtual MMIDCustomComponent* GetFocusedComponent() const = 0;
+
+    /**
      * Returns the index of the given component in this container.
      *
      * @return The index of the given component in this container.
@@ -120,7 +127,21 @@ public: // New methods
      */
     virtual TBool IsFullScreen() const = 0;
 
+    /**
+     * Changes focused component to argument (now only for TextEditor).
+     *
+     * @param Pointer to new focused TextEditor.
+     */
+    virtual void ChangeFocusStateOfTextEditorsL(TBool aFocusState, MMIDCustomComponent* aTextEditor) = 0;
+
 #ifdef RD_JAVA_S60_RELEASE_9_2
+    /**
+     * Returns flag information, if partial keyboard is open.
+     *
+     * @return True if Partial VKB is open. False otherwise.
+     */
+    virtual TBool IsPartialVKBOpen() const = 0;
+
     /**
      * Gets the Displayable from container.
      *
